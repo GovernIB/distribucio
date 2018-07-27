@@ -1,0 +1,19 @@
+package es.caib.distribucio.plugin.signatura;
+
+import es.caib.distribucio.plugin.SistemaExternException;
+
+/**
+ * Plugin permetre la signatura de documents des del servidor de Ripea.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+public interface SignaturaPlugin {
+
+	public byte[] signar(
+			String id, 
+			String nom, 
+			String motiu,
+			String tipusFirma,
+			byte[] contingut) throws SistemaExternException;
+
+}

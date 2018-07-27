@@ -94,7 +94,7 @@
 		<dependency>
 			<groupId>org.fundaciobit.plugins</groupId>
 			<artifactId>plugin-arxiu-caib</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
@@ -214,12 +214,6 @@
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
 			<version>1.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>dumbster</groupId>
-			<artifactId>dumbster</artifactId>
-			<version>1.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
