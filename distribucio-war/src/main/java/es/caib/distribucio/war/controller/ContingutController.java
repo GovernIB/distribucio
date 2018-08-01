@@ -26,41 +26,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.AlertaDto;
-import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.ContingutComentariDto;
-import es.caib.ripea.core.api.dto.ContingutDto;
-import es.caib.ripea.core.api.dto.ContingutLogDetallsDto;
-import es.caib.ripea.core.api.dto.DocumentEnviamentEstatEnumDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.ExpedientDto;
-import es.caib.ripea.core.api.dto.FitxerDto;
-import es.caib.ripea.core.api.dto.InteressatDto;
-import es.caib.ripea.core.api.dto.InteressatTipusEnumDto;
-import es.caib.ripea.core.api.dto.LogObjecteTipusEnumDto;
-import es.caib.ripea.core.api.dto.LogTipusEnumDto;
-import es.caib.ripea.core.api.dto.NodeDto;
-import es.caib.ripea.core.api.dto.RegistreAnnexDetallDto;
-import es.caib.ripea.core.api.dto.RegistreAnotacioDto;
-import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.registre.RegistreTipusEnum;
-import es.caib.ripea.core.api.service.AlertaService;
-import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.ContingutService;
-import es.caib.ripea.core.api.service.ExpedientInteressatService;
-import es.caib.ripea.core.api.service.ExpedientService;
-import es.caib.ripea.core.api.service.MetaDadaService;
-import es.caib.ripea.core.api.service.MetaDocumentService;
-import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.core.api.service.RegistreService;
-import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
-import es.caib.ripea.war.helper.BeanGeneratorHelper;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.EnumHelper;
-import es.caib.ripea.war.helper.MissatgesHelper;
-import es.caib.ripea.war.helper.SessioHelper;
+import es.caib.distribucio.core.api.dto.AlertaDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.ContingutComentariDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.service.AlertaService;
+import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.war.command.ContingutMoureCopiarEnviarCommand;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EnumHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
+import es.caib.distribucio.war.helper.SessioHelper;
 
 /**
  * Controlador per a la gestió de contenidors i mètodes compartits entre
@@ -79,26 +67,11 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
-	private MetaExpedientService metaExpedientService;
-	@Autowired
-	private MetaDocumentService metaDocumentService;
-	@Autowired
-	private ExpedientInteressatService interessatService;
-	@Autowired
-	private ExpedientService expedientService;
-	@Autowired
-	private MetaDadaService metaDadaService;
-	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
 	private RegistreService registreService;
 	@Autowired
 	private AlertaService alertaService;
-
-	@Autowired
-	private BeanGeneratorHelper beanGeneratorHelper;
-
-
 
 	@RequestMapping(value = "/contingut/{contingutId}", method = RequestMethod.GET)
 	public String contingutGet(
@@ -118,26 +91,6 @@ public class ContingutController extends BaseUserController {
 				SessioHelper.desmarcarLlegit(request),
 				model);
 		return "contingut";
-	}
-
-	@RequestMapping(value = "/contingut/{contingutId}/delete", method = RequestMethod.GET)
-	public String delete(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutId,
-				true,
-				false);
-		contingutService.deleteReversible(
-				entitatActual.getId(),
-				contingutId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				(contingut.getPare() != null) ? "redirect:../../contingut/" + contingut.getPare().getId() : "redirect:../../escriptori",
-				"contingut.controller.element.esborrat.ok");
 	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/canviVista/icones", method = RequestMethod.GET)
@@ -163,107 +116,8 @@ public class ContingutController extends BaseUserController {
 		return "redirect:../../" + contingutId;
 	}
 
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure", method = RequestMethod.GET)
-	public String moureForm(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerMoureOCopiar(
-				entitatActual,
-				contingutOrigenId,
-				model);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
-		command.setOrigenId(contingutOrigenId);
-		model.addAttribute(command);
-		return "contingutMoureForm";
-	}
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure", method = RequestMethod.POST)
-	public String moure(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			@Valid ContingutMoureCopiarEnviarCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerMoureOCopiar(
-					entitatActual,
-					contingutOrigenId,
-					model);
-			return "contingutMoureForm";
-		}
-		contingutService.move(
-				entitatActual.getId(),
-				contingutOrigenId,
-				command.getDestiId());
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../" + contingutOrigenId,
-				"contingut.controller.element.mogut.ok");
-	}
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/moure/{contingutDestiId}", method = RequestMethod.GET)
-	public String moureDragDrop(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			@PathVariable Long contingutDestiId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutOrigenId,
-				true,
-				false);
-		contingutService.move(
-				entitatActual.getId(),
-				contingutOrigenId,
-				contingutDestiId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../" + contingutOrigen.getPare().getId(),
-				"contingut.controller.element.mogut.ok");
-	}
+	
 
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/copiar", method = RequestMethod.GET)
-	public String copiarForm(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerMoureOCopiar(
-				entitatActual,
-				contingutOrigenId,
-				model);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
-		command.setOrigenId(contingutOrigenId);
-		model.addAttribute(command);
-		return "contingutCopiarForm";
-	}
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/copiar", method = RequestMethod.POST)
-	public String copiar(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			@Valid ContingutMoureCopiarEnviarCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerMoureOCopiar(
-					entitatActual,
-					contingutOrigenId,
-					model);
-			return "contingutCopiarForm";
-		}
-		ContingutDto contingutCreat = contingutService.copy(
-				entitatActual.getId(),
-				contingutOrigenId,
-				command.getDestiId(),
-				true);
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../" + contingutCreat.getId(),
-				"contingut.controller.element.copiat.ok");
-	}
 	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.GET)
 	public String enviarForm(
 			HttpServletRequest request,
@@ -305,27 +159,6 @@ public class ContingutController extends BaseUserController {
 				"contingut.controller.element.enviat.ok");
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/errors", method = RequestMethod.GET)
-	public String errors(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						contingutId,
-						true,
-						false));
-		model.addAttribute(
-				"errors",
-				contingutService.findErrorsValidacio(
-						entitatActual.getId(),
-						contingutId));
-		return "contingutErrors";
-	}
-	
 	@RequestMapping(value = "/contingut/{contingutId}/errors/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse errorsDatatable(
@@ -352,27 +185,6 @@ public class ContingutController extends BaseUserController {
 		alertaService.update(alerta);
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse registreDatatable(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<RegistreAnotacioDto> registres = null;
-		ContingutDto contingut = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutId,
-				true,
-				false);
-		if (contingut instanceof ExpedientDto) {
-			ExpedientDto expedient = (ExpedientDto)contingut;
-			registres = expedient.getFillsRegistres();
-		}
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				registres);
-	}
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreInfo(
 			HttpServletRequest request,
@@ -440,11 +252,6 @@ public class ContingutController extends BaseUserController {
 		return "registreAnnex";
 	}
 	
-	
-
-	
-	
-	
 	@RequestMapping(value = "/contingut/ajax/{contingutId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
@@ -461,10 +268,6 @@ public class ContingutController extends BaseUserController {
 		
 		return "registreJustificant";
 	}
-	
-
-	
-	
 	
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/llegir", method = RequestMethod.GET)
 	public String registreMarcarLlegida(
@@ -562,56 +365,7 @@ public class ContingutController extends BaseUserController {
 			return "redirect:../" + registreId;
 		}
 	}
-	/*@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/log", method = RequestMethod.GET)
-	public String registreLog(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			@PathVariable Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						contingutId,
-						true));
-		model.addAttribute(
-				"registre",
-				registreService.findOne(
-						entitatActual.getId(),
-						contingutId,
-						registreId));
-		model.addAttribute(
-				"moviments",
-				contingutService.findMovimentsPerContingutUser(
-						entitatActual.getId(),
-						registreId));
-		return "registreLog";
-	}*/
 	
-	@RequestMapping(value = "/contingut/{contingutId}/interessat/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse interessatDatatable(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		List<InteressatDto> interessats = null;
-		ContingutDto contingut = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutId,
-				true,
-				false);
-		if (contingut instanceof ExpedientDto) {
-			interessats = interessatService.findByExpedient(
-					entitatActual.getId(),
-					contingutId);
-		}
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				interessats);
-	}
-
 	@RequestMapping(value = "/contingut/{contingutId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
@@ -662,44 +416,6 @@ public class ContingutController extends BaseUserController {
 				contingutLogId);
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/arxiu")
-	public String arxiu(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutId,
-				false,
-				false);
-		model.addAttribute("contingut", contingut);
-		if (contingut.isReplicatDinsArxiu()) {
-			model.addAttribute(
-					"arxiuDetall",
-					contingutService.getArxiuDetall(
-							entitatActual.getId(),
-							contingutId));
-		}
-		return "contingutArxiu";
-	}
-
-	@RequestMapping(value = "/contingut/{contingutId}/exportar", method = RequestMethod.GET)
-	public String exportar(
-			HttpServletRequest request,
-			HttpServletResponse response,
-			@PathVariable Long contingutId) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		FitxerDto fitxer = contingutService.exportacioEni(
-				entitatActual.getId(),
-				contingutId);
-		writeFileToResponse(
-				fitxer.getNom(),
-				fitxer.getContingut(),
-				response);
-		return null;
-	}
-	
 	@RequestMapping(value = "/contingut/{contingutId}/comentaris", method = RequestMethod.GET)
 	public String comentaris(
 			HttpServletRequest request,
@@ -759,44 +475,6 @@ public class ContingutController extends BaseUserController {
 			boolean pipellaAnotacionsRegistre,
 			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		model.addAttribute("contingut", contingut);
-		model.addAttribute(
-				"metaExpedients",
-				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
-		model.addAttribute(
-				"metaDocuments",
-				metaDocumentService.findActiveByEntitatAndContenidorPerCreacio(
-						entitatActual.getId(),
-						contingut.getId()));
-		if (contingut instanceof ExpedientDto) {
-			model.addAttribute(
-					"interessats",
-					interessatService.findByExpedient(
-							entitatActual.getId(),
-							contingut.getId()));
-			model.addAttribute("relacionats", expedientService.relacioFindAmbExpedient(
-					entitatActual.getId(),
-					contingut.getId()));
-		}
-		/*if (contingut instanceof DocumentDto) {
-			model.addAttribute(
-					"documentVersions",
-					documentService.findVersionsByDocument(
-							entitatActual.getId(),
-							contingut.getId()));
-		}*/
-		if (contingut instanceof NodeDto) {
-			model.addAttribute(
-					"metaDades",
-					metaDadaService.findByNode(
-							entitatActual.getId(),
-							contingut.getId()));
-			model.addAttribute(
-					"dadesCommand",
-					beanGeneratorHelper.generarCommandDadesNode(
-							entitatActual.getId(),
-							contingut.getId(),
-							((NodeDto)contingut).getDades()));
-		}
 		String contingutVista = SessioHelper.getContenidorVista(request);
 		if (contingutVista == null)
 			contingutVista = CONTENIDOR_VISTA_ICONES;
@@ -812,43 +490,9 @@ public class ContingutController extends BaseUserController {
 						RegistreTipusEnum.class,
 						"registre.anotacio.tipus.enum."));
 		model.addAttribute(
-				"notificacioEstatEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentEnviamentEstatEnumDto.class,
-						"notificacio.estat.enum.",
-						new Enum<?>[] {DocumentEnviamentEstatEnumDto.PROCESSAT}));
-		model.addAttribute(
-				"publicacioEstatEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						DocumentEnviamentEstatEnumDto.class,
-						"publicacio.estat.enum.",
-						new Enum<?>[] {
-							DocumentEnviamentEstatEnumDto.ENVIAT,
-							DocumentEnviamentEstatEnumDto.PROCESSAT,
-							DocumentEnviamentEstatEnumDto.CANCELAT}));
-		model.addAttribute(
-				"interessatTipusEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						InteressatTipusEnumDto.class,
-						"interessat.tipus.enum."));
-		model.addAttribute(
 				"pluginArxiuActiu",
 				aplicacioService.isPluginArxiuActiu());
 		model.addAttribute("pipellaAnotacionsRegistre", pipellaAnotacionsRegistre);
-	}
-
-	private void omplirModelPerMoureOCopiar(
-			EntitatDto entitatActual,
-			Long contingutOrigenId,
-			Model model) {
-		ContingutDto contingutOrigen = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutOrigenId,
-				true,
-				false);
-		model.addAttribute(
-				"contingutOrigen",
-				contingutOrigen);
 	}
 
 	private void omplirModelPerEnviar(

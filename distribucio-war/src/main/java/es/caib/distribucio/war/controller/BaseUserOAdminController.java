@@ -5,8 +5,8 @@ package es.caib.distribucio.war.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.war.helper.EntitatHelper;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.war.helper.EntitatHelper;
 
 
 /**

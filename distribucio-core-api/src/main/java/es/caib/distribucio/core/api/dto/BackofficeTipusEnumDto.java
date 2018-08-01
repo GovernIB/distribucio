@@ -10,6 +10,6 @@ package es.caib.distribucio.core.api.dto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum BackofficeTipusEnumDto {
-	RIPEA,
+	DISTRIBUCIO,
 	SISTRA
 }

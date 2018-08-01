@@ -28,7 +28,7 @@ public interface ReglaService {
 	 *            Informació de la regla a crear.
 	 * @return La regla creada.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto create(
 			Long entitatId,
 			ReglaDto regla);
@@ -44,7 +44,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto update(
 			Long entitatId,
 			ReglaDto regla) throws NotFoundException;
@@ -62,7 +62,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
@@ -79,7 +79,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto delete(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -95,7 +95,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto moveUp(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -111,7 +111,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto moveDown(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -129,7 +129,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto moveTo(
 			Long entitatId,
 			Long reglaId,
@@ -144,7 +144,7 @@ public interface ReglaService {
 	 *            Atribut id de la regla a trobar.
 	 * @return La regla amb l'id especificat o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId);
@@ -158,7 +158,7 @@ public interface ReglaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams);

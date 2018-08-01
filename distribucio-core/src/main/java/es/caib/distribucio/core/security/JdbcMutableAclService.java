@@ -429,7 +429,7 @@ public class JdbcMutableAclService extends JdbcAclService implements MutableAclS
 	}
 
 	private String getHibernateDialect() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.hibernate.dialect");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.hibernate.dialect");
 	}
 
 }

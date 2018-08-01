@@ -10,8 +10,6 @@ package es.caib.distribucio.core.api.dto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum ReglaTipusEnumDto {
-	EXP_CREAR,
-	EXP_AFEGIR,
 	BUSTIA,
 	BACKOFFICE
 }

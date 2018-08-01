@@ -34,7 +34,7 @@ public class ReglaServiceBean implements ReglaService {
 
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto create(
 			Long entitatId,
 			ReglaDto regla) {
@@ -44,7 +44,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto update(
 			Long entitatId,
 			ReglaDto regla) throws NotFoundException {
@@ -54,7 +54,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
@@ -66,7 +66,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto delete(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -76,7 +76,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto moveUp(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -86,7 +86,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto moveDown(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -96,7 +96,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto moveTo(
 			Long entitatId,
 			Long reglaId,
@@ -108,7 +108,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId) {
@@ -118,7 +118,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) {
@@ -131,7 +131,7 @@ public class ReglaServiceBean implements ReglaService {
 
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi) {
 		return delegate.findByEntitatAndUnitatCodi(
 				entitatId,

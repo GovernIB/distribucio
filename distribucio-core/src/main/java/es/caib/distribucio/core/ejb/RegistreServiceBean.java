@@ -65,7 +65,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 	
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public boolean reglaReintentarAdmin(
 			Long entitatId,
 			Long bustiaId,

@@ -39,7 +39,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public BustiaDto create(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -55,7 +55,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public BustiaDto update(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -73,7 +73,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -90,7 +90,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public BustiaDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -105,7 +105,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -121,7 +121,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -137,7 +137,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -151,7 +151,7 @@ public interface BustiaService {
 	 *            El filtre per a la consulta.
 	 * @return Les bústies que coincideixen amb els criteris del filtre.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -166,7 +166,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
 
@@ -234,7 +234,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_BSTWS')")
+	@PreAuthorize("hasRole('DIS_BSTWS')")
 	public Long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -252,7 +252,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_BSTWS')")
+	@PreAuthorize("hasRole('DIS_BSTWS')")
 	public void registreAnotacioCrear(
 			String entitatCodi,
 			String referencia) throws NotFoundException;
@@ -349,7 +349,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,
@@ -370,7 +370,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -388,7 +388,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,

@@ -85,7 +85,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 		return copia;
 	}
 
-	// Copiat de es.caib.ripea.core.api.registre.RegistreAnotacio
+	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
 	private String numero;
 	private Date data;
 	private Date dataOrigen;

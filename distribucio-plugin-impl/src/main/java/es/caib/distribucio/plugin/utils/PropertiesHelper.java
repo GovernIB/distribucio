@@ -18,7 +18,7 @@ import es.caib.distribucio.core.api.exception.PropietatNotFoundException;
  */
 public class PropertiesHelper extends Properties {
 
-	private static final String APPSERV_PROPS_PATH = "es.caib.ripea.properties.path";
+	private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path";
 
 	private static PropertiesHelper instance = null;
 

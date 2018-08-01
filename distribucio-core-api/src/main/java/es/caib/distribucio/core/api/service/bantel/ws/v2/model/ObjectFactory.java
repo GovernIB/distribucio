@@ -28,7 +28,7 @@ import es.caib.distribucio.core.api.service.bantel.ws.v2.model.TramiteSubsanacio
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the es.caib.ripea.core.api.service.bantel.ws.v2 package. 
+ * generated in the es.caib.distribucio.core.api.service.bantel.ws.v2 package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -70,7 +70,7 @@ public class ObjectFactory {
     private final static QName _DocumentoBTEPresentacionPresencial_QNAME = new QName("", "presentacionPresencial");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: es.caib.ripea.core.api.service.bantel.ws.v2
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: es.caib.distribucio.core.api.service.bantel.ws.v2
      * 
      */
     public ObjectFactory() {

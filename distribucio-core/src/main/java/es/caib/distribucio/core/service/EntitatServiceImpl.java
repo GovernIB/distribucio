@@ -16,22 +16,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PermisosEntitatHelper;
 import es.caib.distribucio.core.helper.PermisosHelper;
+import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.service.EntitatService;
-import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.repository.ArxiuRepository;
-import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.EntitatRepository;
 
 /**
  * Implementació del servei de gestió d'entitats.
@@ -43,8 +42,6 @@ public class EntitatServiceImpl implements EntitatService {
 
 	@Resource
 	private EntitatRepository entitatRepository;
-	@Resource
-	private ArxiuRepository arxiuRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
 

@@ -13,25 +13,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.ReglaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.service.ReglaService;
-import es.caib.ripea.core.entity.ArxiuEntity;
-import es.caib.ripea.core.entity.BustiaEntity;
-import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.MetaExpedientEntity;
-import es.caib.ripea.core.entity.ReglaEntity;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
-import es.caib.ripea.core.repository.EntitatRepository;
-import es.caib.ripea.core.repository.ReglaRepository;
-import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.ReglaRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 
 /**
  * Implementació dels mètodes per a gestionar regles.
@@ -119,20 +117,6 @@ public class ReglaServiceImpl implements ReglaService {
 			entity.updatePerTipusBustia(
 					bustia);
 			break;
-		case EXP_AFEGIR:
-		case EXP_CREAR:
-			MetaExpedientEntity metaExpedient = entityComprovarHelper.comprovarMetaExpedient(
-					entitat,
-					regla.getMetaExpedientId(),
-					false,
-					false);
-			ArxiuEntity arxiu = entityComprovarHelper.comprovarArxiu(
-					entitat,
-					regla.getArxiuId(),
-					false);
-			entity.updatePerTipusExpedient(
-					metaExpedient,
-					arxiu);
 		}
 		return toReglaDto(reglaRepository.save(entity));
 	}
@@ -336,12 +320,8 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaDto dto = conversioTipusHelper.convertir(
 				regla,
 				ReglaDto.class);
-		if (regla.getArxiu() != null)
-			dto.setArxiuId(regla.getArxiu().getId());
 		if (regla.getBustia() != null)
 			dto.setBustiaId(regla.getBustia().getId());
-		if (regla.getMetaExpedient() != null)
-			dto.setMetaExpedientId(regla.getMetaExpedient().getId());
 		
 		UnitatOrganitzativaEntity unitatEntity = regla.getUnitatOrganitzativa();
 		UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(

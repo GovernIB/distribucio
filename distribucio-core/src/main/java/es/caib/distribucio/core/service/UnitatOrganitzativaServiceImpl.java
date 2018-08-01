@@ -15,26 +15,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ArbreDto;
+import es.caib.distribucio.core.api.dto.MunicipiDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.ProvinciaDto;
+import es.caib.distribucio.core.api.dto.TipusViaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
+import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
+import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
-import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.MunicipiDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.ProvinciaDto;
-import es.caib.ripea.core.api.dto.TipusViaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaFiltreDto;
-import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
-import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
-import es.caib.ripea.core.repository.EntitatRepository;
-import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 
 /**
  * Implementació del servei de gestió d'entitats.

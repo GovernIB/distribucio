@@ -18,22 +18,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
+import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
+import es.caib.distribucio.core.api.dto.IntegracioDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.ExcepcioLogHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
+import es.caib.distribucio.core.repository.AclSidRepository;
+import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
-import es.caib.ripea.core.api.dto.ExcepcioLogDto;
-import es.caib.ripea.core.api.dto.IntegracioAccioDto;
-import es.caib.ripea.core.api.dto.IntegracioDto;
-import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.core.entity.UsuariEntity;
-import es.caib.ripea.core.repository.AclSidRepository;
-import es.caib.ripea.core.repository.UsuariRepository;
 
 /**
  * Implementació dels mètodes per a gestionar la versió de l'aplicació.
@@ -203,13 +203,13 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public String propertyBaseUrl() {
 		logger.debug("Consulta de la propietat base URL");
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.base.url");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.base.url");
 	}
 
 	@Override
 	public String propertyPluginPassarelaFirmaIds() {
 		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.passarelafirma.ids");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.passarelafirma.ids");
 	}
 
 	@Override
@@ -221,7 +221,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public String propertyPluginEscaneigIds() {
 		logger.debug("Consulta de la propietat amb les ids pels plugins d'escaneig de documents");
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.escaneig.ids");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.escaneig.ids");
 	}
 
 	@Override

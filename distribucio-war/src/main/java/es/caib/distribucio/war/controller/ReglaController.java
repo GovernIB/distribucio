@@ -18,19 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.BackofficeTipusEnumDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.ReglaDto;
-import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
-import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.core.api.service.ReglaService;
-import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
-import es.caib.ripea.war.command.ReglaCommand;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.EnumHelper;
+import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.ReglaCommand;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EnumHelper;
 
 /**
  * Controlador per al manteniment de regles.
@@ -44,11 +42,7 @@ public class ReglaController  extends BaseAdminController {
 	@Autowired
 	private ReglaService reglaService;
 	@Autowired
-	private ArxiuService arxiuService;
-	@Autowired
 	private BustiaService bustiaService;
-	@Autowired
-	private MetaExpedientService metaExpedientService;
 	@Autowired
 	private UnitatOrganitzativaService unitatService;
 
@@ -256,14 +250,6 @@ public class ReglaController  extends BaseAdminController {
 						ReglaTipusEnumDto.class,
 						"regla.tipus.enum."));
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"metaExpedients",
-				metaExpedientService.findActiusAmbEntitatPerAdmin(
-						entitatActual.getId()));
-		model.addAttribute(
-				"arxius",
-				arxiuService.findActiusAmbEntitat(
-						entitatActual.getId()));
 		model.addAttribute(
 				"busties",
 				bustiaService.findActivesAmbEntitat(

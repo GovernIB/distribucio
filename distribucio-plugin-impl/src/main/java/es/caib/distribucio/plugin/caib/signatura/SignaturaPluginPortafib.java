@@ -38,7 +38,7 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class SignaturaPluginPortafib implements SignaturaPlugin {	  
 	
-	private static final String PROPERTIES_BASE = "es.caib.ripea.plugin.signatura.portafib.";
+	private static final String PROPERTIES_BASE = "es.caib.distribucio.plugin.signatura.portafib.";
 	  
 	@Override
 	public byte[] signar(
@@ -105,11 +105,11 @@ public class SignaturaPluginPortafib implements SignaturaPlugin {
 
 	}  
 	
-	private static final String FIRMASERVIDOR_RIPEA = "FIRMASERVIDOR_RIPEA";
+	private static final String FIRMASERVIDOR_DISTRIBUCIO = "FIRMASERVIDOR_DISTRIBUCIO";
 	private static final String autofirmaBasePath;
 	static {
 		String tempDir = System.getProperty("java.io.tmpdir");
-		final File base = new File(tempDir, FIRMASERVIDOR_RIPEA);
+		final File base = new File(tempDir, FIRMASERVIDOR_DISTRIBUCIO);
 		base.mkdirs();
 		autofirmaBasePath = base.getAbsolutePath();
 	}

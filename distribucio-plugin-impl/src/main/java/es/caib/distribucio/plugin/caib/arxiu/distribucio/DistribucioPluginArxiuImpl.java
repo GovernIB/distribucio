@@ -218,10 +218,10 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		fitxer.setContentType(annex.getFitxerTipusMime());
 		fitxer.setTamany(contingut.length);
 
-		byte[] firmaRipeaContingut = null;
+		byte[] firmaDistribucioContingut = null;
 		if (this.isRegistreSignarAnnexos() && annex.getFirmes().size() == 0) {
-			// Ripea signa amb el plugin de signatures els annexos sense firmes
-			firmaRipeaContingut = this.signaturaRipeaSignar(
+			// Distribucio signa amb el plugin de signatures els annexos sense firmes
+			firmaDistribucioContingut = this.signaturaDistribucioSignar(
 					annex,
 					contingut);
 			
@@ -234,8 +234,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
 				perfil = FirmaPerfil.EPES.toString();
-				fitxer.setContingut(firmaRipeaContingut);
-				firmaRipeaContingut = null;
+				fitxer.setContingut(firmaDistribucioContingut);
+				firmaDistribucioContingut = null;
 			} else {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
 				perfil = FirmaPerfil.BES.toString();
@@ -262,7 +262,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 //					csvRegulacio, 
 //					true, 
 //					null, 
-//					firmaRipeaContingut, 
+//					firmaDistribucioContingut, 
 //					annex);
 			
 			annex.getFirmes().add(annexFirma);
@@ -272,7 +272,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				annex,
 				unitatArrelCodi,
 				fitxer,
-				convertirFirmesAnnexToArxiuFirmaDto(annex, firmaRipeaContingut),
+				convertirFirmesAnnexToArxiuFirmaDto(annex, firmaDistribucioContingut),
 				expedientCreat);
 		annex.setFitxerArxiuUuid(uuidDocument);
 	}
@@ -316,7 +316,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	
 	private List<ArxiuFirmaDto> convertirFirmesAnnexToArxiuFirmaDto(
 			DistribucioRegistreAnnex annex,
-			byte[] firmaRipeaContingut) throws SistemaExternException {
+			byte[] firmaDistribucioContingut) throws SistemaExternException {
 		List<ArxiuFirmaDto> firmes = null;
 		if (annex.getFirmes() != null) {
 			firmes = new ArrayList<ArxiuFirmaDto>();
@@ -330,9 +330,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 						this.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 						baos_fir);
 					firmaContingut = baos_fir.toByteArray();
-				} else if(firmaRipeaContingut != null) {
-					firmaContingut = firmaRipeaContingut;
-				} else if (firmaRipeaContingut == null && !"TF06".equalsIgnoreCase(annexFirma.getTipus())) {
+				} else if(firmaDistribucioContingut != null) {
+					firmaContingut = firmaDistribucioContingut;
+				} else if (firmaDistribucioContingut == null && !"TF06".equalsIgnoreCase(annexFirma.getTipus())) {
 						firmaContingut = annexFirma.getContingut();
 				}
 				
@@ -387,11 +387,11 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 	}
 	
-	private byte[] signaturaRipeaSignar(
+	private byte[] signaturaDistribucioSignar(
 			DistribucioRegistreAnnex annex,
 			byte[] annexContingut) throws SistemaExternException {
 		try {
-			String motiu = "Autofirma en servidor de RIPEA";
+			String motiu = "Autofirma en servidor de DISTRIBUCIO";
 			String tipusFirma;
 			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
 				tipusFirma = "PADES";
@@ -818,12 +818,12 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					if (PropertiesHelper.getProperties().isLlegirSystem()) {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
-								"es.caib.ripea.");
+								"es.caib.distribucio.");
 					} else {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class,
 								Properties.class).newInstance(
-								"es.caib.ripea.",
+								"es.caib.distribucio.",
 								PropertiesHelper.getProperties().findAll());
 					}
 				} catch (Exception ex) {
@@ -892,26 +892,26 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	}
 	private String getPropertyPluginArxiu() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.arxiu.class");
+				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
 		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-				"es.caib.ripea.anotacions.registre.expedient.classificacio");
+				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
 		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-				"es.caib.ripea.anotacions.registre.expedient.serie.documental");
+				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.ripea.plugin.gesdoc.class");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
 		return PropertiesHelper.getProperties().getAsBoolean(
-				"es.caib.ripea.plugin.signatura.signarAnnexos");
+				"es.caib.distribucio.plugin.signatura.signarAnnexos");
 	}
 	private String getPropertyPluginSignatura() {
 		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.signatura.class");
+				"es.caib.distribucio.plugin.signatura.class");
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(DistribucioPluginArxiuImpl.class);

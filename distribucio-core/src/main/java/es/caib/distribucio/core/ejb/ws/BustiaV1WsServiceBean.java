@@ -15,13 +15,13 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.service.ws.BustiaV1WsService;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
 
 /**
- * Implementació dels mètodes per al servei de bústies de RIPEA.
+ * Implementació dels mètodes per al servei de bústies de DISTRIBUCIO.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -30,14 +30,14 @@ import es.caib.ripea.core.api.registre.RegistreAnotacio;
 		name = "BustiaV1",
 		serviceName = "BustiaV1Service",
 		portName = "BustiaV1ServicePort",
-		targetNamespace = "http://www.caib.es/ripea/ws/v1/bustia")
+		targetNamespace = "http://www.caib.es/distribucio/ws/v1/bustia")
 @WebContext(
-		contextRoot = "/ripea/ws",
+		contextRoot = "/distribucio/ws",
 		urlPattern = "/v1/bustia",
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"IPA_BSTWS"})
+@RolesAllowed({"DIS_BSTWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BustiaV1WsServiceBean implements BustiaV1WsService {

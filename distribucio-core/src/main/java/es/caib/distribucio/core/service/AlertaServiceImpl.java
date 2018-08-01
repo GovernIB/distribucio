@@ -11,18 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.AlertaDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.service.AlertaService;
+import es.caib.distribucio.core.entity.AlertaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.helper.AlertaHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
-import es.caib.ripea.core.api.dto.AlertaDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.service.AlertaService;
-import es.caib.ripea.core.entity.AlertaEntity;
-import es.caib.ripea.core.entity.ContingutEntity;
-import es.caib.ripea.core.repository.AlertaRepository;
-import es.caib.ripea.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.AlertaRepository;
+import es.caib.distribucio.core.repository.ContingutRepository;
 
 /**
  * Implementació del servei de gestió d'entitats.

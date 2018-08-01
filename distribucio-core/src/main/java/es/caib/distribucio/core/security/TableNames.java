@@ -10,7 +10,7 @@ package es.caib.distribucio.core.security;
  */
 public class TableNames {
 
-	public static final String TABLE_PREFIX = "ipa_";
+	public static final String TABLE_PREFIX = "dis_";
 	//public static final String TABLE_PREFIX = "";
 
 	public static final String TABLE_OBJECT_IDENTITY = TABLE_PREFIX + "acl_object_identity";

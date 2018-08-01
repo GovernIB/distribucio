@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.api.service.UnitatOrganitzativaService;
-import es.caib.ripea.war.command.BustiaCommand;
-import es.caib.ripea.war.command.BustiaFiltreCommand;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.RequestSessionHelper;
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.BustiaCommand;
+import es.caib.distribucio.war.command.BustiaFiltreCommand;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -38,7 +38,7 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 public class BustiaAdminController extends BaseAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
-
+//
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
@@ -93,6 +93,41 @@ public class BustiaAdminController extends BaseAdminController {
 //		BustiaCommand command = (BustiaCommand)model.asMap().get("bustiaCommand");
 //		command.setUnitatCodi(unitatCodi);
 		return vista;
+	}
+	
+	
+	// save new or modified bústia
+	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
+	public String save(
+			HttpServletRequest request,
+			@Valid BustiaCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			return "bustiaAdminForm";
+		}
+		String isOrganigrama = request.getParameter("isOrganigrama");
+		// if it is modified
+		if (command.getId() != null) {
+			bustiaService.update(
+					entitatActual.getId(),
+					BustiaCommand.asDto(command));
+			
+			return getModalControllerReturnValueSuccess(
+					request,
+					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
+					"bustia.controller.modificat.ok");
+		//if it is new	
+		} else {
+			bustiaService.create(
+					entitatActual.getId(),
+					BustiaCommand.asDto(command));
+			return getModalControllerReturnValueSuccess(
+					request,
+					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
+					"bustia.controller.creat.ok");
+		}
 	}
 	
 	
@@ -170,57 +205,21 @@ public class BustiaAdminController extends BaseAdminController {
 		command.setEntitatId(entitatActual.getId());
 		return "bustiaAdminForm";
 	}
-	
-	
-	
-	
-	// save new or modified bústia
-	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
-	public String save(
-			HttpServletRequest request,
-			@Valid BustiaCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			return "bustiaAdminForm";
-		}
-		String isOrganigrama = request.getParameter("isOrganigrama");
-		// if it is modified
-		if (command.getId() != null) {
-			bustiaService.update(
-					entitatActual.getId(),
-					BustiaCommand.asDto(command));
-			
-			return getModalControllerReturnValueSuccess(
-					request,
-					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
-					"bustia.controller.modificat.ok");
-		//if it is new	
-		} else {
-			bustiaService.create(
-					entitatActual.getId(),
-					BustiaCommand.asDto(command));
-			return getModalControllerReturnValueSuccess(
-					request,
-					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
-					"bustia.controller.creat.ok");
-		}
-	}
-	
-	@RequestMapping(value = "/{bustiaId}/new", method = RequestMethod.GET)
-	public String getNewAmbPare(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		BustiaCommand command = new BustiaCommand();
-		command.setPareId(bustiaId);
-		command.setEntitatId(entitatActual.getId());
-		model.addAttribute(command);
-		return "bustiaAdminForm";
-	}
 
+//	
+//	@RequestMapping(value = "/{bustiaId}/new", method = RequestMethod.GET)
+//	public String getNewAmbPare(
+//			HttpServletRequest request,
+//			@PathVariable Long bustiaId,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		BustiaCommand command = new BustiaCommand();
+//		command.setPareId(bustiaId);
+//		command.setEntitatId(entitatActual.getId());
+//		model.addAttribute(command);
+//		return "bustiaAdminForm";
+//	}
+//
 	@RequestMapping(value = "/{bustiaId}/enable", method = RequestMethod.GET)
 	public String enable(
 			HttpServletRequest request,
@@ -286,15 +285,15 @@ public class BustiaAdminController extends BaseAdminController {
 		}
 	}
 
-	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)
-	@ResponseBody
-	public List<BustiaDto> findAmbEntitat(
-			HttpServletRequest request,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return bustiaService.findActivesAmbEntitat(
-				entitatActual.getId());
-	}
+//	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)
+//	@ResponseBody
+//	public List<BustiaDto> findAmbEntitat(
+//			HttpServletRequest request,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		return bustiaService.findActivesAmbEntitat(
+//				entitatActual.getId());
+//	}
 
 	private BustiaFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {

@@ -17,12 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.core.api.service.ArxiuService;
-import es.caib.ripea.war.helper.EnumHelper.HtmlOption;
+import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.war.helper.EnumHelper.HtmlOption;
 
 /**
  * Controlador per a les consultes ajax dels usuaris normals.
@@ -35,10 +32,6 @@ public class AjaxUserController extends BaseUserController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
-	@Autowired
-	private ArxiuService arxiuService;
-
-
 
 	@RequestMapping(value = "/usuari/{codi}", method = RequestMethod.GET)
 	@ResponseBody
@@ -58,24 +51,12 @@ public class AjaxUserController extends BaseUserController {
 		return aplicacioService.findUsuariAmbText(text);
 	}
 
-	@RequestMapping(value = "/metaExpedient/{metaExpedientId}/arxius", method = RequestMethod.GET)
-	@ResponseBody
-	public List<ArxiuDto> arxiusAmbMetaExpedient(
-			HttpServletRequest request,
-			@PathVariable Long metaExpedientId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return arxiuService.findAmbMetaExpedientPerCreacio(
-				entitatActual.getId(),
-				metaExpedientId);
-	}
-
 	@RequestMapping(value = "/enum/{enumClass}", method = RequestMethod.GET)
 	@ResponseBody
 	public List<HtmlOption> enumValorsAmbText(
 			HttpServletRequest request,
 			@PathVariable String enumClass) throws ClassNotFoundException {
-		Class<?> enumeracio = Class.forName("es.caib.ripea.core.api.dto." + enumClass);
+		Class<?> enumeracio = Class.forName("es.caib.distribucio.core.api.dto." + enumClass);
 		StringBuilder textKeyPrefix = new StringBuilder();
 		String[] textKeys = StringUtils.splitByCharacterTypeCamelCase(enumClass);
 		for (String textKey: textKeys) {

@@ -26,7 +26,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La versió actual.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public String getVersioActual();
 
 	/**
@@ -35,15 +35,23 @@ public interface AplicacioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'usuari amb el codi de l'usuari autenticat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public void processarAutenticacioUsuari() throws NotFoundException;
+	
+	/**
+	 * Retorna el valor de la propietat plugin.passarelafirma.ignorar.modal.ids.
+	 * 
+	 * @return el valor del paràmetre.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public String propertyPluginPassarelaFirmaIgnorarModalIds();
 
 	/**
 	 * Obté l'usuari actual.
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public UsuariDto getUsuariActual();
 	
 	/**
@@ -51,7 +59,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public UsuariDto updateUsuariActual(UsuariDto asDto);
 
 	/**
@@ -61,7 +69,7 @@ public interface AplicacioService {
 	 *            Codi de l'usuari a cercar.
 	 * @return L'usuari obtingut o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public UsuariDto findUsuariAmbCodi(String codi);
 
 	/**
@@ -71,7 +79,7 @@ public interface AplicacioService {
 	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public List<UsuariDto> findUsuariAmbText(String text);
 
 	/**
@@ -79,7 +87,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La llista d'integracions.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public List<IntegracioDto> integracioFindAll();
 
 	/**
@@ -91,7 +99,7 @@ public interface AplicacioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat la integració amb el codi especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(
 			String codi) throws NotFoundException;
 
@@ -110,7 +118,7 @@ public interface AplicacioService {
 	 *             L'index de l'excepció.
 	 * @return L'excepció.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public ExcepcioLogDto excepcioFindOne(Long index);
 
 	/**
@@ -118,7 +126,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La llista amb les darreres excepcions.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public List<ExcepcioLogDto> excepcioFindAll();
 
 	/**
@@ -130,11 +138,11 @@ public interface AplicacioService {
 	public List<String> permisosFindRolsDistinctAll();
 
 	/**
-	 * Retorna el valor de la propietat es.caib.ripea.base.url.
+	 * Retorna el valor de la propietat es.caib.distribucio.base.url.
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public String propertyBaseUrl();
 
 	/**
@@ -142,23 +150,23 @@ public interface AplicacioService {
 	 * 
 	 * @return true si està actiu o false si no ho està.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public boolean isPluginArxiuActiu();
 
 	/**
-	 * Retorna el valor de la propietat es.caib.ripea.plugin.passarelafirma.ids.
+	 * Retorna el valor de la propietat es.caib.distribucio.plugin.passarelafirma.ids.
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public String propertyPluginPassarelaFirmaIds();
 
 	/**
-	 * Retorna el valor de la propietat es.caib.ripea.plugin.escaneig..ids.
+	 * Retorna el valor de la propietat es.caib.distribucio.plugin.escaneig..ids.
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public String propertyPluginEscaneigIds();
 
 	/**
@@ -167,7 +175,7 @@ public interface AplicacioService {
 	 * 
 	 * @return els valors com a un objecte Properties.
 	 */
-	@PreAuthorize("hasRole('IPA_SUPER') or hasRole('IPA_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public Properties propertyFindByPrefix(String prefix);
 
 }

@@ -22,6 +22,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ArbreDto;
+import es.caib.distribucio.core.api.dto.BustiaContingutDto;
+import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
+import es.caib.distribucio.core.api.dto.BustiaContingutPendentTipusEnumDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.core.api.registre.Firma;
+import es.caib.distribucio.core.api.registre.RegistreAnnex;
+import es.caib.distribucio.core.api.registre.RegistreAnotacio;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
+import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
@@ -32,58 +63,25 @@ import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.HibernateHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
+import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
+import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
+import es.caib.distribucio.core.repository.AlertaRepository;
+import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.ContingutComentariRepository;
+import es.caib.distribucio.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.ReglaRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
-import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
-import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.registre.RegistreAnotacioResposta;
-import es.caib.ripea.core.api.dto.ArbreDto;
-import es.caib.ripea.core.api.dto.BustiaContingutDto;
-import es.caib.ripea.core.api.dto.BustiaContingutFiltreEstatEnumDto;
-import es.caib.ripea.core.api.dto.BustiaContingutPendentTipusEnumDto;
-import es.caib.ripea.core.api.dto.BustiaDto;
-import es.caib.ripea.core.api.dto.BustiaFiltreDto;
-import es.caib.ripea.core.api.dto.BustiaUserFiltreDto;
-import es.caib.ripea.core.api.dto.ContingutDto;
-import es.caib.ripea.core.api.dto.LogTipusEnumDto;
-import es.caib.ripea.core.api.dto.PaginaDto;
-import es.caib.ripea.core.api.dto.PaginacioParamsDto;
-import es.caib.ripea.core.api.dto.PermisDto;
-import es.caib.ripea.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.ripea.core.api.exception.NotFoundException;
-import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.registre.Firma;
-import es.caib.ripea.core.api.registre.RegistreAnnex;
-import es.caib.ripea.core.api.registre.RegistreAnotacio;
-import es.caib.ripea.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.ripea.core.api.registre.RegistreProcesEstatSistraEnum;
-import es.caib.ripea.core.api.registre.RegistreTipusEnum;
-import es.caib.ripea.core.api.service.BustiaService;
-import es.caib.ripea.core.entity.BustiaEntity;
-import es.caib.ripea.core.entity.ContingutEntity;
-import es.caib.ripea.core.entity.ContingutMovimentEntity;
-import es.caib.ripea.core.entity.EntitatEntity;
-import es.caib.ripea.core.entity.ExpedientEntity;
-import es.caib.ripea.core.entity.RegistreAnnexEntity;
-import es.caib.ripea.core.entity.RegistreAnnexFirmaEntity;
-import es.caib.ripea.core.entity.RegistreEntity;
-import es.caib.ripea.core.entity.ReglaEntity;
-import es.caib.ripea.core.entity.UnitatOrganitzativaEntity;
-import es.caib.ripea.core.repository.AlertaRepository;
-import es.caib.ripea.core.repository.BustiaRepository;
-import es.caib.ripea.core.repository.ContingutComentariRepository;
-import es.caib.ripea.core.repository.ContingutRepository;
-import es.caib.ripea.core.repository.EntitatRepository;
-import es.caib.ripea.core.repository.ExpedientRepository;
-import es.caib.ripea.core.repository.RegistreRepository;
-import es.caib.ripea.core.repository.ReglaRepository;
-import es.caib.ripea.core.repository.UnitatOrganitzativaRepository;
 
 /**
  * Implementació dels mètodes per a gestionar bústies.
@@ -101,8 +99,6 @@ public class BustiaServiceImpl implements BustiaService {
 	private RegistreRepository registreRepository;
 	@Resource
 	private ReglaRepository reglaRepository;
-	@Resource
-	private ExpedientRepository expedientRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
 	@Resource
@@ -660,23 +656,6 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				contingutId,
 				null);
-		// Comprova que el contingutOrigen arrel és l'escriptori de l'usuari actual
-		contingutHelper.comprovarContingutArrelEsEscriptoriUsuariActual(
-				entitat,
-				contingut);
-		// Comprova que aquest contingut no pertanyi a cap expedient
-		ExpedientEntity expedientActual = contingutHelper.getExpedientSuperior(
-				contingut,
-				true,
-				false,
-				false);
-		if (expedientActual != null) {
-			logger.error("No es pot enviar un node que pertany a un expedient");
-			throw new ValidationException(
-					contingutId,
-					ContingutEntity.class,
-					"No es pot enviar un node que pertany a un expedient");
-		}
 		// Comprova l'accés al path del contingutOrigen
 		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
@@ -778,7 +757,7 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacio,
 				reglaAplicable);
 		
-		Boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.ripea.tasca.dist.anotacio.asincrona"));
+		Boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona"));
 		
 		if (anotacioEntity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
 			anotacioEntity.updateProces(
@@ -1258,10 +1237,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaContingut.setError(true);
 			}
 			bustiaContingut.setProcesAutomatic(anotacio.getRegla() != null && (RegistreProcesEstatEnum.PENDENT == anotacio.getProcesEstat() || RegistreProcesEstatSistraEnum.PENDENT == anotacio.getProcesEstatSistra()));
-		} else if (deproxied instanceof ExpedientEntity) {
-			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.EXPEDIENT);
-		} else if (deproxied instanceof ExpedientEntity) {
-			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.DOCUMENT);
 		}
 		if (contingut.getDarrerMoviment() != null) {
 			if (contingut.getDarrerMoviment().getRemitent() != null)

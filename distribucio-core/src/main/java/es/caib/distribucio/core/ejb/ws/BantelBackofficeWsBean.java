@@ -21,9 +21,10 @@ import es.caib.distribucio.core.api.service.bantel.ws.v2.BantelBackofficeWsExcep
 import es.caib.distribucio.core.api.service.bantel.ws.v2.model.ReferenciaEntrada;
 import es.caib.distribucio.core.api.service.bantel.ws.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.api.service.bantel.ws.v2.model.TramiteBTE;
+import es.caib.distribucio.core.service.ws.bantel.BantelBackofficeWsImpl;
 
 /**
- * Implementació dels mètodes per al servei de backoffices Sistra de RIPEA.
+ * Implementació dels mètodes per al servei de backoffices Sistra de DISTRIBUCIO.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -34,12 +35,12 @@ import es.caib.distribucio.core.api.service.bantel.ws.v2.model.TramiteBTE;
 		portName = "BackofficeFacade",
 		targetNamespace = "urn:es:caib:bantel:ws:v2:services")
 @WebContext(
-		contextRoot = "/ripea/ws",
+		contextRoot = "/distribucio/ws",
 		urlPattern = "/backofficeFacade",
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"IPA_BSTWS"})
+@RolesAllowed({"DIS_BSTWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BantelBackofficeWsBean implements BantelBackofficeWs {

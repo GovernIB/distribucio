@@ -34,20 +34,20 @@ public class EntitatServiceBean implements EntitatService {
 
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public EntitatDto create(EntitatDto entitat) {
 		return delegate.create(entitat);
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public EntitatDto update(
 			EntitatDto entitat) {
 		return delegate.update(entitat);
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public EntitatDto updateActiva(
 			Long id,
 			boolean activa) {
@@ -55,44 +55,44 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public EntitatDto delete(
 			Long id) {
 		return delegate.delete(id);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public EntitatDto findById(Long id) {
 		return delegate.findById(id);
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public EntitatDto findByCodi(String codi) {
 		return delegate.findByCodi(codi);
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
 		return delegate.findPaginat(paginacioParams);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		return delegate.findAccessiblesUsuariActual();
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public List<PermisDto> findPermisSuper(Long id) {
 		return delegate.findPermisSuper(id);
 	}
 
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public void updatePermisSuper(
 			Long id,
 			PermisDto permis) {
@@ -101,7 +101,7 @@ public class EntitatServiceBean implements EntitatService {
 				permis);
 	}
 	@Override
-	@RolesAllowed("IPA_SUPER")
+	@RolesAllowed("DIS_SUPER")
 	public void deletePermisSuper(
 			Long id,
 			Long permisId) {
@@ -111,13 +111,13 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public List<PermisDto> findPermisAdmin(Long id) {
 		return delegate.findPermisAdmin(id);
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public void updatePermisAdmin(
 			Long id,
 			PermisDto permis) {
@@ -126,7 +126,7 @@ public class EntitatServiceBean implements EntitatService {
 				permis);
 	}
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public void deletePermisAdmin(
 			Long id,
 			Long permisId) {

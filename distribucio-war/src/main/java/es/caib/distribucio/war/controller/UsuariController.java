@@ -13,12 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import es.caib.ripea.core.api.dto.ReglaTipusEnumDto;
-import es.caib.ripea.core.api.dto.UsuariDto;
-import es.caib.ripea.core.api.service.AplicacioService;
-import es.caib.ripea.war.command.UsuariCommand;
-import es.caib.ripea.war.helper.EnumHelper;
-import es.caib.ripea.war.helper.SessioHelper;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.war.command.UsuariCommand;
+import es.caib.distribucio.war.helper.EnumHelper;
+import es.caib.distribucio.war.helper.SessioHelper;
 
 /**
  * Controlador per al manteniment de regles.

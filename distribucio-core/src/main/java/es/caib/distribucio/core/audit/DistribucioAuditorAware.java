@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.caib.distribucio.core.entity.UsuariEntity;
-import es.caib.distribucio.repository.UsuariRepository;
+import es.caib.distribucio.core.repository.UsuariRepository;
 
 /**
  * Especifica els mètodes que s'han d'emprar per obtenir i modificar la

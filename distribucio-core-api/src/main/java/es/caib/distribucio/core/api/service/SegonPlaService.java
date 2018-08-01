@@ -14,8 +14,6 @@ public interface SegonPlaService {
 	 * Comprovar si hi ha execucions massives pendents 
 	 * d'executar-se
 	 */
-//	@PreAuthorize("hasRole('tothom')")
-	public void comprovarExecucionsMassives();
 
 	public void comprovarEnviamentEmailsNoAgrupatsBustia();
 

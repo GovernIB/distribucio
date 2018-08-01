@@ -35,49 +35,49 @@ public class AplicacioServiceBean implements AplicacioService {
 
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public String getVersioActual() {
 		return delegate.getVersioActual();
 	}
 	
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public void processarAutenticacioUsuari() {
 		delegate.processarAutenticacioUsuari();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public UsuariDto getUsuariActual() {
 		return delegate.getUsuariActual();
 	}
 	
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public UsuariDto updateUsuariActual(UsuariDto usuari) {
 		return delegate.updateUsuariActual(usuari);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public UsuariDto findUsuariAmbCodi(String codi) {
 		return delegate.findUsuariAmbCodi(codi);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		return delegate.findUsuariAmbText(text);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER"})
+	@RolesAllowed({"DIS_SUPER"})
 	public List<IntegracioDto> integracioFindAll() {
 		return delegate.integracioFindAll();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER"})
+	@RolesAllowed({"DIS_SUPER"})
 	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
 		return delegate.integracioFindDarreresAccionsByCodi(codi);
 	}
@@ -88,13 +88,13 @@ public class AplicacioServiceBean implements AplicacioService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER"})
+	@RolesAllowed({"DIS_SUPER"})
 	public ExcepcioLogDto excepcioFindOne(Long index) {
 		return delegate.excepcioFindOne(index);
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER"})
+	@RolesAllowed({"DIS_SUPER"})
 	public List<ExcepcioLogDto> excepcioFindAll() {
 		return delegate.excepcioFindAll();
 	}
@@ -104,33 +104,39 @@ public class AplicacioServiceBean implements AplicacioService {
 		return delegate.permisosFindRolsDistinctAll();
 	}
 
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public boolean isPluginArxiuActiu() {
 		return delegate.isPluginArxiuActiu();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public String propertyBaseUrl() {
 		return delegate.propertyBaseUrl();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public String propertyPluginPassarelaFirmaIds() {
 		return delegate.propertyPluginPassarelaFirmaIds();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public String propertyPluginEscaneigIds() {
 		return delegate.propertyPluginEscaneigIds();
 	}
 
 	@Override
-	@RolesAllowed({"IPA_SUPER", "IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public Properties propertyFindByPrefix(String prefix) {
 		return delegate.propertyFindByPrefix(prefix);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
+		return delegate.propertyPluginPassarelaFirmaIgnorarModalIds();
 	}
 
 }

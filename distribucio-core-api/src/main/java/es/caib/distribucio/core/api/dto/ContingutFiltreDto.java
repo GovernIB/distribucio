@@ -18,7 +18,6 @@ public class ContingutFiltreDto implements Serializable {
 
 	private String nom;
 	private ContingutTipusEnumDto tipus;
-	private Long metaNodeId;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
 	private boolean mostrarEsborrats;
@@ -37,12 +36,6 @@ public class ContingutFiltreDto implements Serializable {
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
-	}
-	public Long getMetaNodeId() {
-		return metaNodeId;
-	}
-	public void setMetaNodeId(Long metaNodeId) {
-		this.metaNodeId = metaNodeId;
 	}
 	public Date getDataCreacioInici() {
 		return dataCreacioInici;

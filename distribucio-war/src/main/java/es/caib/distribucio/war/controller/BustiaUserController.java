@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
-import es.caib.distribucio.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.AlertaService;
@@ -35,19 +32,13 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.BustiaUserFiltreCommand;
+import es.caib.distribucio.war.command.ContingutReenviarCommand;
+import es.caib.distribucio.war.command.MarcarProcessatCommand;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
-import es.caib.ripea.core.api.dto.ArxiuDto;
-import es.caib.ripea.core.api.dto.EscriptoriDto;
-import es.caib.ripea.war.command.ContenidorCommand.Create;
-import es.caib.ripea.war.command.ContingutMoureCopiarEnviarCommand;
-import es.caib.ripea.war.command.ContingutReenviarCommand;
-import es.caib.ripea.war.command.ExpedientCommand;
-import es.caib.ripea.war.command.ExpedientFiltreCommand;
-import es.caib.ripea.war.command.MarcarProcessatCommand;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.ElementsPendentsBustiaHelper;
-import es.caib.ripea.war.helper.RequestSessionHelper;
+import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -59,7 +50,6 @@ import es.caib.ripea.war.helper.RequestSessionHelper;
 public class BustiaUserController extends BaseUserController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
-	private static final String SESSION_ATTRIBUTE_FILTRE_ADDEXP = "ExpedientFilterCommand.session.filtre.";
 	
 	@Autowired
 	private BustiaService bustiaService;
@@ -145,139 +135,8 @@ public class BustiaUserController extends BaseUserController {
 		
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/nouexp", method = RequestMethod.GET)
-	public String bustiaPendentNouexpGet(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		ExpedientCommand command = new ExpedientCommand();
-		command.setEntitatId(entitatActual.getId());
-		command.setPareId(escriptori.getId());
-		model.addAttribute(command);
-		omplirModelPerNouExpedient(
-				entitatActual,
-				model);
-		return "bustiaPendentContingutNouexp";
-	}
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/nouexp", method = RequestMethod.POST)
-	public String bustiaPendentNouexpPost(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			@Validated({Create.class}) ExpedientCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerNouExpedient(
-					entitatActual,
-					model);
-			return "bustiaPendentContingutNouexp";
-		}
-		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		expedientService.create(
-				entitatActual.getId(),
-				escriptori.getId(),
-				command.getMetaNodeId(),
-				command.getArxiuId(),
-				null,
-				command.getNom(),
-				contingutTipus,
-				contingutId);
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.nouexp.ok");
-	}
-
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp", method = RequestMethod.GET)
-	public String bustiaPendentAddexpGet(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerAfegirAExpedient(
-				bustiaId,
-				contingutTipus,
-				contingutId,
-				entitatActual,
-				getFiltreExpedientCommand(
-						request,
-						SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId),
-				model,
-				contingutId);
-		return "bustiaPendentContingutAddexp";
-	}
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse bustiaPendentAddexpDatatable(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			Model model) {
-		ExpedientFiltreCommand filtre = getFiltreExpedientCommand(
-				request,
-				SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId);
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				expedientService.findAmbFiltreUser(
-						entitatActual.getId(), 
-						ExpedientFiltreCommand.asDto(filtre), 
-						DatatablesHelper.getPaginacioDtoFromRequest(request)));
-	}
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp", method = RequestMethod.POST)
-	public String bustiaPendentAddexpFiltrar(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			@Valid ExpedientFiltreCommand expedientFiltreCommand,
-			BindingResult bindingResult,
-			@RequestParam(value = "accio", required = false) String accio,
-			Model model) {
-		if("filtrar".equals(accio)) {
-			RequestSessionHelper.actualitzarObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId,
-					expedientFiltreCommand);
-			return "redirect:./addexp";
-		} else {
-			RequestSessionHelper.esborrarObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_FILTRE_ADDEXP + bustiaId + "." + contingutTipus + "." + contingutId);
-			return "redirect:./addexp";
-		}
-	}
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutTipus}/{contingutId}/addexp/{expedientId}", method = RequestMethod.POST)
-	public String bustiaPendentAddexpPost(
-			HttpServletRequest request,
-			@PathVariable Long bustiaId,
-			@PathVariable BustiaContingutPendentTipusEnumDto contingutTipus,
-			@PathVariable Long contingutId,
-			@PathVariable Long expedientId,
-			Model model) {
-		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		expedientService.afegirContingutBustia(
-				entitatActual.getId(),
-				expedientId,
-				bustiaId,
-				contingutTipus,
-				contingutId);
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:/modal/tancar",
-				"bustia.controller.pendent.contingut.addexp.ok");
-	}
+	
+	
 	
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.GET)
 	public String bustiaPendentReenviarGet(
@@ -460,44 +319,6 @@ public class BustiaUserController extends BaseUserController {
 		return ret;
 	}
 
-	private void omplirModelPerNouExpedient(
-			EntitatDto entitatActual,
-			Model model) {
-		model.addAttribute(
-				"metaExpedients",
-				metaExpedientService.findActiusAmbEntitatPerCreacio(entitatActual.getId()));
-		model.addAttribute(
-				"arxius",
-				new ArrayList<ArxiuDto>());
-	}
-
-	private void omplirModelPerAfegirAExpedient(
-			Long bustiaId,
-			BustiaContingutPendentTipusEnumDto contingutTipus,
-			Long contingutId,
-			EntitatDto entitatActual,
-			ExpedientFiltreCommand expedientFiltreCommand,
-			Model model,
-			Long contenidorOrigenId) {
-		model.addAttribute("bustiaId", bustiaId);
-		model.addAttribute("contingutTipus", contingutTipus);
-		model.addAttribute("contingutId", contingutId);
-		EscriptoriDto escriptori = contingutService.getEscriptoriPerUsuariActual(entitatActual.getId());
-		model.addAttribute(
-				"contenidorDesti",
-				escriptori);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
-		command.setOrigenId(contenidorOrigenId);
-		model.addAttribute(command);
-		model.addAttribute("expedientFiltreCommand", expedientFiltreCommand);
-		model.addAttribute(
-				"arxius",
-				arxiuService.findPermesosPerUsuari(
-						entitatActual.getId()));
-		model.addAttribute(
-				"expedientTipus",
-				metaExpedientService.findByEntitat(entitatActual.getId()));
-	}
 
 	private void omplirModelPerReenviar(
 			EntitatDto entitatActual,
@@ -548,24 +369,5 @@ public class BustiaUserController extends BaseUserController {
 		}
 		return filtreCommand;
 	}
-	
-	private ExpedientFiltreCommand getFiltreExpedientCommand(
-			HttpServletRequest request,
-			String KEY) {
-		
-		ExpedientFiltreCommand expedientFiltreCommand = (ExpedientFiltreCommand) RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				KEY);
-		if(expedientFiltreCommand == null) {
-			expedientFiltreCommand = new ExpedientFiltreCommand();
-			RequestSessionHelper.actualitzarObjecteSessio(
-					request,
-					KEY,
-					expedientFiltreCommand);
-		}
-		return expedientFiltreCommand;
-	}
-	
-	
 
 }

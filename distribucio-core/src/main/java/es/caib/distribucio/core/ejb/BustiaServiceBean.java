@@ -43,7 +43,7 @@ public class BustiaServiceBean implements BustiaService {
 
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto create(
 			Long entitatId,
 			BustiaDto bustia) {
@@ -51,7 +51,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto update(
 			Long entitatId,
 			BustiaDto bustia) {
@@ -59,7 +59,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -68,7 +68,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto delete(
 			Long entitatId,
 			Long id) {
@@ -76,7 +76,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
 			Long id) {
@@ -84,7 +84,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "tothom"})
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) {
@@ -92,7 +92,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) {
@@ -100,7 +100,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -112,7 +112,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "tothom"})
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
 		return delegate.findActivesAmbEntitat(entitatId);
@@ -143,7 +143,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_BSTWS")
+	@RolesAllowed("DIS_BSTWS")
 	public Long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -157,7 +157,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_BSTWS")
+	@RolesAllowed("DIS_BSTWS")
 	public void registreAnotacioCrear(
 			String entitatCodi,
 			String referencia) {
@@ -201,7 +201,7 @@ public class BustiaServiceBean implements BustiaService {
 
 
 	@Override
-	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "tothom"})
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,
@@ -215,7 +215,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -224,7 +224,7 @@ public class BustiaServiceBean implements BustiaService {
 	}	
 
 	@Override
-	@RolesAllowed("IPA_ADMIN")
+	@RolesAllowed("DIS_ADMIN")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -233,7 +233,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"IPA_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "tothom"})
 	public List<BustiaDto> findPermesesPerUsuari(Long entitatId) {
 		return delegate.findPermesesPerUsuari(entitatId);
 	}

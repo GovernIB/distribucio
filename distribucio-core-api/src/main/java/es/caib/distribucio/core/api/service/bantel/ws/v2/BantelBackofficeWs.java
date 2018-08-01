@@ -12,7 +12,7 @@ import es.caib.distribucio.core.api.service.bantel.ws.v2.BantelBackofficeWsExcep
 
 /**
  * WS per emular la interfície Bantel de Sistra per a que els backoffices tipus
- * Sistra pugin consultar a Ripea les entrades notificades a través anteriorment.
+ * Sistra pugin consultar a Distribucio les entrades notificades a través anteriorment.
  * Aquests tres mètodes permeten obtenir les dades de les entrades en el registre
  * i establir el resultat del procés si han processat les dades del tràmit.
  * 
@@ -31,8 +31,8 @@ public interface BantelBackofficeWs {
 	 * @return
 	 * @throws BantelBackofficeWsException
 	 */
-    @ResponseWrapper(localName = "obtenerEntradaResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.ObtenerEntradaResponse")
-    @RequestWrapper(localName = "obtenerEntrada", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.ObtenerEntrada")
+    @ResponseWrapper(localName = "obtenerEntradaResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.ObtenerEntradaResponse")
+    @RequestWrapper(localName = "obtenerEntrada", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.ObtenerEntrada")
     @WebResult(name = "obtenerEntradaReturn", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade")
     @WebMethod
     public es.caib.distribucio.core.api.service.bantel.ws.v2.model.TramiteBTE obtenerEntrada(
@@ -50,8 +50,8 @@ public interface BantelBackofficeWs {
      * @param resultadoProcesamiento
      * @throws BantelBackofficeWsException
      */
-    @ResponseWrapper(localName = "establecerResultadoProcesoResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.model.EstablecerResultadoProcesoResponse")
-    @RequestWrapper(localName = "establecerResultadoProceso", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.model.EstablecerResultadoProceso")
+    @ResponseWrapper(localName = "establecerResultadoProcesoResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.model.EstablecerResultadoProcesoResponse")
+    @RequestWrapper(localName = "establecerResultadoProceso", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.model.EstablecerResultadoProceso")
     @WebMethod
     public void establecerResultadoProceso(
         @WebParam(name = "numeroEntrada", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade")
@@ -75,8 +75,8 @@ public interface BantelBackofficeWs {
      * @return
      * @throws BantelBackofficeWsException
      */
-    @ResponseWrapper(localName = "obtenerNumerosEntradasResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.ObtenerNumerosEntradasResponse")
-    @RequestWrapper(localName = "obtenerNumerosEntradas", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.ripea.core.api.service.bantel.ws.v2.ObtenerNumerosEntradas")
+    @ResponseWrapper(localName = "obtenerNumerosEntradasResponse", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.ObtenerNumerosEntradasResponse")
+    @RequestWrapper(localName = "obtenerNumerosEntradas", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade", className = "es.caib.distribucio.core.api.service.bantel.ws.v2.ObtenerNumerosEntradas")
     @WebResult(name = "obtenerNumerosEntradasReturn", targetNamespace = "urn:es:caib:bantel:ws:v2:model:BackofficeFacade")
     @WebMethod
     public es.caib.distribucio.core.api.service.bantel.ws.v2.model.ReferenciasEntrada obtenerNumerosEntradas(

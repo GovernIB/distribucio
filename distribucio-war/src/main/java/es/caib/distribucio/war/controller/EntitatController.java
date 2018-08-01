@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.service.EntitatService;
-import es.caib.ripea.war.command.EntitatCommand;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.war.command.EntitatCommand;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 
 /**
  * Controlador per al manteniment d'entitats.
@@ -32,8 +32,6 @@ public class EntitatController extends BaseController {
 
 	@Autowired
 	private EntitatService entitatService;
-
-
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get() {

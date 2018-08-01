@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.war.controller;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,19 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.ripea.core.api.dto.ContingutTipusEnumDto;
-import es.caib.ripea.core.api.dto.EntitatDto;
-import es.caib.ripea.core.api.exception.ValidationException;
-import es.caib.ripea.core.api.service.ContingutService;
-import es.caib.ripea.core.api.service.MetaDocumentService;
-import es.caib.ripea.core.api.service.MetaExpedientService;
-import es.caib.ripea.core.api.service.RegistreService;
-import es.caib.ripea.war.command.ContingutFiltreCommand;
-import es.caib.ripea.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
-import es.caib.ripea.war.helper.DatatablesHelper;
-import es.caib.ripea.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.ripea.war.helper.MissatgesHelper;
-import es.caib.ripea.war.helper.RequestSessionHelper;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.war.command.ContingutFiltreCommand;
+import es.caib.distribucio.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
+import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.MissatgesHelper;
+import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -51,10 +46,6 @@ public class ContingutAdminController extends BaseAdminController {
 	private ContingutService contingutService;
 	@Autowired
 	private RegistreService registreService;
-	@Autowired
-	private MetaExpedientService metaExpedientService;
-	@Autowired
-	private MetaDocumentService metaDocumentService;
 
 
 
@@ -62,19 +53,10 @@ public class ContingutAdminController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisos(request);
 		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(
 				filtreCommand);
-		if (ContingutTipusEnumDto.EXPEDIENT.equals(filtreCommand.getTipus())) {
-			model.addAttribute(
-					"metaNodes",
-					metaExpedientService.findByEntitat(entitatActual.getId()));
-		} else if (ContingutTipusEnumDto.DOCUMENT.equals(filtreCommand.getTipus())) {
-			model.addAttribute(
-					"metaNodes",
-					metaDocumentService.findByEntitat(entitatActual.getId()));
-		}
 		return "contingutAdminList";
 	}
 	@RequestMapping(method = RequestMethod.POST)
@@ -147,42 +129,42 @@ public class ContingutAdminController extends BaseAdminController {
 		return "contingutLog";
 	}
 
-	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
-	public String undelete(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		try {
-			contingutService.undelete(
-					entitatActual.getId(),
-					contingutId);
-			return getAjaxControllerReturnValueSuccess(
-					request,
-					"redirect:../../esborrat",
-					"contingut.admin.controller.recuperat.ok");
-		} catch (ValidationException ex) {
-			return getAjaxControllerReturnValueError(
-					request,
-					"redirect:../../esborrat",
-					"contingut.admin.controller.recuperat.duplicat");
-		}
-	}
+//	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
+//	public String undelete(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) throws IOException {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		try {
+//			contingutService.undelete(
+//					entitatActual.getId(),
+//					contingutId);
+//			return getAjaxControllerReturnValueSuccess(
+//					request,
+//					"redirect:../../esborrat",
+//					"contingut.admin.controller.recuperat.ok");
+//		} catch (ValidationException ex) {
+//			return getAjaxControllerReturnValueError(
+//					request,
+//					"redirect:../../esborrat",
+//					"contingut.admin.controller.recuperat.duplicat");
+//		}
+//	}
 
-	@RequestMapping(value = "/{contingutId}/delete", method = RequestMethod.GET)
-	public String delete(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		contingutService.deleteDefinitiu(
-				entitatActual.getId(),
-				contingutId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../esborrat",
-				"contingut.admin.controller.esborrat.definitiu.ok");
-	}
+//	@RequestMapping(value = "/{contingutId}/delete", method = RequestMethod.GET)
+//	public String delete(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		contingutService.deleteDefinitiu(
+//				entitatActual.getId(),
+//				contingutId);
+//		return getAjaxControllerReturnValueSuccess(
+//				request,
+//				"redirect:../../esborrat",
+//				"contingut.admin.controller.esborrat.definitiu.ok");
+//	}
 
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(

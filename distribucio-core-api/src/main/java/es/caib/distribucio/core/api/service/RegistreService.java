@@ -65,7 +65,7 @@ public interface RegistreService {
 
 	/**
 	 * Distribueix periòdicament les anotacions de registre que han arribat
-	 * al RIPEA i s'han quedat pendents de distribuir de forma asíncrona.
+	 * al DISTRIBUCIO i s'han quedat pendents de distribuir de forma asíncrona.
 	 */
 	public void distribuirAnotacionsPendents();
 
@@ -89,7 +89,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('IPA_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public boolean reglaReintentarAdmin(
 			Long entitatId,
 			Long bustiaId,
@@ -175,7 +175,7 @@ public interface RegistreService {
 	 *            Atribut identificador l'entitat.
 	 * @return els detalls de l'anotació o null si no es troba.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public RegistreAnotacioDto findAmbIdentificador(String identificador);
 
 	/**
@@ -187,7 +187,7 @@ public interface RegistreService {
 	 * @param resultat
 	 * 				Descripció del resultat d'error o del processament SISTRA.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public void updateProces(
 			Long registreId,
 			RegistreProcesEstatEnum procesEstat, 
@@ -204,7 +204,7 @@ public interface RegistreService {
 	 * @return La llista de números d'entrada de registres (identificadors) segons els paràmetres 
 	 * de filtre.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public List<String> findPerBackofficeSistra(
 			String identificadorProcediment, 
 			String identificadorTramit,

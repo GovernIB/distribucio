@@ -12,13 +12,13 @@ import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 
 /**
  * Declaració dels mètodes per al servei d'enviament de contingut a
- * bústies de RIPEA v1.
+ * bústies de DISTRIBUCIO v1.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @WebService(
 		name = "BustiaV1",
-		targetNamespace = "http://www.caib.es/ripea/ws/v1/bustia")
+		targetNamespace = "http://www.caib.es/distribucio/ws/v1/bustia")
 public interface BustiaV1WsService {
 
 	/**
@@ -32,7 +32,7 @@ public interface BustiaV1WsService {
 	 * @param registreEntrada
 	 *            Dades de l'anotació al registre d'entrada.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public void enviarAnotacioRegistreEntrada(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
@@ -49,7 +49,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar el document.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public void enviarDocument(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
@@ -66,7 +66,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar l'expedient.
 	 */
-	//@PreAuthorize("hasRole('IPA_BSTWS')")
+	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public void enviarExpedient(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
