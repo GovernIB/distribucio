@@ -878,11 +878,11 @@ public class BustiaServiceImpl implements BustiaService {
 		MimeMessageHelper helper;
 		helper = new MimeMessageHelper(missatge, true);
 		
-		if (adresses == null && adresses.isEmpty()){
+//		if (adresses == null && adresses.isEmpty()){
 		missatge.addRecipients(RecipientType.TO, InternetAddress.parse(adresses));
-		} else {
-			helper.setTo("urszulal@limit.es");
-		}
+//		} else {
+//			helper.setTo("urszulal@limit.es");
+//		}
 
 		helper.setFrom(emailHelper.getRemitent());
 		helper.setSubject("Distribució: "+registre.getExtracte());
