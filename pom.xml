@@ -36,6 +36,7 @@
 		<module>distribucio-lib-common</module>
 		<module>distribucio-plugin</module>
 		<module>distribucio-plugin-impl</module>
+		<module>distribucio-ws-client</module>
 	</modules>
 	<build>
 		<plugins>

@@ -14,15 +14,6 @@
 <head>
 	<title>
 		<c:choose>
-			<c:when test="${contingut.escriptori}">
-				<c:choose>
-					<c:when test="${paginaExpedients}">&nbsp;<spring:message code="contingut.titol.expedients"/></c:when>
-					<c:otherwise>&nbsp;<spring:message code="contingut.titol.escriptori"/></c:otherwise>
-				</c:choose>
-			</c:when>
-			<c:when test="${contingut.expedient}">&nbsp;${contingut.nom}</c:when>
-			<c:when test="${contingut.carpeta}">&nbsp;${contingut.nom}</c:when>
-			<c:when test="${contingut.document}">&nbsp;${contingut.nom}</c:when>
 			<c:when test="${contingut.bustia}">&nbsp;${contingut.nom}</c:when>
 		</c:choose>
 	</title>
@@ -633,35 +624,6 @@ $(document).ready(function() {
 										<span class="fa fa-th-list"></span>
 									</a>
 								</div>
-								<c:if test="${contingut.escriptori}">
-									<div id="boto-accions-massives" class="btn-group">
-										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-											<span class="fa fa-cogs"></span>&nbsp;
-											<spring:message code="contingut.boto.accions.massives"/>&nbsp;
-											<span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu text-left" role="menu">
-											<li>
-												<a href="<c:url value="/massiu/portafirmes"/>">
-													<span class="fa fa-envelope"></span>
-													<spring:message code="contingut.boto.accio.massiva.portafirmes"/>
-												</a>
-											</li>
-										</ul>
-									</div>
-								</c:if>
-								<c:if test="${(contingut.escriptori or contingut.carpeta or ((contingut.expedient or contingut.document) and potModificarContingut))}">
-									<div id="botons-crear-contingut" class="btn-group">
-										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span>&nbsp;<spring:message code="contingut.boto.crear.contingut"/>&nbsp;<span class="caret"></span></button>
-										<ul class="dropdown-menu text-left" role="menu">
-											<c:if test="${contingut.crearExpedients and not empty metaExpedients}">
-												<li><a href="../contingut/${contingut.id}/expedient/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaExpedientTancat}"></span>&nbsp;<spring:message code="contingut.boto.crear.expedient"/>...</a></li>
-											</c:if>
-											<li><a href="../contingut/${contingut.id}/document/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaDocument}"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.document"/>...</a></li>
-											<li><a href="../contingut/${contingut.id}/carpeta/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa ${iconaCarpeta}"></span>&nbsp;&nbsp;<spring:message code="contingut.boto.crear.carpeta"/>...</a></li>
-										</ul>
-									</div>
-								</c:if>
 							</div>
 							<dis:blocContenidorContingut contingut="${contingut}" mostrarExpedients="${true}" mostrarNoExpedients="${true}"/>
 						</c:otherwise>

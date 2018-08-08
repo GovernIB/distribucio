@@ -74,14 +74,7 @@ function refrescarFileChooser(campPath, contenidorId) {
 			var ocultarDocuments = <c:choose><c:when test="${ocultarDocuments}">true</c:when><c:otherwise>false</c:otherwise></c:choose>;
 			$("input#" + campPath).val(data.id);
 			var path = "";
-			if (data.id == '${contenidorBaseId}') {
-				if (data.escriptori)
-					path += '<span class="fa fa-desktop"></span> Escriptori';
-				if (data.expedient)
-					path += data.nom;
-			} else {
-				path += data.pathAsStringExploradorAmbNom;
-			}
+			path += data.pathAsStringExploradorAmbNom;
 			path = path.replaceAll('#E#', '<span class="fa fa-desktop"></span> Escriptori');
 			path = path.replaceAll('#X#', '<span class="fa fa-briefcase"></span>');
 			path = path.replaceAll('#C#', '<span class="fa fa-folder"></span>');
