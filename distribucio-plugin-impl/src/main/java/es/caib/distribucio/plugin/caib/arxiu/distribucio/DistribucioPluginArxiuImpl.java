@@ -92,7 +92,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			processarAnnexosRegistre(anotacio, unitatArrelCodi, expedientCreat);
 		}
 		
-		return expedientCreat.getIdentificador();
+		return expedientCreat != null ? expedientCreat.getIdentificador() : null;
 	}
 	
 	@Override

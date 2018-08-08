@@ -291,48 +291,48 @@ public class RegistreServiceImpl implements RegistreService {
 	@Async
 	@Scheduled(fixedRateString = "60000")
 	public void reglaAplicarPendentsBackofficeSistra() {
-//		logger.debug("Aplicant regles a les anotacions pendents per a regles de backoffice tipus Sistra");
-//		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentProcessarBackofficeSistra();
-//		logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
-//		if (!pendents.isEmpty()) {
-//			Date ara;
-//			Date darrerProcessament;
-//			Integer minutsEntreReintents;
-//			Calendar properProcessamentCal = Calendar.getInstance();
-//			for (RegistreEntity pendent: pendents) {
-//				try {
-//					// Comprova si ha passat el temps entre reintents o ha d'esperar
-//					boolean esperar = false;
-//					darrerProcessament = pendent.getProcesData();
-//					minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
-//					if (darrerProcessament != null && minutsEntreReintents != null) {
-//						// Calcula el temps pel proper intent
-//						properProcessamentCal.setTime(darrerProcessament);
-//						properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
-//						ara  = new Date();
-//						esperar = ara.before(properProcessamentCal.getTime());
-//					}
-//					if (!esperar) {
-//						try {
-//							registreHelper.distribuirAnotacioPendent(pendent.getId());
-//						} catch (Exception e) {
-//							registreHelper.actualitzarEstatError(
-//									pendent.getId(), 
-//									e);
-//						}
-//					}
-//				} catch (Exception e) {
-//					alertaHelper.crearAlerta(
-//							messageHelper.getMessage(
-//									"alertes.segon.pla.aplicar.regles.backoffice.sistra.error",
-//									new Object[] {pendent.getId()}),
-//							e,
-//							pendent.getId());
-//				}
-//			}
-//		} else {
-//			logger.debug("No hi ha registres pendents de processar");
-//		}
+		logger.debug("Aplicant regles a les anotacions pendents per a regles de backoffice tipus Sistra");
+		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentProcessarBackofficeSistra();
+		logger.debug("Aplicant regles a " + pendents.size() + " registres pendents");
+		if (!pendents.isEmpty()) {
+			Date ara;
+			Date darrerProcessament;
+			Integer minutsEntreReintents;
+			Calendar properProcessamentCal = Calendar.getInstance();
+			for (RegistreEntity pendent: pendents) {
+				try {
+					// Comprova si ha passat el temps entre reintents o ha d'esperar
+					boolean esperar = false;
+					darrerProcessament = pendent.getProcesData();
+					minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
+					if (darrerProcessament != null && minutsEntreReintents != null) {
+						// Calcula el temps pel proper intent
+						properProcessamentCal.setTime(darrerProcessament);
+						properProcessamentCal.add(Calendar.MINUTE, minutsEntreReintents);
+						ara  = new Date();
+						esperar = ara.before(properProcessamentCal.getTime());
+					}
+					if (!esperar) {
+						try {
+							registreHelper.distribuirAnotacioPendent(pendent.getId());
+						} catch (Exception e) {
+							registreHelper.actualitzarEstatError(
+									pendent.getId(), 
+									e);
+						}
+					}
+				} catch (Exception e) {
+					alertaHelper.crearAlerta(
+							messageHelper.getMessage(
+									"alertes.segon.pla.aplicar.regles.backoffice.sistra.error",
+									new Object[] {pendent.getId()}),
+							e,
+							pendent.getId());
+				}
+			}
+		} else {
+			logger.debug("No hi ha registres pendents de processar");
+		}
 	}
 	
 	@Value("${config:es.caib.distribucio.tasca.dist.anotacio.asincrona}")
@@ -343,32 +343,32 @@ public class RegistreServiceImpl implements RegistreService {
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.dist.anotacio.pendent.periode.execucio}")
 	public void distribuirAnotacionsPendents() {
 		
-//		if (isDistAsincEnabled) {
-//		
-//			logger.debug("Distribuïnt anotacions de registere pendents");
-//			try {
-//				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
-//				List<RegistreEntity> pendents = registreRepository.findPendentsDistribuir(Integer.parseInt(maxReintents));
-//				
-//				logger.debug("Distribuïnt " + pendents.size() + " anotacion pendents");
-//				if (!pendents.isEmpty()) {
-//					for (RegistreEntity pendent: pendents) {
-//						try {
-//							registreHelper.distribuirAnotacioPendent(pendent.getId());
-//						} catch (Exception e) {
-//							registreHelper.actualitzarEstatError(
-//									pendent.getId(), 
-//									e);
-//						}
-//					}
-//				} else {
-//					logger.debug("No hi ha anotacions pendents de distribuïr");
-//				}
-//			} catch (Exception e) {
-//				logger.error("Error distribuïnt anotacions pendents", e);
-//				e.printStackTrace();
-//			}
-//		}
+		if (isDistAsincEnabled) {
+		
+			logger.debug("Distribuïnt anotacions de registere pendents");
+			try {
+				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
+				List<RegistreEntity> pendents = registreRepository.findPendentsDistribuir(Integer.parseInt(maxReintents));
+				
+				logger.debug("Distribuïnt " + pendents.size() + " anotacion pendents");
+				if (!pendents.isEmpty()) {
+					for (RegistreEntity pendent: pendents) {
+						try {
+							registreHelper.distribuirAnotacioPendent(pendent.getId());
+						} catch (Exception e) {
+							registreHelper.actualitzarEstatError(
+									pendent.getId(), 
+									e);
+						}
+					}
+				} else {
+					logger.debug("No hi ha anotacions pendents de distribuïr");
+				}
+			} catch (Exception e) {
+				logger.error("Error distribuïnt anotacions pendents", e);
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override

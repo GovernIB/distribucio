@@ -102,15 +102,10 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-	<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/anotacionsRegistre/datatable"/>" data-filter="#anotacioRegistreFiltreCommand" data-default-order="9" data-default-dir="asc" class="table table-bordered table-striped">
+	<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/anotacionsRegistre/datatable"/>" data-filter="#anotacioRegistreFiltreCommand" data-default-order="4" data-default-dir="asc" class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
-				<th data-col-name="escriptori" data-visible="false">#</th>
-				<th data-col-name="expedient" data-visible="false">#</th>
-				<th data-col-name="carpeta" data-visible="false">#</th>
-				<th data-col-name="document" data-visible="false">#</th>
-				<th data-col-name="arxiv" data-visible="false">#</th>
 				<th data-col-name="bustia" data-visible="false">#</th>
 				<th data-col-name="registre" data-visible="false">#</th>
 				<th data-col-name="nom" data-template="#cellNomTemplate" width="25%">
@@ -125,13 +120,8 @@ $(document).ready(function() {
 					<spring:message code="contingut.admin.columna.situacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
-							{{if escriptori}}<span class="fa ${iconaEscriptori}" title="<spring:message code="contingut.path.escriptori"/>"></span>
-							{{else expedient}}<span class="fa ${iconaExpedient}" title="<spring:message code="contingut.icona.expedient"/>"></span>
-							{{else carpeta}}<span class="fa ${iconaCarpeta}" title="<spring:message code="contingut.icona.carpeta"/>"></span>
-							{{else document}}<span class="fa ${iconaDocument}" title="<spring:message code="contingut.icona.document"/>"></span>
-							{{else arxiv}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaArxiu}" title="<spring:message code="contingut.icona.arxiu"/>"></span>{{/if}}
-							{{else bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
-							{{if escriptori}}{{:createdBy.nom}}{{else}}{{:nom}}{{/if}}
+							{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
+							{{:nom}}
 						{{/for}}
 					</script>
 				</th>
