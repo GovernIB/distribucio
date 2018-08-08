@@ -606,11 +606,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String fitxerExtensio = fitxer.getExtensio();
 			String extensioAmbPunt = (fitxerExtensio.startsWith(".")) ? fitxerExtensio.toLowerCase() : "." + fitxerExtensio.toLowerCase();
 			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-			contingut = new DocumentContingut();
-			contingut.setArxiuNom(fitxer.getNom());
-			contingut.setContingut(fitxer.getContingut());
-			contingut.setTipusMime(fitxer.getContentType());
-			document.setContingut(contingut);
+			if (!isFirmesPades(firmes) && firmaPdf == null) {
+				contingut = new DocumentContingut();
+				contingut.setArxiuNom(fitxer.getNom());
+				contingut.setContingut(fitxer.getContingut());
+				contingut.setTipusMime(fitxer.getContentType());
+			}
+//			document.setContingut(contingut);
 		}
 		if (firmaPdf != null) {
 			Firma firmaPades = new Firma();
@@ -807,6 +809,14 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		document.setContingut(contingut);
 		document.setEstat(estat);
 		return document;
+	}
+	
+	private boolean isFirmesPades(List<ArxiuFirmaDto> firmes) {
+		for (ArxiuFirmaDto firma: firmes) {
+			if (ArxiuFirmaTipusEnumDto.PADES == firma.getTipus())
+				return true;
+		}
+		return false;
 	}
 	
 	private IArxiuPlugin getArxiuPlugin() throws SistemaExternException {

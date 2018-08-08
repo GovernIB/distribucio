@@ -58,8 +58,8 @@ tr.clicable {
 
 	    $(".collapse-annex").on('show.bs.collapse', function(data){  
 		    if (!$(this).data("loaded")) {	
-		        var registreId = $("#collapse-justificant").data("registreId"); 
-		        var contingutId = $("#collapse-justificant").data("contingutId"); 
+		    	var registreId = $(this).data("registreId"); 
+		        var contingutId = $(this).data("contingutId"); 
 		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
 		        $(this).load("<c:url value="/contingut/ajax/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid);
@@ -399,7 +399,7 @@ tr.clicable {
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>
- 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-fitxer-arxiu-uuid="${annex.fitxerArxiuUuid}"> 
+ 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-contingut-id="${contingutId}" data-fitxer-arxiu-uuid="${annex.fitxerArxiuUuid}"> 
 
  							</div> 
 						</div>

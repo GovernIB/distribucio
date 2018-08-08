@@ -14,8 +14,8 @@
 
 	    $("#collapse-registre-firmes-<c:out value='${annex.fitxerArxiuUuid}'/>").on('show.bs.collapse', function(data){  	
 		    if (!$(this).data("loaded")) {
-		        var registreId = $("#collapse-justificant").data("registreId"); 
-		        var contingutId = $("#collapse-justificant").data("contingutId"); 
+		    	var registreId = $(this).parents(".collapse-annex").data("registreId"); 
+		        var contingutId = $(this).parents(".collapse-annex").data("contingutId"); 
 		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
 		        $(this).load("<c:url value="/contingut/ajax/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid + "/registreFirmes");

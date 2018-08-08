@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -214,17 +216,23 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable String fitxerArxiuUuid,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-
-		model.addAttribute(
-				"annex",
-				registreService.getAnnexFirmesAmbArxiu(
-						entitatActual.getId(),
-						contingutId,
-						registreId,
-						fitxerArxiuUuid));
-		model.addAttribute("registreId", registreId);
-		model.addAttribute("fitxerArxiuUuid", fitxerArxiuUuid);
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+	
+			model.addAttribute(
+					"annex",
+					registreService.getAnnexFirmesAmbArxiu(
+							entitatActual.getId(),
+							contingutId,
+							registreId,
+							fitxerArxiuUuid));
+			model.addAttribute("registreId", registreId);
+			model.addAttribute("fitxerArxiuUuid", fitxerArxiuUuid);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació de firma", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+			return "ajaxErrorPage";
+		}
 
 		return "registreAnnexFirmes";
 	}
@@ -237,17 +245,23 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable String fitxerArxiuUuid,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-
-		model.addAttribute(
-				"annex",
-				registreService.getAnnexAmbArxiu(
-						entitatActual.getId(),
-						contingutId,
-						registreId,
-						fitxerArxiuUuid));
-		model.addAttribute("registreId", registreId);
-
+		
+		try{
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+	
+			model.addAttribute(
+					"annex",
+					registreService.getAnnexAmbArxiu(
+							entitatActual.getId(),
+							contingutId,
+							registreId,
+							fitxerArxiuUuid));
+			model.addAttribute("registreId", registreId);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació de l'annex", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+			return "ajaxErrorPage";
+		}
 
 		return "registreAnnex";
 	}
@@ -259,12 +273,18 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
-		RegistreAnnexDetallDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), contingutId, registreId);
-		
-		model.addAttribute("justificant",
-				justificant);
+		try{
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			
+			RegistreAnnexDetallDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), contingutId, registreId);
+			
+			model.addAttribute("justificant",
+					justificant);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació del justificant", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+			return "ajaxErrorPage";
+		}
 		
 		return "registreJustificant";
 	}
@@ -298,11 +318,19 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws IOException {
-		FitxerDto fitxer = registreService.getArxiuAnnex(annexId);
-		writeFileToResponse(
-				fitxer.getNom(),
-				fitxer.getContingut(),
-				response);
+		try{
+			FitxerDto fitxer = registreService.getArxiuAnnex(annexId);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (Exception ex) {
+			logger.error("Error descarregant el document", ex);
+			return getModalControllerReturnValueError(
+					request,
+					"/contingut/" + contingutId + "/registre/" + registreId,
+					"contingut.controller.document.descarregar.error");
+		}
 		return null;
 	}
 	
@@ -521,4 +549,5 @@ public class ContingutController extends BaseUserController {
 						true));
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(ContingutController.class);
 }

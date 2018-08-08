@@ -72,14 +72,14 @@ public class BustiaV1Test {
         anotacio.setIdentificador("15/10/2015");
         anotacio.setExpedientNumero(String.valueOf(randomNumber));
         
-        File file = new File("c:/Feina/RIPEA/annexos/foto.jpg");
+        File file = new File("c:/Feina/RIPEA/annexos/annex1.pdf");
         byte[] encodedContingut = FileUtils.readFileToByteArray(file);
         RegistreAnnex annex1 = new RegistreAnnex();
-        annex1.setTitol("Annex imatge");
+        annex1.setTitol("Annex PDF");
         annex1.setFitxerNom(file.getName());
-        annex1.setFitxerTipusMime(Files.probeContentType(file.toPath()));
-        annex1.setFitxerContingut(encodedContingut);
-        annex1.setFitxerTamany((int)(file.length()));
+//        annex1.setFitxerTipusMime(Files.probeContentType(file.toPath()));
+//        annex1.setFitxerContingut(encodedContingut);
+//        annex1.setFitxerTamany((int)(file.length()));
         annex1.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         annex1.setEniOrigen("0");
         annex1.setEniEstatElaboracio("EE01");
@@ -105,7 +105,7 @@ public class BustiaV1Test {
         annex2.setSicresTipusDocument("02");
 //        afegirFirmes(annex2);
         
-        anotacio.getAnnexos().add(annex2);
+//        anotacio.getAnnexos().add(annex2);
         
         File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
         byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
@@ -186,12 +186,12 @@ public class BustiaV1Test {
 
 	private void afegirFirmes(RegistreAnnex annex) throws IOException {
 		Firma firma = new Firma();
-		File firmaFile = new File("c:/Feina/RIPEA/annexos/2018-01-24_CAdES_Detached_foto_jpg.csig");
+		File firmaFile = new File("c:/Feina/RIPEA/annexos/pades_epes.pdf");
         byte[] firmaContingut = FileUtils.readFileToByteArray(firmaFile);
-        firma.setTipus("TF04");
-        firma.setPerfil("BES");
+        firma.setTipus("TF06");
+        firma.setPerfil("EPES");
         firma.setContingut(firmaContingut);
-        firma.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
+        firma.setFitxerNom("pades_epes.pdf");
         firma.setTipusMime(Files.probeContentType(firmaFile.toPath()));
         firma.setCsvRegulacio("Regulació CSV 1");
 		

@@ -4,17 +4,26 @@
 package es.caib.distribucio.core.service;
 
 import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +32,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
+import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutPendentTipusEnumDto;
@@ -34,16 +46,20 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
+import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
@@ -66,6 +82,12 @@ import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
+import es.caib.distribucio.core.helper.PluginHelper;
+import es.caib.distribucio.core.helper.PropertiesHelper;
+import es.caib.distribucio.core.helper.RegistreHelper;
+import es.caib.distribucio.core.helper.ReglaHelper;
+import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
@@ -74,37 +96,8 @@ import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
-import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
-import es.caib.distribucio.core.helper.RegistreHelper;
-import es.caib.distribucio.core.helper.ReglaHelper;
-import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.registre.RegistreAnotacioResposta;
-
-
-import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.core.api.registre.RegistreInteressat;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMessage.RecipientType;
-import java.util.Objects;
-import java.util.Properties;
-import java.text.SimpleDateFormat;
 
 
 /**
@@ -878,11 +871,11 @@ public class BustiaServiceImpl implements BustiaService {
 		MimeMessageHelper helper;
 		helper = new MimeMessageHelper(missatge, true);
 		
-		if (adresses == null && adresses.isEmpty()){
+//		if (adresses == null && adresses.isEmpty()){
 		missatge.addRecipients(RecipientType.TO, InternetAddress.parse(adresses));
-		} else {
-			helper.setTo("urszulal@limit.es");
-		}
+//		} else {
+//			helper.setTo("urszulal@limit.es");
+//		}
 
 		helper.setFrom(emailHelper.getRemitent());
 		helper.setSubject("Distribució: "+registre.getExtracte());
