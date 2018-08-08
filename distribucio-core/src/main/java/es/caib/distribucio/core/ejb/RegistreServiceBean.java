@@ -176,5 +176,12 @@ public class RegistreServiceBean implements RegistreService {
 			String fitxerArxiuUuid) throws NotFoundException {
 		return delegate.getAnnexFirmesAmbArxiu(entitatId, contingutId, registreId, fitxerArxiuUuid);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
+			throws NotFoundException {
+		return delegate.getAnnexos(entitatId, contingutId, registreId);
+	}	
 
 }

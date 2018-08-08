@@ -155,6 +155,7 @@ $(document).ready(function() {
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
 									</c:if>
 									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									<li><a href="./bustiaUser/{{:pareId}}/enviarByEmail/{{:id}}" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 									{{if estatContingut == 'PENDENT'}}
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 									{{/if}}			

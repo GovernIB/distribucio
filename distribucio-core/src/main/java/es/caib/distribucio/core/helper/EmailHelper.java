@@ -240,7 +240,7 @@ public class EmailHelper {
 		}
 		return null;
 	}
-	private String getRemitent() {
+	public String getRemitent() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.email.remitent");
 	}
 

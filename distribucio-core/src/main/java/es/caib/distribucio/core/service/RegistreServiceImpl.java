@@ -191,7 +191,60 @@ public class RegistreServiceImpl implements RegistreService {
 		return justificant;
 	}
 	
+	@Transactional(readOnly = true)
+	@Override
+	public List<RegistreAnnexDetallDto> getAnnexos(
+			Long entitatId,
+			Long contingutId,
+			Long registreId	
+			) throws NotFoundException {
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					contingut,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+				contingut,
+				registreId);
+		
+		
+
+		List<RegistreAnnexDetallDto> anexosDto = new ArrayList<>();
+		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
+			
+			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
+					annexEntity,
+					RegistreAnnexDetallDto.class);
+			annex.setAmbDocument(true);
+			anexosDto.add(annex);
+		}
+			
+		return anexosDto;
+	}
 	
+		
 	
 
 	@Transactional

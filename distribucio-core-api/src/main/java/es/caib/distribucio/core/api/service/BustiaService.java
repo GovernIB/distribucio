@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+import javax.mail.MessagingException;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -400,6 +401,10 @@ public interface BustiaService {
 			Long unitatIdFiltre);
 
 	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre);
+
+	void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses) throws MessagingException;	
+
+
 
 }
 

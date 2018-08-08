@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,11 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+
+import java.util.Arrays;
+import javax.mail.MessagingException;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -135,7 +141,58 @@ public class BustiaUserController extends BaseUserController {
 		
 	}
 
+	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.GET)
+	public String bustiaEnviarByEmailGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			Model model) {
+
+		
+		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
+		command.setBustiaId(bustiaId);
+		command.setContingutId(contingutId);
+			
+		model.addAttribute(command);
+		return "registreViaEmail";
+	}
 	
+	
+	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.POST)
+	public String bustiaEnviarByEmailPost(
+			HttpServletRequest request,
+			@Valid RegistreEnviarViaEmailCommand command,
+			BindingResult bindingResult,
+			Model model)  {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+
+			return "bustiaUserList";
+		}
+		
+		String adresses = command.getAddresses();
+		
+		List<String> adressList = Arrays.asList(adresses.split(",\\s*|\\s+"));
+		
+		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
+		
+		try {
+			bustiaService.enviarRegistreByEmail(entitatActual.getId(), command.getBustiaId(), command.getContingutId(), adressesParsed);
+		} catch (MessagingException messagingException) {
+			getModalControllerReturnValueError(
+					request, 
+					"redirect:../../../pendent", 
+					ExceptionUtils.getRootCauseMessage(messagingException));
+		}
+		
+		
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:../../../pendent",
+				"bustia.controller.pendent.contingut.enviat.email.ok");
+	}
+	
+		
 	
 	
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.GET)

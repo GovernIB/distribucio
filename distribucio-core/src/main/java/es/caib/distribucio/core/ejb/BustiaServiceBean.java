@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb;
 
 import java.util.List;
+import javax.mail.MessagingException;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -273,6 +274,12 @@ public class BustiaServiceBean implements BustiaService {
 				contingutId,
 				deixarCopia,
 				comentari);
+	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses) throws MessagingException {
+		delegate.enviarRegistreByEmail(entitatId, contingutId, registreId, adresses);
 	}
 
 	

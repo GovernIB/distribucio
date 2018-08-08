@@ -238,4 +238,6 @@ public interface RegistreService {
 
 	RegistreAnnexDetallDto getAnnexFirmesAmbArxiu(Long entitatId, Long contingutId, Long registreId,
 			String fitxerArxiuUuid) throws NotFoundException;
+	
+	List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
 }

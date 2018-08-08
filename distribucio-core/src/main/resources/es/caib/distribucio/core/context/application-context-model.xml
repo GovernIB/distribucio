@@ -51,6 +51,7 @@
 	<!-- E-mail -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="session" ref="mailSession"/>
+		<property name="defaultEncoding" value="UTF-8"/>
 	</bean>
 	<!-- /E-mail -->
 
