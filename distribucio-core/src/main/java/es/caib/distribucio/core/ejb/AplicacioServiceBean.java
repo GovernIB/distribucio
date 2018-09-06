@@ -117,18 +117,6 @@ public class AplicacioServiceBean implements AplicacioService {
 
 	@Override
 	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
-	public String propertyPluginPassarelaFirmaIds() {
-		return delegate.propertyPluginPassarelaFirmaIds();
-	}
-
-	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
-	public String propertyPluginEscaneigIds() {
-		return delegate.propertyPluginEscaneigIds();
-	}
-
-	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public Properties propertyFindByPrefix(String prefix) {
 		return delegate.propertyFindByPrefix(prefix);
 	}

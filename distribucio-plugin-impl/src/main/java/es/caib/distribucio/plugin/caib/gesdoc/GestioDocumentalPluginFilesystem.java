@@ -119,7 +119,7 @@ public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin 
 
 	private String getBaseDir(String agrupacio) {
 		String baseDir = PropertiesHelper.getProperties().getProperty(
-				"es.caib.ripea.plugin.gesdoc.filesystem.base.dir");
+				"es.caib.distribucio.plugin.gesdoc.filesystem.base.dir");
 		if (baseDir != null) {
 			if (baseDir.endsWith("/")) {
 				return baseDir + agrupacio;

@@ -207,21 +207,9 @@ public class AplicacioServiceImpl implements AplicacioService {
 	}
 
 	@Override
-	public String propertyPluginPassarelaFirmaIds() {
-		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.passarelafirma.ids");
-	}
-
-	@Override
 	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
 		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
 		return PropertiesHelper.getProperties().getProperty("plugin.passarelafirma.ignorar.modal.ids");
-	}
-
-	@Override
-	public String propertyPluginEscaneigIds() {
-		logger.debug("Consulta de la propietat amb les ids pels plugins d'escaneig de documents");
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.escaneig.ids");
 	}
 
 	@Override

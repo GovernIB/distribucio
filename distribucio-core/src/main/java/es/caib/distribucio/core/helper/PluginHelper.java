@@ -37,7 +37,6 @@ import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
-import es.caib.distribucio.plugin.conversio.ConversioPlugin;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
 import es.caib.distribucio.plugin.dadesext.Municipi;
 import es.caib.distribucio.plugin.dadesext.Provincia;
@@ -46,10 +45,8 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.portafirmes.PortafirmesPlugin;
 import es.caib.distribucio.plugin.registre.RegistreAnotacioResposta;
 import es.caib.distribucio.plugin.registre.RegistrePlugin;
-import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -74,14 +71,10 @@ public class PluginHelper {
 
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
-	private PortafirmesPlugin portafirmesPlugin;
-	private ConversioPlugin conversioPlugin;
 	private RegistrePlugin registrePlugin;
-	//private CiutadaPlugin ciutadaPlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
 	private IArxiuPlugin arxiuPlugin;
 	private IValidateSignaturePlugin validaSignaturaPlugin;
-	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
 	private DistribucioPlugin distribucioPlugin;
 
@@ -1828,685 +1821,11 @@ public class PluginHelper {
 		}
 		return gestioDocumentalPlugin;
 	}
-//
-//
-//
-//	/*private CiutadaPersona toPluginCiutadaPersona(
-//			InteressatEntity interessat) {
-//		if (interessat == null)
-//			return null;
-//		if (	!InteressatDocumentTipusEnumDto.NIF.equals(interessat.getDocumentTipus()) &&
-//				!InteressatDocumentTipusEnumDto.CIF.equals(interessat.getDocumentTipus())) {
-//			throw new ValidationException(
-//					interessat.getId(),
-//					InteressatEntity.class,
-//					"No es pot notificar a interessats amb el tipus de document " + interessat.getDocumentTipus());
-//		}
-//		CiutadaPersona persona = new CiutadaPersona();
-//		if (interessat instanceof InteressatPersonaFisicaEntity) {
-//			InteressatPersonaFisicaEntity interessatPf = (InteressatPersonaFisicaEntity)interessat;
-//			persona.setNif(interessatPf.getDocumentNum());
-//			persona.setNom(interessatPf.getNom());
-//			persona.setLlinatge1(interessatPf.getLlinatge1());
-//			persona.setLlinatge2(interessatPf.getLlinatge2());
-//			persona.setPaisCodi(interessat.getPais());
-//			persona.setProvinciaCodi(interessat.getProvincia());
-//			persona.setMunicipiCodi(interessat.getMunicipi());
-//		} else if (interessat instanceof InteressatPersonaJuridicaEntity) {
-//			InteressatPersonaFisicaEntity interessatPj = (InteressatPersonaFisicaEntity)interessat;
-//			persona.setNif(interessatPj.getDocumentNum());
-//			persona.setNom(interessatPj.getNom());
-//			persona.setPaisCodi(interessat.getPais());
-//			persona.setProvinciaCodi(interessat.getProvincia());
-//			persona.setMunicipiCodi(interessat.getMunicipi());
-//		} else if (interessat instanceof InteressatAdministracioEntity) {
-//			throw new ValidationException(
-//					interessat.getId(),
-//					InteressatEntity.class,
-//					"Els interessats de les notificacions només poden ser persones físiques o jurídiques");
-//		}
-//		return persona;
-//	}
-//
-//	private String getIdiomaPerPluginCiutada(InteressatIdiomaEnumDto idioma) {
-//		switch (idioma) {
-//		case CA:
-//			return "ca";
-//		case ES:
-//			return "es";
-//		default:
-//			return "ca";
-//		}
-//	}
-//
-//	private static final Pattern MOBIL_PATTERN = Pattern.compile("(\\+34|0034|34)?[ -]*(6|7)([0-9]){2}[ -]?(([0-9]){2}[ -]?([0-9]){2}[ -]?([0-9]){2}|([0-9]){3}[ -]?([0-9]){3})");
-//	private boolean isTelefonMobil(String telefon) {
-//		return MOBIL_PATTERN.matcher(telefon).matches();
-//	}*/
-//
 	private Long toLongValue(String text) {
 		if (text == null || text.isEmpty())
 			return null;
 		return Long.parseLong(text);
 	}
-//
-//	private Expedient toArxiuExpedient(
-//			String identificador,
-//			String nom,
-//			String ntiIdentificador,
-//			List<String> ntiOrgans,
-//			Date ntiDataObertura,
-//			String ntiClassificacio,
-//			ExpedientEstatEnumDto ntiEstat,
-//			List<String> ntiInteressats,
-//			String serieDocumental) {
-//		Expedient expedient = new Expedient();
-//		expedient.setNom(nom);
-//		expedient.setIdentificador(identificador);
-//		ExpedientMetadades metadades = new ExpedientMetadades();
-//		metadades.setIdentificador(ntiIdentificador);
-//		metadades.setDataObertura(ntiDataObertura);
-//		metadades.setClassificacio(ntiClassificacio);
-//		if (ntiEstat != null) {
-//			switch (ntiEstat) {
-//			case OBERT:
-//				metadades.setEstat(ExpedientEstat.OBERT);
-//				break;
-//			case TANCAT:
-//				metadades.setEstat(ExpedientEstat.TANCAT);
-//				break;
-//			case INDEX_REMISSIO:
-//				metadades.setEstat(ExpedientEstat.INDEX_REMISSIO);
-//				break;
-//			}
-//		}
-//		metadades.setOrgans(ntiOrgans);
-//		metadades.setInteressats(ntiInteressats);
-//		metadades.setSerieDocumental(serieDocumental);
-//		expedient.setMetadades(metadades);
-//		return expedient;
-//	}
-//
-//	private Document toArxiuDocument(
-//			String identificador,
-//			String nom,
-//			FitxerDto fitxer,
-//			FitxerDto firmaPdf,
-//			List<ArxiuFirmaDto> firmes, 
-//			String ntiIdentificador,
-//			NtiOrigenEnumDto ntiOrigen,
-//			List<String> ntiOrgans,
-//			Date ntiDataCaptura,
-//			DocumentNtiEstadoElaboracionEnumDto ntiEstatElaboracio,
-//			DocumentNtiTipoDocumentalEnumDto ntiTipusDocumental,
-//			DocumentEstat estat,
-//			boolean enPaper) {
-//		Document document = new Document();
-//		document.setNom(nom);
-//		document.setIdentificador(identificador);
-//		DocumentMetadades metadades = new DocumentMetadades();
-//		metadades.setIdentificador(ntiIdentificador);
-//		if (ntiOrigen != null) {
-//			switch (ntiOrigen) {
-//			case O0:
-//				metadades.setOrigen(ContingutOrigen.CIUTADA);
-//				break;
-//			case O1:
-//				metadades.setOrigen(ContingutOrigen.ADMINISTRACIO);
-//				break;
-//			}
-//		}
-//		metadades.setDataCaptura(ntiDataCaptura);
-//		DocumentEstatElaboracio estatElaboracio = null;
-//		switch (ntiEstatElaboracio) {
-//		case EE01:
-//			estatElaboracio = DocumentEstatElaboracio.ORIGINAL;
-//			break;
-//		case EE02:
-//			estatElaboracio = DocumentEstatElaboracio.COPIA_CF;
-//			break;
-//		case EE03:
-//			estatElaboracio = DocumentEstatElaboracio.COPIA_DP;
-//			break;
-//		case EE04:
-//			estatElaboracio = DocumentEstatElaboracio.COPIA_PR;
-//			break;
-//		case EE99:
-//			estatElaboracio = DocumentEstatElaboracio.ALTRES;
-//			break;
-//		}
-//		metadades.setEstatElaboracio(estatElaboracio);
-//		DocumentTipus tipusDocumental = null;
-//		switch (ntiTipusDocumental) {
-//		case TD01:
-//			tipusDocumental = DocumentTipus.RESOLUCIO;
-//			break;
-//		case TD02:
-//			tipusDocumental = DocumentTipus.ACORD;
-//			break;
-//		case TD03:
-//			tipusDocumental = DocumentTipus.CONTRACTE;
-//			break;
-//		case TD04:
-//			tipusDocumental = DocumentTipus.CONVENI;
-//			break;
-//		case TD05:
-//			tipusDocumental = DocumentTipus.DECLARACIO;
-//			break;
-//		case TD06:
-//			tipusDocumental = DocumentTipus.COMUNICACIO;
-//			break;
-//		case TD07:
-//			tipusDocumental = DocumentTipus.NOTIFICACIO;
-//			break;
-//		case TD08:
-//			tipusDocumental = DocumentTipus.PUBLICACIO;
-//			break;
-//		case TD09:
-//			tipusDocumental = DocumentTipus.JUSTIFICANT_RECEPCIO;
-//			break;
-//		case TD10:
-//			tipusDocumental = DocumentTipus.ACTA;
-//			break;
-//		case TD11:
-//			tipusDocumental = DocumentTipus.CERTIFICAT;
-//			break;
-//		case TD12:
-//			tipusDocumental = DocumentTipus.DILIGENCIA;
-//			break;
-//		case TD13:
-//			tipusDocumental = DocumentTipus.INFORME;
-//			break;
-//		case TD14:
-//			tipusDocumental = DocumentTipus.SOLICITUD;
-//			break;
-//		case TD15:
-//			tipusDocumental = DocumentTipus.DENUNCIA;
-//			break;
-//		case TD16:
-//			tipusDocumental = DocumentTipus.ALEGACIO;
-//			break;
-//		case TD17:
-//			tipusDocumental = DocumentTipus.RECURS;
-//			break;
-//		case TD18:
-//			tipusDocumental = DocumentTipus.COMUNICACIO_CIUTADA;
-//			break;
-//		case TD19:
-//			tipusDocumental = DocumentTipus.FACTURA;
-//			break;
-//		case TD20:
-//			tipusDocumental = DocumentTipus.ALTRES_INCAUTATS;
-//			break;
-//		default:
-//			tipusDocumental = DocumentTipus.ALTRES;
-//			break;
-//		}
-//		metadades.setTipusDocumental(tipusDocumental);
-//		DocumentExtensio extensio = null;
-//		DocumentContingut contingut = null;
-//		if (fitxer != null && !enPaper) {
-//			String fitxerExtensio = fitxer.getExtensio();
-//			String extensioAmbPunt = (fitxerExtensio.startsWith(".")) ? fitxerExtensio.toLowerCase() : "." + fitxerExtensio.toLowerCase();
-//			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-//			contingut = new DocumentContingut();
-//			contingut.setArxiuNom(fitxer.getNom());
-//			contingut.setContingut(fitxer.getContingut());
-//			contingut.setTipusMime(fitxer.getContentType());
-//			document.setContingut(contingut);
-//		}
-//		if (firmaPdf != null) {
-//			Firma firmaPades = new Firma();
-//			firmaPades.setTipus(FirmaTipus.PADES);
-//			firmaPades.setPerfil(FirmaPerfil.EPES);
-//			firmaPades.setTipusMime("application/pdf");
-//			firmaPades.setFitxerNom(firmaPdf.getNom());
-//			firmaPades.setContingut(firmaPdf.getContingut());
-//			document.setFirmes(Arrays.asList(firmaPades));
-//			extensio = DocumentExtensio.PDF;
-//		}
-//		if (firmes != null && firmes.size() > 0) {
-//			if (document.getFirmes() == null)
-//				document.setFirmes(new ArrayList<Firma>());
-//			for (ArxiuFirmaDto firmaDto: firmes) {
-//				Firma firma = new Firma();
-//				firma.setContingut(firmaDto.getContingut());
-//				firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
-//				firma.setFitxerNom(firmaDto.getFitxerNom());
-//				if (firmaDto.getPerfil() != null) {
-//					switch(firmaDto.getPerfil()) {
-//					case BES:
-//						firma.setPerfil(FirmaPerfil.BES);
-//						break;
-//					case EPES:
-//						firma.setPerfil(FirmaPerfil.EPES);
-//						break;
-//					case LTV:
-//						firma.setPerfil(FirmaPerfil.LTV);
-//						break;
-//					case T:
-//						firma.setPerfil(FirmaPerfil.T);
-//						break;
-//					case C:
-//						firma.setPerfil(FirmaPerfil.C);
-//						break;
-//					case X:
-//						firma.setPerfil(FirmaPerfil.X);
-//						break;
-//					case XL:
-//						firma.setPerfil(FirmaPerfil.XL);
-//						break;
-//					case A:
-//						firma.setPerfil(FirmaPerfil.A);
-//						break;
-//					}
-//				}
-//				if (firmaDto.getTipus() != null) {
-//					switch(firmaDto.getTipus()) {
-//					case CSV:
-//						firma.setTipus(FirmaTipus.CSV);
-//						break;
-//					case XADES_DET:
-//						firma.setTipus(FirmaTipus.XADES_DET);
-//						break;
-//					case XADES_ENV:
-//						firma.setTipus(FirmaTipus.XADES_ENV);
-//						break;
-//					case CADES_DET:
-//						firma.setTipus(FirmaTipus.CADES_DET);
-//						break;
-//					case CADES_ATT:
-//						firma.setTipus(FirmaTipus.CADES_ATT);
-//						break;
-//					case PADES:
-//						firma.setTipus(FirmaTipus.PADES);
-//						break;
-//					case SMIME:
-//						firma.setTipus(FirmaTipus.SMIME);
-//						break;
-//					case ODT:
-//						firma.setTipus(FirmaTipus.ODT);
-//						break;
-//					case OOXML:
-//						firma.setTipus(FirmaTipus.OOXML);
-//						break;
-//					}
-//				}
-//				firma.setTipusMime(firmaDto.getTipusMime());
-//				document.getFirmes().add(firma);
-//			}
-//		}
-//		if (extensio != null) {
-//			metadades.setExtensio(extensio);
-//			DocumentFormat format = null;
-//			switch (extensio) {
-//			case AVI:
-//				format = DocumentFormat.AVI;
-//				break;
-//			case CSS:
-//				format = DocumentFormat.CSS;
-//				break;
-//			case CSV:
-//				format = DocumentFormat.CSV;
-//				break;
-//			case DOCX:
-//				format = DocumentFormat.SOXML;
-//				break;
-//			case GML:
-//				format = DocumentFormat.GML;
-//				break;
-//			case GZ:
-//				format = DocumentFormat.GZIP;
-//				break;
-//			case HTM:
-//				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-//				break;
-//			case HTML:
-//				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-//				break;
-//			case JPEG:
-//				format = DocumentFormat.JPEG;
-//				break;
-//			case JPG:
-//				format = DocumentFormat.JPEG;
-//				break;
-//			case MHT:
-//				format = DocumentFormat.MHTML;
-//				break;
-//			case MHTML:
-//				format = DocumentFormat.MHTML;
-//				break;
-//			case MP3:
-//				format = DocumentFormat.MP3;
-//				break;
-//			case MP4:
-//				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-//				break;
-//			case MPEG:
-//				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-//				break;
-//			case ODG:
-//				format = DocumentFormat.OASIS12;
-//				break;
-//			case ODP:
-//				format = DocumentFormat.OASIS12;
-//				break;
-//			case ODS:
-//				format = DocumentFormat.OASIS12;
-//				break;
-//			case ODT:
-//				format = DocumentFormat.OASIS12;
-//				break;
-//			case OGA:
-//				format = DocumentFormat.OGG;
-//				break;
-//			case OGG:
-//				format = DocumentFormat.OGG;
-//				break;
-//			case PDF:
-//				format = DocumentFormat.PDF; // PDF o PDFA!!!
-//				break;
-//			case PNG:
-//				format = DocumentFormat.PNG;
-//				break;
-//			case PPTX:
-//				format = DocumentFormat.SOXML;
-//				break;
-//			case RTF:
-//				format = DocumentFormat.RTF;
-//				break;
-//			case SVG:
-//				format = DocumentFormat.SVG;
-//				break;
-//			case TIFF:
-//				format = DocumentFormat.TIFF;
-//				break;
-//			case TXT:
-//				format = DocumentFormat.TXT;
-//				break;
-//			case WEBM:
-//				format = DocumentFormat.WEBM;
-//				break;
-//			case XLSX:
-//				format = DocumentFormat.SOXML;
-//				break;
-//			case ZIP:
-//				format = DocumentFormat.ZIP;
-//				break;
-//			case CSIG:
-//				format = DocumentFormat.CSIG;
-//				break;
-//			case XSIG:
-//				format = DocumentFormat.XSIG;
-//				break;
-//			case XML:
-//				format = DocumentFormat.XML;
-//				break;
-//			}
-//			metadades.setFormat(format);
-//		}
-//		metadades.setOrgans(ntiOrgans);
-//		document.setMetadades(metadades);
-//		document.setContingut(contingut);
-//		document.setEstat(estat);
-//		return document;
-//	}
-//
-//	private Carpeta toArxiuCarpeta(
-//			String identificador,
-//			String nom) {
-//		Carpeta carpeta = new Carpeta();
-//		carpeta.setIdentificador(identificador);
-//		carpeta.setNom(nom);
-//		return carpeta;
-//	}
-//	
-//	private DocumentExtensio getArxiuFormatExtensio(String extensio) {
-//		String extensioAmbPunt = (extensio.startsWith(".")) ? extensio.toLowerCase() : "." + extensio.toLowerCase();
-//		return DocumentExtensio.toEnum(extensioAmbPunt);
-//	}
-//
-//	private Persona convertirAmbPersona(InteressatEntity interessat) {
-//		Persona persona = new Persona();
-//		persona.setNif(interessat.getDocumentNum());
-//		if (interessat instanceof InteressatPersonaFisicaEntity) {
-//			InteressatPersonaFisicaEntity interessatPf = (InteressatPersonaFisicaEntity)interessat;
-//			persona.setNom(interessatPf.getNom());
-//			persona.setLlinatge1(interessatPf.getLlinatge1());
-//			persona.setLlinatge2(interessatPf.getLlinatge2());
-//		} else if (interessat instanceof InteressatPersonaJuridicaEntity) {
-//			InteressatPersonaJuridicaEntity interessatPj = (InteressatPersonaJuridicaEntity)interessat;
-//			persona.setNom(interessatPj.getRaoSocial());
-//		}
-//		persona.setTelefon(interessat.getTelefon());
-//		persona.setEmail(interessat.getEmail());
-//		return persona;
-//	}
-//
-//	/*private ArxiuCapsalera generarCapsaleraArxiu(
-//			ContingutEntity contingut) {
-//		ArxiuCapsalera capsaleraTest = new ArxiuCapsalera();
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		capsaleraTest.setFuncionariNom(auth.getName());
-//		capsaleraTest.setFuncionariOrgan(
-//				contingut.getEntitat().getUnitatArrel());
-//		return capsaleraTest;
-//	}*/
-//
-//	private void propagarMetadadesExpedient(
-//			Expedient expedientArxiu,
-//			ExpedientEntity expedientDb) {
-//		List<String> metadadaOrgans = expedientArxiu.getMetadades().getOrgans();
-//		String organs = null;
-//		if (expedientArxiu.getMetadades().getOrgans() != null) {
-//			StringBuilder organsSb = new StringBuilder();
-//			boolean primer = true;
-//			for (String organ: metadadaOrgans) {
-//				organsSb.append(organ);
-//				if (primer || metadadaOrgans.size() == 1) {
-//					primer = false;
-//				} else {
-//					organsSb.append(",");
-//				}
-//			}
-//			organs = organsSb.toString();
-//		}
-//		expedientDb.updateNti(
-//				obtenirNumeroVersioEniExpedient(
-//						expedientArxiu.getMetadades().getVersioNti()),
-//				expedientArxiu.getMetadades().getIdentificador(),
-//				organs,
-//				expedientArxiu.getMetadades().getDataObertura(),
-//				expedientArxiu.getMetadades().getClassificacio());
-//	}
-//
-//	private static final String ENI_EXPEDIENT_PREFIX = "http://administracionelectronica.gob.es/ENI/XSD/v";
-//	private String obtenirNumeroVersioEniExpedient(String versio) {
-//		if (versio != null) {
-//			if (versio.startsWith(ENI_EXPEDIENT_PREFIX)) {
-//				int indexBarra = versio.indexOf("/", ENI_EXPEDIENT_PREFIX.length());
-//				return versio.substring(ENI_EXPEDIENT_PREFIX.length(), indexBarra);
-//			}
-//		}
-//		return null;
-//	}
-//
-//	private void propagarMetadadesDocument(
-//			Document documentArxiu,
-//			DocumentEntity documentDb) {
-//		List<String> metadadaOrgans = documentArxiu.getMetadades().getOrgans();
-//		String organs = null;
-//		if (documentArxiu.getMetadades().getOrgans() != null) {
-//			StringBuilder organsSb = new StringBuilder();
-//			boolean primer = true;
-//			for (String organ: metadadaOrgans) {
-//				organsSb.append(organ);
-//				if (primer || metadadaOrgans.size() == 1) {
-//					primer = false;
-//				} else {
-//					organsSb.append(",");
-//				}
-//			}
-//			organs = organsSb.toString();
-//		}
-//		NtiOrigenEnumDto origen = null;
-//		ContingutOrigen metadadaOrigen = documentArxiu.getMetadades().getOrigen();
-//		if (metadadaOrigen != null) {
-//			switch (metadadaOrigen) {
-//			case CIUTADA:
-//				origen = NtiOrigenEnumDto.O0;
-//				break;
-//			case ADMINISTRACIO:
-//				origen = NtiOrigenEnumDto.O1;
-//				break;
-//			}
-//		}
-//		DocumentNtiEstadoElaboracionEnumDto ntiEstadoElaboracion = null;
-//		if (documentArxiu.getMetadades().getEstatElaboracio() != null) {
-//			switch (documentArxiu.getMetadades().getEstatElaboracio()) {
-//			case ORIGINAL:
-//				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE01;
-//				break;
-//			case COPIA_CF:
-//				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE02;
-//				break;
-//			case COPIA_DP:
-//				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE03;
-//				break;
-//			case COPIA_PR:
-//				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE04;
-//				break;
-//			case ALTRES:
-//				ntiEstadoElaboracion = DocumentNtiEstadoElaboracionEnumDto.EE99;
-//				break;
-//			}
-//		}
-//		DocumentNtiTipoDocumentalEnumDto ntiTipoDocumental = null;
-//		if (documentArxiu.getMetadades().getTipusDocumental() != null) {
-//			switch (documentArxiu.getMetadades().getTipusDocumental()) {
-//			case RESOLUCIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD01;
-//				break;
-//			case ACORD:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD02;
-//				break;
-//			case CONTRACTE:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD03;
-//				break;
-//			case CONVENI:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD04;
-//				break;
-//			case DECLARACIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD05;
-//				break;
-//			case COMUNICACIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD06;
-//				break;
-//			case NOTIFICACIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD07;
-//				break;
-//			case PUBLICACIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD08;
-//				break;
-//			case JUSTIFICANT_RECEPCIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD09;
-//				break;
-//			case ACTA:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD10;
-//				break;
-//			case CERTIFICAT:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD11;
-//				break;
-//			case DILIGENCIA:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD12;
-//				break;
-//			case INFORME:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD13;
-//				break;
-//			case SOLICITUD:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD14;
-//				break;
-//			case DENUNCIA:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD15;
-//				break;
-//			case ALEGACIO:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD16;
-//				break;
-//			case RECURS:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD17;
-//				break;
-//			case COMUNICACIO_CIUTADA:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD18;
-//				break;
-//			case FACTURA:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD19;
-//				break;
-//			case ALTRES_INCAUTATS:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD20;
-//				break;
-//			case ALTRES:
-//				ntiTipoDocumental = DocumentNtiTipoDocumentalEnumDto.TD99;
-//				break;
-//			}
-//		}
-//		DocumentNtiTipoFirmaEnumDto ntiTipoFirma = null;
-//		if (documentArxiu.getFirmes() != null && !documentArxiu.getFirmes().isEmpty()) {
-//			Firma firma = documentArxiu.getFirmes().get(0);
-//			switch (firma.getTipus()) {
-//			case CSV:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF01;
-//				break;
-//			case XADES_DET:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF02;
-//				break;
-//			case XADES_ENV:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF03;
-//				break;
-//			case CADES_DET:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF04;
-//				break;
-//			case CADES_ATT:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF05;
-//				break;
-//			case PADES:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF06;
-//				break;
-//			case SMIME:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF07;
-//				break;
-//			case ODT:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF08;
-//				break;
-//			case OOXML:
-//				ntiTipoFirma = DocumentNtiTipoFirmaEnumDto.TF09;
-//				break;
-//			
-//			}
-//		}
-//		documentDb.updateNti(
-//				obtenirNumeroVersioEniDocument(
-//						documentArxiu.getMetadades().getVersioNti()),
-//				documentArxiu.getMetadades().getIdentificador(),
-//				organs,
-//				origen,
-//				ntiEstadoElaboracion,
-//				ntiTipoDocumental,
-//				documentArxiu.getMetadades().getIdentificadorOrigen(),
-//				ntiTipoFirma,
-//				null,
-//				null);
-//	}
-//	private static final String ENI_DOCUMENT_PREFIX = "http://administracionelectronica.gob.es/ENI/XSD/v";
-//	private String obtenirNumeroVersioEniDocument(String versio) {
-//		if (versio != null) {
-//			if (versio.startsWith(ENI_DOCUMENT_PREFIX)) {
-//				int indexBarra = versio.indexOf("/", ENI_DOCUMENT_PREFIX.length());
-//				return versio.substring(ENI_DOCUMENT_PREFIX.length(), indexBarra);
-//			}
-//		}
-//		return null;
-//	}
-//
 	
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		if (dadesUsuariPlugin == null) {
@@ -2583,48 +1902,6 @@ public class PluginHelper {
 		}
 		return arxiuPlugin;
 	}
-//	private PortafirmesPlugin getPortafirmesPlugin() {
-//		if (portafirmesPlugin == null) {
-//			String pluginClass = getPropertyPluginPortafirmes();
-//			if (pluginClass != null && pluginClass.length() > 0) {
-//				try {
-//					Class<?> clazz = Class.forName(pluginClass);
-//					portafirmesPlugin = (PortafirmesPlugin)clazz.newInstance();
-//				} catch (Exception ex) {
-//					throw new SistemaExternException(
-//							IntegracioHelper.INTCODI_PFIRMA,
-//							"Error al crear la instància del plugin de portafirmes",
-//							ex);
-//				}
-//			} else {
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_PFIRMA,
-//						"No està configurada la classe per al plugin de portafirmes");
-//			}
-//		}
-//		return portafirmesPlugin;
-//	}
-//	private ConversioPlugin getConversioPlugin() {
-//		if (conversioPlugin == null) {
-//			String pluginClass = getPropertyPluginConversio();
-//			if (pluginClass != null && pluginClass.length() > 0) {
-//				try {
-//					Class<?> clazz = Class.forName(pluginClass);
-//					conversioPlugin = (ConversioPlugin)clazz.newInstance();
-//				} catch (Exception ex) {
-//					throw new SistemaExternException(
-//							IntegracioHelper.INTCODI_CONVERT,
-//							"Error al crear la instància del plugin de conversió de documents",
-//							ex);
-//				}
-//			} else {
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_CONVERT,
-//						"No està configurada la classe per al plugin de conversió de documents");
-//			}
-//		}
-//		return conversioPlugin;
-//	}
 	private RegistrePlugin getRegistrePlugin() {
 		if (registrePlugin == null) {
 			String pluginClass = getPropertyPluginRegistre();
@@ -2646,23 +1923,6 @@ public class PluginHelper {
 		}
 		return registrePlugin;
 	}
-//	/*private CiutadaPlugin getCiutadaPlugin() {
-//		if (ciutadaPlugin == null) {
-//			String pluginClass = getPropertyPluginCiutada();
-//			if (pluginClass != null && pluginClass.length() > 0) {
-//				try {
-//					Class<?> clazz = Class.forName(pluginClass);
-//					ciutadaPlugin = (CiutadaPlugin)clazz.newInstance();
-//				} catch (Exception ex) {
-//					throw new SistemaExternException(
-//							IntegracioHelper.INTCODI_CIUTADA,
-//							"Error al crear la instància del plugin de comunicació amb el ciutadà",
-//							ex);
-//				}
-//			}
-//		}
-//		return ciutadaPlugin;
-//	}*/
 	private DadesExternesPlugin getDadesExternesPlugin() {
 		if (dadesExternesPlugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
@@ -2701,7 +1961,6 @@ public class PluginHelper {
 								"es.caib.distribucio.",
 								PropertiesHelper.getProperties().findAll());
 					}
-					//validaSignaturaPlugin = (IValidateSignaturePlugin)PluginsManager.instancePluginByClassName(pluginClass);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_VALIDASIG,
@@ -2709,57 +1968,11 @@ public class PluginHelper {
 							ex);
 				}
 			} else {
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_VALIDASIG,
-//						"No està configurada la classe per al plugin de validació de signatures");
 				return null;
 			}
 		}
 		return validaSignaturaPlugin;
 	}
-//	private SignaturaPlugin getSignaturaPlugin() {
-//		if (signaturaPlugin == null) {
-//			String pluginClass = getPropertyPluginSignatura();
-//			if (pluginClass != null && pluginClass.length() > 0) {
-//				try {
-//					Class<?> clazz = Class.forName(pluginClass);
-//					signaturaPlugin = (SignaturaPlugin)clazz.newInstance();
-//				} catch (Exception ex) {
-//					throw new SistemaExternException(
-//							IntegracioHelper.INTCODI_SIGNATURA,
-//							"Error al crear la instància del plugin de signatura",
-//							ex);
-//				}
-//			} else {
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_SIGNATURA,
-//						"No està configurada la classe per al plugin de signatura");
-//			}
-//		}
-//		return signaturaPlugin;
-//	}
-//	private NotificacioPlugin getNotificacioPlugin() {
-//		if (notificacioPlugin == null) {
-//			String pluginClass = getPropertyPluginNotificacio();
-//			if (pluginClass != null && pluginClass.length() > 0) {
-//				try {
-//					Class<?> clazz = Class.forName(pluginClass);
-//					notificacioPlugin = (NotificacioPlugin)clazz.newInstance();
-//				} catch (Exception ex) {
-//					throw new SistemaExternException(
-//							IntegracioHelper.INTCODI_NOTIFICACIO,
-//							"Error al crear la instància del plugin de notificació",
-//							ex);
-//				}
-//			} else {
-//				throw new SistemaExternException(
-//						IntegracioHelper.INTCODI_NOTIFICACIO,
-//						"No està configurada la classe per al plugin de notificació");
-//			}
-//		}
-//		return notificacioPlugin;
-//	}
-//	
 	private DistribucioPlugin getDistribucioPlugin() {
 		if (distribucioPlugin == null) {
 			String pluginClass = getPropertyPluginDistribucio();
@@ -2794,22 +2007,10 @@ public class PluginHelper {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
-//	private String getPropertyPluginPortafirmes() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.plugin.portafirmes.class");
-//	}
-//	private String getPropertyPluginConversio() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.plugin.conversio.class");
-//	}
 	private String getPropertyPluginRegistre() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.registre.class");
 	}
-//	/*private String getPropertyPluginCiutada() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.plugin.ciutada.class");
-//	}*/
 	private String getPropertyPluginDadesExternes() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.dadesext.class");
@@ -2818,14 +2019,6 @@ public class PluginHelper {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.validatesignature.class");
 	}
-//	private String getPropertyPluginSignatura() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.plugin.signatura.class");
-//	}
-//	private String getPropertyPluginNotificacio() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.plugin.notificacio.class");
-//	}
 	private String getPropertyPluginDistribucio() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugins.distribucio.fitxers.class");
@@ -2833,51 +2026,4 @@ public class PluginHelper {
 	private String getPropertyPluginGestioDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
-//
-//	private String getPropertyPluginArxiuEscriptoriExpedientClassificacio() {
-//		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-//				"es.caib.distribucio.plugin.arxiu.escriptori.classificacio");
-//	}
-//	private String getPropertyPluginArxiuEscriptoriExpedientSerieDocumental() {
-//		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-//				"es.caib.distribucio.plugin.arxiu.escriptori.serie.documental");
-//	}
-//
-//	private String getPropertyPluginRegistreExpedientClassificacio() {
-//		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-//				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
-//	}
-//	private String getPropertyPluginRegistreExpedientSerieDocumental() {
-//		return PropertiesHelper.getProperties().getPropertyAmbComprovacio(
-//				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
-//	}
-//
-//	private boolean getPropertyPluginRegistreSignarAnnexos() {
-//		return PropertiesHelper.getProperties().getAsBoolean(
-//				"es.caib.distribucio.plugin.signatura.signarAnnexos");
-//	}
-//
-//	private Integer getPropertyNotificacioRetardNumDies() {
-//		String valor = PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.notificacio.retard.num.dies");
-//		return (valor != null) ? new Integer(valor) : null;
-//	}
-//	private Integer getPropertyNotificacioCaducitatNumDies() {
-//		String valor = PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.notificacio.caducitat.num.dies");
-//		return (valor != null) ? new Integer(valor) : 15;
-//	}
-//	private boolean getPropertyNotificacioEnviamentPostalActiu() {
-//		return PropertiesHelper.getProperties().getAsBoolean(
-//				"es.caib.distribucio.notificacio.enviament.postal.actiu");
-//	}
-//	private boolean getPropertyNotificacioEnviamentDehActiva() {
-//		return PropertiesHelper.getProperties().getAsBoolean(
-//				"es.caib.distribucio.notificacio.enviament.deh.activa");
-//	}
-//	private String getPropertyNotificacioForsarEntitat() {
-//		return PropertiesHelper.getProperties().getProperty(
-//				"es.caib.distribucio.notificacio.forsar.entitat");
-//	}
-
 }

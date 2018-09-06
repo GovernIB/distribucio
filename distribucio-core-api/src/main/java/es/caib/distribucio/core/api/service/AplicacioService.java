@@ -153,21 +153,6 @@ public interface AplicacioService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public boolean isPluginArxiuActiu();
 
-	/**
-	 * Retorna el valor de la propietat es.caib.distribucio.plugin.passarelafirma.ids.
-	 * 
-	 * @return el valor del paràmetre.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
-	public String propertyPluginPassarelaFirmaIds();
-
-	/**
-	 * Retorna el valor de la propietat es.caib.distribucio.plugin.escaneig..ids.
-	 * 
-	 * @return el valor del paràmetre.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
-	public String propertyPluginEscaneigIds();
 
 	/**
 	 * Retorna els valors dels paràmetres de configuració de l'aplicació
