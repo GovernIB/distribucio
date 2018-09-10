@@ -402,7 +402,8 @@ public interface BustiaService {
 
 	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre);
 
-	void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses) throws MessagingException;	
+	void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses,
+			String serverPortContext) throws MessagingException;
 
 
 

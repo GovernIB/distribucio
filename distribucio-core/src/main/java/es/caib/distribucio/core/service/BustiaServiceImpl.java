@@ -838,7 +838,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId, 
-			String adresses) throws MessagingException {
+			String adresses,
+			String serverPortContext) throws MessagingException {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		
@@ -847,11 +848,15 @@ public class BustiaServiceImpl implements BustiaService {
 				contingutId,
 				registreId);
 		
-		RegistreAnnexDetallDto justificant = registreService.getRegistreJustificant(
-				entitatId,
-				contingutId, 
-				registreId);
 		
+		RegistreAnnexDetallDto justificant = null;
+		if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
+			justificant = registreService.getRegistreJustificant(
+					entitatId,
+					contingutId, 
+					registreId);
+		}
+
 		
 		List<RegistreAnnexDetallDto> anexos = registreService.getAnnexosAmbArxiu(
 				entitatId,
@@ -892,8 +897,11 @@ public class BustiaServiceImpl implements BustiaService {
 		Object registreDataOrigen = registre.getDataOrigen() == null ? "" : sdf.format(registre.getDataOrigen());
 		Object registreData = registre.getData() == null ? "" : sdf.format(registre.getData());
 		Object registreCreatedDate = registre.getCreatedDate() == null ? "" : sdf.format(registre.getCreatedDate());
-		Object justificantDataCaptura = justificant.getDataCaptura() == null ? "" : sdf.format(justificant.getDataCaptura());				
 		
+		Object justificantDataCaptura = null;
+		if(justificant!=null){
+			justificantDataCaptura = justificant.getDataCaptura() == null ? "" : sdf.format(justificant.getDataCaptura());	
+		}
 		
 		String htmlJustificant="";
 		if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
@@ -1086,7 +1094,11 @@ public class BustiaServiceImpl implements BustiaService {
 							)+ 					
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
-					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+"</td>"+
+					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
+					
+					"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>"
+					+
+					"</td>"+
 					"			</tr>"+
 					
 					htmlFirmes+
@@ -1619,6 +1631,8 @@ public class BustiaServiceImpl implements BustiaService {
 			
 			
 		}		
+		
+		String plainTextJustificant=""; 
 
 		String plainTextAnnexos = "";
 		
@@ -1712,6 +1726,41 @@ public class BustiaServiceImpl implements BustiaService {
 			
 			
 			
+			if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
+				plainTextJustificant = 
+							"\n"+
+							messageHelper.getMessage("registre.detalls.titol.justificant").toUpperCase()+"\n"+
+							"================================================================================\n"+			
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +
+							"\t\t"+ justificantDataCaptura + "\n"+
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +
+							"\t\t\t"+ Objects.toString(justificant.getOrigenCiutadaAdmin(), "") + "\n"+
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + 
+							"\t" + (justificant.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(justificant.getNtiElaboracioEstat(), ""))) + "\n"+
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + 
+							"\t\t" + (justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), ""))) + "\n"+
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + 
+							"\t\t\t"  + (justificant.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+justificant.getSicresTipusDocument())) + "\n"+
+							
+							(justificant.getLocalitzacio() == null ? "": 
+								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + 
+								"\t\t\t"  + justificant.getLocalitzacio())+ 
+							
+							(justificant.getObservacions() == null ? "": 
+								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + 
+								"\t\t\t"  + justificant.getObservacions())+ 					
+							
+							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + 
+							"\t\t\t\t"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+"\n";
+						
+			}
+
+
 			
 			
 			
@@ -1849,37 +1898,7 @@ public class BustiaServiceImpl implements BustiaService {
 			"\t" + messageHelper.getMessage("registre.detalls.camp.distribucio.alta") + 
 			"\t\t" + registreCreatedDate + "\n"+
 			
-			
-			"\n"+
-			messageHelper.getMessage("registre.detalls.titol.justificant").toUpperCase()+"\n"+
-			"================================================================================\n"+			
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +
-			"\t\t"+ justificantDataCaptura + "\n"+
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +
-			"\t\t\t"+ Objects.toString(justificant.getOrigenCiutadaAdmin(), "") + "\n"+
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + 
-			"\t" + (justificant.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(justificant.getNtiElaboracioEstat(), ""))) + "\n"+
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + 
-			"\t\t" + (justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), ""))) + "\n"+
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + 
-			"\t\t\t"  + (justificant.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+justificant.getSicresTipusDocument())) + "\n"+
-			
-			(justificant.getLocalitzacio() == null ? "": 
-				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + 
-				"\t\t\t"  + justificant.getLocalitzacio())+ 
-			
-			(justificant.getObservacions() == null ? "": 
-				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + 
-				"\t\t\t"  + justificant.getObservacions())+ 					
-			
-			"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + 
-			"\t\t\t\t"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+"\n"			+
-			
+			plainTextJustificant +
 			
 			plainTextInteressats +	
 			

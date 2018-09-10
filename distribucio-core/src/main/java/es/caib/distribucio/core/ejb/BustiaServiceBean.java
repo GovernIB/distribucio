@@ -278,9 +278,8 @@ public class BustiaServiceBean implements BustiaService {
 	
 	@Override
 	@RolesAllowed("tothom")
-	public void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses) throws MessagingException {
-		delegate.enviarRegistreByEmail(entitatId, contingutId, registreId, adresses);
+	public void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses, String serverPortContext) throws MessagingException {
+		delegate.enviarRegistreByEmail(entitatId, contingutId, registreId, adresses, serverPortContext);
 	}
-
 	
 }
