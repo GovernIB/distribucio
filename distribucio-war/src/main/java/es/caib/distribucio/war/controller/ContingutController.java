@@ -209,7 +209,7 @@ public class ContingutController extends BaseUserController {
 	
 	
 	
-	@RequestMapping(value = "/contingut/ajax/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}/registreFirmes", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}/registreFirmes", method = RequestMethod.GET)
 	public String registreAnnexFirmes(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
@@ -238,7 +238,7 @@ public class ContingutController extends BaseUserController {
 	}
 	
 	
-	@RequestMapping(value = "/contingut/ajax/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}", method = RequestMethod.GET)
 	public String registreAnnex(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
@@ -266,7 +266,7 @@ public class ContingutController extends BaseUserController {
 		return "registreAnnex";
 	}
 	
-	@RequestMapping(value = "/contingut/ajax/{contingutId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,

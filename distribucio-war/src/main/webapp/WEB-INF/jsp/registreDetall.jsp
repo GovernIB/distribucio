@@ -50,7 +50,7 @@ tr.clicable {
 		        var registreId = $(this).data("registreId"); 
 		        var contingutId = $(this).data("contingutId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/contingut/ajax/"/>" + contingutId + "/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/registreJustificant");
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -62,7 +62,7 @@ tr.clicable {
 		        var contingutId = $(this).data("contingutId"); 
 		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/contingut/ajax/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid);
+		        $(this).load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid);
 		        $(this).data("loaded", true);
 		    }
 	    });

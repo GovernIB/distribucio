@@ -18,7 +18,7 @@
 		        var contingutId = $(this).parents(".collapse-annex").data("contingutId"); 
 		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/contingut/ajax/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid + "/registreFirmes");
+		        $(this).load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid + "/registreFirmes");
 		        $(this).data("loaded", true);
 		    }
 	    });
