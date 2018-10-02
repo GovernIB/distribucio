@@ -22,6 +22,7 @@ import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
@@ -1146,6 +1147,19 @@ public class ContingutServiceImpl implements ContingutService {
 			}
 			
 		}
+		
+		
+		
+		contingutLogHelper.log(
+				registre,
+				LogTipusEnumDto.MARCAMENT_PROCESSAT,
+				registre.getNom(),
+				null,
+				false,
+				false);
+		
+		
+		
 		
 		return publicarComentariPerContingut(
 				entitatId,

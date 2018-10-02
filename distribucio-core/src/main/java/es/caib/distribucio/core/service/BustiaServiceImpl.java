@@ -848,6 +848,21 @@ public class BustiaServiceImpl implements BustiaService {
 				contingutId,
 				registreId);
 		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		
+		RegistreEntity registreEntity = registreRepository.findByPareAndId(
+				contingut,
+				registreId);
+		
 		
 		RegistreAnnexDetallDto justificant = null;
 		if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
@@ -1908,6 +1923,21 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		helper.setText(plainText, htmlText);
 		mailSender.send(missatge);
+	
+		
+		String logTo = "Destinitaris: " +adresses;
+				
+		
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.ENVIAMENT_EMAIL,
+				registreEntity.getNom(),
+				logTo,
+				false,
+				false);
+		
+		
+		
 		
 	}
 	
