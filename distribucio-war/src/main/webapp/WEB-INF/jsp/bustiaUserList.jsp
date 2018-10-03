@@ -59,9 +59,6 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
-			<div class="col-md-3">
-				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
-			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
