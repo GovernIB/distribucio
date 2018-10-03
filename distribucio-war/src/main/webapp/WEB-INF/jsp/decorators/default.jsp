@@ -170,7 +170,6 @@ body {
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/bustiaAdmin"/>"><spring:message code="decorator.menu.busties"/></a></li>
 										<li><a href="<c:url value="/unitatOrganitzativa"/>"><spring:message code="decorator.menu.unitats"/></a></li>
-										<li><a href="<c:url value="/bustiaAdminOrganigrama"/>"><spring:message code="decorator.menu.bustiesorganigrama"/></a></li>
 										<li class="divider"></li>
 										<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
 										<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
@@ -213,8 +212,8 @@ body {
 	</div>
 	<div class="container container-main">
 		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h2>
+			<div class="panel-heading" id="header">
+				<h2 style="display: inline-block;">
 					<c:set var="metaTitleIconClass"><decorator:getProperty property="meta.title-icon-class"/></c:set>
 					<c:if test="${not empty metaTitleIconClass}"><span class="${metaTitleIconClass}"></span></c:if>
 					<decorator:title />

@@ -213,11 +213,16 @@ function desactivar() {
 }
 
 $(document).ready(
-
-	function() { 
+	function() {
 		if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()){
 			$('#arbreUnitatsOrganitzatives').jstree('open_all');
 		}
+
+		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'>Canvi vista</button></div>");
+
+		$("#canviVistaBusties").click(function(){
+			window.location.replace("/distribucio/bustiaAdmin");
+		});
 });
 
 

@@ -19,6 +19,18 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<script type="text/javascript">
+
+	$(document).ready(
+		function() {
+			$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
+		
+			$("#canviVistaBusties").click(function(){
+				window.location.replace("/distribucio/bustiaAdminOrganigrama");
+			});
+		});
+	</script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreCommand">
