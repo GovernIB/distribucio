@@ -543,7 +543,8 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findAmbEntitatAndFiltre(
 			Long entitatId, 
 			String bustiaNomFiltre,
-			Long unitatIdFiltre) {
+			Long unitatIdFiltre, 
+			Boolean unitatObsoleta) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
@@ -556,12 +557,13 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatOrganitzativaRepository.findOne(unitatIdFiltre): null;
 		
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 				entitat,
 				unitatIdFiltre == null, 
 				unitat,
 				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
-				bustiaNomFiltre);
+				bustiaNomFiltre,
+				unitatObsoleta == null || unitatObsoleta == false);
 		
 		return toBustiaDto(
 				busties,
@@ -2208,7 +2210,8 @@ public class BustiaServiceImpl implements BustiaService {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			Long entitatId,
 			String bustiaNomFiltre,
-			Long unitatIdFiltre) {
+			Long unitatIdFiltre,
+			Boolean unitatObsoleta) {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaNomFiltre=" + bustiaNomFiltre + ", "
@@ -2221,7 +2224,8 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiaHelper.findArbreUnitatsOrganitzativesAmbFiltre(
 				entitat,
 				bustiaNomFiltre,
-				unitatIdFiltre);
+				unitatIdFiltre,
+				unitatObsoleta);
 	}
 	
 

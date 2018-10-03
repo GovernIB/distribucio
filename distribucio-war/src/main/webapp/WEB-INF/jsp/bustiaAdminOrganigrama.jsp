@@ -247,6 +247,9 @@ $(document).ready(
 					suggestValue="id"
 					suggestText="nom"/>
 			</div>
+			<div class="col-md-2" style="padding-left: 30px;">
+				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			</div>			
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

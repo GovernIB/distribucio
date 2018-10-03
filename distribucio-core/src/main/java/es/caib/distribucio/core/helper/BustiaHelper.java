@@ -140,15 +140,17 @@ public class BustiaHelper {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			EntitatEntity entitat,
 			String bustiaNomFiltre,
-			Long unitatIdFiltre) {
+			Long unitatIdFiltre,
+			Boolean unitatObsoleta) {
 		
 		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatRepository.findOne(unitatIdFiltre): null;
 		
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(entitat,
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(entitat,
 				unitatIdFiltre == null, 
 				unitat,
 				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
-				bustiaNomFiltre);
+				bustiaNomFiltre,
+				unitatObsoleta == null || unitatObsoleta == false);
 		
 		Set<String> bustiaUnitatCodis = new HashSet<String>();
 		for (BustiaEntity bustia: busties)
