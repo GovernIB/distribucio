@@ -397,13 +397,16 @@ public interface BustiaService {
 
 	List<BustiaDto> findAmbEntitat(Long entitatId);
 
-	ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
-			Long unitatIdFiltre);
 
-	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre);
 
 	void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses,
 			String serverPortContext) throws MessagingException;
+
+	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre,
+			Boolean unitatObsoleta);
+
+	ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
+			Long unitatIdFiltre, Boolean unitatObsoleta);
 
 
 
