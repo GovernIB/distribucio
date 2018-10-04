@@ -213,11 +213,16 @@ function desactivar() {
 }
 
 $(document).ready(
-
-	function() { 
+	function() {
 		if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()){
 			$('#arbreUnitatsOrganitzatives').jstree('open_all');
 		}
+
+		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'>Canvi vista</button></div>");
+
+		$("#canviVistaBusties").click(function(){
+			window.location.replace("/distribucio/bustiaAdmin");
+		});
 });
 
 
@@ -247,6 +252,9 @@ $(document).ready(
 					suggestValue="id"
 					suggestText="nom"/>
 			</div>
+			<div class="col-md-2" style="padding-left: 30px;">
+				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			</div>			
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

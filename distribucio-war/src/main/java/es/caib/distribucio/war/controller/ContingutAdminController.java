@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -128,6 +129,23 @@ public class ContingutAdminController extends BaseAdminController {
 						contingutId));
 		return "contingutLog";
 	}
+	
+	
+	@RequestMapping(value = "/{contingutId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
+	@ResponseBody
+	public ContingutLogDetallsDto logDetalls(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@PathVariable Long contingutLogId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return contingutService.findLogDetallsPerContingutUser(
+				entitatActual.getId(),
+				contingutId,
+				contingutLogId);
+	}
+	
+	
 
 //	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
 //	public String undelete(

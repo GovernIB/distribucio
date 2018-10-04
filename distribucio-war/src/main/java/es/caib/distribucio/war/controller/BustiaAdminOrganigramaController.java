@@ -57,7 +57,8 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
 				bustiaFiltreOrganigramaCommand.getNomFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre());
+				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre(),
+				bustiaFiltreOrganigramaCommand.getUnitatObsoleta());
 		
 		model.addAttribute(
 				"busties",
@@ -66,7 +67,8 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		ArbreDto<UnitatOrganitzativaDto> arbreUnitatsOrganitzatives = bustiaService.findArbreUnitatsOrganitzativesAmbFiltre(
 				entitatActual.getId(),
 				bustiaFiltreOrganigramaCommand.getNomFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre());
+				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre(),
+				bustiaFiltreOrganigramaCommand.getUnitatObsoleta());
 		
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",

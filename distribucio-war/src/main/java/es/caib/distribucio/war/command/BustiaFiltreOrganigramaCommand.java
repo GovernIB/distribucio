@@ -16,8 +16,15 @@ public class BustiaFiltreOrganigramaCommand {
 	private String unitatCodiFiltre;
 	private String nomFiltre;
 	private Long unitatIdFiltre;
+	private Boolean unitatObsoleta;
 	
 	
+	public Boolean getUnitatObsoleta() {
+		return unitatObsoleta;
+	}
+	public void setUnitatObsoleta(Boolean unitatObsoleta) {
+		this.unitatObsoleta = unitatObsoleta;
+	}
 	public Long getUnitatIdFiltre() {
 		return unitatIdFiltre;
 	}
