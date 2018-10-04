@@ -4,7 +4,9 @@
 package es.caib.distribucio.core.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -13,9 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ReglaService;
@@ -27,6 +32,7 @@ import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
@@ -274,6 +280,45 @@ public class ReglaServiceImpl implements ReglaService {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
+			Long entitatId,
+			ReglaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Cercant les regles segons el filtre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
+		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
+		
+
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
+		
+
+		
+		PaginaDto<ReglaDto> resultPagina =  paginacioHelper.toPaginaDto(
+				reglaRepository.findByFiltrePaginat(
+						entitat,
+						filtre.getUnitatId() == null, 
+						unitat,
+						filtre.getNom() == null || filtre.getNom().isEmpty(), 
+						filtre.getNom(),
+						filtre.getTipus() == null , 
+						filtre.getTipus(),
+						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
+						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
+				ReglaDto.class);
+		
+		return resultPagina;
+	}	
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<ReglaDto> findByEntitatAndUnitatCodi(
 			Long entitatId, 
 			String unitatCodi) {
@@ -334,5 +379,7 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
+
+
 
 }

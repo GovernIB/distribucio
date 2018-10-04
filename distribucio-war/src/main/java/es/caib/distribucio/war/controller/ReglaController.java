@@ -25,10 +25,13 @@ import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.command.ReglaCommand;
+import es.caib.distribucio.war.command.ReglaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
+import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
  * Controlador per al manteniment de regles.
@@ -46,15 +49,22 @@ public class ReglaController  extends BaseAdminController {
 	@Autowired
 	private UnitatOrganitzativaService unitatService;
 
+	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
+			HttpServletRequest request,
 			Model model) {
 		model.addAttribute(
 				"reglaTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						ReglaTipusEnumDto.class,
 						"regla.tipus.enum."));
+		ReglaFiltreCommand reglaFiltreCommand = getFiltreCommand(request);
+		
+		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
+		
+
 		return "reglaList";
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -62,13 +72,47 @@ public class ReglaController  extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		ReglaFiltreCommand reglaFiltreCommand = getFiltreCommand(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				reglaService.findAmbEntitatPaginat(
+				reglaService.findAmbFiltrePaginat(
 						entitatActual.getId(),
+						ReglaFiltreCommand.asDto(reglaFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id");
 		return dtr;
+	}
+	
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public String reglaPost(
+			HttpServletRequest request,
+			@Valid ReglaFiltreCommand filtreCommand,
+			BindingResult bindingResult,
+			Model model) {
+		if (!bindingResult.hasErrors()) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
+		}
+		return "redirect:regla";
+	}
+	
+	
+	private ReglaFiltreCommand getFiltreCommand(
+			HttpServletRequest request) {
+		ReglaFiltreCommand reglaFiltreCommand = (ReglaFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE);
+		if (reglaFiltreCommand == null) {
+			reglaFiltreCommand = new ReglaFiltreCommand();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					reglaFiltreCommand);
+		}
+		return reglaFiltreCommand;
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)
@@ -122,7 +166,8 @@ public class ReglaController  extends BaseAdminController {
 				model);
 		return "reglaForm";
 	}
-	@RequestMapping(method = RequestMethod.POST)
+
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
 			@Valid ReglaCommand command,
@@ -252,7 +297,7 @@ public class ReglaController  extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"busties",
-				bustiaService.findActivesAmbEntitat(
+			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
 		model.addAttribute(
 				"backofficeTipusEnumOptions",

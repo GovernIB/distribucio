@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
 /**
@@ -164,5 +165,8 @@ public interface ReglaService {
 			PaginacioParamsDto paginacioParams);
 
 	List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi);
+
+	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
+
 
 }
