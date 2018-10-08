@@ -27,7 +27,7 @@ public class BustiaV1WsClientFactory {
 				wsdlResourceUrl,
 				endpoint,
 				new QName(
-						"http://www.caib.es/ripea/ws/v1/bustia",
+						"http://www.caib.es/distribucio/ws/v1/bustia",
 						"BustiaV1Service"),
 				userName,
 				password,
@@ -41,7 +41,7 @@ public class BustiaV1WsClientFactory {
 		return new WsClientHelper<BustiaV1>().generarClientWs(
 				endpoint,
 				new QName(
-						"http://www.caib.es/ripea/ws/v1/bustia",
+						"http://www.caib.es/distribucio/ws/v1/bustia",
 						"BustiaV1Service"),
 				userName,
 				password,

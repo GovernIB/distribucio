@@ -97,7 +97,9 @@ public class PluginHelper {
 			DistribucioRegistreAnotacio registreAnotacio = conversioTipusHelper.convertir(anotacio, DistribucioRegistreAnotacio.class);
 			String unitatArrelCodi = bustia.getEntitat().getUnitatArrel();
 			
-			String identificadorRetorn = getDistribucioPlugin().ditribuirAssentament(registreAnotacio, unitatArrelCodi);
+			String identificadorRetorn = getDistribucioPlugin().contenidorCrear(registreAnotacio, unitatArrelCodi);
+			
+			getDistribucioPlugin().documentCrear(registreAnotacio, unitatArrelCodi, identificadorRetorn);
 			
 			anotacio.updateExpedientArxiuUuid(registreAnotacio.getExpedientArxiuUuid());
 			if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
@@ -713,22 +715,8 @@ public class PluginHelper {
 		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
 		try {
-			Document documentDetalls = getArxiuPlugin().documentDetalls(
-					arxiuUuid,
-					versio,
-					ambContingut);
 			
-			if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
-				boolean isPdf = false;
-				for (Firma firma : documentDetalls.getFirmes()) {
-					if (firma.getTipus() == FirmaTipus.PADES) {
-						isPdf = true;
-					}
-				}
-				if (isPdf) {
-					documentDetalls.setContingut(getArxiuPlugin().documentImprimible(documentDetalls.getIdentificador()));
-				}
-			}
+			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
 			
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
@@ -1639,9 +1627,12 @@ public class PluginHelper {
 			String agrupacio,
 			InputStream contingut) {
 		try {
-			String gestioDocumentalId = getGestioDocumentalPlugin().create(
-					agrupacio,
-						contingut);
+			String gestioDocumentalId = null;
+			if (getGestioDocumentalPlugin() != null) {
+				gestioDocumentalId = getGestioDocumentalPlugin().create(
+						agrupacio,
+							contingut);
+			}
 			return gestioDocumentalId;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de gestió documental";
@@ -1673,9 +1664,11 @@ public class PluginHelper {
 			String id,
 			String agrupacio) {
 		try {
-			getGestioDocumentalPlugin().delete(
-					id,
-					agrupacio);
+			if (getGestioDocumentalPlugin() != null) {
+				getGestioDocumentalPlugin().delete(
+						id,
+						agrupacio);
+			}
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de gestió documental";
 			throw new SistemaExternException(
@@ -1689,10 +1682,12 @@ public class PluginHelper {
 			String agrupacio,
 			OutputStream contingutOut) {
 		try {
-			getGestioDocumentalPlugin().get(
-					id,
-					agrupacio,
-					contingutOut);
+			if (getGestioDocumentalPlugin() != null) {
+				getGestioDocumentalPlugin().get(
+						id,
+						agrupacio,
+						contingutOut);
+			}
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de gestió documental";
 			throw new SistemaExternException(
@@ -1813,11 +1808,12 @@ public class PluginHelper {
 							"Error al crear la instància del plugin de gestió documental",
 							ex);
 				}
-			} else {
+			}
+			/*else {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_USUARIS,
 						"La classe del plugin de gestió documental no està configurada");
-			}
+			}*/
 		}
 		return gestioDocumentalPlugin;
 	}

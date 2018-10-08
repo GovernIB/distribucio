@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -69,7 +70,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	
 	
 	@Override
-	public void eliminarContingutExistent(String idContingut) throws SistemaExternException {
+	public void contenidorEliminar(String idContingut) throws SistemaExternException {
 		try {
 			getArxiuPlugin().expedientEsborrar(idContingut);
 		} catch (Exception ex) {
@@ -80,19 +81,28 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					ex);
 		}
 	}
-
+	
 	@Override
-	public String ditribuirAssentament(DistribucioRegistreAnotacio anotacio, String unitatArrelCodi)
+	public String contenidorCrear(DistribucioRegistreAnotacio anotacio, String unitatArrelCodi)
 			throws SistemaExternException {
-		
 		ContingutArxiu expedientCreat = null;
 		if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0 && anotacio.getExpedientArxiuUuid() == null) {
 			expedientCreat = arxiuExpedientPerAnotacioCrear(anotacio, unitatArrelCodi);
 			anotacio.setExpedientArxiuUuid(expedientCreat.getIdentificador());
-			processarAnnexosRegistre(anotacio, unitatArrelCodi, expedientCreat);
 		}
 		
 		return expedientCreat != null ? expedientCreat.getIdentificador() : null;
+	}
+	
+	@Override
+	public String documentCrear(DistribucioRegistreAnotacio anotacio, String unitatArrelCodi,
+			String identificadorRetorn) {
+		String uuidDocument = null;
+		if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
+			uuidDocument = processarAnnexosRegistre(anotacio, unitatArrelCodi, identificadorRetorn);
+		}
+		
+		return uuidDocument != null ? uuidDocument : null;
 	}
 	
 	@Override
@@ -109,6 +119,32 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 	}
 
+	@Override
+	public Document documentDescarregar(
+			String arxiuUuid,
+			String versio, 
+			boolean ambContingut,
+			boolean ambVersioImprimible) throws SistemaExternException {
+		
+		Document documentDetalls = getArxiuPlugin().documentDetalls(
+				  arxiuUuid,
+				  versio,
+				  ambContingut);
+		
+		if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
+			boolean isPdf = false;
+			for (Firma firma : documentDetalls.getFirmes()) {
+				if (firma.getTipus() == FirmaTipus.PADES) {
+					isPdf = true;
+				}
+			}
+			if (isPdf) {
+				documentDetalls.setContingut(getArxiuPlugin().documentImprimible(documentDetalls.getIdentificador()));
+			}
+		}
+		return documentDetalls;
+	}
+	
 	private ContingutArxiu arxiuExpedientPerAnotacioCrear(
 			DistribucioRegistreAnotacio anotacio,
 			String unitatArrelCodi) throws SistemaExternException {
@@ -128,19 +164,20 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return expedientCreat;
 	}
 	
-	private void processarAnnexosRegistre(
+	private String processarAnnexosRegistre(
 			DistribucioRegistreAnotacio anotacio, 
 			String unitatArrelCodi, 
-			ContingutArxiu expedientCreat) {
+			String identificadorRetorn) {
 		
+		String uuidDocument = null;
 		boolean isExpedientFinal = false;
 		try {
 			for (DistribucioRegistreAnnex annex: anotacio.getAnnexos()) {
 				
-				guardarDocumentAnnex (
+				uuidDocument = guardarDocumentAnnex (
 						annex, 
 						unitatArrelCodi, 
-						expedientCreat);
+						identificadorRetorn);
 				
 				isExpedientFinal = true;
 			}
@@ -152,7 +189,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					anotacio.setArxiuUuid(null);
 					anotacio.setArxiuDataActualitzacio(null);
 				} else {
-					eliminarContingutExistent(anotacio.getExpedientArxiuUuid());
+					contenidorEliminar(anotacio.getExpedientArxiuUuid());
 				}
 			} catch (Exception ex2) {
 				logger.error(
@@ -163,12 +200,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					"Error al processar els annexos de l'anotació de registre",
 					ex);
 		}
+		return uuidDocument != null ? uuidDocument : null;
 	}
 	
-	private void guardarDocumentAnnex(
+	private String guardarDocumentAnnex(
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
-			ContingutArxiu expedientCreat) throws IOException, SistemaExternException {
+			String identificadorRetorn) throws IOException, SistemaExternException {
 		byte[] contingut = null;
 		if (annex.getGesdocDocumentId() != null) {
 			ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
@@ -254,17 +292,6 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			annexFirma.setContingut(contingut);
 			annexFirma.setAnnex(annex);
 			
-//			DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma(
-//					tipus, 
-//					perfil, 
-//					fitxerNom, 
-//					tipusMime, 
-//					csvRegulacio, 
-//					true, 
-//					null, 
-//					firmaDistribucioContingut, 
-//					annex);
-			
 			annex.getFirmes().add(annexFirma);
 		}
 
@@ -273,8 +300,10 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				unitatArrelCodi,
 				fitxer,
 				convertirFirmesAnnexToArxiuFirmaDto(annex, firmaDistribucioContingut),
-				expedientCreat);
+				identificadorRetorn);
 		annex.setFitxerArxiuUuid(uuidDocument);
+		
+		return uuidDocument;
 	}
 	
 	private String arxiuDocumentAnnexCrear(
@@ -282,7 +311,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String unitatArrelCodi,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes,
-			ContingutArxiu expedient) throws SistemaExternException {
+			String identificadorRetorn) throws SistemaExternException {
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
 			estatDocument = DocumentEstat.DEFINITIU;
@@ -303,7 +332,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
 							estatDocument,
 							false),
-					expedient.getIdentificador());
+					identificadorRetorn);
 			return contingutFitxer.getIdentificador();
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
@@ -925,5 +954,5 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(DistribucioPluginArxiuImpl.class);
-	
+
 }

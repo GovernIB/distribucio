@@ -741,10 +741,12 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		EntitatEntity entitatPerUnitat = entitatRepository.findByUnitatArrel(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
-			throw new NotFoundException(
-					
-					entitatUnitatCodi,
-					EntitatEntity.class);
+			entitatPerUnitat = entitatRepository.findByCodi(entitatUnitatCodi);
+			if (entitatPerUnitat == null) {
+				throw new NotFoundException(
+						entitatUnitatCodi, 
+						EntitatEntity.class);
+			}
 		}
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatPerUnitat.getId(),
@@ -944,11 +946,7 @@ public class BustiaServiceImpl implements BustiaService {
 							"			<tr>"+
 							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + "</th>"+
 							"				<td>" + (justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), ""))) + "</td>"+
-							"			</tr>"+
-							"			<tr>"+
-							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + "</th>"+
-							"				<td>"  + (justificant.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+justificant.getSicresTipusDocument())) + "</td>"+
-							"			</tr>"+				
+							"			</tr>"+			
 							(justificant.getLocalitzacio() == null ? "": 
 								"			<tr>"+
 								"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + "</th>"+
