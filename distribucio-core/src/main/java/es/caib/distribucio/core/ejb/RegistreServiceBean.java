@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -182,6 +183,13 @@ public class RegistreServiceBean implements RegistreService {
 	public List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException {
 		return delegate.getAnnexos(entitatId, contingutId, registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")	
+	public void enviarAnotacioRegistreEntrada(String entitat, String unitatAdministrativa,
+			RegistreAnotacio registreEntrada) {
+		delegate.enviarAnotacioRegistreEntrada(entitat, unitatAdministrativa, registreEntrada);
 	}	
 
 }

@@ -12,6 +12,7 @@ import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 
@@ -240,4 +241,6 @@ public interface RegistreService {
 			String fitxerArxiuUuid) throws NotFoundException;
 	
 	List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
+
+	void enviarAnotacioRegistreEntrada(String entitat, String unitatAdministrativa, RegistreAnotacio registreEntrada);
 }
