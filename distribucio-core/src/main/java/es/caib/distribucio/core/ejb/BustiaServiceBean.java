@@ -4,11 +4,11 @@
 package es.caib.distribucio.core.ejb;
 
 import java.util.List;
-import javax.mail.MessagingException;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
@@ -278,8 +278,29 @@ public class BustiaServiceBean implements BustiaService {
 	
 	@Override
 	@RolesAllowed("tothom")
-	public void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses, String serverPortContext) throws MessagingException {
-		delegate.enviarRegistreByEmail(entitatId, contingutId, registreId, adresses, serverPortContext);
+	public void enviarRegistreByEmail(
+			Long entitatId, 
+			Long contingutId, 
+			Long registreId, 
+			String adresses, 
+			String serverPortContext) throws MessagingException {
+		delegate.enviarRegistreByEmail(
+				entitatId, 
+				contingutId, 
+				registreId, 
+				adresses, 
+				serverPortContext);
 	}
 	
+	@Override
+	@RolesAllowed("tothom")	
+	public void enviarAnotacioRegistreEntrada(
+			String entitat, 
+			String unitatAdministrativa,
+			RegistreAnotacio registreEntrada) {
+		delegate.enviarAnotacioRegistreEntrada(
+				entitat, 
+				unitatAdministrativa, 
+				registreEntrada);
+	}	
 }
