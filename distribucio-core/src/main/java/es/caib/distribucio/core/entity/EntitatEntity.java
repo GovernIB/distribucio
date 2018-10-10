@@ -33,8 +33,8 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	private String descripcio;
 	@Column(name = "cif", length = 9, nullable = false)
 	private String cif;
-	@Column(name = "unitat_arrel", length = 9, nullable = false)
-	private String unitatArrel;
+	@Column(name = "codi_dir3", length = 9, nullable = false)
+	private String codiDir3;
 	@Column(name = "fecha_actualizacion")
 	Timestamp fechaActualizacion;
 	@Column(name = "fecha_sincronizacion")
@@ -69,8 +69,8 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	public String getCif() {
 		return cif;
 	}
-	public String getUnitatArrel() {
-		return unitatArrel;
+	public String getCodiDir3() {
+		return codiDir3;
 	}
 	public boolean isActiva() {
 		return activa;
@@ -81,12 +81,12 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 			String nom,
 			String descripcio,
 			String cif,
-			String unitatArrel) {
+			String codiDir3) {
 		this.codi = codi;
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.cif = cif;
-		this.unitatArrel = unitatArrel;
+		this.codiDir3 = codiDir3;
 	}
 
 	public void updateActiva(
@@ -105,8 +105,8 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	 *            El valor de l'atribut descripcio.
 	 * @param cif
 	 *            El valor de l'atribut cif.
-	 * @param unitatArrel
-	 *            El valor de l'atribut unitatArrel.
+	 * @param codiDir3
+	 *            El valor de l'atribut codiDir3.
 	 * @return Una nova instància del Builder.
 	 */
 	public static Builder getBuilder(
@@ -114,13 +114,13 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 			String nom,
 			String descripcio,
 			String cif,
-			String unitatArrel) {
+			String codiDir3) {
 		return new Builder(
 				codi,
 				nom,
 				descripcio,
 				cif,
-				unitatArrel);
+				codiDir3);
 	}
 
 	/**
@@ -135,13 +135,13 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 				String nom,
 				String descripcio,
 				String cif,
-				String unitatArrel) {
+				String codiDir3) {
 			built = new EntitatEntity();
 			built.codi = codi;
 			built.nom = nom;
 			built.descripcio = descripcio;
 			built.cif = cif;
-			built.unitatArrel = unitatArrel;
+			built.codiDir3 = codiDir3;
 		}
 		public EntitatEntity build() {
 			return built;

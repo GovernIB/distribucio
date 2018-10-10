@@ -321,7 +321,7 @@ public class BustiaServiceImpl implements BustiaService {
 			// Valida que si s'esborra encara hi hagi una altra per defecte d'alternativa
 			BustiaEntity bustiaPerDefecteAlternativa = null;
 			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
-					entitat.getUnitatArrel(),
+					entitat.getCodiDir3(),
 					bustia.getUnitatCodi());
 			if (path != null && !path.isEmpty()) {
 				BustiaEntity bustiaAux;
@@ -739,14 +739,12 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		Long idAnotacioRetornada = null;
 		
-		EntitatEntity entitatPerUnitat = entitatRepository.findByUnitatArrel(entitatUnitatCodi);
+		EntitatEntity entitatPerUnitat = entitatRepository.findByCodiDir3(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
-			entitatPerUnitat = entitatRepository.findByCodi(entitatUnitatCodi);
-			if (entitatPerUnitat == null) {
 				throw new NotFoundException(
 						entitatUnitatCodi, 
 						EntitatEntity.class);
-			}
+			
 		}
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatPerUnitat.getId(),

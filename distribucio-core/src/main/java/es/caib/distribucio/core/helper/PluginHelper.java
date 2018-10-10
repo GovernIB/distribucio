@@ -95,7 +95,7 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			DistribucioRegistreAnotacio registreAnotacio = conversioTipusHelper.convertir(anotacio, DistribucioRegistreAnotacio.class);
-			String unitatArrelCodi = bustia.getEntitat().getUnitatArrel();
+			String unitatArrelCodi = bustia.getEntitat().getCodiDir3();
 			
 			String identificadorRetorn = getDistribucioPlugin().contenidorCrear(registreAnotacio, unitatArrelCodi);
 			

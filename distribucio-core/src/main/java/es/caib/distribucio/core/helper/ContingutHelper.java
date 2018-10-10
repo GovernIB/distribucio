@@ -106,7 +106,7 @@ public class ContingutHelper {
 			dto.setActiva(bustia.isActiva());
 			dto.setPerDefecte(bustia.isPerDefecte());
 			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
-					bustia.getEntitat().getUnitatArrel(),
+					bustia.getEntitat().getCodiDir3(),
 					bustia.getUnitatCodi());
 			if (unitatConselleria != null)
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());

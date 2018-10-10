@@ -24,7 +24,7 @@ public interface EntitatRepository extends JpaRepository<EntitatEntity, Long> {
 
 	EntitatEntity findByCodi(String codi);
 
-	EntitatEntity findByUnitatArrel(String unitatArrel);
+	EntitatEntity findByCodiDir3(String codiDir3);
 
 	List<EntitatEntity> findByActiva(boolean activa);
 

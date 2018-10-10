@@ -154,8 +154,8 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 
 		
 		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				unitatOrganitzativaRepository.findByUnitatCodiArrelAndUnitatDenominacioFiltrePaginat(
-						entitat.getUnitatArrel(),
+				unitatOrganitzativaRepository.findByCodiDir3AndUnitatDenominacioFiltrePaginat(
+						entitat.getCodiDir3(),
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi(),
 						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
@@ -219,7 +219,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	public ArbreDto<UnitatOrganitzativaDto> findTree(Long id){
 		
 		EntitatEntity entitat = entitatRepository.findOne(id);
-		return unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPareAndEstatVigent(entitat.getUnitatArrel());
+		return unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPareAndEstatVigent(entitat.getCodiDir3());
 	}
 	
 
@@ -230,7 +230,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			String entitatCodi) { 
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		return conversioTipusHelper.convertirList(
-				unitatOrganitzativaRepository.findByCodiUnitatArrel(entitat.getUnitatArrel()),
+				unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3()),
 				UnitatOrganitzativaDto.class);
 //		return cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi).toDadesList();
 	}
@@ -242,8 +242,8 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			String entitatCodi, String filtre) { 
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		return conversioTipusHelper.convertirList(
-				unitatOrganitzativaRepository.findByUnitatCodiArrelAndCodiAndDenominacioFiltre(
-						entitat.getUnitatArrel(),
+				unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
+						entitat.getCodiDir3(),
 						filtre == null || filtre.isEmpty(), 
 						filtre),
 				UnitatOrganitzativaDto.class);

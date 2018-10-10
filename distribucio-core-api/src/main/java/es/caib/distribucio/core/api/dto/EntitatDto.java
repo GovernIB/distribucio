@@ -19,7 +19,7 @@ public class EntitatDto extends AuditoriaDto {
 	private String nom;
 	private String descripcio;
 	private String cif;
-	private String unitatArrel;
+	private String codiDir3;
 	private boolean activa;
 
 	private List<PermisDto> permisos;
@@ -56,11 +56,11 @@ public class EntitatDto extends AuditoriaDto {
 	public void setCif(String cif) {
 		this.cif = cif;
 	}
-	public String getUnitatArrel() {
-		return unitatArrel;
+	public String getCodiDir3() {
+		return codiDir3;
 	}
-	public void setUnitatArrel(String unitatArrel) {
-		this.unitatArrel = unitatArrel;
+	public void setCodiDir3(String codiDir3) {
+		this.codiDir3 = codiDir3;
 	}
 	public boolean isActiva() {
 		return activa;
