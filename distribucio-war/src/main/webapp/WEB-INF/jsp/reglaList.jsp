@@ -3,12 +3,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<dis:blocIconaContingutNoms/>
 <html>
 <head>
 	<title><spring:message code="regla.list.titol"/></title>
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+		<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/webjars/Sortable/1.4.2/Sortable.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
@@ -29,7 +35,44 @@ $(document).ready(function() {
 	<div class="text-right" data-toggle="botons-titol">
 		<a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
 	</div>
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-drag-enabled="true" data-info-type="search" data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%">
+	
+
+	
+	<form:form action="" method="post" cssClass="well" commandName="reglaFiltreCommand">
+		<div class="row">
+			<div class="col-md-4">
+				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
+			</div>
+			<div class="col-md-2">
+				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+			</div>			
+			<div class="col-md-2">
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="unitatId" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="bustia.form.camp.unitat"
+					suggestValue="id"
+					suggestText="nom" />
+			</div>
+			<div class="col-md-2" style="padding-left: 30px;">
+				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			</div>
+			<div class="col-md-2 pull-right">
+				<div class="pull-right">
+					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+				</div>
+			</div>
+		</div>
+	</form:form>
+
+	
+	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="true"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%">
+
 		<thead>
 			<tr>
 				<th data-col-name="ordre" data-visible="false"></th>

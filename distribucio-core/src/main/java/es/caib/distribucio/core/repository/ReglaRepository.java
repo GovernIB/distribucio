@@ -11,8 +11,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -40,5 +43,27 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			Pageable pageable);
 
 	int countByEntitat(EntitatEntity entitat);
+	
+	
+	
+	@Query(	"from " +
+			"    ReglaEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"and (:esNullFiltreUnitat = true or r.unitatOrganitzativa = :unitatOrganitzativa) " +
+			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
+			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " + 			
+			"and (:esNullFiltreEstat = true or r.unitatOrganitzativa.estat = 'E' or r.unitatOrganitzativa.estat = 'A' or r.unitatOrganitzativa.estat = 'T')")
+	Page<BustiaEntity> findByFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
+			@Param("esNullFiltreNom") boolean esNullFiltreNom,
+			@Param("filtreNom") String filtreNom,
+			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
+			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,			
+			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
+			Pageable pageable);
+	
 
 }

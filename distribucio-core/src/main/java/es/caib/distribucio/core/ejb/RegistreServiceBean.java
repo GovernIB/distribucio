@@ -182,6 +182,6 @@ public class RegistreServiceBean implements RegistreService {
 	public List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException {
 		return delegate.getAnnexos(entitatId, contingutId, registreId);
-	}	
-
+	}
+	
 }

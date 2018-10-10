@@ -97,12 +97,13 @@ $(document).ready(function() {
 
 
 
-	<c:set var="formAction"><dis:modalUrl value="/regla"/></c:set>
+
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a href="#comunes" aria-controls="comunes" role="tab" data-toggle="tab"><spring:message code="regla.form.pipella.comunes"/></a></li>
 		<li role="presentation"><a href="#especifiques" aria-controls="especifiques" role="tab" data-toggle="tab"><spring:message code="regla.form.pipella.especifiques"/></a></li>
 	</ul>
 	<br/>
+		<c:set var="formAction"><dis:modalUrl value="/regla/save"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="reglaCommand" role="form">
 		<form:hidden path="id"/>
 		<div class="tab-content">

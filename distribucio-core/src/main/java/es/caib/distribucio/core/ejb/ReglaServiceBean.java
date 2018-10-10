@@ -15,6 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ReglaService;
 
@@ -137,5 +138,19 @@ public class ReglaServiceBean implements ReglaService {
 				entitatId,
 				unitatCodi);
 	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
+			Long entitatId,
+			ReglaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findAmbFiltrePaginat(
+				entitatId,
+				filtre,
+				paginacioParams);
+	}
+
+	
 
 }
