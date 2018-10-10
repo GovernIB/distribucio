@@ -17,5 +17,24 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.fundaciobit.plugins</groupId>
+			<artifactId>plugin-arxiu-caib</artifactId>
+			<version>1.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>github-governib-maven-repos</id>
+			<name>GovernIB Maven Repository</name>
+			<url>http://governib.github.io/maven/maven/</url>
+		</repository>
+	</repositories>
 </project>

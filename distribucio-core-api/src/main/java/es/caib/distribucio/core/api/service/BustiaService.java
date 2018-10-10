@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+
 import javax.mail.MessagingException;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -409,6 +410,9 @@ public interface BustiaService {
 			Long unitatIdFiltre, Boolean unitatObsoleta);
 
 
-
+	@PreAuthorize("hasRole('tothom')")
+	public void enviarAnotacioRegistreEntrada(
+			String entitat, String unitatAdministrativa, 
+			RegistreAnotacio registreEntrada);
 }
 

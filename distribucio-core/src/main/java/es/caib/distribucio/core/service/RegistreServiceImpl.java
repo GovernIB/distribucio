@@ -140,7 +140,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreAnotacio;
 	}
 	
-	
 	@Transactional
 	@Override
 	public RegistreAnnexDetallDto getRegistreJustificant(

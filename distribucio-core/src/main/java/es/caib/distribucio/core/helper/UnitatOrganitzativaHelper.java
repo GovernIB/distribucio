@@ -108,11 +108,11 @@ public class UnitatOrganitzativaHelper {
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);
 		
 		
-		List<UnitatOrganitzativa> unitatsVigentsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+		List<UnitatOrganitzativa> unitatsVigentsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
 		
@@ -132,17 +132,17 @@ public class UnitatOrganitzativaHelper {
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);
 		
 		// getting list of last changes from webservices
-		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
 		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
-				.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
+				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
 
 		// list of unitats which are vigent now in database but in
 		// synchronization list taken from webservices they are marked as
@@ -151,7 +151,7 @@ public class UnitatOrganitzativaHelper {
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) { 
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
 				if (unitatV.getCodi().equals(unitatWS.getCodi()) && !unitatWS.getEstat().equals("V")
-						&& !unitatV.getCodi().equals(entitat.getUnitatArrel())) {
+						&& !unitatV.getCodi().equals(entitat.getCodiDir3())) {
 					unitatsVigentObsolete.add(unitatWS);
 				}
 			}
@@ -178,13 +178,13 @@ public class UnitatOrganitzativaHelper {
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		
 		// getting list of last changes from webservices
-		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getUnitatArrel(),
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
 		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
-				.findByCodiUnitatArrelAndEstatV(entitat.getUnitatArrel());
+				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
 		
 		 
 		// list of vigent unitats from webservice
@@ -193,7 +193,7 @@ public class UnitatOrganitzativaHelper {
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
 				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat().equals("V")
 						&& unitatWS.getHistoricosUO() == null
-						&& !unitatV.getCodi().equals(entitat.getUnitatArrel())) {
+						&& !unitatV.getCodi().equals(entitat.getCodiDir3())) {
 					unitatsVigentsWithChangedAttributes.add(unitatWS);
 				}
 			}
@@ -257,27 +257,27 @@ public class UnitatOrganitzativaHelper {
 
 		List<UnitatOrganitzativa> unitats;
 
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getUnitatArrel(),
+		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);
 
 
-			unitats = pluginHelper.findAmbPare(entitat.getUnitatArrel(), entitat.getFechaActualizacion(),
+			unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
 
 
 		for (UnitatOrganitzativa unidadWS : unitats) {
-			sincronizarUnitat(unidadWS);
+			sincronizarUnitat(unidadWS, entitat.getCodiDir3());
 		}
 
 		// historicos
 		for (UnitatOrganitzativa unidadWS : unitats) {
 			UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository
-					.findByCodiUnitatArrelAndCodi(entitat.getUnitatArrel(), unidadWS.getCodi());
+					.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unidadWS.getCodi());
 			sincronizarHistoricosUnitat(unitat, unidadWS);
 		}
 
 		List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
-				.findByCodiUnitatArrelAndEstatNotV(entitat.getUnitatArrel());
+				.findByCodiDir3EntitatAndEstatNotV(entitat.getCodiDir3());
 
 		// setting type of transition
 		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
@@ -319,7 +319,7 @@ public class UnitatOrganitzativaHelper {
 	 * @param entidadId
 	 * @throws Exception
 	 */
-	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS) {
+	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS, String codiEntitat) {
 
 
 		UnitatOrganitzativaEntity unitat = null;
@@ -346,6 +346,7 @@ public class UnitatOrganitzativaHelper {
 						nomVia(unitatWS.getNomVia()).
 						numVia(unitatWS.getNumVia())
 						.build();
+				unitat.setCodiDir3Entitat(codiEntitat);
 				unitatOrganitzativaRepository.save(unitat);
 			} else {
 				unitat.update(
@@ -364,6 +365,7 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getTipusVia(),
 						unitatWS.getNomVia(),
 						unitatWS.getNumVia());
+				unitat.setCodiDir3Entitat(codiEntitat);
 			}
 			
 
@@ -410,8 +412,8 @@ public class UnitatOrganitzativaHelper {
 		
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		
-		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiUnitatArrelAndCodi(
-				entitat.getUnitatArrel(),
+		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(
+				entitat.getCodiDir3(),
 				unitatOrganitzativaCodi));
 	}
 
@@ -441,9 +443,9 @@ public class UnitatOrganitzativaHelper {
 	}
 
 	public List<UnitatOrganitzativaDto> findPath(
-			String unitatArrel,
+			String codiDir3,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatArrel);
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(codiDir3);
 		List<UnitatOrganitzativaDto> superiors = new ArrayList<UnitatOrganitzativaDto>();
 		String codiActual = unitatOrganitzativaCodi;
 		do {
@@ -462,14 +464,14 @@ public class UnitatOrganitzativaHelper {
 
 	/**
 	 * Returns the tree of unitats containing unitats specified in @param unitatCodiPermesos and their parent unitats on the path up to the root unitat
-	 * @param unitatArrel
+	 * @param codiDir3
 	 * @param unitatCodiPermesos
 	 * @return
 	 */
-	public ArbreDto<UnitatOrganitzativaDto> findPerUnitatArrelAmbCodisPermesos(
-			String unitatArrel,
+	public ArbreDto<UnitatOrganitzativaDto> findPerCodiDir3EntitatAmbCodisPermesos(
+			String codiDir3,
 			Set<String> unitatCodiPermesos) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatArrel).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(codiDir3).clone();
 		if (unitatCodiPermesos != null) {
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
@@ -503,7 +505,7 @@ public class UnitatOrganitzativaHelper {
 //			throws SistemaExternException {
 //
 //		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-//		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getUnitatArrel());
+//		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getCodiDir3());
 //	}
 	
 
@@ -551,14 +553,14 @@ public class UnitatOrganitzativaHelper {
 	 * Takes the list of unitats from database and converts it to the tree
 	 * 
 	 * @param pareCodi 
-	 * 				unitatArrel
+	 * 				codiDir3
 	 * @return tree of unitats
 	 */
 	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(String pareCodi) {
 
 		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiUnitatArrel(pareCodi);
-
+				.findByCodiDir3Entitat(pareCodi);
+		
 		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
 				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
 
@@ -647,13 +649,13 @@ public class UnitatOrganitzativaHelper {
 	 * Takes the list of unitats from database and converts it to the tree
 	 * 
 	 * @param pareCodi 
-	 * 				unitatArrel
+	 * 				codiDir3
 	 * @return tree of unitats
 	 */
 	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPareAndEstatVigent(String pareCodi) {
 
 		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiUnitatArrelAndEstatV(pareCodi);
+				.findByCodiDir3AndEstatV(pareCodi);
 		
 		
 		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper

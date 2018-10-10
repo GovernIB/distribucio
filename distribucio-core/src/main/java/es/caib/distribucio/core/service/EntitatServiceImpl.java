@@ -71,7 +71,7 @@ public class EntitatServiceImpl implements EntitatService {
 				entitat.getNom(),
 				entitat.getDescripcio(),
 				entitat.getCif(),
-				entitat.getUnitatArrel()).build();
+				entitat.getCodiDir3()).build();
 		return conversioTipusHelper.convertir(
 				entitatRepository.save(entity),
 				EntitatDto.class);
@@ -93,7 +93,7 @@ public class EntitatServiceImpl implements EntitatService {
 				entitat.getNom(),
 				entitat.getDescripcio(),
 				entitat.getCif(),
-				entitat.getUnitatArrel());
+				entitat.getCodiDir3());
 		return conversioTipusHelper.convertir(
 				entity,
 				EntitatDto.class);

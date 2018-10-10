@@ -32,7 +32,7 @@ CREATE TABLE DIS_ENTITAT
   NOM                  character varying(256)   NOT NULL,
   DESCRIPCIO           character varying(1024),
   CIF                  character varying(9)     NOT NULL,
-  UNITAT_ARREL         character varying(9)     NOT NULL,
+  CODI_DIR3	           character varying(9)     NOT NULL,
   ACTIVA               boolean,
   VERSION              bigint                   NOT NULL,
   CREATEDBY_CODI       character varying(64),
@@ -393,6 +393,7 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
   CREATEDBY_CODI       		CHARACTER VARYING(256),
   LASTMODIFIEDDATE     		TIMESTAMP WITHOUT TIME ZONE,
   LASTMODIFIEDBY_CODI  		CHARACTER VARYING(256)
+  CODI_DIR3_ENTITAT		 	CHARACTER VARYING(9)
 );
 
 CREATE TABLE DIS_UO_SINC_REL (

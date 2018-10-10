@@ -33,7 +33,7 @@ public class EntitatCommand {
 	@NotEmpty @Size(max=9) @DocumentIdentitat
 	private String cif;
 	@NotEmpty @Size(max=9)
-	private String unitatArrel;
+	private String codiDir3;
 
 	public Long getId() {
 		return id;
@@ -59,11 +59,11 @@ public class EntitatCommand {
 	public void setCif(String cif) {
 		this.cif = cif;
 	}
-	public String getUnitatArrel() {
-		return unitatArrel;
+	public String getCodiDir3() {
+		return codiDir3;
 	}
-	public void setUnitatArrel(String unitatArrel) {
-		this.unitatArrel = unitatArrel;
+	public void setCodiDir3(String codiDir3) {
+		this.codiDir3 = codiDir3;
 	}
 
 	public static List<EntitatCommand> toEntitatCommands(

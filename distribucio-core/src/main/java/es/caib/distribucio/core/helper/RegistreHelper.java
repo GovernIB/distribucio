@@ -466,9 +466,10 @@ public class RegistreHelper {
 			}
 		} 
 		
+		if (identificadorRetorn != null) {
 		// si s'ha utilitzat el plugin de gestió documental, s'intentaran esborrar els fitxers guardats
 		esborrarDocsTemporals(anotacio);
-		
+		}
 		//aquí haurem de actualtizar estat OK
 		Date dataProcesOk = new Date();
 		anotacio.updateProces(

@@ -25,10 +25,12 @@
 		<td><strong><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></strong></td>
 		<td><c:if test="${not empty justificant.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${justificant.ntiTipusDocument}"/></c:if></td>
 	</tr>
-	<tr>
-		<td><strong><spring:message code="registre.annex.detalls.camp.sicres.tipus.document"/></strong></td>
-		<td><c:if test="${not empty justificant.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${justificant.sicresTipusDocument}"/></c:if></td>
-	</tr>
+	<c:if test="${not empty justificant.sicresTipusDocument}">
+		<tr>
+			<td><strong><spring:message code="registre.annex.detalls.camp.sicres.tipus.document"/></strong></td>
+			<td><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${justificant.sicresTipusDocument}"/></td>
+		</tr>
+	</c:if>
 	<c:if test="${not empty justificant.localitzacio}">
 		<tr>
 			<td><strong><spring:message code="registre.annex.detalls.camp.localitzacio"/></strong></td>

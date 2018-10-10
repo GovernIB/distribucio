@@ -49,6 +49,8 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	@Column(name = "codi_unitat_arrel", length = 9) 
 	private String codiUnitatArrel;
 	
+	@Column(name = "codi_dir3_entitat")
+	private String codiDir3Entitat;
 	
 	@Column(name = "data_creacio_oficial") 
 	private Date dataCreacioOficial;
@@ -130,6 +132,14 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 
 	public String getCodiUnitatArrel() {
 		return codiUnitatArrel;
+	}
+	
+	public String getCodiDir3Entitat() {
+		return codiDir3Entitat;
+	}
+	
+	public void setCodiDir3Entitat(String codiDir3Entitat) {
+		this.codiDir3Entitat = codiDir3Entitat;
 	}
 
 	public Date getDataCreacioOficial() {

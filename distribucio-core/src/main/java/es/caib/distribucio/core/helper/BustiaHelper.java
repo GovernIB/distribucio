@@ -79,8 +79,8 @@ public class BustiaHelper {
 				bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
 		}
 		// Consulta l'arbre
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerUnitatArrelAmbCodisPermesos(
-				entitat.getUnitatArrel(),
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
+				entitat.getCodiDir3(),
 				bustiaUnitatCodis);
 		if (ambContadorElementsPendents && !busties.isEmpty()) {
 			// Consulta els contadors d'elements pendents per a totes les bústies
@@ -156,8 +156,8 @@ public class BustiaHelper {
 		for (BustiaEntity bustia: busties)
 			bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
 			
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerUnitatArrelAmbCodisPermesos(
-				entitat.getUnitatArrel(),
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
+				entitat.getCodiDir3(),
 				bustiaUnitatCodis);
 
 		return arbre;
@@ -179,7 +179,7 @@ public class BustiaHelper {
 		// la unitat no te bústia per defecte va pujant a l'arbre fins a trobar la
 		// primera unitat que en tengui.
 		List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
-				entitat.getUnitatArrel(),
+				entitat.getCodiDir3(),
 				unitatOrganitzativaCodi);
 		if (path == null || path.isEmpty()) {
 			throw new NotFoundException(
