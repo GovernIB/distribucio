@@ -421,7 +421,7 @@ public class BustiaUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new BustiaUserFiltreCommand();
-			filtreCommand.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PROCESSAT);
+			filtreCommand.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PENDENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
