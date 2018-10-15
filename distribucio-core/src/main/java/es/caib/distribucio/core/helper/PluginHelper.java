@@ -22,8 +22,6 @@ import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
@@ -45,15 +43,11 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.registre.RegistreAnotacioResposta;
-import es.caib.distribucio.plugin.registre.RegistrePlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.Firma;
-import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
 /**
@@ -71,7 +65,6 @@ public class PluginHelper {
 
 	private DadesUsuariPlugin dadesUsuariPlugin;
 	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
-	private RegistrePlugin registrePlugin;
 	private DadesExternesPlugin dadesExternesPlugin;
 	private IArxiuPlugin arxiuPlugin;
 	private IValidateSignaturePlugin validaSignaturaPlugin;
@@ -1212,42 +1205,6 @@ public class PluginHelper {
 //		}
 //	}
 
-	public RegistreAnotacioResposta registreEntradaConsultar(
-			String identificador,
-			String entitatCodi) {
-		String accioDescripcio = "Consulta d'una anotació d'entrada";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("identificador", identificador);
-		long t0 = System.currentTimeMillis();
-		try {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			RegistreAnotacioResposta resposta = getRegistrePlugin().entradaConsultar(
-					identificador,
-					auth.getName(),
-					entitatCodi);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_REGISTRE,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return resposta;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de registre";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_REGISTRE,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_REGISTRE,
-					errorDescripcio,
-					ex);
-		}
-	}
 //
 //	/*public CiutadaExpedientInformacio ciutadaExpedientCrear(
 //			ExpedientEntity expedient,
@@ -1898,27 +1855,6 @@ public class PluginHelper {
 		}
 		return arxiuPlugin;
 	}
-	private RegistrePlugin getRegistrePlugin() {
-		if (registrePlugin == null) {
-			String pluginClass = getPropertyPluginRegistre();
-			if (pluginClass != null && pluginClass.length() > 0) {
-				try {
-					Class<?> clazz = Class.forName(pluginClass);
-					registrePlugin = (RegistrePlugin)clazz.newInstance();
-				} catch (Exception ex) {
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_REGISTRE,
-							"Error al crear la instància del plugin de registre",
-							ex);
-				}
-			} else {
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_REGISTRE,
-						"No està configurada la classe per al plugin de registre");
-			}
-		}
-		return registrePlugin;
-	}
 	private DadesExternesPlugin getDadesExternesPlugin() {
 		if (dadesExternesPlugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
@@ -2002,10 +1938,6 @@ public class PluginHelper {
 	private String getPropertyPluginArxiu() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
-	}
-	private String getPropertyPluginRegistre() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.registre.class");
 	}
 	private String getPropertyPluginDadesExternes() {
 		return PropertiesHelper.getProperties().getProperty(

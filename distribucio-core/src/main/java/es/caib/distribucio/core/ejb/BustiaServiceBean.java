@@ -158,16 +158,6 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
-	public void registreAnotacioCrear(
-			String entitatCodi,
-			String referencia) {
-		delegate.registreAnotacioCrear(
-				entitatCodi,
-				referencia);
-	}
-
-	@Override
 	@RolesAllowed("tothom")
 	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
 			Long entitatId,
