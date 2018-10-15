@@ -82,14 +82,6 @@ tr.clicable {
 		<li role="presentation">
 			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.annexos"/>&nbsp;<span class="badge">${fn:length(registre.annexos)}</span></a>
 		</li>
-		<c:if test="${registre.procesEstat != 'NO_PROCES'}">
-			<li role="presentation">
-				<a href="#proces" aria-controls="proces" role="tab" data-toggle="tab">
-					<spring:message code="registre.detalls.pipella.proces"/>
-					<c:if test="${registre.procesEstat == 'ERROR'}"><span class="fa fa-warning text-danger"></span></c:if>
-				</a>
-			</li>
-		</c:if>
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
@@ -424,26 +416,6 @@ tr.clicable {
 					</c:choose>				
 				</c:otherwise>
 			</c:choose>
-		</div>
-		<div class="tab-pane" id="proces" role="tabpanel">
-			<c:if test="${registre.procesEstat == 'ERROR'}">
-				<div class="alert well-sm alert-danger alert-dismissable">
-					<span class="fa fa-exclamation-triangle"></span>
-					<spring:message code="registre.detalls.info.errors"/>
-					<a href="${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
-				</div>
-			</c:if>
-			<dl class="dl-horizontal">
-				<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
-				<dd>${registre.procesEstat}</dd>
-				<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
-				<dd><fmt:formatDate value="${registre.procesData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-				<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
-				<dd>${registre.procesIntents}</dd>
-			</dl>
-			<c:if test="${registre.procesEstat == 'ERROR'}">
-				<pre style="height:300px">${registre.procesError}</pre>
-			</c:if>
 		</div>
 	</div>
 	<div id="modal-botons" class="well">

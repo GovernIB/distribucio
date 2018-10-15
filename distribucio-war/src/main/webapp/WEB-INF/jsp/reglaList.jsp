@@ -32,9 +32,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<div class="text-right" data-toggle="botons-titol">
-		<a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
-	</div>
+
 	
 
 	
@@ -70,8 +68,13 @@ $(document).ready(function() {
 		</div>
 	</form:form>
 
-	
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="true"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%">
+
+
+	<script id="botonsTemplate" type="text/x-jsrender">
+		<p style="text-align:right"><a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a></p>
+	</script>
+	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="true"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
+	data-botons-template="#botonsTemplate">
 
 		<thead>
 			<tr>

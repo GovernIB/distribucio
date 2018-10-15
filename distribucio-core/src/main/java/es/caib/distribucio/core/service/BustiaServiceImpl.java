@@ -2179,7 +2179,7 @@ public class BustiaServiceImpl implements BustiaService {
 		mailSender.send(missatge);
 	
 		
-		String logTo = "Destinitaris: " +adresses;
+		String logTo = "Destinataris: " +adresses;
 				
 		
 		contingutLogHelper.log(
