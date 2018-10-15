@@ -23,7 +23,35 @@
 			$("form#permisCommand *:disabled").attr('readonly', 'readonly');
 			$("form#permisCommand *:disabled").removeAttr('disabled');
 		});
+
+		<c:if test="${empty permisCommand.id}">
+			disableGuardarIfNoneChecked();
+			$("input[type='checkbox']").change(function( index, element ) { 
+				disableGuardarIfNoneChecked();
+			});
+		</c:if>
+
+		
 	});
+
+
+	function disableGuardarIfNoneChecked(){
+		var anyChecked=false;
+		$("input[type='checkbox']").each(function( index, element ) { 
+			if ($( element ).is(':checked')){
+			anyChecked=true;			
+			}
+		}); 
+		if(anyChecked==true){
+			$(".submitDialog",parent.document).prop('disabled',false)
+			$(".submitDialog").prop('disabled',false)
+
+		} else {
+			$(".submitDialog",parent.document).prop('disabled',true)
+			$(".submitDialog").prop('disabled',true)
+
+		}
+	}
 </script>
 </head>
 <body>
@@ -35,7 +63,7 @@
 		<dis:inputCheckbox name="administration" textKey="permis.form.camp.administracio"/>
 		<dis:inputCheckbox name="read" textKey="permis.form.camp.usuari"/>
 		<div id="modal-botons">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
+			<button type="submit" class="btn btn-success submitDialog"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/permis"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
