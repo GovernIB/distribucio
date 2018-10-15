@@ -101,7 +101,6 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.distribucio.plugin.registre.RegistreAnotacioResposta;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
 import es.caib.plugins.arxiu.api.DocumentTipus;
@@ -1073,23 +1072,6 @@ public class BustiaServiceImpl implements BustiaService {
 		return idAnotacioRetornada;
 	}
 
-	@Transactional
-	@Override
-	public void registreAnotacioCrear(
-			String entitatUnitatCodi,
-			String registreReferencia) {
-		RegistreAnotacioResposta resposta = pluginHelper.registreEntradaConsultar(
-				registreReferencia,
-				entitatUnitatCodi);
-		registreAnotacioCrear(
-				entitatUnitatCodi,
-				resposta.getTipus(),
-				resposta.getUnitatAdministrativa(),
-				resposta.getRegistreAnotacio());
-	}
-
-	
-	
 	@Transactional
 	@Override
 	public void enviarRegistreByEmail(

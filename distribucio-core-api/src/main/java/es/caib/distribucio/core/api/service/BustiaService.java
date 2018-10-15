@@ -243,22 +243,7 @@ public interface BustiaService {
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) throws NotFoundException;
 
-	/**
-	 * Envia una anotació de registre a una bústia.
-	 * 
-	 * @param entitatCodi
-	 *            El codi de l'entitat.
-	 * @param referencia
-	 *            La referència per a consultar l'anotació de registre.
-	 * @return el contenidor enviat
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('DIS_BSTWS')")
-	public void registreAnotacioCrear(
-			String entitatCodi,
-			String referencia) throws NotFoundException;
-
+	
 	/**
 	 * Consulta el contingut pendent d'una bústia.
 	 * 

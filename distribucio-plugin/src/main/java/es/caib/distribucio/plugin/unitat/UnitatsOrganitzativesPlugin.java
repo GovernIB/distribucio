@@ -17,8 +17,20 @@ import es.caib.distribucio.plugin.SistemaExternException;
  */
 public interface UnitatsOrganitzativesPlugin {
 	
-	
 
+	/**
+	 * Retorna la unitat organtizativa donat el pareCodi
+	 * 
+	 * @param pareCodi
+	 *            Codi de la unitat pare.
+	 * @param fechaActualizacion
+	 *            Data de la darrera actualització.
+	 * @param fechaSincronizacion
+	 *            Data de la primera sincronització.
+	 * @return La unitat organitzativa trobada.
+	 * @throws SistemaExternException
+	 *            Si es produeix un error al consultar les unitats organitzatives.
+	 */
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
