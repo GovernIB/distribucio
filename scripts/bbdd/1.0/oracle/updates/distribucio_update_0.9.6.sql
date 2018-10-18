@@ -1,1 +1,1 @@
-alter table dis.dis_usuari add idioma varchar2(2) default 'ca' not null;
+alter table dis_usuari add idioma varchar2(2) default 'ca' not null;
