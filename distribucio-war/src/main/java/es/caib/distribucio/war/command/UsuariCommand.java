@@ -23,6 +23,7 @@ public class UsuariCommand implements Serializable {
 	private String nif;
 	private String email;
 	private String[] rols;
+	private String idioma;
 	private Boolean rebreEmailsBustia;
 	private Boolean rebreEmailsAgrupats;
 
@@ -55,6 +56,12 @@ public class UsuariCommand implements Serializable {
 	}
 	public void setRols(String[] rols) {
 		this.rols = rols;
+	}
+	public String getIdioma() {
+		return idioma;
+	}
+	public void setIdioma(String idioma) {
+		this.idioma = idioma;
 	}
 	public Boolean getRebreEmailsBustia() {
 		return rebreEmailsBustia;

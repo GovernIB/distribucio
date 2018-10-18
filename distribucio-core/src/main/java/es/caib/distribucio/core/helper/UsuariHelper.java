@@ -86,6 +86,7 @@ public class UsuariHelper {
 			return null;
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
+			String idioma = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.default.user.language");
 			logger.debug("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			// Primer cream l'usuari amb dades fictícies i després l'actualitzam.
@@ -96,7 +97,8 @@ public class UsuariHelper {
 							auth.getName(),
 							auth.getName(),
 							"00000000X",
-							auth.getName() + "@" + "caib.es").build());
+							auth.getName() + "@" + "caib.es", 
+							idioma).build());
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari.update(
