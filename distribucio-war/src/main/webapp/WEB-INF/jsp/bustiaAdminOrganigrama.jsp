@@ -218,7 +218,7 @@ $(document).ready(
 			$('#arbreUnitatsOrganitzatives').jstree('open_all');
 		}
 
-		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'>Canvi vista</button></div>");
+		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
 
 		$("#canviVistaBusties").click(function(){
 			window.location.replace("/distribucio/bustiaAdmin");
