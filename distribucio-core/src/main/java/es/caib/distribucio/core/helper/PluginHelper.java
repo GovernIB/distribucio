@@ -101,6 +101,8 @@ public class PluginHelper {
 					DistribucioRegistreAnnex distribucioAnnex = registreAnotacio.getAnnexos().get(i);
 					annex.updateFitxerArxiuUuid(distribucioAnnex.getFitxerArxiuUuid());
 					
+					actualitzarTamanyContingut(annex);
+					
 					if (distribucioAnnex.getFirmes() != null && distribucioAnnex.getFirmes().size() > 0) {
 						for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
 							if (distribucioFirma.isAutofirma() && crearAutofirma) {
@@ -1747,6 +1749,18 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DADESEXT,
 					errorDescripcio,
 					ex);
+		}
+	}
+	
+	private void actualitzarTamanyContingut(RegistreAnnexEntity annex) {
+		if (annex.getFitxerTamany() <= 0) {
+			Document document = this.arxiuDocumentConsultar(
+					annex.getRegistre(), 
+					annex.getFitxerArxiuUuid(), 
+					null, 
+					true);
+			if (document.getContingut() != null)
+				annex.updateFitxerTamany((int)document.getContingut().getTamany());
 		}
 	}
 	

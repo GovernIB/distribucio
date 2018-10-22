@@ -158,6 +158,10 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
 	
+	public void updateFitxerTamany(int fitxerTamany) {
+		this.fitxerTamany = fitxerTamany;
+	}
+	
 	public static Builder getBuilder(
 			String titol,
 			String fitxerNom,
