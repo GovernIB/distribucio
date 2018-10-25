@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
+import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
@@ -287,6 +288,30 @@ public class ContingutController extends BaseUserController {
 		}
 		
 		return "registreJustificant";
+	}
+	
+	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
+	public String arxiuInfo(
+			HttpServletRequest request,
+			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
+			Model model) {
+		
+		try{
+			getEntitatActualComprovantPermisos(request);
+			
+			ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registreId);
+			
+			model.addAttribute(
+					"arxiuDetall",
+					arxiuDetall);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació de l'arxiu", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+			return "ajaxErrorPage";
+		}
+		
+		return "arxiuInfo";
 	}
 	
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/llegir", method = RequestMethod.GET)

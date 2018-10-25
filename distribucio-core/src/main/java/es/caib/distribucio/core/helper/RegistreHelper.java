@@ -68,6 +68,8 @@ public class RegistreHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private ReglaHelper reglaHelper;
+	@Resource
+	private ConversioTipusHelper conversioTipusHelper;
 	
 	@Resource
 	private RegistreRepository registreRepository;
@@ -515,6 +517,28 @@ public class RegistreHelper {
 					RegistreProcesEstatEnum.ERROR,
 					error);
 		}
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void actualitzarEstatErrorTancament(
+			Long registreId) {
+		
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		
+		registre.updateArxiuTancatError(true);
+		
+	}
+	
+	//procés i distribució d'anotacions
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void tancarExpedientArxiu(Long anotacioId) throws Exception {
+		
+		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
+		
+		pluginHelper.tancarExpedientArxiu(anotacio);
+		
+		anotacio.updateArxiuTancat(true);
+		registreRepository.saveAndFlush(anotacio);
 	}
 	
 	private void esborrarDocsTemporals(RegistreEntity anotacioEntity) {

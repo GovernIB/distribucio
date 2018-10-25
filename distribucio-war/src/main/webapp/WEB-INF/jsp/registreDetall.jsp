@@ -66,7 +66,15 @@ tr.clicable {
 		        $(this).data("loaded", true);
 		    }
 	    });
-			    
+
+		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
+			if (!$(this).data("loaded")) {	
+		    	var registreId = $(this).data("registreId"); 
+		        var contingutId = $(this).data("contingutId"); 
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/arxiuInfo");
+		        $(this).data("loaded", true);
+		    }
+		});		    
 	    
 	});
 
@@ -82,6 +90,11 @@ tr.clicable {
 		<li role="presentation">
 			<a href="#annexos" aria-controls="annexos" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.annexos"/>&nbsp;<span class="badge">${fn:length(registre.annexos)}</span></a>
 		</li>
+		<c:if test="${not empty registre.expedientArxiuUuid}">
+			<li role="presentation">
+				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" data-contingut-id="${contingutId}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
+			</li>
+		</c:if>
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
@@ -417,6 +430,12 @@ tr.clicable {
 				</c:otherwise>
 			</c:choose>
 		</div>
+		
+		<c:if test="${not empty registre.expedientArxiuUuid}">
+			<div class="tab-pane" id="arxiuInfo" role="tabpanel" data-loaded=false>
+				<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>
+			</div>
+		</c:if>
 	</div>
 	<div id="modal-botons" class="well">
 		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>

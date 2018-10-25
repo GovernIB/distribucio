@@ -4,13 +4,15 @@
 package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
-
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -35,16 +37,12 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.BustiaUserFiltreCommand;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
+import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-
-import java.util.Arrays;
-import javax.mail.MessagingException;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 
 /**
  * Controlador per al manteniment de bústies.

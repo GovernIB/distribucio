@@ -150,4 +150,19 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
 			Pageable pageable);
+	
+	/** Consulta les anotacions de registre que tenen 
+	 * l'expedient a l'arxiu pendents de tancar i a les quals
+	 * ja s'ha excedit el temps d'espera establert
+	 * @return
+	 */
+	@Query("from RegistreEntity r " +
+			"where r.dataTancament is not null " +
+			" and r.dataTancament <= :ara " +
+			" and r.arxiuTancat = false" +
+			" and r.arxiuTancatError = false " +
+		    " order by r.dataTancament asc")
+	List<RegistreEntity> findPendentsTancarArxiu(
+			@Param("ara") Date ara);
+	
 }

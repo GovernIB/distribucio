@@ -86,6 +86,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 
 	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
+	private String expedientArxiuUuid;
 	private String numero;
 	private Date data;
 	private Date dataOrigen;
@@ -380,6 +381,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setLlegida(Boolean llegida) {
 		this.llegida = llegida;
+	}
+	public String getExpedientArxiuUuid() {
+		return expedientArxiuUuid;
+	}
+	public void setExpedientArxiuUuid(String expedientArxiuUuid) {
+		this.expedientArxiuUuid = expedientArxiuUuid;
 	}
 	
 }
