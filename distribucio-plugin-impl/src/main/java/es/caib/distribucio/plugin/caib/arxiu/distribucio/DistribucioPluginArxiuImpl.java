@@ -271,8 +271,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
 				perfil = FirmaPerfil.EPES.toString();
+				
 				fitxer.setContingut(firmaDistribucioContingut);
-				firmaDistribucioContingut = null;
+				tipusMime = "application/pdf";
+				fitxerNom = annex.getTitol() + "_pades.pdf";
+				
+//				fitxer.setContingut(firmaDistribucioContingut);
+//				firmaDistribucioContingut = null;
 			} else {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
 				perfil = FirmaPerfil.BES.toString();
@@ -288,7 +293,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			annexFirma.setCsvRegulacio(csvRegulacio);
 			annexFirma.setAutofirma(true);
 			annexFirma.setGesdocFirmaId(null);
-			annexFirma.setContingut(contingut);
+			annexFirma.setContingut(firmaDistribucioContingut);
 			annexFirma.setAnnex(annex);
 			
 			annex.getFirmes().add(annexFirma);
