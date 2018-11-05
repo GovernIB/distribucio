@@ -180,12 +180,16 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "llegida")
 	private Boolean llegida;
 	
-//	@Column(name = "data_dist_asinc")
-//	private Date dataDistribucioAsincrona;
-//	
-//	@Column(name = "reintents_dist_asinc")
-//	private Integer reintentsDistribucioAsincrona;
-
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data_tancament")
+	private Date dataTancament;
+	
+	@Column(name = "arxiu_tancat")
+	private Boolean arxiuTancat;
+	
+	@Column(name = "arxiu_tancat_error")
+	private Boolean arxiuTancatError;
+	
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
 	}
@@ -336,14 +340,23 @@ public class RegistreEntity extends ContingutEntity {
 	public Boolean getLlegida() {
 		return llegida;
 	}
-//	public Date getDataDistribucioAsincrona() {
-//		return dataDistribucioAsincrona;
-//	}
 	
 	public void updateRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
 	}
+	public void updateDataTancament(
+			Date dataTancament) {
+		this.dataTancament = dataTancament;
+		this.arxiuTancat = false;
+	}
+	public void updateArxiuTancat(Boolean arxiuTancat){
+		this.arxiuTancat = arxiuTancat;
+	}
+	public void updateArxiuTancatError(Boolean arxiuTancatError){
+		this.arxiuTancatError = arxiuTancatError;
+	}
+	
 	public void updateProces(
 			Date procesData,
 			RegistreProcesEstatEnum procesEstat,
@@ -384,9 +397,6 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
 	}
-//	public void updateDataDistribucioAsincrona(Date dataDistribucioAsincrona) {
-//		this.dataDistribucioAsincrona = dataDistribucioAsincrona;
-//	}
 
 	public static Builder getBuilder(
 			EntitatEntity entitat,
@@ -463,6 +473,8 @@ public class RegistreEntity extends ContingutEntity {
 			built.idiomaCodi = idiomaCodi;
 			built.procesEstat = procesEstat;
 			built.pare = pare;
+			built.arxiuTancat = false;
+			built.arxiuTancatError = false;
 		}
 		public Builder entitatCodi(String entitatCodi) {
 			built.entitatCodi = entitatCodi;

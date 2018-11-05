@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
@@ -68,6 +69,12 @@ public interface RegistreService {
 	 * al DISTRIBUCIO i s'han quedat pendents de distribuir de forma asíncrona.
 	 */
 	public void distribuirAnotacionsPendents();
+	
+	/**
+	 * Revisa si ja s'ha superat la data de tancament de l'expedient de l'arxiu relacionat
+	 * amb l'assentament registral
+	 */
+	public void tancarExpedientsPendents();
 
 	/**
 	 * Processa periòdicament les regles de tipus backoffice Sistra pendents d'aplicar 
@@ -229,6 +236,15 @@ public interface RegistreService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId);
+	
+	/**
+	 * Retorna la informació de l'expedient emmagatzemada a dins l'arxiu,
+	 * donada una anotació de registre
+	 * @param expedientId
+	 *            Atribut id de l'anotacio de registre.
+	 * @return la informació de l'expedient emmagatzemada a dins l'arxiu
+	 */
+	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
 	RegistreAnnexDetallDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException;

@@ -13,6 +13,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
@@ -182,6 +183,18 @@ public class RegistreServiceBean implements RegistreService {
 	public List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException {
 		return delegate.getAnnexos(entitatId, contingutId, registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void tancarExpedientsPendents() {
+		delegate.tancarExpedientsPendents();
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId) {
+		return delegate.getArxiuDetall(registreAnotacioId);
 	}
 	
 }

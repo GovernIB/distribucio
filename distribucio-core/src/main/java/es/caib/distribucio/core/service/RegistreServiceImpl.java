@@ -19,8 +19,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ArxiuContingutDto;
+import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
@@ -49,9 +53,11 @@ import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
+import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 
@@ -367,6 +373,33 @@ public class RegistreServiceImpl implements RegistreService {
 				logger.error("Error distribuïnt anotacions pendents", e);
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	@Override
+	@Transactional
+	@Scheduled(fixedRate = 120000)
+	public void tancarExpedientsPendents() {
+		
+		logger.debug("Revisant si s'ha de tancar algun expedient a l'arxiu");
+		try {
+			Date ara = new Date();
+			List<RegistreEntity> pendentsTancar = registreRepository.findPendentsTancarArxiu(ara);
+			
+			if (!pendentsTancar.isEmpty()) {
+				logger.debug("Tancant " + pendentsTancar.size() + " expedients a l'arxiu");
+				for (RegistreEntity registre: pendentsTancar) {
+					try {
+						registreHelper.tancarExpedientArxiu(registre.getId());
+					} catch (Exception e) {
+						registreHelper.actualitzarEstatErrorTancament(
+								registre.getId());
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error tancant expedient", e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -876,7 +909,72 @@ public class RegistreServiceImpl implements RegistreService {
 				registre);		
 	}
 
-
+	@Transactional(readOnly = true)
+	@Override
+	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId) {
+		logger.debug("Obtenint informació de l'arxiu per l'anotacio ("
+				+ "registreAnotacioId=" + registreAnotacioId + ")");
+		RegistreEntity registre = registreRepository.findOne(registreAnotacioId);
+		
+		ArxiuDetallDto arxiuDetall = null;
+		if (registre.getExpedientArxiuUuid() != null) {
+			arxiuDetall = new ArxiuDetallDto();
+			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
+			List<ContingutArxiu> continguts = arxiuExpedient.getContinguts();
+			arxiuDetall.setIdentificador(arxiuExpedient.getIdentificador());
+			arxiuDetall.setNom(arxiuExpedient.getNom());
+			ExpedientMetadades metadades = arxiuExpedient.getMetadades();
+			if (metadades != null) {
+				arxiuDetall.setEniVersio(metadades.getVersioNti());
+				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
+				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());
+				arxiuDetall.setEniDataObertura(metadades.getDataObertura());
+				arxiuDetall.setEniClassificacio(metadades.getClassificacio());
+				if (metadades.getEstat() != null) {
+					switch (metadades.getEstat()) {
+					case OBERT:
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.OBERT);
+						break;
+					case TANCAT:
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.TANCAT);
+						break;
+					case INDEX_REMISSIO:
+						arxiuDetall.setEniEstat(ExpedientEstatEnumDto.INDEX_REMISSIO);
+						break;
+					}
+				}
+				arxiuDetall.setEniInteressats(metadades.getInteressats());
+				arxiuDetall.setEniOrgans(metadades.getOrgans());
+				arxiuDetall.setMetadadesAddicionals(metadades.getMetadadesAddicionals());
+			}
+			if (continguts != null) {
+				List<ArxiuContingutDto> detallFills = new ArrayList<ArxiuContingutDto>();
+				for (ContingutArxiu cont: continguts) {
+					ArxiuContingutDto detallFill = new ArxiuContingutDto();
+					detallFill.setIdentificador(
+							cont.getIdentificador());
+					detallFill.setNom(
+							cont.getNom());
+					if (cont.getTipus() != null) {
+						switch (cont.getTipus()) {
+						case EXPEDIENT:
+							detallFill.setTipus(ArxiuContingutTipusEnumDto.EXPEDIENT);
+							break;
+						case DOCUMENT:
+							detallFill.setTipus(ArxiuContingutTipusEnumDto.DOCUMENT);
+							break;
+						case CARPETA:
+							detallFill.setTipus(ArxiuContingutTipusEnumDto.CARPETA);
+							break;
+						}
+					}
+					detallFills.add(detallFill);
+				}
+				arxiuDetall.setFills(detallFills);
+			}
+		}
+		return arxiuDetall;
+	}
 
 	private RegistreAnnexDetallDto getJustificantPerRegistre(
 			EntitatEntity entitat,

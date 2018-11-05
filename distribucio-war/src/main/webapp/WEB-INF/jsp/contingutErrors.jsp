@@ -78,36 +78,6 @@
 		</div>
 		<div id="validacions" class="tab-pane">
 	</c:if>
-	<c:if test="${!contingut.valid}">
-		
-			<c:set var="hiHaMetaDades" value="${false}"/>
-			<c:set var="hiHaMetaDocuments" value="${false}"/>
-			<c:forEach var="error" items="${errors}">
-				<c:if test="${error.errorMetaDada}"><c:set var="hiHaMetaDades" value="${true}"/></c:if>
-				<c:if test="${error.errorMetaDocument}"><c:set var="hiHaMetaDocuments" value="${true}"/></c:if>
-			</c:forEach>
-			<c:if test="${hiHaMetaDades}">
-				<h4><span class="fa fa-exclamation-triangle text-warning"></span>&nbsp;<spring:message code="contingut.errors.falten.metadades"/></h4>
-				<ul class="list-group">
-					<c:forEach var="error" items="${errors}">
-						<c:if test="${error.errorMetaDada}">
-							<li class="list-group-item">${error.metaDada.nom}</li>
-						</c:if>
-					</c:forEach>
-				</ul>
-			</c:if>
-			<c:if test="${hiHaMetaDocuments}">
-				<h4><span class="fa fa-exclamation-triangle text-warning"></span>&nbsp;<spring:message code="contingut.errors.falten.metadocuments"/></h4>
-				<ul class="list-group">
-					<c:forEach var="error" items="${errors}">
-						<c:if test="${error.errorMetaDocument}">
-							<li class="list-group-item">${error.metaDocument.nom}</li>
-						</c:if>
-					</c:forEach>
-				</ul>
-			</c:if>
-	
-	</c:if>
 	<c:if test="${!contingut.valid && contingut.alerta}">			
 		</div>
 	</c:if>

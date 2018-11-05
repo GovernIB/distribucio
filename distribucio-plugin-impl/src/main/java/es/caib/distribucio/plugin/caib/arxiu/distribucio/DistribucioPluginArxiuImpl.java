@@ -13,7 +13,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -272,8 +271,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
 				perfil = FirmaPerfil.EPES.toString();
+				
 				fitxer.setContingut(firmaDistribucioContingut);
-				firmaDistribucioContingut = null;
+				tipusMime = "application/pdf";
+				fitxerNom = annex.getTitol() + "_pades.pdf";
+				
+//				fitxer.setContingut(firmaDistribucioContingut);
+//				firmaDistribucioContingut = null;
 			} else {
 				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
 				perfil = FirmaPerfil.BES.toString();
@@ -289,7 +293,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			annexFirma.setCsvRegulacio(csvRegulacio);
 			annexFirma.setAutofirma(true);
 			annexFirma.setGesdocFirmaId(null);
-			annexFirma.setContingut(contingut);
+			annexFirma.setContingut(firmaDistribucioContingut);
 			annexFirma.setAnnex(annex);
 			
 			annex.getFirmes().add(annexFirma);

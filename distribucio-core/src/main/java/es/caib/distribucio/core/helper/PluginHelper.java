@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +80,6 @@ public class PluginHelper {
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
-
-
 	public String distribuirContingutAnotacioPendent(RegistreEntity anotacio, BustiaEntity bustia, boolean crearAutofirma) {
 		String accioDescripcio = "Distribucio de contingut d'anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -100,6 +100,8 @@ public class PluginHelper {
 					RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
 					DistribucioRegistreAnnex distribucioAnnex = registreAnotacio.getAnnexos().get(i);
 					annex.updateFitxerArxiuUuid(distribucioAnnex.getFitxerArxiuUuid());
+					
+					actualitzarTamanyContingut(annex);
 					
 					if (distribucioAnnex.getFirmes() != null && distribucioAnnex.getFirmes().size() > 0) {
 						for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
@@ -377,97 +379,7 @@ public class PluginHelper {
 	public boolean isArxiuPluginActiu() {
 		return getArxiuPlugin() != null;
 	}
-//	public boolean arxiuSuportaVersionsExpedients() {
-//		return getArxiuPlugin().suportaVersionatExpedient();
-//	}
-//	public boolean arxiuSuportaVersionsDocuments() {
-//		return getArxiuPlugin().suportaVersionatDocument();
-//	}
-//	public boolean arxiuSuportaMetadades() {
-//		return getArxiuPlugin().suportaMetadadesNti();
-//	}
-//
-//	public ContingutArxiu arxiuExpedientPerAnotacioCrear(
-//			RegistreEntity anotacio, 
-//			BustiaEntity bustia) {
-//		String accioDescripcio = "Creant un expedient temporal per anotacio de registre rebuda";
-//		String nomExpedient = "EXP_REG_" + anotacio.getExpedientNumero() + "_" + System.currentTimeMillis();
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("nom", nomExpedient);
-//		accioParams.put("entitatId", bustia.getEntitat().getId().toString());
-//		accioParams.put("entitatCodi", bustia.getEntitat().getCodi());
-//		accioParams.put("entitatNom", bustia.getEntitat().getNom());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
-//					toArxiuExpedient(
-//							null,
-//							nomExpedient,
-//							null,
-//							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
-//							new Date(),
-//							getPropertyPluginRegistreExpedientClassificacio(),
-//							ExpedientEstatEnumDto.OBERT,
-//							null,
-//							getPropertyPluginRegistreExpedientSerieDocumental()));
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			
-//			return expedientCreat;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public Expedient arxiuExpedientConsultarPerUuid(
-//			String uuid) {
-//		String accioDescripcio = "Consulta d'un expedient per uuid";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			Expedient arxiuExpedient = getArxiuPlugin().expedientDetalls(
-//					uuid, 
-//					null);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return arxiuExpedient;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//	
+	
 	public void eliminarContingutExistent(
 			String idContingut) {
 		String accioDescripcio = "Eliminació d'un expedient";
@@ -501,6 +413,27 @@ public class PluginHelper {
 
 	public void marcarAnotacioComProcessada(
 			RegistreEntity registre) {
+			
+		//Abans aquí es tancava l'expedient de l'arxiu digital
+		//ara es fa en segon pla passat un interval de dies.
+		
+		int dies = getPropertyExpedientDiesTancament();
+		
+		Date ara = new Date();
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(ara);
+		c.add(Calendar.DATE, dies);
+		
+		Date dataTancament = c.getTime();
+		
+		registre.updateDataTancament(dataTancament);
+		
+		registre.updateArxiuEsborrat();
+	}
+	
+	public void tancarExpedientArxiu(
+			RegistreEntity registre) {
 		String accioDescripcio = "Tancament d'un expedient temporal relacionada amb una anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
@@ -510,12 +443,11 @@ public class PluginHelper {
 		accioParams.put("registreEntitat", registre.getEntitatCodi());
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();
+		
 		try {
-			
 			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(registre, DistribucioRegistreAnotacio.class);
 			getDistribucioPlugin().marcarProcessat(anotacio);
 			
-			registre.updateArxiuEsborrat();
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -538,147 +470,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-//
-//	public void arxiuDocumentActualitzar(
-//			DocumentEntity document,
-//			FitxerDto fitxer,
-//			ContingutEntity contingutPare,
-//			String classificacioDocumental) {
-//		String accioDescripcio = "Actualització de les dades d'un document";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("id", document.getId().toString());
-//		accioParams.put("títol", document.getNom());
-//		accioParams.put("contingutPareId", contingutPare.getId().toString());
-//		accioParams.put("contingutPareNom", contingutPare.getNom());
-//		accioParams.put("classificacioDocumental", classificacioDocumental);
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			if (document.getArxiuUuid() == null) {
-//				ContingutArxiu documentCreat = getArxiuPlugin().documentCrear(
-//						toArxiuDocument(
-//								null,
-//								document.getNom(),
-//								fitxer,
-//								null,
-//								null,
-//								null,
-//								document.getNtiOrigen(),
-//								Arrays.asList(document.getNtiOrgano()),
-//								document.getDataCaptura(),
-//								document.getNtiEstadoElaboracion(),
-//								document.getNtiTipoDocumental(),
-//								DocumentEstat.ESBORRANY,
-//								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())),
-//						contingutPare.getArxiuUuid());
-//				if (getArxiuPlugin().suportaMetadadesNti()) {
-//					Document documentDetalls = getArxiuPlugin().documentDetalls(
-//							documentCreat.getIdentificador(),
-//							null,
-//							false);
-//					propagarMetadadesDocument(
-//							documentDetalls,
-//							document);
-//				}
-//				document.updateArxiu(
-//						documentCreat.getIdentificador());
-//			} else {
-//				getArxiuPlugin().documentModificar(
-//						toArxiuDocument(
-//								document.getArxiuUuid(),
-//								document.getNom(),
-//								fitxer,
-//								null,
-//								null,
-//								null,
-//								document.getNtiOrigen(),
-//								Arrays.asList(document.getNtiOrgano()),
-//								document.getDataCaptura(),
-//								document.getNtiEstadoElaboracion(),
-//								document.getNtiTipoDocumental(),
-//								DocumentEstat.ESBORRANY,
-//								DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
-//				document.updateArxiu(null);
-//			}
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public String arxiuDocumentAnnexCrear(
-//			RegistreAnnexEntity annex,
-//			BustiaEntity bustia,
-//			FitxerDto fitxer,
-//			List<ArxiuFirmaDto> firmes,
-//			ContingutArxiu expedient) {
-//		String accioDescripcio = "Actualització de les dades d'un document";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("títol", annex.getTitol());
-//		accioParams.put("contingutPareId", expedient.getIdentificador());
-//		accioParams.put("contingutPareNom", expedient.getNom());
-//		long t0 = System.currentTimeMillis();
-//		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
-//		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
-//			estatDocument = DocumentEstat.DEFINITIU;
-//		}
-//		try {
-//			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
-//					toArxiuDocument(
-//							null,
-//							annex.getTitol(),
-//							fitxer,
-//							null,
-//							firmes,
-//							null,
-//							(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(annex.getOrigenCiutadaAdmin().getValor())] : null),
-//							Arrays.asList(bustia.getEntitat().getUnitatArrel()),
-//							annex.getDataCaptura(),
-//							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(annex.getNtiElaboracioEstat().getValor()) : null),
-//							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(annex.getNtiTipusDocument().getValor()) : null),
-//							estatDocument,
-//							false),
-//					expedient.getIdentificador());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return contingutFitxer.getIdentificador();
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
+	
 	public Document arxiuDocumentConsultar(
 			ContingutEntity contingut,
 			String nodeId,
@@ -691,6 +483,7 @@ public class PluginHelper {
 				ambContingut,
 				false);
 	}
+	
 	public Document arxiuDocumentConsultar(
 			ContingutEntity contingut,
 			String nodeId,
@@ -734,781 +527,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-//
-//	public void arxiuDocumentEsborrar(
-//			DocumentEntity document) {
-//		String accioDescripcio = "Eliminació d'un document";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("id", document.getId().toString());
-//		accioParams.put("títol", document.getNom());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			getArxiuPlugin().documentEsborrar(
-//					document.getArxiuUuid());
-//			document.updateArxiuEsborrat();
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public boolean arxiuDocumentExtensioPermesa(String extensio) {
-//		return getArxiuFormatExtensio(extensio) != null;
-//	}
-//
-//	public List<ContingutArxiu> arxiuDocumentObtenirVersions(
-//			DocumentEntity document) {
-//		String accioDescripcio = "Obtenir versions del document";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("id", document.getId().toString());
-//		accioParams.put("títol", document.getNom());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			List<ContingutArxiu> versions = getArxiuPlugin().documentVersions(
-//					document.getArxiuUuid());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return versions;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public String arxiuDocumentGuardarPdfFirmat(
-//			DocumentEntity document,
-//			FitxerDto fitxerPdfFirmat) {
-//		// El paràmetre custodiaTipus es reb sempre com a paràmetre però només te
-//		// sentit quan s'empra el plugin d'arxiu que accedeix a valcert.
-//		String accioDescripcio = "Guardar PDF firmat com a document definitiu";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("id", document.getId().toString());
-//		accioParams.put("títol", document.getNom());
-//		accioParams.put("fitxerPdfFirmatNom", fitxerPdfFirmat.getNom());
-//		accioParams.put("fitxerPdfFirmatTamany", new Long(fitxerPdfFirmat.getTamany()).toString());
-//		accioParams.put("fitxerPdfFirmatContentType", fitxerPdfFirmat.getContentType());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			getArxiuPlugin().documentModificar(
-//					toArxiuDocument(
-//							document.getArxiuUuid(),
-//							document.getNom(),
-//							null,
-//							fitxerPdfFirmat,
-//							null,
-//							null,
-//							document.getNtiOrigen(),
-//							Arrays.asList(document.getNtiOrgano()),
-//							document.getDataCaptura(),
-//							document.getNtiEstadoElaboracion(),
-//							document.getNtiTipoDocumental(),
-//							DocumentEstat.DEFINITIU,
-//							DocumentTipusEnumDto.FISIC.equals(document.getDocumentTipus())));
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			document.updateEstat(
-//					DocumentEstatEnumDto.CUSTODIAT);
-//			return document.getId().toString();
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public FitxerDto arxiuDocumentVersioImprimible(
-//			DocumentEntity document) {
-//		String accioDescripcio = "Obtenir versió imprimible del document";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("id", document.getId().toString());
-//		accioParams.put("títol", document.getNom());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			DocumentContingut documentContingut = getArxiuPlugin().documentImprimible(
-//					document.getArxiuUuid());
-//			FitxerDto fitxer = new FitxerDto();
-//			fitxer.setNom(documentContingut.getArxiuNom());
-//			fitxer.setContentType(documentContingut.getTipusMime());
-//			fitxer.setTamany(documentContingut.getTamany());
-//			fitxer.setContingut(documentContingut.getContingut());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return fitxer;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_ARXIU,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public String portafirmesUpload(
-//			DocumentEntity document,
-//			String motiu,
-//			PortafirmesPrioritatEnum prioritat,
-//			Date dataCaducitat,
-//			String documentTipus,
-//			String[] responsables,
-//			MetaDocumentFirmaFluxTipusEnumDto fluxTipus,
-//			String fluxId,
-//			List<DocumentEntity> annexos) {
-//		String accioDescripcio = "Enviament de document a firmar";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put(
-//				"documentId",
-//				document.getId().toString());
-//		accioParams.put(
-//				"documentTitol",
-//				document.getNom());
-//		accioParams.put("motiu", motiu);
-//		accioParams.put("prioritat", prioritat.toString());
-//		accioParams.put(
-//				"dataCaducitat",
-//				new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataCaducitat));
-//		long t0 = System.currentTimeMillis();
-//		if (annexos != null) {
-//			StringBuilder annexosIds = new StringBuilder();
-//			StringBuilder annexosTitols = new StringBuilder();
-//			boolean primer = true;
-//			for (DocumentEntity annex: annexos) {
-//				if (!primer) {
-//					annexosIds.append(", ");
-//					annexosTitols.append(", ");
-//				}
-//				annexosIds.append(annex.getId());
-//				annexosTitols.append(annex.getNom());
-//				primer = false;
-//			}
-//			accioParams.put("annexosIds", annexosIds.toString());
-//			accioParams.put("annexosTitols", annexosTitols.toString());
-//		}
-//		PortafirmesDocument portafirmesDocument = new PortafirmesDocument();
-//		portafirmesDocument.setTitol(document.getNom());
-//		portafirmesDocument.setFirmat(
-//				false);
-//		/*String urlCustodia = null;
-//		if (portafirmesEnviarDocumentEstampat()) {
-//			urlCustodia = arxiuDocumentGenerarUrlPerDocument(document);
-//		}
-//		FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(document);
-//		FitxerDto fitxerConvertit = conversioConvertirPdfIEstamparUrl(
-//				fitxerOriginal,
-//				urlCustodia);*/
-//		FitxerDto fitxerOriginal = documentHelper.getFitxerAssociat(document);
-//		FitxerDto fitxerConvertit = this.conversioConvertirPdf(
-//				fitxerOriginal,
-//				null);
-//		portafirmesDocument.setArxiuNom(
-//				fitxerConvertit.getNom());
-//		portafirmesDocument.setArxiuContingut(
-//				fitxerConvertit.getContingut());
-//		List<PortafirmesFluxBloc> flux = new ArrayList<PortafirmesFluxBloc>();
-//		if (MetaDocumentFirmaFluxTipusEnumDto.SERIE.equals(fluxTipus)) {
-//			for (String responsable: responsables) {
-//				PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
-//				bloc.setMinSignataris(1);
-//				bloc.setDestinataris(new String[] {responsable});
-//				bloc.setObligatorietats(new boolean[] {true});
-//				flux.add(bloc);
-//			}
-//		} else if (MetaDocumentFirmaFluxTipusEnumDto.PARALEL.equals(fluxTipus)) {
-//			PortafirmesFluxBloc bloc = new PortafirmesFluxBloc();
-//			bloc.setMinSignataris(responsables.length);
-//			bloc.setDestinataris(responsables);
-//			boolean[] obligatorietats = new boolean[responsables.length];
-//			Arrays.fill(obligatorietats, true);
-//			bloc.setObligatorietats(obligatorietats);
-//			flux.add(bloc);
-//		}
-//		try {
-//			Calendar dataCaducitatCal = Calendar.getInstance();
-//			dataCaducitatCal.setTime(dataCaducitat);
-//			if (	dataCaducitatCal.get(Calendar.HOUR_OF_DAY) == 0 &&
-//					dataCaducitatCal.get(Calendar.MINUTE) == 0 &&
-//					dataCaducitatCal.get(Calendar.SECOND) == 0 &&
-//					dataCaducitatCal.get(Calendar.MILLISECOND) == 0) {
-//				dataCaducitatCal.set(Calendar.HOUR_OF_DAY, 23);
-//				dataCaducitatCal.set(Calendar.MINUTE, 59);
-//				dataCaducitatCal.set(Calendar.SECOND, 59);
-//				dataCaducitatCal.set(Calendar.MILLISECOND, 999);
-//			}
-//			String portafirmesEnviamentId = getPortafirmesPlugin().upload(
-//					portafirmesDocument,
-//					documentTipus,
-//					motiu,
-//					"Aplicació DISTRIBUCIO",
-//					prioritat,
-//					dataCaducitatCal.getTime(),
-//					flux,
-//					fluxId,
-//					null,
-//					false);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return portafirmesEnviamentId;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de portafirmes";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public PortafirmesDocument portafirmesDownload(
-//			DocumentPortafirmesEntity documentPortafirmes) {
-//		String accioDescripcio = "Descarregar document firmat";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		DocumentEntity document = documentPortafirmes.getDocument();
-//		accioParams.put(
-//				"documentVersioId",
-//				document.getId().toString());
-//		accioParams.put(
-//				"documentPortafirmesId",
-//				documentPortafirmes.getId().toString());
-//		accioParams.put(
-//				"portafirmesId",
-//				new Long(documentPortafirmes.getPortafirmesId()).toString());
-//		long t0 = System.currentTimeMillis();
-//		PortafirmesDocument portafirmesDocument = null;
-//		try {
-//			portafirmesDocument = getPortafirmesPlugin().download(
-//					documentPortafirmes.getPortafirmesId());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return portafirmesDocument;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al descarregar el document firmat";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public void portafirmesDelete(
-//			DocumentPortafirmesEntity documentPortafirmes) {
-//		String accioDescripcio = "Esborrar document enviat a firmar";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		DocumentEntity document = documentPortafirmes.getDocument();
-//		accioParams.put(
-//				"documentId",
-//				document.getId().toString());
-//		accioParams.put(
-//				"documentPortafirmesId",
-//				documentPortafirmes.getId().toString());
-//		accioParams.put(
-//				"portafirmesId",
-//				new Long(documentPortafirmes.getPortafirmesId()).toString());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			getPortafirmesPlugin().delete(
-//					documentPortafirmes.getPortafirmesId());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de portafirmes";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public List<PortafirmesDocumentTipusDto> portafirmesFindDocumentTipus() {
-//		String accioDescripcio = "Consulta de tipus de document";
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			List<PortafirmesDocumentTipus> tipus = getPortafirmesPlugin().findDocumentTipus();
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					null,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			if (tipus != null) {
-//				List<PortafirmesDocumentTipusDto> resposta = new ArrayList<PortafirmesDocumentTipusDto>();
-//				for (PortafirmesDocumentTipus t: tipus) {
-//					PortafirmesDocumentTipusDto dto = new PortafirmesDocumentTipusDto();
-//					dto.setId(t.getId());
-//					dto.setCodi(t.getCodi());
-//					dto.setNom(t.getNom());
-//					resposta.add(dto);
-//				}
-//				return resposta;
-//			} else {
-//				return null;
-//			}
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de portafirmes";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					accioDescripcio,
-//					null,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_PFIRMA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public boolean portafirmesEnviarDocumentEstampat() {
-//		return !getPortafirmesPlugin().isCustodiaAutomatica();
-//	}
-//
-//	public String conversioConvertirPdfArxiuNom(
-//			String nomOriginal) {
-//		return getConversioPlugin().getNomArxiuConvertitPdf(nomOriginal);
-//	}
-//
-//	public FitxerDto conversioConvertirPdf(
-//			FitxerDto original,
-//			String urlPerEstampar) {
-//		String accioDescripcio = "Conversió de document a PDF";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("arxiuOriginalNom", original.getNom());
-//		accioParams.put("arxiuOriginalTamany", new Integer(original.getContingut().length).toString());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			ConversioArxiu convertit = getConversioPlugin().convertirPdfIEstamparUrl(
-//					new ConversioArxiu(
-//							original.getNom(),
-//							original.getContingut()),
-//					urlPerEstampar);
-//			accioParams.put("arxiuConvertitNom", convertit.getArxiuNom());
-//			accioParams.put("arxiuConvertitTamany", new Integer(convertit.getArxiuContingut().length).toString());
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_CONVERT,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			FitxerDto resposta = new FitxerDto();
-//			resposta.setNom(
-//					convertit.getArxiuNom());
-//			resposta.setContingut(
-//					convertit.getArxiuContingut());
-//			return resposta;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de conversió de documents";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_CONVERT,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_CONVERT,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
 
-//
-//	/*public CiutadaExpedientInformacio ciutadaExpedientCrear(
-//			ExpedientEntity expedient,
-//			InteressatEntity destinatari) {
-//		MetaExpedientEntity metaExpedient = expedient.getMetaExpedient();
-//		String accioDescripcio = "Creació d'un expedient a la zona personal del ciutadà";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("expedientId", expedient.getId().toString());
-//		accioParams.put("expedientNumero", expedient.getNumero());
-//		accioParams.put("expedientTitol", expedient.getNom());
-//		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
-//		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
-//		accioParams.put("unitatAdministrativa", metaExpedient.getUnitatAdministrativa());
-//		String idioma = getIdiomaPerPluginCiutada(destinatari.getPreferenciaIdioma());
-//		accioParams.put("idioma", idioma);
-//		accioParams.put("destinatari", destinatari.getIdentificador());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			String descripcio = "[" + expedient.getNumero() + "] " + expedient.getNom();
-//			String interessatMobil = null;
-//			if (destinatari.getTelefon() != null && isTelefonMobil(destinatari.getTelefon())) {
-//				interessatMobil = destinatari.getTelefon();
-//			}
-//			CiutadaExpedientInformacio expedientInfo = getCiutadaPlugin().expedientCrear(
-//					expedient.getNtiIdentificador(),
-//					metaExpedient.getUnitatAdministrativa(),
-//					metaExpedient.getClassificacioDocumental(),
-//					idioma,
-//					descripcio,
-//					toPluginCiutadaPersona(destinatari),
-//					null,
-//					expedient.getSistraBantelNum(),
-//					destinatari.isNotificacioAutoritzat(),
-//					destinatari.getEmail(),
-//					interessatMobil);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return expedientInfo;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public void ciutadaAvisCrear(
-//			ExpedientEntity expedient,
-//			String titol,
-//			String text,
-//			String textMobil) {
-//		MetaExpedientEntity metaExpedient = expedient.getMetaExpedient();
-//		String accioDescripcio = "Creació d'un avis a la zona personal del ciutadà";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("expedientId", expedient.getId().toString());
-//		accioParams.put("expedientNumero", expedient.getNumero());
-//		accioParams.put("expedientTitol", expedient.getNom());
-//		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
-//		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
-//		accioParams.put("titol", titol);
-//		accioParams.put("text", text);
-//		accioParams.put("textMobil", textMobil);
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			getCiutadaPlugin().avisCrear(
-//					expedient.getNtiIdentificador(),
-//					metaExpedient.getUnitatAdministrativa(),
-//					titol,
-//					text,
-//					textMobil,
-//					null);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public CiutadaNotificacioResultat ciutadaNotificacioEnviar(
-//			ExpedientEntity expedient,
-//			InteressatEntity destinatari,
-//			String oficiTitol,
-//			String oficiText,
-//			String avisTitol,
-//			String avisText,
-//			String avisTextMobil,
-//			InteressatIdiomaEnumDto idioma,
-//			boolean confirmarRecepcio,
-//			List<DocumentEntity> annexos) {
-//		MetaExpedientEntity metaExpedient = expedient.getMetaExpedient();
-//		String accioDescripcio = "Enviament d'una notificació electrònica al ciutadà";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("expedientId", expedient.getId().toString());
-//		accioParams.put("expedientNumero", expedient.getNumero());
-//		accioParams.put("expedientTitol", expedient.getNom());
-//		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
-//		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
-//		accioParams.put("unitatAdministrativa", metaExpedient.getUnitatAdministrativa());
-//		accioParams.put("llibreCodi", metaExpedient.getNotificacioLlibreCodi());
-//		accioParams.put("organCodi", metaExpedient.getNotificacioOrganCodi());
-//		accioParams.put("destinatari", (destinatari != null) ? destinatari.getIdentificador() : "<null>");
-//		accioParams.put("idioma", idioma.name());
-//		accioParams.put("oficiTitol", oficiTitol);
-//		accioParams.put("avisTitol", avisTitol);
-//		accioParams.put("confirmarRecepcio", new Boolean(confirmarRecepcio).toString());
-//		if (annexos != null)
-//			accioParams.put("annexos (núm.)", new Integer(annexos.size()).toString());
-//		if (annexos != null) {
-//			StringBuilder annexosIds = new StringBuilder();
-//			StringBuilder annexosTitols = new StringBuilder();
-//			boolean primer = true;
-//			for (DocumentEntity annex: annexos) {
-//				if (!primer) {
-//					annexosIds.append(", ");
-//					annexosTitols.append(", ");
-//				}
-//				annexosIds.append(annex.getId());
-//				annexosTitols.append(annex.getNom());
-//				primer = false;
-//			}
-//			accioParams.put("annexosIds", annexosIds.toString());
-//			accioParams.put("annexosTitols", annexosTitols.toString());
-//		}
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			List<CiutadaDocument> ciutadaAnnexos = null;
-//			if (annexos != null) {
-//				ciutadaAnnexos = new ArrayList<CiutadaDocument>();
-//				for (DocumentEntity annex: annexos) {
-//					if (DocumentTipusEnumDto.FISIC.equals(annex.getDocumentTipus())) {
-//						throw new ValidationException(
-//								annex.getId(),
-//								DocumentEntity.class,
-//								"No espoden emprar documents físics com annexos d'una notificació telemàtica");
-//					}
-//					CiutadaDocument cdoc = new CiutadaDocument();
-//					cdoc.setTitol(annex.getNom());
-//					FitxerDto fitxer = documentHelper.getFitxerAssociat(annex);
-//					cdoc.setArxiuNom(fitxer.getNom());
-//					cdoc.setArxiuContingut(fitxer.getContingut());
-//					ciutadaAnnexos.add(cdoc);
-//				}
-//			}
-//			CiutadaNotificacioResultat resultat = getCiutadaPlugin().notificacioCrear(
-//					expedient.getNtiIdentificador(),
-//					expedient.getSistraUnitatAdministrativa(),
-//					metaExpedient.getNotificacioLlibreCodi(),
-//					metaExpedient.getNotificacioOrganCodi(),
-//					toPluginCiutadaPersona(destinatari),
-//					null,
-//					getIdiomaPerPluginCiutada(idioma),
-//					oficiTitol,
-//					oficiText,
-//					avisTitol,
-//					avisText,
-//					avisTextMobil,
-//					confirmarRecepcio,
-//					ciutadaAnnexos);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return resultat;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
-//	public CiutadaNotificacioEstat ciutadaNotificacioComprovarEstat(
-//			ExpedientEntity expedient,
-//			String registreNumero) {
-//		String accioDescripcio = "Comprovació de l'estat de la notificació";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put("expedientId", expedient.getId().toString());
-//		accioParams.put("expedientNumero", expedient.getNumero());
-//		accioParams.put("expedientTitol", expedient.getNom());
-//		accioParams.put("expedientTipusId", expedient.getMetaNode().getId().toString());
-//		accioParams.put("expedientTipusNom", expedient.getMetaNode().getNom());
-//		accioParams.put("registreNumero", registreNumero);
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			CiutadaNotificacioEstat justificant = getCiutadaPlugin().notificacioObtenirJustificantRecepcio(
-//					registreNumero);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return justificant;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de comunicació amb el ciutadà";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_CIUTADA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}*/
-//
-//	public boolean isRegistreSignarAnnexos() {
-//		return this.getPropertyPluginRegistreSignarAnnexos();
-//	}
-//
-//	public byte[] signaturaDistribucioSignar(
-//			RegistreAnnexEntity annex,
-//			byte[] annexContingut) {
-//		String accioDescripcio = "Signatura del document des del servidor";
-//		Map<String, String> accioParams = new HashMap<String, String>();
-//		accioParams.put(
-//				"annexId",
-//				annex.getId().toString());
-//		accioParams.put(
-//				"annexNom",
-//				annex.getFitxerNom());
-//		long t0 = System.currentTimeMillis();
-//		try {
-//			String motiu = "Autofirma en servidor de DISTRIBUCIO";
-//			String tipusFirma;
-//			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime()))
-//				tipusFirma = "PADES";
-//			else
-//				tipusFirma = "CADES";
-//			
-//			byte[] firmaContingut = getSignaturaPlugin().signar(
-//					annex.getId().toString(),
-//					annex.getFitxerNom(),
-//					motiu,
-//					tipusFirma,
-//					annexContingut);
-//			integracioHelper.addAccioOk(
-//					IntegracioHelper.INTCODI_SIGNATURA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0);
-//			return firmaContingut;
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error en accedir al plugin de signatura";
-//			integracioHelper.addAccioError(
-//					IntegracioHelper.INTCODI_SIGNATURA,
-//					accioDescripcio,
-//					accioParams,
-//					IntegracioAccioTipusEnumDto.ENVIAMENT,
-//					System.currentTimeMillis() - t0,
-//					errorDescripcio,
-//					ex);
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_SIGNATURA,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
-//
 	public boolean isValidaSignaturaPluginActiu() {
 		return getValidaSignaturaPlugin() != null;
 	}
@@ -1599,24 +618,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-//	
-//	public void gestioDocumentalUpdate(
-//			String id,
-//			String agrupacio,
-//			InputStream contingut) {
-//		try {
-//			getGestioDocumentalPlugin().update(
-//					id,
-//					agrupacio,
-//					contingut);
-//		} catch (Exception ex) {
-//			String errorDescripcio = "Error al accedir al plugin de gestió documental";
-//			throw new SistemaExternException(
-//					IntegracioHelper.INTCODI_GESDOC,
-//					errorDescripcio,
-//					ex);
-//		}
-//	}
+	
 	public void gestioDocumentalDelete(
 			String id,
 			String agrupacio) {
@@ -1747,6 +749,50 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DADESEXT,
 					errorDescripcio,
 					ex);
+		}
+	}
+	
+	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
+			String arxiuUuid) {
+		String accioDescripcio = "Consulta d'un expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientArxiuUuid", arxiuUuid);
+		long t0 = System.currentTimeMillis();
+		try {
+			es.caib.plugins.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return exp;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	private void actualitzarTamanyContingut(RegistreAnnexEntity annex) {
+		if (annex.getFitxerTamany() <= 0) {
+			Document document = this.arxiuDocumentConsultar(
+					annex.getRegistre(), 
+					annex.getFitxerArxiuUuid(), 
+					null, 
+					true);
+			if (document.getContingut() != null)
+				annex.updateFitxerTamany((int)document.getContingut().getTamany());
 		}
 	}
 	
@@ -1953,5 +999,9 @@ public class PluginHelper {
 	}
 	private String getPropertyPluginGestioDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+	}
+	private int getPropertyExpedientDiesTancament() {
+		String cadenaDies = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tancament.expedient.dies");
+		return Integer.parseInt(cadenaDies);
 	}
 }
