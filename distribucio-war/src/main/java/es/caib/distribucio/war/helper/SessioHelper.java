@@ -4,7 +4,10 @@
 package es.caib.distribucio.war.helper;
 
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 
@@ -19,11 +22,12 @@ public class SessioHelper {
 	public static final String SESSION_ATTRIBUTE_USUARI_ACTUAL = "SessioHelper.usuariActual";
 	public static final String SESSION_ATTRIBUTE_CONTENIDOR_VISTA = "SessioHelper.contenidorVista";
 	private static final String SESSION_ATTRIBUTE_PIPELLA_ANOT_REG = "SessioHelper.pipellaAnotacioRegistre";
-
+	private static final String SESSION_ATTRIBUTE_IDIOMA_USUARI = "SessionHelper.idiomaUsuari";
 
 
 	public static void processarAutenticacio(
 			HttpServletRequest request,
+			HttpServletResponse response,
 			AplicacioService aplicacioService) {
 		if (request.getUserPrincipal() != null) {
 			Boolean autenticacioProcessada = (Boolean)request.getSession().getAttribute(
@@ -36,7 +40,21 @@ public class SessioHelper {
 				request.getSession().setAttribute(
 						SESSION_ATTRIBUTE_USUARI_ACTUAL,
 						aplicacioService.getUsuariActual());
+				
 			}
+			String idioma_usuari = aplicacioService.getUsuariActual().getIdioma();
+			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+			
+			request.getSession().setAttribute(
+					SESSION_ATTRIBUTE_IDIOMA_USUARI, 
+					idioma_usuari);
+			
+	        localeResolver.setLocale(
+	        		request, 
+	        		response, 
+	        		StringUtils.parseLocaleString(
+	        				(String)request.getSession().getAttribute(SESSION_ATTRIBUTE_IDIOMA_USUARI))
+	        		);
 		}
 	}
 	public static boolean isAutenticacioProcessada(HttpServletRequest request) {

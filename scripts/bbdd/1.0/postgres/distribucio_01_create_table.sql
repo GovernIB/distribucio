@@ -1,7 +1,7 @@
 
 CREATE TABLE DIS_ALERTA
 (
-  ID                   BIGINT                          NOT NULL,
+  ID                   BIGSERIAL                          NOT NULL,
   TEXT                 character varying(256)          NOT NULL,
   ERROR                character varying(2048),
   LLEGIDA              boolean                         NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE DIS_USUARI
   NIF           		character varying(9)        NOT NULL,
   NOM           		character varying(200),
   EMAIL         		character varying(200),
-  IDIOMA 				character varying(2) default 'CA' NOT NULL,
+  IDIOMA 				character varying(2) 	 	NOT NULL,
   REBRE_EMAILS  		boolean,
   EMAILS_AGRUPATS		boolean,
   VERSION       		bigint                      NOT NULL
@@ -28,7 +28,7 @@ CREATE TABLE DIS_USUARI
 
 CREATE TABLE DIS_ENTITAT
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   CODI                 character varying(64)    NOT NULL,
   NOM                  character varying(256)   NOT NULL,
   DESCRIPCIO           character varying(1024),
@@ -44,10 +44,10 @@ CREATE TABLE DIS_ENTITAT
   FECHA_SINCRONIZACION TIMESTAMP WITHOUT TIME ZONE
 );
 
-
+/*
 CREATE TABLE DIS_METADOCUMENT
 (
-  ID                      BIGINT               NOT NULL,
+  ID                      BIGSERIAL               NOT NULL,
   GLOBAL_EXPEDIENT        boolean,
   GLOBAL_MULTIPLICITAT    character varying(256),
   GLOBAL_READONLY         boolean,
@@ -63,11 +63,11 @@ CREATE TABLE DIS_METADOCUMENT
   PLANTILLA_CONTENT_TYPE  character varying(256),
   PLANTILLA_CONTINGUT     oid
 );
-
+*/
 
 CREATE TABLE DIS_CONTINGUT
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   NOM                  character varying(1024)  NOT NULL,
   TIPUS                integer                  NOT NULL,
   PARE_ID              bigint,
@@ -86,7 +86,7 @@ CREATE TABLE DIS_CONTINGUT
 
 CREATE TABLE DIS_CONT_MOV
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   CONTINGUT_ID         bigint                   NOT NULL,
   ORIGEN_ID            bigint,
   DESTI_ID             bigint                   NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE DIS_CONT_MOV
 
 CREATE TABLE DIS_CONT_MOV_EMAIL 
 (
-  ID 					BIGINT 					NOT NULL, 
+  ID 					BIGSERIAL 					NOT NULL, 
   DESTINATARI_CODI		character varying(64) 	NOT NULL, 
   DESTINATARI_EMAIL		character varying(256) 	NOT NULL,
   ENVIAMENT_AGRUPAT		boolean					NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE DIS_CONT_MOV_EMAIL
 
 CREATE TABLE DIS_CONT_LOG
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   TIPUS                integer                  NOT NULL,
   CONTINGUT_ID         bigint                   NOT NULL,
   PARE_ID              bigint,
@@ -137,7 +137,7 @@ CREATE TABLE DIS_CONT_LOG
 
 CREATE TABLE DIS_BUSTIA
 (
-  ID           BIGINT                           NOT NULL,
+  ID           BIGSERIAL                           NOT NULL,
   UNITAT_CODI  character varying(9)             NOT NULL,
   PER_DEFECTE  boolean,
   ACTIVA       boolean,
@@ -147,7 +147,7 @@ CREATE TABLE DIS_BUSTIA
 
 CREATE TABLE DIS_REGISTRE
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   TIPUS                character varying(1)     NOT NULL,
   UNITAT_ADM           character varying(21)    NOT NULL,
   UNITAT_ADM_DESC      character varying(100),
@@ -201,16 +201,13 @@ CREATE TABLE DIS_REGISTRE
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(100),
   LLEGIDA              boolean,
-  EXPEDIENT_ARXIU_UUID  character varying(100),
-  DATA_TANCAMENT	   timestamp without time zone,
-  ARXIU_TANCAT		   boolean default false NOT NULL,
-  ARXIU_TANCAT_ERROR   boolean default false NOT NULL
+  EXPEDIENT_ARXIU_UUID  character varying(100)
 );
 
 
 CREATE TABLE DIS_REGISTRE_ANNEX
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   TITOL                character varying(200)   NOT NULL,
   FITXER_NOM           character varying(80)    NOT NULL,
   FITXER_TAMANY        integer                  NOT NULL,
@@ -243,7 +240,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
 
 CREATE TABLE DIS_REGISTRE_ANNEX_FIRMA
 (
-  ID                   BIGINT                   	NOT NULL,
+  ID                   BIGSERIAL                   	NOT NULL,
   TIPUS		           character varying(30),
   PERFIL    	       character varying(30),
   FITXER_NOM           character varying(80),
@@ -261,7 +258,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX_FIRMA
 
 CREATE TABLE DIS_REGISTRE_INTER
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ADRESA               character varying(640),
@@ -292,7 +289,7 @@ CREATE TABLE DIS_REGISTRE_INTER
 
 CREATE TABLE DIS_REGLA
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ACTIVA               boolean,
@@ -359,7 +356,7 @@ CREATE TABLE DIS_ACL_OBJECT_IDENTITY
 
 CREATE TABLE DIS_CONT_COMMENT
 (
-  ID                   BIGINT                   NOT NULL,
+  ID                   BIGSERIAL                   NOT NULL,
   CONTINGUT_ID         bigint 		        NOT NULL,
   TEXT		       character varying (1024),
   CREATEDDATE          timestamp without time zone,
@@ -370,7 +367,7 @@ CREATE TABLE DIS_CONT_COMMENT
 
 
 CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
-  ID           				BIGINT          NOT NULL,
+  ID           				BIGSERIAL          NOT NULL,
   CODI 						CHARACTER VARYING(9) 		NOT NULL,
   DENOMINACIO 				CHARACTER VARYING(300) 		NOT NULL,
   NIF_CIF 					CHARACTER VARYING(9),

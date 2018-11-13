@@ -66,7 +66,6 @@ public class UsuariController  extends BaseAdminController {
 	@RequestMapping(value = "/configuracio", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
-			HttpServletResponse response,
 			@Valid UsuariCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -76,9 +75,6 @@ public class UsuariController  extends BaseAdminController {
 		UsuariDto usuari = aplicacioService.updateUsuariActual(UsuariCommand.asDto(command));
 		SessioHelper.setUsuariActual(request, usuari);
 		
-		LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-        localeResolver.setLocale(request, response, StringUtils.parseLocaleString(aplicacioService.getUsuariActual().getIdioma()));
-        
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:/",
