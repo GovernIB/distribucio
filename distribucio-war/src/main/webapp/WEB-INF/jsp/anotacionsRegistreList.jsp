@@ -119,10 +119,12 @@ $(document).ready(function() {
 				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
 					<spring:message code="contingut.admin.columna.situacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
-						{{for path}}/
-							{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
-							{{:nom}}
-						{{/for}}
+						{{if path}}
+							{{for path}}/
+								{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
+								{{:nom}}
+							{{/for}}
+						{{/if}}
 					</script>
 				</th>
 				<th data-col-name="interessatsResum" data-orderable="false"><spring:message code="contingut.admin.columna.interessats"/></th>
