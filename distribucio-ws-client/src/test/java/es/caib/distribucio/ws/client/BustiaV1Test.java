@@ -5,27 +5,19 @@ package es.caib.distribucio.ws.client;
 
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import es.caib.distribucio.ws.v1.bustia.BustiaV1;
-import es.caib.distribucio.ws.v1.bustia.BustiaV1Service;
-import es.caib.distribucio.ws.v1.bustia.Firma;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnnex;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnotacio;
 import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
@@ -37,107 +29,118 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
  */
 public class BustiaV1Test {
 
-	private static final String ENDPOINT_ADDRESS = "http://localhost:8080/distribucio/ws/v1/bustia";
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "admin15";
+	private static final String ENTITAT_DIST_CODI = "E00003601";
+	private static final String UNITAT_ADM_CODI = "E03029603";
+	private static final String APLICACIO_CODI = "CLIENT_TEST";
+	private static final String APLICACIO_VERSIO = "2";
+	private static final String ASSUMPTE_CODI = "A1";
+	private static final String ASSUMPTE_DESC = "Descripcio CodA";
+	private static final String ASSUMPTE_TIPUS_CODI = "A1";
+	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
+	private static final String USUARI_CODI = "u104848";
+	private static final String USUARI_NOM = "VHZ";
+	private static final String EXTRACTE = "Anotació amb annexos sense firma per provar autofirma servidor";
+	private static final String ENTITAT_CODI = "codientitat";
+	private static final String ENTITAT_DESC = "Descripció entitat";
+	private static final String OFICINA_CODI = "10";
+	private static final String OFICINA_DESC = "Oficina de proves";
+	private static final String LLIBRE_CODI = "10";
+	private static final String LLIBRE_DESC = "Oficina de proves";
+	private static final String IDIOMA_CODI = "1";
+	private static final String IDIOMA_DESC = "Català";
+	private static final String IDENTIFICADOR = "15/10/2015";
+	private static final String EXPEDIENT_NUM = "12345678";
 
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
-		
-		Random generator = new Random(); 
+		Random generator = new Random();
 		int randomNumber = generator.nextInt(9999) + 1;
-		
 		RegistreAnotacio anotacio = new RegistreAnotacio(); 
-		anotacio.setAplicacioCodi("CLIENT_TEST");
-		anotacio.setAplicacioVersio("2");
-		anotacio.setAssumpteCodi("A1");
-        anotacio.setAssumpteDescripcio("Descripcio CodA");
-        anotacio.setAssumpteTipusCodi("A1");
-        anotacio.setAssumpteDescripcio("Assumpte de proves");
-        anotacio.setUsuariCodi("u104848");
-        anotacio.setUsuariNom("VHZ");
+		anotacio.setAplicacioCodi(APLICACIO_CODI);
+		anotacio.setAplicacioVersio(APLICACIO_VERSIO);
+		anotacio.setAssumpteCodi(ASSUMPTE_CODI);
+        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
+        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
+        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);
+        anotacio.setUsuariCodi(USUARI_CODI);
+        anotacio.setUsuariNom(USUARI_NOM);
         anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        anotacio.setExtracte("Anotació amb annexos sense firma per provar autofirma servidor");
-        anotacio.setOficinaCodi("10");
-        anotacio.setOficinaDescripcio("Oficina de proves");
-        anotacio.setEntitatCodi("codientitat");
-        anotacio.setEntitatDescripcio("Descripció entitat");
-        anotacio.setLlibreCodi("L01");
-        anotacio.setLlibreDescripcio("llibre descripció");
+        anotacio.setExtracte(EXTRACTE);
+        anotacio.setEntitatCodi(ENTITAT_CODI);
+        anotacio.setEntitatDescripcio(ENTITAT_DESC);
+        anotacio.setOficinaCodi(OFICINA_CODI);
+        anotacio.setOficinaDescripcio(OFICINA_DESC);
+        anotacio.setLlibreCodi(LLIBRE_CODI);
+        anotacio.setLlibreDescripcio(LLIBRE_DESC);
         anotacio.setNumero(String.valueOf(randomNumber));
-        anotacio.setIdiomaCodi("1");
-        anotacio.setIdiomaDescripcio("Català");
-        anotacio.setIdentificador("15/10/2015");
-        anotacio.setExpedientNumero(String.valueOf(randomNumber));
-        
-        File file = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/Koala.jpg");
-        byte[] encodedContingut = FileUtils.readFileToByteArray(file);
-        RegistreAnnex annex1 = new RegistreAnnex();
-        annex1.setTitol("Koala imatge");
-        annex1.setFitxerNom(file.getName());
-        annex1.setFitxerTipusMime(Files.probeContentType(file.toPath()));
-        annex1.setFitxerContingut(encodedContingut);
-        annex1.setFitxerTamany((int)(file.length()));
-        annex1.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        annex1.setEniOrigen("0");
-        annex1.setEniEstatElaboracio("EE01");
-        annex1.setEniTipusDocumental("TD01");
-        annex1.setSicresTipusDocument("01");
-        afegirFirmesJpg(annex1);
-
+        anotacio.setIdiomaCodi(IDIOMA_CODI);
+        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
+        anotacio.setIdentificador(IDENTIFICADOR);
+        anotacio.setExpedientNumero(EXPEDIENT_NUM);
+        RegistreAnnex annex1 = crearAnnex(
+        		"Annex1",
+        		"annex.pdf",
+        		"application/pdf",
+        		null,
+        		getContingutAnnexSenseFirma(),
+        		"0",
+        		"EE01",
+        		"TD01",
+        		"01");
         anotacio.getAnnexos().add(annex1);
-
-
-//        File file2 = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/annex1.pdf");
-//        byte[] encodedContingut2 = FileUtils.readFileToByteArray(file2);
-//        RegistreAnnex annex2 = new RegistreAnnex();
-//        annex2.setTitol("annexproves2");
-//        annex2.setFitxerNom(file2.getName());
-////        annex2.setFitxerTipusMime(Files.probeContentType(file2.toPath()));
-//        annex2.setFitxerContingut(encodedContingut2);
-////        annex2.setFitxerTamany((int)(file2.length()));
-////        annex2.setFitxerArxiuUuid("0d7465ae-ac35-4835-9100-911487fba14f");
-//        annex2.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-//        annex2.setEniOrigen("1");
-//        annex2.setEniEstatElaboracio("EE01");
-//        annex2.setEniTipusDocumental("TD02");
-//        annex2.setSicresTipusDocument("02");
-//        afegirFirmes2(annex2);
-//
-//        anotacio.getAnnexos().add(annex2);
-        
-        
-        File file3 = new File("c:/Feina/RIPEA/annexos/justificant.pdf");
-        byte[] encodedContingut3 = FileUtils.readFileToByteArray(file3);
-        RegistreAnnex justificant = new RegistreAnnex();
-        justificant.setTitol("justificant");
-        justificant.setFitxerNom(file3.getName());
-        justificant.setFitxerTipusMime(Files.probeContentType(file3.toPath()));
-        justificant.setFitxerContingut(encodedContingut3);
-        justificant.setFitxerTamany((int)(file3.length()));
-        justificant.setEniDataCaptura(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        justificant.setEniOrigen("1");
-        justificant.setEniEstatElaboracio("EE01");
-        justificant.setEniTipusDocumental("TD02");
-        justificant.setSicresTipusDocument("02");
-        justificant.setFitxerArxiuUuid("9f33c5c7-7d0f-4d70-9082-c541a42cc041");
-        
-//        anotacio.setJustificant(justificant);
-        
-//        afegirInteressats(anotacio);
-        
+        RegistreAnnex justificant = crearAnnex(
+        		"justificant",
+        		"justificant.pdf",
+        		"application/pdf",
+        		"9f33c5c7-7d0f-4d70-9082-c541a42cc041",
+        		null, //getContingutJustificant(),
+        		"1",
+        		"EE01",
+        		"TD02",
+        		"02");
+        anotacio.setJustificant(justificant);
         try {
     		getBustiaServicePort().enviarAnotacioRegistreEntrada(
-    				"E00003601", // "entitatCodi",
-    				"E03029603", // "unitatAdministrativaCodi",
+    				ENTITAT_DIST_CODI,
+    				UNITAT_ADM_CODI,
     				anotacio);        	
-        } catch (Exception e) {
-        	System.err.println("Error invocant el WS: " + e.getMessage());
-        	e.printStackTrace();
+        } catch (Exception ex) {
+        	ex.printStackTrace();
         	fail();
         }
 	}
-	
+
+	private RegistreAnnex crearAnnex(
+			String titol,
+			String arxiuNom,
+			String arxiuTipusMime,
+			String arxiuUuid,
+			InputStream arxiuContingut,
+			String eniOrigen,
+			String eniEstatElaboracio,
+			String eniTipusDocumental,
+			String sicresTipusDocument) throws IOException, DatatypeConfigurationException {
+		RegistreAnnex annex = new RegistreAnnex();
+		annex.setTitol(titol);
+		annex.setFitxerNom(arxiuNom);
+        annex.setFitxerTipusMime(arxiuTipusMime);
+        if (arxiuContingut != null) {
+        	annex.setFitxerContingut(IOUtils.toByteArray(arxiuContingut));
+        	annex.setFitxerTamany(
+        			annex.getFitxerContingut().length);
+        }
+        annex.setFitxerArxiuUuid(arxiuUuid);
+        annex.setEniDataCaptura(
+        		DatatypeFactory.newInstance().newXMLGregorianCalendar(
+        				new GregorianCalendar()));
+        annex.setEniOrigen(eniOrigen);
+        annex.setEniEstatElaboracio(eniEstatElaboracio);
+        annex.setEniTipusDocumental(eniTipusDocumental);
+        annex.setSicresTipusDocument(sicresTipusDocument);
+        return annex;
+	}
+
+	@SuppressWarnings("unused")
 	private void afegirInteressats(RegistreAnotacio anotacio) {
 		RegistreInteressat representant = new RegistreInteressat();
 		representant.setAdresa("Carrer companys");
@@ -158,8 +161,6 @@ public class BustiaV1Test {
 		representant.setRepresentant(null);
 		representant.setTelefon("666555444");
 		representant.setTipus("2");
-		
-		
 		RegistreInteressat interessat = new RegistreInteressat();
 		interessat.setAdresa("Carrer del moix 2");
 		interessat.setCanalPreferent("02");
@@ -179,11 +180,10 @@ public class BustiaV1Test {
 		interessat.setRepresentant(representant);
 		interessat.setTelefon("999888777");
 		interessat.setTipus("2");
-		
 		anotacio.getInteressats().add(interessat);
-		
 	}
 
+	/*@SuppressWarnings("unused")
 	private void afegirFirmes(RegistreAnnex annex) throws IOException {
 		Firma firma2 = new Firma();
 		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/2018-01-24_CAdES_Detached_foto_jpg.csig");
@@ -194,10 +194,9 @@ public class BustiaV1Test {
 		firma2.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
 		firma2.setTipusMime(Files.probeContentType(firmaFile2.toPath()));
 		firma2.setCsvRegulacio("Regulació CSV 2");
-		
 		annex.getFirmes().add(firma2);
 	}
-	
+	@SuppressWarnings("unused")
 	private void afegirFirmes2(RegistreAnnex annex) throws IOException {
 		Firma firma = new Firma();
 		File firmaFile = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/annex1_signed.pdf");
@@ -208,10 +207,8 @@ public class BustiaV1Test {
         firma.setFitxerNom("annex1_signed.pdf");
         firma.setTipusMime(Files.probeContentType(firmaFile.toPath()));
         firma.setCsvRegulacio("Regulació CSV 1");
-		
 		annex.getFirmes().add(firma);
 	}
-	
 	private void afegirFirmesJpg(RegistreAnnex annex) throws IOException {
 		Firma firma2 = new Firma();
 		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/Koala.jpg_signed.csig");
@@ -222,27 +219,34 @@ public class BustiaV1Test {
 		firma2.setFitxerNom("Koala.jpg_signed.csig");
 		firma2.setTipusMime(Files.probeContentType(firmaFile2.toPath()));
 		firma2.setCsvRegulacio("Regulació CSV 2");
-		
 		annex.getFirmes().add(firma2);
+	}*/
+
+	private BustiaV1 getBustiaServicePort() throws IOException {
+		Properties testProperties = getTestProperties();
+		return BustiaV1WsClientFactory.getWsClient(
+				testProperties.getProperty("bustia.test.service.url"),
+				testProperties.getProperty("bustia.test.service.username"),
+				testProperties.getProperty("bustia.test.service.password"));
 	}
 
-	private BustiaV1 getBustiaServicePort() throws MalformedURLException {
-		URL url = new URL(ENDPOINT_ADDRESS + "?wsdl");
-		BustiaV1 bustia = new BustiaV1Service(url).getBustiaV1ServicePort();
-		@SuppressWarnings("rawtypes")
-		List<Handler> handlerChain = new ArrayList<Handler>();
-		handlerChain.add(new LogMessageHandler());
-		if (USERNAME != null) {
-			BindingProvider bp = (BindingProvider)bustia;
-			bp.getBinding().setHandlerChain(handlerChain);
-			bp.getRequestContext().put(
-					BindingProvider.USERNAME_PROPERTY,
-					USERNAME);
-			bp.getRequestContext().put(
-					BindingProvider.PASSWORD_PROPERTY,
-					PASSWORD);
-		}
-		return bustia;
+	private InputStream getContingutAnnexSenseFirma() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/annex_sense_firma.pdf");
+		return is;
+	}
+	@SuppressWarnings("unused")
+	private InputStream getContingutJustificant() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/justificant.pdf");
+		return is;
+	}
+	private Properties getTestProperties() throws IOException {
+		Properties props = new Properties();
+		InputStream is = getClass().getResourceAsStream(
+        		"/bustia_test.properties");
+		props.load(is);
+		return props;
 	}
 
 }

@@ -39,7 +39,7 @@ public class SignaturaPluginMock implements SignaturaPlugin {
 		// Retorna una firma falsa
 		byte[] firmaContingut = null;
 		try {
-			firmaContingut = IOUtils.toByteArray(this.getClass().getResourceAsStream("/es/caib/distribucio/plugin/caib/signatura/firma_document_mock.xml"));
+			firmaContingut = IOUtils.toByteArray(this.getClass().getResourceAsStream("/es/caib/distribucio/plugin/signatura/firma_document_mock.xml"));
 		} catch (IOException e) {
 			String errMsg = "Error llegint el fitxer mock de firma XAdES: " + e.getMessage();
 			Logger.getLogger(SignaturaPluginMock.class.getName()).log(Level.SEVERE, errMsg, e);

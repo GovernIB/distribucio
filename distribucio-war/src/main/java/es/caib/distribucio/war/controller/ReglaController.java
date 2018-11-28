@@ -25,7 +25,6 @@ import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.command.ReglaCommand;
 import es.caib.distribucio.war.command.ReglaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;

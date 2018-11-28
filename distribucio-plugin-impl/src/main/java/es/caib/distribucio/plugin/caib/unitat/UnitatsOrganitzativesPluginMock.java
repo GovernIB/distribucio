@@ -23,10 +23,10 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  */
 public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlugin {
 
-	private static final String CODI_UNITAT_ARREL = "00000000T";
+	/*private static final String CODI_UNITAT_ARREL = "00000000T";
 	private static final String CODI_UNITAT_FILLA = "12345678Z";
 
-	private List<UnitatOrganitzativa> unitats;
+	private List<UnitatOrganitzativa> unitats;*/
 	
 	
 	@Override
@@ -70,7 +70,7 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 		throw new SistemaExternException("Mètode no implementat");
 	}*/
 
-	private List<UnitatOrganitzativa> getUnitats() {
+	/*private List<UnitatOrganitzativa> getUnitats() {
 		if (unitats == null) {
 			unitats = new ArrayList<UnitatOrganitzativa>();
 			UnitatOrganitzativa pare = new UnitatOrganitzativa();
@@ -85,7 +85,7 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 			unitats.add(fill);
 		}
 		return unitats;
-	}
+	}*/
 
 	@Override
 	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,

@@ -108,8 +108,8 @@ public class UnitatOrganitzativaHelper {
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
-				null, null);
+		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
+				null, null);*/
 		
 		
 		List<UnitatOrganitzativa> unitatsVigentsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
@@ -132,8 +132,8 @@ public class UnitatOrganitzativaHelper {
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
-				null, null);
+		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
+				null, null);*/
 		
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
@@ -257,8 +257,8 @@ public class UnitatOrganitzativaHelper {
 
 		List<UnitatOrganitzativa> unitats;
 
-		UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
-				null, null);
+		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
+				null, null);*/
 
 
 			unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),

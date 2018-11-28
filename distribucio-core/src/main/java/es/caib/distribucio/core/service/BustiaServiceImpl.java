@@ -19,7 +19,6 @@ import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,8 +41,6 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
-import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -55,7 +52,6 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
-import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -101,11 +97,6 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.plugins.arxiu.api.ContingutOrigen;
-import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
-import es.caib.plugins.arxiu.api.DocumentTipus;
-import es.caib.plugins.arxiu.api.FirmaPerfil;
-import es.caib.plugins.arxiu.api.FirmaTipus;
 
 
 /**
@@ -164,254 +155,11 @@ public class BustiaServiceImpl implements BustiaService {
 	private MessageHelper messageHelper;
 	@Resource
 	private IntegracioHelper integracioHelper;
-	
-	@Autowired
+
+	@Resource
 	private RegistreService registreService;
 	@Resource
 	private JavaMailSender mailSender;	
-	
-	@Transactional	
-	@Override
-	public void enviarAnotacioRegistreEntrada(
-			String entitat,
-			String unitatAdministrativa,
-			RegistreAnotacio registreEntrada) {
-		
-		String registreNumero = (registreEntrada != null) ? registreEntrada.getIdentificador() : null;
-
-		//Dades pel monitor d'integracions
-		String accioDescripcio = "Crida del WS d'Enviament d'anotació de registre d'entrada";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("entitat", entitat);
-		accioParams.put("unitatAdministrativa", unitatAdministrativa);
-		accioParams.put("numero", registreNumero);
-		accioParams.put("tipusRegistre", RegistreTipusEnum.ENTRADA.toString());
-		long t0 = System.currentTimeMillis();
-		///
-		
-		try {
-			logger.debug(
-					"Processant enviament d'anotació de registre d'entrada al servei web de bústia (" +
-					"entitat:" + entitat + ", " +
-					"unitatAdministrativa:" + unitatAdministrativa + ", " +
-					"numero:" + registreNumero + ")");
-			
-			validarAnotacioRegistre(registreEntrada);
-			
-			Long idRetornada = this.registreAnotacioCrear(
-					entitat,
-					RegistreTipusEnum.ENTRADA,
-					unitatAdministrativa,
-					registreEntrada);
-			
-			if (idRetornada != null)
-				registreHelper.distribuirAnotacioPendent(idRetornada);
-			
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_REGISTRE,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.RECEPCIO,
-					System.currentTimeMillis() - t0);
-		} catch (RuntimeException ex) {
-			String errorDescripcio = "Error al cridar el WS d'Enviament d'anotació de registre d'entrada";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_REGISTRE,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.RECEPCIO,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw ex;
-		}
-	}
-	
-	private void validarAnotacioRegistre(
-			RegistreAnotacio registreEntrada) {
-		
-		// Validació d'obligatorietat de camps
-		validarObligatorietatRegistre(registreEntrada);
-		
-		// Validació de format de camps
-		validarFormatCampsRegistre(registreEntrada);
-		
-		// Validació d'annexos
-		if (registreEntrada.getAnnexos() != null && registreEntrada.getAnnexos().size() > 0)
-			for (RegistreAnnex annex : registreEntrada.getAnnexos())
-				validarAnnex(annex);
-		
-		// Validació de precedència de justificant
-		if (registreEntrada.getJustificant() != null && registreEntrada.getJustificant().getFitxerArxiuUuid() == null) {
-			throw new ValidationException(
-					"El justificant adjuntat no conté un uuid (" +
-					"entitatCodi=" + registreEntrada.getEntitatCodi() + ", " +
-					"llibreCodi=" + registreEntrada.getLlibreCodi() + ", " +
-					"tipus=" + RegistreTipusEnum.ENTRADA.getValor() + ", " +
-					"numero=" + registreEntrada.getNumero() + ", " +
-					"data=" + registreEntrada.getData() + ")");
-		}
-	}	
-	
-	
-	private void validarObligatorietatRegistre(RegistreAnotacio registreEntrada) {
-		if (registreEntrada.getNumero() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'numero'");
-		}
-		if (registreEntrada.getData() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'data'");
-		}
-		if (registreEntrada.getIdentificador() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'identificador'");
-		}
-		if (registreEntrada.getExtracte() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'extracte'");
-		}
-		if (registreEntrada.getOficinaCodi() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'oficinaCodi'");
-		}
-		if (registreEntrada.getLlibreCodi() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'llibreCodi'");
-		}
-		if (registreEntrada.getAssumpteTipusCodi() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'assumpteTipusCodi'");
-		}
-		if (registreEntrada.getIdiomaCodi() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'idiomaCodi'");
-		}
-	}	
-	
-	private void validarFormatCampsRegistre(RegistreAnotacio registreEntrada) {
-		
-		if (registreEntrada.getJustificant() != null)
-			validarFormatAnnex(registreEntrada.getJustificant());
-		
-		if (registreEntrada.getAnnexos() != null) {
-			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
-				validarFormatAnnex(annex);
-			}
-		}
-	}	
-	
-	
-	/** Valida que l'annex:
-	 * Tingui el nom informat.
-	 * Valida les seves firmes.
-	 * @param annex
-	 * @throws ValidationException
-	 */
-	private void validarAnnex(RegistreAnnex annex) throws ValidationException{
-		
-		if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null)
-			throw new ValidationException(
-					"S'ha d'especificar o bé la referència del document o el contingut del document"
-					+ " per l'annex [" + annex.getTitol() + "]");
-		
-		if (annex.getFitxerContingut() != null && annex.getFitxerNom() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'fitxerNom' per l'annex");
-		}
-		
-		if (annex.getFirmes() != null && annex.getFirmes().size() > 0)
-			for (es.caib.distribucio.core.api.registre.Firma firma : annex.getFirmes())
-				validaFirma(annex, firma);
-	}
-	
-	/** Valida la firma. Valida:
-	 * El tipus de firma ha d'estar reconegut.
-	 * Si el tipus és TF04 l'annex ha de tenir el contingut informat.
-	 * Si el tipus és TF05 la firma ha de tenir el contingut informat
-	 * @param annex
-	 * @param firma
-	 */
-	private void validaFirma(RegistreAnnex annex, es.caib.distribucio.core.api.registre.Firma firma) {
-		if (firma.getTipus() == null)
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'tipus' de la firma");
-		DocumentNtiTipoFirmaEnumDto firmaTipus = null;
-		try {
-			firmaTipus = DocumentNtiTipoFirmaEnumDto.valueOf(firma.getTipus());
-		} catch(Exception e) {
-			throw new ValidationException(
-					"El tipus de firma '" + firma.getTipus() + "' no es reconeix com a vàlid.");
-		}
-		// Validacions segons el tipus de firma
-		if (DocumentNtiTipoFirmaEnumDto.TF04.equals(firmaTipus)) {
-			if (annex.getFitxerContingut() == null)
-				throw new ValidationException(
-						"El contingut de l'annex ha d'estar informat quan conté una firma del tipus TF04");
-			if (firma.getContingut() == null)
-				throw new ValidationException(
-						"El contingut de la firma ha d'estar informat pel tipus TF04");
-		} else if (DocumentNtiTipoFirmaEnumDto.TF05.equals(firmaTipus)) {
-			if (firma.getContingut() != null)
-				throw new ValidationException(
-						"El tipus de firma TF05 (CADES ATTACHED) no permet contingut en la firma");
-		}		
-	}
-	
-	
-	
-	private void validarFormatAnnex(RegistreAnnex annex) {
-		if (annex.getEniOrigen() != null && !enumContains(ContingutOrigen.class, annex.getEniOrigen(), true)) {
-			throw new ValidationException(
-					"El valor de l'annex o justificant 'EniOrigen' no és vàlid");
-		}
-		if (annex.getEniEstatElaboracio() != null && !enumContains(DocumentEstatElaboracio.class, annex.getEniEstatElaboracio(), true)) {
-			throw new ValidationException(
-					"El valor de l'annex o justificant 'EniEstatElaboracio' no és vàlid");
-		}
-		if (annex.getEniTipusDocumental() != null && !enumContains(DocumentTipus.class, annex.getEniTipusDocumental(), true)) {
-			throw new ValidationException(
-					"El valor de l'annex o justificant 'EniTipusDocumental' no és vàlid");
-		}
-		if (annex.getSicresTipusDocument() != null && !enumContains(RegistreAnnexSicresTipusDocumentEnum.class, annex.getSicresTipusDocument(), true)) {
-			throw new ValidationException(
-					"El valor de l'annex o justificant 'SicresTipusDocument' no és vàlid");
-		}
-		
-		if (annex.getFirmes() != null) {
-			for (es.caib.distribucio.core.api.registre.Firma firma: annex.getFirmes()) {
-				validarFormatFirma(firma);
-			}
-		}
-	}
-	
-	
-	
-	private void validarFormatFirma(es.caib.distribucio.core.api.registre.Firma firma) {
-		if (firma.getTipus() != null && !enumContains(FirmaTipus.class, firma.getTipus(), true)) {
-			throw new ValidationException(
-					"El valor de la firma 'Tipus' no és vàlid");
-		}
-		if (firma.getPerfil() != null && !enumContains(FirmaPerfil.class, firma.getPerfil(), true)) {
-			throw new ValidationException(
-					"El valor de la firma 'Perfil' no és vàlid");
-		}
-	}
-	
-	private <E extends Enum<E>> boolean enumContains(Class<E> enumerat, String test, boolean modeText) {
-	    for (Enum<E> c : enumerat.getEnumConstants()) {
-	    	if (modeText) {
-		        if (c.toString().equalsIgnoreCase(test)) {
-		            return true;
-		        }
-	    	} else {
-	        	if (c.name().equalsIgnoreCase(test)) {
-		            return true;
-		        }
-	    	}
-	    }
-	    return false;
-	}
 
 	@Override
 	@Transactional
@@ -480,8 +228,6 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 	}
-	
-	
 
 	@Override
 	@Transactional
@@ -601,9 +347,7 @@ public class BustiaServiceImpl implements BustiaService {
 				}			
 			}
 		}
-		
 		bustiaRepository.delete(bustia);
-
 		return toBustiaDto(
 				bustia,
 				false,
@@ -723,13 +467,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true,
 				false);
-		
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
-		
-
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
-		
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 						entitat,
@@ -809,9 +549,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		
 		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatOrganitzativaRepository.findOne(unitatIdFiltre): null;
-		
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 				entitat,
 				unitatIdFiltre == null, 
@@ -819,7 +557,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
 				bustiaNomFiltre,
 				unitatObsoleta == null || unitatObsoleta == false);
-		
 		return toBustiaDto(
 				busties,
 				false,
@@ -910,7 +647,6 @@ public class BustiaServiceImpl implements BustiaService {
 				new Permission[] {ExtendedPermission.READ},
 				auth);
 		List<BustiaDto> bustiesRetorn = toBustiaDto(busties, true, true);
-		
 		return bustiesRetorn;
 	}
 
@@ -959,7 +695,7 @@ public class BustiaServiceImpl implements BustiaService {
 				contingutMoviment,
 				true,
 				true);
-//		// Avisam per correu als responsables de la bústia de destí
+		// Avisam per correu als responsables de la bústia de destí
 		emailHelper.emailBustiaPendentContingut(
 				bustia,
 				contingut,
@@ -981,7 +717,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
-	public Long registreAnotacioCrear(
+	public Long registreAnotacioCrearIDistribuir(
 			String entitatUnitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatOrganitzativa,
@@ -991,15 +727,11 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
 				+ "anotacio=" + anotacio.getIdentificador() + ")");
-		
-		Long idAnotacioRetornada = null;
-		
 		EntitatEntity entitatPerUnitat = entitatRepository.findByCodiDir3(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
-				throw new NotFoundException(
-						entitatUnitatCodi, 
-						EntitatEntity.class);
-			
+			throw new NotFoundException(
+					entitatUnitatCodi, 
+					EntitatEntity.class);
 		}
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatPerUnitat.getId(),
@@ -1024,7 +756,6 @@ public class BustiaServiceImpl implements BustiaService {
 					"numero=" + anotacio.getNumero() + ", " +
 					"data=" + anotacio.getData() + ")");
 		}
-		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
@@ -1035,25 +766,15 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatOrganitzativa,
 				anotacio,
 				reglaAplicable);
-		
-		Boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona"));
-		
 		if (anotacioEntity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
 			anotacioEntity.updateProces(
-					anotacioEntity.getData(), 
-					RegistreProcesEstatEnum.PROCESSAT, 
+					anotacioEntity.getData(),
+					RegistreProcesEstatEnum.PROCESSAT,
 					null);
-
-		} else if (isDistribucioAsincrona) {
-			guardarFitxersGesDoc(anotacioEntity, anotacio);
 		} else {
 			guardarFitxersGesDoc(anotacioEntity, anotacio);
-			registreRepository.saveAndFlush(anotacioEntity);
-			idAnotacioRetornada = anotacioEntity.getId();
 		}
-		
 		registreRepository.saveAndFlush(anotacioEntity);
-		
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -1068,101 +789,73 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaHelper.evictElementsPendentsBustia(
 				bustia.getEntitat(),
 				bustia);
-		
-		return idAnotacioRetornada;
+		boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona"));
+		if (!isDistribucioAsincrona) {
+			registreHelper.distribuirAnotacioPendent(anotacioEntity.getId());
+		}
+		return anotacioEntity.getId();
 	}
 
 	@Transactional
 	@Override
-	public void enviarRegistreByEmail(
+	public void registreAnotacioEnviarPerEmail(
 			Long entitatId,
 			Long contingutId,
 			Long registreId, 
 			String adresses,
 			String serverPortContext) throws MessagingException {
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		
 		RegistreAnotacioDto registre = registreService.findOne(
 				entitatId,
 				contingutId,
 				registreId);
-		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
 				contingutId,
 				null);
-		
 		RegistreEntity registreEntity = registreRepository.findByPareAndId(
 				contingut,
 				registreId);
-		
-		
 		RegistreAnnexDetallDto justificant = null;
-		if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
+		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			justificant = registreService.getRegistreJustificant(
 					entitatId,
 					contingutId, 
 					registreId);
 		}
-
-		
 		List<RegistreAnnexDetallDto> anexos = registreService.getAnnexosAmbArxiu(
 				entitatId,
 				contingutId,
 				registreId);
-		
-//		List<RegistreAnnexDetallDto> anexos = registreService.getAnnexos(
-//				entitatId,
-//				contingutId,
-//				registreId);
-		
-
 		MimeMessage missatge = mailSender.createMimeMessage();
-		
 		missatge.setHeader("Content-Type", "text/html charset=UTF-8");
-
 		MimeMessageHelper helper;
 		helper = new MimeMessageHelper(missatge, true);
-		
-//		if (adresses == null && adresses.isEmpty()){
 		missatge.addRecipients(RecipientType.TO, InternetAddress.parse(adresses));
-//		} else {
-//			helper.setTo("urszulal@limit.es");
-//		}
-
 		helper.setFrom(emailHelper.getRemitent());
 		helper.setSubject("Distribució: "+registre.getExtracte());
-		
 		messageHelper.getMessage("registre.detalls.camp.tipus");
-		
 		String message18nRegistreTipus = "";
 		if (registre.getRegistreTipus() == RegistreTipusEnum.ENTRADA) {
 			message18nRegistreTipus = messageHelper.getMessage("registre.detalls.camp.desti");
 		} else if (registre.getRegistreTipus() == RegistreTipusEnum.SORTIDA) {
 			messageHelper.getMessage("registre.detalls.camp.origen");
 		}
-		
 		Object registreDataOrigen = registre.getDataOrigen() == null ? "" : sdf.format(registre.getDataOrigen());
 		Object registreData = registre.getData() == null ? "" : sdf.format(registre.getData());
 		Object registreCreatedDate = registre.getCreatedDate() == null ? "" : sdf.format(registre.getCreatedDate());
-		
 		Object justificantDataCaptura = null;
-		if(justificant!=null){
+		if (justificant!=null) {
 			justificantDataCaptura = justificant.getDataCaptura() == null ? "" : sdf.format(justificant.getDataCaptura());	
 		}
-		
-		String htmlJustificant="";
-		if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
-			
+		String htmlJustificant = "";
+		if (registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
 			htmlJustificant = 
-					
 							"		<table>"+
 							"			<tr>"+
 							"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.justificant") + "</th>"+
@@ -1202,25 +895,16 @@ public class BustiaServiceImpl implements BustiaService {
 							"		</table>";
 
 		}
-		
 		String htmlAnnexos = "";
-		for(RegistreAnnexDetallDto annex: anexos){
-			
-			
-			
-			
+		for (RegistreAnnexDetallDto annex: anexos) {
 			String htmlFirmes="";
 			if(!annex.getFirmes().isEmpty()){
-				
 				htmlFirmes+=
 				"			<tr>"+
 				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.annex.detalls.camp.firmes") + "</th>"+
 				"			</tr>";
-				
 				int i=1;
 				for (ArxiuFirmaDto firma: annex.getFirmes()){
-					
-					
 					String htmlDetalls="";
 					for(ArxiuFirmaDetallDto detall: firma.getDetalls()){
 						htmlDetalls+=
@@ -1231,8 +915,6 @@ public class BustiaServiceImpl implements BustiaService {
 								"								<td>"+ Objects.toString(detall.getEmissorCertificat(), "") + "</td>"+
 								"							</tr>";
 					}
-					
-					
 					htmlFirmes+=
 
 							"			<tr>"+
@@ -1287,26 +969,9 @@ public class BustiaServiceImpl implements BustiaService {
 								"						</table>"+
 								"					</td>"+
 								"				</tr>");
-								
-
-									 						
-					
-					
 					i++;
 				}
-				
-				
-				
-
 			}
-			
-			
-			
-			
-			
-			
-			
-			
 			htmlAnnexos += 
 					"			<tr>"+
 					"				<th class=\"tableHeader\" colspan=\"2\">" + annex.getTitol() + "</th>"+
@@ -1351,14 +1016,10 @@ public class BustiaServiceImpl implements BustiaService {
 					+
 					"</td>"+
 					"			</tr>"+
-					
-					htmlFirmes+
-"";
+					htmlFirmes+"";
 		}
-		
 		String htmlAnnexosTable="";
-		if(!registre.getAnnexos().isEmpty()){
-			
+		if (!registre.getAnnexos().isEmpty()) {
 			htmlAnnexosTable = 
 					
 					
@@ -1369,19 +1030,11 @@ public class BustiaServiceImpl implements BustiaService {
 							htmlAnnexos +
 							"		</table>";
 		}
-		
-
-		
-		
-
 		String htmlInteressats = "";
-		for(RegistreInteressat interessat: registre.getInteressats()){
-			
+		for (RegistreInteressat interessat: registre.getInteressats()) {
 			RegistreInteressat representant = interessat.getRepresentant();
-			
 			String htmlRepresentant = "";
-			
-			if(representant!=null){
+			if (representant!=null){
 				
 				String representantTitle="";
 				if(representant.getTipus().equals("PERSONA_FIS")){
@@ -1446,15 +1099,12 @@ public class BustiaServiceImpl implements BustiaService {
 					"				<td>"  + Objects.toString(representant.getObservacions(), "") + "</td>"+
 					"			</tr>";											
 			}
-			
-			
 			String interesatTitle="";
-			if(interessat.getTipus().equals("PERSONA_FIS")){
+			if (interessat.getTipus().equals("PERSONA_FIS")) {
 				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+interessat.getLlinatge2();
 			} else {
 				interesatTitle = interessat.getRaoSocial();
 			}
-			
 			htmlInteressats += 
 					"			<tr>"+
 					"				<th class=\"tableHeader\" colspan=\"2\">" + interesatTitle + "</th>"+
@@ -1509,13 +1159,9 @@ public class BustiaServiceImpl implements BustiaService {
 					"			</tr>"+
 					htmlRepresentant;
 		}
-		
-		String htmlInteressatsTable="";
-		if(!registre.getInteressats().isEmpty()){
-			
+		String htmlInteressatsTable = "";
+		if (!registre.getInteressats().isEmpty()) {
 			htmlInteressatsTable = 
-					
-					
 							"		<table>"+
 							"			<tr>"+
 							"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.pipella.interessats") + "</th>"+
@@ -1523,7 +1169,6 @@ public class BustiaServiceImpl implements BustiaService {
 							htmlInteressats +
 							"		</table>";
 		}		
-		
 		String htmlText = 
 				"<!DOCTYPE html>"+
 				"<html>"+
@@ -1713,16 +1358,9 @@ public class BustiaServiceImpl implements BustiaService {
 				"				<td>" + registreCreatedDate + "</td>"+
 				"			</tr>"+		
 				"		</table>"+					
-				
-				
 				htmlJustificant +
-				
 				htmlInteressatsTable + 
-				
 				htmlAnnexosTable + 
-				
-				
-				
 				"	</div>"+
 				"	<div class=\"footer\">"+
 					"	<span class=\"footerText\">"+
@@ -1732,192 +1370,108 @@ public class BustiaServiceImpl implements BustiaService {
 				"	</div>"+
 				"</body>"+
 				"</html>";
-
-		
-		
 		String plainTextInteressats = "";
-		if(!registre.getInteressats().isEmpty()){
-			
-			plainTextInteressats=
-				"\n"+
+		if (!registre.getInteressats().isEmpty()) {
+			plainTextInteressats =
+				"\n" +
 				messageHelper.getMessage("registre.detalls.pipella.interessats").toUpperCase()+"\n"+
 				"================================================================================\n";
 		}
-		
-		
-		for(RegistreInteressat interessat: registre.getInteressats()){
-			
+		for (RegistreInteressat interessat: registre.getInteressats()) {
 			RegistreInteressat representant = interessat.getRepresentant();
-			
 			String plainTextRepresentant = "";
-			
-			if(representant!=null){
-				
+			if (representant!=null) {
 				String representantTitle="";
-				if(representant.getTipus().equals("PERSONA_FIS")){
+				if (representant.getTipus().equals("PERSONA_FIS")) {
 					representantTitle = representant.getNom()+" "+representant.getLlinatge1()+" "+representant.getLlinatge2();
 				} else {
 					representantTitle = representant.getRaoSocial();
 				}
-
 				plainTextRepresentant =
-						
 					"\n"+												
 					messageHelper.getMessage("registre.interessat.detalls.camp.representant").toUpperCase()+"\n"+
 					"---------------------------------------------------------\n"+
-						
 					representantTitle.toUpperCase()+"\n"+
 					"---------------------------------------\n"+
-						
 					"\t"+ messageHelper.getMessage("registre.detalls.camp.interessat.tipus") +
 					"\t\t\t\t"+ (representant.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(representant.getTipus(), "")))+ "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("registre.detalls.camp.interessat.document") +
 					"\t\t\t"+ Objects.toString(representant.getDocumentTipus(), "")+": "+representant.getDocumentNum() + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.pais") + 
 					"\t\t\t\t" + Objects.toString(representant.getPais(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.provincia") + 
 					"\t\t\t" + Objects.toString(representant.getProvincia(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.municipi") + 
 					"\t\t\t"  + Objects.toString(representant.getMunicipi(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.adresa") + 
 					"\t\t\t\t" + Objects.toString(representant.getAdresa(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.codiPostal") + 
 					"\t\t\t"  + Objects.toString(representant.getCodiPostal(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.email") +
 					"\t\t"+ Objects.toString(representant.getEmail(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.telefon") + 
 					"\t\t\t\t" + Objects.toString(representant.getTelefon(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat") + 
 					"\t" + Objects.toString(representant.getEmailHabilitat(), "") + "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +
 					"\t\t\t"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))+ "\n"+
-					
-					
 					"\t"+ messageHelper.getMessage("interessat.form.camp.observacions") + 
 					"\t\t\t"  + Objects.toString(representant.getObservacions(), "") + "\n";											
 			}
-			
-			
-			String interesatTitle="";
-			if(interessat.getTipus().equals("PERSONA_FIS")){
+			String interesatTitle = "";
+			if (interessat.getTipus().equals("PERSONA_FIS")) {
 				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+interessat.getLlinatge2();
 			} else {
 				interesatTitle = interessat.getRaoSocial();
 			}
-			
 			plainTextInteressats += 
-
 					interesatTitle.toUpperCase()+"\n"+
 					"--------------------------------------------------------------------------------\n"+
-							
 					"\t"+ messageHelper.getMessage("registre.detalls.camp.interessat.tipus") +
 					"\t\t\t\t"+ (interessat.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(interessat.getTipus(), "")))+ "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("registre.detalls.camp.interessat.document") +
 					"\t\t\t"+ Objects.toString(interessat.getDocumentTipus(), "")+": "+interessat.getDocumentNum() + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.pais") + 
 					"\t\t\t\t" + Objects.toString(interessat.getPais(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.provincia") + 
 					"\t\t\t" + Objects.toString(interessat.getProvincia(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.municipi") + 
 					"\t\t\t"  + Objects.toString(interessat.getMunicipi(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.adresa") + 
 					"\t\t\t\t" + Objects.toString(interessat.getAdresa(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.codiPostal") + 
 					"\t\t\t"  + Objects.toString(interessat.getCodiPostal(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.email") +
 					"\t\t"+ Objects.toString(interessat.getEmail(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.telefon") + 
 					"\t\t\t\t" + Objects.toString(interessat.getTelefon(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat") + 
 					"\t" + Objects.toString(interessat.getEmailHabilitat(), "") + "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +
 					"\t\t\t"+ (interessat.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))+ "\n"+
-			
-			
 					"\t"+ messageHelper.getMessage("interessat.form.camp.observacions") + 
 					"\t\t\t"  + Objects.toString(interessat.getObservacions(), "") + "\n"+					
-							
-
 					plainTextRepresentant;
-			
-			
 		}		
-		
 		String plainTextJustificant=""; 
-
 		String plainTextAnnexos = "";
-		
-		if(!registre.getAnnexos().isEmpty()){
-			
+		if (!registre.getAnnexos().isEmpty()) {
 			plainTextAnnexos += 
 			"\n"+
 			messageHelper.getMessage("registre.detalls.pipella.annexos").toUpperCase()+"\n"+
 			"================================================================================\n";
-
 		}
-		
-		for(RegistreAnnexDetallDto annex: anexos){
-			
-			
-			
-			
-			
-			
+		for (RegistreAnnexDetallDto annex: anexos) {
 			String plainTextFirmes = "";
 			if (!annex.getFirmes().isEmpty()) {
-
 				plainTextFirmes += 
 						"\n" + 
 						messageHelper.getMessage("registre.annex.detalls.camp.firmes").toUpperCase()
 						+ "\n" + "---------------------------------------------------------\n";
-
 				int i = 1;
 				for (ArxiuFirmaDto firma : annex.getFirmes()) {
-			
-					
 					String plainTextDetalls="";
-					if(!firma.getDetalls().isEmpty()){
-						
+					if (!firma.getDetalls().isEmpty()) {
 						plainTextDetalls+=
 								"\n"+
 								messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls") + "\n"+							
@@ -1928,120 +1482,72 @@ public class BustiaServiceImpl implements BustiaService {
 								messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.nom")  
 								; 
 					}
-					
-					for(ArxiuFirmaDetallDto detall: firma.getDetalls()){
+					for (ArxiuFirmaDetallDto detall: firma.getDetalls()) {
 						plainTextDetalls+=
-
 								(detall.getData() == null ? messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.data.nd") : sdf.format(detall.getData())) + "\n"+"\t\t" +
 								Objects.toString(detall.getResponsableNif(), "") + "\t\t"+ 
 								Objects.toString(detall.getEmissorCertificat(), "") + "\t\t"+ 
 								Objects.toString(detall.getResponsableNom(), "")+"\n";
-
-					
 					plainTextFirmes+=
-							
 							 messageHelper.getMessage("registre.annex.detalls.camp.firma") +" "+i+
 									 (!firma.isAutofirma()? "": 
 											"("+messageHelper.getMessage("registre.annex.detalls.camp.firma.autoFirma")+")"
 										)+"\n"+ 	
 							"---------------------------------------\n"+
-
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaTipus") +
 							"\t\t\t" + (firma.getTipus()==null ? "": messageHelper.getMessage("document.nti.tipfir.enum." + Objects.toString(firma.getTipus(), ""))) + "\n"+
-
-
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaPerfil") +
 							"\t\t\t"+ Objects.toString(firma.getPerfil(), "") + "\n"+
-
-							
 							(firma.getTipus() == ArxiuFirmaTipusEnumDto.PADES && firma.getTipus() == ArxiuFirmaTipusEnumDto.CADES_ATT && firma.getTipus() == ArxiuFirmaTipusEnumDto.XADES_ENV ? "": 
-
 								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + 
 								"\t\t\t\t"+ Objects.toString(firma.getFitxerNom(), "") + "\n"
 									)+ 	
-							
 							(firma.getCsvRegulacio() == null || firma.getCsvRegulacio().isEmpty() ? "": 
-
 								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaCsvRegulacio") + 
 								"\t\t\t"+ Objects.toString(firma.getCsvRegulacio(), "") + "\n"
 									)+ 	
 							plainTextDetalls;
-
-
 						i++;
 					}
-
 				}
-
 			}
-			
-			
-			
-			if(registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()){
+			if (registre.getJustificantArxiuUuid()!=null && !registre.getJustificantArxiuUuid().isEmpty()) {
 				plainTextJustificant = 
 							"\n"+
 							messageHelper.getMessage("registre.detalls.titol.justificant").toUpperCase()+"\n"+
 							"================================================================================\n"+			
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +
 							"\t\t"+ justificantDataCaptura + "\n"+
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +
 							"\t\t\t"+ Objects.toString(justificant.getOrigenCiutadaAdmin(), "") + "\n"+
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + 
 							"\t" + (justificant.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(justificant.getNtiElaboracioEstat(), ""))) + "\n"+
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + 
 							"\t\t" + (justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), ""))) + "\n"+
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + 
 							"\t\t\t"  + (justificant.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+justificant.getSicresTipusDocument())) + "\n"+
-							
 							(justificant.getLocalitzacio() == null ? "": 
 								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + 
 								"\t\t\t"  + justificant.getLocalitzacio())+ 
-							
 							(justificant.getObservacions() == null ? "": 
 								"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + 
 								"\t\t\t"  + justificant.getObservacions())+ 					
-							
 							"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + 
 							"\t\t\t\t"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+"\n";
-						
 			}
-
-
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			plainTextAnnexos += 
-					
 				annex.getTitol().toUpperCase()+"\n"+
 				"--------------------------------------------------------------------------------\n"+		
-
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +
 				"\t\t"+ (annex.getDataCaptura() == null ? "" : sdf.format(annex.getDataCaptura())) + "\n"+
-				
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +
 				"\t\t\t"+ Objects.toString(annex.getOrigenCiutadaAdmin(), "") + "\n"+
-				
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + 
 				"\t" + (annex.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(annex.getNtiElaboracioEstat(), ""))) + "\n"+
-				
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + 
 				"\t\t" + (annex.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(annex.getNtiTipusDocument(), ""))) + "\n"+
-				
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + 
 				"\t"  + (annex.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+annex.getSicresTipusDocument())) + "\n"+
-				
 				(annex.getLocalitzacio() == null ? "": 
 					"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + 
 					"\t\t\t"  + annex.getLocalitzacio()
@@ -2050,120 +1556,77 @@ public class BustiaServiceImpl implements BustiaService {
 					"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + 
 					"\t\t\t"  + annex.getObservacions()
 						)+ 					
-				
 				"\t"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + 
 				"\t\t\t\t"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+"\n"+
-				
   				plainTextFirmes+
 				"";
-			
 		}
-		
-		
 		String plainText = 
 			"ANOTACIÓ DE REGISTRE \n"+
 			"================================================================================\n"+
 			"\n"+
-			
 			"\t"+messageHelper.getMessage("registre.detalls.camp.tipus")+
 			"\t\t\t\t"+ messageHelper.getMessage("registre.anotacio.tipus.enum." + Objects.toString(registre.getRegistreTipus(), ""))+"\n"+
-			
 			"\t"+messageHelper.getMessage("registre.detalls.camp.numero")+
 			"\t\t\t\t"+Objects.toString(registre.getNumero(), "")+"\n"+
-			
 			"\t"+messageHelper.getMessage("registre.detalls.camp.data")+
 			"\t\t\t\t"+registreData+"\n"+
-			
 			"\t"+messageHelper.getMessage("registre.detalls.camp.oficina") + 
 			"\t\t\t\t"+Objects.toString(registre.getOficinaDescripcio(), "") + " (" + Objects.toString(registre.getOficinaCodi(), "") + ")" +"\n"+			
-			
-			
 			"\n"+
 			messageHelper.getMessage("registre.detalls.titol.obligatories").toUpperCase()+"\n"+
 			"================================================================================\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.llibre") + 
 			"\t\t\t\t" + Objects.toString(registre.getLlibreDescripcio(), "") + " (" + Objects.toString(registre.getLlibreCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.extracte") + 
 			"\t\t\t" + Objects.toString(registre.getExtracte(), "") + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.docfis") + 
 			"\t\t" + Objects.toString(registre.getDocumentacioFisicaCodi(), "")  + "-" + Objects.toString(registre.getDocumentacioFisicaDescripcio(), "") + "\n"+
-			
 			"\t" + message18nRegistreTipus +
 			"\t\t\t" + Objects.toString(registre.getUnitatAdministrativaDescripcio(), "") + " (" + Objects.toString(registre.getUnitatAdministrativa(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.assumpte.tipus") + 
 			"\t\t" + Objects.toString(registre.getAssumpteTipusDescripcio(), "") + " (" + Objects.toString(registre.getAssumpteTipusCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.idioma") + 
 			"\t\t\t\t" + Objects.toString(registre.getIdiomaDescripcio(), "") + " (" + Objects.toString(registre.getIdiomaCodi(), "") + ")" +"\n"+
-						
-			
 			"\n"+
 			messageHelper.getMessage("registre.detalls.titol.opcionals").toUpperCase()+"\n"+
 			"================================================================================\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.assumpte.codi") + 
 			"\t\t\t" + Objects.toString(registre.getAssumpteCodi(), "") + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.refext") + 
 			"\t\t\t" + Objects.toString(registre.getReferencia(), "") + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.numexp") + 
 			"\t\t\t" + Objects.toString(registre.getExpedientNumero(), "") + "\n	"+
-			
 			"" + messageHelper.getMessage("registre.detalls.camp.transport.tipus") + 
 			"\t\t\t" + Objects.toString(registre.getTransportTipusDescripcio(), "") + " (" + Objects.toString(registre.getTransportTipusCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.transport.num") + 
 			"\t\t\t" + Objects.toString(registre.getTransportNumero(), "") + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.origen.oficina") + 
 			"\t\t\t" + Objects.toString(registre.getOficinaOrigenDescripcio(), "") + " (" + Objects.toString(registre.getOficinaOrigenCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.origen.num") + 
 			"\t\t\t" + Objects.toString(registre.getNumeroOrigen(), "") + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.origen.data") + 
 			"\t\t\t" + registreDataOrigen + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.observacions") + 
 			"\t\t\t" + Objects.toString(registre.getObservacions(), "") + "\n"+	
-			
-			
 			"\n"+
 			messageHelper.getMessage("registre.detalls.titol.seguiment").toUpperCase()+"\n"+
 			"================================================================================\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.entitat") + 
 			"\t\t\t\t" + Objects.toString(registre.getEntitatDescripcio(), "") + " (" + Objects.toString(registre.getEntitatCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.aplicacio") +
 			"\t\t\t" + Objects.toString(registre.getAplicacioCodi(), "") + Objects.toString(registre.getAplicacioVersio(), "")  + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.usuari") + 
 			"\t\t\t\t" + Objects.toString(registre.getUsuariNom(), "") + " (" + Objects.toString(registre.getUsuariCodi(), "") + ")" + "\n"+
-			
 			"\t" + messageHelper.getMessage("registre.detalls.camp.distribucio.alta") + 
 			"\t\t" + registreCreatedDate + "\n"+
-			
 			plainTextJustificant +
-			
 			plainTextInteressats +	
-			
 			plainTextAnnexos +
-
 			"";
-		
 		helper.setText(plainText, htmlText);
 		mailSender.send(missatge);
-	
-		
-		String logTo = "Destinataris: " +adresses;
-				
-		
+		String logTo = "Destinataris: " + adresses;
 		contingutLogHelper.log(
 				registreEntity,
 				LogTipusEnumDto.ENVIAMENT_EMAIL,
@@ -2171,14 +1634,8 @@ public class BustiaServiceImpl implements BustiaService {
 				logTo,
 				false,
 				false);
-		
-		
-		
-		
 	}
-	
-	
-		
+
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(

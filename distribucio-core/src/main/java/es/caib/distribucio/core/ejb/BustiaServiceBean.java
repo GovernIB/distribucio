@@ -41,8 +41,6 @@ public class BustiaServiceBean implements BustiaService {
 	@Autowired
 	BustiaService delegate;
 
-
-
 	@Override
 	@RolesAllowed("DIS_ADMIN")
 	public BustiaDto create(
@@ -145,16 +143,32 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("DIS_BSTWS")
-	public Long registreAnotacioCrear(
+	public Long registreAnotacioCrearIDistribuir(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) {
-		return delegate.registreAnotacioCrear(
+		return delegate.registreAnotacioCrearIDistribuir(
 				entitatCodi,
 				tipus,
 				unitatAdministrativa,
 				anotacio);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void registreAnotacioEnviarPerEmail(
+			Long entitatId, 
+			Long contingutId, 
+			Long registreId, 
+			String adresses, 
+			String serverPortContext) throws MessagingException {
+		delegate.registreAnotacioEnviarPerEmail(
+				entitatId, 
+				contingutId, 
+				registreId, 
+				adresses, 
+				serverPortContext);
 	}
 
 	@Override
@@ -265,32 +279,5 @@ public class BustiaServiceBean implements BustiaService {
 				deixarCopia,
 				comentari);
 	}
-	
-	@Override
-	@RolesAllowed("tothom")
-	public void enviarRegistreByEmail(
-			Long entitatId, 
-			Long contingutId, 
-			Long registreId, 
-			String adresses, 
-			String serverPortContext) throws MessagingException {
-		delegate.enviarRegistreByEmail(
-				entitatId, 
-				contingutId, 
-				registreId, 
-				adresses, 
-				serverPortContext);
-	}
-	
-	@Override
-	@RolesAllowed("tothom")	
-	public void enviarAnotacioRegistreEntrada(
-			String entitat, 
-			String unitatAdministrativa,
-			RegistreAnotacio registreEntrada) {
-		delegate.enviarAnotacioRegistreEntrada(
-				entitat, 
-				unitatAdministrativa, 
-				registreEntrada);
-	}	
+
 }

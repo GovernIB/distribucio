@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -154,8 +153,7 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(command);
 		return "registreViaEmail";
 	}
-	
-	
+
 	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.POST)
 	public String bustiaEnviarByEmailPost(
 			HttpServletRequest request,
@@ -164,38 +162,30 @@ public class BustiaUserController extends BaseUserController {
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
-
 			return "bustiaUserList";
 		}
-		
 		String adresses = command.getAddresses();
-		
-		List<String> adressList = Arrays.asList(adresses.split(",\\s*|\\s+"));
-		
 		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
-		
-		String serverPortContext = "";
-		serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-		
+		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 		try {
-			bustiaService.enviarRegistreByEmail(entitatActual.getId(), command.getBustiaId(), command.getContingutId(), adressesParsed, serverPortContext);
+			bustiaService.registreAnotacioEnviarPerEmail(
+					entitatActual.getId(),
+					command.getBustiaId(),
+					command.getContingutId(),
+					adressesParsed,
+					serverPortContext);
 		} catch (MessagingException messagingException) {
 			getModalControllerReturnValueError(
 					request, 
 					"redirect:../../../pendent", 
 					ExceptionUtils.getRootCauseMessage(messagingException));
 		}
-		
-		
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
 				"bustia.controller.pendent.contingut.enviat.email.ok");
 	}
-	
-		
-	
-	
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.GET)
 	public String bustiaPendentReenviarGet(
 			HttpServletRequest request,
@@ -347,7 +337,6 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
-		
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				alertaService.findPaginatByLlegida(
@@ -364,7 +353,6 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long contingutId,
 			@PathVariable Long alertaId,
 			Model model) {
-		
 		AlertaDto alerta = alertaService.find(alertaId);
 		alerta.setLlegida(true);
 		alertaService.update(alerta);
@@ -376,6 +364,16 @@ public class BustiaUserController extends BaseUserController {
 		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBusties(request, bustiaService);
 		return ret;
 	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(
+	    		Date.class,
+	    		new CustomDateEditor(
+	    				new SimpleDateFormat("dd/MM/yyyy"),
+	    				true));
+	}
+
 
 
 	private void omplirModelPerReenviar(
@@ -401,15 +399,6 @@ public class BustiaUserController extends BaseUserController {
 						true,
 						false,
 						true));
-	}
-	
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
-	    binder.registerCustomEditor(
-	    		Date.class,
-	    		new CustomDateEditor(
-	    				new SimpleDateFormat("dd/MM/yyyy"),
-	    				true));
 	}
 	
 	private BustiaUserFiltreCommand getFiltreCommand(

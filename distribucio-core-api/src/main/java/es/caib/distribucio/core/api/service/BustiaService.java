@@ -222,7 +222,7 @@ public interface BustiaService {
 			String comentari) throws NotFoundException;
 
 	/**
-	 * Envia una anotació de registre a una bústia.
+	 * Crea l'anotació de registre i la distribueix.
 	 * 
 	 * @param entitatCodi
 	 *            El codi de l'entitat.
@@ -237,7 +237,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('DIS_BSTWS')")
-	public Long registreAnotacioCrear(
+	public Long registreAnotacioCrearIDistribuir(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
@@ -343,8 +343,6 @@ public interface BustiaService {
 			boolean nomesBustiesPermeses,
 			boolean comptarElementsPendents) throws NotFoundException;
 
-	
-
 	/**
 	 * Modifica els permisos d'un usuari o d'un rol per a accedir a una bústia.
 	 * 
@@ -381,23 +379,20 @@ public interface BustiaService {
 			Long id,
 			Long permisId) throws NotFoundException;
 
-	List<BustiaDto> findAmbEntitat(Long entitatId);
-
-
-
-	void enviarRegistreByEmail(Long entitatId, Long contingutId, Long registreId, String adresses,
-			String serverPortContext) throws MessagingException;
-
-	List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre,
-			Boolean unitatObsoleta);
-
-	ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
-			Long unitatIdFiltre, Boolean unitatObsoleta);
-
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> findAmbEntitat(Long entitatId);
 
 	@PreAuthorize("hasRole('tothom')")
-	public void enviarAnotacioRegistreEntrada(
-			String entitat, String unitatAdministrativa, 
-			RegistreAnotacio registreEntrada);
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses,
+			String serverPortContext) throws MessagingException;
+
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre,
+			Boolean unitatObsoleta);
+
+	@PreAuthorize("hasRole('tothom')")
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
+			Long unitatIdFiltre, Boolean unitatObsoleta);
+
 }
 

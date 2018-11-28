@@ -1,14 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>es.caib.distribucio</groupId>
-    <artifactId>distribucio</artifactId>
-    <version>0.1</version>
-  </parent>
-  <artifactId>distribucio-ear</artifactId>
-  <packaging>ear</packaging>
-  
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>es.caib.distribucio</groupId>
+		<artifactId>distribucio</artifactId>
+		<version>0.9</version>
+	</parent>
+	<artifactId>distribucio-ear</artifactId>
+	<packaging>ear</packaging>
+	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator-legacy</artifactId>
@@ -33,24 +34,24 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-lib-common</artifactId>
-			<version>${distribucio.version}</version>
+			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-plugin-impl</artifactId>
-			<version>${distribucio.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-core</artifactId>
-			<version>${distribucio.version}</version>
+			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-war</artifactId>
-			<version>${distribucio.version}</version>
+			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
 	</dependencies>

@@ -347,9 +347,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.dist.anotacio.pendent.periode.execucio}")
 	public void distribuirAnotacionsPendents() {
-		
 		if (isDistAsincEnabled) {
-		
 			logger.debug("Distribuïnt anotacions de registere pendents");
 			try {
 				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
@@ -380,12 +378,10 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Scheduled(fixedRate = 120000)
 	public void tancarExpedientsPendents() {
-		
 		logger.debug("Revisant si s'ha de tancar algun expedient a l'arxiu");
 		try {
 			Date ara = new Date();
 			List<RegistreEntity> pendentsTancar = registreRepository.findPendentsTancarArxiu(ara);
-			
 			if (!pendentsTancar.isEmpty()) {
 				logger.debug("Tancant " + pendentsTancar.size() + " expedients a l'arxiu");
 				for (RegistreEntity registre: pendentsTancar) {
@@ -427,7 +423,6 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia);
 		if (	RegistreProcesEstatEnum.PENDENT.equals(anotacio.getProcesEstat()) ||
 				RegistreProcesEstatEnum.ERROR.equals(anotacio.getProcesEstat())) {
-			
 			try {
 				registreHelper.distribuirAnotacioPendent(anotacio.getId());
 				return true;
@@ -437,7 +432,6 @@ public class RegistreServiceImpl implements RegistreService {
 						e);
 				return false;
 			}
-			
 		} else {
 			throw new ValidationException(
 					anotacio.getId(),

@@ -202,11 +202,9 @@ public class RegistreHelper {
 								entity));
 			}
 		}
-		
 		if (anotacio.getJustificant() != null && anotacio.getJustificant().getFitxerArxiuUuid() != null) {
 			entity.updateJustificantUuid(anotacio.getJustificant().getFitxerArxiuUuid());
 		}
-		
 		return entity;
 	}
 	
@@ -437,20 +435,13 @@ public class RegistreHelper {
 				annex).build();
 		return firmaEntity;
 	}
-	
-	//procés i distribució d'anotacions
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void distribuirAnotacioPendent(Long anotacioId) {
-		
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-		
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				anotacio.getEntitat(),
 				anotacio.getUnitatAdministrativa());
-		
-		
 		String identificadorRetorn = pluginHelper.distribuirContingutAnotacioPendent(anotacio, bustia, true);
-		
 		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 			if (anotacio.getRegla() != null 
 					&& anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE
@@ -459,7 +450,6 @@ public class RegistreHelper {
 					processarAnnexSistra(anotacio, annex);
 			}
 		}
-		
 		if (anotacio.getRegla() != null) {
 			if (!reglaHelper.reglaAplicar(anotacio)) {
 				if (identificadorRetorn != null)
@@ -467,7 +457,6 @@ public class RegistreHelper {
 				throw new AplicarReglaException("Error aplicant regla en segon pla per a l'anotació " + anotacio.getId());
 			}
 		} 
-		
 		if (identificadorRetorn != null) {
 		// si s'ha utilitzat el plugin de gestió documental, s'intentaran esborrar els fitxers guardats
 		esborrarDocsTemporals(anotacio);
