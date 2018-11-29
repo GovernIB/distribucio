@@ -136,6 +136,7 @@ public class ContingutHelper {
 				conversioTipusHelper.convertir(
 						contingut.getEntitat(),
 							EntitatDto.class));
+		resposta.setAlerta(!contingut.getAlertes().isEmpty());
 		if (contingut.getDarrerMoviment() != null) {
 			ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
 			resposta.setDarrerMovimentUsuari(

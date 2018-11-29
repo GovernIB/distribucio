@@ -28,7 +28,21 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String procesError;
 	private Integer procesIntents;
 	
+	private boolean error;
+	private boolean alerta;
 
+	public boolean isError() {
+		return error;
+	}
+	public void setError(boolean error) {
+		this.error = error;
+	}
+	public boolean isAlerta() {
+		return alerta;
+	}
+	public void setAlerta(boolean alerta) {
+		this.alerta = alerta;
+	}
 	public RegistreTipusEnum getRegistreTipus() {
 		return registreTipus;
 	}
