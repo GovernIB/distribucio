@@ -382,7 +382,9 @@ public class RegistreAnotacioDto extends ContingutDto {
 		String interessatsResum = "";
 		if (this.interessats != null)
 			for (RegistreInteressat interessat: this.interessats) {
-				interessatsResum += interessat.getNom() + " " + interessat.getLlinatge1() + " " + interessat.getLlinatge2() + "<br>"; 
+				interessatsResum+= interessat.getNom()==null ? "" :interessat.getNom()+" ";
+				interessatsResum+=  interessat.getLlinatge1()==null ? "": interessat.getLlinatge1()+" ";
+				interessatsResum+=  interessat.getLlinatge2()==null ? "" : interessat.getLlinatge2()  + "<br>"; 
 			}
 		
 		return interessatsResum;
