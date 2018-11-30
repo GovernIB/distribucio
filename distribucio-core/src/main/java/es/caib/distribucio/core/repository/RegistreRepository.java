@@ -135,8 +135,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
 			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
 			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
-			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat) " +
-		    "order by r.data desc")
+			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)")
 	public Page<RegistreEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,

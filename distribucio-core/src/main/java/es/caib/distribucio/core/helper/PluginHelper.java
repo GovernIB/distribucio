@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +29,7 @@ import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
-import es.caib.distribucio.core.entity.RegistreAnnexEntity;
-import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
@@ -43,7 +38,6 @@ import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
@@ -59,7 +53,7 @@ import es.caib.plugins.arxiu.api.IArxiuPlugin;
  */
 @Component
 public class PluginHelper {
-	
+
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
 	public static final String GESDOC_AGRUPACIO_CERTIFICACIONS = "certificacions";
@@ -80,58 +74,106 @@ public class PluginHelper {
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
-	public String distribuirContingutAnotacioPendent(RegistreEntity anotacio, BustiaEntity bustia, boolean crearAutofirma) {
-		String accioDescripcio = "Distribucio de contingut d'anotació de registre";
+	public String distribucioContenidorCrear(
+			String registreIdentificador,
+			DistribucioRegistreAnotacio registreAnotacio,
+			String unitatOrganitzativaCodi) {
+		String accioDescripcio = "Creant contenidor per als documents annexos";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("anotacioCodi", anotacio.getIdentificador());
-		accioParams.put("bustiaNom", bustia.getNom());
+		accioParams.put("registreIdentificador", registreIdentificador);
+		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		long t0 = System.currentTimeMillis();
 		try {
-			DistribucioRegistreAnotacio registreAnotacio = conversioTipusHelper.convertir(anotacio, DistribucioRegistreAnotacio.class);
-			String unitatArrelCodi = bustia.getEntitat().getCodiDir3();
-			
-			String identificadorRetorn = getDistribucioPlugin().contenidorCrear(registreAnotacio, unitatArrelCodi);
-			
-			getDistribucioPlugin().documentCrear(registreAnotacio, unitatArrelCodi, identificadorRetorn);
-			
-			anotacio.updateExpedientArxiuUuid(registreAnotacio.getExpedientArxiuUuid());
-			if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
-				for (int i = 0; i < anotacio.getAnnexos().size();  i++) {
-					RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
-					DistribucioRegistreAnnex distribucioAnnex = registreAnotacio.getAnnexos().get(i);
-					annex.updateFitxerArxiuUuid(distribucioAnnex.getFitxerArxiuUuid());
-					
-					actualitzarTamanyContingut(annex);
-					
-					if (distribucioAnnex.getFirmes() != null && distribucioAnnex.getFirmes().size() > 0) {
-						for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
-							if (distribucioFirma.isAutofirma() && crearAutofirma) {
-								RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
-								novaFirma.updatePerNovaFirma(
-										distribucioFirma.getTipus(), 
-										distribucioFirma.getPerfil(), 
-										distribucioFirma.getFitxerNom(), 
-										distribucioFirma.getTipusMime(), 
-										distribucioFirma.getCsvRegulacio(), 
-										distribucioFirma.isAutofirma(), 
-										distribucioFirma.getGesdocFirmaId(), 
-										annex);
-								annex.getFirmes().add(novaFirma);
-							}
-						}
-					}
-				}
-			}
-			
+			String contenidorUuid = getDistribucioPlugin().contenidorCrear(
+					registreAnotacio,
+					unitatOrganitzativaCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
-			return identificadorRetorn;
+			return contenidorUuid;
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de distribucio";
+			String errorDescripcio = "Error al crear contenidor per als documents annexos";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public String distribucioDocumentCrear(
+			String registreIdentificador,
+			DistribucioRegistreAnnex annex,
+			String unitatOrganitzativaCodi,
+			String uuidContenidor) {
+		String accioDescripcio = "Creant document annex a dins el contenidor";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("registreIdentificador", registreIdentificador);
+		accioParams.put("annexTitol", annex.getTitol());
+		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
+		accioParams.put("uuidContenidor", uuidContenidor);
+		long t0 = System.currentTimeMillis();
+		try {
+			String documentUuid = getDistribucioPlugin().documentCrear(
+					annex,
+					unitatOrganitzativaCodi,
+					uuidContenidor);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return documentUuid;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al crear el document annex a dins el contenidor";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void distribucioContenidorMarcarProcessat(
+			RegistreEntity registre) {
+		String accioDescripcio = "Marcant com a processat el contenidor relacionat amb anotació de registre";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
+		accioParams.put("expedientNumero", registre.getExpedientNumero());
+		accioParams.put("registreNom", registre.getNom());
+		accioParams.put("registreNumero", registre.getNumero());
+		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
+		long t0 = System.currentTimeMillis();
+		try {
+			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(registre, DistribucioRegistreAnotacio.class);
+			getDistribucioPlugin().contenidorMarcarProcessat(anotacio);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al marcar el contenidor com a processat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
@@ -211,9 +253,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
-	
-	
+
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
@@ -227,7 +267,6 @@ public class PluginHelper {
 		try {
 			UnitatOrganitzativa unitat = getUnitatsOrganitzativesPlugin().findUnidad(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
-			
 			if (unitat != null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
@@ -249,7 +288,6 @@ public class PluginHelper {
 						IntegracioHelper.INTCODI_UNITATS,
 						errorMissatge);
 			}
-				
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
 			integracioHelper.addAccioError(
@@ -267,8 +305,6 @@ public class PluginHelper {
 		}
 	}
 	
-	
-	
 	public List<UnitatOrganitzativa> findAmbPare(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
@@ -282,7 +318,6 @@ public class PluginHelper {
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
-			
 			if (arbol != null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
@@ -320,8 +355,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
-	
+
 	public List<UnitatOrganitzativaDto> unitatsOrganitzativesFindByFiltre(
 			String codiUnitat, 
 			String denominacioUnitat,
@@ -379,8 +413,8 @@ public class PluginHelper {
 	public boolean isArxiuPluginActiu() {
 		return getArxiuPlugin() != null;
 	}
-	
-	public void eliminarContingutExistent(
+
+	public void arxiuExpedientEliminar(
 			String idContingut) {
 		String accioDescripcio = "Eliminació d'un expedient";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -411,66 +445,6 @@ public class PluginHelper {
 		}
 	}
 
-	public void marcarAnotacioComProcessada(
-			RegistreEntity registre) {
-			
-		//Abans aquí es tancava l'expedient de l'arxiu digital
-		//ara es fa en segon pla passat un interval de dies.
-		
-		int dies = getPropertyExpedientDiesTancament();
-		
-		Date ara = new Date();
-		
-		Calendar c = Calendar.getInstance();
-		c.setTime(ara);
-		c.add(Calendar.DATE, dies);
-		
-		Date dataTancament = c.getTime();
-		
-		registre.updateDataTancament(dataTancament);
-		
-		registre.updateArxiuEsborrat();
-	}
-	
-	public void tancarExpedientArxiu(
-			RegistreEntity registre) {
-		String accioDescripcio = "Tancament d'un expedient temporal relacionada amb una anotació de registre";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
-		accioParams.put("expedientNumero", registre.getExpedientNumero());
-		accioParams.put("registreNom", registre.getNom());
-		accioParams.put("registreNumero", registre.getNumero());
-		accioParams.put("registreEntitat", registre.getEntitatCodi());
-		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
-		long t0 = System.currentTimeMillis();
-		
-		try {
-			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(registre, DistribucioRegistreAnotacio.class);
-			getDistribucioPlugin().marcarProcessat(anotacio);
-			
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_ARXIU,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_ARXIU,
-					errorDescripcio,
-					ex);
-		}
-	}
-	
 	public Document arxiuDocumentConsultar(
 			ContingutEntity contingut,
 			String nodeId,
@@ -483,7 +457,7 @@ public class PluginHelper {
 				ambContingut,
 				false);
 	}
-	
+
 	public Document arxiuDocumentConsultar(
 			ContingutEntity contingut,
 			String nodeId,
@@ -501,9 +475,7 @@ public class PluginHelper {
 		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
 		try {
-			
 			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
-			
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -618,7 +590,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 	public void gestioDocumentalDelete(
 			String id,
 			String agrupacio) {
@@ -636,6 +608,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
+
 	public void gestioDocumentalGet(
 			String id,
 			String agrupacio,
@@ -655,7 +628,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 	public List<TipusViaDto> dadesExternesTipusViaAll() {
 		String accioDescripcio = "Consulta de tipus de via";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -687,7 +660,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 	public List<Provincia> dadesExternesProvinciesFindAmbComunitat(
 			String comunitatCodi) {
 		String accioDescripcio = "Consulta de les províncies d'una comunitat";
@@ -719,7 +692,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 	public List<Municipi> dadesExternesMunicipisFindAmbProvincia(
 			String provinciaCodi) {
 		String accioDescripcio = "Consulta dels municipis d'una província";
@@ -751,7 +724,7 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
+
 	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
 			String arxiuUuid) {
 		String accioDescripcio = "Consulta d'un expedient";
@@ -783,8 +756,8 @@ public class PluginHelper {
 					ex);
 		}
 	}
-	
-	private void actualitzarTamanyContingut(RegistreAnnexEntity annex) {
+
+	/*private void actualitzarTamanyContingut(RegistreAnnexEntity annex) {
 		if (annex.getFitxerTamany() <= 0) {
 			Document document = this.arxiuDocumentConsultar(
 					annex.getRegistre(), 
@@ -794,8 +767,8 @@ public class PluginHelper {
 			if (document.getContingut() != null)
 				annex.updateFitxerTamany((int)document.getContingut().getTamany());
 		}
-	}
-	
+	}*/
+
 	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
 		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
@@ -825,7 +798,7 @@ public class PluginHelper {
 			return null;
 		return Long.parseLong(text);
 	}
-	
+
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		if (dadesUsuariPlugin == null) {
 			String pluginClass = getPropertyPluginDadesUsuari();
@@ -847,7 +820,6 @@ public class PluginHelper {
 		}
 		return dadesUsuariPlugin;
 	}
-	
 	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
 		if (unitatsOrganitzativesPlugin == null) {
 			String pluginClass = getPropertyPluginUnitatsOrganitzatives();
@@ -869,7 +841,6 @@ public class PluginHelper {
 		}
 		return unitatsOrganitzativesPlugin;
 	}
-	
 	private IArxiuPlugin getArxiuPlugin() {
 		if (arxiuPlugin == null) {
 			String pluginClass = getPropertyPluginArxiu();
@@ -910,13 +881,13 @@ public class PluginHelper {
 					dadesExternesPlugin = (DadesExternesPlugin)clazz.newInstance();
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_CIUTADA,
+							IntegracioHelper.INTCODI_DADESEXT,
 							"Error al crear la instància del plugin de consulta de dades externes",
 							ex);
 				}
 			} else {
 				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_CIUTADA,
+						IntegracioHelper.INTCODI_DADESEXT,
 						"No està configurada la classe per al plugin de dades externes");
 			}
 		}
@@ -960,13 +931,13 @@ public class PluginHelper {
 					distribucioPlugin = (DistribucioPlugin)clazz.newInstance();
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_NOTIFICACIO,
+							IntegracioHelper.INTCODI_DISTRIBUCIO,
 							"Error al crear la instància del plugin de distribucio",
 							ex);
 				}
 			} else {
 				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_NOTIFICACIO,
+						IntegracioHelper.INTCODI_DISTRIBUCIO,
 						"No està configurada la classe per al plugin de distribucio");
 			}
 		}
@@ -994,14 +965,18 @@ public class PluginHelper {
 				"es.caib.distribucio.plugin.validatesignature.class");
 	}
 	private String getPropertyPluginDistribucio() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugins.distribucio.fitxers.class");
+		String pluginClass = PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugins.distribucio.class");
+		if (pluginClass == null) {
+			return PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio.plugins.distribucio.fitxers.class");
+		} else {
+			return pluginClass;
+		}
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.gesdoc.class");
 	}
-	private int getPropertyExpedientDiesTancament() {
-		String cadenaDies = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tancament.expedient.dies");
-		return Integer.parseInt(cadenaDies);
-	}
+
 }

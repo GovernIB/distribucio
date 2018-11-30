@@ -29,6 +29,7 @@ import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
 import es.caib.plugins.arxiu.api.DocumentTipus;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
+
 /**
  * Implementació dels mètodes per al servei d'enviament de
  * continguts a bústies.
@@ -57,7 +58,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getIdentificador() : null;
-		String accioDescripcio = "Crida del WS d'Enviament d'anotació de registre d'entrada";
+		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitat);
 		accioParams.put("unitatAdministrativa", unitatAdministrativa);
@@ -66,31 +67,40 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		long t0 = System.currentTimeMillis();
 		try {
 			logger.debug(
-					"Processant enviament d'anotació de registre d'entrada al servei web de bústia (" +
+					"Nou registre d'entrada rebut en el servei web de bústia (" +
 					"entitat=" + entitat + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
 					"registreEntradaNumero=" + registreEntradaNumero + ")");
 			validarAnotacioRegistre(registreEntrada);
-			bustiaService.registreAnotacioCrearIDistribuir(
+			RuntimeException exception = bustiaService.registreAnotacioCrearIDistribuir(
 					entitat,
 					RegistreTipusEnum.ENTRADA,
 					unitatAdministrativa,
 					registreEntrada);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_REGISTRE,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.RECEPCIO,
-					System.currentTimeMillis() - t0);
+			if (exception == null) {
+				integracioHelper.addAccioOk(
+						IntegracioHelper.INTCODI_BUSTIAWS,
+						accioDescripcio,
+						accioParams,
+						IntegracioAccioTipusEnumDto.RECEPCIO,
+						System.currentTimeMillis() - t0);
+			} else {
+				throw exception;
+			}
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al cridar el WS d'Enviament d'anotació de registre d'entrada";
+			logger.error(
+					"Error al processar nou registre d'entrada en el servei web de bústia (" +
+					"entitat=" + entitat + ", " +
+					"unitatAdministrativa=" + unitatAdministrativa + ", " +
+					"registreEntradaNumero=" + registreEntradaNumero + ")",
+					ex);
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_REGISTRE,
+					IntegracioHelper.INTCODI_BUSTIAWS,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
-					errorDescripcio,
+					"Error al processar registre d'entrada al servei web de bústia",
 					ex);
 			throw ex;
 		}
@@ -102,7 +112,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
 			@WebParam(name="referenciaDocument") String referenciaDocument) {
 		logger.debug(
-				"Processant enviament de document al servei web de bústia (" +
+				"Nou document rebut al servei web de bústia (" +
 				"unitatCodi:" + entitat + ", " +
 				"unitatAdministrativa:" + unitatAdministrativa + ", " +
 				"referenciaDocument:" + referenciaDocument + ")");
@@ -116,7 +126,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			@WebParam(name="unitatAdministrativa") String unitatAdministrativa,
 			@WebParam(name="referenciaExpedient") String referenciaExpedient) {
 		logger.debug(
-				"Processant enviament d'expedient al servei web de bústia (" +
+				"Nou expedient rebut al servei web de bústia (" +
 				"unitatCodi:" + entitat + ", " +
 				"unitatAdministrativa:" + unitatAdministrativa + ", " +
 				"referenciaExpedient:" + referenciaExpedient + ")");

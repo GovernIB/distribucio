@@ -27,7 +27,6 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
@@ -715,14 +714,14 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
 	@Override
-	public Long registreAnotacioCrearIDistribuir(
+	public RuntimeException registreAnotacioCrearIDistribuir(
 			String entitatUnitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatOrganitzativa,
 			RegistreAnotacio anotacio) {
-		logger.debug("Creant anotació de registre a la bústia ("
+		logger.debug("Creant anotació provinent del servei d'enviament a bústia ("
 				+ "entitatUnitatCodi=" + entitatUnitatCodi + ", "
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
@@ -789,11 +788,32 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaHelper.evictElementsPendentsBustia(
 				bustia.getEntitat(),
 				bustia);
+		logger.debug("Bústia destí de l'anotació (" +
+				"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
+				"tipus=" + tipus + ", " +
+				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
+				"anotacio=" + anotacio.getIdentificador() + ", "  +
+				"bustia=" + bustia + ")");
 		boolean isDistribucioAsincrona = "true".equalsIgnoreCase(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona"));
 		if (!isDistribucioAsincrona) {
-			registreHelper.distribuirAnotacioPendent(anotacioEntity.getId());
+			logger.debug("L'anotació es distribuirà inmediatament (" +
+					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
+					"tipus=" + tipus + ", " +
+					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
+					"anotacio=" + anotacio.getIdentificador() + ")");
+			try {
+				registreHelper.distribuirAnotacioPendent(anotacioEntity.getId());
+			} catch (RuntimeException ex) {
+				return ex;
+			}
+		} else {
+			logger.debug("L'anotació es distribuirà de forma asíncrona (" +
+					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
+					"tipus=" + tipus + ", " +
+					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
+					"anotacio=" + anotacio.getIdentificador() + ")");
 		}
-		return anotacioEntity.getId();
+		return null;
 	}
 
 	@Transactional

@@ -53,13 +53,13 @@ public class IntegracioController extends BaseUserController {
 			@PathVariable String codi,
 			Model model) {
 		List<IntegracioDto> integracions = aplicacioService.integracioFindAll();
-		
-		for (IntegracioDto integracio : integracions) {
-			for (IntegracioEnumDto integracioEnum : IntegracioEnumDto.values()) {
+		for (IntegracioDto integracio: integracions) {
+			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {
 				if (integracio.getCodi() == integracioEnum.name()) {
 					integracio.setNom(
-							EnumHelper.getOneOptionForEnum(IntegracioEnumDto.class,
-							"integracio.list.pipella." + integracio.getCodi()).getText());
+							EnumHelper.getOneOptionForEnum(
+									IntegracioEnumDto.class,
+									"integracio.list.pipella." + integracio.getCodi()).getText());
 				}
 			}
 		}

@@ -58,7 +58,14 @@ pageContext.setAttribute(
 			</div>
 		</div>
 	</form:form>
-	<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/contingutAdmin/datatable"/>" data-filter="#contingutFiltreCommand" data-default-order="6" data-default-dir="asc" class="table table-bordered table-striped">
+	<table
+		id="taulaDades"
+		data-toggle="datatable"
+		data-url="<c:url value="/contingutAdmin/datatable"/>"
+		data-filter="#contingutFiltreCommand"
+		data-default-order="6"
+		data-default-dir="desc"
+		class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>

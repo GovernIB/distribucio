@@ -25,12 +25,10 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 <script>
 $(document).ready(function() {
-
 	$('#unitatOrganitzativa').on('change', function (e) {
 		var rutaBusties = $('#bustia').data('url-llistat');
 		var rutaFragmentada = rutaBusties.split('/');
 		var darrerFragment = rutaFragmentada[rutaFragmentada.length - 1];
-		
 		if (this.value == null || this.value.length == 0) {
 			$('#bustia').data('url-llistat', rutaBusties.replace(darrerFragment, 'null'));
 			$('#bustia').prop('disabled', true);
@@ -40,11 +38,8 @@ $(document).ready(function() {
 			$('#bustia').prop('disabled', false);
 		}
 	});
-	
 	$('#netejarFiltre').click(function(e) {
-		$('#estat').val('ERROR').change();
 	});
-
 	$('#unitatOrganitzativa').trigger('change');
 });
 </script>
@@ -78,11 +73,9 @@ $(document).ready(function() {
 					suggestValue="id"
 					suggestText="nom" />
 			</div>
-			
 <!-- 			<div class="col-md-3"> -->
 <%-- 				<dis:inputText name="bustia" inline="true" placeholderKey="contingut.admin.filtre.bustia"/> --%>
 <!-- 			</div> -->
-			
 		</div>
 		<div class="row">
 			<div class="col-md-3">
@@ -102,7 +95,14 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-	<table id="taulaDades" data-toggle="datatable" data-url="<c:url value="/anotacionsRegistre/datatable"/>" data-filter="#anotacioRegistreFiltreCommand" data-default-order="4" data-default-dir="asc" class="table table-bordered table-striped">
+	<table
+		id="taulaDades"
+		data-toggle="datatable"
+		data-url="<c:url value="/anotacionsRegistre/datatable"/>"
+		data-filter="#anotacioRegistreFiltreCommand"
+		data-default-order="4"
+		data-default-dir="desc"
+		class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
@@ -116,6 +116,20 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="createdDate" data-converter="datetime" width="10%"><spring:message code="contingut.admin.columna.creat.el"/></th>
+				<th data-col-name="procesEstat" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
+					<spring:message code="bustia.pendent.columna.estat"/>
+					<script id="cellEstatTemplate" type="text/x-jsrender">
+						{{if procesEstat == 'NO_PROCES'}}
+							<spring:message code="registre.proces.estat.enum.NO_PROCES"/>
+						{{else procesEstat == 'PENDENT'}}
+							<spring:message code="registre.proces.estat.enum.PENDENT"/>
+						{{else procesEstat == 'PROCESSAT'}}
+							<spring:message code="registre.proces.estat.enum.PROCESSAT"/>
+						{{else procesEstat == 'ERROR'}}
+							<spring:message code="registre.proces.estat.enum.ERROR"/>
+						{{/if}}
+					</script>
+				</th>
 				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
 					<spring:message code="contingut.admin.columna.situacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">

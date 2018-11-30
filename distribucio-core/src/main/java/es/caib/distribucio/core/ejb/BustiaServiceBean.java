@@ -143,7 +143,7 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("DIS_BSTWS")
-	public Long registreAnotacioCrearIDistribuir(
+	public RuntimeException registreAnotacioCrearIDistribuir(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,

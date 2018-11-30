@@ -38,52 +38,30 @@ public class IntegracioHelper {
 
 	public static final int DEFAULT_MAX_ACCIONS = 20;
 
-	public static final String INTCODI_REGISTRE = "REGISTRE";
 	public static final String INTCODI_USUARIS = "USUARIS";
 	public static final String INTCODI_UNITATS = "UNITATS";
-	public static final String INTCODI_CIUTADA = "CIUTADA";
-	public static final String INTCODI_PFIRMA = "PFIRMA";
 	public static final String INTCODI_ARXIU = "ARXIU";
-	public static final String INTCODI_CONVERT = "CONVERT";
-	public static final String INTCODI_CALLBACK = "CALLBACK";
 	public static final String INTCODI_DADESEXT = "DADESEXT";
 	public static final String INTCODI_SIGNATURA = "SIGNATURA";
 	public static final String INTCODI_VALIDASIG = "VALIDASIG";
-	public static final String INTCODI_NOTIFICACIO = "NOTIFICACIO";
-	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 	public static final String INTCODI_GESDOC = "GESDOC";
+	public static final String INTCODI_BUSTIAWS = "BUSTIAWS";
+	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
-
-
 
 	public List<IntegracioDto> findAll() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
 		integracions.add(
 				novaIntegracio(
-						INTCODI_REGISTRE));
+						INTCODI_USUARIS));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_UNITATS));
 		integracions.add(
 				novaIntegracio(
-						INTCODI_PFIRMA));
-		integracions.add(
-				novaIntegracio(
-						INTCODI_CALLBACK));
-		integracions.add(
-				novaIntegracio(
 						INTCODI_ARXIU));
-		integracions.add(
-				novaIntegracio(
-						INTCODI_CIUTADA));
-		integracions.add(
-				novaIntegracio(
-						INTCODI_USUARIS));
-		integracions.add(
-				novaIntegracio(
-						INTCODI_CONVERT));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_DADESEXT));
@@ -95,7 +73,13 @@ public class IntegracioHelper {
 						INTCODI_VALIDASIG));
 		integracions.add(
 				novaIntegracio(
-						INTCODI_NOTIFICACIO));
+						INTCODI_GESDOC));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_BUSTIAWS));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_DISTRIBUCIO));
 		return integracions;
 	}
 
@@ -237,30 +221,24 @@ public class IntegracioHelper {
 			String codi) {
 		IntegracioDto integracio = new IntegracioDto();
 		integracio.setCodi(codi);
-		if (INTCODI_REGISTRE.equals(codi)) {
-			integracio.setNom("Registre");
-		} else if (INTCODI_PFIRMA.equals(codi)) {
-			integracio.setNom("Portafirmes");
-		} else if (INTCODI_ARXIU.equals(codi)) {
-			integracio.setNom("Arxiu digital");
-		} else if (INTCODI_CONVERT.equals(codi)) {
-			integracio.setNom("Conversió doc.");
-		} else if (INTCODI_USUARIS.equals(codi)) {
+		if (INTCODI_USUARIS.equals(codi)) {
 			integracio.setNom("Usuaris");
 		} else if (INTCODI_UNITATS.equals(codi)) {
 			integracio.setNom("Unitats admin.");
-		} else if (INTCODI_CIUTADA.equals(codi)) {
-			integracio.setNom("Com. ciutadà");
-		} else if (INTCODI_CALLBACK.equals(codi)) {
-			integracio.setNom("Callback PF");
+		} else if (INTCODI_ARXIU.equals(codi)) {
+			integracio.setNom("Arxiu digital");
 		} else if (INTCODI_DADESEXT.equals(codi)) {
 			integracio.setNom("Dades ext.");
 		} else if (INTCODI_SIGNATURA.equals(codi)) {
 			integracio.setNom("Signatura");
 		} else if (INTCODI_VALIDASIG.equals(codi)) {
 			integracio.setNom("Valida sig.");
-		} else if (INTCODI_NOTIFICACIO.equals(codi)) {
-			integracio.setNom("Notificació");
+		} else if (INTCODI_GESDOC.equals(codi)) {
+			integracio.setNom("Gestió doc.");
+		} else if (INTCODI_BUSTIAWS.equals(codi)) {
+			integracio.setNom("Bústia WS");
+		} else if (INTCODI_DISTRIBUCIO.equals(codi)) {
+			integracio.setNom("Distribució");
 		}
 		return integracio;
 	}

@@ -9,7 +9,7 @@ import es.caib.plugins.arxiu.api.Document;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface DistribucioPlugin {
-	
+
 	/**
 	 * Crea un contenidor de contingut, per exemple un expedient
 	 * al gestor d'arxius remot
@@ -23,9 +23,9 @@ public interface DistribucioPlugin {
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public String contenidorCrear(
-			DistribucioRegistreAnotacio anotacio, 
+			DistribucioRegistreAnotacio anotacio,
 			String unitatArrelCodi) throws SistemaExternException;
-	
+
 	/**
 	 * Crea (envia) els documents d'un assentament registral
 	 * al gestor d'arxius remot dins el un contenidor creat prèviament
@@ -41,10 +41,10 @@ public interface DistribucioPlugin {
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public String documentCrear(
-			DistribucioRegistreAnotacio anotacio, 
-			String unitatArrelCodi, 
-			String contenidorArxiuUuid);
-	
+			DistribucioRegistreAnnex annex,
+			String unitatArrelCodi,
+			String contenidorArxiuUuid) throws SistemaExternException;
+
 	/**
 	 * Obté el document enviat prèviament al gestor d'arxius remot
 	 * 
@@ -61,11 +61,23 @@ public interface DistribucioPlugin {
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public Document documentDescarregar(
-			String arxiuUuid, 
-			String versio, 
-			boolean ambContingut, 
-			boolean ambVersioImprimible) throws SistemaExternException ;
-	
+			String arxiuUuid,
+			String versio,
+			boolean ambContingut,
+			boolean ambVersioImprimible) throws SistemaExternException;
+
+	/**
+	 * Implementa la lògica de marcar com a processada per l'usuari 
+	 * un assentametn registral i el subsegüent tracte que els seus annexos tendran. 
+	 * 
+	 * @param anotacio
+	 *            assentament registral que es marca com a processat
+	 * @throws SistemaExternException
+	 *            Si hi ha hagut algun problema per dur a terme l'acció.
+	 */
+	public void contenidorMarcarProcessat(
+			DistribucioRegistreAnotacio anotacio) throws SistemaExternException;
+
 	/**
 	 * Elimina un contenidor creat prèviament a partir del seu UUID
 	 * 
@@ -76,17 +88,5 @@ public interface DistribucioPlugin {
 	 */
 	public void contenidorEliminar(
 			String uuid) throws SistemaExternException;
-	
-	/**
-	 * Implementa la lògica de marcar com a processada per l'usuari 
-	 * un assentametn registral i el subsegüent tracte que els seus annexos tendran. 
-	 * 
-	 * @param anotacio
-	 *            assentament registral que es marca com a processat
-	 * @throws SistemaExternException
-	 *            Si hi ha hagut algun problema per dur a terme l'acció.
-	 */
-	public void marcarProcessat(
-			DistribucioRegistreAnotacio anotacio) throws SistemaExternException;
 
 }

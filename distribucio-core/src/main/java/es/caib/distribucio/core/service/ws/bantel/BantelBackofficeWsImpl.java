@@ -6,6 +6,8 @@ package es.caib.distribucio.core.service.ws.bantel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -14,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeFactory;
@@ -89,7 +94,8 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
     		throw new BantelBackofficeWsException("No s'ha trobat cap entrada amb aquest número d'entrada: " + referencia.getNumeroEntrada());          	
 		
 		// Comprova la clau d'accés a l'entrada
-		if ( referencia.getClaveAcceso() == null || !ReglaHelper.encrypt(referencia.getNumeroEntrada()).equals(referencia.getClaveAcceso().getValue()))
+		String numeroEntradaEncriptat = getNumeroEntradaEncriptat(referencia.getNumeroEntrada());
+		if ( referencia.getClaveAcceso() == null || !numeroEntradaEncriptat.equals(referencia.getClaveAcceso().getValue()))
 			throw new BantelBackofficeWsException("La clau d'accés no concorda amb la clau esperada per a l'entrada amb número \"" + referencia.getNumeroEntrada() + "\"");
 
 		// Construeix la resposta
@@ -129,14 +135,17 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 	}
 
 
-	/** Mètode per explorar l'XML de l'annex i extreure la informació de Sistra. 
+	/**
+	 * Mètode per explorar l'XML de l'annex i extreure la informació de Sistra.
+	 *  
 	 * @param registre 
 	 * 			Objecte registre per accedir a tots els seus annexos.
 	 * @param tramitBte
 	 * 			Objecte on omplir l'informació obtinguda dels annexos
 	 * @param annex
 	 * 			Objexte annex del registre amb la informació per accedir al fitxer físic
-	 * @throws Exception */
+	 * @throws Exception
+	 */
 	private void extreureDadesAnnex(RegistreAnotacioDto registre, TramiteBTE tramitBte, RegistreAnnex annex) throws Exception {
 
 		try {
@@ -348,7 +357,8 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
     		throw new BantelBackofficeWsException("No s'ha informat correctament el número d'entrada");
 
 		// Comprova la clau d'accés a l'entrada
-		if ( referencia.getClaveAcceso() == null || !ReglaHelper.encrypt(referencia.getNumeroEntrada()).equals(referencia.getClaveAcceso().getValue()))
+    	String numeroEntradaEncriptat = getNumeroEntradaEncriptat(referencia.getNumeroEntrada());
+		if ( referencia.getClaveAcceso() == null || !numeroEntradaEncriptat.equals(referencia.getClaveAcceso().getValue()))
 			throw new BantelBackofficeWsException("La clau d'accés no concorda amb la clau esperada per a l'entrada amb número \"" + referencia.getNumeroEntrada() + "\"");
 
 		// Determina l'estat de l'anotació segons el resultat
@@ -430,7 +440,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 			referencia = new ReferenciaEntrada();
 			referencia.setNumeroEntrada(numeroEntrada);
 			// Xifra el número d'entrada com a clau d'accés de l'entrada
-			clauAcces = ReglaHelper.encrypt(numeroEntrada);
+			clauAcces = getNumeroEntradaEncriptat(numeroEntrada);
 			referencia.setClaveAcceso(bantelObjectFactory.createReferenciaEntradaClaveAcceso(clauAcces));
 			referenciesEntrades.add(referencia);
 		}
@@ -480,8 +490,15 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 			processada = null;
 		return processada;
 	}
-	
 
+	private String getNumeroEntradaEncriptat(String numeroEntrada) throws BantelBackofficeWsException {
+		try {
+			return ReglaHelper.encrypt(numeroEntrada);
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException ex) {
+			throw new BantelBackofficeWsException("Error al comprovar la clau d'accés per a l'entrada amb número \"" + numeroEntrada + "\"", ex);
+		}
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BantelBackofficeWsImpl.class);
+
 }

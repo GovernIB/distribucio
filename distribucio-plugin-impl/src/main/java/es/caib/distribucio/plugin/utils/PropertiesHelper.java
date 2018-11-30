@@ -9,8 +9,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.distribucio.core.api.exception.PropietatNotFoundException;
-
 /**
  * Utilitat per accedir a les entrades del fitxer de properties.
  * 
@@ -52,14 +50,6 @@ public class PropertiesHelper extends Properties {
 			}
 		}
 		return instance;
-	}
-	
-	public String getPropertyAmbComprovacio(String key) {
-		String valor = getProperty(key);
-		if (valor == null || valor.isEmpty()) {
-			throw new PropietatNotFoundException(key);
-		}
-		return valor;
 	}
 
 	public String getProperty(String key) {

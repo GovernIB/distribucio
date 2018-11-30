@@ -38,8 +38,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			ContingutEntity pare,
 			String nom,
 			int esborrat);
-	
-	
+
 	@Query(	"select " +
 			"    c " +
 			"from " +
@@ -66,8 +65,6 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("mostrarEsborrats") boolean mostrarEsborrats,
 			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
 			Pageable pageable);
-	
-	
 
 	@Query(	"select " +
 			"    c " +
@@ -139,7 +136,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);
-	
+
 	@Query("select " +
 			"   c " +
 			"from " +
@@ -150,5 +147,5 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"   c.pare.id = :pareId")
 	List<ContingutEntity> findRegistresByPareId(
 			@Param("pareId") Long pareId);
-	
+
 }

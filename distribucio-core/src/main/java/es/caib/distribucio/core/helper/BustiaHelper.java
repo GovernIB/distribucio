@@ -133,45 +133,29 @@ public class BustiaHelper {
 		}
 		return arbre;
 	}
-	
-	
-	
-	
+
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			EntitatEntity entitat,
 			String bustiaNomFiltre,
 			Long unitatIdFiltre,
 			Boolean unitatObsoleta) {
-		
 		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatRepository.findOne(unitatIdFiltre): null;
-		
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(entitat,
 				unitatIdFiltre == null, 
 				unitat,
 				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
 				bustiaNomFiltre,
 				unitatObsoleta == null || unitatObsoleta == false);
-		
 		Set<String> bustiaUnitatCodis = new HashSet<String>();
-		for (BustiaEntity bustia: busties)
+		for (BustiaEntity bustia: busties) {
 			bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
-			
+		}
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
 				entitat.getCodiDir3(),
 				bustiaUnitatCodis);
-
 		return arbre;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
-	
 	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {
@@ -186,7 +170,6 @@ public class BustiaHelper {
 					unitatOrganitzativaCodi,
 					UnitatOrganitzativaDto.class);
 		}
-//		Collections.reverse(path);
 		BustiaEntity bustiaDesti = null;
 		for (UnitatOrganitzativaDto unitat: path) {
 			BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(

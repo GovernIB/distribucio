@@ -39,7 +39,6 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	
 	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
 		<div class="row">
 			<div class="col-md-6">
@@ -71,7 +70,6 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-
 	<table id="taulaDades" class="table table-bordered table-striped" style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/bustiaUser/datatable"/>"
@@ -122,7 +120,6 @@ $(document).ready(function() {
 						{{/for}}
 					</script>
 				</th>
-				
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						{{if !procesAutomatic}}
@@ -130,7 +127,6 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="10%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -166,7 +162,5 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
-	
 </body>
-
 </html>

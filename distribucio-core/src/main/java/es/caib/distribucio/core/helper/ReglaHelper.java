@@ -3,10 +3,15 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.namespace.QName;
 
@@ -191,20 +196,15 @@ public class ReglaHelper {
 		}
 	}
 
-	/** Mètode per encriptar un text per a generar la clau d'accès. */
-	public static String encrypt(String input){
-	   byte[] crypted = null;
-	   try{
-	     SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
-	       Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-	       cipher.init(Cipher.ENCRYPT_MODE, skey);
-	       crypted = cipher.doFinal(input.getBytes());
-	     }catch(Exception e){
-	      System.out.println(e.toString());
-	     }
-	     return new String(Base64.encode(crypted));
-	 }
-	
+	public static String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+		byte[] crypted = null;
+		SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		cipher.init(Cipher.ENCRYPT_MODE, skey);
+		crypted = cipher.doFinal(input.getBytes());
+		return new String(Base64.encode(crypted));
+	}
+
 	public boolean reglaAplicar(
 			RegistreEntity anotacio) {
 		contingutLogHelper.log(
@@ -226,14 +226,12 @@ public class ReglaHelper {
 		try {
 			aplicar(anotacio.getId());
 			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
-			
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
 							"alertes.segon.pla.aplicar.regles",
 							new Object[] {anotacio.getId()}),
 					null,
 					anotacio.getId());
-			
 			return true;
 		} catch (Exception ex) {
 			String procesError;
@@ -242,22 +240,20 @@ public class ReglaHelper {
 			} else {
 				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
 			}
-			
 			logger.debug("Processament anotació ERROR (" +
 					"id=" + anotacio.getId() + ", " +
 					"núm.=" + anotacio.getIdentificador() + "): " +
 					procesError);
-			
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
 							"alertes.segon.pla.aplicar.regles.error",
 							new Object[] {anotacio.getId()}),
 					ex,
 					anotacio.getId());
-			
 			return false;
 		}
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ReglaHelper.class);
+
 }

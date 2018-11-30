@@ -41,6 +41,7 @@ import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PluginHelper;
+import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
@@ -468,7 +469,7 @@ public class ContingutServiceImpl implements ContingutService {
 //				contingutDesti);
 //		return dto;
 //	}
-//
+
 	@Transactional(readOnly = true)
 	@Override
 	public ContingutDto findAmbIdUser(
@@ -549,7 +550,7 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				true);
 	}
-//
+
 //	@Transactional(readOnly = true)
 //	@Override
 //	public ContingutDto getContingutAmbFillsPerPath(
@@ -652,7 +653,7 @@ public class ContingutServiceImpl implements ContingutService {
 //					"El contingut no és un node");
 //		}
 //	}
-//
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<ContingutLogDto> findLogsPerContingutAdmin(
@@ -699,7 +700,7 @@ public class ContingutServiceImpl implements ContingutService {
 				true);
 		return contingutLogHelper.findLogsContingut(contingut);
 	}
-//
+
 //	@Transactional(readOnly = true)
 //	@Override
 //	public ContingutLogDetallsDto findLogDetallsPerContingutAdmin(
@@ -722,7 +723,7 @@ public class ContingutServiceImpl implements ContingutService {
 //				contingut,
 //				contingutLogId);
 //	}
-//
+
 	@Transactional(readOnly = true)
 	@Override
 	public ContingutLogDetallsDto findLogDetallsPerContingutUser(
@@ -773,8 +774,6 @@ public class ContingutServiceImpl implements ContingutService {
 		return contingutLogHelper.findMovimentsContingut(contingut);
 	}
 
-	
-
 	@Transactional(readOnly = true)
 	@Override
 	public List<ContingutMovimentDto> findMovimentsPerContingutUser(
@@ -816,7 +815,6 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				true,
 				false);
-		
 		boolean tipusBustia = true;
 		boolean tipusRegistre = true;
 		if (filtre.getTipus() != null) {
@@ -881,22 +879,22 @@ public class ContingutServiceImpl implements ContingutService {
 					}
 				});
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(
 			Long entitatId,
 			AnotacioRegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta d'anotacions de registre per usuari admin ("
-				+ "entitatId=" + entitatId + ", "
-				+ "filtre=" + filtre + ")");
+		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
+				"entitatId=" + entitatId + ", " +
+				"filtre=" + filtre + ", " +
+				"paginacioParams=" + paginacioParams + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		
 		Date dataInici = filtre.getDataCreacioInici();
 		if (dataInici != null) {
 			Calendar cal = Calendar.getInstance();
@@ -917,7 +915,6 @@ public class ContingutServiceImpl implements ContingutService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
-		
 		return paginacioHelper.toPaginaDto(
 				registreRepository.findByFiltrePaginat(
 						entitat, 
@@ -948,7 +945,7 @@ public class ContingutServiceImpl implements ContingutService {
 					}
 				});
 	}
-//
+
 //	@Transactional(readOnly = true)
 //	@Override
 //	public PaginaDto<ContingutDto> findEsborrats(
@@ -1051,13 +1048,11 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				true);
-		
-		
 		return conversioTipusHelper.convertirList(
 				contingutComentariRepository.findByContingutOrderByCreatedDateAsc(contingut), 
 				ContingutComentariDto.class);
 	}
-	
+
 	@Transactional
 	@Override
 	public boolean publicarComentariPerContingut(
@@ -1083,20 +1078,16 @@ public class ContingutServiceImpl implements ContingutService {
 				false,
 				false,
 				true);
-		
 		//truncam a 1024 caracters
 		if (text.length() > 1024)
 			text = text.substring(0, 1024);
-		
 		ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(
 				contingut, 
 				text).build();
-		
 		contingutComentariRepository.save(comentari);
-		
 		return true;
 	}
-	
+
 	@Transactional
 	@Override
 	public boolean marcarProcessat(
@@ -1112,16 +1103,13 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		
 		RegistreEntity registre = null;
 		long registresAmbMateixUuid = 0;
 		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus()) {
 			registre = (RegistreEntity)contingut;
 			registresAmbMateixUuid = registreRepository.countByExpedientArxiuUuidAndEsborrat(registre.getExpedientArxiuUuid(), 0);
 		}
-		
 		contingut.updateEsborrat(1);
-		
 		// Marca per evitar la cache de la bustia
 		Long bustiaId = contingut.getPare().getId();
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
@@ -1129,20 +1117,22 @@ public class ContingutServiceImpl implements ContingutService {
 				bustiaId,
 				true);
 		bustiaHelper.evictElementsPendentsBustia(entitat, bustia);
-		
 		// Si el contingut és una anotació de registre s'ha de 
 		// tancar l'expedient temporal 
 		if (registre != null) {
-			
-			if(registre.getExpedientArxiuUuid() == null || registresAmbMateixUuid <= 1) {
-				
+			if (registre.getExpedientArxiuUuid() == null || registresAmbMateixUuid <= 1) {
 				if (registre.getAnnexos() != null && registre.getAnnexos().size() > 0) {
-					pluginHelper.marcarAnotacioComProcessada(registre);
+					int dies = getPropertyExpedientDiesTancament();
+					Date ara = new Date();
+					Calendar c = Calendar.getInstance();
+					c.setTime(ara);
+					c.add(Calendar.DATE, dies);
+					Date dataTancament = c.getTime();
+					registre.updateDataTancament(dataTancament);
+					registre.updateArxiuEsborrat();
 				}
 			}
-			
 		}
-		
 		contingutLogHelper.log(
 				registre,
 				LogTipusEnumDto.MARCAMENT_PROCESSAT,
@@ -1150,11 +1140,19 @@ public class ContingutServiceImpl implements ContingutService {
 				null,
 				false,
 				false);
-		
 		return publicarComentariPerContingut(
 				entitatId,
 				contingutId,
 				text);
+	}
+
+
+
+	private int getPropertyExpedientDiesTancament() {
+		String numDies = PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.tancament.expedient.dies",
+				"30");
+		return Integer.parseInt(numDies);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);

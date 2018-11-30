@@ -237,13 +237,12 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('DIS_BSTWS')")
-	public Long registreAnotacioCrearIDistribuir(
+	public RuntimeException registreAnotacioCrearIDistribuir(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) throws NotFoundException;
 
-	
 	/**
 	 * Consulta el contingut pendent d'una bústia.
 	 * 

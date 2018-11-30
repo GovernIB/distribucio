@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -41,7 +40,6 @@ import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
-import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -53,24 +51,22 @@ import es.caib.distribucio.plugin.usuari.DadesUsuari;
 @Component
 public class ContingutHelper {
 
-	@Resource
+	@Autowired
 	private ContingutRepository contingutRepository;
-	@Resource
-	private RegistreRepository registreRepository;
-	@Resource
+	@Autowired
 	private ContingutMovimentRepository contenidorMovimentRepository;
 
-	@Resource
+	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
+	@Autowired
 	private PluginHelper pluginHelper;
-	@Resource
+	@Autowired
+	private RegistreHelper registreHelper;
+	@Autowired
 	private PermisosHelper permisosHelper;
-	@Resource
-	private CacheHelper cacheHelper;
-	@Resource
+	@Autowired
 	private UsuariHelper usuariHelper;
-	@Resource
+	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 
@@ -330,7 +326,6 @@ public class ContingutHelper {
 			usuariHelper.generarUsuariAutenticat(
 					contingut.getDarrerMoviment().getRemitent().getCodi(), 
 					true);
-		
 		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
 				contingut,
 				contingut.getPare(),
@@ -387,7 +382,7 @@ public class ContingutHelper {
 		}
 		return resposta;
 	}
-	
+
 	private Long getCountByContingut(
 			ContingutEntity contingut,
 			List<Object[]> counts) {
@@ -400,9 +395,10 @@ public class ContingutHelper {
 		return new Long(0);
 	}
 
-	public ContingutEntity ferCopiaContingut (ContingutEntity contingutOriginal, BustiaEntity bustiaDesti) {
+	public ContingutEntity ferCopiaContingut(
+			ContingutEntity contingutOriginal,
+			BustiaEntity bustiaDesti) {
 		RegistreEntity registreOriginal = (RegistreEntity)contingutOriginal;
-		
 		RegistreEntity contingutCopia = RegistreEntity.getBuilder(
 				registreOriginal.getEntitat(), 
 				registreOriginal.getRegistreTipus(), 
@@ -445,7 +441,6 @@ public class ContingutHelper {
 				regla(registreOriginal.getRegla()).
 				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
 				build();
-		
 		if (registreOriginal.getInteressats() != null) {
 			for (RegistreInteressatEntity registreInteressat: registreOriginal.getInteressats()) {
 				contingutCopia.getInteressats().add(registreInteressat);
@@ -453,7 +448,6 @@ public class ContingutHelper {
 		}
 		if (registreOriginal.getAnnexos() != null) {
 			for (RegistreAnnexEntity registreAnnex: registreOriginal.getAnnexos()) {
-				
 				RegistreAnnexEntity nouAnnex = RegistreAnnexEntity.getBuilder(
 						registreAnnex.getTitol(), 
 						registreAnnex.getFitxerNom(), 
@@ -472,7 +466,6 @@ public class ContingutHelper {
 						timestamp(registreAnnex.getTimestamp()).
 						validacioOCSP(registreAnnex.getValidacioOCSP()).
 						build();
-				
 				for (RegistreAnnexFirmaEntity firma: registreAnnex.getFirmes()) {
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
 							firma.getTipus(), 
@@ -482,25 +475,22 @@ public class ContingutHelper {
 							firma.getCsvRegulacio(), 
 							firma.isAutofirma(), 
 							nouAnnex).build();
-					
 					nouAnnex.getFirmes().add(novaFirma);
 				}
-				
 				contingutCopia.getAnnexos().add(nouAnnex);
 			}
 		}
-		
 		contingutCopia.updateJustificantUuid(registreOriginal.getJustificantArxiuUuid());
-		
 		contingutRepository.saveAndFlush(contingutCopia);
-		
 		boolean duplicarContingut = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
 		if (duplicarContingut) {
-			pluginHelper.distribuirContingutAnotacioPendent(contingutCopia, bustiaDesti, false);
+			registreHelper.guardarAnnexosAmbPluginDistribucio(
+					contingutCopia,
+					bustiaDesti,
+					false);
 		} else {
 			contingutCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
 		}
-		
   		return contingutCopia;
 	}
 
