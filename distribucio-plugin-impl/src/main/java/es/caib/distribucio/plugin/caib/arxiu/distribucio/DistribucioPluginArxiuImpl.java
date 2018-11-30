@@ -4,8 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -49,12 +51,13 @@ import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
 public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 
-	private static final String INTCODI_GESDOC = "GESDOC";
-	private static final String INTCODI_ARXIU = "ARXIU";
-	private static final String INTCODI_SIGNATURA = "SIGNATURA";
 
-	private static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
-	private static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
+	private IntegracioManager integracioManager;
+	private String itegracioGesdocCodi = "GESDOC";
+	private String integracioArxiuCodi = "ARXIU";
+	private String integracioSignaturaCodi = "SIGNATURA";
+	private String gesdocAgrupacioAnnexos = "anotacions_registre_doc_tmp";
+	private String gesdocAgrupacioFirmes = "anotacions_registre_fir_tmp";
 
 	private IArxiuPlugin arxiuPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
@@ -75,18 +78,46 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			throw new ValidationException(
 					"No s'ha configurat la propietat amb la sèrie documental de l'expedient");
 		}
-		ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
-				toArxiuExpedient(
-						null,
-						nomExpedient,
-						null,
-						Arrays.asList(unitatArrelCodi),
-						new Date(),
-						classificacio,
-						ExpedientEstatEnumDto.OBERT,
-						null,
-						serieDocumental));
-		return expedientCreat.getIdentificador();
+		String accioDescripcio = "Creant expedient per l'anotació de registre";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("titol", nomExpedient);
+		accioParams.put("organ", unitatArrelCodi);
+		accioParams.put("classificacio", classificacio);
+		accioParams.put("estat", ExpedientEstatEnumDto.OBERT.name());
+		accioParams.put("serieDocumental", serieDocumental);
+		long t0 = System.currentTimeMillis();
+		try {
+			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
+					toArxiuExpedient(
+							null,
+							nomExpedient,
+							null,
+							Arrays.asList(unitatArrelCodi),
+							new Date(),
+							classificacio,
+							ExpedientEstatEnumDto.OBERT,
+							null,
+							serieDocumental));
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+			return expedientCreat.getIdentificador();
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al crear expedient per l'anotació de registre";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	@Override
@@ -96,12 +127,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String contenidorId) throws SistemaExternException {
 		byte[] contingut = null;
 		if (annex.getGesdocDocumentId() != null) {
-			ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
-			getGestioDocumentalPlugin().get(
+			contingut = gestioDocumentalGet(
 					annex.getGesdocDocumentId(),
-					GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
-					baos_doc);
-			contingut = baos_doc.toByteArray();
+					gesdocAgrupacioAnnexos);
 		} else {
 			Document arxiuDocument = this.arxiuDocumentConsultar(
 					annex.getFitxerArxiuUuid(),
@@ -189,7 +217,12 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String versio, 
 			boolean ambContingut,
 			boolean ambVersioImprimible) throws SistemaExternException {
-		Document documentDetalls = getArxiuPlugin().documentDetalls(
+		return arxiuDocumentConsultar(
+				arxiuUuid,
+				versio, 
+				ambContingut,
+				ambVersioImprimible);
+		/*Document documentDetalls = getArxiuPlugin().documentDetalls(
 				  arxiuUuid,
 				  versio,
 				  ambContingut);
@@ -204,171 +237,87 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				documentDetalls.setContingut(getArxiuPlugin().documentImprimible(documentDetalls.getIdentificador()));
 			}
 		}
-		return documentDetalls;
+		return documentDetalls;*/
 	}
 
 	@Override
 	public void contenidorMarcarProcessat(
 			DistribucioRegistreAnotacio anotacio) throws SistemaExternException {
-		getArxiuPlugin().expedientTancar(
-				anotacio.getExpedientArxiuUuid());
+		String accioDescripcio = "Tancant expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("identificador", anotacio.getExpedientArxiuUuid());
+		long t0 = System.currentTimeMillis();
+		try {
+			getArxiuPlugin().expedientTancar(
+					anotacio.getExpedientArxiuUuid());
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al tancar rexpedient";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	@Override
 	public void contenidorEliminar(
 			String idContingut) throws SistemaExternException {
-		getArxiuPlugin().expedientEsborrar(idContingut);
-	}
-
-
-
-	/*private ContingutArxiu arxiuExpedientPerAnotacioCrear(
-			DistribucioRegistreAnotacio anotacio,
-			String unitatArrelCodi) throws SistemaExternException {
-		String nomExpedient = "EXP_REG_" + anotacio.getExpedientNumero() + "_" + System.currentTimeMillis();
-		ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
-				toArxiuExpedient(
-						null,
-						nomExpedient,
-						null,
-						Arrays.asList(unitatArrelCodi),
-						new Date(),
-						getPropertyPluginRegistreExpedientClassificacio(),
-						ExpedientEstatEnumDto.OBERT,
-						null,
-						getPropertyPluginRegistreExpedientSerieDocumental()));
-		
-		return expedientCreat;
-	}
-
-	private String processarAnnexosRegistre(
-			DistribucioRegistreAnotacio anotacio, 
-			String unitatArrelCodi, 
-			String identificadorRetorn) {
-		String uuidDocument = null;
-		boolean isExpedientFinal = false;
+		String accioDescripcio = "Esborrant expedient";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("identificador", idContingut);
+		long t0 = System.currentTimeMillis();
 		try {
-			for (DistribucioRegistreAnnex annex: anotacio.getAnnexos()) {
-				uuidDocument = guardarDocumentAnnex(
-						annex, 
-						unitatArrelCodi, 
-						identificadorRetorn);
-				isExpedientFinal = true;
-			}
+			getArxiuPlugin().expedientEsborrar(idContingut);
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			try {
-				if (isExpedientFinal) {
-					getArxiuPlugin().expedientTancar(
-							anotacio.getExpedientArxiuUuid());
-					anotacio.setArxiuUuid(null);
-					anotacio.setArxiuDataActualitzacio(null);
-				} else {
-					contenidorEliminar(anotacio.getExpedientArxiuUuid());
-				}
-			} catch (Exception ex2) {
-				logger.error(
-						"Error al eliminar o tancar l'expedient creat l'arxiu digital",
-						ex2);
-			}
-			throw new BustiaServiceException(
-					"Error al processar els annexos de l'anotació de registre",
+			String errorDescripcio = "Error al esborrar rexpedient";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
 					ex);
 		}
-		return uuidDocument;
 	}
 
-	private String guardarDocumentAnnex(
-			DistribucioRegistreAnnex annex,
-			String unitatArrelCodi,
-			String contenidorId) throws SistemaExternException {
-		byte[] contingut = null;
-		if (annex.getGesdocDocumentId() != null) {
-			ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
-			getGestioDocumentalPlugin().get(
-					annex.getGesdocDocumentId(),
-					GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
-					baos_doc);
-			contingut = baos_doc.toByteArray();
-		} else {
-			Document arxiuDocument = this.arxiuDocumentConsultar(
-					annex.getFitxerArxiuUuid(),
-					null,
-					true,
-					false);
-			if (arxiuDocument.getContingut() != null) {
-				contingut = arxiuDocument.getContingut().getContingut();
-			} else {
-				throw new ValidationException(
-						"No s'ha trobat cap contingut per l'annex (" +
-						"uuid=" + annex.getFitxerArxiuUuid() + ")");
-			}
-			if (arxiuDocument.getFirmes() != null && arxiuDocument.getFirmes().size() > 0) {
-//				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(annexEntity, null);
-				Iterator<Firma> it = arxiuDocument.getFirmes().iterator();
-				int firmaIndex = 0;
-				while (it.hasNext()) {
-					Firma arxiuFirma = it.next();
-					if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus()) && !FirmaTipus.PADES.equals(arxiuFirma.getTipus())) {
-						DistribucioRegistreFirma firma = annex.getFirmes().get(firmaIndex);
-						firma.setContingut(arxiuFirma.getContingut());
-						firmaIndex++;
-					} else {
-						it.remove();
-					}
-				}
-			}
-		}
-		FitxerDto fitxer = new FitxerDto();
-		fitxer.setNom(annex.getFitxerNom());
-		fitxer.setContingut(contingut);
-		fitxer.setContentType(annex.getFitxerTipusMime());
-		fitxer.setTamany(contingut.length);
-		byte[] firmaDistribucioContingut = null;
-		if (this.isRegistreSignarAnnexos() && annex.getFirmes().size() == 0) {
-			// Distribucio signa amb el plugin de signatures els annexos sense firmes
-			firmaDistribucioContingut = this.signaturaDistribucioSignar(
-					annex,
-					contingut);
-			String tipus = null;
-			String perfil = null;
-			String fitxerNom = null;
-			String tipusMime = null;
-			String csvRegulacio = null;
-			if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
-				tipus = DocumentNtiTipoFirmaEnumDto.TF06.toString();
-				perfil = FirmaPerfil.EPES.toString();
-				fitxer.setContingut(firmaDistribucioContingut);
-				tipusMime = "application/pdf";
-				fitxerNom = annex.getTitol() + "_pades.pdf";
-//				fitxer.setContingut(firmaDistribucioContingut);
-//				firmaDistribucioContingut = null;
-			} else {
-				tipus = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-				perfil = FirmaPerfil.BES.toString();
-				fitxerNom = annex.getFitxerNom() + "_cades_det.csig";
-				tipusMime = "application/octet-stream";
-			}
-			DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
-			annexFirma.setTipus(tipus);
-			annexFirma.setPerfil(perfil);
-			annexFirma.setFitxerNom(fitxerNom);
-			annexFirma.setTipusMime(tipusMime);
-			annexFirma.setCsvRegulacio(csvRegulacio);
-			annexFirma.setAutofirma(true);
-			annexFirma.setGesdocFirmaId(null);
-			annexFirma.setContingut(firmaDistribucioContingut);
-			annexFirma.setAnnex(annex);
-			annex.getFirmes().add(annexFirma);
-		}
-		String uuidDocument = arxiuDocumentAnnexCrear(
-				annex,
-				unitatArrelCodi,
-				fitxer,
-				convertirFirmesAnnexToArxiuFirmaDto(annex, firmaDistribucioContingut),
-				contenidorId);
-		annex.setFitxerArxiuUuid(uuidDocument);
-		return uuidDocument;
-	}*/
+	@Override
+	public void configurar(
+			IntegracioManager integracioManager,
+			String itegracioGesdocCodi,
+			String integracioArxiuCodi,
+			String integracioSignaturaCodi,
+			String gesdocAgrupacioAnnexos,
+			String gesdocAgrupacioFirmes) {
+		this.integracioManager = integracioManager;
+		this.itegracioGesdocCodi = itegracioGesdocCodi;
+		this.integracioArxiuCodi = integracioArxiuCodi;
+		this.integracioSignaturaCodi = integracioSignaturaCodi;
+		this.gesdocAgrupacioAnnexos = gesdocAgrupacioAnnexos;
+		this.gesdocAgrupacioFirmes = gesdocAgrupacioFirmes;
+	}
+
+
 
 	private String arxiuDocumentAnnexCrear(
 			DistribucioRegistreAnnex annex,
@@ -380,23 +329,51 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
 			estatDocument = DocumentEstat.DEFINITIU;
 		}
-		ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
-				toArxiuDocument(
-						null,
-						annex.getTitol(),
-						fitxer,
-						null,
-						firmes,
-						null,
-						(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
-						Arrays.asList(unitatArrelCodi),
-						annex.getDataCaptura(),
-						(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
-						(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
-						estatDocument,
-						false),
-				identificadorRetorn);
-		return contingutFitxer.getIdentificador();
+		String accioDescripcio = "Creant document annex";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("titol", annex.getTitol());
+		accioParams.put("fitxerNom", fitxer.getNom());
+		accioParams.put("fitxerContentType", fitxer.getContentType());
+		accioParams.put("fitxerContingut", (fitxer.getContingut() != null ? "" + fitxer.getContingut().length : "0") + " bytes");
+		accioParams.put("firmes", (firmes != null ? "" + firmes.size() : "0"));
+		long t0 = System.currentTimeMillis();
+		try {
+			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
+					toArxiuDocument(
+							null,
+							annex.getTitol(),
+							fitxer,
+							null,
+							firmes,
+							null,
+							(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
+							Arrays.asList(unitatArrelCodi),
+							annex.getDataCaptura(),
+							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
+							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
+							estatDocument,
+							false),
+					identificadorRetorn);
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+			return contingutFitxer.getIdentificador();
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al crear document annex";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	private List<ArxiuFirmaDto> convertirFirmesAnnexToArxiuFirmaDto(
@@ -408,12 +385,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			for (DistribucioRegistreFirma annexFirma: annex.getFirmes()) {
 				byte[] firmaContingut = null;
 				if (annexFirma.getGesdocFirmaId() != null) {
-					ByteArrayOutputStream baos_fir = new ByteArrayOutputStream();
-					getGestioDocumentalPlugin().get(
+					firmaContingut = gestioDocumentalGet(
 							annexFirma.getGesdocFirmaId(),
-							GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
-							baos_fir);
-					firmaContingut = baos_fir.toByteArray();
+							gesdocAgrupacioFirmes);
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
 				} else if (firmaDistribucioContingut == null && !"TF06".equalsIgnoreCase(annexFirma.getTipus())) {
@@ -462,13 +436,41 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		} else {
 			tipusFirma = "CADES";
 		}
-		byte[] firmaContingut = getSignaturaPlugin().signar(
-				annex.getId().toString(),
-				annex.getFitxerNom(),
-				motiu,
-				tipusFirma,
-				annexContingut);
-		return firmaContingut;
+		String accioDescripcio = "Firma en servidor de document annex";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("annexId", annex.getId().toString());
+		accioParams.put("annexFitxerNom", annex.getFitxerNom());
+		accioParams.put("annexFitxerContingut", (annexContingut != null ? "" + annexContingut.length : "0") + " bytes");
+		accioParams.put("motiu", motiu);
+		accioParams.put("tipusFirma", tipusFirma);
+		long t0 = System.currentTimeMillis();
+		try {
+			byte[] firmaContingut = getSignaturaPlugin().signar(
+					annex.getId().toString(),
+					annex.getFitxerNom(),
+					motiu,
+					tipusFirma,
+					annexContingut);
+			integracioAddAccioOk(
+					integracioSignaturaCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+			return firmaContingut;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al firmar document en servidor";
+			integracioAddAccioError(
+					integracioSignaturaCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioSignaturaCodi,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	private Document arxiuDocumentConsultar(
@@ -476,10 +478,37 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String versio,
 			boolean ambContingut,
 			boolean ambVersioImprimible) throws SistemaExternException {
-		Document documentDetalls = getArxiuPlugin().documentDetalls(
-				arxiuUuid,
-				versio,
-				ambContingut);
+		String accioDescripcio = "Obtenint detalls del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("arxiuUuid", arxiuUuid);
+		accioParams.put("versio", versio);
+		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
+		long t0 = System.currentTimeMillis();
+		Document documentDetalls = null;
+		try {
+			documentDetalls = getArxiuPlugin().documentDetalls(
+					arxiuUuid,
+					versio,
+					ambContingut);
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al obtenir detalls del document";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
+					ex);
+		}
 		if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
 			boolean isPdf = false;
 			for (Firma firma : documentDetalls.getFirmes()) {
@@ -488,10 +517,77 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				}
 			}
 			if (isPdf) {
-				documentDetalls.setContingut(getArxiuPlugin().documentImprimible(documentDetalls.getIdentificador()));
+				generarVersioImprimible(documentDetalls);
 			}
 		}
 		return documentDetalls;
+	}
+
+	private void generarVersioImprimible(
+			Document documentDetalls) throws SistemaExternException {
+		String accioDescripcio = "Generant versió imprimible del document";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("identificador", documentDetalls.getIdentificador());
+		long t0 = System.currentTimeMillis();
+		try {
+			documentDetalls.setContingut(
+					getArxiuPlugin().documentImprimible(
+							documentDetalls.getIdentificador()));
+			integracioAddAccioOk(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al generar la versió imprimible del document";
+			integracioAddAccioError(
+					integracioArxiuCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					integracioArxiuCodi,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	private byte[] gestioDocumentalGet(
+			String id,
+			String agrupacio) throws SistemaExternException {
+		String accioDescripcio = "Obtenint arxiu de la gestió documental";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
+		accioParams.put("agrupacio", agrupacio);
+		long t0 = System.currentTimeMillis();
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			getGestioDocumentalPlugin().get(
+					id,
+					agrupacio,
+					baos);
+			integracioAddAccioOk(
+					itegracioGesdocCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0);
+			return baos.toByteArray();
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al obtenir arxiu de la gestió documental";
+			integracioAddAccioError(
+					itegracioGesdocCodi,
+					accioDescripcio,
+					accioParams,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					itegracioGesdocCodi,
+					errorDescripcio,
+					ex);
+		}
 	}
 
 	private Expedient toArxiuExpedient(
@@ -865,6 +961,37 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return false;
 	}
 
+	private void integracioAddAccioOk(
+			String integracioCodi,
+			String descripcio,
+			Map<String, String> parametres,
+			long tempsResposta) {
+		if (integracioManager != null) {
+			integracioManager.addAccioOk(
+					integracioCodi,
+					descripcio,
+					parametres,
+					tempsResposta);
+		}
+	}
+	private void integracioAddAccioError(
+			String integracioCodi,
+			String descripcio,
+			Map<String, String> parametres,
+			long tempsResposta,
+			String errorDescripcio,
+			Throwable throwable) {
+		if (integracioManager != null) {
+			integracioManager.addAccioError(
+					integracioCodi,
+					descripcio,
+					parametres,
+					tempsResposta,
+					errorDescripcio,
+					throwable);
+		}
+	}
+
 	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() throws SistemaExternException {
 		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
@@ -876,13 +1003,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.newInstance();
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							INTCODI_GESDOC,
+							itegracioGesdocCodi,
 							"Error al crear la instància del plugin de gestió documental",
 							ex);
 				}
 			} else {
 				throw new SistemaExternException(
-						INTCODI_GESDOC,
+						itegracioGesdocCodi,
 						"La classe del plugin de gestió documental no està configurada");
 			}
 		}
@@ -907,13 +1034,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							INTCODI_ARXIU,
+							integracioArxiuCodi,
 							"Error al crear la instància del plugin d'arxiu digital",
 							ex);
 				}
 			} else {
 				throw new SistemaExternException(
-						INTCODI_ARXIU,
+						integracioArxiuCodi,
 						"No està configurada la classe per al plugin d'arxiu digital");
 			}
 		}
@@ -928,13 +1055,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					signaturaPlugin = (SignaturaPlugin)clazz.newInstance();
 				} catch (Exception ex) {
 					throw new SistemaExternException(
-							INTCODI_SIGNATURA,
+							integracioSignaturaCodi,
 							"Error al crear la instància del plugin de signatura",
 							ex);
 				}
 			} else {
 				throw new SistemaExternException(
-						INTCODI_SIGNATURA,
+						integracioSignaturaCodi,
 						"No està configurada la classe per al plugin de signatura");
 			}
 		}

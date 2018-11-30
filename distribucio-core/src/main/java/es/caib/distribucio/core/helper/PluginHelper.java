@@ -36,6 +36,7 @@ import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
 import es.caib.distribucio.plugin.dadesext.Municipi;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
+import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManager;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
@@ -929,6 +930,42 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					distribucioPlugin = (DistribucioPlugin)clazz.newInstance();
+					distribucioPlugin.configurar(
+							new IntegracioManager() {
+								public void addAccioOk(
+										String integracioCodi,
+										String descripcio,
+										Map<String, String> parametres,
+										long tempsResposta) {
+									integracioHelper.addAccioOk(
+											integracioCodi,
+											descripcio,
+											parametres,
+											IntegracioAccioTipusEnumDto.ENVIAMENT,
+											tempsResposta);
+								}
+								public void addAccioError(
+										String integracioCodi,
+										String descripcio,
+										Map<String, String> parametres,
+										long tempsResposta,
+										String errorDescripcio,
+										Throwable throwable) {
+									integracioHelper.addAccioError(
+											integracioCodi,
+											descripcio,
+											parametres,
+											IntegracioAccioTipusEnumDto.ENVIAMENT,
+											tempsResposta,
+											errorDescripcio,
+											throwable);
+								}
+							},
+							IntegracioHelper.INTCODI_GESDOC,
+							IntegracioHelper.INTCODI_ARXIU,
+							IntegracioHelper.INTCODI_SIGNATURA,
+							GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
+							GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_DISTRIBUCIO,
