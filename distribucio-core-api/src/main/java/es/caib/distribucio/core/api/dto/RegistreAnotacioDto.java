@@ -28,7 +28,21 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String procesError;
 	private Integer procesIntents;
 	
+	private boolean error;
+	private boolean alerta;
 
+	public boolean isError() {
+		return error;
+	}
+	public void setError(boolean error) {
+		this.error = error;
+	}
+	public boolean isAlerta() {
+		return alerta;
+	}
+	public void setAlerta(boolean alerta) {
+		this.alerta = alerta;
+	}
 	public RegistreTipusEnum getRegistreTipus() {
 		return registreTipus;
 	}
@@ -368,7 +382,9 @@ public class RegistreAnotacioDto extends ContingutDto {
 		String interessatsResum = "";
 		if (this.interessats != null)
 			for (RegistreInteressat interessat: this.interessats) {
-				interessatsResum += interessat.getNom() + " " + interessat.getLlinatge1() + " " + interessat.getLlinatge2() + "<br>"; 
+				interessatsResum+= interessat.getNom()==null ? "" :interessat.getNom()+" ";
+				interessatsResum+=  interessat.getLlinatge1()==null ? "": interessat.getLlinatge1()+" ";
+				interessatsResum+=  interessat.getLlinatge2()==null ? "" : interessat.getLlinatge2()  + "<br>"; 
 			}
 		
 		return interessatsResum;

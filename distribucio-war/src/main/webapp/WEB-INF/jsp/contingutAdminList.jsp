@@ -72,18 +72,23 @@ pageContext.setAttribute(
 				<th data-col-name="bustia" data-visible="false">#</th>
 				<th data-col-name="registre" data-visible="false">#</th>
 				<th data-col-name="esborrat" data-visible="false">#</th>
+				<th data-col-name="alerta" data-visible="false">#</th>
 				<th data-col-name="nom" data-template="#cellNomTemplate" width="25%">
-					<spring:message code="contingut.admin.columna.nom"/>
+					<spring:message code="bustia.pendent.columna.contingut"/>
 					<script id="cellNomTemplate" type="text/x-jsrender">
 						{{if registre}}<span class="fa ${iconaAnotacioRegistre}"></span>{{else bustia}}<span class="fa ${iconaBustia}"></span>{{/if}}
 						{{:nom}}
 						{{if esborrat}}<span class="fa fa-trash-o pull-right" title="<spring:message code="contingut.admin.columna.esborrat"/>"></span>{{/if}}
+						{{if error}}<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.pendent.registre.estat.error"/>"></span>{{/if}}
+						{{if alerta}}
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
+						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="createdBy.nom" width="10%"><spring:message code="contingut.admin.columna.creat.per"/></th>
-				<th data-col-name="createdDate" data-converter="datetime" width="10%"><spring:message code="contingut.admin.columna.creat.el"/></th>
+				<th data-col-name="createdBy.nom" width="10%"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="createdDate" data-converter="datetime" width="10%"><spring:message code="contingut.admin.info.camp.data.creacio"/></th>
 				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false" width="30%">
-					<spring:message code="contingut.admin.columna.situacio"/>
+					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{if path}}
 							{{for path}}/
