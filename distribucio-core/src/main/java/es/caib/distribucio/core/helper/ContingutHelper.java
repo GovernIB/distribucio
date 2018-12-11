@@ -481,7 +481,8 @@ public class ContingutHelper {
 				contingutCopia.getAnnexos().add(nouAnnex);
 			}
 		}
-		contingutCopia.updateJustificantUuid(registreOriginal.getJustificantArxiuUuid());
+		contingutCopia.updateJustificantArxiuUuid(
+				registreOriginal.getJustificantArxiuUuid());
 		contingutRepository.saveAndFlush(contingutCopia);
 		boolean duplicarContingut = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
 		if (duplicarContingut) {

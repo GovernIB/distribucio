@@ -157,11 +157,13 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
-	
 	public void updateFitxerTamany(int fitxerTamany) {
 		this.fitxerTamany = fitxerTamany;
 	}
-	
+	public void updateGesdocDocumentId(String gesdocDocumentId) {
+		this.gesdocDocumentId = gesdocDocumentId;
+	}
+
 	public static Builder getBuilder(
 			String titol,
 			String fitxerNom,
@@ -243,11 +245,6 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 			return built;
 		}
 	}
-	
-	public void updateGesdocDocumentId(String gesdocDocumentId) {
-		this.gesdocDocumentId = gesdocDocumentId;
-	}
-	
 
 	@Override
 	public int hashCode() {

@@ -3,7 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -76,12 +76,12 @@ public class PluginHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
 	public String distribucioContenidorCrear(
-			String registreIdentificador,
+			String registreNumero,
 			DistribucioRegistreAnotacio registreAnotacio,
 			String unitatOrganitzativaCodi) {
 		String accioDescripcio = "Creant contenidor per als documents annexos";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("registreIdentificador", registreIdentificador);
+		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		long t0 = System.currentTimeMillis();
 		try {
@@ -113,16 +113,18 @@ public class PluginHelper {
 	}
 
 	public String distribucioDocumentCrear(
-			String registreIdentificador,
+			String registreNumero,
 			DistribucioRegistreAnnex annex,
 			String unitatOrganitzativaCodi,
 			String uuidContenidor) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("registreIdentificador", registreIdentificador);
+		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		accioParams.put("uuidContenidor", uuidContenidor);
+		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
+		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			String documentUuid = getDistribucioPlugin().documentCrear(
@@ -574,17 +576,38 @@ public class PluginHelper {
 
 	public String gestioDocumentalCreate(
 			String agrupacio,
-			InputStream contingut) {
+			byte[] contingut) {
+		String accioDescripcio = "Creant nou document a dins la gestió documental";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("agrupacio", agrupacio);
+		int contingutLength = contingut != null ? contingut.length : 0;
+		accioParams.put("numBytes", Integer.toString(contingutLength));
+		long t0 = System.currentTimeMillis();
 		try {
 			String gestioDocumentalId = null;
 			if (getGestioDocumentalPlugin() != null) {
 				gestioDocumentalId = getGestioDocumentalPlugin().create(
 						agrupacio,
-							contingut);
+						new ByteArrayInputStream(contingut));
 			}
+			accioParams.put("idRetornat", gestioDocumentalId);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 			return gestioDocumentalId;
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			String errorDescripcio = "Error al crear document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,
@@ -595,14 +618,33 @@ public class PluginHelper {
 	public void gestioDocumentalDelete(
 			String id,
 			String agrupacio) {
+		String accioDescripcio = "Esborrant document a dins la gestió documental";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
+		accioParams.put("agrupacio", agrupacio);
+		long t0 = System.currentTimeMillis();
 		try {
 			if (getGestioDocumentalPlugin() != null) {
 				getGestioDocumentalPlugin().delete(
 						id,
 						agrupacio);
 			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			String errorDescripcio = "Error al esborrar document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,
@@ -614,6 +656,11 @@ public class PluginHelper {
 			String id,
 			String agrupacio,
 			OutputStream contingutOut) {
+		String accioDescripcio = "Consultant document a dins la gestió documental";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
+		accioParams.put("agrupacio", agrupacio);
+		long t0 = System.currentTimeMillis();
 		try {
 			if (getGestioDocumentalPlugin() != null) {
 				getGestioDocumentalPlugin().get(
@@ -621,8 +668,22 @@ public class PluginHelper {
 						agrupacio,
 						contingutOut);
 			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de gestió documental";
+			String errorDescripcio = "Error al consultar document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,

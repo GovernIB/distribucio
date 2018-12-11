@@ -352,7 +352,6 @@ public class RegistreServiceImpl implements RegistreService {
 			try {
 				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
 				List<RegistreEntity> pendents = registreRepository.findPendentsDistribuir(Integer.parseInt(maxReintents));
-				
 				logger.debug("Distribuïnt " + pendents.size() + " anotacion pendents");
 				if (!pendents.isEmpty()) {
 					for (RegistreEntity pendent: pendents) {

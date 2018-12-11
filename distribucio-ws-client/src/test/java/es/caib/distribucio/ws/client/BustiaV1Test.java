@@ -7,9 +7,11 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -18,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import es.caib.distribucio.ws.v1.bustia.BustiaV1;
+import es.caib.distribucio.ws.v1.bustia.Firma;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnnex;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnotacio;
 import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
@@ -51,10 +54,10 @@ public class BustiaV1Test {
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "12345678";
 
+	private static final boolean TEST_ANNEX_FIRMAT = true;
+
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
-		Random generator = new Random();
-		int randomNumber = generator.nextInt(9999) + 1;
 		RegistreAnotacio anotacio = new RegistreAnotacio(); 
 		anotacio.setAplicacioCodi(APLICACIO_CODI);
 		anotacio.setAplicacioVersio(APLICACIO_VERSIO);
@@ -72,21 +75,34 @@ public class BustiaV1Test {
         anotacio.setOficinaDescripcio(OFICINA_DESC);
         anotacio.setLlibreCodi(LLIBRE_CODI);
         anotacio.setLlibreDescripcio(LLIBRE_DESC);
-        anotacio.setNumero(String.valueOf(randomNumber));
+        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
         anotacio.setIdiomaCodi(IDIOMA_CODI);
         anotacio.setIdiomaDescripcio(IDIOMA_DESC);
         anotacio.setIdentificador(IDENTIFICADOR);
         anotacio.setExpedientNumero(EXPEDIENT_NUM);
+        List<Firma> firmes = null;
+        if (TEST_ANNEX_FIRMAT) {
+        	firmes = new ArrayList<Firma>();
+            Firma firma = new Firma();
+            firma.setFitxerNom("annex_firmat.pdf");
+            firma.setTipusMime("application/pdf");
+            firma.setContingut(
+            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+            firma.setTipus("TF06");
+            firma.setPerfil("EPES");
+            firmes.add(firma);
+        }
         RegistreAnnex annex1 = crearAnnex(
         		"Annex1",
         		"annex.pdf",
         		"application/pdf",
         		null,
-        		getContingutAnnexSenseFirma(),
+        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirma(),
         		"0",
         		"EE01",
         		"TD01",
-        		"01");
+        		"01",
+        		firmes);
         anotacio.getAnnexos().add(annex1);
         RegistreAnnex justificant = crearAnnex(
         		"justificant",
@@ -97,7 +113,8 @@ public class BustiaV1Test {
         		"1",
         		"EE01",
         		"TD02",
-        		"02");
+        		"02",
+        		null);
         anotacio.setJustificant(justificant);
         try {
     		getBustiaServicePort().enviarAnotacioRegistreEntrada(
@@ -119,7 +136,8 @@ public class BustiaV1Test {
 			String eniOrigen,
 			String eniEstatElaboracio,
 			String eniTipusDocumental,
-			String sicresTipusDocument) throws IOException, DatatypeConfigurationException {
+			String sicresTipusDocument,
+			List<Firma> firmes) throws IOException, DatatypeConfigurationException {
 		RegistreAnnex annex = new RegistreAnnex();
 		annex.setTitol(titol);
 		annex.setFitxerNom(arxiuNom);
@@ -137,6 +155,9 @@ public class BustiaV1Test {
         annex.setEniEstatElaboracio(eniEstatElaboracio);
         annex.setEniTipusDocumental(eniTipusDocumental);
         annex.setSicresTipusDocument(sicresTipusDocument);
+        if (firmes != null) {
+        	annex.getFirmes().addAll(firmes);
+        }
         return annex;
 	}
 
@@ -183,45 +204,6 @@ public class BustiaV1Test {
 		anotacio.getInteressats().add(interessat);
 	}
 
-	/*@SuppressWarnings("unused")
-	private void afegirFirmes(RegistreAnnex annex) throws IOException {
-		Firma firma2 = new Firma();
-		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/2018-01-24_CAdES_Detached_foto_jpg.csig");
-        byte[] firmaContingut2 = FileUtils.readFileToByteArray(firmaFile2);
-		firma2.setTipus("TF04");
-		firma2.setPerfil("BES");
-		firma2.setContingut(firmaContingut2);
-		firma2.setFitxerNom("2018-01-24_CAdES_Detached_foto_jpg.csig");
-		firma2.setTipusMime(Files.probeContentType(firmaFile2.toPath()));
-		firma2.setCsvRegulacio("Regulació CSV 2");
-		annex.getFirmes().add(firma2);
-	}
-	@SuppressWarnings("unused")
-	private void afegirFirmes2(RegistreAnnex annex) throws IOException {
-		Firma firma = new Firma();
-		File firmaFile = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/annex1_signed.pdf");
-        byte[] firmaContingut = FileUtils.readFileToByteArray(firmaFile);
-        firma.setTipus("TF06");
-        firma.setPerfil("EPES");
-        firma.setContingut(firmaContingut);
-        firma.setFitxerNom("annex1_signed.pdf");
-        firma.setTipusMime(Files.probeContentType(firmaFile.toPath()));
-        firma.setCsvRegulacio("Regulació CSV 1");
-		annex.getFirmes().add(firma);
-	}
-	private void afegirFirmesJpg(RegistreAnnex annex) throws IOException {
-		Firma firma2 = new Firma();
-		File firmaFile2 = new File("c:/Feina/RIPEA/annexos/firmes cert Toni/Koala.jpg_signed.csig");
-        byte[] firmaContingut2 = FileUtils.readFileToByteArray(firmaFile2);
-		firma2.setTipus("TF04");
-		firma2.setPerfil("BES");
-		firma2.setContingut(firmaContingut2);
-		firma2.setFitxerNom("Koala.jpg_signed.csig");
-		firma2.setTipusMime(Files.probeContentType(firmaFile2.toPath()));
-		firma2.setCsvRegulacio("Regulació CSV 2");
-		annex.getFirmes().add(firma2);
-	}*/
-
 	private BustiaV1 getBustiaServicePort() throws IOException {
 		Properties testProperties = getTestProperties();
 		return BustiaV1WsClientFactory.getWsClient(
@@ -230,17 +212,25 @@ public class BustiaV1Test {
 				testProperties.getProperty("bustia.test.service.password"));
 	}
 
-	private InputStream getContingutAnnexSenseFirma() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/annex_sense_firma.pdf");
-		return is;
-	}
 	@SuppressWarnings("unused")
 	private InputStream getContingutJustificant() {
 		InputStream is = getClass().getResourceAsStream(
         		"/justificant.pdf");
 		return is;
 	}
+	@SuppressWarnings("unused")
+	private InputStream getContingutAnnexSenseFirma() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/annex_sense_firma.pdf");
+		return is;
+	}
+	@SuppressWarnings("unused")
+	private InputStream getContingutAnnexFirmat() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/annex_firmat.pdf");
+		return is;
+	}
+
 	private Properties getTestProperties() throws IOException {
 		Properties props = new Properties();
 		InputStream is = getClass().getResourceAsStream(

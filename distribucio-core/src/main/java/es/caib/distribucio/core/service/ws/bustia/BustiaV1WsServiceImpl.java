@@ -57,20 +57,38 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
-		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getIdentificador() : null;
+		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
+		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;
+		int numAnnexos = (registreEntrada != null && registreEntrada.getAnnexos() != null) ? registreEntrada.getAnnexos().size() : 0;
+		StringBuilder ambFirma = new StringBuilder();
+		if (registreEntrada != null && registreEntrada.getAnnexos() != null) {
+			boolean first = true;
+			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
+				if (!first) {
+					ambFirma.append(", ");
+				}
+				ambFirma.append(Boolean.toString(annex.getFirmes() != null));
+				first = false;
+			}
+		}
 		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitat);
 		accioParams.put("unitatAdministrativa", unitatAdministrativa);
-		accioParams.put("registreEntradaNumero", registreEntradaNumero);
-		accioParams.put("tipusRegistre", RegistreTipusEnum.ENTRADA.toString());
+		accioParams.put("numero", registreEntradaNumero);
+		accioParams.put("extracte", registreEntradaExtracte);
+		accioParams.put("annexosNum", Integer.toString(numAnnexos));
+		accioParams.put("annexosFirmats", ambFirma.toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			logger.debug(
 					"Nou registre d'entrada rebut en el servei web de bústia (" +
 					"entitat=" + entitat + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
-					"registreEntradaNumero=" + registreEntradaNumero + ")");
+					"numero=" + registreEntradaNumero + ", " +
+					"extracte=" + registreEntradaExtracte + ", " +
+					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
+					"annexosFirmats=" + ambFirma.toString() + ")");
 			validarAnotacioRegistre(registreEntrada);
 			RuntimeException exception = bustiaService.registreAnotacioCrearIDistribuir(
 					entitat,
@@ -92,7 +110,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"Error al processar nou registre d'entrada en el servei web de bústia (" +
 					"entitat=" + entitat + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
-					"registreEntradaNumero=" + registreEntradaNumero + ")",
+					"numero=" + registreEntradaNumero + ", " +
+					"extracte=" + registreEntradaExtracte + ", " +
+					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
+					"annexosFirmats=" + ambFirma.toString() + ")",
 					ex);
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BUSTIAWS,
@@ -194,10 +215,9 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	}	
 
 	private void validarFormatCampsRegistre(RegistreAnotacio registreEntrada) {
-		
-		if (registreEntrada.getJustificant() != null)
+		if (registreEntrada.getJustificant() != null) {
 			validarFormatAnnex(registreEntrada.getJustificant());
-		
+		}
 		if (registreEntrada.getAnnexos() != null) {
 			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
 				validarFormatAnnex(annex);
@@ -212,22 +232,15 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	 * @throws ValidationException
 	 */
 	private void validarAnnex(RegistreAnnex annex) throws ValidationException{
-		
-		if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null)
-			throw new ValidationException(
-					"S'ha d'especificar o bé la referència del document o el contingut del document"
-					+ " per l'annex [" + annex.getTitol() + "]");
-		
-		if (annex.getFitxerContingut() != null && annex.getFitxerNom() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'fitxerNom' per l'annex");
-		}
-		
-		if (annex.getFirmes() != null && annex.getFirmes().size() > 0)
-			for (es.caib.distribucio.core.api.registre.Firma firma : annex.getFirmes())
+		if (annex.getFirmes() != null && annex.getFirmes().size() > 0) {
+			for (es.caib.distribucio.core.api.registre.Firma firma: annex.getFirmes()) {
 				validaFirma(annex, firma);
+			}
+		} else {
+			validaContingutAnnex(annex);
+		}
 	}
-	
+
 	/** Valida la firma. Valida:
 	 * El tipus de firma ha d'estar reconegut.
 	 * Si el tipus és TF04 l'annex ha de tenir el contingut informat.
@@ -235,10 +248,13 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	 * @param annex
 	 * @param firma
 	 */
-	private void validaFirma(RegistreAnnex annex, es.caib.distribucio.core.api.registre.Firma firma) {
-		if (firma.getTipus() == null)
+	private void validaFirma(
+			RegistreAnnex annex,
+			es.caib.distribucio.core.api.registre.Firma firma) {
+		if (firma.getTipus() == null) {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'tipus' de la firma");
+		}
 		DocumentNtiTipoFirmaEnumDto firmaTipus = null;
 		try {
 			firmaTipus = DocumentNtiTipoFirmaEnumDto.valueOf(firma.getTipus());
@@ -246,19 +262,29 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"El tipus de firma '" + firma.getTipus() + "' no es reconeix com a vàlid.");
 		}
-		// Validacions segons el tipus de firma
-		if (DocumentNtiTipoFirmaEnumDto.TF04.equals(firmaTipus)) {
-			if (annex.getFitxerContingut() == null)
+		boolean detached = DocumentNtiTipoFirmaEnumDto.TF02.equals(firmaTipus) || DocumentNtiTipoFirmaEnumDto.TF04.equals(firmaTipus);
+		if (detached) {
+			if (annex.getFitxerContingut() == null) {
 				throw new ValidationException(
-						"El contingut de l'annex ha d'estar informat quan conté una firma del tipus TF04");
-			if (firma.getContingut() == null)
+						"El contingut de l'annex ha d'estar informat quan aquest conté una firma de tipus detached");
+			}
+			if (firma.getContingut() == null) {
 				throw new ValidationException(
-						"El contingut de la firma ha d'estar informat pel tipus TF04");
-		} else if (DocumentNtiTipoFirmaEnumDto.TF05.equals(firmaTipus)) {
-			if (firma.getContingut() != null)
-				throw new ValidationException(
-						"El tipus de firma TF05 (CADES ATTACHED) no permet contingut en la firma");
-		}		
+						"El contingut de la firma ha d'estar informat per a les firmes de tipus detached");
+			}
+			validaContingutAnnex(annex);
+		}
+	}
+
+	private void validaContingutAnnex(RegistreAnnex annex) {
+		if (annex.getFitxerArxiuUuid() == null && annex.getFitxerContingut() == null)
+			throw new ValidationException(
+					"S'ha d'especificar el contingut del document o l'UUID del document dins l'arxiu (" +
+					"annex=" + annex.getTitol() + ")");
+		if (annex.getFitxerContingut() != null && annex.getFitxerNom() == null) {
+			throw new ValidationException(
+					"Si s'envia el contingut de l'annex és obligatori especificar un valor pel camp 'fitxerNom'");
+		}
 	}
 
 	private void validarFormatAnnex(RegistreAnnex annex) {
@@ -298,7 +324,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	}
 
 	private <E extends Enum<E>> boolean enumContains(Class<E> enumerat, String test, boolean modeText) {
-	    for (Enum<E> c : enumerat.getEnumConstants()) {
+	    for (Enum<E> c: enumerat.getEnumConstants()) {
 	    	if (modeText) {
 		        if (c.toString().equalsIgnoreCase(test)) {
 		            return true;

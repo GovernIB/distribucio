@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +48,9 @@ import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
+import es.caib.distribucio.core.repository.RegistreAnnexRepository;
+import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
@@ -63,22 +65,26 @@ import es.caib.plugins.arxiu.api.Document;
 @Component
 public class RegistreHelper {
 
-	@Resource
+	@Autowired
 	private RegistreRepository registreRepository;
+	@Autowired
+	private RegistreAnnexRepository registreAnnexRepository;
+	@Autowired
+	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
+	@Autowired
+	private RegistreInteressatRepository registreInteressatRepository;
 
-	@Resource
+	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Resource
-	private AlertaHelper alertaHelper;
-	@Resource
+	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Resource
+	@Autowired
 	private PluginHelper pluginHelper;
-	@Resource
+	@Autowired
 	private ReglaHelper reglaHelper;
-	@Resource
+	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
+	@Autowired
 	private ContingutLogHelper contingutLogHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
@@ -140,17 +146,19 @@ public class RegistreHelper {
 		return anotacio;
 	}
 
-	public RegistreEntity toRegistreEntity(
+	public RegistreEntity crearRegistreEntity(
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
 			ReglaEntity regla) {
-		// Obté la unitat organitzativa per guardar la descripció a l'anotació del registre
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
-		// Construeix l'anotació
+		String justificantArxiuUuid = null;
+		if (anotacio.getJustificant() != null) {
+			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
+		}
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
@@ -191,12 +199,23 @@ public class RegistreHelper {
 		exposa(anotacio.getExposa()).
 		solicita(anotacio.getSolicita()).
 		regla(regla).
-		oficinaOrigen(anotacio.getDataOrigen(), anotacio.getOficinaOrigenCodi(), anotacio.getOficinaOrigenDescripcio()).
+		oficinaOrigen(
+				anotacio.getDataOrigen(),
+				anotacio.getOficinaOrigenCodi(),
+				anotacio.getOficinaOrigenDescripcio()).
+		justificantArxiuUuid(justificantArxiuUuid).
 		build();
+		if (entity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
+			entity.updateProces(
+					entity.getData(),
+					RegistreProcesEstatEnum.PROCESSAT,
+					null);
+		}
+		registreRepository.saveAndFlush(entity);
 		if (anotacio.getInteressats() != null) {
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
 				entity.getInteressats().add(
-						toInteressatEntity(
+						crearInteressatEntity(
 								registreInteressat,
 								entity));
 			}
@@ -204,13 +223,10 @@ public class RegistreHelper {
 		if (anotacio.getAnnexos() != null) {
 			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
 				entity.getAnnexos().add(
-						toAnnexEntity(
+						crearAnnexEntity(
 								registreAnnex,
 								entity));
 			}
-		}
-		if (anotacio.getJustificant() != null && anotacio.getJustificant().getFitxerArxiuUuid() != null) {
-			entity.updateJustificantUuid(anotacio.getJustificant().getFitxerArxiuUuid());
 		}
 		return entity;
 	}
@@ -338,7 +354,7 @@ public class RegistreHelper {
 						"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
 						"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 				uuidContenidor = pluginHelper.distribucioContenidorCrear(
-						anotacio.getIdentificador(),
+						anotacio.getNumero(),
 						distribucioRegistreAnotacio,
 						bustia.getEntitat().getCodiDir3());
 			} else {
@@ -358,7 +374,7 @@ public class RegistreHelper {
 								"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 						DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
 						String uuidDocument = pluginHelper.distribucioDocumentCrear(
-								anotacio.getIdentificador(),
+								anotacio.getNumero(),
 								distribucioAnnex,
 								bustia.getEntitat().getCodiDir3(),
 								uuidContenidor);
@@ -518,7 +534,7 @@ public class RegistreHelper {
 		return annex;
 	}
 
-	private RegistreInteressatEntity toInteressatEntity(
+	private RegistreInteressatEntity crearInteressatEntity(
 			RegistreInteressat registreInteressat,
 			RegistreEntity registre) {
 		RegistreInteressatTipusEnum interessatTipus = RegistreInteressatTipusEnum.valorAsEnum(registreInteressat.getTipus());
@@ -577,12 +593,19 @@ public class RegistreHelper {
 					representant.getEmailHabilitat(),
 					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()));
 		}
+		registreInteressatRepository.save(interessatEntity);
 		return interessatEntity;
 	}
 
-	private RegistreAnnexEntity toAnnexEntity(
+	private RegistreAnnexEntity crearAnnexEntity(
 			RegistreAnnex registreAnnex,
 			RegistreEntity registre) {
+		String gestioDocumentalId = null;
+		if (registreAnnex.getFitxerContingut() != null) {
+			gestioDocumentalId = pluginHelper.gestioDocumentalCreate(
+					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
+					registreAnnex.getFitxerContingut());
+		}
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
@@ -598,10 +621,12 @@ public class RegistreHelper {
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
 				observacions(registreAnnex.getObservacions()).
 				build();
+		annexEntity.updateGesdocDocumentId(gestioDocumentalId);
+		registreAnnexRepository.saveAndFlush(annexEntity);
 		if (registreAnnex.getFirmes() != null && registreAnnex.getFirmes().size() > 0) {
 			for (Firma firma: registreAnnex.getFirmes()) {
 				annexEntity.getFirmes().add(
-						toFirmaEntity(
+						crearFirmaEntity(
 								firma,
 								annexEntity));
 			}
@@ -609,9 +634,15 @@ public class RegistreHelper {
 		return annexEntity;
 	}
 
-	private RegistreAnnexFirmaEntity toFirmaEntity(
+	private RegistreAnnexFirmaEntity crearFirmaEntity(
 			Firma firma,
 			RegistreAnnexEntity annex) {
+		String gestioDocumentalId = null;
+		if (firma.getContingut() != null) {
+			gestioDocumentalId = pluginHelper.gestioDocumentalCreate(
+					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+					firma.getContingut());
+		}
 		RegistreAnnexFirmaEntity firmaEntity = RegistreAnnexFirmaEntity.getBuilder(
 				firma.getTipus(),
 				firma.getPerfil(),
@@ -620,6 +651,8 @@ public class RegistreHelper {
 				firma.getCsvRegulacio(),
 				false,
 				annex).build();
+		firmaEntity.updateGesdocFirmaId(gestioDocumentalId);
+		registreAnnexFirmaRepository.save(firmaEntity);
 		return firmaEntity;
 	}
 

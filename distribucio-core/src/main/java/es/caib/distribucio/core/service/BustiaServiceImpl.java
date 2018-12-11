@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.service;
 
-import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,8 +48,6 @@ import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
-import es.caib.distribucio.core.api.registre.Firma;
-import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -62,8 +59,6 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.RegistreAnnexEntity;
-import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -759,21 +754,12 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitatOrganitzativa,
 				anotacio);
-		RegistreEntity anotacioEntity = registreHelper.toRegistreEntity(
+		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
 				entitat,
 				tipus,
 				unitatOrganitzativa,
 				anotacio,
 				reglaAplicable);
-		if (anotacioEntity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
-			anotacioEntity.updateProces(
-					anotacioEntity.getData(),
-					RegistreProcesEstatEnum.PROCESSAT,
-					null);
-		} else {
-			guardarFitxersGesDoc(anotacioEntity, anotacio);
-		}
-		registreRepository.saveAndFlush(anotacioEntity);
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -2067,14 +2053,11 @@ public class BustiaServiceImpl implements BustiaService {
 		BustiaContingutDto bustiaContingut = new BustiaContingutDto();
 		bustiaContingut.setId(contingut.getId());
 		bustiaContingut.setNom(contingut.getNom());
-		
 		List<ContingutDto> path = contingutHelper.getPathContingutComDto(
 				contingut,
 				false,
 				false);
-		
 		bustiaContingut.setPath(path);
-		
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
 		if (contingut.getEsborrat() < 2)
@@ -2095,42 +2078,13 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaContingut.setRecepcioData(contingut.getDarrerMoviment().getCreatedDate().toDate());
 			bustiaContingut.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
-		
 		bustiaContingut.setNumComentaris(contingutComentariRepository.countByContingut(contingut));
-				
 		bustiaContingut.setAlerta(alertaRepository.countByLlegidaAndContingutId(
 				false,
 				contingut.getId()) > 0);
-		
 		return bustiaContingut;
 	}
 
-	private void guardarFitxersGesDoc(
-			RegistreEntity anotacioEntity, 
-			RegistreAnotacio anotacio) {
-		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
-			for (int i = 0; i < anotacioEntity.getAnnexos().size(); i++) {
-				RegistreAnnexEntity annexEntity = anotacioEntity.getAnnexos().get(i);
-				RegistreAnnex annex = anotacio.getAnnexos().get(i);
-				if (annex.getFitxerContingut() != null && annex.getFitxerContingut().length > 0) {
-					annexEntity.updateGesdocDocumentId(pluginHelper.gestioDocumentalCreate(
-							PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							new ByteArrayInputStream(annex.getFitxerContingut())));
-				}
-				
-				for (int j = 0; j < annexEntity.getFirmes().size(); j++) {
-					RegistreAnnexFirmaEntity firmaEntity = annexEntity.getFirmes().get(j);
-					Firma firma = annex.getFirmes().get(j);
-					if (firma.getContingut() != null && firma.getContingut().length > 0) {
-						firmaEntity.updateGesdocFirmaId(pluginHelper.gestioDocumentalCreate(
-								PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-								new ByteArrayInputStream(firma.getContingut())));
-					}
-				}
-			}
-		}
-	}
-	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 
 }

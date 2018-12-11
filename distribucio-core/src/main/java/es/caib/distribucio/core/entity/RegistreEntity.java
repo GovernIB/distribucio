@@ -388,14 +388,14 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateIdentificadorProcedimentSistra(String identificadorProcediment) {
 		this.identificadorProcedimentSistra = identificadorProcediment;
 	}
-	public void updateJustificantUuid(String justificantArxiuUuid) {
-		this.justificantArxiuUuid = justificantArxiuUuid;
-	}
 	public void updateLlegida(Boolean llegida) {
 		this.llegida = llegida;
 	}
 	public void updateExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
+	}
+	public void updateJustificantArxiuUuid(String justificantArxiuUuid) {
+		this.justificantArxiuUuid = justificantArxiuUuid;
 	}
 
 	public static Builder getBuilder(
@@ -601,6 +601,10 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder llegida(Boolean llegida) {
 			built.llegida = llegida;
+			return this;
+		}
+		public Builder justificantArxiuUuid(String justificantArxiuUuid) {
+			built.justificantArxiuUuid = justificantArxiuUuid;
 			return this;
 		}
 		public RegistreEntity build() {
