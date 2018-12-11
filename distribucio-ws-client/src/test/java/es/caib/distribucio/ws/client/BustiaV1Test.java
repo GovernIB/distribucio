@@ -32,8 +32,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
  */
 public class BustiaV1Test {
 
-	private static final String ENTITAT_DIST_CODI = "E00003601";
-	private static final String UNITAT_ADM_CODI = "E03029603";
+	private static final String ENTITAT_DIST_CODI = "A04019281";
+	private static final String UNITAT_ADM_CODI = "A04015411";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = "A1";
@@ -42,19 +42,20 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Anotació amb annexos sense firma per provar autofirma servidor";
+	private static final String EXTRACTE = "Anotació provinent de REGWEB (" + System.currentTimeMillis() + ")";
 	private static final String ENTITAT_CODI = "codientitat";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
 	private static final String OFICINA_DESC = "Oficina de proves";
-	private static final String LLIBRE_CODI = "10";
-	private static final String LLIBRE_DESC = "Oficina de proves";
+	private static final String LLIBRE_CODI = "11";
+	private static final String LLIBRE_DESC = "Llibre de proves";
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "12345678";
 
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_PDF = false;
 
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
@@ -81,6 +82,7 @@ public class BustiaV1Test {
         anotacio.setIdentificador(IDENTIFICADOR);
         anotacio.setExpedientNumero(EXPEDIENT_NUM);
         List<Firma> firmes = null;
+        RegistreAnnex annex1;
         if (TEST_ANNEX_FIRMAT) {
         	firmes = new ArrayList<Firma>();
             Firma firma = new Firma();
@@ -91,18 +93,44 @@ public class BustiaV1Test {
             firma.setTipus("TF06");
             firma.setPerfil("EPES");
             firmes.add(firma);
+            annex1 = crearAnnex(
+	        		"Annex1",
+	        		"annex.pdf",
+	        		"application/pdf",
+	        		null,
+	        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaPdf(),
+	        		"0",
+	        		"EE01",
+	        		"TD01",
+	        		"01",
+	        		firmes);
+        } else {
+	        if (TEST_ANNEX_PDF) {
+		        annex1 = crearAnnex(
+		        		"Annex1",
+		        		"annex.pdf",
+		        		"application/pdf",
+		        		null,
+		        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaPdf(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        } else {
+	        	annex1 = crearAnnex(
+		        		"Annex1",
+		        		"annex.docx",
+		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		        		null,
+		        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaDocx(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        }
         }
-        RegistreAnnex annex1 = crearAnnex(
-        		"Annex1",
-        		"annex.pdf",
-        		"application/pdf",
-        		null,
-        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirma(),
-        		"0",
-        		"EE01",
-        		"TD01",
-        		"01",
-        		firmes);
         anotacio.getAnnexos().add(annex1);
         RegistreAnnex justificant = crearAnnex(
         		"justificant",
@@ -218,13 +246,16 @@ public class BustiaV1Test {
         		"/justificant.pdf");
 		return is;
 	}
-	@SuppressWarnings("unused")
-	private InputStream getContingutAnnexSenseFirma() {
+	private InputStream getContingutAnnexSenseFirmaPdf() {
 		InputStream is = getClass().getResourceAsStream(
         		"/annex_sense_firma.pdf");
 		return is;
 	}
-	@SuppressWarnings("unused")
+	private InputStream getContingutAnnexSenseFirmaDocx() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/annex_sense_firma.docx");
+		return is;
+	}
 	private InputStream getContingutAnnexFirmat() {
 		InputStream is = getClass().getResourceAsStream(
         		"/annex_firmat.pdf");

@@ -250,6 +250,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					perfil = FirmaPerfil.EPES.toString();
 					tipusMime = "application/pdf";
 					fitxerNom = annex.getTitol() + "_pades.pdf";
+					fitxerContingut.setContingut(null);
 				} else {
 					tipusFirmaServidor = "CADES";
 					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
@@ -273,7 +274,6 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				annexFirma.setContingut(firmaDistribucioContingut);
 				annexFirma.setAnnex(annex);
 				annex.getFirmes().add(annexFirma);
-				fitxerContingut.setContingut(null);
 			}
 			arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
 					annex.getFirmes());
@@ -404,18 +404,22 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		if (firmes != null) {
 			StringBuilder firmesTipus = new StringBuilder();
 			StringBuilder firmesPerfil = new StringBuilder();
+			StringBuilder firmesContingut = new StringBuilder();
 			boolean primera = true;
 			for (ArxiuFirmaDto firma: firmes) {
 				if (!primera) {
 					firmesTipus.append(", ");
 					firmesPerfil.append(", ");
+					firmesContingut.append(", ");
 				}
 				firmesTipus.append(firma.getTipus());
 				firmesPerfil.append(firma.getPerfil());
+				firmesContingut.append((firma.getContingut() != null ? "" + firma.getContingut().length : "0") + " bytes");
 				primera = false;
 			}
 			accioParams.put("firmesTipus", firmesTipus.toString());
 			accioParams.put("firmesPerfil", firmesPerfil.toString());
+			accioParams.put("firmesContingut", firmesContingut.toString());
 		}
 		long t0 = System.currentTimeMillis();
 		try {
