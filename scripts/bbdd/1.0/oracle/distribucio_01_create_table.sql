@@ -192,7 +192,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
 (
   ID                   NUMBER(19)               NOT NULL,
   TITOL                VARCHAR2(200)            NOT NULL,
-  FITXER_NOM           VARCHAR2(80)             NOT NULL,
+  FITXER_NOM           VARCHAR2(256)            NOT NULL,
   FITXER_TAMANY        NUMBER(10)               NOT NULL,
   FITXER_MIME          VARCHAR2(100),
   FITXER_ARXIU_UUID    VARCHAR2(100),
@@ -226,7 +226,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX_FIRMA
   ID                   NUMBER(19)               NOT NULL,
   TIPUS		           VARCHAR2(30),
   PERFIL    	       VARCHAR2(30),
-  FITXER_NOM           VARCHAR2(80),
+  FITXER_NOM           VARCHAR2(256),
   TIPUS_MIME           VARCHAR2(30),
   CSV_REGULACIO		   VARCHAR2(640),
   ANNEX_ID             NUMBER(19)               NOT NULL,

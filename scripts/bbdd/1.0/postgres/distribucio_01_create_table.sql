@@ -209,7 +209,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
 (
   ID                   BIGSERIAL                   NOT NULL,
   TITOL                character varying(200)   NOT NULL,
-  FITXER_NOM           character varying(80)    NOT NULL,
+  FITXER_NOM           character varying(256)    NOT NULL,
   FITXER_TAMANY        integer                  NOT NULL,
   FITXER_MIME          character varying(100),
   FITXER_ARXIU_UUID     character varying(100)   NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX_FIRMA
   ID                   BIGSERIAL                   	NOT NULL,
   TIPUS		           character varying(30),
   PERFIL    	       character varying(30),
-  FITXER_NOM           character varying(80),
+  FITXER_NOM           character varying(256),
   TIPUS_MIME           character varying(30),
   CSV_REGULACIO		   character varying(640),
   ANNEX_ID             bigint                    	NOT NULL,
