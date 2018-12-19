@@ -167,7 +167,9 @@ public class PluginHelper {
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();
 		try {
-			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(registre, DistribucioRegistreAnotacio.class);
+			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(
+					registre,
+					DistribucioRegistreAnotacio.class);
 			getDistribucioPlugin().contenidorMarcarProcessat(anotacio);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,

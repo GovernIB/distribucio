@@ -59,7 +59,6 @@ $(document).ready(function() {
 					suggestValue="codi"
 					suggestText="nom" />
 			</div>
-			
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/anotacionsRegistre/ajaxBustia" var="urlConsultaInicial"/>
 				<c:url value="/anotacionsRegistre/ajaxBusties/null" var="urlConsultaLlistat"/>
@@ -119,14 +118,16 @@ $(document).ready(function() {
 				<th data-col-name="procesEstat" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
-						{{if procesEstat == 'NO_PROCES'}}
-							<spring:message code="registre.proces.estat.enum.NO_PROCES"/>
-						{{else procesEstat == 'PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.PENDENT"/>
-						{{else procesEstat == 'PROCESSAT'}}
-							<spring:message code="registre.proces.estat.enum.PROCESSAT"/>
-						{{else procesEstat == 'ERROR'}}
-							<spring:message code="registre.proces.estat.enum.ERROR"/>
+						{{if procesEstat == 'ARXIU_PENDENT'}}
+							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
+						{{else procesEstat == 'REGLA_PENDENT'}}
+							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
+						{{else procesEstat == 'BUSTIA_PENDENT'}}
+							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
+						{{else procesEstat == 'DISTRIBUIT_PROCESSAT'}}
+							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_PROCESSAT"/>
+						{{else procesEstat == 'DISTRIBUIT_BACKOFFICE'}}
+							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_BACKOFFICE"/>
 						{{/if}}
 					</script>
 				</th>

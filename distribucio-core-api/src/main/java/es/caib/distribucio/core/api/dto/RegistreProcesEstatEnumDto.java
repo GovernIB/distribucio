@@ -10,8 +10,9 @@ package es.caib.distribucio.core.api.dto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum RegistreProcesEstatEnumDto {
-	NO_PROCES,
-	PENDENT,
-	PROCESSAT,
-	ERROR
+	ARXIU_PENDENT,
+	REGLA_PENDENT,
+	BUSTIA_PENDENT,
+	DISTRIBUIT_PROCESSAT,
+	DISTRIBUIT_BACKOFFICE
 }

@@ -191,7 +191,7 @@ public class ContingutAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = registreService.reglaReintentarAdmin(
+		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
 				bustiaId,
 				registreId);

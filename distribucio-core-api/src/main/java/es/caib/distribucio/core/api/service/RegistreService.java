@@ -65,23 +65,21 @@ public interface RegistreService {
 			String motiu) throws NotFoundException;
 
 	/**
-	 * Distribueix periòdicament les anotacions de registre que han arribat
-	 * al DISTRIBUCIO i s'han quedat pendents de distribuir de forma asíncrona.
+	 * Guarda els annexos pendents de les anotacions de registre que han
+	 * arribat a DISTRIBUCIO.
 	 */
-	public void distribuirAnotacionsPendents();
-	
-	/**
-	 * Revisa si ja s'ha superat la data de tancament de l'expedient de l'arxiu relacionat
-	 * amb l'assentament registral
-	 */
-	public void tancarExpedientsPendents();
+	public void guardarAnnexosArxiuPendents();
 
 	/**
-	 * Processa periòdicament les regles de tipus backoffice Sistra pendents d'aplicar 
-	 * a les anotacions de registre. Aquestes regles es revisen un cop cada minut (60000 milisegons).
+	 * Aplica les regles pendents a les anotacions de registre.
 	 */
-	public void reglaAplicarPendentsBackofficeSistra();
+	public void aplicarReglesPendents();
 
+	/**
+	 * Tanca els contenidors de l'arxiu (expedients) de les anotacions de registre
+	 * ja processades.
+	 */
+	public void tancarContenidorsArxiuPendents();
 	
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
@@ -97,7 +95,7 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
-	public boolean reglaReintentarAdmin(
+	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException;
@@ -116,7 +114,7 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public boolean reglaReintentarUser(
+	public boolean reintentarProcessamentUser(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException;

@@ -9,15 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -27,7 +24,6 @@ import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
@@ -159,11 +155,19 @@ public class RegistreHelper {
 		if (anotacio.getJustificant() != null) {
 			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
 		}
+		RegistreProcesEstatEnum estat;
+		if (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty()) {
+			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
+		} else if (regla != null) {
+			estat = RegistreProcesEstatEnum.REGLA_PENDENT;
+		} else {
+			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+		}
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
 				unitatAdministrativa,
-				unitat != null? unitat.getDenominacio() : null,
+				unitat != null ? unitat.getDenominacio() : null,
 				anotacio.getNumero(),
 				anotacio.getData(),
 				anotacio.getIdentificador(),
@@ -172,7 +176,7 @@ public class RegistreHelper {
 				anotacio.getLlibreCodi(),
 				anotacio.getAssumpteTipusCodi(),
 				anotacio.getIdiomaCodi(),
-				(regla != null || (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty())) ? RegistreProcesEstatEnum.PENDENT : RegistreProcesEstatEnum.NO_PROCES,
+				estat,
 				null).
 		entitatCodi(anotacio.getEntitatCodi()).
 		entitatDescripcio(anotacio.getEntitatDescripcio()).
@@ -205,12 +209,6 @@ public class RegistreHelper {
 				anotacio.getOficinaOrigenDescripcio()).
 		justificantArxiuUuid(justificantArxiuUuid).
 		build();
-		if (entity.getProcesEstat() == RegistreProcesEstatEnum.NO_PROCES) {
-			entity.updateProces(
-					entity.getData(),
-					RegistreProcesEstatEnum.PROCESSAT,
-					null);
-		}
 		registreRepository.saveAndFlush(entity);
 		if (anotacio.getInteressats() != null) {
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
@@ -296,17 +294,39 @@ public class RegistreHelper {
 		return firmes;
 	}
 
-	public void distribuirAnotacioPendent(Long anotacioId) {
+	@Transactional
+	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-		// Guarda els annexos a dins l'arxiu
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				anotacio.getEntitat(),
 				anotacio.getUnitatAdministrativa());
-		String uuidContenidor = guardarAnnexosAmbPluginDistribucio(
+		Exception exceptionGuardantAnnexos = guardarAnnexosAmbPluginDistribucio(
 				anotacio,
 				bustia,
 				true);
-		// Processa els annexos provinents de SISTRA
+		if (exceptionGuardantAnnexos == null) {
+			RegistreProcesEstatEnum nouEstat;
+			if (anotacio.getRegla() != null) {
+				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+			} else {
+				esborrarDocsTemporals(anotacio);
+				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+			}
+			anotacio.updateProces(
+					nouEstat, 
+					null);
+			return null;
+		} else {
+			anotacio.updateProces(
+					null, 
+					exceptionGuardantAnnexos);
+			return exceptionGuardantAnnexos;
+		}
+	}
+
+	@Transactional
+	public Exception processarAnotacioPendentRegla(Long anotacioId) {
+		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
 		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
 			if (anotacio.getRegla() != null &&
 				anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE &&
@@ -315,165 +335,126 @@ public class RegistreHelper {
 					processarAnnexSistra(anotacio, annex);
 			}
 		}
-		// Aplica la regla a l'anotació
-		if (anotacio.getRegla() != null) {
-			boolean errorAlAplicarRegla = !reglaHelper.reglaAplicar(anotacio);
-			if (errorAlAplicarRegla) {
-				if (uuidContenidor != null) {
-					pluginHelper.arxiuExpedientEliminar(uuidContenidor);
-				}
-				throw new AplicarReglaException("Error aplicant regla en segon pla per a l'anotació " + anotacio.getId());
-			}
+		Exception exceptionAplicantRegla = reglaHelper.reglaAplicar(anotacio);
+		if (exceptionAplicantRegla != null) {
+			return exceptionAplicantRegla;
 		}
-		if (uuidContenidor != null) {
-			// si s'ha utilitzat el plugin de gestió documental, s'intentaran esborrar els fitxers guardats
-			esborrarDocsTemporals(anotacio);
-		}
-		// aquí haurem de actualtizar estat OK
-		Date dataProcesOk = new Date();
+		esborrarDocsTemporals(anotacio);
 		anotacio.updateProces(
-				dataProcesOk,
-				RegistreProcesEstatEnum.PROCESSAT, 
+				RegistreProcesEstatEnum.BUSTIA_PENDENT, 
 				null);
-		registreRepository.saveAndFlush(anotacio);
+		return null;
 	}
 
-	public String guardarAnnexosAmbPluginDistribucio(
+	public Exception guardarAnnexosAmbPluginDistribucio(
 			RegistreEntity anotacio,
 			BustiaEntity bustia,
 			boolean crearAutofirma) {
-		String uuidContenidor = null;
 		if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 					anotacio,
 					DistribucioRegistreAnotacio.class);
+			String uuidContenidor = null;
 			if (anotacio.getExpedientArxiuUuid() == null) {
 				// Cream el contenidor per als annexos de l'anotació de registre
 				// només si no s'ha creat anteriorment
 				logger.debug("Creant contenidor pels annexos de l'anotació (" +
 						"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
 						"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
-				uuidContenidor = pluginHelper.distribucioContenidorCrear(
-						anotacio.getNumero(),
-						distribucioRegistreAnotacio,
-						bustia.getEntitat().getCodiDir3());
+				try {
+					uuidContenidor = pluginHelper.distribucioContenidorCrear(
+							anotacio.getNumero(),
+							distribucioRegistreAnotacio,
+							bustia.getEntitat().getCodiDir3());
+					anotacio.updateExpedientArxiuUuid(uuidContenidor);
+				} catch (Exception ex) {
+					return ex;
+				}
 			} else {
 				// Si el contenidor ja està creat agafam el seu UUID
 				uuidContenidor = anotacio.getExpedientArxiuUuid();
 			}
 			if (uuidContenidor != null) {
 				// Emmagatzemam cada un dels annexos de l'anotació de registre
-				for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
-					RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
-					// Només crea l'annex a dins el contenidor si encara
-					// no s'ha creat
-					if (annex.getFitxerArxiuUuid() == null) {
-						logger.debug("Creant annex a dins el contenidor de l'anotació (" +
-								"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
-								"annexTitol=" + annex.getTitol() + ", " +
-								"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
-						DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
-						String uuidDocument = pluginHelper.distribucioDocumentCrear(
-								anotacio.getNumero(),
-								distribucioAnnex,
-								bustia.getEntitat().getCodiDir3(),
-								uuidContenidor);
-						annex.updateFitxerArxiuUuid(uuidDocument);
-						if (annex.getFitxerTamany() <= 0) {
-							Document document = pluginHelper.arxiuDocumentConsultar(
-									annex.getRegistre(), 
-									annex.getFitxerArxiuUuid(), 
-									null, 
-									true);
-							if (document.getContingut() != null) {
-								annex.updateFitxerTamany(
-										(int)document.getContingut().getTamany());
+				try {
+					for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
+						RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
+						// Només crea l'annex a dins el contenidor si encara
+						// no s'ha creat
+						if (annex.getFitxerArxiuUuid() == null) {
+							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
+									"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+									"annexTitol=" + annex.getTitol() + ", " +
+									"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
+							String uuidDocument = pluginHelper.distribucioDocumentCrear(
+									anotacio.getNumero(),
+									distribucioAnnex,
+									bustia.getEntitat().getCodiDir3(),
+									uuidContenidor);
+							annex.updateFitxerArxiuUuid(uuidDocument);
+							if (annex.getFitxerTamany() <= 0) {
+								Document document = pluginHelper.arxiuDocumentConsultar(
+										annex.getRegistre(), 
+										annex.getFitxerArxiuUuid(), 
+										null, 
+										true);
+								if (document.getContingut() != null) {
+									annex.updateFitxerTamany(
+											(int)document.getContingut().getTamany());
+								}
 							}
-						}
-						if (distribucioAnnex.getFirmes() != null) {
-							for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
-								if (distribucioFirma.isAutofirma() && crearAutofirma) {
-									RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
-									novaFirma.updatePerNovaFirma(
-											distribucioFirma.getTipus(), 
-											distribucioFirma.getPerfil(), 
-											distribucioFirma.getFitxerNom(), 
-											distribucioFirma.getTipusMime(), 
-											distribucioFirma.getCsvRegulacio(), 
-											distribucioFirma.isAutofirma(), 
-											distribucioFirma.getGesdocFirmaId(), 
-											annex);
-									annex.getFirmes().add(novaFirma);
+							if (distribucioAnnex.getFirmes() != null) {
+								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
+									if (distribucioFirma.isAutofirma() && crearAutofirma) {
+										RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
+										novaFirma.updatePerNovaFirma(
+												distribucioFirma.getTipus(), 
+												distribucioFirma.getPerfil(), 
+												distribucioFirma.getFitxerNom(), 
+												distribucioFirma.getTipusMime(), 
+												distribucioFirma.getCsvRegulacio(), 
+												distribucioFirma.isAutofirma(), 
+												distribucioFirma.getGesdocFirmaId(), 
+												annex);
+										annex.getFirmes().add(novaFirma);
+									}
 								}
 							}
 						}
 					}
+					logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
+							"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+							"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+					contingutLogHelper.log(
+							anotacio,
+							LogTipusEnumDto.DISTRIBUCIO,
+							anotacio.getNom(),
+							null,
+							false,
+							false);
+				} catch (Exception ex) {
+					return ex;
 				}
 			}
 		}
-		logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
-				"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
-				"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
-		contingutLogHelper.log(
-				anotacio,
-				LogTipusEnumDto.DISTRIBUCIO,
-				anotacio.getNom(),
-				null,
-				false,
-				false);
-		return uuidContenidor;
+		return null;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void actualitzarEstatError(
-			Long pendentId,
-			Exception ex) {
-		String error = ex.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(ex) ;
-		RegistreEntity pendent = registreRepository.findOne(pendentId);
-		ReglaEntity regla = pendent.getRegla();
-		if (regla != null && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-			Integer intentsRegla = regla.getBackofficeIntents();
-			if (intentsRegla == null) {
-				pendent.updateProces(
-						new Date(),
-						RegistreProcesEstatEnum.ERROR,
-						error);
-			} else {
-				Integer intentsPendent = pendent.getProcesIntents();
-				if (intentsPendent != null && intentsPendent.intValue() >= intentsRegla.intValue() - 1) {
-					pendent.updateProces(
-							new Date(),
-							RegistreProcesEstatEnum.ERROR,
-							error);
-				} else {
-					pendent.updateProces(
-							new Date(),
-							RegistreProcesEstatEnum.PENDENT,
-							error);
-				}
-			}
-		} else {
-			pendent.updateProces(
-					new Date(),
-					RegistreProcesEstatEnum.ERROR,
-					error);
-		}
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void actualitzarEstatErrorTancament(
-			Long registreId) {
+	@Transactional
+	public void tancarExpedientArxiu(Long registreId) {
 		RegistreEntity registre = registreRepository.findOne(registreId);
-		registre.updateArxiuTancatError(true);
-	}
-
-	//procés i distribució d'anotacions
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void tancarExpedientArxiu(Long anotacioId) throws Exception {
-		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-		pluginHelper.distribucioContenidorMarcarProcessat(anotacio);
-		anotacio.updateArxiuTancat(true);
-		registreRepository.saveAndFlush(anotacio);
+		Exception exception = null;
+		try {
+			pluginHelper.distribucioContenidorMarcarProcessat(registre);
+		} catch (Exception ex) {
+			exception = ex;
+		}
+		if (exception != null) {
+			registre.updateArxiuTancatError(true);
+		} else {
+			registre.updateArxiuTancat(true);
+		}
 	}
 
 
@@ -665,7 +646,6 @@ public class RegistreHelper {
 							PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
 					annex.updateGesdocDocumentId(null);
 				}
-				
 				for(RegistreAnnexFirmaEntity firma: annex.getFirmes()) {
 					if (firma.getGesdocFirmaId() != null) {
 						pluginHelper.gestioDocumentalDelete(

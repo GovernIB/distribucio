@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 
 /**
- * Informació sobre contingut pendent d'una bústia.
+ * Informació sobre contingut pendent a dins d'una bústia.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -29,7 +29,6 @@ public class BustiaContingutDto implements Serializable {
 	private boolean procesAutomatic;
 	private boolean error;
 	private long numComentaris;
-	
 	private boolean alerta;
 
 	public Long getId() {
@@ -98,22 +97,19 @@ public class BustiaContingutDto implements Serializable {
 	public void setError(boolean error) {
 		this.error = error;
 	}
-
 	public long getNumComentaris() {
 		return numComentaris;
 	}
 	public void setNumComentaris(long numComentaris) {
 		this.numComentaris = numComentaris;
 	}
-	
 	public boolean isAlerta() {
 		return alerta;
 	}
 	public void setAlerta(boolean alerta) {
 		this.alerta = alerta;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -143,12 +143,12 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("DIS_BSTWS")
-	public RuntimeException registreAnotacioCrearIDistribuir(
+	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) {
-		return delegate.registreAnotacioCrearIDistribuir(
+		return delegate.registreAnotacioCrearIProcessar(
 				entitatCodi,
 				tipus,
 				unitatAdministrativa,

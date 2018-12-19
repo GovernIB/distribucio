@@ -123,9 +123,6 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	public ContingutMovimentEntity getDarrerMoviment() {
 		return darrerMoviment;
 	}
-	
-	
-
 	public List<AlertaEntity> getAlertes() {
 		return alertes;
 	}
@@ -141,7 +138,7 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	public void updateDarrerMoviment(ContingutMovimentEntity darrerMoviment) {
 		this.darrerMoviment = darrerMoviment;
 	}
-	public void updateArxiu(
+	public void updateArxiuUuid(
 			String arxiuUuid) {
 		if (arxiuUuid != null) {
 			this.arxiuUuid = arxiuUuid;

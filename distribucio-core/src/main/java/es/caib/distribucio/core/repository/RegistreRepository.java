@@ -30,43 +30,38 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			RegistreProcesEstatEnum procesEstat);
 
 	long countByExpedientArxiuUuidAndEsborrat(String expedientArxiuUuid, int esborrat);
-	
-	/** Consulta les anotacions de registre pendents de processar amb regles que no
-	 * siguin de tipus backoffice sistra.
-	 * @return
-	 */
-	@Query("from RegistreEntity r " +
-		    "where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.PENDENT " +
-			"	and r.regla is not null " +
-		    "	and (r.regla.backofficeTipus is null or r.regla.backofficeTipus <> es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA) " +
-		    "order by r.data asc")
-	List<RegistreEntity> findAmbReglaPendentProcessar();
-	
-	/** Consulta les anotacions de registre pendents de distribuïr
-	 * que s'han rebut anteriorment via WS
-	 * @return
-	 */
-	@Query("from RegistreEntity r " +
-			"where ((r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.PENDENT and r.procesData is null) " +
-			" or (r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ERROR and (r.procesIntents is null or r.procesIntents <= :maxReintents))) " +
-			" and r.procesEstatSistra is null" +
-		    " order by r.data asc")
-	List<RegistreEntity> findPendentsDistribuir(
+
+	@Query(
+			"from" +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
+			"and r.procesIntents <= :maxReintents " +
+		    "order by " +
+		    "    r.data desc")
+	List<RegistreEntity> findGuardarAnnexPendents(
 			@Param("maxReintents") int maxReintents);
-	
-	/** Consulta les anotacions de registre pendents de processar amb regles per a tipus backoffice sistra que
-	 * estiguin en estat pendent o error de sistra i que no hagin superat el nombre de reintents.
-	 * @return
-	 */
-	@Query("from RegistreEntity r " +
+
+	@Query(
+			"from" +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.regla is not null " +
+			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.REGLA_PENDENT " +
+			"and r.procesIntents <= :maxReintents " +
+		    "order by " +
+		    "    r.data desc")
+	List<RegistreEntity> findAmbReglaPendentAplicar(
+			@Param("maxReintents") int maxReintents);
+
+	/*@Query("from RegistreEntity r " +
 		    "where r.regla.backofficeTipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
 		    "	and r.procesEstatSistra in ( es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.PENDENT, " +
 		    "						   es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.ERROR) " +
 			"	and (r.regla.backofficeIntents is null or  r.procesIntents < r.regla.backofficeIntents) " +
 		    "order by r.data asc")
-	List<RegistreEntity> findAmbReglaPendentProcessarBackofficeSistra();
+	List<RegistreEntity> findAmbReglaPendentProcessarBackofficeSistra();*/
 
-	
 	RegistreEntity findByPareAndId(
 			ContingutEntity pare,
 			Long id);
@@ -97,7 +92,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String numero,
 			Date data);
 
-
 	/** Troba l'anotació de registre per identificador. */
 	RegistreEntity findByIdentificador(String identificador);
 
@@ -123,8 +117,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullFins") boolean esNullFins,
 			@Param("fins") Date fins
 		);
-	
-	
+
 	@Query(	"select " +
 			"    r " +
 			"from " +
@@ -149,7 +142,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
 			Pageable pageable);
-	
+
 	/** Consulta les anotacions de registre que tenen 
 	 * l'expedient a l'arxiu pendents de tancar i a les quals
 	 * ja s'ha excedit el temps d'espera establert
@@ -163,5 +156,5 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 		    " order by r.dataTancament asc")
 	List<RegistreEntity> findPendentsTancarArxiu(
 			@Param("ara") Date ara);
-	
+
 }

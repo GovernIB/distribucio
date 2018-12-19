@@ -399,7 +399,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = registreService.reglaReintentarUser(
+		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				contingutId,
 				registreId);

@@ -54,8 +54,8 @@ public class BustiaV1Test {
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "12345678";
 
-	private static final boolean TEST_ANNEX_FIRMAT = false;
-	private static final boolean TEST_ANNEX_PDF = false;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_PDF = true;
 
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
@@ -98,7 +98,7 @@ public class BustiaV1Test {
 	        		"annex.pdf",
 	        		"application/pdf",
 	        		null,
-	        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaPdf(),
+	        		null,
 	        		"0",
 	        		"EE01",
 	        		"TD01",
@@ -111,7 +111,7 @@ public class BustiaV1Test {
 		        		"annex.pdf",
 		        		"application/pdf",
 		        		null,
-		        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaPdf(),
+		        		getContingutAnnexSenseFirmaPdf(),
 		        		"0",
 		        		"EE01",
 		        		"TD01",
@@ -123,7 +123,7 @@ public class BustiaV1Test {
 		        		"annex.docx",
 		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 		        		null,
-		        		TEST_ANNEX_FIRMAT ? null : getContingutAnnexSenseFirmaDocx(),
+		        		getContingutAnnexSenseFirmaDocx(),
 		        		"0",
 		        		"EE01",
 		        		"TD01",

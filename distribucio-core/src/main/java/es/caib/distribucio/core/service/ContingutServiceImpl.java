@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -915,20 +916,22 @@ public class ContingutServiceImpl implements ContingutService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
+		System.out.println(">>> Filtre: " + filtre);
+		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
+				entitat, 
+				(filtre.getUnitatOrganitzativa() == null),
+				filtre.getUnitatOrganitzativa(),
+				(filtre.getBustia() == null),
+				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
+				(dataInici == null),
+				dataInici,
+				(dataFi == null),
+				dataFi,
+				(filtre.getEstat() == null),
+				filtre.getEstat(),
+				paginacioHelper.toSpringDataPageable(paginacioParams));
 		return paginacioHelper.toPaginaDto(
-				registreRepository.findByFiltrePaginat(
-						entitat, 
-						(filtre.getUnitatOrganitzativa() == null),
-						filtre.getUnitatOrganitzativa(),
-						(filtre.getBustia() == null),
-						(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
-						(dataInici == null),
-						dataInici,
-						(dataFi == null),
-						dataFi,
-						(filtre.getEstat() == null),
-						filtre.getEstat(),
-						paginacioHelper.toSpringDataPageable(paginacioParams)),
+				registres,
 				RegistreAnotacioDto.class,
 				new Converter<RegistreEntity, RegistreAnotacioDto>() {
 					@Override

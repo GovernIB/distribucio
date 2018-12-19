@@ -50,8 +50,6 @@ public class BustiaHelper {
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
-
-
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			EntitatEntity entitat,
 			boolean nomesAmbBusties,
@@ -200,6 +198,18 @@ public class BustiaHelper {
 						entitat,
 						usuari);
 		}
+	}
+
+	public boolean isProcessamentAsincronProperty() {
+		String value = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona");
+		if (value != null) {
+			return new Boolean(value);
+		}
+		value = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.anotacio.processament.asincron");
+		if (value != null) {
+			return new Boolean(value);
+		}
+		return false;
 	}
 
 }

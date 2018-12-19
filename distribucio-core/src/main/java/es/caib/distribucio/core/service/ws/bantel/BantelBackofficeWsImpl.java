@@ -349,9 +349,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 			"numeroEntrada:" + referencia + ", " +
 			"resultado:" + resultado + ", " +
 			"resultadoProcesamiento:" + resultadoProcesamiento + ")");
-		
 		// TODO: convindria controlar l'accès a les entrades segons l'autenticació al WS, no està clar com
-		
     	// Comprova que s'hagi informat el número d'entrada
     	if (referencia == null || referencia.getNumeroEntrada() == null)
     		throw new BantelBackofficeWsException("No s'ha informat correctament el número d'entrada");
@@ -370,24 +368,22 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 		RegistreProcesEstatEnum procesEstat;
 		switch (procesEstatSistra) {
 		case PROCESSADA:
-			procesEstat = RegistreProcesEstatEnum.PROCESSAT;
+			procesEstat = RegistreProcesEstatEnum.DISTRIBUIT_BACKOFFICE;
 			break;
 		case ERROR:
 		case PENDENT:
 		default:
-    		procesEstat = RegistreProcesEstatEnum.PENDENT;
+    		procesEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 			break;		
 		}
-    	
 		// Recuperar anotació registre i establir resultat Sistra i resultat processament (descripció error)
     	RegistreAnotacioDto registre = registreService.findAmbIdentificador(referencia.getNumeroEntrada());
 		if (registre == null)
     		throw new BantelBackofficeWsException("No s'ha trobat cap entrada amb aquest número d'entrada: " + referencia.getNumeroEntrada());          	
-
 		// Si s'ha processat sense errors posar el resultat de processament a null
-		if (procesEstatSistra.equals(ENTRADA_NO_PROCESSADA))
+		if (procesEstatSistra.equals(ENTRADA_NO_PROCESSADA)) {
 			resultadoProcesamiento = null;
-
+		}
 		registreService.updateProces(
 				registre.getId(),
 				procesEstat,

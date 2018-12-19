@@ -51,9 +51,9 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 @Controller
 @RequestMapping("/bustiaUser")
 public class BustiaUserController extends BaseUserController {
-	
+
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
-	
+
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
@@ -62,24 +62,19 @@ public class BustiaUserController extends BaseUserController {
 	private ContingutService contingutService;
 	@Autowired
 	private AlertaService alertaService;
-	
-
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
 		BustiaUserFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(
 				filtreCommand);
-		
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
-		
 		return "bustiaUserList";
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public String bustiaPost(
 			HttpServletRequest request,
@@ -102,7 +97,6 @@ public class BustiaUserController extends BaseUserController {
 		return "redirect:bustiaUser";
 	}
 
-	
 	@RequestMapping(value = "/netejar", method = RequestMethod.GET)
 	public String expedientNetejar(
 			HttpServletRequest request,
@@ -114,20 +108,17 @@ public class BustiaUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		return "redirect:bustiaUser";
 	}
-	
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		BustiaUserFiltreCommand bustiaUserFiltreCommand = getFiltreCommand(request);
-		
 		List<BustiaDto> bustiesUsuari = null;
-		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty())
+		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty()) {
 			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId());
-		
+		}
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				bustiaService.contingutPendentFindByDatatable(
@@ -135,7 +126,6 @@ public class BustiaUserController extends BaseUserController {
 						bustiesUsuari,
 						BustiaUserFiltreCommand.asDto(bustiaUserFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
-		
 	}
 
 	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.GET)
@@ -144,12 +134,9 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
-
-		
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
 		command.setBustiaId(bustiaId);
 		command.setContingutId(contingutId);
-			
 		model.addAttribute(command);
 		return "registreViaEmail";
 	}
@@ -220,7 +207,6 @@ public class BustiaUserController extends BaseUserController {
 					model);
 			return "bustiaPendentRegistreReenviar";
 		}
-		
 		if (command.getDestins() == null || command.getDestins().length <= 0) {
 			MissatgesHelper.error(
 					request,
@@ -229,7 +215,6 @@ public class BustiaUserController extends BaseUserController {
 							"bustia.pendent.accio.reenviar.no.desti"));			
 			return "bustiaPendentRegistreReenviar";
 		}
-		
 		bustiaService.contingutPendentReenviar(
 				entitatActual.getId(),
 				bustiaId,
@@ -250,7 +235,7 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		boolean processatOk = registreService.reglaReintentarUser(
+		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				bustiaId,
 				registreId);

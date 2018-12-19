@@ -237,7 +237,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('DIS_BSTWS')")
-	public RuntimeException registreAnotacioCrearIDistribuir(
+	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,

@@ -50,8 +50,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	@Resource
 	private IntegracioHelper integracioHelper;
 
-
-
 	@Override
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
@@ -90,7 +88,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
 					"annexosFirmats=" + ambFirma.toString() + ")");
 			validarAnotacioRegistre(registreEntrada);
-			RuntimeException exception = bustiaService.registreAnotacioCrearIDistribuir(
+			Exception exception = bustiaService.registreAnotacioCrearIProcessar(
 					entitat,
 					RegistreTipusEnum.ENTRADA,
 					unitatAdministrativa,
@@ -123,7 +121,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					System.currentTimeMillis() - t0,
 					"Error al processar registre d'entrada al servei web de bústia",
 					ex);
-			throw ex;
+			throw new RuntimeException(ex);
 		}
 	}
 

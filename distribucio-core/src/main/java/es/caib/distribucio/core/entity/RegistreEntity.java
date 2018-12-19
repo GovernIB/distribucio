@@ -22,6 +22,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -141,8 +143,6 @@ public class RegistreEntity extends ContingutEntity {
 	private String oficinaOrigenCodi;
 	@Column(name = "oficina_orig_desc", length = 100)
 	private String oficinaOrigenDescripcio;
-
-
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat_sistra", length = 16)
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
@@ -150,12 +150,10 @@ public class RegistreEntity extends ContingutEntity {
 	private String identificadorTramitSistra;
 	@Column(name = "sistra_id_proc", length = 100)
 	private String identificadorProcedimentSistra;
-
-	
 	@Column(name = "proces_error", length = ERROR_MAX_LENGTH)
 	private String procesError;
 	@Column(name = "proces_intents")
-	private Integer procesIntents;
+	private int procesIntents;
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -168,25 +166,19 @@ public class RegistreEntity extends ContingutEntity {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
-	
 	@Column(name = "justificant_arxiu_uuid", length = 100)
 	private String justificantArxiuUuid;
-	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regla_id")
 	@ForeignKey(name = "dis_regla_registre_fk")
 	private ReglaEntity regla;
-	
 	@Column(name = "llegida")
 	private Boolean llegida;
-	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_tancament")
 	private Date dataTancament;
-	
 	@Column(name = "arxiu_tancat")
 	private Boolean arxiuTancat;
-	
 	@Column(name = "arxiu_tancat_error")
 	private Boolean arxiuTancatError;
 	
@@ -340,8 +332,8 @@ public class RegistreEntity extends ContingutEntity {
 	public Boolean getLlegida() {
 		return llegida;
 	}
-	
-	public void updateRebuig(
+
+	public void updateMotiuRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
 	}
@@ -356,29 +348,22 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateArxiuTancatError(Boolean arxiuTancatError){
 		this.arxiuTancatError = arxiuTancatError;
 	}
-	
 	public void updateProces(
-			Date procesData,
 			RegistreProcesEstatEnum procesEstat,
-			String procesError) {
-		this.procesData = procesData;
-		this.procesEstat = procesEstat;
-		if (procesIntents == null) {
-			procesIntents = new Integer(1);
-		} else {
-			procesIntents = new Integer(procesIntents.intValue() + 1);
+			Exception exception) {
+		this.procesData = new Date();
+		if (procesEstat != null) {
+			this.procesEstat = procesEstat;
+			this.procesIntents = 0;
 		}
-		if (procesError != null) {
-			if (procesError.length() > ERROR_MAX_LENGTH)
-				this.procesError = procesError.substring(0, ERROR_MAX_LENGTH);	
-			else
-				this.procesError = procesError;
+		this.procesIntents++;
+		if (exception != null) {
+			String error = exception.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(exception);
+			this.procesError = StringUtils.abbreviate(error, ERROR_MAX_LENGTH);
 		} else {
 			this.procesError = null;
 		}
 	}
-	
-	
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;
 	}
@@ -458,7 +443,6 @@ public class RegistreEntity extends ContingutEntity {
 			} else {
 				built.nom = numero;
 			}
-			built.tipus = ContingutTipusEnumDto.REGISTRE;
 			built.entitat = entitat;
 			built.registreTipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
@@ -473,6 +457,9 @@ public class RegistreEntity extends ContingutEntity {
 			built.idiomaCodi = idiomaCodi;
 			built.procesEstat = procesEstat;
 			built.pare = pare;
+			built.tipus = ContingutTipusEnumDto.REGISTRE;
+			built.procesData = new Date();
+			built.procesIntents = 0;
 			built.arxiuTancat = false;
 			built.arxiuTancatError = false;
 		}

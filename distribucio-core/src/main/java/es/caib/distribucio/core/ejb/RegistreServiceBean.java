@@ -61,17 +61,17 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void reglaAplicarPendentsBackofficeSistra() {
-		delegate.reglaAplicarPendentsBackofficeSistra();
+	public void aplicarReglesPendents() {
+		delegate.aplicarReglesPendents();
 	}
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
-	public boolean reglaReintentarAdmin(
+	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) {
-		return delegate.reglaReintentarAdmin(
+		return delegate.reintentarProcessamentAdmin(
 				entitatId,
 				bustiaId,
 				registreId);
@@ -79,11 +79,11 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public boolean reglaReintentarUser(
+	public boolean reintentarProcessamentUser(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) {
-		return delegate.reglaReintentarUser(
+		return delegate.reintentarProcessamentUser(
 				entitatId,
 				bustiaId,
 				registreId);
@@ -154,8 +154,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void distribuirAnotacionsPendents() {
-		delegate.distribuirAnotacionsPendents();
+	public void guardarAnnexosArxiuPendents() {
+		delegate.guardarAnnexosArxiuPendents();
 	}
 	
 	@Override
@@ -187,8 +187,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void tancarExpedientsPendents() {
-		delegate.tancarExpedientsPendents();
+	public void tancarContenidorsArxiuPendents() {
+		delegate.tancarContenidorsArxiuPendents();
 	}
 
 	@Override

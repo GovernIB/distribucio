@@ -205,7 +205,7 @@ public class ReglaHelper {
 		return new String(Base64.encode(crypted));
 	}
 
-	public boolean reglaAplicar(
+	public Exception reglaAplicar(
 			RegistreEntity anotacio) {
 		contingutLogHelper.log(
 				anotacio,
@@ -232,7 +232,7 @@ public class ReglaHelper {
 							new Object[] {anotacio.getId()}),
 					null,
 					anotacio.getId());
-			return true;
+			return null;
 		} catch (Exception ex) {
 			String procesError;
 			if (ex instanceof ScheduledTaskException) {
@@ -250,7 +250,7 @@ public class ReglaHelper {
 							new Object[] {anotacio.getId()}),
 					ex,
 					anotacio.getId());
-			return false;
+			return ex;
 		}
 	}
 
