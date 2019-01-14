@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
@@ -101,9 +102,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
-			"and ((:esNullEstat = true and (c.esborrat = 0 or c.esborrat = 1)) or (c.esborrat = :estat)) " +
-			"and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT))")
-	public Page<ContingutEntity> findBustiaPendentByPareAndFiltre(
+			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT)) or (c.procesEstat = :estat))")
+	public Page<ContingutEntity> findRegistreByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,
 			@Param("pares") List<? extends ContingutEntity> pares,
@@ -116,7 +116,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi,
 			@Param("esNullEstat") boolean esNullEstat,
-			@Param("estat") int estat,
+			@Param("estat") RegistreProcesEstatEnum estat,
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,
 			Pageable pageable);

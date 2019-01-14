@@ -39,6 +39,7 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -1696,7 +1697,15 @@ public class BustiaServiceImpl implements BustiaService {
 		if (bustia == null && pares.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
-			pagina = contingutRepository.findBustiaPendentByPareAndFiltre(
+			
+			RegistreProcesEstatEnum registreEstat = null;
+			if(filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PENDENT){
+				registreEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+			} else if (filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PROCESSAT ) { 
+				registreEstat = RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT;
+			}					
+			
+			pagina = contingutRepository.findRegistreByPareAndFiltre(
 					(bustia == null),
 					bustia,
 					pares,
@@ -1708,8 +1717,8 @@ public class BustiaServiceImpl implements BustiaService {
 					filtre.getDataRecepcioInici(),
 					(filtre.getDataRecepcioFi() == null),
 					filtre.getDataRecepcioFi(),
-					(filtre.getEstatContingut() == null),
-					(filtre.getEstatContingut() != null ? filtre.getEstatContingut().ordinal() : 1),
+					registreEstat == null,
+					registreEstat,
 					paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
 					paginacioParams.getFiltre(),
 					paginacioHelper.toSpringDataPageable(
@@ -1809,7 +1818,7 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaOrigen);
 		if (contingut instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)contingut;
-			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.BUSTIA_PENDENT == registre.getProcesEstat()) {
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
 				throw new ValidationException(
 						contingutId,
 						ContingutEntity.class,
@@ -1830,6 +1839,12 @@ public class BustiaServiceImpl implements BustiaService {
 			} else {
 				contingutEnviar = contingutHelper.ferCopiaContingut(contingutAux, bustia);
 			}
+			
+			if (contingutEnviar.getClass() == RegistreEntity.class){
+				RegistreEntity registre = (RegistreEntity) contingutEnviar;
+				registre.updateProces(RegistreProcesEstatEnum.BUSTIA_PENDENT, null);
+			}			
+			
 			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 					contingutEnviar,
 					bustia,
@@ -2039,10 +2054,27 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaContingut.setPath(path);
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
-		if (contingut.getEsborrat() < 2) {
-			bustiaContingut.setEstatContingut(
-					BustiaContingutFiltreEstatEnumDto.values()[contingut.getEsborrat()]);
+		
+		
+//		
+//		if (contingut.getEsborrat() < 2) {
+//			bustiaContingut.setEstatContingut(
+//					BustiaContingutFiltreEstatEnumDto.values()[contingut.getEsborrat()]);
+//		}
+		
+		RegistreEntity registre = null;
+		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus()) {
+			registre = (RegistreEntity)contingut;
+			
+			if(registre.getProcesEstat()==RegistreProcesEstatEnum.BUSTIA_PENDENT){
+				bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PENDENT);
+			} else if (registre.getProcesEstat()==RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT) { 
+				bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PROCESSAT);
+			}
 		}
+		
+		
+		
 		if (deproxied instanceof RegistreEntity) {
 			RegistreEntity anotacio = (RegistreEntity)contingut;
 			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE);

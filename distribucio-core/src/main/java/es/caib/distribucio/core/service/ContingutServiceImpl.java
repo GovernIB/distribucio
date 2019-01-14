@@ -27,6 +27,7 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
@@ -1112,7 +1113,12 @@ public class ContingutServiceImpl implements ContingutService {
 			registre = (RegistreEntity)contingut;
 			registresAmbMateixUuid = registreRepository.countByExpedientArxiuUuidAndEsborrat(registre.getExpedientArxiuUuid(), 0);
 		}
-		contingut.updateEsborrat(1);
+		
+		if (registre != null) {
+			registre.updateProces(RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT, null);
+		}
+		
+//		contingut.updateEsborrat(1);
 		// Marca per evitar la cache de la bustia
 		Long bustiaId = contingut.getPare().getId();
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
