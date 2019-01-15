@@ -894,7 +894,11 @@ public class BustiaServiceImpl implements BustiaService {
 									)+ 					
 							"			<tr>"+
 							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
-							"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+"</td>"+
+							"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+
+							
+							"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>" +
+							
+							"</td>"+
 							"			</tr>"+								
 							"		</table>";
 
