@@ -47,6 +47,9 @@ $(document).ready(function() {
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="anotacioRegistreFiltreCommand">
 		<div class="row">
+			<div class="col-md-3">
+				<dis:inputText name="nom" inline="true" placeholderKey="contingut.admin.filtre.nom"/>
+			</div>		
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>

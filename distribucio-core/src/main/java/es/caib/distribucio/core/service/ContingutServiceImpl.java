@@ -920,6 +920,8 @@ public class ContingutServiceImpl implements ContingutService {
 		System.out.println(">>> Filtre: " + filtre);
 		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
 				entitat, 
+				(filtre.getNom() == null),
+				filtre.getNom(),
 				(filtre.getUnitatOrganitzativa() == null),
 				filtre.getUnitatOrganitzativa(),
 				(filtre.getBustia() == null),
