@@ -25,6 +25,14 @@ public class BustiaUserFiltreCommand {
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
 	private BustiaContingutFiltreEstatEnumDto estatContingut;
+	private String numeroOrigen;
+
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}
 	
 	public static BustiaUserFiltreCommand asCommand(BustiaUserFiltreDto dto) {
 		BustiaUserFiltreCommand command = ConversioTipusHelper.convertir(

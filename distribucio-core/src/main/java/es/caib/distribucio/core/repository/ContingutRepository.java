@@ -98,6 +98,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    (:esPareNull = true or c.pare = :pare) " +
 			"and (:esPareNull = false or c.pare in (:pares)) " +
 			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
+			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
@@ -109,6 +110,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("pares") List<? extends ContingutEntity> pares,
 			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
 			@Param("contingutDescripcio") String contingutDescripcio,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
 			@Param("esNullRemitent") boolean esNullRemitent,
 			@Param("remitent") String remitent,
 			@Param("esNullDataInici") boolean esNullDataInici,
