@@ -72,7 +72,14 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(
 				filtreCommand);
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
+		
 		return "bustiaUserList";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
+	public String bustiaMetriques(HttpServletRequest request) {
+		return bustiaService.getApplictionMetrics();
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

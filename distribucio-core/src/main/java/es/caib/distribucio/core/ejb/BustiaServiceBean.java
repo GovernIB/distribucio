@@ -12,7 +12,6 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
-
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -278,6 +277,12 @@ public class BustiaServiceBean implements BustiaService {
 				contingutId,
 				deixarCopia,
 				comentari);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public String getApplictionMetrics(){
+		return delegate.getApplictionMetrics();
 	}
 
 }

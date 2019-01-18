@@ -15,5 +15,6 @@
 	
 	<import resource="classpath:es/caib/distribucio/core/api/context/application-context-ejb-client.xml" />
 	<import resource="classpath:es/caib/distribucio/war/context/application-context-security.xml" />
+	<import resource="classpath:es/caib/distribucio/core/context/application-context-metrics.xml" />
 
 </beans>

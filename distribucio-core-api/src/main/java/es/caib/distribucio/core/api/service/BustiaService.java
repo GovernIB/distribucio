@@ -393,5 +393,8 @@ public interface BustiaService {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
 			Long unitatIdFiltre, Boolean unitatObsoleta);
 
+	@PreAuthorize("hasRole('tothom')")
+	String getApplictionMetrics();
+
 }
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -18,6 +19,7 @@ import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,6 +29,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.json.MetricsModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
@@ -153,6 +162,11 @@ public class BustiaServiceImpl implements BustiaService {
 	private RegistreService registreService;
 	@Resource
 	private JavaMailSender mailSender;	
+	
+	@Autowired
+	private MetricRegistry metricRegistry;
+	  
+
 
 	@Override
 	@Transactional
@@ -1660,11 +1674,31 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
 				+ "estatContingut=" + filtre.getEstatContingut() + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
+		
+		
+		
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable"));
+		Timer.Context contextTotal = timerTotal.time();
+
+		
+		
+		
+		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarEntitat"));
+		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
+		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
+		
+		comprovarEntitatContext.stop();
+		
+
+		
+		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarBustia"));
+		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
+		
 		// Comprova la bústia i que l'usuari hi tengui accés
 		BustiaEntity bustia = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
@@ -1684,6 +1718,14 @@ public class BustiaServiceImpl implements BustiaService {
 		} else if (bustia != null) {
 			pares.add(bustia);
 		}
+		
+		comprovarBustiaContext.stop();
+		
+		
+		
+		final Timer findRegistreByPareAndFiltreTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.findRegistreByPareAndFiltre"));
+		Timer.Context findRegistreByPareAndFiltreContext = findRegistreByPareAndFiltreTimer.time();
+		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"recepcioData",
@@ -1729,7 +1771,15 @@ public class BustiaServiceImpl implements BustiaService {
 							paginacioParams,
 							mapeigOrdenacio));
 		}
-		return paginacioHelper.toPaginaDto(
+		
+		
+		findRegistreByPareAndFiltreContext.stop();
+		
+		
+		final Timer toPaginaDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto"));
+		Timer.Context toPaginaDtoContext = toPaginaDtoTimer.time();
+		
+		PaginaDto<BustiaContingutDto> pag = paginacioHelper.toPaginaDto(
 				pagina,
 				BustiaContingutDto.class,
 				new Converter<ContingutEntity, BustiaContingutDto>() {
@@ -1738,8 +1788,35 @@ public class BustiaServiceImpl implements BustiaService {
 						return toBustiaContingutDto(source);
 					}
 				});
+		
+		toPaginaDtoContext.stop();
+		
+		contextTotal.stop();
+		
+		
+		return pag;
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public String getApplictionMetrics() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(
+				new MetricsModule(
+						TimeUnit.SECONDS,
+						TimeUnit.MILLISECONDS,
+						false));
+		
+		logger.debug("Consultant les mètriques de l'aplicació");
+		try {
+			return mapper.writeValueAsString(metricRegistry);
+		} catch (Exception ex) {
+			logger.error("Error al generar les mètriques de l'aplicació", ex);
+			return "ERR";
+		}
+	}
+	
+	
 	@Transactional(readOnly = true)
 	@Override
 	public BustiaContingutDto contingutPendentFindOne(
