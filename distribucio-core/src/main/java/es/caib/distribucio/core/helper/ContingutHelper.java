@@ -20,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
@@ -28,6 +31,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
+import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
@@ -68,6 +72,9 @@ public class ContingutHelper {
 	private UsuariHelper usuariHelper;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	
+	@Autowired
+	private MetricRegistry metricRegistry;
 
 
 
@@ -92,6 +99,9 @@ public class ContingutHelper {
 			boolean ambPath,
 			boolean pathNomesFinsExpedientArrel,
 			boolean ambVersions) {
+		
+		
+		
 		ContingutDto resposta = null;
 		// Crea el contenidor del tipus correcte
 		ContingutEntity deproxied = HibernateHelper.deproxy(contingut);
@@ -157,12 +167,22 @@ public class ContingutHelper {
 		}
 		if (resposta != null) {
 			if (ambPath) {
+				
+				
+				// TIMER START
+				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaDto.getPathContingutComDto"));
+				Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
+				
 				// Calcula el path
 				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
 						ambPermisos,
 						pathNomesFinsExpedientArrel);
 				resposta.setPath(path);
+				
+				
+				getPathContingutComDtoContext.stop();
+				// TIMER STOP
 			}
 			if (ambFills) {
 				// Cerca els nodes fills

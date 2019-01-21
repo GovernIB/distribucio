@@ -22,7 +22,6 @@
 
 	<import resource="classpath:es/caib/distribucio/core/context/application-context-war.xml" />
 	<import resource="classpath:es/caib/distribucio/war/context/application-context-security.xml" />
-	<import resource="classpath:es/caib/distribucio/core/context/application-context-metrics.xml" />
 
 	<wss:binding url="/ws/v1/bustia">
 		<wss:service>

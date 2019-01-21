@@ -50,5 +50,6 @@
 	<import resource="classpath:es/caib/distribucio/core/context/application-context-model-jndi.xml" />
 	<import resource="classpath:es/caib/distribucio/core/context/application-context-model.xml" />
 	<import resource="classpath:es/caib/distribucio/core/context/application-context-model-acl.xml" />
+	<import resource="classpath:es/caib/distribucio/core/context/application-context-metrics.xml" />
 
 </beans>
