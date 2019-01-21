@@ -23,6 +23,7 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
 	private RegistreProcesEstatEnum estat;
+	private String nom;
 	private String numeroOrigen;
 
 	public String getNumeroOrigen() {
@@ -31,6 +32,13 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	public void setNumeroOrigen(String numeroOrigen) {
 		this.numeroOrigen = numeroOrigen;
 	}	
+
+	public String getNom() {
+		return nom;
+	}
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
 
 
 	public String getUnitatOrganitzativa() {

@@ -131,6 +131,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.entitat = :entitat " +
+			"	and (:esNullNom = true or lower(r.nom) like lower('%'||:nom||'%')) " +
 			"	and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +			
 			"	and (:esNullUnitatOrganitzativa = true or r.unitatAdministrativa = :unitatOrganitzativa) " +
 			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
@@ -139,6 +140,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)")
 	public Page<RegistreEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
 			@Param("esNumeroOrigen") boolean esNumeroOrigen,
 			@Param("numeroOrigen") String numeroOrigen,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
