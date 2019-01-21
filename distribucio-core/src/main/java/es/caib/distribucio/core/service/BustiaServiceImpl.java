@@ -1755,6 +1755,8 @@ public class BustiaServiceImpl implements BustiaService {
 					pares,
 					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
 					filtre.getContingutDescripcio(),
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen(),
 					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
 					filtre.getRemitent(),
 					(filtre.getDataRecepcioInici() == null),
@@ -2163,6 +2165,7 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 			bustiaContingut.setProcesAutomatic(
 					RegistreProcesEstatEnum.ARXIU_PENDENT == anotacio.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == anotacio.getProcesEstat());
+			bustiaContingut.setNumeroOrigen(anotacio.getNumeroOrigen());
 		}
 		if (contingut.getDarrerMoviment() != null) {
 			if (contingut.getDarrerMoviment().getRemitent() != null)
@@ -2175,6 +2178,7 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaContingut.setAlerta(alertaRepository.countByLlegidaAndContingutId(
 				false,
 				contingut.getId()) > 0);
+		
 		return bustiaContingut;
 	}
 
