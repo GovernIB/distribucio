@@ -31,6 +31,14 @@ public class BustiaContingutDto implements Serializable {
 	private long numComentaris;
 	
 	private boolean alerta;
+	private String numeroOrigen;
+
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}	
 
 	public Long getId() {
 		return id;

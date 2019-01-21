@@ -918,6 +918,8 @@ public class ContingutServiceImpl implements ContingutService {
 		return paginacioHelper.toPaginaDto(
 				registreRepository.findByFiltrePaginat(
 						entitat, 
+						(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
+						filtre.getNumeroOrigen(),
 						(filtre.getUnitatOrganitzativa() == null),
 						filtre.getUnitatOrganitzativa(),
 						(filtre.getBustia() == null),

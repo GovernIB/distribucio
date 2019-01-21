@@ -1709,6 +1709,8 @@ public class BustiaServiceImpl implements BustiaService {
 					pares,
 					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
 					filtre.getContingutDescripcio(),
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen(),					
 					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
 					filtre.getRemitent(),
 					(filtre.getDataRecepcioInici() == null),
@@ -2074,6 +2076,7 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaContingut.setError(true);
 			}
 			bustiaContingut.setProcesAutomatic(anotacio.getRegla() != null && (RegistreProcesEstatEnum.PENDENT == anotacio.getProcesEstat() || RegistreProcesEstatSistraEnum.PENDENT == anotacio.getProcesEstatSistra()));
+			bustiaContingut.setNumeroOrigen(anotacio.getNumeroOrigen());
 		}
 		if (contingut.getDarrerMoviment() != null) {
 			if (contingut.getDarrerMoviment().getRemitent() != null)

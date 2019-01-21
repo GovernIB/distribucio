@@ -22,6 +22,14 @@ public class BustiaUserFiltreDto implements Serializable {
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
 	private BustiaContingutFiltreEstatEnumDto estatContingut;
+	private String numeroOrigen;
+
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}
 	
 	@Override
 	public String toString() {

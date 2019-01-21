@@ -47,6 +47,9 @@ $(document).ready(function() {
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="anotacioRegistreFiltreCommand">
 		<div class="row">
+			<div class="col-md-3">
+				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
+			</div>		
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -115,6 +118,7 @@ $(document).ready(function() {
 						{{:nom}}
 					</script>
 				</th>
+				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>					
 				<th data-col-name="createdDate" data-converter="datetime" width="10%"><spring:message code="contingut.admin.columna.creat.el"/></th>
 				<th data-col-name="procesEstat" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/>

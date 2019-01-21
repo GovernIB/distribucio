@@ -39,29 +39,32 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
+	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-5">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
-			</div>
+				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
+			</div>			
 		</div>
 		<div class="row">
 			<div class="col-md-3">
+				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
+			</div>			
+			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
 			</div>
-			<div class="col-md-3 pull-right">
+			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -96,6 +99,7 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
+				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				<th data-col-name="remitent"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="recepcioData" data-converter="datetime" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
 				<th data-col-name="estatContingut" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
