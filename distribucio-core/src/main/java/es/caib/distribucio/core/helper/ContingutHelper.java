@@ -170,7 +170,7 @@ public class ContingutHelper {
 				
 				
 				// TIMER START
-				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaDto.getPathContingutComDto"));
+				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.toBustiaDto.toContingutDto.getPathContingutComDto"));
 				Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
 				
 				// Calcula el path
