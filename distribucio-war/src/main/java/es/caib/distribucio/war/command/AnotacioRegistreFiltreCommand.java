@@ -25,6 +25,14 @@ public class AnotacioRegistreFiltreCommand {
 	private Date dataCreacioFi;
 	private RegistreProcesEstatEnum estat;
 	private String nom;
+	private String numeroOrigen;
+
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}
 
 	public String getNom() {
 		return nom;
