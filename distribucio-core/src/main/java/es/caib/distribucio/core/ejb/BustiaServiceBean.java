@@ -279,5 +279,10 @@ public class BustiaServiceBean implements BustiaService {
 				deixarCopia,
 				comentari);
 	}
+	@Override
+	@RolesAllowed("tothom")
+	public String getApplictionMetrics(){
+		return delegate.getApplictionMetrics();
+	}	
 
 }

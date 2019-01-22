@@ -42,6 +42,10 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.http.HttpServletResponse;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -78,6 +82,26 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
 		
 		return "bustiaUserList";
+	}
+	
+	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
+	public String bustiaMetriques2(
+			HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		try{
+			byte[] b = bustiaService.getApplictionMetrics().getBytes();
+		
+			writeFileToResponse(
+					"metrics.json",
+					b,
+					response);
+		} catch (Exception ex) {
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:.",
+					"contingut.controller.document.descarregar.error");
+		}
+		return null;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
