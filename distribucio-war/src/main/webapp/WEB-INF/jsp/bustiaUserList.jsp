@@ -23,8 +23,7 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-	<script src="<c:url value='/js/Blob.js'/>"></script>
-	<script src="<c:url value='/js/FileSaver.min.js'/>"></script>
+
 <script>
 
 $(document).ready(function() {
@@ -39,22 +38,10 @@ $(document).ready(function() {
 		})
 	} );
 
-	// Event del botó exportar: desa les mètriques en un fitxer de text (metrics.json)
-	$('#exportar').click(function() {
-		$.get( "bustiaUser/metriques")
-		.done(function( metricsData ) {
-
-			var obbfd= JSON.parse(metricsData)
-			var blob = new Blob([JSON.stringify(obbfd)], {type: "application/json"});
-			saveAs(blob, "metrics.json");
-		})
-
-	});
 });
 </script>
 </head>
 <body>
-	<button id="exportar" type="button" name="accio" value="exportar" class="btn btn-default" style="float:right"><spring:message code="comu.boto.metrics.exportar"/></button>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
 		<div class="row">
 			<div class="col-md-4">

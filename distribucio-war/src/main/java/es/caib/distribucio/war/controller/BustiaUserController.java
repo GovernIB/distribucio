@@ -3,12 +3,15 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -29,6 +32,7 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -76,10 +80,25 @@ public class BustiaUserController extends BaseUserController {
 		return "bustiaUserList";
 	}
 	
-	@ResponseBody
+	
 	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
-	public String bustiaMetriques(HttpServletRequest request) {
-		return bustiaService.getApplictionMetrics();
+	public String bustiaMetriques2(
+			HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		try{
+			byte[] b = bustiaService.getApplictionMetrics().getBytes();
+		
+			writeFileToResponse(
+					"metrics.json",
+					b,
+					response);
+		} catch (Exception ex) {
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:.",
+					"contingut.controller.document.descarregar.error");
+		}
+		return null;
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

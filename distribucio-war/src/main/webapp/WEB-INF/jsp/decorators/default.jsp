@@ -161,6 +161,7 @@ body {
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
 										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
+										<li><a href="<c:url value="/bustiaUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>
 									</ul>
 								</div>
 							</c:when>

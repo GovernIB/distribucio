@@ -46,36 +46,6 @@
 			<scope>provided</scope>
 		</dependency>
 		
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-jvm</artifactId>
-            <version>3.1.2</version>
-			<exclusions>
-			  <exclusion>
-			    <groupId>org.slf4j</groupId>
-			    <artifactId>slf4j-jdk14</artifactId>
-			  </exclusion>
-			  <exclusion>
-			    <groupId>org.slf4j</groupId>
-			    <artifactId>slf4j-api</artifactId>
-			  </exclusion>
-			</exclusions>           
-        </dependency>		
-		<dependency>
-			<groupId>io.dropwizard.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-			<version>3.1.2</version>
-			<exclusions>
-			  <exclusion>
-			    <groupId>org.slf4j</groupId>
-			    <artifactId>slf4j-jdk14</artifactId>
-			  </exclusion>
-			  <exclusion>
-			    <groupId>org.slf4j</groupId>
-			    <artifactId>slf4j-api</artifactId>
-			  </exclusion>
-			</exclusions> 			
-		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-json</artifactId>
@@ -122,40 +92,7 @@
 				</exclusion>				
 			</exclusions>
 		</dependency> 		
-		
-        <!--dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-jvm</artifactId>
-            <version>3.1.2</version>
-        </dependency>	
-		<dependency>
-		    <groupId>io.dropwizard.metrics</groupId>
-		    <artifactId>metrics-json</artifactId>
-		    <version>3.1.2</version>
-		</dependency>          
-		<dependency>
-			<groupId>com.ryantenney.metrics</groupId>
-			<artifactId>metrics-spring</artifactId>
-			<version>3.1.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-aop</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-context-support</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency-->      	
+		   	
 		<dependency>
 			<groupId>javax.ejb</groupId>
 			<artifactId>ejb-api</artifactId>
