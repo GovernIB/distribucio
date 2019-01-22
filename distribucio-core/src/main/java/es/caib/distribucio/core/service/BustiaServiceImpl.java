@@ -2131,6 +2131,10 @@ public class BustiaServiceImpl implements BustiaService {
 
 	private BustiaContingutDto toBustiaContingutDto(
 			ContingutEntity contingut) {
+		// TIMER START
+		final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.getPathContingutComDto"));
+		Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
+		
 		Object deproxied = HibernateHelper.deproxy(contingut);
 		BustiaContingutDto bustiaContingut = new BustiaContingutDto();
 		bustiaContingut.setId(contingut.getId());
@@ -2140,8 +2144,28 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		bustiaContingut.setPath(path);
+		
+		
+		getPathContingutComDtoContext.stop();
+		// TIMER STOP
+		
+		
+		// TIMER START
+		final Timer toBustiaDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.toBustiaDto"));
+		Timer.Context toBustiaDtoContext = toBustiaDtoTimer.time();
+		
+		
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
+		
+		toBustiaDtoContext.stop();
+		// TIMER STOP
+		
+		
+		// TIMER START
+		final Timer countByContingutTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.countByContingut"));
+		Timer.Context countByContingutContext = countByContingutTimer.time();
+		
 		if (contingut.getEsborrat() < 2)
 			bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.values()[contingut.getEsborrat()]);
 		if (deproxied instanceof RegistreEntity) {
@@ -2162,9 +2186,23 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiaContingut.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
 		bustiaContingut.setNumComentaris(contingutComentariRepository.countByContingut(contingut));
+		
+		
+		countByContingutContext.stop();
+		// TIMER STOP
+		
+		// TIMER START
+		final Timer countByLlegidaAndContingutIdTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.countByLlegidaAndContingutId"));
+		Timer.Context countByLlegidaAndContingutIdContext = countByLlegidaAndContingutIdTimer.time();
+		
+		
 		bustiaContingut.setAlerta(alertaRepository.countByLlegidaAndContingutId(
 				false,
 				contingut.getId()) > 0);
+		
+		countByLlegidaAndContingutIdContext.stop();
+		// TIMER STOP
+		
 		return bustiaContingut;
 	}
 
