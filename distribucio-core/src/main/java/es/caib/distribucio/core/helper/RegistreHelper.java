@@ -294,6 +294,7 @@ public class RegistreHelper {
 		return firmes;
 	}
 
+
 	@Transactional
 	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
@@ -350,6 +351,9 @@ public class RegistreHelper {
 			RegistreEntity anotacio,
 			BustiaEntity bustia,
 			boolean crearAutofirma) {
+		
+		Exception exception = null;
+		
 		if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 					anotacio,
@@ -375,9 +379,12 @@ public class RegistreHelper {
 				uuidContenidor = anotacio.getExpedientArxiuUuid();
 			}
 			if (uuidContenidor != null) {
-				// Emmagatzemam cada un dels annexos de l'anotació de registre
-				try {
-					for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
+			// Emmagatzemam cada un dels annexos de l'anotació de registre
+			
+				
+				for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
+					
+					try {
 						RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
 						// Només crea l'annex a dins el contenidor si encara
 						// no s'ha creat
@@ -387,6 +394,8 @@ public class RegistreHelper {
 									"annexTitol=" + annex.getTitol() + ", " +
 									"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
+													
+							
 							String uuidDocument = pluginHelper.distribucioDocumentCrear(
 									anotacio.getNumero(),
 									distribucioAnnex,
@@ -422,23 +431,29 @@ public class RegistreHelper {
 								}
 							}
 						}
+					
+					} catch (Exception ex) {
+						exception = ex;
 					}
-					logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
-							"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
-							"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
-					contingutLogHelper.log(
-							anotacio,
-							LogTipusEnumDto.DISTRIBUCIO,
-							anotacio.getNom(),
-							null,
-							false,
-							false);
-				} catch (Exception ex) {
-					return ex;
 				}
 			}
 		}
-		return null;
+		if (exception != null) {
+			return exception;
+		} else {
+			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
+					"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+					"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+			contingutLogHelper.log(
+					anotacio,
+					LogTipusEnumDto.DISTRIBUCIO,
+					anotacio.getNom(),
+					null,
+					false,
+					false);
+			return null;
+		}
+			
 	}
 
 	@Transactional

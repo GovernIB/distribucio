@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "12345678";
 
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 
 	@Test
@@ -133,6 +133,120 @@ public class BustiaV1Test {
 	        }
         }
         anotacio.getAnnexos().add(annex1);
+        
+        
+        
+        
+        
+        RegistreAnnex annex2;
+        if (TEST_ANNEX_FIRMAT) {
+        	firmes = new ArrayList<Firma>();
+            Firma firma = new Firma();
+            firma.setFitxerNom("annex_firmat.pdf");
+            firma.setTipusMime("application/pdf");
+            firma.setContingut(
+            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+            firma.setTipus("TF06");
+            firma.setPerfil("EPES");
+            firmes.add(firma);
+            annex2 = crearAnnex(
+	        		"Annex2",
+	        		//"annex.pdf",
+	        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+	        		"application/pdf",
+	        		null,
+	        		null,
+	        		"0",
+	        		"EE01",
+	        		"TD01",
+	        		"01",
+	        		firmes);
+        } else {
+	        if (TEST_ANNEX_PDF) {
+		        annex2 = crearAnnex(
+		        		"Annex2",
+		        		"annex.pdf",
+		        		"application/pdf",
+		        		null,
+		        		getContingutAnnexSenseFirmaPdf(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        } else {
+	        	annex2 = crearAnnex(
+		        		"Annex2",
+		        		"annex.docx",
+		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		        		null,
+		        		getContingutAnnexSenseFirmaDocx(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        }
+        }
+        anotacio.getAnnexos().add(annex2);
+        
+        
+        
+        
+        RegistreAnnex annex3;
+        if (TEST_ANNEX_FIRMAT) {
+        	firmes = new ArrayList<Firma>();
+            Firma firma = new Firma();
+            firma.setFitxerNom("annex_firmat.pdf");
+            firma.setTipusMime("application/pdf");
+            firma.setContingut(
+            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+            firma.setTipus("TF06");
+            firma.setPerfil("EPES");
+            firmes.add(firma);
+            annex3 = crearAnnex(
+	        		"Annex3",
+	        		//"annex.pdf",
+	        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+	        		"application/pdf",
+	        		null,
+	        		null,
+	        		"0",
+	        		"EE01",
+	        		"TD01",
+	        		"01",
+	        		firmes);
+        } else {
+	        if (TEST_ANNEX_PDF) {
+		        annex3 = crearAnnex(
+		        		"Annex3",
+		        		"annex.pdf",
+		        		"application/pdf",
+		        		null,
+		        		getContingutAnnexSenseFirmaPdf(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        } else {
+	        	annex3 = crearAnnex(
+		        		"Annex3",
+		        		"annex.docx",
+		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		        		null,
+		        		getContingutAnnexSenseFirmaDocx(),
+		        		"0",
+		        		"EE01",
+		        		"TD01",
+		        		"01",
+		        		firmes);
+	        }
+        }
+        anotacio.getAnnexos().add(annex3);
+        
+        
+        
         RegistreAnnex justificant = crearAnnex(
         		"justificant",
         		"justificant.pdf",
