@@ -105,7 +105,7 @@ $(document).ready(function() {
 		data-toggle="datatable"
 		data-url="<c:url value="/anotacionsRegistre/datatable"/>"
 		data-filter="#anotacioRegistreFiltreCommand"
-		data-default-order="4"
+		data-default-order="5"
 		data-default-dir="desc"
 		class="table table-bordered table-striped">
 		<thead>
