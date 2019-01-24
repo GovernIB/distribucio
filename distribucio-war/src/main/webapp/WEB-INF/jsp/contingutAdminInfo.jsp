@@ -11,15 +11,15 @@
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${contingut}"/>
-	<c:if test="${contingut.registre && contingut.procesEstat == 'ERROR'}">
+	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT'}">
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
 			</li>
-			<c:if test="${contingut.procesEstat != 'NO_PROCES'}">
+			<c:if test="${contingut.procesEstat != 'BUSTIA_PENDENT'}">
 				<li role="presentation">
 					<a href="#proces" aria-controls="proces" role="tab" data-toggle="tab">
 						<spring:message code="registre.detalls.pipella.proces"/>
-						<c:if test="${contingut.procesEstat == 'ERROR'}"><span class="fa fa-warning text-danger"></span></c:if>
+						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if>
 					</a>
 				</li>
 			</c:if>
@@ -72,10 +72,10 @@
 			<dt><spring:message code="registre.detalls.camp.distribucio.alta"/></dt><dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
 		</c:if>
 	</dl>
-	<c:if test="${contingut.registre && contingut.procesEstat == 'ERROR'}">
+	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT'}">
 			</div>
 			<div class="tab-pane" id="proces" role="tabpanel">
-				<c:if test="${contingut.procesEstat == 'ERROR'}">
+				<c:if test="${contingut.procesEstat == 'ARXIU_PENDENT'}">
 					<div class="alert well-sm alert-danger alert-dismissable">
 						<span class="fa fa-exclamation-triangle"></span>
 						<spring:message code="registre.detalls.info.errors"/>
@@ -90,7 +90,7 @@
 					<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
 					<dd>${contingut.procesIntents}</dd>
 				</dl>
-				<c:if test="${contingut.procesEstat == 'ERROR'}">
+				<c:if test="${contingut.procesEstat == 'ARXIU_PENDENT'}">
 					<pre style="height:300px">${contingut.procesError}</pre>
 				</c:if>
 			</div>

@@ -117,11 +117,12 @@ $(document).ready(function() {
 					<spring:message code="contingut.admin.columna.nom"/>
 					<script id="cellNomTemplate" type="text/x-jsrender">
 						<span class="fa ${iconaAnotacioRegistre}"></span>
-						{{:nom}}
+						{{:nom}} 
 					</script>
 				</th>
 				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>				
 				<th data-col-name="createdDate" data-converter="datetime" width="10%"><spring:message code="contingut.admin.columna.creat.el"/></th>
+				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="procesEstat" data-orderable="false" width="10%" data-template="#cellEstatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
@@ -135,6 +136,10 @@ $(document).ready(function() {
 							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_PROCESSAT"/>
 						{{else procesEstat == 'DISTRIBUIT_BACKOFFICE'}}
 							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_BACKOFFICE"/>
+						{{/if}}
+
+						{{if procesError != null}}
+							<span class="fa fa-warning text-danger" title="{{:procesError}}"></span>
 						{{/if}}
 					</script>
 				</th>
