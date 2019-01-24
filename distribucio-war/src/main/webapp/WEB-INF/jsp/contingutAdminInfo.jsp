@@ -75,7 +75,7 @@
 	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT'}">
 			</div>
 			<div class="tab-pane" id="proces" role="tabpanel">
-				<c:if test="${contingut.procesEstat == 'ARXIU_PENDENT'}">
+				<c:if test="${contingut.procesError != null }">
 					<div class="alert well-sm alert-danger alert-dismissable">
 						<span class="fa fa-exclamation-triangle"></span>
 						<spring:message code="registre.detalls.info.errors"/>
