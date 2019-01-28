@@ -177,13 +177,13 @@ tr.clicable {
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.transport.tipus"/></strong></td>
-									<td>${registre.transportTipusDescripcio} (${registre.transportTipusCodi})</td>
+									<td>${registre.transportTipusDescripcio} ${registre.transportTipusCodi!=null?'(':''}${registre.transportTipusCodi}${registre.transportTipusCodi!=null?')':''}</td>
 									<td><strong><spring:message code="registre.detalls.camp.transport.num"/></strong></td>
 									<td>${registre.transportNumero}</td>
 								</tr>
 								<tr>
 									<td colspan="2"><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
-									<td colspan="2">${registre.oficinaOrigenDescripcio} (${registre.oficinaOrigenCodi})</td>
+									<td colspan="2">${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
