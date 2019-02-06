@@ -38,17 +38,30 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
 		
 		List<UnitatOrganitzativa> unitats = new ArrayList<>();
-		unitats.add(new UnitatOrganitzativa("A04026201", "B3 Prueba Marilen","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026203", "A04026205"))));
-		unitats.add(new UnitatOrganitzativa("A04026203", "Administracion del Estado en el Exterior - Representacion Permanente de Transportes","A04025121", "A04025121","V", null));
-		unitats.add(new UnitatOrganitzativa("A04026205", "AENA Aeropuertos, S.A.","A04025121", "A04025121","V", null));
-		unitats.add(new UnitatOrganitzativa("A04026185", "Agencia Estatal de Seguridad Aerea","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026187"))));
-		unitats.add(new UnitatOrganitzativa("A04026163", "Agencia Estatal de Seguridad Ferroviaria","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026187"))));
-		unitats.add(new UnitatOrganitzativa("A04026187", "AENA Desarrollo Internacional, S.A.","A04025121", "A04025121","V",null));
-
 		
-//		unitats.add(new UnitatOrganitzativa("A04026161", "B1 Prueba Marilen","A04025121", "A04025121","E", new ArrayList<>(Arrays.asList("A04026191"))));
-//		unitats.add(new UnitatOrganitzativa("A04026191", "Denom Completa 1.1.","A04026163", "A04025121","V", null));
-		unitats.add(new UnitatOrganitzativa("A04026202", "B3 Prueba Marilen 1.1.11111111111111111","A04026201", "A04025121","V", null));
+		// unitat arrel: A04019281  
+		// unitat superior: A04017954
+		
+		//SPLIT
+		unitats.add(new UnitatOrganitzativa("A04017955", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999901", "A99999902"))));
+		unitats.add(new UnitatOrganitzativa("A99999901", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa("A99999902", "denominacio", "A04017954", "A04019281","V", null));
+		
+		//MERGE
+		unitats.add(new UnitatOrganitzativa("A04017960", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999903"))));
+		unitats.add(new UnitatOrganitzativa("A04017956", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999903"))));
+		unitats.add(new UnitatOrganitzativa("A99999903", "denominacio", "A04017954", "A04019281","V", null));
+		
+		//SUBSTITUTION
+		unitats.add(new UnitatOrganitzativa("A04017957", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999904"))));
+		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", "A04017954", "A04019281","V", null));
+		
+		//PROPS CHANGED
+		unitats.add(new UnitatOrganitzativa("A04017958", "denominacio", "A04017954", "A04019281","V", null));
+		
+		//NEW
+		unitats.add(new UnitatOrganitzativa("A99999905", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa("A99999906", "denominacio", "A04017954", "A04019281","V", null));
 		
 		return unitats;
 	}

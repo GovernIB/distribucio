@@ -96,8 +96,8 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId) {
-		return delegate.predictSynchronization(entitatId);
+	public List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entitatId) {
+		return delegate.getObsoletesFromWS(entitatId);
 	}
 
 	@Override
@@ -128,6 +128,12 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	@RolesAllowed("tothom")
 	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
 		return delegate.getLastHistoricos(uo);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId) {
+		return delegate.getNewFromWS(entitatId);
 	}	
 	
 	

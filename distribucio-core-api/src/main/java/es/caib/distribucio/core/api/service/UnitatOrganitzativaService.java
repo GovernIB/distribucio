@@ -96,7 +96,7 @@ public interface UnitatOrganitzativaService {
 
 	ArbreDto<UnitatOrganitzativaDto> findTree(Long id);
 
-	List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId);
+	List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entitatId);
 
 	List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId);
 
@@ -107,4 +107,6 @@ public interface UnitatOrganitzativaService {
 	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre);
 
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
+
+	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);
 }

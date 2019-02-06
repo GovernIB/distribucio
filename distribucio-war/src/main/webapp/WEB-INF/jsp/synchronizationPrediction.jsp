@@ -77,7 +77,7 @@
 		</c:if>
 		<c:if test="${!isFirstSincronization}">
 			<c:set var="isAllEmpty"
-				value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents}" />
+				value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents and empty unitatsNew}" />
 			<c:if test="${isAllEmpty}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -183,8 +183,6 @@
 				</div>
 			</c:if>
 
-
-
 			<c:if test="${!empty unitatsVigents}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -212,6 +210,33 @@
 					</div>
 				</div>
 			</c:if>
+			
+			
+			<c:if test="${!empty unitatsNew}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message
+							code="unitat.synchronize.prediction.noves" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="unitatNew" items="${unitatsNew}">
+							<div class=horizontal-left>
+								<div id="wrapper" style="margin-left: 15px">
+									<span class="label bg-success border-green overflow-ellipsis"
+										title="${unitatNew.codi} - ${unitatNew.denominacio}">
+										${unitatNew.codi} - ${unitatNew.denominacio} </span>
+									<div class="branch lv1 empty-branch">
+										<div class="entry sole empty-entry">
+											<span
+												class="label bg-success border-green overflow-ellipsis empty-label"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+					</div>
+				</div>
+			</c:if>			
 		</c:if>
 
 	</div>

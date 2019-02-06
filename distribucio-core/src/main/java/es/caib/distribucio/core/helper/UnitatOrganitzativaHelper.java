@@ -12,6 +12,9 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
@@ -23,6 +26,7 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.service.UnitatOrganitzativaServiceImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
 
@@ -127,7 +131,13 @@ public class UnitatOrganitzativaHelper {
 		return unitatsVigentWSDto;
 	}
 	
-	public List<UnitatOrganitzativaDto> predictSynchronization(Long entidadId) throws SistemaExternException{
+	/**
+	 * Getting list of unitats that are now vigent in db but syncronization is marking them as obsolete
+	 * @param entidadId
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entidadId) throws SistemaExternException{
 		
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
@@ -138,6 +148,14 @@ public class UnitatOrganitzativaHelper {
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		
+		
+		logger.debug("############################## UnitatsWS #######################################");
+		for(UnitatOrganitzativa un: unitatsWS){
+			logger.debug(ToStringBuilder.reflectionToString(un));
+		}
+		logger.debug("############################## END UnitatsWS ###################################");
+
 		
 		
 		// getting all vigent unitats from database
@@ -211,6 +229,85 @@ public class UnitatOrganitzativaHelper {
 	}
 	
 	
+	
+	public List<UnitatOrganitzativaDto> getNewFromWS(Long entidadId){
+		
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+		
+		// getting list of syncronization unitats from webservices
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		
+		// getting all vigent unitats from database
+		List<UnitatOrganitzativaEntity> vigentUnitatsDB = unitatOrganitzativaRepository
+				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		
+		
+		//List of new unitats that are vigent
+		List<UnitatOrganitzativa> vigentUnitatsWS = new ArrayList<>();
+		
+		//List of new unitats that are vigent and does not exist in database
+		List<UnitatOrganitzativa> vigentNotInDBUnitatsWS = new ArrayList<>();
+		
+		
+		//List of new unitats (that are vigent, not pointed by any obsolete unitat and does not exist in database)
+		List<UnitatOrganitzativa> newUnitatsWS = new ArrayList<>();
+		
+		
+		
+		//Filtering to only obtain vigents 
+		for (UnitatOrganitzativa unitatWS : unitatsWS) {
+			if (unitatWS.getEstat().equals("V") && !unitatWS.getCodi().equals(entitat.getCodiDir3())) {
+				vigentUnitatsWS.add(unitatWS);
+			}
+		}
+
+		// Filtering to only obtain vigents that does not already exist in
+		// database
+		for (UnitatOrganitzativa vigentUnitat : vigentUnitatsWS) {
+			boolean found = false;
+			for (UnitatOrganitzativaEntity vigentUnitatDB : vigentUnitatsDB) {
+				if (vigentUnitatDB.getCodi().equals(vigentUnitat.getCodi())) {
+					found = true;
+				}
+			}
+			if (found == false) {
+				vigentNotInDBUnitatsWS.add(vigentUnitat);
+			}
+		}
+		
+		
+		// Filtering to obtain unitats that are vigent, not pointed by any obsolete unitat and does not already exist in database
+		for (UnitatOrganitzativa vigentNotInDBUnitatWS : vigentNotInDBUnitatsWS) {
+			boolean pointed = false;
+			for (UnitatOrganitzativa unitatWS : unitatsWS) {
+				if(unitatWS.getHistoricosUO()!=null){
+					for(String novaCodi: unitatWS.getHistoricosUO()){
+						if(novaCodi.equals(vigentNotInDBUnitatWS.getCodi())){
+							pointed = true;
+						}
+					}
+				}
+			}
+			if (pointed == false) {
+				newUnitatsWS.add(vigentNotInDBUnitatWS);
+			}
+
+		}
+		
+		
+		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
+		List<UnitatOrganitzativaDto> newUnitatsDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigent : newUnitatsWS){
+			newUnitatsDto.add(conversioTipusHelper.convertir(
+					vigent, 
+					UnitatOrganitzativaDto.class));
+		}
+		
+		return newUnitatsDto;
+	}
+	
+	
 	/**
 	 * Method to get last historicos (recursive to cover cumulative synchro case)
 	 * @param unitat
@@ -261,7 +358,7 @@ public class UnitatOrganitzativaHelper {
 				null, null);*/
 
 
-			unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
+		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
 
 
@@ -717,7 +814,7 @@ public class UnitatOrganitzativaHelper {
 		return currentArbreNode;
 	}
 	
-	
+	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaHelper.class);
 	
 
 }
