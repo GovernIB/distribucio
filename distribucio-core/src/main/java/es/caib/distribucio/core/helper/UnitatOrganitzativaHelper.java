@@ -171,10 +171,10 @@ public class UnitatOrganitzativaHelper {
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
 
-		// list of obsolete unitats from ws that were vigent in last sincro (are vigent in DB and obsolete in WS)
-		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative case:
-		// If from last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
-		// we only want A here (we dont want to return B) because prediction must show this transition (A -> C) [between A(that is now vigent in database) and C (that is now vigent in WS)]     
+		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
+		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
+		// If since last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
+		// we only want to return A (we dont want to return B) because prediction must show this transition (A -> C) [between A(that is now vigent in database) and C (that is now vigent in WS)]     
 		List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) { 
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
@@ -190,8 +190,8 @@ public class UnitatOrganitzativaHelper {
 			// setting obsolete unitat to point to the last one it transitioned into 
 			// Name of the field historicosUO is totally wrong because this field shows future unitats not historic
 			// but that's how it is named in WS and we cant change it 
-			// This field is pointing to the last unitat given unitat transitioned into. We need the last one to cover cumulative changed case:
-			// If from last sincro unitat A changed to B and then to C then from WS we wil get unitat A pointing to B (A -> B) and unitat B pointing to C (B -> C)  
+			// lastHistoricosUnitats field should be pointing to the last unitat it transitioned into. We need to recursively find last one because it is possible there will be cumulative changes:
+			// If since last sincro unitat A changed to B and then to C then from WS we will get unitat A pointing to B (A -> B) and unitat B pointing to C (B -> C)  
 			// what we want is to add direct pointer from unitat A to C (A -> C)
 			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
 		}
