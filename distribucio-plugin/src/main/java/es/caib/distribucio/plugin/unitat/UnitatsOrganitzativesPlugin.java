@@ -39,9 +39,11 @@ public interface UnitatsOrganitzativesPlugin {
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donada
 	 * una unitat pare.
+	 * If you put fechaActualizacion==null and fechaSincronizacion==null it returns all unitats that are now vigent (current tree)
+	 * If you put fechaActualizacion!=null and fechaSincronizacion!=null it returns all the changes in unitats from the time of last syncronization (@param fechaActualizacion) to now  
 	 * 
 	 * @param pareCodi
-	 *            Codi de la unitat pare.
+	 *            Codi de la unitat pare. It doesnt have to be arrel
 	 * @param fechaActualizacion
 	 *            Data de la darrera actualització.
 	 * @param fechaSincronizacion

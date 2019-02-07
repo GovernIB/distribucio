@@ -23,82 +23,58 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  */
 public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlugin {
 
-	/*private static final String CODI_UNITAT_ARREL = "00000000T";
-	private static final String CODI_UNITAT_FILLA = "12345678Z";
+	
+	
 
-	private List<UnitatOrganitzativa> unitats;*/
-	
-	
-	@Override
-	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
-		return new UnitatOrganitzativa("E00003601", "Ministerio de Fomento","EA9999999", "E00003601","V", null);
-	}
 	
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
 		
 		List<UnitatOrganitzativa> unitats = new ArrayList<>();
 		
-		// unitat arrel: A04019281  
-		// unitat superior: A04017954
+		
+		final String CODI_UNITAT_ARREL = "A04019281";
+		final String CODI_UNITAT_SUPERIOR = "A04019281";
+		
+		final String CODI_UNITAT_TO_SPLIT = "A04017955";
+		final String CODI_UNITAT_TO_MERGE1 = "A04017960";
+		final String CODI_UNITAT_TO_MERGE2 = "A04017956";
+		final String CODI_UNITAT_TO_SUBSTITUTE = "A04017957";
+		final String CODI_UNITAT_TO_CUMULATIVE_CHANGES = "A04017958";
+		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04017959";
+		
+		
 		
 		//SPLIT
-		unitats.add(new UnitatOrganitzativa("A04017955", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999901", "A99999902"))));
-		unitats.add(new UnitatOrganitzativa("A99999901", "denominacio", "A04017954", "A04019281","V", null));
-		unitats.add(new UnitatOrganitzativa("A99999902", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SPLIT, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999901", "A99999902"))));
+		unitats.add(new UnitatOrganitzativa("A99999901", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+		unitats.add(new UnitatOrganitzativa("A99999902", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		//MERGE
-		unitats.add(new UnitatOrganitzativa("A04017960", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999903"))));
-		unitats.add(new UnitatOrganitzativa("A04017956", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999903"))));
-		unitats.add(new UnitatOrganitzativa("A99999903", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE1, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE2, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
+		unitats.add(new UnitatOrganitzativa("A99999903", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		//SUBSTITUTION
-		unitats.add(new UnitatOrganitzativa("A04017957", "denominacio", "A04017954", "A04019281","E", new ArrayList<>(Arrays.asList("A99999904"))));
-		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SUBSTITUTE, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999904"))));
+		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+		
+		//CUMULATIVE CHANGES
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_CUMULATIVE_CHANGES, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999905"))));
+		unitats.add(new UnitatOrganitzativa("A99999905", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999906"))));
+		unitats.add(new UnitatOrganitzativa("A99999906", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		//PROPS CHANGED
-		unitats.add(new UnitatOrganitzativa("A04017958", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_PROPS_CHANGED, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		//NEW
-		unitats.add(new UnitatOrganitzativa("A99999905", "denominacio", "A04017954", "A04019281","V", null));
-		unitats.add(new UnitatOrganitzativa("A99999906", "denominacio", "A04017954", "A04019281","V", null));
+		unitats.add(new UnitatOrganitzativa("A99999907", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+		unitats.add(new UnitatOrganitzativa("A99999908", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		return unitats;
 	}
 
 
-
-
-
-	/*@Override
-	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
-			String codiUnitat, 
-			String denominacioUnitat,
-			Long codiNivellAdministracio, 
-			Long codiComunitat, 
-			Boolean ambOficines, 
-			Boolean esUnitatArrel,
-			Long codiProvincia, 
-			String codiLocalitat) throws SistemaExternException {
-		throw new SistemaExternException("Mètode no implementat");
-	}*/
-
-	/*private List<UnitatOrganitzativa> getUnitats() {
-		if (unitats == null) {
-			unitats = new ArrayList<UnitatOrganitzativa>();
-			UnitatOrganitzativa pare = new UnitatOrganitzativa();
-			pare.setCodi(CODI_UNITAT_ARREL);
-			pare.setDenominacio("Límit Tecnologies");
-			unitats.add(pare);
-			UnitatOrganitzativa fill = new UnitatOrganitzativa();
-			fill.setCodi(CODI_UNITAT_FILLA);
-			fill.setDenominacio("Departament de programari");
-			fill.setCodiUnitatArrel(CODI_UNITAT_ARREL);
-			fill.setCodiUnitatSuperior(CODI_UNITAT_ARREL);
-			unitats.add(fill);
-		}
-		return unitats;
-	}*/
 
 	@Override
 	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,
@@ -107,5 +83,11 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+		return new UnitatOrganitzativa("E00003601", "Ministerio de Fomento","EA9999999", "E00003601","V", null);
+	}
+	
 
 }
