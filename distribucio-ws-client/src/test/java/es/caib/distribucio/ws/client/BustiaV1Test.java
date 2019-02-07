@@ -42,7 +42,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Anotació provinent de REGWEB (" + System.currentTimeMillis() + ")";
+	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
 	private static final String ENTITAT_CODI = "codientitat";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
