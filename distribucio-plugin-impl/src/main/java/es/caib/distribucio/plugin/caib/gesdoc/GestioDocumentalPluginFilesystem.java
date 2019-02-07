@@ -25,7 +25,7 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
 public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin {
 
 	@Override
-	public String create(
+	public synchronized String create(
 			String agrupacio,
 			InputStream contingut) throws SistemaExternException {
 		try {
@@ -64,7 +64,7 @@ public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin 
 				outContent.close();
 			} else {
 				throw new SistemaExternException(
-						"No s'ha trobat l'arxiu (id=" + id + ")");
+						"No s'ha trobat l'arxiu per actualitzar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -84,7 +84,7 @@ public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin 
 				fContent.delete();
 			} else {
 				throw new SistemaExternException(
-						"No s'ha trobat l'arxiu (id=" + id + ")");
+						"No s'ha trobat l'arxiu per esborrar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -106,7 +106,7 @@ public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin 
 				IOUtils.copy(contingutIn, contingutOut);
 			} else {
 				throw new SistemaExternException(
-						"No s'ha trobat l'arxiu (id=" + id + ")");
+						"No s'ha trobat l'arxiu per consultar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
 			throw new SistemaExternException(

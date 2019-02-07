@@ -348,16 +348,17 @@ public class RegistreServiceImpl implements RegistreService {
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.dist.anotacio.pendent.periode.execucio}")
 	public void distribuirAnotacionsPendents() {
 		if (isDistAsincEnabled) {
-			logger.debug("Distribuïnt anotacions de registere pendents");
+			logger.debug("Distribuint anotacions de registere pendents");
 			try {
 				String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
 				List<RegistreEntity> pendents = registreRepository.findPendentsDistribuir(Integer.parseInt(maxReintents));
-				logger.debug("Distribuïnt " + pendents.size() + " anotacion pendents");
+				logger.debug("Distribuint " + pendents.size() + " anotacion pendents");
 				if (!pendents.isEmpty()) {
 					for (RegistreEntity pendent: pendents) {
 						try {
 							registreHelper.distribuirAnotacioPendent(pendent.getId());
 						} catch (Exception e) {
+							logger.error("Error distribuint l'anotació pendent (id=" + pendent.getId() + ", numero=" + pendent.getNumero() + "): " + e.getMessage(), e);
 							registreHelper.actualitzarEstatError(
 									pendent.getId(), 
 									e);
@@ -367,7 +368,7 @@ public class RegistreServiceImpl implements RegistreService {
 					logger.debug("No hi ha anotacions pendents de distribuïr");
 				}
 			} catch (Exception e) {
-				logger.error("Error distribuïnt anotacions pendents", e);
+				logger.error("Error distribuint anotacions pendents", e);
 				e.printStackTrace();
 			}
 		}
