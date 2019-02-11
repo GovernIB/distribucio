@@ -100,7 +100,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
+			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
 			"and ((:esNullEstat = true and (c.esborrat = 0 or c.esborrat = 1)) or (c.esborrat = :estat)) " +
 			"and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.PROCESSAT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.NO_PROCES))")

@@ -16,6 +16,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -1745,6 +1746,7 @@ public class BustiaServiceImpl implements BustiaService {
 		if (bustia == null && pares.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
+			
 			pagina = contingutRepository.findBustiaPendentByPareAndFiltre(
 					(bustia == null),
 					bustia,
@@ -1758,7 +1760,7 @@ public class BustiaServiceImpl implements BustiaService {
 					(filtre.getDataRecepcioInici() == null),
 					filtre.getDataRecepcioInici(),
 					(filtre.getDataRecepcioFi() == null),
-					filtre.getDataRecepcioFi(),
+					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
 					(filtre.getEstatContingut() == null),
 					(filtre.getEstatContingut() != null ? filtre.getEstatContingut().ordinal() : 1),
 					paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
@@ -1767,6 +1769,7 @@ public class BustiaServiceImpl implements BustiaService {
 							paginacioParams,
 							mapeigOrdenacio));
 		}
+		
 		
 		
 		findRegistreByPareAndFiltreContext.stop();
