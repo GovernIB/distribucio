@@ -63,7 +63,7 @@ pageContext.setAttribute(
 		data-toggle="datatable"
 		data-url="<c:url value="/contingutAdmin/datatable"/>"
 		data-filter="#contingutFiltreCommand"
-		data-default-order="6"
+		data-default-order="7"
 		data-default-dir="desc"
 		class="table table-bordered table-striped">
 		<thead>
