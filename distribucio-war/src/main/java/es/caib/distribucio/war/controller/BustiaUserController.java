@@ -190,14 +190,13 @@ public class BustiaUserController extends BaseUserController {
 		}
 		String adresses = command.getAddresses();
 		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
-		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+//		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 		try {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					command.getBustiaId(),
 					command.getContingutId(),
-					adressesParsed,
-					serverPortContext);
+					adressesParsed);
 		} catch (MessagingException messagingException) {
 			getModalControllerReturnValueError(
 					request, 

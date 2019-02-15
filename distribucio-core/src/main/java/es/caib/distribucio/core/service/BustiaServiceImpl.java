@@ -820,8 +820,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId, 
-			String adresses,
-			String serverPortContext) throws MessagingException {
+			String adresses) throws MessagingException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreAnotacioDto registre = registreService.findOne(
 				entitatId,
@@ -850,6 +849,11 @@ public class BustiaServiceImpl implements BustiaService {
 				entitatId,
 				contingutId,
 				registreId);
+		
+		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		
+		
+		
 		MimeMessage missatge = mailSender.createMimeMessage();
 		missatge.setHeader("Content-Type", "text/html charset=UTF-8");
 		MimeMessageHelper helper;
@@ -910,7 +914,7 @@ public class BustiaServiceImpl implements BustiaService {
 							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
 							"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+
 
-							"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>" +
+							"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>" +
 
 							"</td>"+
 							"			</tr>"+								
@@ -1034,7 +1038,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
 					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
 					
-					"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>"
+					"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>"
 					+
 					"</td>"+
 					"			</tr>"+
