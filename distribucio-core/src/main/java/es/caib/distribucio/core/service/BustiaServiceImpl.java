@@ -353,6 +353,18 @@ public class BustiaServiceImpl implements BustiaService {
 				}			
 			}
 		}
+		
+		// cannot remove busties containing any anotacions
+		if (contingutRepository.findByPare(bustia) != null && !contingutRepository.findByPare(bustia).isEmpty()) {
+			String missatgeError = "No es pot esborrar la bústia amb anotacions a dins (" + 
+					"bustiaId=" + id + ")";
+			logger.error(missatgeError);
+			throw new ValidationException(
+					id,
+					BustiaEntity.class,
+					missatgeError);
+		}
+		
 		bustiaRepository.delete(bustia);
 		return toBustiaDto(
 				bustia,

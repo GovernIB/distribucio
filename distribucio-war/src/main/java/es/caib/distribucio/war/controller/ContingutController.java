@@ -76,117 +76,118 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private AlertaService alertaService;
 
-	@RequestMapping(value = "/contingut/{contingutId}", method = RequestMethod.GET)
-	public String contingutGet(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		ContingutDto contingut = contingutService.findAmbIdUser(
-				entitatActual.getId(),
-				contingutId,
-				true,
-				true);
-		omplirModelPerMostrarContingut(
-				request,
-				entitatActual,
-				contingut,
-				SessioHelper.desmarcarLlegit(request),
-				model);
-		return "contingut";
-	}
+	
+//	@RequestMapping(value = "/contingut/{contingutId}", method = RequestMethod.GET)
+//	public String contingutGet(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		ContingutDto contingut = contingutService.findAmbIdUser(
+//				entitatActual.getId(),
+//				contingutId,
+//				true,
+//				true);
+//		omplirModelPerMostrarContingut(
+//				request,
+//				entitatActual,
+//				contingut,
+//				SessioHelper.desmarcarLlegit(request),
+//				model);
+//		return "contingut";
+//	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/canviVista/icones", method = RequestMethod.GET)
-	public String canviVistaLlistat(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		getEntitatActualComprovantPermisos(request);
-		SessioHelper.updateContenidorVista(
-				request,
-				CONTENIDOR_VISTA_ICONES);
-		return "redirect:../../" + contingutId;
-	}
-	@RequestMapping(value = "/contingut/{contingutId}/canviVista/llistat", method = RequestMethod.GET)
-	public String canviVistaIcones(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		getEntitatActualComprovantPermisos(request);
-		SessioHelper.updateContenidorVista(
-				request,
-				CONTENIDOR_VISTA_LLISTAT);
-		return "redirect:../../" + contingutId;
-	}
+//	@RequestMapping(value = "/contingut/{contingutId}/canviVista/icones", method = RequestMethod.GET)
+//	public String canviVistaLlistat(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) {
+//		getEntitatActualComprovantPermisos(request);
+//		SessioHelper.updateContenidorVista(
+//				request,
+//				CONTENIDOR_VISTA_ICONES);
+//		return "redirect:../../" + contingutId;
+//	}
+//	@RequestMapping(value = "/contingut/{contingutId}/canviVista/llistat", method = RequestMethod.GET)
+//	public String canviVistaIcones(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) {
+//		getEntitatActualComprovantPermisos(request);
+//		SessioHelper.updateContenidorVista(
+//				request,
+//				CONTENIDOR_VISTA_LLISTAT);
+//		return "redirect:../../" + contingutId;
+//	}
 
 	
+//
+//	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.GET)
+//	public String enviarForm(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutOrigenId,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		omplirModelPerEnviar(
+//				entitatActual,
+//				contingutOrigenId,
+//				model);
+//		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
+//		command.setOrigenId(contingutOrigenId);
+//		model.addAttribute(command);
+//		return "contingutEnviarForm";
+//	}
+//	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.POST)
+//	public String enviar(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutOrigenId,
+//			@Valid ContingutMoureCopiarEnviarCommand command,
+//			BindingResult bindingResult,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+//		if (bindingResult.hasErrors()) {
+//			omplirModelPerEnviar(
+//					entitatActual,
+//					contingutOrigenId,
+//					model);
+//			return "contingutEnviarForm";
+//		}
+//		bustiaService.enviarContingut(
+//				entitatActual.getId(),
+//				command.getDestiId(),
+//				contingutOrigenId,
+//				command.getComentariEnviar());
+//		return getModalControllerReturnValueSuccess(
+//				request,
+//				"redirect:../../" + contingutOrigenId,
+//				"contingut.controller.element.enviat.ok");
+//	}
 
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.GET)
-	public String enviarForm(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerEnviar(
-				entitatActual,
-				contingutOrigenId,
-				model);
-		ContingutMoureCopiarEnviarCommand command = new ContingutMoureCopiarEnviarCommand();
-		command.setOrigenId(contingutOrigenId);
-		model.addAttribute(command);
-		return "contingutEnviarForm";
-	}
-	@RequestMapping(value = "/contingut/{contingutOrigenId}/enviar", method = RequestMethod.POST)
-	public String enviar(
-			HttpServletRequest request,
-			@PathVariable Long contingutOrigenId,
-			@Valid ContingutMoureCopiarEnviarCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerEnviar(
-					entitatActual,
-					contingutOrigenId,
-					model);
-			return "contingutEnviarForm";
-		}
-		bustiaService.enviarContingut(
-				entitatActual.getId(),
-				command.getDestiId(),
-				contingutOrigenId,
-				command.getComentariEnviar());
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../" + contingutOrigenId,
-				"contingut.controller.element.enviat.ok");
-	}
-
-	@RequestMapping(value = "/contingut/{contingutId}/errors/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse errorsDatatable(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			Model model) {
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				alertaService.findPaginatByLlegida(
-						false,
-						contingutId,
-						DatatablesHelper.getPaginacioDtoFromRequest(request)));
-	}
-	
-	@RequestMapping(value = "/contingut/{contingutId}/errors/{alertaId}/llegir", method = RequestMethod.GET)
-	@ResponseBody
-	public void llegirAlerta(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			@PathVariable Long alertaId,
-			Model model) {
-		AlertaDto alerta = alertaService.find(alertaId);
-		alerta.setLlegida(true);
-		alertaService.update(alerta);
-	}
+//	@RequestMapping(value = "/contingut/{contingutId}/errors/datatable", method = RequestMethod.GET)
+//	@ResponseBody
+//	public DatatablesResponse errorsDatatable(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			Model model) {
+//		return DatatablesHelper.getDatatableResponse(
+//				request,
+//				alertaService.findPaginatByLlegida(
+//						false,
+//						contingutId,
+//						DatatablesHelper.getPaginacioDtoFromRequest(request)));
+//	}
+//	
+//	@RequestMapping(value = "/contingut/{contingutId}/errors/{alertaId}/llegir", method = RequestMethod.GET)
+//	@ResponseBody
+//	public void llegirAlerta(
+//			HttpServletRequest request,
+//			@PathVariable Long contingutId,
+//			@PathVariable Long alertaId,
+//			Model model) {
+//		AlertaDto alerta = alertaService.find(alertaId);
+//		alerta.setLlegida(true);
+//		alertaService.update(alerta);
+//	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreInfo(

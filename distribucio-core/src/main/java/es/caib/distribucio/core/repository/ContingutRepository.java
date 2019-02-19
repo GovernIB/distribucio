@@ -38,6 +38,9 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			ContingutEntity pare,
 			String nom,
 			int esborrat);
+	
+	List<ContingutEntity> findByPare(
+			ContingutEntity pare);
 
 	@Query(	"select " +
 			"    c " +
