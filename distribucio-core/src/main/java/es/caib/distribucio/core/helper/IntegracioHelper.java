@@ -15,15 +15,20 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.entity.UsuariEntity;
+import es.caib.distribucio.core.service.RegistreServiceImpl;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -113,19 +118,17 @@ public class IntegracioHelper {
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
 			String errorDescripcio) {
-		IntegracioAccioDto accio = new IntegracioAccioDto();
-		accio.setIntegracio(novaIntegracio(integracioCodi));
-		accio.setData(new Date());
-		accio.setDescripcio(descripcio);
-		accio.setParametres(parametres);
-		accio.setTipus(tipus);
-		accio.setTempsResposta(tempsResposta);
-		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
-		accio.setErrorDescripcio(errorDescripcio);
-		addAccio(
+		addAccioError(
 				integracioCodi,
-				accio);
+				descripcio,
+				parametres,
+				tipus,
+				tempsResposta,
+				errorDescripcio,
+				null);
 	}
+	
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void addAccioError(
 			String integracioCodi,
 			String descripcio,
@@ -143,13 +146,24 @@ public class IntegracioHelper {
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
 		accio.setErrorDescripcio(errorDescripcio);
-		accio.setExcepcioMessage(
-				ExceptionUtils.getMessage(throwable));
-		accio.setExcepcioStacktrace(
-				ExceptionUtils.getStackTrace(throwable));
+		
+		if (throwable!=null){
+			accio.setExcepcioMessage(
+					ExceptionUtils.getMessage(throwable));
+			accio.setExcepcioStacktrace(
+					ExceptionUtils.getStackTrace(throwable));
+		} 
 		addAccio(
 				integracioCodi,
 				accio);
+		
+		logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
+				+ "integracioCodi=" + integracioCodi + ", "
+				+ "parametres=" + parametres + ", "
+				+ "tipus=" + tipus + ", "
+				+ "tempsResposta=" + tempsResposta + ")",
+				throwable);
+		
 	}
 
 
@@ -242,5 +256,7 @@ public class IntegracioHelper {
 		}
 		return integracio;
 	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 
 }

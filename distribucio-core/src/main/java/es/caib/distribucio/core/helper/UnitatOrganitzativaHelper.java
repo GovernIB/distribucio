@@ -637,20 +637,27 @@ public class UnitatOrganitzativaHelper {
 	public UnitatOrganitzativaDto findConselleria(
 			String unitatPare,
 			String unitatOrganitzativaCodi) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatPare).clone();
+		
 		UnitatOrganitzativaDto unitatConselleria = null;
-		for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
-			UnitatOrganitzativaDto uo = node.getDades();
-			if (uo.getCodi().equals(unitatOrganitzativaCodi)) {
-				ArbreNodeDto<UnitatOrganitzativaDto> nodeActual = node;
-				while (nodeActual.getNivell() > 1) {
-					nodeActual = nodeActual.getPare();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatPare);
+		
+		if (arbre != null) {
+			ArbreDto<UnitatOrganitzativaDto> arbreClone = arbre.clone();
+			
+			for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbreClone.toList()) {
+				UnitatOrganitzativaDto uo = node.getDades();
+				if (uo.getCodi().equals(unitatOrganitzativaCodi)) {
+					ArbreNodeDto<UnitatOrganitzativaDto> nodeActual = node;
+					while (nodeActual.getNivell() > 1) {
+						nodeActual = nodeActual.getPare();
+					}
+					if (nodeActual.getNivell() == 1)
+						unitatConselleria = nodeActual.getDades();
+					break;
 				}
-				if (nodeActual.getNivell() == 1)
-					unitatConselleria = nodeActual.getDades();
-				break;
 			}
 		}
+
 		return unitatConselleria;
 	}
 
