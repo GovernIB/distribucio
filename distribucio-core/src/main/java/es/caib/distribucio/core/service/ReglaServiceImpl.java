@@ -21,6 +21,7 @@ import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -31,6 +32,7 @@ import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 
@@ -46,7 +48,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private EntitatRepository entitatRepository;
 	@Resource
 	private ReglaRepository reglaRepository;
-
+	@Resource
+	private RegistreRepository registreRepository;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -162,6 +165,23 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaId);
+		
+		
+		
+		
+		// cannot remove busties containing any anotacions
+		if (registreRepository.findByRegla(regla) != null && !registreRepository.findByRegla(regla).isEmpty()) {
+			String missatgeError = "No es pot esborrar la regla amb anotacions connectat (" + 
+					"reglaId=" + reglaId + ")";
+			logger.error(missatgeError);
+			throw new ValidationException(
+					reglaId,
+					ReglaEntity.class,
+					missatgeError);
+		}
+		
+		
+		
 		reglaRepository.delete(regla);
 		return toReglaDto(regla);
 	}

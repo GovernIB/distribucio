@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -30,6 +31,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			RegistreProcesEstatEnum procesEstat);
 
 	long countByExpedientArxiuUuidAndEsborrat(String expedientArxiuUuid, int esborrat);
+	
+	List<RegistreEntity> findByRegla(
+			ReglaEntity regla);
 	
 	/** Consulta les anotacions de registre pendents de processar amb regles que no
 	 * siguin de tipus backoffice sistra.
