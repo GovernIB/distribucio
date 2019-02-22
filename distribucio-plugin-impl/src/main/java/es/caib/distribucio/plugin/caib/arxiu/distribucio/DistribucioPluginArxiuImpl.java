@@ -592,7 +592,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
 			boolean isPdf = false;
 			for (Firma firma : documentDetalls.getFirmes()) {
-				if (firma.getTipus() == FirmaTipus.PADES) {
+				if (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET) {
 					isPdf = true;
 				}
 			}
