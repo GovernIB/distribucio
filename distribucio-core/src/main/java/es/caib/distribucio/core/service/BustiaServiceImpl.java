@@ -1704,18 +1704,14 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "paginacioParams=" + paginacioParams + ")");
 		
 		
-<<<<<<< HEAD
+
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable"));
-=======
-		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable"));
->>>>>>> branch 'desenv' of https://github.com/GovernIB/distribucio.git
+
 		Timer.Context contextTotal = timerTotal.time();
 	
-<<<<<<< HEAD
+
 		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.comprovarEntitat"));
-=======
-		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarEntitat"));
->>>>>>> branch 'desenv' of https://github.com/GovernIB/distribucio.git
+
 		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
 		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1726,11 +1722,9 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		comprovarEntitatContext.stop();
 			
-<<<<<<< HEAD
+
 		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.comprovarBustia"));
-=======
-		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarBustia"));
->>>>>>> branch 'desenv' of https://github.com/GovernIB/distribucio.git
+
 		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
 		
 		// Comprova la bústia i que l'usuari hi tengui accés
