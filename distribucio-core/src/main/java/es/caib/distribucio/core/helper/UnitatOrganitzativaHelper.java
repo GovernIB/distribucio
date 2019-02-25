@@ -628,7 +628,12 @@ public class UnitatOrganitzativaHelper {
 //		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getCodiDir3());
 //	}
 	
-
+	/**
+	 * Returns unitat pare (of unitat: @param unitatOrganitzativaCodi) that is first child of the root unitat (given by: @param unitatPare) 
+	 * @param unitatPare
+	 * @param unitatOrganitzativaCodi
+	 * @return
+	 */
 	public UnitatOrganitzativaDto findConselleria(
 			String unitatPare,
 			String unitatOrganitzativaCodi) {

@@ -111,17 +111,19 @@ public class ContingutHelper {
 			dto.setUnitatCodi(bustia.getUnitatCodi());
 			dto.setActiva(bustia.isActiva());
 			dto.setPerDefecte(bustia.isPerDefecte());
+			
 			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
 					bustia.getEntitat().getCodiDir3(),
 					bustia.getUnitatCodi());
 			if (unitatConselleria != null)
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
+			
 			UnitatOrganitzativaEntity unitatEntity = bustia.getUnitatOrganitzativa();
 			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
 					unitatEntity,
 					UnitatOrganitzativaDto.class);
-			
 			unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
+			
 			dto.setUnitatOrganitzativa(unitatDto);
 			dto.setUnitatCodi(bustia.getUnitatOrganitzativa().getCodi());
 			resposta = dto;
