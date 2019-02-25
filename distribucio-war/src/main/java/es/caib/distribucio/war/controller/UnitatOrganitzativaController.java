@@ -74,17 +74,19 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		MultiMap substMap = new MultiHashMap();
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
+		List<UnitatOrganitzativaDto> unitatsNew = new ArrayList<>();
 		
 		boolean isFirstSincronization = unitatOrganitzativaService.isFirstSincronization(entitatActual.getId());
 		
 		if(isFirstSincronization){
 			unitatsVigentsFirstSincro = unitatOrganitzativaService.predictFirstSynchronization(entitatActual.getId());
 		} else {
+            //Getting list of unitats that are now vigent in db but syncronization is marking them as obsolete
 			List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService
-					.predictSynchronization(entitatActual.getId());
+					.getObsoletesFromWS(entitatActual.getId());
 
 
-			// differentiate between split and (subst/merge)
+			// differentiate between split and (subst or merge)
 			for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
 				if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
 					for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
@@ -125,9 +127,15 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				}
 			}
 
-			// getting list of unitats with only properties changed
+			// Getting list of unitats that are now vigent in db and in syncronization are also vigent but with properties changed
 			unitatsVigents = unitatOrganitzativaService
 					.getVigentsFromWebService(entitatActual.getId());
+			
+			
+			// Getting list of unitats that are totally new (doesnt exist in database)
+			unitatsNew = unitatOrganitzativaService
+					.getNewFromWS(entitatActual.getId());
+			
 
 			// Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
 			// System.out.println("SPLITS: ");
@@ -151,13 +159,15 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		}
 		
 		
+		
+		model.addAttribute("isFirstSincronization", isFirstSincronization);
 		model.addAttribute("unitatsVigentsFirstSincro", unitatsVigentsFirstSincro);
-
+		
 		model.addAttribute("splitMap", splitMap);
 		model.addAttribute("mergeMap", mergeMap);
 		model.addAttribute("substMap", substMap);
 		model.addAttribute("unitatsVigents", unitatsVigents);
-		model.addAttribute("isFirstSincronization", isFirstSincronization);
+		model.addAttribute("unitatsNew", unitatsNew);
 		
 		
 		return "synchronizationPrediction";

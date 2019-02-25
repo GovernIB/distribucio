@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 
 /**
- * Informació sobre contingut pendent a dins d'una bústia.
+ * Informació sobre contingut pendent d'una bústia.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */

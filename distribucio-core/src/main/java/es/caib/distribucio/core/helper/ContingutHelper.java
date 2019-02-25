@@ -170,7 +170,7 @@ public class ContingutHelper {
 				
 				
 				// TIMER START
-				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.toBustiaDto.toContingutDto.getPathContingutComDto"));
+				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
 				Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
 				
 				// Calcula el path
@@ -187,10 +187,19 @@ public class ContingutHelper {
 			if (ambFills) {
 				// Cerca els nodes fills
 				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
+				
+				// TIMER START
+				final Timer findByPareAndEsborratTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
+				Timer.Context findByPareAndEsborratContext = findByPareAndEsborratTimer.time();
+				
 				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
 						contingut,
 						0,
 						new Sort("createdDate"));
+				
+				findByPareAndEsborratContext.stop();
+				// TIMER STOP
+				
 				List<ContingutDto> fillPath = null;
 				if (ambPath) {
 					fillPath = new ArrayList<ContingutDto>();

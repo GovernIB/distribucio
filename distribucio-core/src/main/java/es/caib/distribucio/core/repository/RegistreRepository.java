@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -31,6 +32,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 
 	long countByExpedientArxiuUuidAndEsborrat(String expedientArxiuUuid, int esborrat);
 
+	List<RegistreEntity> findByRegla(
+			ReglaEntity regla);
+	
 	@Query(
 			"from" +
 			"    RegistreEntity r " +

@@ -65,9 +65,16 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	
 	@Override
 	@Transactional
-	public List<UnitatOrganitzativaDto> predictSynchronization(Long entitatId) {
+	public List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entitatId) {
 
-		return unitatOrganitzativaHelper.predictSynchronization(entitatId);		
+		return unitatOrganitzativaHelper.getObsoletesFromWS(entitatId);		
+	}
+	
+	@Override
+	@Transactional
+	public List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId) {
+
+		return unitatOrganitzativaHelper.getNewFromWS(entitatId);		
 	}
 	
 	@Override

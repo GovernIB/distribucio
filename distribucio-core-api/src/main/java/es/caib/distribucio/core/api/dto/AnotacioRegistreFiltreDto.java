@@ -39,6 +39,8 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+
+
 	public String getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
@@ -87,3 +89,4 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	private static final long serialVersionUID = -139254994389509932L;
 
 }
+

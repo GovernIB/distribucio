@@ -46,6 +46,10 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.http.HttpServletResponse;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -79,6 +83,7 @@ public class BustiaUserController extends BaseUserController {
 		
 		return "bustiaUserList";
 	}
+	
 	
 	
 	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
@@ -179,14 +184,13 @@ public class BustiaUserController extends BaseUserController {
 		}
 		String adresses = command.getAddresses();
 		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
-		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+//		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 		try {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					command.getBustiaId(),
 					command.getContingutId(),
-					adressesParsed,
-					serverPortContext);
+					adressesParsed);
 		} catch (MessagingException messagingException) {
 			getModalControllerReturnValueError(
 					request, 

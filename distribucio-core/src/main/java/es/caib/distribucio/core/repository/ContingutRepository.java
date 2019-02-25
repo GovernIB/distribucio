@@ -39,6 +39,9 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			ContingutEntity pare,
 			String nom,
 			int esborrat);
+	
+	List<ContingutEntity> findByPare(
+			ContingutEntity pare);
 
 	@Query(	"select " +
 			"    c " +
@@ -101,7 +104,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
+			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
 			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT)) or (c.procesEstat = :estat))")
 	public Page<ContingutEntity> findRegistreByPareAndFiltre(

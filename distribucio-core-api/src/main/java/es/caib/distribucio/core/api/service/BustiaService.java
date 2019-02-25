@@ -382,19 +382,20 @@ public interface BustiaService {
 	public List<BustiaDto> findAmbEntitat(Long entitatId);
 
 	@PreAuthorize("hasRole('tothom')")
-	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses,
-			String serverPortContext) throws MessagingException;
-
-	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre,
 			Boolean unitatObsoleta);
 
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
 			Long unitatIdFiltre, Boolean unitatObsoleta);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public String getApplictionMetrics();
 
 	@PreAuthorize("hasRole('tothom')")
-	String getApplictionMetrics();
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
+			throws MessagingException;	
+
 
 }
 

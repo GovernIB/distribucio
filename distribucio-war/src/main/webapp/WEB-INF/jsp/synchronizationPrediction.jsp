@@ -17,29 +17,28 @@
 		</c:set>
 	</c:otherwise>
 </c:choose>
+
+<c:set var="isAllEmpty" value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents and empty unitatsNew}" />
+
 <html>
 <head>
-<title>${titol}</title>
-<link
-	href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>"
-	rel="stylesheet" />
-<link
-	href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>"
-	rel="stylesheet" />
-<link href="<c:url value="/css/horizontal-tree.css"/>" rel="stylesheet" />
-<script
-	src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
-<script
-	src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
-<script src="<c:url value="/js/webutil.common.js"/>"></script>
-<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-<dis:modalHead />
+	<title>${titol}</title>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet" />
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet" />
+	<link href="<c:url value="/css/horizontal-tree.css"/>" rel="stylesheet" />
+	<script
+		src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script
+		src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	<dis:modalHead />
 </head>
 <body>
 
-
-
 	<div class="panel-group">
+	
+		<!-- If this is first sincronization it shows all currently vigent unitats that will be created in db  -->
 		<c:if test="${isFirstSincronization}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -76,8 +75,8 @@
 			</div>
 		</c:if>
 		<c:if test="${!isFirstSincronization}">
-			<c:set var="isAllEmpty"
-				value="${empty substMap and empty splitMap and empty mergeMap and empty unitatsVigents}" />
+
+			<!-- If unitats didn't change from the last time of synchronization show message: no changes -->
 			<c:if test="${isAllEmpty}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -89,6 +88,7 @@
 				</div>
 			</c:if>
 
+			<!-- If they exist show unitats that splited  (e.g. unitat A splits to unitats B and C) -->
 			<c:if test="${!empty splitMap}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -120,38 +120,8 @@
 				</div>
 			</c:if>
 
-			<c:if test="${!empty substMap}">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<spring:message code="unitat.synchronize.prediction.substitucions" />
-					</div>
-					<div class="panel-body">
-						<c:forEach var="substMap" items="${substMap}">
-							<c:set var="key" value="${substMap.key}" />
-							<c:set var="values" value="${substMap.value}" />
-							<div class=horizontal-right>
-								<div id="wrapper">
-									<span
-										class="label bg-success border-green right-postion-20 overflow-ellipsis"
-										title="${key.codi} - ${key.denominacio}"> ${key.codi} -
-										${key.denominacio} </span>
-									<div class="branch lv1">
-										<c:forEach var="value" items="${values}">
-											<div class="entry sole">
-												<span class="label bg-danger border-red overflow-ellipsis"
-													title="${value.codi} - ${value.denominacio}">
-													${value.codi} - ${value.denominacio} </span>
-											</div>
-										</c:forEach>
-									</div>
-								</div>
-							</div>
-						</c:forEach>
-					</div>
-				</div>
-			</c:if>
 
-
+			<!-- If they exist show unitats that merged (e.g. unitats D and E merge to unitat F) -->
 			<c:if test="${!empty mergeMap}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -182,9 +152,41 @@
 					</div>
 				</div>
 			</c:if>
+			
+			
+			<!-- If they exist show unitats that were substituted by the others  (e.g. unitat G is substituted by unitat H) -->
+			<c:if test="${!empty substMap}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message code="unitat.synchronize.prediction.substitucions" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="substMap" items="${substMap}">
+							<c:set var="key" value="${substMap.key}" />
+							<c:set var="values" value="${substMap.value}" />
+							<div class=horizontal-right>
+								<div id="wrapper">
+									<span
+										class="label bg-success border-green right-postion-20 overflow-ellipsis"
+										title="${key.codi} - ${key.denominacio}"> ${key.codi} -
+										${key.denominacio} </span>
+									<div class="branch lv1">
+										<c:forEach var="value" items="${values}">
+											<div class="entry sole">
+												<span class="label bg-danger border-red overflow-ellipsis"
+													title="${value.codi} - ${value.denominacio}">
+													${value.codi} - ${value.denominacio} </span>
+											</div>
+										</c:forEach>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+					</div>
+				</div>
+			</c:if>			
 
-
-
+			<!-- If they exist show unitats that only had some of their properties changed -->
 			<c:if test="${!empty unitatsVigents}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -212,6 +214,33 @@
 					</div>
 				</div>
 			</c:if>
+			
+			<!-- If they exist show unitats that are new (are not transitioned from any other unitat) -->
+			<c:if test="${!empty unitatsNew}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message
+							code="unitat.synchronize.prediction.noves" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="unitatNew" items="${unitatsNew}">
+							<div class=horizontal-left>
+								<div id="wrapper" style="margin-left: 15px">
+									<span class="label bg-success border-green overflow-ellipsis"
+										title="${unitatNew.codi} - ${unitatNew.denominacio}">
+										${unitatNew.codi} - ${unitatNew.denominacio} </span>
+									<div class="branch lv1 empty-branch">
+										<div class="entry sole empty-entry">
+											<span
+												class="label bg-success border-green overflow-ellipsis empty-label"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+					</div>
+				</div>
+			</c:if>			
 		</c:if>
 
 	</div>
@@ -219,17 +248,14 @@
 	<c:set var="formAction">
 		<dis:modalUrl value="/unitatOrganitzativa/saveSynchronize" />
 	</c:set>
-	<form:form action="${formAction}" method="post"
-		cssClass="form-horizontal" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" role="form">
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"
 				<c:if test="${isAllEmpty and !isFirstSincronization}"><c:out value="disabled='disabled'"/></c:if>>
 				<span class="fa fa-save"></span>
 				<spring:message code="unitat.list.boto.synchronize" />
 			</button>
-			<a href="<c:url value="/unitatOrganitzativa"/>"
-				class="btn btn-default" data-modal-cancel="true"><spring:message
-					code="comu.boto.cancelar" /></a>
+			<a href="<c:url value="/unitatOrganitzativa"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar" /></a>
 		</div>
 	</form:form>
 
