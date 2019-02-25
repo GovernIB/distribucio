@@ -17,6 +17,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import es.caib.distribucio.core.helper.PropertiesHelper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -98,6 +100,13 @@ import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.json.MetricsModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 /**
  * Implementació dels mètodes per a gestionar bústies.
@@ -163,7 +172,6 @@ public class BustiaServiceImpl implements BustiaService {
 	
 	@Autowired
 	private MetricRegistry metricRegistry;
-	  
 
 
 	@Override
@@ -352,6 +360,18 @@ public class BustiaServiceImpl implements BustiaService {
 				}			
 			}
 		}
+		
+		// cannot remove busties containing any anotacions
+		if (contingutRepository.findByPare(bustia) != null && !contingutRepository.findByPare(bustia).isEmpty()) {
+			String missatgeError = "No es pot esborrar la bústia amb anotacions a dins (" + 
+					"bustiaId=" + id + ")";
+			logger.error(missatgeError);
+			throw new ValidationException(
+					id,
+					BustiaEntity.class,
+					missatgeError);
+		}
+		
 		bustiaRepository.delete(bustia);
 		return toBustiaDto(
 				bustia,
@@ -818,8 +838,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId, 
-			String adresses,
-			String serverPortContext) throws MessagingException {
+			String adresses) throws MessagingException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreAnotacioDto registre = registreService.findOne(
 				entitatId,
@@ -848,6 +867,9 @@ public class BustiaServiceImpl implements BustiaService {
 				entitatId,
 				contingutId,
 				registreId);
+		
+		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		
 		MimeMessage missatge = mailSender.createMimeMessage();
 		missatge.setHeader("Content-Type", "text/html charset=UTF-8");
 		MimeMessageHelper helper;
@@ -908,7 +930,7 @@ public class BustiaServiceImpl implements BustiaService {
 							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
 							"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)"+
 							
-							"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>" +
+							"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>" +
 							
 							"</td>"+
 							"			</tr>"+								
@@ -1032,7 +1054,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
 					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
 					
-					"<a href=\"http://"+serverPortContext+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>"
+					"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>"
 					+
 					"</td>"+
 					"			</tr>"+
@@ -1674,13 +1696,9 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "paginacioParams=" + paginacioParams + ")");
 		
 		
-		
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable"));
 		Timer.Context contextTotal = timerTotal.time();
-
-		
-		
-		
+	
 		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarEntitat"));
 		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
 		
@@ -1691,9 +1709,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		
 		comprovarEntitatContext.stop();
-		
-
-		
+			
 		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.comprovarBustia"));
 		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
 		
@@ -1718,7 +1734,6 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		
 		comprovarBustiaContext.stop();
-		
 		
 		
 		final Timer findRegistreByPareAndFiltreTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.findRegistreByPareAndFiltre"));
@@ -1762,7 +1777,7 @@ public class BustiaServiceImpl implements BustiaService {
 					(filtre.getDataRecepcioInici() == null),
 					filtre.getDataRecepcioInici(),
 					(filtre.getDataRecepcioFi() == null),
-					filtre.getDataRecepcioFi(),
+					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
 					registreEstat == null,
 					registreEstat,
 					paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
@@ -2140,12 +2155,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		bustiaContingut.setPath(path);
 		
-		
 		getPathContingutComDtoContext.stop();
 		// TIMER STOP
-		
-		
-		
+			
 		
 		// TIMER START
 		final Timer toBustiaDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaService.class, "contingutPendentFindByDatatable.toPaginaDto.toBustiaContingutDto.toBustiaDto"));

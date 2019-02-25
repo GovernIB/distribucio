@@ -20,7 +20,14 @@ public class BustiaFiltreDto implements Serializable {
 	// if the obsolete is true we look for the busties of extinguished or anulated unitats  
 	private Boolean unitatObsoleta;
 	private Long unitatId;
-	
+	private String numeroOrigen;
+
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}	
 	
 	public Long getUnitatId() {
 		return unitatId;

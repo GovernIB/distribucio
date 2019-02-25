@@ -350,6 +350,8 @@ public class RegistreServiceImpl implements RegistreService {
 			logger.debug("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
 		}
 	}
+	
+
 
 	@Override
 	@Transactional

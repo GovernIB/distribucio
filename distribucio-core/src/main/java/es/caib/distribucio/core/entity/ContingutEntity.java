@@ -63,7 +63,6 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	@OneToMany(
 			mappedBy = "pare",
 			fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	protected Set<ContingutEntity> fills = new HashSet<ContingutEntity>();
 	/*
@@ -91,9 +90,14 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 			orphanRemoval = true)
 	@OrderBy("createdDate ASC")
 	protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
+	@OneToMany(
+			mappedBy = "contingut",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	protected List<ContingutLogEntity> logs = new ArrayList<ContingutLogEntity>();
 	@Version
 	private long version = 0;
-
 
 
 	public String getNom() {

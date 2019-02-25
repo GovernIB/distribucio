@@ -274,13 +274,22 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		reglaService.delete(
-				entitatActual.getId(),
-				reglaId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../regla",
-				"regla.controller.esborrada.ok");
+		
+		try {
+			reglaService.delete(
+					entitatActual.getId(),
+					reglaId);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../regla",
+					"regla.controller.esborrada.ok");
+		} catch (RuntimeException ve) {
+			return getAjaxControllerReturnValueError(
+					request,
+					"redirect:../../bustiaAdmin",
+					"regla.controller.esborrada.error.validacio",
+					new Object[] {ve.getMessage()});			
+		}
 	}
 
 

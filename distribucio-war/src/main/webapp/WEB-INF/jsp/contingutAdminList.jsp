@@ -52,6 +52,7 @@ pageContext.setAttribute(
 			</div>
 			<div class="col-md-5 pull-right">
 				<div class="pull-right">
+					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
@@ -63,7 +64,7 @@ pageContext.setAttribute(
 		data-toggle="datatable"
 		data-url="<c:url value="/contingutAdmin/datatable"/>"
 		data-filter="#contingutFiltreCommand"
-		data-default-order="6"
+		data-default-order="7"
 		data-default-dir="desc"
 		class="table table-bordered table-striped">
 		<thead>

@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +50,15 @@ public class AjaxUnitatsController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String text,
 			Model model) {
-
-		
+		String decodedToUTF8 = null;
+		try {
+			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), text);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8);
 		
 		return unitatsEntitat;
 	}

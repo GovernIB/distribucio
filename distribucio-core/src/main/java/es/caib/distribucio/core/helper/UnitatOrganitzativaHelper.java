@@ -12,6 +12,9 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
@@ -23,6 +26,7 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.service.UnitatOrganitzativaServiceImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
 
@@ -70,7 +74,8 @@ public class UnitatOrganitzativaHelper {
 	
 	
 	/**
-	 * Starting point, calls recursive method to get last historicos
+	 * It gives the last (most current) unitat/unitats to which given obsolete unitat transitioned
+	 * Starting point of recursivie method
 	 * @param unitat - unitats which historicos we are looking for
 	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
 	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
@@ -83,13 +88,6 @@ public class UnitatOrganitzativaHelper {
 	}
 	
 	
-	
-	/**
-	 * Method to get last historicos (recursive to cover cumulative synchro case)
-	 * @param unitat - unitats which historicos we are looking for
-	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
-	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
-	 */
 	private void getLastHistoricosRecursive(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService,  List<UnitatOrganitzativa> lastHistorcos){
 
 			if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
@@ -127,7 +125,13 @@ public class UnitatOrganitzativaHelper {
 		return unitatsVigentWSDto;
 	}
 	
-	public List<UnitatOrganitzativaDto> predictSynchronization(Long entidadId) throws SistemaExternException{
+	/**
+	 * Getting from WS obsolete unitats (with pointer to vigent unitat)  
+	 * @param entidadId
+	 * @return
+	 * @throws SistemaExternException
+	 */
+	public List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entidadId) throws SistemaExternException{
 		
 
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
@@ -140,13 +144,37 @@ public class UnitatOrganitzativaHelper {
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
 		
+		logger.debug("############################## BEGIN UnitatsWS ###########################################");
+		logger.debug("Consulta d'unitats a WS (" +
+				"codiDir3=" + entitat.getCodiDir3() + ", " +
+				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
+				"fechaSincronizacion=" + entitat.getFechaSincronizacion() + ")");
+		
+		for(UnitatOrganitzativa un: unitatsWS){
+			logger.debug(ToStringBuilder.reflectionToString(un));
+		}
+		logger.debug("############################## END UnitatsWS #############################################");
+		
+		logger.debug("############################## BEGIN UnitatsWS short #####################################");
+		logger.debug("Consulta d'unitats a WS (" +
+				"codiDir3=" + entitat.getCodiDir3() + ", " +
+				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
+				"fechaSincronizacion=" + entitat.getFechaSincronizacion() + ")");
+		for(UnitatOrganitzativa un: unitatsWS){
+			logger.debug(un.getCodi()+" "+un.getEstat()+" "+un.getHistoricosUO());
+		}
+		logger.debug("############################## END UnitatsWS short #######################################");
+
+		
+		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
 
-		// list of unitats which are vigent now in database but in
-		// synchronization list taken from webservices they are marked as
-		// obsolete
+		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
+		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
+		// If since last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
+		// we only want to return A (we dont want to return B) because prediction must show this transition (A -> C) [between A(that is now vigent in database) and C (that is now vigent in WS)]     
 		List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) { 
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
@@ -157,12 +185,20 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 
-		// setting list of last historicos unitats in every vigent unitat
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
+			
+			// setting obsolete unitat to point to the last one it transitioned into 
+			// Name of the field historicosUO is totally wrong because this field shows future unitats not historic
+			// but that's how it is named in WS and we cant change it 
+			// lastHistoricosUnitats field should be pointing to the last unitat it transitioned into. We need to recursively find last one because it is possible there will be cumulative changes:
+			// If since last sincro unitat A changed to B and then to C then from WS we will get unitat A pointing to B (A -> B) and unitat B pointing to C (B -> C)  
+			// what we want is to add direct pointer from unitat A to C (A -> C)
 			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
 		}
 		
-		// converting form UnitatOrganitzativa to UnitatOrganitzativaDto
+		
+		
+		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
 			unitatsVigentObsoleteDto.add(conversioTipusHelper.convertir(
@@ -173,6 +209,12 @@ public class UnitatOrganitzativaHelper {
 		return unitatsVigentObsoleteDto;
 	}
 	
+
+	/**
+	 * Getting unitats that didn't transition to any other unitats, they only got some properties changed 
+	 * @param entidadId
+	 * @return
+	 */
 	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId){
 		
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
@@ -208,6 +250,86 @@ public class UnitatOrganitzativaHelper {
 		}
 		
 		return unitatsVigentsWithChangedAttributesDto;
+	}
+	
+	
+	/**
+	 * Getting unitats that are new (not transitioned from any other unitat)
+	 * @param entidadId
+	 * @return
+	 */
+	public List<UnitatOrganitzativaDto> getNewFromWS(Long entidadId){
+		
+		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+		
+		// getting list of syncronization unitats from webservices
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
+				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		
+		// getting all vigent unitats from database
+		List<UnitatOrganitzativaEntity> vigentUnitatsDB = unitatOrganitzativaRepository
+				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		
+		//List of new unitats that are vigent
+		List<UnitatOrganitzativa> vigentUnitatsWS = new ArrayList<>();
+		
+		//List of new unitats that are vigent and does not exist in database
+		List<UnitatOrganitzativa> vigentNotInDBUnitatsWS = new ArrayList<>();
+		
+		//List of new unitats (that are vigent, not pointed by any obsolete unitat and does not exist in database)
+		List<UnitatOrganitzativa> newUnitatsWS = new ArrayList<>();
+		
+		
+		//Filtering to only obtain vigents 
+		for (UnitatOrganitzativa unitatWS : unitatsWS) {
+			if (unitatWS.getEstat().equals("V") && !unitatWS.getCodi().equals(entitat.getCodiDir3())) {
+				vigentUnitatsWS.add(unitatWS);
+			}
+		}
+
+		// Filtering to only obtain vigents that does not already exist in
+		// database
+		for (UnitatOrganitzativa vigentUnitat : vigentUnitatsWS) {
+			boolean found = false;
+			for (UnitatOrganitzativaEntity vigentUnitatDB : vigentUnitatsDB) {
+				if (vigentUnitatDB.getCodi().equals(vigentUnitat.getCodi())) {
+					found = true;
+				}
+			}
+			if (found == false) {
+				vigentNotInDBUnitatsWS.add(vigentUnitat);
+			}
+		}
+		
+		
+		// Filtering to obtain unitats that are vigent, not pointed by any obsolete unitat and does not already exist in database
+		for (UnitatOrganitzativa vigentNotInDBUnitatWS : vigentNotInDBUnitatsWS) {
+			boolean pointed = false;
+			for (UnitatOrganitzativa unitatWS : unitatsWS) {
+				if(unitatWS.getHistoricosUO()!=null){
+					for(String novaCodi: unitatWS.getHistoricosUO()){
+						if(novaCodi.equals(vigentNotInDBUnitatWS.getCodi())){
+							pointed = true;
+						}
+					}
+				}
+			}
+			if (pointed == false) {
+				newUnitatsWS.add(vigentNotInDBUnitatWS);
+			}
+
+		}
+		
+		
+		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
+		List<UnitatOrganitzativaDto> newUnitatsDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigent : newUnitatsWS){
+			newUnitatsDto.add(conversioTipusHelper.convertir(
+					vigent, 
+					UnitatOrganitzativaDto.class));
+		}
+		
+		return newUnitatsDto;
 	}
 	
 	
@@ -252,7 +374,6 @@ public class UnitatOrganitzativaHelper {
 	
 	
 
-
 	public void sincronizarOActualizar(EntitatEntity entitat) {
 
 		List<UnitatOrganitzativa> unitats;
@@ -261,10 +382,9 @@ public class UnitatOrganitzativaHelper {
 				null, null);*/
 
 
-			unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
+		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
-
-
+		// Takes all the unitats from WS and saves them to database. If unitat did't exist in db it creates new one if it already existed it overrides existing one.  
 		for (UnitatOrganitzativa unidadWS : unitats) {
 			sincronizarUnitat(unidadWS, entitat.getCodiDir3());
 		}
@@ -313,7 +433,7 @@ public class UnitatOrganitzativaHelper {
 
 
 	/**
-	 * This method creates new (if it doesnt already exists) or updates existing unidad in database with the given unitatWS  
+	 * Creating new unitat (if it doesn't exist in db) or overriding existing one (if it exists in db)
 	 * 
 	 * @param unidadWS
 	 * @param entidadId
@@ -717,7 +837,7 @@ public class UnitatOrganitzativaHelper {
 		return currentArbreNode;
 	}
 	
-	
+	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaHelper.class);
 	
 
 }
