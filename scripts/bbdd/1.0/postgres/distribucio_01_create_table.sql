@@ -185,7 +185,7 @@ CREATE TABLE DIS_REGISTRE
   SOLICITA             character varying(4000),
   MOTIU_REBUIG         character varying(4000),
   PROCES_DATA          timestamp without time zone,
-  PROCES_ESTAT         character varying(16)    NOT NULL,
+  PROCES_ESTAT         character varying(64)    NOT NULL,
   PROCES_INTENTS       integer,
   PROCES_ERROR         character varying(1024),
   REGLA_ID             bigint,

@@ -168,7 +168,7 @@ public class RegistreEntity extends ContingutEntity {
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
 	@Column(name = "justificant_arxiu_uuid", length = 100)
 	private String justificantArxiuUuid;
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "regla_id")
 	@ForeignKey(name = "dis_regla_registre_fk")
 	private ReglaEntity regla;
