@@ -7,16 +7,24 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import es.caib.distribucio.ws.v1.bustia.BustiaV1;
@@ -24,7 +32,6 @@ import es.caib.distribucio.ws.v1.bustia.Firma;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnnex;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnotacio;
 import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
-
 /**
  * Client de test per al servei bustia de RIPEA.
  * 
@@ -56,218 +63,140 @@ public class BustiaV1Test {
 
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
+	
+	/** Accepta els certificats i afegeix el protocol TLSv1.2.
+	 * @throws Exception */
+	@Before
+	public void init() throws Exception {
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
+		    public X509Certificate[] getAcceptedIssuers(){return null;}
+		    public void checkClientTrusted(X509Certificate[] certs, String authType){}
+		    public void checkServerTrusted(X509Certificate[] certs, String authType){}
+		}};
+
+		// Install the all-trusting trust manager
+		try {
+		    SSLContext sc = SSLContext.getInstance("TLS");
+		    sc.init(null, trustAllCerts, new SecureRandom());
+		    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (Exception e) {
+		    System.err.println("Error ingorant certificats: " + e.getMessage());
+		    e.printStackTrace();
+		}		
+		// Afegeix el protocol TLSv1.2
+    	SSLContext context = SSLContext.getInstance("TLSv1.2");
+    	context.init(null,null,null);
+    	SSLContext.setDefault(context); 
+	}
 
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
-		RegistreAnotacio anotacio = new RegistreAnotacio(); 
-		anotacio.setAplicacioCodi(APLICACIO_CODI);
-		anotacio.setAplicacioVersio(APLICACIO_VERSIO);
-		anotacio.setAssumpteCodi(ASSUMPTE_CODI);
-        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
-        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
-        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);
-        anotacio.setUsuariCodi(USUARI_CODI);
-        anotacio.setUsuariNom(USUARI_NOM);
-        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
-        anotacio.setExtracte(EXTRACTE);
-        anotacio.setEntitatCodi(ENTITAT_CODI);
-        anotacio.setEntitatDescripcio(ENTITAT_DESC);
-        anotacio.setOficinaCodi(OFICINA_CODI);
-        anotacio.setOficinaDescripcio(OFICINA_DESC);
-        anotacio.setLlibreCodi(LLIBRE_CODI);
-        anotacio.setLlibreDescripcio(LLIBRE_DESC);
-        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
-        anotacio.setIdiomaCodi(IDIOMA_CODI);
-        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
-        anotacio.setIdentificador(IDENTIFICADOR);
-        anotacio.setExpedientNumero(EXPEDIENT_NUM);
-        List<Firma> firmes = null;
-        RegistreAnnex annex1;
-        if (TEST_ANNEX_FIRMAT) {
-        	firmes = new ArrayList<Firma>();
-            Firma firma = new Firma();
-            firma.setFitxerNom("annex_firmat.pdf");
-            firma.setTipusMime("application/pdf");
-            firma.setContingut(
-            		IOUtils.toByteArray(getContingutAnnexFirmat()));
-            firma.setTipus("TF06");
-            firma.setPerfil("EPES");
-            firmes.add(firma);
-            annex1 = crearAnnex(
-	        		"Annex1",
-	        		//"annex.pdf",
-	        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+		RegistreAnotacio anotacio; 
+		int nAnotacions = 1;
+		for (int i=1; i<=nAnotacions; i++) {
+			System.out.println("Enviant l'anotació " + i);
+			anotacio = new RegistreAnotacio(); 
+			anotacio.setAplicacioCodi(APLICACIO_CODI);
+			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
+			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
+	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
+	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
+	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);
+	        anotacio.setUsuariCodi(USUARI_CODI);
+	        anotacio.setUsuariNom(USUARI_NOM);
+	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+	        anotacio.setExtracte(EXTRACTE + " " + i);
+	        anotacio.setEntitatCodi(ENTITAT_CODI);
+	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
+	        anotacio.setOficinaCodi(OFICINA_CODI);
+	        anotacio.setOficinaDescripcio(OFICINA_DESC);
+	        anotacio.setLlibreCodi(LLIBRE_CODI);
+	        anotacio.setLlibreDescripcio(LLIBRE_DESC);
+	        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
+	        anotacio.setIdiomaCodi(IDIOMA_CODI);
+	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
+	        anotacio.setIdentificador(IDENTIFICADOR);
+	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
+	        List<Firma> firmes = null;
+	        RegistreAnnex annex;
+	        int nAnnexos = 1;
+	        for (int j=1; j<=nAnnexos; j++) {
+		        if (TEST_ANNEX_FIRMAT) {
+		        	firmes = new ArrayList<Firma>();
+		            Firma firma = new Firma();
+		            firma.setFitxerNom("annex_firmat.pdf");
+		            firma.setTipusMime("application/pdf");
+		            firma.setContingut(
+		            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+		            firma.setTipus("TF06");
+		            firma.setPerfil("EPES");
+		            firmes.add(firma);
+		            annex = crearAnnex(
+			        		"Annex" + j,
+			        		//"annex.pdf",
+			        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+			        		"application/pdf",
+			        		null,
+			        		null,
+			        		"0",
+			        		"EE01",
+			        		"TD01",
+			        		"01",
+			        		firmes);
+		        } else {
+			        if (TEST_ANNEX_PDF) {
+				        annex = crearAnnex(
+				        		"Annex" + j,
+				        		"annex.pdf",
+				        		"application/pdf",
+				        		null,
+				        		getContingutAnnexSenseFirmaPdf(),
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+			        } else {
+			        	annex = crearAnnex(
+				        		"Annex" + j,
+				        		"annex.docx",
+				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+				        		null,
+				        		getContingutAnnexSenseFirmaDocx(),
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+			        }
+		        }
+		        anotacio.getAnnexos().add(annex);
+		    }
+
+	        	        
+	        RegistreAnnex justificant = crearAnnex(
+	        		"justificant",
+	        		"justificant.pdf",
 	        		"application/pdf",
-	        		null,
-	        		null,
-	        		"0",
+	        		"9f33c5c7-7d0f-4d70-9082-c541a42cc041",
+	        		null, //getContingutJustificant(),
+	        		"1",
 	        		"EE01",
-	        		"TD01",
-	        		"01",
-	        		firmes);
-        } else {
-	        if (TEST_ANNEX_PDF) {
-		        annex1 = crearAnnex(
-		        		"Annex1",
-		        		"annex.pdf",
-		        		"application/pdf",
-		        		null,
-		        		getContingutAnnexSenseFirmaPdf(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        } else {
-	        	annex1 = crearAnnex(
-		        		"Annex1",
-		        		"annex.docx",
-		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		        		null,
-		        		getContingutAnnexSenseFirmaDocx(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        }
-        }
-        anotacio.getAnnexos().add(annex1);
-        
-        
-        
-        
-        
-        RegistreAnnex annex2;
-        if (TEST_ANNEX_FIRMAT) {
-        	firmes = new ArrayList<Firma>();
-            Firma firma = new Firma();
-            firma.setFitxerNom("annex_firmat.pdf");
-            firma.setTipusMime("application/pdf");
-            firma.setContingut(
-            		IOUtils.toByteArray(getContingutAnnexFirmat()));
-            firma.setTipus("TF06");
-            firma.setPerfil("EPES");
-            firmes.add(firma);
-            annex2 = crearAnnex(
-	        		"Annex2",
-	        		//"annex.pdf",
-	        		"C23 Renovació autorització 121193 & 121194_s.pdf",
-	        		"application/pdf",
-	        		null,
-	        		null,
-	        		"0",
-	        		"EE01",
-	        		"TD01",
-	        		"01",
-	        		firmes);
-        } else {
-	        if (TEST_ANNEX_PDF) {
-		        annex2 = crearAnnex(
-		        		"Annex2",
-		        		"annex.pdf",
-		        		"application/pdf",
-		        		null,
-		        		getContingutAnnexSenseFirmaPdf(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        } else {
-	        	annex2 = crearAnnex(
-		        		"Annex2",
-		        		"annex.docx",
-		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		        		null,
-		        		getContingutAnnexSenseFirmaDocx(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        }
-        }
-        anotacio.getAnnexos().add(annex2);
-        
-        
-        
-        
-        RegistreAnnex annex3;
-        if (TEST_ANNEX_FIRMAT) {
-        	firmes = new ArrayList<Firma>();
-            Firma firma = new Firma();
-            firma.setFitxerNom("annex_firmat.pdf");
-            firma.setTipusMime("application/pdf");
-            firma.setContingut(
-            		IOUtils.toByteArray(getContingutAnnexFirmat()));
-            firma.setTipus("TF06");
-            firma.setPerfil("EPES");
-            firmes.add(firma);
-            annex3 = crearAnnex(
-	        		"Annex3",
-	        		//"annex.pdf",
-	        		"C23 Renovació autorització 121193 & 121194_s.pdf",
-	        		"application/pdf",
-	        		null,
-	        		null,
-	        		"0",
-	        		"EE01",
-	        		"TD01",
-	        		"01",
-	        		firmes);
-        } else {
-	        if (TEST_ANNEX_PDF) {
-		        annex3 = crearAnnex(
-		        		"Annex3",
-		        		"annex.pdf",
-		        		"application/pdf",
-		        		null,
-		        		getContingutAnnexSenseFirmaPdf(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        } else {
-	        	annex3 = crearAnnex(
-		        		"Annex3",
-		        		"annex.docx",
-		        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		        		null,
-		        		getContingutAnnexSenseFirmaDocx(),
-		        		"0",
-		        		"EE01",
-		        		"TD01",
-		        		"01",
-		        		firmes);
-	        }
-        }
-        anotacio.getAnnexos().add(annex3);
-        
-        
-        
-        RegistreAnnex justificant = crearAnnex(
-        		"justificant",
-        		"justificant.pdf",
-        		"application/pdf",
-        		"9f33c5c7-7d0f-4d70-9082-c541a42cc041",
-        		null, //getContingutJustificant(),
-        		"1",
-        		"EE01",
-        		"TD02",
-        		"02",
-        		null);
-        anotacio.setJustificant(justificant);
-        try {
-    		getBustiaServicePort().enviarAnotacioRegistreEntrada(
-    				ENTITAT_DIST_CODI,
-    				UNITAT_ADM_CODI,
-    				anotacio);        	
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-        	fail();
-        }
+	        		"TD02",
+	        		"02",
+	        		null);
+	        anotacio.setJustificant(justificant);
+	        try {
+	    		getBustiaServicePort().enviarAnotacioRegistreEntrada(
+	    				ENTITAT_DIST_CODI,
+	    				UNITAT_ADM_CODI,
+	    				anotacio);        	
+	        } catch (Exception ex) {
+	        	ex.printStackTrace();
+	        	fail();
+	        }			
+		}
 	}
 
 	private RegistreAnnex crearAnnex(
