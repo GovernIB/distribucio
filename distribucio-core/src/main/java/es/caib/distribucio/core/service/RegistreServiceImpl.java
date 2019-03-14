@@ -436,7 +436,7 @@ public class RegistreServiceImpl implements RegistreService {
 		FitxerDto arxiu = new FitxerDto();
 		
 		Document document = null;
-		document = pluginHelper.arxiuDocumentConsultar(registre, registre.getJustificantArxiuUuid(), null, true);
+		document = pluginHelper.arxiuDocumentConsultar(registre, registre.getJustificantArxiuUuid(), null, true, true);
 		
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
