@@ -355,7 +355,7 @@
 			}
 			$taula.on('processing.dt', function(e, settings_, processing) {
 				if (!$('tbody .datatable-dades-carregant', $taula).length) {
-					$('tbody', $taula).append('<tr class="datatable-dades-carregant"><td colspan="8"><div><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div></td></tr>');
+					$('tbody', $taula).prepend('<tr class="datatable-dades-carregant"><td colspan="8"><div><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div></td></tr>');
 				}
 				if (processing) {
 					$('tbody .datatable-dades-carregant', $taula).show();

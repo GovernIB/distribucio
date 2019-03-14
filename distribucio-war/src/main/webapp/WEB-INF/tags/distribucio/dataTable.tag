@@ -14,7 +14,7 @@
 <script>
 	$(document).ready(function() {
 		var taula = $('#${tableId}');
-		<c:if test="${not empty ajaxSourceUrl}">$('thead', taula).append('<tr class="datatable-dades-carregant"><td colspan="7" style="margin-top: 2em; text-align: center"><img src="<c:url value="/img/loading.gif"/>"/></td></tr>');</c:if>
+		<c:if test="${not empty ajaxSourceUrl}">$('thead', taula).prepend('<tr class="datatable-dades-carregant"><td colspan="7" style="margin-top: 2em; text-align: center"><img src="<c:url value="/img/loading.gif"/>"/></td></tr>');</c:if>
 		var aoColumns = new Array();
 		var aaSorting = new Array();
 		var aProps = new Array();
