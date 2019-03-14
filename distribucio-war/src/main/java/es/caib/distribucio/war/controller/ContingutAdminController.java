@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
@@ -65,13 +66,21 @@ public class ContingutAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@Valid ContingutFiltreCommand filtreCommand,
 			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_FILTRE,
-					filtreCommand);
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
 		}
+
 		return "redirect:contingutAdmin";
 	}
 
@@ -81,6 +90,7 @@ public class ContingutAdminController extends BaseAdminController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
+
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				contingutService.findAdmin(
