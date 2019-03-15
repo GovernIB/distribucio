@@ -126,7 +126,20 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,
 			Pageable pageable);
-
+	
+	
+	
+	@Query(	"select " +
+			"    count(c) " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"(c.pare in (:pares)) " +
+			"and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)")
+	public long countPendentsByPares(
+			@Param("pares") List<? extends ContingutEntity> pares);
+	
+	
 	@Query(	"select " +
 			"    c.pare.id, " +
 			"    count(*) " +

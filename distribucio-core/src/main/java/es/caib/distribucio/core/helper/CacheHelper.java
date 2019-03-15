@@ -28,6 +28,7 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -47,7 +48,8 @@ public class CacheHelper {
 	private EntitatRepository entitatRepository;
 	@Resource
 	private BustiaRepository bustiaRepository;
-
+	@Resource
+	private ContingutRepository contingutRepository;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
 	@Resource
@@ -60,8 +62,6 @@ public class CacheHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
-
-	private Map<String, Set<String>> usuarisElementsPendentsPerEntitat;
 
 
 
@@ -139,20 +139,9 @@ public class CacheHelper {
 				BustiaEntity.class,
 				new Permission[] {ExtendedPermission.READ},
 				usuariHelper.generarUsuariAutenticat(usuariCodi, false));
-		long count = 0;
-		if (!busties.isEmpty()) {
-			// Ompl els contadors de fills i registres
-			long[] countFills = contingutHelper.countFillsAmbPermisReadByContinguts(
-					entitat,
-					busties,
-					true);
-			for (long c: countFills)
-				count += c;
-		}
-		// Afegeix l'usuari a l'entitat
-		afegirUsuariElementsPendentsPerEntitat(
-				entitat,
-				usuariCodi);
+		
+		long count = contingutRepository.countPendentsByPares(busties);
+		
 		return count;
 	}
 	@CacheEvict(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
@@ -161,22 +150,7 @@ public class CacheHelper {
 			String usuariCodi) {
 	}
 
-	private void afegirUsuariElementsPendentsPerEntitat(
-			EntitatEntity entitat,
-			String usuariCodi) {
-		String entitatCodi = entitat.getCodi();
-		if (usuarisElementsPendentsPerEntitat == null) {
-			usuarisElementsPendentsPerEntitat = new HashMap<String, Set<String>>();
-		}
-		Set<String> usuaris = usuarisElementsPendentsPerEntitat.get(entitatCodi);
-		if (usuaris == null) {
-			usuaris = new HashSet<String>();
-			usuarisElementsPendentsPerEntitat.put(
-					entitatCodi,
-					usuaris);
-		}
-		usuaris.add(usuariCodi);
-	}
+
 
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 
