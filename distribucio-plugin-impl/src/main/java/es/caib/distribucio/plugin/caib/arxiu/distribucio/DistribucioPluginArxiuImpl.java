@@ -590,13 +590,14 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					ex);
 		}
 		if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
-			boolean isPdf = false;
+			boolean generarVersioImprimible = false;
+			
 			for (Firma firma : documentDetalls.getFirmes()) {
-				if (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET) {
-					isPdf = true;
+				if (documentDetalls.getContingut().getTipusMime().equals("application/pdf") && (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET)) {
+					generarVersioImprimible = true;
 				}
 			}
-			if (isPdf) {
+			if (generarVersioImprimible) {
 				generarVersioImprimible(documentDetalls);
 			}
 		}
