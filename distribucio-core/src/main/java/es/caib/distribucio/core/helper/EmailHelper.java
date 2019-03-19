@@ -65,10 +65,16 @@ public class EmailHelper {
 			BustiaEntity bustia,
 			ContingutEntity contingut,
 			ContingutMovimentEntity contenidorMoviment) {
-		logger.debug("Desant emails nou contenidor a la bústia per a enviament (" +
-				"bustiaId=" + (bustia != null ? bustia.getId() : "") + ")" +
-				"contingutId=" + (contingut != null ? contingut.getId() : "") + ")");
 		List<UsuariDto> destinataris = obtenirCodiDestinatarisPerEmail(bustia);
+		
+		StringBuilder sb = new StringBuilder("Desant emails nou contenidor a la bustia per a enviament (" +
+				"bustiaId=" + (bustia != null ? bustia.getId() : "") + ")" +
+				"contingutId=" + (contingut != null ? contingut.getId() : "") + " destinataris={");
+		for (UsuariDto destinatari : destinataris)
+			sb.append(destinatari.getCodi() + " " + destinatari.getEmail()).append(", ");
+		sb.append("})");
+		logger.debug(sb.toString());
+		
 		String unitatOrganitzativa = ""; 
 		if (bustia != null && !destinataris.isEmpty())
 			unitatOrganitzativa = getUnitatOrganitzativaNom(
