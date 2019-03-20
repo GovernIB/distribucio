@@ -1734,17 +1734,17 @@ public class BustiaServiceImpl implements BustiaService {
 					entitat,
 					new Long(filtre.getBustia()),
 					true);
-		List<ContingutEntity> pares = new ArrayList<ContingutEntity>();
+		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
 			for (BustiaDto bustiaUsuari: bustiesUsuari) {
-				pares.add(
+				busties.add(
 						entityComprovarHelper.comprovarBustia(
 						entitat,
 						new Long(bustiaUsuari.getId()),
 						true));
 			}
 		} else if (bustia != null) {
-			pares.add(bustia);
+			busties.add(bustia);
 		}
 		
 		comprovarBustiaContext.stop();
@@ -1766,7 +1766,7 @@ public class BustiaServiceImpl implements BustiaService {
 		Page<ContingutEntity> pagina;
 		
 		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
-		if (bustia == null && pares.isEmpty()) {
+		if (bustia == null && busties.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
 			
@@ -1780,7 +1780,7 @@ public class BustiaServiceImpl implements BustiaService {
 			pagina = contingutRepository.findRegistreByPareAndFiltre(
 					(bustia == null),
 					bustia,
-					pares,
+					busties,
 					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
 					filtre.getContingutDescripcio(),
 					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
