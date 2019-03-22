@@ -43,7 +43,8 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04015411";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	private static final String ASSUMPTE_CODI = "A1";
+//	private static final String ASSUMPTE_CODI = "A1";
+	private static final String PROCEDIMENT_CODI = "E5";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
@@ -61,7 +62,7 @@ public class BustiaV1Test {
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "12345678";
 
-	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_PDF = true;
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
@@ -99,7 +100,7 @@ public class BustiaV1Test {
 			anotacio = new RegistreAnotacio(); 
 			anotacio.setAplicacioCodi(APLICACIO_CODI);
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
-			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
+			anotacio.setProcedimentCodi(PROCEDIMENT_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
 	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);

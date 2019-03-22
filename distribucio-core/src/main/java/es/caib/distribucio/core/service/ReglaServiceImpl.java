@@ -77,7 +77,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				regla.getNom(),
 				regla.getTipus(),
-				regla.getAssumpteCodi(),
+				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
 				ordre).build();
 		return toReglaDto(reglaRepository.save(entity));
@@ -103,7 +103,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getNom(),
 				regla.getDescripcio(),
 				regla.getTipus(),
-				regla.getAssumpteCodi(),
+				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
 		switch(regla.getTipus()) {
 		case BACKOFFICE:

@@ -40,6 +40,7 @@
 <xs:element minOccurs="0" name="aplicacioCodi" type="xs:string" />
 <xs:element minOccurs="0" name="aplicacioVersio" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteCodi" type="xs:string" />
+<xs:element minOccurs="0" name="procedimentCodi" type="xs:string"></xs:element>
 <xs:element minOccurs="0" name="assumpteDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteTipusCodi" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteTipusDescripcio" type="xs:string" />
