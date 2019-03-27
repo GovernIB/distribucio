@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,8 @@ public class RegistreHelper {
 	private PluginHelper pluginHelper;
 	@Autowired
 	private ReglaHelper reglaHelper;
+	@Resource
+	private EmailHelper emailHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
@@ -312,6 +316,9 @@ public class RegistreHelper {
 			} else {
 				esborrarDocsTemporals(anotacio);
 				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+				
+				emailHelper.emailBustiaPendentContingut(bustia, anotacio, anotacio.getDarrerMoviment());
+				
 			}
 			anotacio.updateProces(
 					nouEstat, 
