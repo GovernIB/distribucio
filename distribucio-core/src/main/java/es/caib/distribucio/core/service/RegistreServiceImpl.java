@@ -533,6 +533,11 @@ public class RegistreServiceImpl implements RegistreService {
 						annex.getFitxerArxiuUuid(),
 						null,
 						true);
+				DocumentMetadades metadades = document.getMetadades();
+				if (metadades != null) {
+					annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+					
+				}
 				annex.setAmbDocument(true);
 				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
@@ -932,6 +937,7 @@ public class RegistreServiceImpl implements RegistreService {
 			annex.setOrigenCiutadaAdmin(metadades.getOrigen().name());
 			annex.setNtiElaboracioEstat(metadades.getEstatElaboracio().name());
 			annex.setNtiTipusDocument(metadades.getTipusDocumental().name());
+			annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
 		}
 		
 		annex.setAmbDocument(true);

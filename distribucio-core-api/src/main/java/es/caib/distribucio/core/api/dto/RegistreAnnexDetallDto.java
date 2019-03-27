@@ -33,6 +33,7 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private List<ArxiuFirmaDto> firmes;
 	private boolean ambDocument;
 	private boolean ambFirma;
+	private String firmaCsv;
 	private Long registreId;
 	
 	private static final long serialVersionUID = -8656873728034274066L;
@@ -157,6 +158,12 @@ public class RegistreAnnexDetallDto implements Serializable {
 	}
 	public void setFitxerTamany(int fitxerTamany) {
 		this.fitxerTamany = fitxerTamany;
+	}
+	public void setFirmaCsv(String csv) {
+		this.firmaCsv = csv;
+	}
+	public String getFirmaCsv() {
+		return this.firmaCsv;
 	}
 
 }
