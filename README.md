@@ -1,6 +1,6 @@
 # ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
 
-> - Versió Estable: __0.9.20__ (branca [estable](https://github.com/GovernIB/distribucio/tree/dis-0.9))
+> - Versió Estable: __0.9.20__ (branca [dis-0.9](https://github.com/GovernIB/distribucio/tree/dis-0.9))
 > - Versió Desenvolupament: __dev__ (branca [dev](https://github.com/GovernIB/distribucio/tree/dev))
 
 ## <a name="desc"></a> Descripció
