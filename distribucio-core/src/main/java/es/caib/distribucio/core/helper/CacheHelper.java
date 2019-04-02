@@ -132,7 +132,6 @@ public class CacheHelper {
 			String usuariCodi) {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
 		// Obté la llista d'id's amb permisos per a l'usuari
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
 		// Filtra la llista de bústies segons els permisos
@@ -148,10 +147,11 @@ public class CacheHelper {
 				new Permission[] {ExtendedPermission.READ},
 				auth);
 		
-		
-		
-		long count = contingutRepository.countPendentsByPares(busties);
-		
+		long count;
+		if (!busties.isEmpty())
+			count = contingutRepository.countPendentsByPares(busties);
+		else
+			count = 0;
 		return count;
 	}
 	
