@@ -890,7 +890,7 @@ public class BustiaServiceImpl implements BustiaService {
 		helper = new MimeMessageHelper(missatge, true);
 		missatge.addRecipients(RecipientType.TO, InternetAddress.parse(adresses));
 		helper.setFrom(emailHelper.getRemitent());
-		helper.setSubject("Distribució: "+registre.getExtracte());
+		helper.setSubject("Distribució: "+registre.getNom());
 		messageHelper.getMessage("registre.detalls.camp.tipus");
 		String message18nRegistreTipus = "";
 		if (registre.getRegistreTipus() == RegistreTipusEnum.ENTRADA) {
