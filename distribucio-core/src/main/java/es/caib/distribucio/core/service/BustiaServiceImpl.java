@@ -365,6 +365,18 @@ public class BustiaServiceImpl implements BustiaService {
 					missatgeError);
 		}
 		
+		
+		// cannot remove busties with regles
+		if (reglaRepository.findByBustia(bustia) != null && !reglaRepository.findByBustia(bustia).isEmpty()) {
+			String missatgeError = messageHelper.getMessage("bustia.controller.esborrat.error.regles", new Object[] {id});
+			logger.error(missatgeError);
+			throw new ValidationException(
+					id,
+					BustiaEntity.class,
+					missatgeError);
+		}
+		
+		
 		bustiaRepository.delete(bustia);
 		return toBustiaDto(
 				bustia,

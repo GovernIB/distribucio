@@ -65,5 +65,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			Pageable pageable);
 	
+	
+	List<ReglaEntity> findByBustia(BustiaEntity bustia);
 
 }
