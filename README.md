@@ -1,6 +1,6 @@
 # ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
 
-> - Versió Estable: __0.9.20__ (branca [dis-0.9](https://github.com/GovernIB/distribucio/tree/dis-0.9))
+> - Versió Estable: __0.9.21__ (branca [dis-0.9](https://github.com/GovernIB/distribucio/tree/dis-0.9))
 > - Versió Desenvolupament: __1.0.0__ (branca [dis-1.0](https://github.com/GovernIB/distribucio/tree/dis-1.0))
 
 ## <a name="desc"></a> Descripció
@@ -19,4 +19,4 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 
 
 ## <a name="v_estable"></a> Versió estable
-### [0.9.20](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.20)
+### [0.9.21](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.21)
