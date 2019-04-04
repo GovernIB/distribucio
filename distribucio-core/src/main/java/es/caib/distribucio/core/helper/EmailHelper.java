@@ -100,8 +100,8 @@ public class EmailHelper {
 			boolean enviarAgrupat,
 			List<ContingutMovimentEmailEntity> contingutMovimentEmails) {
 		logger.debug("Enviament emails nou contenidor a bústies");
-
 		
+		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		if (enviarAgrupat && contingutMovimentEmails.size() > 1) {
 			
 			SimpleMailMessage missatge = new SimpleMailMessage();
@@ -113,7 +113,7 @@ public class EmailHelper {
 			EntitatEntity entitat = null;
 			String text = "";
 			Integer contadorElement = 1;
-			
+
 			for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
 				if (bustia == null || !contingutEmail.getBustia().getId().equals(bustia.getId())) { 
 					bustia = contingutEmail.getBustia();
@@ -131,7 +131,8 @@ public class EmailHelper {
 						"\t\tTipus: " + tipus + "\n" +
 						"\t\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
 						"\t\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
-						"\t\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n";
+						"\t\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
+						"\t\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n";
 			}
 			missatge.setText(text);
 			mailSender.send(missatge);
@@ -155,11 +156,33 @@ public class EmailHelper {
 						"\tTipus: " + tipus + "\n" +
 						"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
 						"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
-						"\tComentari: " + (contenidorMoviment != null ? contenidorMoviment.getComentari() : "") + "\n");
+						"\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
+						"\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n");
+				
 				mailSender.send(missatge);
 			}
 		}
 		
+	}
+
+	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/contingut/642/registre/2669"
+	 * 
+	 * @param appBaseUrl
+	 * @param bustia
+	 * @param contingut
+	 * @param entitat
+	 * @return
+	 */
+	private String getEnllacContingut(
+			String appBaseUrl, 
+			BustiaEntity bustia, 
+			ContingutEntity contingut,
+			EntitatEntity entitat) {
+
+		StringBuilder url = new StringBuilder(appBaseUrl).append("/contingut/").append(bustia.getId()).append("/registre/").append(contingut.getId());
+		if (entitat != null)
+			url.append("?canviEntitat=").append(entitat.getId());
+		return url.toString();
 	}
 
 	public void emailBustiaPendentRegistre(
