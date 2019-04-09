@@ -68,31 +68,39 @@ public class EmailHelper {
 		List<UsuariDto> destinataris = obtenirCodiDestinatarisPerEmail(bustia);
 		
 		StringBuilder sb = new StringBuilder("Desant emails nou contenidor a la bustia per a enviament (" +
-				"bustiaId=" + (bustia != null ? bustia.getId() : "") + ")" +
-				"contingutId=" + (contingut != null ? contingut.getId() : "") + " destinataris={");
+				"bustiaId=" + (bustia != null ? bustia.getId() : "") + "" +
+				", contingutId=" + (contingut != null ? contingut.getId() : "") +
+				", contenidorMovimentId=" + (contenidorMoviment != null ? contenidorMoviment.getId() : "null") +
+				", destinataris={");
 		for (UsuariDto destinatari : destinataris)
 			sb.append(destinatari.getCodi() + " " + destinatari.getEmail()).append(", ");
 		sb.append("})");
 		logger.debug(sb.toString());
 		
-		String unitatOrganitzativa = ""; 
-		if (bustia != null && !destinataris.isEmpty())
-			unitatOrganitzativa = getUnitatOrganitzativaNom(
-					bustia.getEntitat(),
-					bustia.getUnitatCodi());
-		List<ContingutMovimentEmailEntity> movEmails = new ArrayList<ContingutMovimentEmailEntity>();
-		for (UsuariDto destinatari: destinataris) {
-			ContingutMovimentEmailEntity contingutMovimentEmail = ContingutMovimentEmailEntity.getBuilder(
-					destinatari.getCodi(), 
-					destinatari.getEmail(),
-					destinatari.getRebreEmailsAgrupats(),
-					bustia, 
-					contenidorMoviment, 
-					contingut, 
-					unitatOrganitzativa).build();
-			movEmails.add(contingutMovimentEmail);
+		// Validació
+		if (bustia == null 
+				|| contingut == null 
+				|| contenidorMoviment == null ) {
+			logger.error("No es pot enviar un email de notificacio si la bustia, el contingut o el moviment son nulls: " + sb.toString());
+			return;
 		}
-		contingutMovimentEmailRepository.save(movEmails);
+		if (!destinataris.isEmpty()) {
+			String unitatOrganitzativa = getUnitatOrganitzativaNom( bustia.getEntitat(),
+																	bustia.getUnitatCodi());			
+			List<ContingutMovimentEmailEntity> movEmails = new ArrayList<ContingutMovimentEmailEntity>();
+			for (UsuariDto destinatari: destinataris) {
+				ContingutMovimentEmailEntity contingutMovimentEmail = ContingutMovimentEmailEntity.getBuilder(
+						destinatari.getCodi(), 
+						destinatari.getEmail(),
+						destinatari.getRebreEmailsAgrupats(),
+						bustia, 
+						contenidorMoviment, 
+						contingut, 
+						unitatOrganitzativa).build();
+				movEmails.add(contingutMovimentEmail);
+			}
+			contingutMovimentEmailRepository.save(movEmails);
+		}
 	}
 	
 	public void sendEmailBustiaPendentContingut(

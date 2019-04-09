@@ -319,8 +319,10 @@ public class RegistreHelper {
 				esborrarDocsTemporals(anotacio);
 				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 				
-				emailHelper.emailBustiaPendentContingut(bustia, anotacio, anotacio.getDarrerMoviment());
-				
+				emailHelper.emailBustiaPendentContingut(
+						bustia, 
+						anotacio, 
+						anotacio.getDarrerMoviment());	
 			}
 			anotacio.updateProces(
 					nouEstat, 
