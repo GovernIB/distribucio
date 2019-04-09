@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
@@ -659,25 +661,58 @@ public class RegistreHelper {
 		return firmaEntity;
 	}
 
+	/** Esborra els documents temporals. Programa un esborrat en el cas que el commit vagi bé, si no els temporals no s'han d'esborrar. */
 	private void esborrarDocsTemporals(RegistreEntity anotacioEntity) {
-		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
-			for (RegistreAnnexEntity annex: anotacioEntity.getAnnexos()) {
-				if (annex.getGesdocDocumentId() != null) {
-					pluginHelper.gestioDocumentalDelete(
-							annex.getGesdocDocumentId(), 
-							PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
-					annex.updateGesdocDocumentId(null);
-				}
-				for(RegistreAnnexFirmaEntity firma: annex.getFirmes()) {
-					if (firma.getGesdocFirmaId() != null) {
-						pluginHelper.gestioDocumentalDelete(
-								firma.getGesdocFirmaId(), 
-								PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
-						firma.updateGesdocFirmaId(null);
+		TransactionSynchronizationManager.registerSynchronization(new EsborrarDocsTemporalsHandler(anotacioEntity));
+	}
+
+	/** Classe que implementa la sincronització de transacció pes esborrar els temporals només en el cas que la transacció
+	 * hagi finalitzat correctament. D'aquesta forma no s'esborren els temporals si no s'han guardat correctament a l'arxiu
+	 * amb la informació a BBDD.
+	 */
+	public class EsborrarDocsTemporalsHandler implements TransactionSynchronization {
+
+		/** Registre amb annexos */
+		private RegistreEntity anotacioEntity;
+
+		/** Constructor amb l'anotació */
+		public EsborrarDocsTemporalsHandler(RegistreEntity anotacioEntity) {
+			this.anotacioEntity = anotacioEntity;
+		}
+
+		/** Mètode que s'executa després que s'hagi guardat correctament a BBDD i per tants els temporals es poden guardar correctament. */
+		@Override
+		public void afterCommit() {
+			if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
+				for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
+					if (annex.getGesdocDocumentId() != null) {
+						pluginHelper.gestioDocumentalDelete(annex.getGesdocDocumentId(),
+								PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+						annex.updateGesdocDocumentId(null);
+					}
+					for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+						if (firma.getGesdocFirmaId() != null) {
+							pluginHelper.gestioDocumentalDelete(firma.getGesdocFirmaId(),
+									PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
+							firma.updateGesdocFirmaId(null);
+						}
 					}
 				}
 			}
 		}
+
+		@Override
+		public void suspend() {}
+		@Override
+		public void resume() {}
+		@Override
+		public void flush() {}
+		@Override
+		public void beforeCommit(boolean readOnly) {}
+		@Override
+		public void beforeCompletion() {}
+		@Override
+		public void afterCompletion(int status) {}
 	}
 
 	/*
