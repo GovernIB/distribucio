@@ -42,7 +42,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents <= :maxReintents " +
 		    "order by " +
-		    "    r.data desc")
+		    "    r.data asc")
 	List<RegistreEntity> findGuardarAnnexPendents(
 			@Param("maxReintents") int maxReintents);
 

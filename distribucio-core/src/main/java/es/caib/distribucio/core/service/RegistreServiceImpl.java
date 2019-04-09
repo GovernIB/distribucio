@@ -286,7 +286,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Override
 	@Scheduled(
-			//fixedDelayString = "${config:es.caib.distribucio.tasca.dist.anotacio.pendent.periode.execucio}")
 			fixedDelayString = "${config:es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio}")
 	public void guardarAnnexosArxiuPendents() {
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
@@ -295,9 +294,17 @@ public class RegistreServiceImpl implements RegistreService {
 			List<RegistreEntity> pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
 			if (pendents != null && !pendents.isEmpty()) {
 				logger.debug("Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
-				for (RegistreEntity pendent: pendents) {
-					registreHelper.processarAnotacioPendentArxiu(pendent.getId());
-				}
+				Exception excepcio = null;
+				for (RegistreEntity pendent: pendents)
+					try {
+						logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() +", pendentNom=" + pendent.getNom() + ")");
+						excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
+					} catch (Exception e) {
+						excepcio = e;
+					} finally {
+						if (excepcio != null)
+							logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
+					}
 			} else {
 				logger.debug("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
 			}
