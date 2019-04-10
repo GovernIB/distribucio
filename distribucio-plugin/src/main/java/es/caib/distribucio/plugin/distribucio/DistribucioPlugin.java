@@ -2,6 +2,7 @@ package es.caib.distribucio.plugin.distribucio;
 
 import java.util.Map;
 
+import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.plugins.arxiu.api.Document;
 
@@ -45,7 +46,8 @@ public interface DistribucioPlugin {
 	public String documentCrear(
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
-			String contenidorArxiuUuid) throws SistemaExternException;
+			String contenidorArxiuUuid,
+			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException;
 
 	/**
 	 * Obté el document enviat prèviament al gestor d'arxius remot

@@ -25,6 +25,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
+import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -406,12 +407,18 @@ public class RegistreHelper {
 									"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
 													
+							DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+							documentEniRegistrableDto.setNumero(anotacio.getNumero());
+							documentEniRegistrableDto.setData(anotacio.getData());
+							documentEniRegistrableDto.setOficinaDescripcio(anotacio.getOficinaDescripcio());
+							documentEniRegistrableDto.setOficinaCodi(anotacio.getOficinaCodi());
 							
 							String uuidDocument = pluginHelper.distribucioDocumentCrear(
 									anotacio.getNumero(),
 									distribucioAnnex,
 									bustia.getEntitat().getCodiDir3(),
-									uuidContenidor);
+									uuidContenidor,
+									documentEniRegistrableDto);
 							annex.updateFitxerArxiuUuid(uuidDocument);
 							if (annex.getFitxerTamany() <= 0) {
 								Document document = pluginHelper.arxiuDocumentConsultar(

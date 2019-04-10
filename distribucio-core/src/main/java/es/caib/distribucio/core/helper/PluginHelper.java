@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
+import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -116,7 +117,8 @@ public class PluginHelper {
 			String registreNumero,
 			DistribucioRegistreAnnex annex,
 			String unitatOrganitzativaCodi,
-			String uuidContenidor) {
+			String uuidContenidor,
+			DocumentEniRegistrableDto documentEniRegistrableDto) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
@@ -130,7 +132,8 @@ public class PluginHelper {
 			String documentUuid = getDistribucioPlugin().documentCrear(
 					annex,
 					unitatOrganitzativaCodi,
-					uuidContenidor);
+					uuidContenidor,
+					documentEniRegistrableDto);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,

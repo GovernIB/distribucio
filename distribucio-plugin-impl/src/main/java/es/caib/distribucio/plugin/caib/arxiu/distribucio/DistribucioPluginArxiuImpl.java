@@ -4,6 +4,8 @@
 package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,10 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
@@ -72,6 +76,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	private IArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
+
 
 	@Override
 	public String contenidorCrear(
@@ -134,7 +139,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	public String documentCrear(
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
-			String contenidorId) throws SistemaExternException {
+			String contenidorId,
+			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
 		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;
 		if (annex.getFitxerArxiuUuid() != null) {
@@ -283,7 +289,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				unitatArrelCodi,
 				fitxerContingut,
 				arxiuFirmes,
-				contenidorId);
+				contenidorId,
+				documentEniRegistrableDto);
 		annex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
 	}
@@ -385,7 +392,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String unitatArrelCodi,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes,
-			String identificadorRetorn) throws SistemaExternException {
+			String identificadorRetorn,
+			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
 			estatDocument = DocumentEstat.DEFINITIU;
@@ -435,7 +443,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 							annex.getDataCaptura(),
 							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
-							estatDocument),
+							estatDocument,
+							documentEniRegistrableDto),
 					identificadorRetorn);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
@@ -719,7 +728,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			Date ntiDataCaptura,
 			DocumentNtiEstadoElaboracionEnumDto ntiEstatElaboracio,
 			DocumentNtiTipoDocumentalEnumDto ntiTipusDocumental,
-			DocumentEstat estat) {
+			DocumentEstat estat,
+			DocumentEniRegistrableDto documentEniRegistrableDto) {
 		Document document = new Document();
 		document.setNom(nom);
 		document.setIdentificador(identificador);
@@ -1017,6 +1027,23 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
+		
+		
+
+		
+		Map<String, Object> metaDadesAddicionals = new HashMap<String, Object>();
+		metaDadesAddicionals.put("eni:numero_asiento_registral", documentEniRegistrableDto.getNumero());
+		if (documentEniRegistrableDto.getData() != null) {
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			df.setTimeZone(tz);
+			metaDadesAddicionals.put("eni:fecha_asiento_registral", df.format(documentEniRegistrableDto.getData()));
+		}
+		metaDadesAddicionals.put("eni:codigo_oficina_registro", documentEniRegistrableDto.getOficinaCodi());
+		metaDadesAddicionals.put("eni:tipo_asiento_registral", new Integer("0"));
+		
+		metadades.setMetadadesAddicionals(metaDadesAddicionals);
+	
 		document.setMetadades(metadades);
 		document.setContingut(contingut);
 		document.setEstat(estat);
