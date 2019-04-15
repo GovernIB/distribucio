@@ -81,61 +81,74 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		if(isFirstSincronization){
 			unitatsVigentsFirstSincro = unitatOrganitzativaService.predictFirstSynchronization(entitatActual.getId());
 		} else {
-            //Getting list of unitats that are now vigent in db but syncronization is marking them as obsolete
-			List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService
-					.getObsoletesFromWS(entitatActual.getId());
-
-
-			// differentiate between split and (subst or merge)
-			for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
-				if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
-					for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
-						splitMap.put(vigentObsolete, hist);
-					}
-				} else if (vigentObsolete.getLastHistoricosUnitats().size() == 1) {
-					// check if the map already contains key with this codi
-					UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
-					UnitatOrganitzativaDto keyWithTheSameCodi = null;
-					Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
-					for (UnitatOrganitzativaDto mergeOrSubstKeyMap : keysMergeOrSubst) {
-						if (mergeOrSubstKeyMap.getCodi().equals(mergeOrSubstKeyWS.getCodi())) {
-							keyWithTheSameCodi = mergeOrSubstKeyMap;
+			
+			
+			try {
+				
+	            //Getting list of unitats that are now vigent in db but syncronization is marking them as obsolete
+				List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService
+						.getObsoletesFromWS(entitatActual.getId());
+	
+	
+				// differentiate between split and (subst or merge)
+				for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
+					if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
+						for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
+							splitMap.put(vigentObsolete, hist);
+						}
+					} else if (vigentObsolete.getLastHistoricosUnitats().size() == 1) {
+						// check if the map already contains key with this codi
+						UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
+						UnitatOrganitzativaDto keyWithTheSameCodi = null;
+						Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+						for (UnitatOrganitzativaDto mergeOrSubstKeyMap : keysMergeOrSubst) {
+							if (mergeOrSubstKeyMap.getCodi().equals(mergeOrSubstKeyWS.getCodi())) {
+								keyWithTheSameCodi = mergeOrSubstKeyMap;
+							}
+						}
+						// if it contains already key with the same codi, assign
+						// found key
+						if (keyWithTheSameCodi != null) {
+							mergeOrSubstMap.put(keyWithTheSameCodi, vigentObsolete);
+						} else {
+							mergeOrSubstMap.put(mergeOrSubstKeyWS, vigentObsolete);
 						}
 					}
-					// if it contains already key with the same codi, assign
-					// found key
-					if (keyWithTheSameCodi != null) {
-						mergeOrSubstMap.put(keyWithTheSameCodi, vigentObsolete);
+				}
+	
+	
+				// differantiate between substitution and merge
+				Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+				for (UnitatOrganitzativaDto mergeOrSubstKey : keysMergeOrSubst) {
+					List<UnitatOrganitzativaDto> values = (List<UnitatOrganitzativaDto>) mergeOrSubstMap
+							.get(mergeOrSubstKey);
+					if (values.size() > 1) {
+						for (UnitatOrganitzativaDto value : values) {
+							mergeMap.put(mergeOrSubstKey, value);
+						}
 					} else {
-						mergeOrSubstMap.put(mergeOrSubstKeyWS, vigentObsolete);
+						substMap.put(mergeOrSubstKey, values.get(0));
 					}
 				}
+	
+				// Getting list of unitats that are now vigent in db and in syncronization are also vigent but with properties changed
+				unitatsVigents = unitatOrganitzativaService
+						.getVigentsFromWebService(entitatActual.getId());
+				
+				
+				// Getting list of unitats that are totally new (doesnt exist in database)
+				unitatsNew = unitatOrganitzativaService
+						.getNewFromWS(entitatActual.getId());
+				
+				
+			
+			} catch (Exception exception){
+				return getModalControllerReturnValueErrorNoKey(
+						request,
+						"redirect:../../unitatOrganitzativa",
+						exception.getMessage());
+	
 			}
-
-
-			// differantiate between substitution and merge
-			Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
-			for (UnitatOrganitzativaDto mergeOrSubstKey : keysMergeOrSubst) {
-				List<UnitatOrganitzativaDto> values = (List<UnitatOrganitzativaDto>) mergeOrSubstMap
-						.get(mergeOrSubstKey);
-				if (values.size() > 1) {
-					for (UnitatOrganitzativaDto value : values) {
-						mergeMap.put(mergeOrSubstKey, value);
-					}
-				} else {
-					substMap.put(mergeOrSubstKey, values.get(0));
-				}
-			}
-
-			// Getting list of unitats that are now vigent in db and in syncronization are also vigent but with properties changed
-			unitatsVigents = unitatOrganitzativaService
-					.getVigentsFromWebService(entitatActual.getId());
-			
-			
-			// Getting list of unitats that are totally new (doesnt exist in database)
-			unitatsNew = unitatOrganitzativaService
-					.getNewFromWS(entitatActual.getId());
-			
 
 			// Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
 			// System.out.println("SPLITS: ");
@@ -158,6 +171,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			// }
 		}
 		
+
 		
 		
 		model.addAttribute("isFirstSincronization", isFirstSincronization);

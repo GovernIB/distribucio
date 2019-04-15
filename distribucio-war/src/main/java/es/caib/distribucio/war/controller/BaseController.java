@@ -153,6 +153,22 @@ public class BaseController implements MessageSourceAware {
 			return url;
 		}
 	}
+	
+	protected String getModalControllerReturnValueErrorNoKey(
+			HttpServletRequest request,
+			String url,
+			String message) {
+		if (message != null) {
+			MissatgesHelper.error(
+					request, 
+					message);
+		}
+		if (ModalHelper.isModal(request)) {
+			return modalUrlTancar();
+		} else {
+			return url;
+		}
+	}
 
 	protected void writeFileToResponse(
 			String fileName,

@@ -56,12 +56,14 @@ public class UnitatOrganitzativaHelper {
 	
 
 	/**
-	 * Searches for an return the unitat object with the given codi from the given list of unitats
+	 * Searches for and returns the unitat object with the given codi from the given list of unitats
 	 * @param codi
 	 * @param allUnitats
 	 * @return
 	 */
-	private UnitatOrganitzativa getUnitatFromCodi(String codi, List<UnitatOrganitzativa> allUnitats){
+	private UnitatOrganitzativa getUnitatFromCodi(
+			String codi, 
+			List<UnitatOrganitzativa> allUnitats){
 		
 		UnitatOrganitzativa unitatFromCodi = null;
 		for (UnitatOrganitzativa unitatWS : allUnitats) {
@@ -80,24 +82,49 @@ public class UnitatOrganitzativaHelper {
 	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
 	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
 	 */
-	private List<UnitatOrganitzativa> getLastHistoricos(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService){
+	private List<UnitatOrganitzativa> getLastHistoricos(
+			UnitatOrganitzativa unitat, 
+			List<UnitatOrganitzativa> unitatsFromWebService){
 		
 		List<UnitatOrganitzativa> lastHistorcos = new ArrayList<>();
-		getLastHistoricosRecursive(unitat, unitatsFromWebService, lastHistorcos);
+		getLastHistoricosRecursive(
+				unitat, 
+				unitatsFromWebService, 
+				lastHistorcos);
 		return lastHistorcos;
 	}
 	
-	
-	private void getLastHistoricosRecursive(UnitatOrganitzativa unitat, List<UnitatOrganitzativa> unitatsFromWebService,  List<UnitatOrganitzativa> lastHistorcos){
+	private void getLastHistoricosRecursive(
+			UnitatOrganitzativa unitat,
+			List<UnitatOrganitzativa> unitatsFromWebService,
+			List<UnitatOrganitzativa> lastHistorcos) {
 
-			if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
-				lastHistorcos.add(unitat);
-			} else {
-				for (String historicoCodi : unitat.getHistoricosUO()) {
-					getLastHistoricosRecursive(getUnitatFromCodi(historicoCodi, unitatsFromWebService),
-							unitatsFromWebService, lastHistorcos);
+		logger.debug("Coloca historicos recursiu(" + "unitatCodi=" + unitat.getCodi() + ")");
+
+		if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
+			lastHistorcos.add(
+					unitat);
+		} else {
+			for (String historicoCodi : unitat.getHistoricosUO()) {
+
+				UnitatOrganitzativa unitatFromCodi = getUnitatFromCodi(
+						historicoCodi,
+						unitatsFromWebService);
+
+				if (unitatFromCodi == null) {
+					String errorMissatge = "Error en la sincronització amb DIR3. La unitat orgánica (" + unitat.getCodi()
+							+ ") té l'estat (" + unitat.getEstat() + ") i l'històrica (" + historicoCodi
+							+ ") però no s'ha retornat la unitat orgánica (" + historicoCodi
+							+ ") en el resultat de la consulta del WS.";
+					throw new SistemaExternException(IntegracioHelper.INTCODI_UNITATS, errorMissatge);
 				}
+
+				getLastHistoricosRecursive(
+						unitatFromCodi,
+						unitatsFromWebService,
+						lastHistorcos);
 			}
+		}
 	}
 	
 	
@@ -143,19 +170,13 @@ public class UnitatOrganitzativaHelper {
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		
-		
-		logger.debug("############################## BEGIN UnitatsWS ###########################################");
-		logger.debug("Consulta d'unitats a WS (" +
+		logger.debug("Consulta d'unitats a WS [tot camps](" +
 				"codiDir3=" + entitat.getCodiDir3() + ", " +
 				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
 				"fechaSincronizacion=" + entitat.getFechaSincronizacion() + ")");
-		
 		for(UnitatOrganitzativa un: unitatsWS){
 			logger.debug(ToStringBuilder.reflectionToString(un));
 		}
-		logger.debug("############################## END UnitatsWS #############################################");
-		
-		logger.debug("############################## BEGIN UnitatsWS short #####################################");
 		logger.debug("Consulta d'unitats a WS (" +
 				"codiDir3=" + entitat.getCodiDir3() + ", " +
 				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
@@ -163,13 +184,17 @@ public class UnitatOrganitzativaHelper {
 		for(UnitatOrganitzativa un: unitatsWS){
 			logger.debug(un.getCodi()+" "+un.getEstat()+" "+un.getHistoricosUO());
 		}
-		logger.debug("############################## END UnitatsWS short #######################################");
 
-		
 		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		
+		logger.debug("Consulta d'unitats vigents a DB");
+		for(UnitatOrganitzativaEntity uv: vigentUnitats){
+			logger.debug(ToStringBuilder.reflectionToString(uv));
+		}
+		
 
 		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
 		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
@@ -184,7 +209,10 @@ public class UnitatOrganitzativaHelper {
 				}
 			}
 		}
-
+		logger.debug("Consulta unitats obsolete ");
+		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
+			logger.debug(vigentObsolete.getCodi()+" "+vigentObsolete.getEstat()+" "+vigentObsolete.getHistoricosUO());
+		}
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
 			
 			// setting obsolete unitat to point to the last one it transitioned into 
@@ -338,7 +366,9 @@ public class UnitatOrganitzativaHelper {
 	 * @param unitat
 	 * @param lastHistorcos
 	 */
-	public void getLastHistoricosRecursive(UnitatOrganitzativaDto unitat, List<UnitatOrganitzativaDto> lastHistorcos) {
+	public void getLastHistoricosRecursive(
+			UnitatOrganitzativaDto unitat, 
+			List<UnitatOrganitzativaDto> lastHistorcos) {
 
 		if (unitat.getNoves() == null || unitat.getNoves().isEmpty()) {
 			lastHistorcos.add(unitat);
