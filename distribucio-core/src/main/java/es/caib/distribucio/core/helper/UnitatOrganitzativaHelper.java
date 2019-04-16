@@ -26,7 +26,6 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
-import es.caib.distribucio.core.service.UnitatOrganitzativaServiceImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
 
@@ -112,17 +111,24 @@ public class UnitatOrganitzativaHelper {
 						unitatsFromWebService);
 
 				if (unitatFromCodi == null) {
-					String errorMissatge = "Error en la sincronització amb DIR3. La unitat orgánica (" + unitat.getCodi()
-							+ ") té l'estat (" + unitat.getEstat() + ") i l'històrica (" + historicoCodi
-							+ ") però no s'ha retornat la unitat orgánica (" + historicoCodi
-							+ ") en el resultat de la consulta del WS.";
-					throw new SistemaExternException(IntegracioHelper.INTCODI_UNITATS, errorMissatge);
+					// Looks for historico in database
+					UnitatOrganitzativaEntity entity = unitatOrganitzativaRepository.findByCodi(historicoCodi);
+					if (entity != null) {
+						UnitatOrganitzativa uo = conversioTipusHelper.convertir(entity, UnitatOrganitzativa.class);
+						lastHistorcos.add(uo);						
+					} else {
+						String errorMissatge = "Error en la sincronització amb DIR3. La unitat orgánica (" + unitat.getCodi()
+								+ ") té l'estat (" + unitat.getEstat() + ") i l'històrica (" + historicoCodi
+								+ ") però no s'ha retornat la unitat orgánica (" + historicoCodi
+								+ ") en el resultat de la consulta del WS ni en la BBDD.";
+						throw new SistemaExternException(IntegracioHelper.INTCODI_UNITATS, errorMissatge);
+					}
+				} else {
+					getLastHistoricosRecursive(
+							unitatFromCodi,
+							unitatsFromWebService,
+							lastHistorcos);
 				}
-
-				getLastHistoricosRecursive(
-						unitatFromCodi,
-						unitatsFromWebService,
-						lastHistorcos);
 			}
 		}
 	}
