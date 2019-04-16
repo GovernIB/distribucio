@@ -80,6 +80,25 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getAssumpteCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
 				ordre).build();
+		switch(regla.getTipus()) {
+		case BACKOFFICE:
+			entity.updatePerTipusBackoffice(
+					regla.getBackofficeTipus(),
+					regla.getBackofficeUrl(),
+					regla.getBackofficeUsuari(),
+					regla.getBackofficeContrasenya(),
+					regla.getBackofficeIntents(),
+					regla.getBackofficeTempsEntreIntents());
+			break;
+		case BUSTIA:
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					regla.getBustiaId(),
+					false);
+			entity.updatePerTipusBustia(
+					bustia);
+			break;
+		}
 		return toReglaDto(reglaRepository.save(entity));
 	}
 
