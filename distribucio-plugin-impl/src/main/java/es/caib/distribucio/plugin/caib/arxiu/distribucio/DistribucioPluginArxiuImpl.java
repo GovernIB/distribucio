@@ -37,6 +37,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
+import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.Document;
@@ -412,7 +413,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			StringBuilder firmesTipus = new StringBuilder();
 			StringBuilder firmesPerfil = new StringBuilder();
 			StringBuilder firmesContingut = new StringBuilder();
-			boolean primera = true;
+			boolean primera = true; 
 			for (ArxiuFirmaDto firma: firmes) {
 				if (!primera) {
 					firmesTipus.append(", ");
@@ -430,10 +431,16 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		long t0 = System.currentTimeMillis();
 		try {
+			
+			
+			String annexTitol = inArxiu(
+					annex.getTitol(),
+					identificadorPare);
+			
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
 					toArxiuDocument(
 							null,
-							annex.getTitol(),
+							annexTitol,
 							fitxer,
 							firmes,
 							null,
@@ -466,6 +473,40 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					ex);
 		}
 	}
+	
+	
+	
+	private String inArxiu(
+			String arxiuNom,
+			String identificadorPare) throws ArxiuException, SistemaExternException {
+
+		// geting all docuements of an expedient saved already in arxiu
+		List<ContingutArxiu> continguts = getArxiuPlugin().expedientDetalls(
+				identificadorPare,
+				null).getContinguts();
+		int ocurrences = 0;
+		if (continguts != null) {
+			List<String> noms = new ArrayList<String>();
+			// Itreating over the files and saving their names in a List
+			for (ContingutArxiu contingut : continguts) {
+				noms.add(contingut.getNom());
+			}
+			// comping the name of the new file we try to store
+			String nName = new String(arxiuNom);
+			
+			// Checking if the file name exist in the expedient
+			while (noms.indexOf(nName) >= 0) {
+				// if it does 'ocurrences' increments
+				ocurrences++;
+				// and the number of ocurences is added to the file name
+				// and it checks again if the new file name exists
+				nName = arxiuNom + " (" + ocurrences + ")";
+			}
+			return nName;
+		}
+		return arxiuNom;
+	}
+
 
 	private List<ArxiuFirmaDto> convertirFirmesAnnexToArxiuFirmaDto(
 			List<DistribucioRegistreFirma> annexFirmes) throws SistemaExternException {
