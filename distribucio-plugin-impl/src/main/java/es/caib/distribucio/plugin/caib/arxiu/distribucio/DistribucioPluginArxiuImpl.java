@@ -391,7 +391,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String unitatArrelCodi,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes,
-			String identificadorRetorn,
+			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
@@ -444,7 +444,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
 							estatDocument,
 							documentEniRegistrableDto),
-					identificadorRetorn);
+					identificadorPare);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
 					accioDescripcio,

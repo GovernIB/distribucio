@@ -903,7 +903,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (pendentArxiu) {
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
 					anotacio.getId());
-			if (exceptionProcessant != null) {
+			if (exceptionProcessant == null) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
 						anotacio.getId());
 			}

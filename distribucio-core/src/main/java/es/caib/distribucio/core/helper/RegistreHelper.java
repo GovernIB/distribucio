@@ -348,10 +348,15 @@ public class RegistreHelper {
 					processarAnnexSistra(anotacio, annex);
 			}
 		}
-		Exception exceptionAplicantRegla = reglaHelper.reglaAplicar(anotacio);
+		Exception exceptionAplicantRegla = null;
+		if (anotacio.getRegla() != null) {
+			exceptionAplicantRegla = reglaHelper.reglaAplicar(anotacio);
+		}
 		if (exceptionAplicantRegla != null) {
 			return exceptionAplicantRegla;
 		}
+		
+		
 		esborrarDocsTemporals(anotacio);
 		anotacio.updateProces(
 				RegistreProcesEstatEnum.BUSTIA_PENDENT, 
