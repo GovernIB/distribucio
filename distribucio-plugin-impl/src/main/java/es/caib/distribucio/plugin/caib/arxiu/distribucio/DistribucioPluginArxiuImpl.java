@@ -251,12 +251,11 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				String tipusMime = null;
 				String csvRegulacio = null;
 				if ("application/pdf".equalsIgnoreCase(annex.getFitxerTipusMime())) {
-					tipusFirmaServidor = "PADES";
-					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF06.toString();
-					perfil = FirmaPerfil.EPES.toString();
+					tipusFirmaServidor = "CADES";
+					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
+					perfil = FirmaPerfil.BES.toString();
+					fitxerNom = annex.getFitxerNom() + "_cades_det.csig";
 					tipusMime = "application/pdf";
-					fitxerNom = annex.getTitol() + "_pades.pdf";
-					fitxerContingut.setContingut(null);
 				} else {
 					tipusFirmaServidor = "CADES";
 					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
