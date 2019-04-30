@@ -438,7 +438,7 @@ tr.clicable {
 		</c:if>
 	</div>
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/contenidor/${contenidor.id}"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/bustiaUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>
