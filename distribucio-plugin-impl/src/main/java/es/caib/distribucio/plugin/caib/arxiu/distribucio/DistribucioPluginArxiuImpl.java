@@ -83,7 +83,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	public String contenidorCrear(
 			DistribucioRegistreAnotacio anotacio,
 			String unitatArrelCodi) throws SistemaExternException {
-		String nomExpedient = "EXP_REG_" + anotacio.getExpedientNumero() + "_" + System.currentTimeMillis();
+		String nomExpedient = "EXP_REG_" + anotacio.getNumero() + "_" + System.currentTimeMillis();
 		String classificacio = getPropertyPluginRegistreExpedientClassificacio();
 		if (classificacio == null || classificacio.isEmpty()) {
 			throw new ValidationException(

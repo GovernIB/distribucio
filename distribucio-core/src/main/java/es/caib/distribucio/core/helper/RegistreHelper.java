@@ -380,7 +380,7 @@ public class RegistreHelper {
 				// Cream el contenidor per als annexos de l'anotació de registre
 				// només si no s'ha creat anteriorment
 				logger.debug("Creant contenidor pels annexos de l'anotació (" +
-						"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+						"anotacioNumero=" + anotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 				try {
 					uuidContenidor = pluginHelper.distribucioContenidorCrear(
@@ -407,7 +407,7 @@ public class RegistreHelper {
 						// no s'ha creat
 						if (annex.getFitxerArxiuUuid() == null) {
 							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
-									"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+									"anotacioNumero=" + anotacio.getNumero() + ", " +
 									"annexTitol=" + annex.getTitol() + ", " +
 									"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
@@ -465,7 +465,7 @@ public class RegistreHelper {
 			return exception;
 		} else {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
-					"anotacioIdentificador=" + anotacio.getIdentificador() + ", " +
+					"anotacioNumero=" + anotacio.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
 			contingutLogHelper.log(
 					anotacio,

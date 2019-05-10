@@ -764,7 +764,7 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "entitatUnitatCodi=" + entitatUnitatCodi + ", "
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
-				+ "anotacio=" + anotacio.getIdentificador() + ")");
+				+ "anotacio=" + anotacio.getNumero() + ")");
 		EntitatEntity entitatPerUnitat = entitatRepository.findByCodiDir3(entitatUnitatCodi);
 		if (entitatPerUnitat == null) {
 			throw new NotFoundException(
@@ -822,7 +822,7 @@ public class BustiaServiceImpl implements BustiaService {
 				"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
 				"tipus=" + tipus + ", " +
 				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
-				"anotacio=" + anotacio.getIdentificador() + ", "  +
+				"anotacio=" + anotacio.getNumero() + ", "  +
 				"bustia=" + bustia + ")");
 		Exception exceptionProcessant = null;
 		if (!bustiaHelper.isProcessamentAsincronProperty()) {
@@ -830,7 +830,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
-					"anotacio=" + anotacio.getIdentificador() + ")");
+					"anotacio=" + anotacio.getNumero() + ")");
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getId());
 			if (exceptionProcessant == null) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
@@ -840,7 +840,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
-					"anotacio=" + anotacio.getIdentificador() + ")");
+					"anotacio=" + anotacio.getNumero() + ")");
 		}
 		return exceptionProcessant;
 	}

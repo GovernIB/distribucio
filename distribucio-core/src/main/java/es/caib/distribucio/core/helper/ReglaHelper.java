@@ -121,8 +121,8 @@ public class ReglaHelper {
 					// Crea la llista de referències d'entrada
 					ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
 					ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-					referenciaEntrada.setNumeroEntrada(pendent.getIdentificador());
-					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getIdentificador()));	
+					referenciaEntrada.setNumeroEntrada(pendent.getNumero());
+					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));	
 					referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
 					// Invoca el backoffice sistra
 					try {
@@ -216,7 +216,7 @@ public class ReglaHelper {
 				false);
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"anotacioId=" + anotacio.getId() + ", " +
-				"anotacioNum=" + anotacio.getIdentificador() + ", " +
+				"anotacioNumero=" + anotacio.getNumero() + ", " +
 				"reglaId=" + anotacio.getRegla().getId() + ", " +
 				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
 				(anotacio.getRegla().getBackofficeTipus() != null ?
@@ -225,7 +225,7 @@ public class ReglaHelper {
 				"bustia=" + anotacio.getRegla().getBustia() + ")");
 		try {
 			aplicar(anotacio.getId());
-			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getNumero() + ")");
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
 							"alertes.segon.pla.aplicar.regles",
