@@ -13,7 +13,6 @@ import javax.jws.WebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;

@@ -4,14 +4,12 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,11 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
-import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
-import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -40,15 +34,9 @@ import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
-import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.war.command.ContingutMoureCopiarEnviarCommand;
-import es.caib.distribucio.war.helper.DatatablesHelper;
-import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.SessioHelper;

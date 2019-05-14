@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,6 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -46,10 +44,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.http.HttpServletResponse;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 
 /**
  * Controlador per al manteniment de bústies.

@@ -201,7 +201,8 @@ CREATE TABLE DIS_REGISTRE
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(100),
   LLEGIDA              boolean,
-  EXPEDIENT_ARXIU_UUID  character varying(100)
+  EXPEDIENT_ARXIU_UUID  character varying(100),
+  NUMERO_COPIA		   integer default 0 NOT NULL
 );
 
 

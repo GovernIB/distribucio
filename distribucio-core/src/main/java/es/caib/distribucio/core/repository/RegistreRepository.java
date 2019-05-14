@@ -167,4 +167,21 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findPendentsTancarArxiu(
 			@Param("ara") Date ara);
 
+	/** Mètode per consultar el número màxim pel valor de la columna numero_copia. Serveix per crear una nova còpia 
+	 * incrementant el valor a partir del resultat d'aquesta consulta.
+	 * @param entitatCodi
+	 * @param llibreCodi
+	 * @param data
+	 * @return
+	 */
+	@Query( "select coalesce(max(r.numeroCopia), 0) " + 
+			"from RegistreEntity r " +
+			"where  r.entitatCodi = :entitatCodi " +
+			"		and r.llibreCodi = :llibreCodi " +
+			"		and r.data = :data ")
+	Integer findMaxNumeroCopia(
+			@Param("entitatCodi") String entitatCodi,
+			@Param("llibreCodi") String llibreCodi,
+			@Param("data") Date data);
+	
 }

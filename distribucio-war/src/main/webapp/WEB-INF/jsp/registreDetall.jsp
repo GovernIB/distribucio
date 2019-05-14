@@ -6,7 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="registre.detalls.titol"/></c:set>
+<c:set var="titol"><spring:message code="registre.detalls.titol" arguments="${registre.numero}"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>

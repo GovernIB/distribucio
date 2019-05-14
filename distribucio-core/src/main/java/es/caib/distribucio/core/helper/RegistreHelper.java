@@ -177,6 +177,7 @@ public class RegistreHelper {
 				unitat != null ? unitat.getDenominacio() : null,
 				anotacio.getNumero(),
 				anotacio.getData(),
+				0, // número de còpia
 				anotacio.getIdentificador(),
 				anotacio.getExtracte(),
 				anotacio.getOficinaCodi(),
@@ -774,4 +775,19 @@ public class RegistreHelper {
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
+	/** Consulta el número de còpia màxim pel registre passat com a paràmetre. Quan es copoia una anotació de registre
+	 * a una altra bústia s'ha d'informar del número de còpia per poder distingir-lo de les altres anotacions que tenen
+	 * el mateix llibre, data, numero i entitat.
+	 * @param registre
+	 * @return Retorna el número màxim de registre.
+	 */
+	@Transactional
+	public Integer getMaxNumeroCopia(RegistreEntity registre) {
+		Integer numeroCopia = 
+					registreRepository.findMaxNumeroCopia(
+										registre.getEntitatCodi(),
+										registre.getLlibreCodi(),
+										registre.getData());
+		return numeroCopia != null ? numeroCopia : 0;
+	}
 }
