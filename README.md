@@ -12,7 +12,7 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 ## <a name="docs"></a> Documentació
 
 
->- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/Distribucio_0.9.22/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
+>- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
 >- [Manual d'usuari](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22/doc/pdf/02_Distribucio_Manual_Usuari.pdf)
 >- [Manual d'integració](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22/doc/pdf/03_Distribucio_Manual_Integraci%C3%B3.pdf)
 >- [Manual de plugins](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22/doc/pdf/04_Distribucio_Manual_Plugins.pdf)
