@@ -529,7 +529,7 @@ public class ContingutHelper {
 		if (duplicarContingut) {
 			registreHelper.guardarAnnexosAmbPluginDistribucio(
 					contingutCopia,
-					bustiaDesti,
+					bustiaDesti.getEntitat().getCodiDir3(),
 					false);
 		} else {
 			contingutCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());

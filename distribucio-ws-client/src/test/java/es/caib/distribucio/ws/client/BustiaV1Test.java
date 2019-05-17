@@ -43,7 +43,7 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04015411";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	private static final String ASSUMPTE_CODI = "A1";
+	private static final String ASSUMPTE_CODI = "BACK1";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
@@ -292,7 +292,7 @@ public class BustiaV1Test {
 	}
 	private InputStream getContingutAnnexSenseFirmaPdf() {
 		InputStream is = getClass().getResourceAsStream(
-        		"/annex_sense_firma.pdf");
+        		"/document.pdf");
 		return is;
 	}
 	private InputStream getContingutAnnexSenseFirmaDocx() {

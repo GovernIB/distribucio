@@ -47,7 +47,15 @@
 	<jee:local-slsb
 			id="bustiaV1WsService"
 			jndi-name="distribucio/BustiaV1WsServiceBean/local"
-			business-interface="es.caib.distribucio.core.api.service.ws.BustiaV1WsService"/>
+			business-interface="es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService"/>
+	<jee:local-slsb
+			id="backofficeIntegracioWsService"
+			jndi-name="distribucio/BackofficeIntegracioWsServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService"/>
+	<jee:local-slsb
+			id="backofficeWsService"
+			jndi-name="distribucio/BackofficeWsServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService"/>							
 	<jee:local-slsb
 			id="bantelBackofficeWs"
 			jndi-name="distribucio/BantelBackofficeWsBean/local"

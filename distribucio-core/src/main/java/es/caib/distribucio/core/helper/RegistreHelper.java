@@ -8,15 +8,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -24,10 +33,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
@@ -42,6 +49,8 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -89,6 +98,7 @@ public class RegistreHelper {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private ContingutLogHelper contingutLogHelper;
+	
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -148,13 +158,14 @@ public class RegistreHelper {
 		}
 		return anotacio;
 	}
-
+	
 	public RegistreEntity crearRegistreEntity(
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio,
-			ReglaEntity regla) {
+			ReglaEntity regla,
+			RegistreProcesEstatEnum estat) {
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
@@ -162,14 +173,7 @@ public class RegistreHelper {
 		if (anotacio.getJustificant() != null) {
 			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
 		}
-		RegistreProcesEstatEnum estat;
-		if (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty()) {
-			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
-		} else if (regla != null) {
-			estat = RegistreProcesEstatEnum.REGLA_PENDENT;
-		} else {
-			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-		}
+		// save annotacio in db
 		RegistreEntity entity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
@@ -218,7 +222,8 @@ public class RegistreHelper {
 		justificantArxiuUuid(justificantArxiuUuid).
 		build();
 		registreRepository.saveAndFlush(entity);
-		if (anotacio.getInteressats() != null) {
+		// save interessats in db
+		if (anotacio.getInteressats() != null) { 
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
 				entity.getInteressats().add(
 						crearInteressatEntity(
@@ -226,7 +231,8 @@ public class RegistreHelper {
 								entity));
 			}
 		}
-		if (anotacio.getAnnexos() != null) {
+		// save annexos and firmes in db and their byte content in the folder in local filesystem
+		if (anotacio.getAnnexos() != null) { 
 			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
 				entity.getAnnexos().add(
 						crearAnnexEntity(
@@ -236,6 +242,38 @@ public class RegistreHelper {
 		}
 		return entity;
 	}
+	
+	
+	
+	public static String encrypt
+	(String messageToEncrypt,
+			String clauSecreta) throws Exception {
+
+		MessageDigest messageDigest;
+
+		messageDigest = MessageDigest.getInstance("SHA-1");
+		byte[] digestResult = messageDigest.digest(messageToEncrypt.getBytes());
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE,
+				buildKey(clauSecreta));
+		byte[] encryptResult = cipher.doFinal(digestResult);
+		String clauAcces =  new String(Base64.encode(encryptResult));
+
+		return clauAcces;
+	}
+	
+	
+	public static SecretKeySpec buildKey(String message) throws Exception {
+		MessageDigest sha = MessageDigest.getInstance("SHA-1");
+		byte[] key = sha.digest(message.getBytes());
+		key = Arrays.copyOf(key,
+				16);
+		return new SecretKeySpec(key, "AES");
+	}
+	
+	
+	
+	
 	
 	public byte[] getAnnexArxiuContingut(String nomArxiu) {
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.bustia.contingut.documents.dir");
@@ -311,16 +349,17 @@ public class RegistreHelper {
 				anotacio.getUnitatAdministrativa());
 		Exception exceptionGuardantAnnexos = guardarAnnexosAmbPluginDistribucio(
 				anotacio,
-				bustia,
+				bustia.getEntitat().getCodiDir3(),
 				true);
 		if (exceptionGuardantAnnexos == null) {
+			
+			esborrarDocsTemporals(anotacio);
+			
 			RegistreProcesEstatEnum nouEstat;
 			if (anotacio.getRegla() != null) {
 				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 			} else {
-				esborrarDocsTemporals(anotacio);
 				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-				
 				emailHelper.emailBustiaPendentContingut(
 						bustia, 
 						anotacio, 
@@ -341,33 +380,28 @@ public class RegistreHelper {
 	@Transactional
 	public Exception processarAnotacioPendentRegla(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-		for (RegistreAnnexEntity annex: anotacio.getAnnexos()) {
-			if (anotacio.getRegla() != null &&
-				anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE &&
-				anotacio.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) {
-				if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
-					processarAnnexSistra(anotacio, annex);
-			}
-		}
+
 		Exception exceptionAplicantRegla = null;
 		if (anotacio.getRegla() != null) {
 			exceptionAplicantRegla = reglaHelper.reglaAplicar(anotacio);
 		}
+
 		if (exceptionAplicantRegla != null) {
 			return exceptionAplicantRegla;
 		}
-		
-		
-		esborrarDocsTemporals(anotacio);
-		anotacio.updateProces(
-				RegistreProcesEstatEnum.BUSTIA_PENDENT, 
-				null);
+
 		return null;
 	}
-
+	/**
+	 *  It saves anotacio with annexes in arxiu.
+	 * @param anotacio
+	 * @param codiDir3
+	 * @param crearAutofirma
+	 * @return
+	 */
 	public Exception guardarAnnexosAmbPluginDistribucio(
 			RegistreEntity anotacio,
-			BustiaEntity bustia,
+			String unitatOrganitzativaCodi,
 			boolean crearAutofirma) {
 		
 		Exception exception = null;
@@ -376,32 +410,33 @@ public class RegistreHelper {
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 					anotacio,
 					DistribucioRegistreAnotacio.class);
-			String uuidContenidor = null;
+			String uuidExpedient = null;
+			
+			// Cream el contenidor per als annexos de l'anotació de registre
+			// només si no s'ha creat anteriorment
 			if (anotacio.getExpedientArxiuUuid() == null) {
-				// Cream el contenidor per als annexos de l'anotació de registre
-				// només si no s'ha creat anteriorment
 				logger.debug("Creant contenidor pels annexos de l'anotació (" +
 						"anotacioNumero=" + anotacio.getNumero() + ", " +
-						"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 				try {
-					uuidContenidor = pluginHelper.distribucioContenidorCrear(
+					
+					//convert anotacio into arxiu expedient and save it as expedient in arxiu
+					uuidExpedient = pluginHelper.distribucioContenidorCrear(
 							anotacio.getNumero(),
-							distribucioRegistreAnotacio,
-							bustia.getEntitat().getCodiDir3());
-					anotacio.updateExpedientArxiuUuid(uuidContenidor);
+							distribucioRegistreAnotacio.getNumero(),
+							unitatOrganitzativaCodi);
+					anotacio.updateExpedientArxiuUuid(uuidExpedient);
 				} catch (Exception ex) {
 					return ex;
 				}
+			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
-				// Si el contenidor ja està creat agafam el seu UUID
-				uuidContenidor = anotacio.getExpedientArxiuUuid();
+				uuidExpedient = anotacio.getExpedientArxiuUuid();
 			}
-			if (uuidContenidor != null) {
+			if (uuidExpedient != null) {
+
 			// Emmagatzemam cada un dels annexos de l'anotació de registre
-			
-				
 				for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
-					
 					try {
 						RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
 						// Només crea l'annex a dins el contenidor si encara
@@ -410,7 +445,7 @@ public class RegistreHelper {
 							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
 									"anotacioNumero=" + anotacio.getNumero() + ", " +
 									"annexTitol=" + annex.getTitol() + ", " +
-									"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+									"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
 													
 							DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
@@ -419,16 +454,16 @@ public class RegistreHelper {
 							documentEniRegistrableDto.setOficinaDescripcio(anotacio.getOficinaDescripcio());
 							documentEniRegistrableDto.setOficinaCodi(anotacio.getOficinaCodi());
 							
+							// sign annex if unsigned and save it with firma in arxiu
 							String uuidDocument = pluginHelper.distribucioDocumentCrear(
 									anotacio.getNumero(),
 									distribucioAnnex,
-									bustia.getEntitat().getCodiDir3(),
-									uuidContenidor,
+									unitatOrganitzativaCodi,
+									uuidExpedient,
 									documentEniRegistrableDto);
 							annex.updateFitxerArxiuUuid(uuidDocument);
-							if (annex.getFitxerTamany() <= 0) {
+							if (annex.getFitxerTamany() <= 0) { //if fitxer tamany is not set fill it
 								Document document = pluginHelper.arxiuDocumentConsultar(
-										annex.getRegistre(), 
 										annex.getFitxerArxiuUuid(), 
 										null, 
 										true);
@@ -439,6 +474,7 @@ public class RegistreHelper {
 							}
 							if (distribucioAnnex.getFirmes() != null) {
 								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
+									// if firma was created with autofirma save info about firma(without content bytes) in db
 									if (distribucioFirma.isAutofirma() && crearAutofirma) {
 										RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
 										novaFirma.updatePerNovaFirma(
@@ -467,7 +503,7 @@ public class RegistreHelper {
 		} else {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
 					"anotacioNumero=" + anotacio.getNumero() + ", " +
-					"unitatOrganitzativaCodi=" + bustia.getEntitat().getCodiDir3() + ")");
+					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 			contingutLogHelper.log(
 					anotacio,
 					LogTipusEnumDto.DISTRIBUCIO,
@@ -495,9 +531,110 @@ public class RegistreHelper {
 			registre.updateArxiuTancat(true);
 		}
 	}
+	
+	// sends ids of anotacions to backoffice
+	@Transactional(readOnly = true)
+	public Throwable enviarIdsAnotacionsBackoffice(List<Long> pendentsIdsGroupedByRegla) {
 
+		Throwable throwable = null;
+		List <RegistreEntity> pendentsByRegla = new ArrayList<>();
+		try {
 
+			for(Long id: pendentsIdsGroupedByRegla){
+				RegistreEntity pendent = registreRepository.findOne(id);
+				pendentsByRegla.add(pendent);
+			}
 
+			String clauSecreta = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio.backoffice.integracio.clau");
+
+			List<AnotacioRegistreId> ids = new ArrayList<>();
+			for (RegistreEntity pendent : pendentsByRegla) {
+
+				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+				anotacioRegistreId.setIndetificador(pendent.getNumero());
+				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero(),
+						clauSecreta));
+				ids.add(anotacioRegistreId);
+
+			}
+			ReglaEntity regla = pendentsByRegla.get(0).getRegla();
+			logger.debug(">>> Abans de crear backoffice WS");
+			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
+					getClass().getResource(
+							"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
+					regla.getBackofficeUrl(),
+					new QName(
+							"http://www.caib.es/distribucio/ws/backoffice",
+							"BackofficeService"),
+					regla.getBackofficeUsuari(),
+					regla.getBackofficeContrasenya(),
+					null,
+					BackofficeWsService.class);
+			
+			logger.debug(">>> Abans de cridar backoffice WS");
+			backofficeClient.comunicarAnotacionsPendents(ids);
+			logger.debug(">>> Despres de cridar backoffice WS");			
+			return null;
+		} catch (Throwable ex) {
+			logger.error("Error enviant anotacions al backoffice", ex);
+			throwable = ex;
+			return throwable;
+		}
+	}
+	
+	
+
+	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
+
+		Throwable throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		updateBackEnviarDelayData(pendentsIdsGroupedByRegla, throwable);
+		return throwable;
+	}
+	
+	
+	@Transactional()
+	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Throwable throwable) {
+	
+		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
+		for (Long id : pendentsIdsGroupedByRegla) {
+			RegistreEntity pendent = registreRepository.findOne(id);
+			pendentsByRegla.add(pendent);
+		}
+		
+		for (RegistreEntity pend : pendentsByRegla) {
+
+			
+			if (throwable == null) {
+				// remove exception message and increment procesIntents
+				pend.updateProces(null,
+						null);
+			} else { // if excepion occured during sending anotacions ids to backoffice
+				// add exception message and increment procesIntents
+				pend.updateProces(null,
+						throwable);
+			}
+
+			// set delay for another send retry
+			int procesIntents = pend.getProcesIntents();
+			String tempsEspera = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
+			// we convert to minutes to not have to deal with too big numbers out of bounds
+			int minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
+			if (minutesEspera < 1) {
+				minutesEspera = 1;
+			} // with every proces intent delay between resends will be longer
+			int delayMinutes = minutesEspera * procesIntents;
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(new Date());
+			cal.add(Calendar.MINUTE,
+					delayMinutes);
+			pend.updateBackRetryEnviarData(cal.getTime());
+			registreRepository.saveAndFlush(pend);
+		}
+	}
+
+	
 	private RegistreInteressat fromInteressatEntity(
 			RegistreInteressatEntity interessatEntity) {
 		RegistreInteressat interessat = new RegistreInteressat();
@@ -730,48 +867,7 @@ public class RegistreHelper {
 		public void afterCompletion(int status) {}
 	}
 
-	/*
-	 * Mètode privat per obrir el document annex de tipus sistra i extreure'n
-	 * informació per a l'anotació de registre. La informació que es pot extreure
-	 * depén del document:
-	 * - Asiento.xml: ASIENTO_REGISTRAL.DATOS_ASUNTO.IDENTIFICADOR_TRAMITE (VARCHAR2(20))
-	 * - DatosPropios.xml: DATOS_PROPIOS.INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO (VARCHAR2(100))
-	 * 
-	 * @param anotacio 
-	 * 			Anotació del registre
-	 * @param annex
-	 * 			Document annex amb el contingut per a llegir.
-	 */
-	private void processarAnnexSistra(
-			RegistreEntity anotacio,
-			RegistreAnnexEntity annex) {
-		try {
-			byte[] annexContingut = null;
-			if (annex.getGesdocDocumentId() != null) {
-				ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
-				pluginHelper.gestioDocumentalGet(
-					annex.getGesdocDocumentId(), 
-					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-					baos_doc);
-				annexContingut = baos_doc.toByteArray();
-				annex.updateGesdocDocumentId(null);
-			}
-			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(annexContingut);
-			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
-				String identificadorProcediment = XmlHelper.getNodeValue(
-						doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
-				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
-			} else if (annex.getFitxerNom().equals("Asiento.xml")) {
-				String identificadorTramit = XmlHelper.getNodeValue(
-						doc.getDocumentElement(), "DATOS_ASUNTO.IDENTIFICADOR_TRAMITE");
-				anotacio.updateIdentificadorTramitSistra(identificadorTramit);
-			}		
-		} catch (Exception e) {
-			logger.error(
-					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
-					e);
-		}
-	}
+
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 

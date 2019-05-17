@@ -14,9 +14,33 @@ public interface SegonPlaService {
 	 * Comprovar si hi ha execucions massives pendents 
 	 * d'executar-se
 	 */
+	
+	/**
+	 * Aplica les regles pendents a les anotacions de registre.
+	 */
+	public void aplicarReglesPendents();
 
-	public void comprovarEnviamentEmailsNoAgrupatsBustia();
+	/**
+	 * Tanca els contenidors de l'arxiu (expedients) de les anotacions de registre
+	 * ja processades.
+	 */
+	public void tancarContenidorsArxiuPendents();
+	
 
-	public void comprovarEnviamentEmailsAgrupatsBustia();
+	public void enviarEmailsPendentsNoAgrupats();
+
+	public void enviarEmailsPendentsAgrupats();
+
+	/**
+	 * Guarda els annexos pendents de les anotacions de registre que han
+	 * arribat a DISTRIBUCIO.
+	 */
+	public void guardarAnotacionsPendentsEnArxiu();
+
+	/**
+	 * Envia anotacions pendents al backoffice de distribucio
+	 */
+	void enviarIdsAnotacionsPendentsBackoffice();
+
 	
 }

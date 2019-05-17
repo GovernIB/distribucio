@@ -35,6 +35,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findByRegla(
 			ReglaEntity regla);
 	
+	RegistreEntity findByNumero(String numero);
+	
 	@Query(
 			"from" +
 			"    RegistreEntity r " +
@@ -57,6 +59,24 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 		    "    r.data desc")
 	List<RegistreEntity> findAmbReglaPendentAplicar(
 			@Param("maxReintents") int maxReintents);
+	
+	
+	
+	
+	@Query(
+			"from" +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.regla is not null and r.regla.activa = true " +
+			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
+			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
+		    "order by " +
+		    "    r.data desc "
+		    + "group by r.regla.id")
+	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
+			@Param("currentDate") Date currentDate);
+	
+
 
 	/*@Query("from RegistreEntity r " +
 		    "where r.regla.backofficeTipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +

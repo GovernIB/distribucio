@@ -213,6 +213,18 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.descripcio = descripcio;
 			return this;
 		}
+		public Builder backofficeUrl(String backofficeUrl) {
+			built.backofficeUrl = backofficeUrl;
+			return this;
+		}
+		public Builder backofficeUsuari(String backofficeUsuari) {
+			built.backofficeUsuari = backofficeUsuari;
+			return this;
+		}
+		public Builder backofficeContrasenya(String backofficeContrasenya) {
+			built.backofficeContrasenya = backofficeContrasenya;
+			return this;
+		}
 		public ReglaEntity build() {
 			return built;
 		}

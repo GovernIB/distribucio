@@ -133,10 +133,18 @@ $(document).ready(function() {
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
-						{{else procesEstat == 'DISTRIBUIT_PROCESSAT'}}
-							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_PROCESSAT"/>
-						{{else procesEstat == 'DISTRIBUIT_BACKOFFICE'}}
-							<spring:message code="registre.proces.estat.enum.DISTRIBUIT_BACKOFFICE"/>
+						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
+							<spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/>
+						{{else procesEstat == 'BACK_PENDENT'}}
+							<spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
+						{{else procesEstat == 'BACK_REBUDA'}}
+							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
+						{{else procesEstat == 'BACK_PROCESSADA'}}
+							<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
+						{{else procesEstat == 'BACK_REBUTJADA'}}
+							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
+						{{else procesEstat == 'BACK_ERROR'}}
+							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>
 						{{/if}}
 
 						{{if procesError != null}}

@@ -27,6 +27,7 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.ReglaEntity.Builder;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
@@ -99,6 +100,7 @@ public class ReglaServiceImpl implements ReglaService {
 					bustia);
 			break;
 		}
+
 		return toReglaDto(reglaRepository.save(entity));
 	}
 

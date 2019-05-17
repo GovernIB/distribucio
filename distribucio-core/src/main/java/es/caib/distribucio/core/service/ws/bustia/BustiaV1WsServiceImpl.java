@@ -22,7 +22,7 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnu
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.ws.BustiaV1WsService;
+import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;

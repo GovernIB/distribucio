@@ -156,6 +156,24 @@ public class RegistreEntity extends ContingutEntity {
 	private String procesError;
 	@Column(name = "proces_intents")
 	private int procesIntents;
+	
+	
+	// Date when regla change state of anotacio to RegistreProcesEstatEnum.BACK_PENDENT
+	@Column(name = "back_pendent_data")
+	private Date backPendentData;
+	@Column(name = "back_rebuda_data")
+	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_REBUDA) method 
+	private Date backRebudaData;
+	@Column(name = "back_proces_rebutj_error_data")
+	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_PROCESADA) or (RegistreProcesEstatEnum.BACK_REBUTJADA) or (RegistreProcesEstatEnum.BACK_ERROR) method 
+	private Date backProcesRebutjErrorData;
+	@Column(name = "back_observacions")
+	private String backObservacions;
+	// Date when distribucio should retry to send anotacio to backoffice
+	@Column(name = "back_retry_enviar_data")
+	private Date backRetryEnviarData;
+	
+
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -337,9 +355,21 @@ public class RegistreEntity extends ContingutEntity {
 	public Boolean getLlegida() {
 		return llegida;
 	}
-
 	public Integer getNumeroCopia() {
 		return numeroCopia != null? numeroCopia : 0;
+	}
+	public Date getBackRetryEnviarData() {
+		return backRetryEnviarData;
+	}
+	public Date getBackPendentData() {
+		return backPendentData;
+	}
+	public Date getBackRebudaData() {
+		return backRebudaData;
+	}
+
+	public String getBackObservacions() {
+		return backObservacions;
 	}
 	public void updateMotiuRebuig(
 			String motiuRebuig) {
@@ -358,7 +388,7 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
-			Exception exception) {
+			Throwable exception) {
 		this.procesData = new Date();
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;
@@ -371,6 +401,34 @@ public class RegistreEntity extends ContingutEntity {
 		} else {
 			this.procesError = null;
 		}
+	}
+	public void updateProcesBackPendent() {
+		this.procesData = null;
+		this.procesIntents = 0;
+		this.procesError = null;
+		this.procesEstat = RegistreProcesEstatEnum.BACK_PENDENT;
+	}
+	
+	public void updateBackRetryEnviarData(Date backRetryEnviarData) {
+		this.backRetryEnviarData = backRetryEnviarData;
+	}
+	public void updateBackPendentData(Date backPendentData) {
+		this.backPendentData = backPendentData;
+	}
+	public void updateBackRebudaData(Date backRebudaData) {
+		this.backRebudaData = backRebudaData;
+		this.procesError = null;
+	}
+
+	public Date getBackProcesRebutjErrorData() {
+		return backProcesRebutjErrorData;
+	}
+	public void updateBackProcesRebutjErrorData(Date backProcesRebutjErrorData) {
+		this.backProcesRebutjErrorData = backProcesRebutjErrorData;
+	}
+	public void updateBackEstat(RegistreProcesEstatEnum procesEstat, String backObservacions) {
+		this.procesEstat = procesEstat;
+		this.backObservacions = backObservacions;
 	}
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;

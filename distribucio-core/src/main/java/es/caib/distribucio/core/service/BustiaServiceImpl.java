@@ -693,12 +693,12 @@ public class BustiaServiceImpl implements BustiaService {
 	public ContingutDto enviarContingut(
 			Long entitatId,
 			Long bustiaId,
-			Long contingutId,
+			Long registreId,
 			String comentari) {
 		logger.debug("Enviant contingut a bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + bustiaId + ", "
-				+ "contingutId=" + contingutId + ","
+				+ "registreId=" + registreId + ","
 				+ "comentari=" + comentari + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -707,7 +707,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				registreId,
 				null);
 		// Comprova l'accés al path del contingutOrigen
 		contingutHelper.comprovarPermisosPathContingut(
@@ -739,7 +739,7 @@ public class BustiaServiceImpl implements BustiaService {
 				contingut,
 				contingutMoviment);
 		// Refrescam cache usuaris bústia de destí
-		bustiaHelper.evictElementsPendentsBustia(
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustia);
 		return contingutHelper.toContingutDto(
@@ -776,6 +776,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
+		// find bustia that will become parent of anotacio
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
 				unitatOrganitzativa);
@@ -798,12 +799,28 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitatOrganitzativa,
 				anotacio);
+		
+		// set anotacio processing state
+		RegistreProcesEstatEnum estat;
+		// if anotacio has annexos
+		if (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty()) {
+			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
+		// else if anotacio has regles
+		} else if (reglaAplicable != null) {
+			estat = RegistreProcesEstatEnum.REGLA_PENDENT;
+		} else {
+			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+		}
+		
+		//save anotacio and interessats in db 
+		// and save annexos and firmes in db and their byte content in the folder in local file system
 		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
 				entitat,
 				tipus,
 				unitatOrganitzativa,
 				anotacio,
-				reglaAplicable);
+				reglaAplicable,
+				estat);
 		contingutLogHelper.log(
 				anotacioEntity,
 				LogTipusEnumDto.CREACIO,
@@ -811,11 +828,13 @@ public class BustiaServiceImpl implements BustiaService {
 				null,
 				false,
 				false);
+		
+		// set parent bustia of anotacio
 		contingutHelper.ferIEnregistrarMoviment(
 				anotacioEntity,
 				bustia,
 				null);
-		bustiaHelper.evictElementsPendentsBustia(
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				bustia.getEntitat(),
 				bustia);
 		logger.debug("Bústia destí de l'anotació (" +
@@ -824,7 +843,10 @@ public class BustiaServiceImpl implements BustiaService {
 				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
 				"anotacio=" + anotacio.getNumero() + ", "  +
 				"bustia=" + bustia + ")");
+		
 		Exception exceptionProcessant = null;
+		// if asynchronous processing is turned off 
+		// save anotacio in arxiu and apply reglas now
 		if (!bustiaHelper.isProcessamentAsincronProperty()) {
 			logger.debug("L'anotació es processarà inmediatament (" +
 					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
@@ -836,6 +858,8 @@ public class BustiaServiceImpl implements BustiaService {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 			}
 		} else {
+			// if asynchronous processing is turned on 
+			// there are two @Scheduled methods that will periodically process anotacions pending to save in arxiu or to apply regla to
 			logger.debug("L'anotació es processarà de forma asíncrona (" +
 					"entitatUnitatCodi=" + entitatUnitatCodi + ", " +
 					"tipus=" + tipus + ", " +
@@ -849,13 +873,13 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public void registreAnotacioEnviarPerEmail(
 			Long entitatId,
-			Long contingutId,
+			Long bustiaId,
 			Long registreId, 
 			String adresses) throws MessagingException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreAnotacioDto registre = registreService.findOne(
 				entitatId,
-				contingutId,
+				bustiaId,
 				registreId);
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -864,7 +888,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				bustiaId,
 				null);
 		RegistreEntity registreEntity = registreRepository.findByPareAndId(
 				contingut,
@@ -873,12 +897,12 @@ public class BustiaServiceImpl implements BustiaService {
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			justificant = registreService.getRegistreJustificant(
 					entitatId,
-					contingutId, 
+					bustiaId, 
 					registreId);
 		}
 		List<RegistreAnnexDetallDto> anexos = registreService.getAnnexosAmbArxiu(
 				entitatId,
-				contingutId,
+				bustiaId,
 				registreId);
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
@@ -945,7 +969,7 @@ public class BustiaServiceImpl implements BustiaService {
 							"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)" +
 							(concsvBaseUrl != null && justificant.getFirmaCsv() != null?
 									"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+justificant.getFirmaCsv()+"\"> Descarregar </a>"
-									:"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/justificant\"> Descarregar </a>") +
+									:"<a href=\""+appBaseUrl+"/modal/contingut/"+bustiaId+"/registre/"+registreId+"/justificant\"> Descarregar </a>") +
 							"</td>"+
 							"			</tr>"+								
 							"		</table>";
@@ -1069,7 +1093,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
 					(concsvBaseUrl != null && annex.getFirmaCsv()!=null?
 							"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+annex.getFirmaCsv()+"\"> Descarregar </a>"
-							:"<a href=\""+appBaseUrl+"/modal/contingut/"+contingutId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>") +
+							:"<a href=\""+appBaseUrl+"/modal/contingut/"+bustiaId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>") +
 					"</td>"+
 					"			</tr>"+
 					htmlFirmes+"";
@@ -1780,7 +1804,7 @@ public class BustiaServiceImpl implements BustiaService {
 			if(filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PENDENT){
 				registreEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 			} else if (filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PROCESSAT ) { 
-				registreEstat = RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT;
+				registreEstat = RegistreProcesEstatEnum.BUSTIA_PROCESSADA;
 			}					
 			
 			pagina = contingutRepository.findRegistreByPareAndFiltre(
@@ -1856,11 +1880,11 @@ public class BustiaServiceImpl implements BustiaService {
 	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
-			Long contingutId) {
+			Long registreId) {
 		logger.debug("Consultant un contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + bustiaId + ", "
-				+ "contingutId=" + contingutId + ")");
+				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -1873,7 +1897,7 @@ public class BustiaServiceImpl implements BustiaService {
 				true);
 		ContingutEntity contingutPendent = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				registreId,
 				bustia);
 		return toBustiaContingutDto(contingutPendent);
 	}
@@ -1901,14 +1925,14 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
-			Long contingutId,
+			Long registreId,
 			boolean deixarCopia,
 			String comentari) throws NotFoundException {
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaOrigenId=" + bustiaOrigenId + ", "
 				+ "bustiaDestiIds=" + bustiaDestiIds + ", "
-				+ "contingutId=" + contingutId + ", "
+				+ "registreId=" + registreId + ", "
 				+ "comentari=" + comentari + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -1929,13 +1953,13 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				registreId,
 				bustiaOrigen);
 		if (contingut instanceof RegistreEntity) {
 			RegistreEntity registre = (RegistreEntity)contingut;
 			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
 				throw new ValidationException(
-						contingutId,
+						registreId,
 						ContingutEntity.class,
 						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
 			}
@@ -1943,7 +1967,7 @@ public class BustiaServiceImpl implements BustiaService {
 		/////////////////
 		ContingutEntity contingutAux = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				registreId,
 				bustiaOrigen);
 		// Avisam per correu als responsables de la bústia de destí
 		boolean primerEnviament = true;
@@ -1975,13 +1999,13 @@ public class BustiaServiceImpl implements BustiaService {
 					bustia,
 					contingutEnviar,
 					contingutMoviment);
-			bustiaHelper.evictElementsPendentsBustia(
+			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 					entitat,
 					bustia);
 			primerEnviament = false;
 		}
 		// Refrescam cache d'elements pendents de les bústies
-		bustiaHelper.evictElementsPendentsBustia(
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustiaOrigen);
 	}
@@ -2058,7 +2082,7 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				BustiaEntity.class,
 				permis);
-		bustiaHelper.evictElementsPendentsBustia(
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustia);
 	}
@@ -2086,7 +2110,7 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				BustiaEntity.class,
 				permisId);
-		bustiaHelper.evictElementsPendentsBustia(
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustia);
 	}
@@ -2206,7 +2230,7 @@ public class BustiaServiceImpl implements BustiaService {
 			
 			if(registre.getProcesEstat()==RegistreProcesEstatEnum.BUSTIA_PENDENT){
 				bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PENDENT);
-			} else if (registre.getProcesEstat()==RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT) { 
+			} else if (registre.getProcesEstat()==RegistreProcesEstatEnum.BUSTIA_PROCESSADA) { 
 				bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PROCESSAT);
 			}
 		}

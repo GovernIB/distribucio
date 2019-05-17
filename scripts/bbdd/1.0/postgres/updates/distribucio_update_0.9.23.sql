@@ -1,3 +1,4 @@
+
 -- #98 Eliminar informació de la data de còpia en el número de registre
 -- Cal treure la data existent i modificar la restricció única per peremtre tenir números iguals
 
@@ -86,3 +87,13 @@ alter table dis_registre
 			DATA, 
 			NUMERO_COPIA);
 
+
+UPDATE DIS_REGISTRE SET PROCES_ESTAT = 'BUSTIA_PROCESSADA' WHERE PROCES_ESTAT = 'DISTRIBUIT_PROCESSAT';
+UPDATE DIS_REGISTRE SET PROCES_ESTAT = 'BACK_PROCESSADA' WHERE PROCES_ESTAT = 'BACK_PROCESSADA';
+
+
+alter table DIS_REGISTRE add BACK_PENDENT_DATA  timestamp without time zone;
+alter table DIS_REGISTRE add BACK_REBUDA_DATA  timestamp without time zone;
+alter table DIS_REGISTRE add BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone;
+alter table DIS_REGISTRE add BACK_OBSERVACIONS character varying(1024);
+alter table DIS_REGISTRE add BACK_RETRY_ENVIAR_DATA  timestamp without time zone;

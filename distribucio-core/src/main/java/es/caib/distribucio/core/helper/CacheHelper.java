@@ -149,7 +149,7 @@ public class CacheHelper {
 	
 	
 	@CacheEvict(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
-	public void evictElementsPendentsBustiesUsuari(
+	public void evictCountElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}
