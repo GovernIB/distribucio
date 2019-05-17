@@ -244,7 +244,7 @@ public interface RegistreService {
 	
 	List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
 
-	AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id) throws Exception;
+	AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
 	void canviEstat(AnotacioRegistreId id,
 			Estat estat,

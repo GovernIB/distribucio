@@ -189,7 +189,7 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id) throws Exception {
+	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id) {
 		return delegate.findOneForBackoffice(id);
 	}
 
