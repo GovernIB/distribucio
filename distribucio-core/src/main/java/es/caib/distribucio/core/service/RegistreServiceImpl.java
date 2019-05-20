@@ -900,24 +900,22 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(
 				anotacio.getProcesEstat());
 		Exception exceptionProcessant = null;
-		if (pendentArxiu) {
-			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
-					anotacio.getId());
-			if (exceptionProcessant != null) {
+		if (pendentArxiu || pendentRegla) {
+			if (pendentArxiu) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+						anotacio.getId());
+			}
+			if (exceptionProcessant == null && pendentRegla) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
 						anotacio.getId());
 			}
-			return exceptionProcessant;
-		} else if (pendentRegla) {
-			exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
-					anotacio.getId());
-			return exceptionProcessant;
 		} else {
 			throw new ValidationException(
 					anotacio.getId(),
 					RegistreEntity.class,
 					"L'anotació de registre no es troba en estat pendent");
 		}
+		return exceptionProcessant;
 	}
 
 	private RegistreAnnexDetallDto getJustificantPerRegistre(

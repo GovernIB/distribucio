@@ -691,19 +691,30 @@ public class RegistreHelper {
 
 		/** Mètode que s'executa després que s'hagi guardat correctament a BBDD i per tants els temporals es poden guardar correctament. */
 		@Override
+		@Transactional
 		public void afterCommit() {
 			if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 				for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
 					if (annex.getGesdocDocumentId() != null) {
-						pluginHelper.gestioDocumentalDelete(annex.getGesdocDocumentId(),
-								PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+						try {
+							pluginHelper.gestioDocumentalDelete(annex.getGesdocDocumentId(),
+									PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+						} catch(Exception e) {
+							logger.error("Error esborrant l'annex amb id " + annex.getId() + " del gestor documental: " + e.getMessage(), e);
+						}
 						annex.updateGesdocDocumentId(null);
+						registreAnnexRepository.saveAndFlush(annex);
 					}
 					for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
 						if (firma.getGesdocFirmaId() != null) {
-							pluginHelper.gestioDocumentalDelete(firma.getGesdocFirmaId(),
-									PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
+							try {
+								pluginHelper.gestioDocumentalDelete(firma.getGesdocFirmaId(),
+										PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
+							} catch (Exception e) {
+								logger.error("Error esborrant la firma d'annex amb id " + firma.getId() + " del gestor documental: " + e.getMessage(), e);
+							}
 							firma.updateGesdocFirmaId(null);
+							registreAnnexFirmaRepository.saveAndFlush(firma);
 						}
 					}
 				}
