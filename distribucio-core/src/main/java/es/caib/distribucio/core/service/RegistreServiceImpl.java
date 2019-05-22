@@ -354,11 +354,7 @@ public class RegistreServiceImpl implements RegistreService {
 			if (!encryptedIdentificator.equals(id.getClauAcces()))
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			
 			RegistreEntity registreEntity = registreRepository.findByNumero(id.getIndetificador());
-
 			
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
@@ -383,7 +379,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setIdomaDescripcio(registreEntity.getIdiomaDescripcio());
 			anotacioPerBackoffice.setObservacions(registreEntity.getObservacions());
 			anotacioPerBackoffice.setOrigenRegistreNumero(registreEntity.getNumeroOrigen());
-			anotacioPerBackoffice.setOrigenData(registreEntity.getDataOrigen() != null ? sdf.format(registreEntity.getDataOrigen()) : null);
+			anotacioPerBackoffice.setOrigenData(registreEntity.getDataOrigen());
 			anotacioPerBackoffice.setAplicacioCodi(registreEntity.getAplicacioCodi());
 			anotacioPerBackoffice.setAplicacioVersio(registreEntity.getAplicacioVersio());
 			anotacioPerBackoffice.setRefExterna(registreEntity.getReferencia());

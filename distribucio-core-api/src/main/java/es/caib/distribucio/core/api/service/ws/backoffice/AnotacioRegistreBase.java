@@ -36,7 +36,7 @@ public class AnotacioRegistreBase {
 	private String idomaDescripcio;
 	private String observacions;
 	private String origenRegistreNumero;
-	private String origenData;
+	private Date origenData;
 	private String aplicacioCodi;
 	private String aplicacioVersio;
 	private String refExterna;
@@ -184,10 +184,10 @@ public class AnotacioRegistreBase {
 	public void setOrigenRegistreNumero(String origenRegistreNumero) {
 		this.origenRegistreNumero = origenRegistreNumero;
 	}
-	public String getOrigenData() {
+	public Date getOrigenData() {
 		return origenData;
 	}
-	public void setOrigenData(String origenData) {
+	public void setOrigenData(Date origenData) {
 		this.origenData = origenData;
 	}
 	public String getAplicacioCodi() {

@@ -17,8 +17,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWs
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 
 /**
- * Implementació dels mètodes per al servei d'enviament de
- * continguts a bústies.
+ * Implementació dels mètodes per al servei backoffice integracio
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
