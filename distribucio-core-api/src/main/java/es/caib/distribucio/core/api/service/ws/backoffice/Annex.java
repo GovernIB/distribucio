@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.core.api.service.ws.backoffice;
 
+import java.util.Date;
+
 /**
  * Classe que representa un annex d'una anotació de registre.
  * 
@@ -18,7 +20,7 @@ public class Annex {
 	private String tipusMime;
 	private NtiTipoDocumento ntiTipoDocumental;
 	private NtiOrigen ntiOrigen;
-	private String ntiFechaCaptura;
+	private Date ntiFechaCaptura;
 	private SicresTipoDocumento sicresTipoDocumento;
 	private SicresValidezDocumento sicresValidezDocumento;
 	private String observacions;
@@ -75,10 +77,10 @@ public class Annex {
 	public void setNtiOrigen(NtiOrigen ntiOrigen) {
 		this.ntiOrigen = ntiOrigen;
 	}
-	public String getNtiFechaCaptura() {
+	public Date getNtiFechaCaptura() {
 		return ntiFechaCaptura;
 	}
-	public void setNtiFechaCaptura(String ntiFechaCaptura) {
+	public void setNtiFechaCaptura(Date ntiFechaCaptura) {
 		this.ntiFechaCaptura = ntiFechaCaptura;
 	}
 	public SicresTipoDocumento getSicresTipoDocumento() {

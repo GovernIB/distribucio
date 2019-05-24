@@ -161,8 +161,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
 		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		List<Annex> annexosPerBackoffice = new ArrayList<Annex>(); 
@@ -177,7 +175,7 @@ public class RegistreServiceImpl implements RegistreService {
 			annexPerBackoffice.setTipusMime(annexEntity.getFitxerTipusMime());
 			annexPerBackoffice.setNtiTipoDocumental(toNtiTipoDocumento(annexEntity.getNtiTipusDocument()));
 			annexPerBackoffice.setNtiOrigen(toNtiOrigen(annexEntity.getOrigenCiutadaAdmin()));
-			annexPerBackoffice.setNtiFechaCaptura(sdf.format(annexEntity.getDataCaptura()));
+			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
 			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
 			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
 			

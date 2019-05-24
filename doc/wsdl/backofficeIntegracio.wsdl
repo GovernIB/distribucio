@@ -75,7 +75,7 @@
 <xs:element name="firmaTamany" type="xs:long" />
 <xs:element minOccurs="0" name="firmaTipus" type="tns:firmaTipus" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
-<xs:element minOccurs="0" name="ntiFechaCaptura" type="xs:string" />
+<xs:element minOccurs="0" name="ntiFechaCaptura" type="xs:dateTime" />
 <xs:element minOccurs="0" name="ntiOrigen" type="tns:ntiOrigen" />
 <xs:element minOccurs="0" name="ntiTipoDocumental" type="tns:ntiTipoDocumento" />
 <xs:element minOccurs="0" name="observacions" type="xs:string" />
