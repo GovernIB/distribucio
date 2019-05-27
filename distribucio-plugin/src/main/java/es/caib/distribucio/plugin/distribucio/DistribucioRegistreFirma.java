@@ -11,7 +11,14 @@ public class DistribucioRegistreFirma  {
 	private String gesdocFirmaId;
 	private byte[] contingut;
 	private DistribucioRegistreAnnex annex;
+	private long tamany;
 	
+	public long getTamany() {
+		return tamany;
+	}
+	public void setTamany(long tamany) {
+		this.tamany = tamany;
+	}
 	public String getTipus() {
 		return tipus;
 	}

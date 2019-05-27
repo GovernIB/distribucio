@@ -15,6 +15,9 @@ import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 
 /**
  * Declaració dels mètodes per a gestionar les anotacions
@@ -64,22 +67,8 @@ public interface RegistreService {
 			Long registreId,
 			String motiu) throws NotFoundException;
 
-	/**
-	 * Guarda els annexos pendents de les anotacions de registre que han
-	 * arribat a DISTRIBUCIO.
-	 */
-	public void guardarAnnexosArxiuPendents();
 
-	/**
-	 * Aplica les regles pendents a les anotacions de registre.
-	 */
-	public void aplicarReglesPendents();
 
-	/**
-	 * Tanca els contenidors de l'arxiu (expedients) de les anotacions de registre
-	 * ja processades.
-	 */
-	public void tancarContenidorsArxiuPendents();
 	
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
@@ -254,4 +243,16 @@ public interface RegistreService {
 			String fitxerArxiuUuid) throws NotFoundException;
 	
 	List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
+
+	AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
+
+	void canviEstat(AnotacioRegistreId id,
+			Estat estat,
+			String observacions);
+
+	boolean reintentarEnviamentBackofficeAdmin(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId);
+
 }

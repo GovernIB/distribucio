@@ -70,28 +70,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
 			Pageable pageable);
 
-	@Query(	"select " +
-			"    c " +
-			"from " +
-			"    ContingutEntity c " +
-			"where " +
-			"    c.entitat = :entitat " +
-			"and (:esNullNom = true or lower(c.nom) like :nom) " +
-			"and (:esNullUsuari = true or c.lastModifiedBy = :usuari) " +
-			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
-			"and esborrat > 0")
-	public Page<ContingutEntity> findEsborratsByFiltrePaginat(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("esNullNom") boolean esNullNom,
-			@Param("nom") String nom,
-			@Param("esNullUsuari") boolean esNullUsuari,
-			@Param("usuari") UsuariEntity usuari,
-			@Param("esNullDataInici") boolean esNullDataInici,
-			@Param("dataInici") Date dataInici,
-			@Param("esNullDataFi") boolean esNullDataFi,
-			@Param("dataFi") Date dataFi,
-			Pageable pageable);
+
 
 	@Query(	"select " +
 			"    c " +
@@ -106,7 +85,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
 			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
-			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.DISTRIBUIT_PROCESSAT)) or (c.procesEstat = :estat))")
+			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PROCESSADA)) or (c.procesEstat = :estat))")
 	public Page<ContingutEntity> findRegistreByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,

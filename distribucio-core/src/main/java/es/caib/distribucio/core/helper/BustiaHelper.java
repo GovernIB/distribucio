@@ -188,13 +188,13 @@ public class BustiaHelper {
 		return bustiaDesti;
 	}
 
-	public void evictElementsPendentsBustia(
+	public void evictCountElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			BustiaEntity bustia) {
 		Set<String> usuaris = contingutHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
 		if (usuaris != null) {
 			for (String usuari: usuaris)
-				cacheHelper.evictElementsPendentsBustiesUsuari(
+				cacheHelper.evictCountElementsPendentsBustiesUsuari(
 						entitat,
 						usuari);
 		}

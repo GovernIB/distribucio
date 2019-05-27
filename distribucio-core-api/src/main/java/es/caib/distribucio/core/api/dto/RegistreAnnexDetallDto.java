@@ -17,6 +17,7 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private Long id;
 	private String titol;
 	private String fitxerNom;
+	private byte[] fitxerContingut;
 	private int fitxerTamany;
 	private String fitxerTipusMime;
 	private Date dataCaptura;
@@ -165,5 +166,12 @@ public class RegistreAnnexDetallDto implements Serializable {
 	public String getFirmaCsv() {
 		return this.firmaCsv;
 	}
+	public byte[] getFitxerContingut() {
+		return fitxerContingut;
+	}
+	public void setFitxerContingut(byte[] fitxerContingut) {
+		this.fitxerContingut = fitxerContingut;
+	}
+
 
 }
