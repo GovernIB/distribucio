@@ -1,6 +1,6 @@
 # ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
 
-> - Versió Estable: __0.9.22.1__ (tag [Distribucio_0.9.22.1](https://github.com/GovernIB/distribucio/tree/Distribucio_0.9.22.1))
+> - Versió Estable: __0.9.22.2__ (tag [Distribucio_0.9.22.2](https://github.com/GovernIB/distribucio/tree/Distribucio_0.9.22.2))
 > - Versió Desenvolupament: __0.9.23__ (branca [dis-0.9](https://github.com/GovernIB/distribucio/tree/dis-0.9))
 
 ## <a name="desc"></a> Descripció
@@ -12,11 +12,11 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 ## <a name="docs"></a> Documentació
 
 
->- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.1/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
->- [Manual d'usuari](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.1/doc/pdf/02_Distribucio_Manual_Usuari.pdf)
->- [Manual d'integració](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.1/doc/pdf/03_Distribucio_Manual_Integraci%C3%B3.pdf)
->- [Manual de plugins](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.1/doc/pdf/04_Distribucio_Manual_Plugins.pdf)
+>- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.2/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
+>- [Manual d'usuari](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.2/doc/pdf/02_Distribucio_Manual_Usuari.pdf)
+>- [Manual d'integració](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.2/doc/pdf/03_Distribucio_Manual_Integraci%C3%B3.pdf)
+>- [Manual de plugins](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.22.2/doc/pdf/04_Distribucio_Manual_Plugins.pdf)
 
 
 ## <a name="v_estable"></a> Versió estable
-### [0.9.22.1](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.22.1)
+### [0.9.22.2](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.22.2)
