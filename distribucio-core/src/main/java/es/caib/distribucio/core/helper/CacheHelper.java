@@ -3,11 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -19,12 +15,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-
-import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.MunicipiDto;
 import es.caib.distribucio.core.api.dto.ProvinciaDto;
@@ -36,7 +27,6 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.distribucio.core.service.BustiaServiceImpl;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 /**
@@ -159,7 +149,7 @@ public class CacheHelper {
 	
 	
 	@CacheEvict(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
-	public void evictElementsPendentsBustiesUsuari(
+	public void evictCountElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}

@@ -21,6 +21,9 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 
 /**
  * Implementació de RegistreService com a EJB que empra una clase
@@ -59,11 +62,7 @@ public class RegistreServiceBean implements RegistreService {
 		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public void aplicarReglesPendents() {
-		delegate.aplicarReglesPendents();
-	}
+
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
@@ -152,11 +151,7 @@ public class RegistreServiceBean implements RegistreService {
 				registreId);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public void guardarAnnexosArxiuPendents() {
-		delegate.guardarAnnexosArxiuPendents();
-	}
+
 	
 	@Override
 	@RolesAllowed("tothom")
@@ -185,16 +180,31 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.getAnnexos(entitatId, contingutId, registreId);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public void tancarContenidorsArxiuPendents() {
-		delegate.tancarContenidorsArxiuPendents();
-	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId) {
 		return delegate.getArxiuDetall(registreAnotacioId);
 	}
-	
+
+	@Override
+	@RolesAllowed("tothom")
+	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id) {
+		return delegate.findOneForBackoffice(id);
+	}
+
+	@Override
+	public void canviEstat(AnotacioRegistreId id,
+			Estat estat,
+			String observacions) {
+		delegate.canviEstat(id, estat, observacions);		
+	}
+
+	@Override
+	public boolean reintentarEnviamentBackofficeAdmin(Long entitatId,
+			Long bustiaId,
+			Long registreId) {
+		return delegate.reintentarEnviamentBackofficeAdmin(entitatId, bustiaId, registreId);
+	}
+
 }

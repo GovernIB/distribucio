@@ -6,6 +6,7 @@ package es.caib.distribucio.core.api.dto;
 import java.util.Date;
 import java.util.List;
 
+
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -27,10 +28,89 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
-	
+	private Date backPendentData;
+	private Date backRebudaData;
+	private Date backProcesRebutjErrorData;
+	private String backObservacions;
+	private Date backRetryEnviarData;
 	private boolean error;
 	private boolean alerta;
-
+	
+	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
+	private String expedientArxiuUuid;
+	private String numero;
+	private Date data;
+	private Date dataOrigen;
+	private String identificador;
+	private String entitatCodi;
+	private String entitatDescripcio;
+	private String oficinaCodi;
+	private String oficinaDescripcio;
+	private String oficinaOrigenCodi;
+	private String oficinaOrigenDescripcio;
+	private String llibreCodi;
+	private String llibreDescripcio;
+	private String extracte;
+	private String assumpteTipusCodi;
+	private String assumpteTipusDescripcio;
+	private String assumpteCodi;
+	private String assumpteDescripcio;
+	private String referencia;
+	private String expedientNumero;
+	private String numeroOrigen;
+	private String idiomaCodi;
+	private String idiomaDescripcio;
+	private String transportTipusCodi;
+	private String transportTipusDescripcio;
+	private String transportNumero;
+	private String usuariCodi;
+	private String usuariNom;
+	private String usuariContacte;
+	private String aplicacioCodi;
+	private String aplicacioVersio;
+	private String documentacioFisicaCodi;
+	private String documentacioFisicaDescripcio;
+	private String observacions;
+	private String exposa;
+	private String solicita;
+	private List<RegistreInteressat> interessats;
+	private List<RegistreAnnex> annexos;
+	private RegistreAnnexDetallDto justificant;
+	
+	private String justificantArxiuUuid;
+	
+	private Boolean llegida;
+	
+	public Date getBackRetryEnviarData() {
+		return backRetryEnviarData;
+	}
+	public void setBackRetryEnviarData(Date backRetryEnviarData) {
+		this.backRetryEnviarData = backRetryEnviarData;
+	}
+	public Date getBackPendentData() {
+		return backPendentData;
+	}
+	public void setBackPendentData(Date backPendentData) {
+		this.backPendentData = backPendentData;
+	}
+	public Date getBackRebudaData() {
+		return backRebudaData;
+	}
+	public void setBackRebudaData(Date backRebudaData) {
+		this.backRebudaData = backRebudaData;
+	}
+	public Date getBackProcesRebutjErrorData() {
+		return backProcesRebutjErrorData;
+	}
+	public void setBackProcesRebutjErrorData(Date backProcesRebutjErrorData) {
+		this.backProcesRebutjErrorData = backProcesRebutjErrorData;
+	}
+	public String getBackObservacions() {
+		return backObservacions;
+	}
+	public void setBackObservacions(String backObservacions) {
+		this.backObservacions = backObservacions;
+	}
 	public boolean isError() {
 		return error;
 	}
@@ -98,49 +178,6 @@ public class RegistreAnotacioDto extends ContingutDto {
 		copia.setNom(original.getNom());
 		return copia;
 	}
-
-	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
-	private String expedientArxiuUuid;
-	private String numero;
-	private Date data;
-	private Date dataOrigen;
-	private String identificador;
-	private String entitatCodi;
-	private String entitatDescripcio;
-	private String oficinaCodi;
-	private String oficinaDescripcio;
-	private String oficinaOrigenCodi;
-	private String oficinaOrigenDescripcio;
-	private String llibreCodi;
-	private String llibreDescripcio;
-	private String extracte;
-	private String assumpteTipusCodi;
-	private String assumpteTipusDescripcio;
-	private String assumpteCodi;
-	private String assumpteDescripcio;
-	private String referencia;
-	private String expedientNumero;
-	private String numeroOrigen;
-	private String idiomaCodi;
-	private String idiomaDescripcio;
-	private String transportTipusCodi;
-	private String transportTipusDescripcio;
-	private String transportNumero;
-	private String usuariCodi;
-	private String usuariNom;
-	private String usuariContacte;
-	private String aplicacioCodi;
-	private String aplicacioVersio;
-	private String documentacioFisicaCodi;
-	private String documentacioFisicaDescripcio;
-	private String observacions;
-	private String exposa;
-	private String solicita;
-	private List<RegistreInteressat> interessats;
-	private List<RegistreAnnex> annexos;
-	private RegistreAnnexDetallDto justificant;
-	
-	private String justificantArxiuUuid;
 
 	public String getJustificantArxiuUuid() {
 		return justificantArxiuUuid;
@@ -390,8 +427,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 		return interessatsResum;
 	}
 	
-	private Boolean llegida;
-	
+
 	public Boolean getLlegida() {
 		return llegida;
 	}

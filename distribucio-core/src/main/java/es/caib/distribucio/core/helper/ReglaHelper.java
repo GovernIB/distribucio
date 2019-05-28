@@ -3,8 +3,10 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -19,25 +21,25 @@ import org.apache.axis.encoding.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
-import es.caib.distribucio.core.api.service.ws.DistribucioBackofficeResultatProces;
-import es.caib.distribucio.core.api.service.ws.DistribucioBackofficeWsService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -62,6 +64,8 @@ public class ReglaHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private RegistreHelper registreHelper;
+	@Autowired
+	private PluginHelper pluginHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
 	@Resource
@@ -96,17 +100,18 @@ public class ReglaHelper {
 	public void aplicar(
 			Long pendentId) {
 		RegistreEntity pendent = registreRepository.findOne(pendentId);
-		BustiaEntity pendentBustia = null;
-		if (pendent.getPare() instanceof BustiaEntity) {
-			pendentBustia = (BustiaEntity)pendent.getPare();
-		}
 		ReglaEntity regla = pendent.getRegla();
 		String error = null;
 		try {
 			switch (regla.getTipus()) {
-			case BACKOFFICE:
-				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) {
-					// SISTRA
+			case BACKOFFICE: // ############################### BACKOFFICE ###############################
+				
+				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) { // ############################### BACKOFFICE SISTRA ###############################
+					
+					for (RegistreAnnexEntity annex: pendent.getAnnexos()) {
+							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
+								processarAnnexSistra(pendent, annex);
+					}
 					
 					BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
 							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
@@ -121,8 +126,8 @@ public class ReglaHelper {
 					// Crea la llista de referències d'entrada
 					ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
 					ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-					referenciaEntrada.setNumeroEntrada(pendent.getIdentificador());
-					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getIdentificador()));	
+					referenciaEntrada.setNumeroEntrada(pendent.getNumero());
+					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));	
 					referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
 					// Invoca el backoffice sistra
 					try {
@@ -130,29 +135,17 @@ public class ReglaHelper {
 					} catch (BantelFacadeException bfe) {
 						error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
 					}
-				} else {
-					// DISTRIBUCIO
-
-					//System.out.println(">>> Processant anotacio de registre amb backoffice (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
-					DistribucioBackofficeWsService backofficeClient = new WsClientHelper<DistribucioBackofficeWsService>().generarClientWs(
-							getClass().getResource("/es/caib/distribucio/core/service/ws/backoffice/DistribucioBackoffice.wsdl"),
-							regla.getBackofficeUrl(),
-							new QName(
-									"http://www.caib.es/distribucio/ws/backoffice",
-									"DistribucioBackofficeService"),
-							regla.getBackofficeUsuari(),
-							regla.getBackofficeContrasenya(),
-							null,
-							DistribucioBackofficeWsService.class);
-					DistribucioBackofficeResultatProces resultat = backofficeClient.processarAnotacio(
-							registreHelper.fromRegistreEntity(pendent));
-					if (resultat.isError()) {
-						error = "[" + resultat.getErrorCodi() + "] " + resultat.getErrorDescripcio();
-					}
+				
+			
+				} else if (BackofficeTipusEnumDto.DISTRIBUCIO.equals(regla.getBackofficeTipus())){ // ############################### BACKOFFICE DISTRIBUCIO ###############################
+					
+					pendent.updateProcesBackPendent();
+					pendent.updateBackPendentData(new Date());
+					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice 
 				}
 				break;
-			case BUSTIA:
-				//System.out.println(">>> Processant anotacio de registre movent a bústia (id=" + pendent.getId() + ", identificador=" + pendent.getIdentificador() + ")");
+				
+			case BUSTIA: // ############################### BUSTIA ###############################
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 						pendent,
 						regla.getBustia(),
@@ -167,7 +160,11 @@ public class ReglaHelper {
 						regla.getBustia(),
 						pendent,
 						contingutMoviment);
+				pendent.updateProces(
+						RegistreProcesEstatEnum.BUSTIA_PENDENT, 
+						null);
 				break;
+				
 			default:
 				error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
 				break;
@@ -180,21 +177,69 @@ public class ReglaHelper {
 				t = ex;
 			error = ExceptionUtils.getStackTrace(t);
 		}
+		
+		
 		if (error != null) {
 			throw new AplicarReglaException(error);
 		} else {
+			BustiaEntity pendentBustia = null;
+			if (pendent.getPare() instanceof BustiaEntity) {
+				pendentBustia = (BustiaEntity)pendent.getPare();
+			}
 			if (pendentBustia != null) {
-				bustiaHelper.evictElementsPendentsBustia(
+				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 						regla.getEntitat(),
 						pendentBustia);
 			}
 			
-			// Si la regla és del tipus backoffice marca com a esborrat el contingut una vegada processat
-			if (ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-				pendent.updateEsborrat(1);
-			}
 		}
 	}
+	
+	
+	
+	/*
+	 * Mètode privat per obrir el document annex de tipus sistra i extreure'n
+	 * informació per a l'anotació de registre. La informació que es pot extreure
+	 * depén del document:
+	 * - Asiento.xml: ASIENTO_REGISTRAL.DATOS_ASUNTO.IDENTIFICADOR_TRAMITE (VARCHAR2(20))
+	 * - DatosPropios.xml: DATOS_PROPIOS.INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO (VARCHAR2(100))
+	 * 
+	 * @param anotacio 
+	 * 			Anotació del registre
+	 * @param annex
+	 * 			Document annex amb el contingut per a llegir.
+	 */
+	private void processarAnnexSistra(
+			RegistreEntity anotacio,
+			RegistreAnnexEntity annex) {
+		try {
+			byte[] annexContingut = null;
+			if (annex.getGesdocDocumentId() != null) {
+				ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
+				pluginHelper.gestioDocumentalGet(
+					annex.getGesdocDocumentId(), 
+					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+					baos_doc);
+				annexContingut = baos_doc.toByteArray();
+				annex.updateGesdocDocumentId(null);
+			}
+			org.w3c.dom.Document doc = XmlHelper.getDocumentFromContent(annexContingut);
+			if (annex.getFitxerNom().equals("DatosPropios.xml")) {
+				String identificadorProcediment = XmlHelper.getNodeValue(
+						doc.getDocumentElement(), "INSTRUCCIONES.IDENTIFICADOR_PROCEDIMIENTO");
+				anotacio.updateIdentificadorProcedimentSistra(identificadorProcediment);
+			} else if (annex.getFitxerNom().equals("Asiento.xml")) {
+				String identificadorTramit = XmlHelper.getNodeValue(
+						doc.getDocumentElement(), "DATOS_ASUNTO.IDENTIFICADOR_TRAMITE");
+				anotacio.updateIdentificadorTramitSistra(identificadorTramit);
+			}		
+		} catch (Exception e) {
+			logger.error(
+					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
+					e);
+		}
+	}
+	
 
 	public static String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		byte[] crypted = null;
@@ -216,7 +261,7 @@ public class ReglaHelper {
 				false);
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"anotacioId=" + anotacio.getId() + ", " +
-				"anotacioNum=" + anotacio.getIdentificador() + ", " +
+				"anotacioNumero=" + anotacio.getNumero() + ", " +
 				"reglaId=" + anotacio.getRegla().getId() + ", " +
 				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
 				(anotacio.getRegla().getBackofficeTipus() != null ?
@@ -224,8 +269,11 @@ public class ReglaHelper {
 						: "") +
 				"bustia=" + anotacio.getRegla().getBustia() + ")");
 		try {
+			
+			//aplicar regla
 			aplicar(anotacio.getId());
-			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getIdentificador() + ")");
+			
+			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getNumero() + ")");
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
 							"alertes.segon.pla.aplicar.regles",

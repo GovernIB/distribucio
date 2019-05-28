@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.ejb;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
@@ -25,14 +26,39 @@ public class SegonPlaServiceBean implements SegonPlaService {
 	SegonPlaService delegate;
 
 	@Override
-	public void comprovarEnviamentEmailsNoAgrupatsBustia() {
-		delegate.comprovarEnviamentEmailsNoAgrupatsBustia();
+	@RolesAllowed("tothom")
+	public void enviarEmailsPendentsNoAgrupats() {
+		delegate.enviarEmailsPendentsNoAgrupats();
 	}
 
 	@Override
-	public void comprovarEnviamentEmailsAgrupatsBustia() {
-		delegate.comprovarEnviamentEmailsAgrupatsBustia();
+	@RolesAllowed("tothom")
+	public void enviarEmailsPendentsAgrupats() {
+		delegate.enviarEmailsPendentsAgrupats();
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public void aplicarReglesPendents() {
+		delegate.aplicarReglesPendents();
+	}
 	
+	@Override
+	@RolesAllowed("tothom")
+	public void tancarContenidorsArxiuPendents() {
+		delegate.tancarContenidorsArxiuPendents();
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void guardarAnotacionsPendentsEnArxiu() {
+		delegate.guardarAnotacionsPendentsEnArxiu();
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void enviarIdsAnotacionsPendentsBackoffice() {
+		delegate.enviarIdsAnotacionsPendentsBackoffice();
+		
+	}
 }

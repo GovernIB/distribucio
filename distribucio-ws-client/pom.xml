@@ -68,6 +68,23 @@
 							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-reports-ws-code1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<wsdlUrls>
+								<wsdlUrl>${basedir}/../doc/wsdl/backofficeIntegracio.wsdl</wsdlUrl>
+							</wsdlUrls>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+							</vmArgs>
+							<verbose>true</verbose>
+							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

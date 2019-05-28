@@ -201,7 +201,13 @@ CREATE TABLE DIS_REGISTRE
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(100),
   LLEGIDA              boolean,
-  EXPEDIENT_ARXIU_UUID  character varying(100)
+  EXPEDIENT_ARXIU_UUID  character varying(100),
+  NUMERO_COPIA		   integer default 0 NOT NULL,
+  BACK_PENDENT_DATA    timestamp without time zone,
+  BACK_REBUDA_DATA    timestamp without time zone,
+  BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
+  BACK_OBSERVACIONS 	character varying(1024),
+  BACK_RETRY_ENVIAR_DATA  timestamp without time zone
 );
 
 

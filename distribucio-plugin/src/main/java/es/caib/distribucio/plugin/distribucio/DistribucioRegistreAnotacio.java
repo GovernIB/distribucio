@@ -18,7 +18,8 @@ public class DistribucioRegistreAnotacio {
 	private Date arxiuDataActualitzacio;
 	private String entitatCodi;
 	private String entitatDescripcio;
-	private String expedientNumero;
+	private String numero;
+	private String extracte;
 	private String expedientArxiuUuid;
 	
 	
@@ -57,12 +58,20 @@ public class DistribucioRegistreAnotacio {
 		this.entitatDescripcio = entitatDescripcio;
 	}
 
-	public String getExpedientNumero() {
-		return expedientNumero;
+	public String getNumero() {
+		return numero;
 	}
 
-	public void setExpedientNumero(String expedientNumero) {
-		this.expedientNumero = expedientNumero;
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
+
+	public String getExtracte() {
+		return extracte;
+	}
+
+	public void setExtracte(String extracte) {
+		this.extracte = extracte;
 	}
 
 	public String getExpedientArxiuUuid() {

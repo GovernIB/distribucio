@@ -6,9 +6,12 @@ package es.caib.distribucio.war.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -194,6 +197,33 @@ public class ContingutAdminController extends BaseAdminController {
 //				"contingut.admin.controller.esborrat.definitiu.ok");
 //	}
 
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+					bustiaId,
+					registreId);
+			if (processatOk) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.ok",
+								null));
+			} else {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.error",
+								null));
+			}
+
+
+
+		return "redirect:../../../" + registreId + "/info";
+	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(ContingutAdminController.class);
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,

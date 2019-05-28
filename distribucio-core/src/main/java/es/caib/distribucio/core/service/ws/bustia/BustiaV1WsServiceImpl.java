@@ -13,7 +13,6 @@ import javax.jws.WebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
@@ -23,7 +22,7 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnu
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.ws.BustiaV1WsService;
+import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
@@ -42,7 +41,7 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
 		name = "BustiaV1",
 		serviceName = "BustiaV1Service",
 		portName = "BustiaV1ServicePort",
-		endpointInterface = "es.caib.distribucio.core.api.service.ws.BustiaV1WsService",
+		endpointInterface = "es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService",
 		targetNamespace = "http://www.caib.es/distribucio/ws/v1/bustia")
 public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 

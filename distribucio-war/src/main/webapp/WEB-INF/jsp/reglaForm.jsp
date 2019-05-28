@@ -134,8 +134,8 @@ $(document).ready(function() {
 					<dis:inputText name="backofficeUrl" textKey="regla.form.camp.backoffice.url" required="true"/>
 					<dis:inputText name="backofficeUsuari" textKey="regla.form.camp.backoffice.usuari"/>
 					<dis:inputText name="backofficeContrasenya" textKey="regla.form.camp.backoffice.contrasenya"/>
-					<dis:inputText name="backofficeIntents" textKey="regla.form.camp.backoffice.intents"/>
 					<block id="backofficeTempsEntreIntentsBlock" style='display:${reglaCommand.backofficeTipus == "SISTRA" ? "inline" : "none"}'>
+						<dis:inputText name="backofficeIntents" textKey="regla.form.camp.backoffice.intents"/>
 						<dis:inputText name="backofficeTempsEntreIntents" textKey="regla.form.camp.backoffice.temps.entre.intents" comment="regla.form.camp.backoffice.temps.entre.intents.info"/>
 					</block>
 				</div>

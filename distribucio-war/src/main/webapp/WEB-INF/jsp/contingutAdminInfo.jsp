@@ -11,15 +11,30 @@
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${contingut}"/>
-	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT'}">
+	<c:if test="${contingut.registre && contingut.procesEstat == 'BACK_PENDENT' || contingut.procesEstat == 'ARXIU_PENDENT' || contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR'}">
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
 			</li>
-			<c:if test="${contingut.procesEstat != 'BUSTIA_PENDENT'}">
+			<c:if test="${contingut.procesEstat == 'ARXIU_PENDENT' || contingut.procesEstat == 'REGLA_PENDENT'}">
 				<li role="presentation">
 					<a href="#proces" aria-controls="proces" role="tab" data-toggle="tab">
 						<spring:message code="registre.detalls.pipella.proces"/>
 						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if>
+					</a>
+				</li>
+			</c:if>
+			<c:if test="${contingut.procesEstat == 'BACK_PENDENT'}">
+				<li role="presentation">
+					<a href="#backPendent"" aria-controls="proces" role="tab" data-toggle="tab">
+						<spring:message code="registre.detalls.pipella.pendent.backoffice"/>
+						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if>
+					</a>
+				</li>
+			</c:if>			
+			<c:if test="${contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR'}">
+				<li role="presentation">
+					<a href="#backAction" aria-controls="proces" role="tab" data-toggle="tab">
+						<spring:message code="registre.detalls.pipella.proces.backoffice"/>
 					</a>
 				</li>
 			</c:if>
@@ -70,9 +85,10 @@
 				<dt><spring:message code="registre.detalls.camp.observacions"/></dt><dd>${contingut.observacions}</dd>
 			</c:if>
 			<dt><spring:message code="registre.detalls.camp.distribucio.alta"/></dt><dd><fmt:formatDate value="${contingut.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+			<dt><spring:message code="registre.detalls.camp.distribucio.identificadorArxiu"/></dt><dd>${contingut.expedientArxiuUuid}</dd>
 		</c:if>
 	</dl>
-	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT'}">
+	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT' || contingut.procesEstat == 'REGLA_PENDENT'}">
 			</div>
 			<div class="tab-pane" id="proces" role="tabpanel">
 				<c:if test="${contingut.procesError != null }">
@@ -96,6 +112,78 @@
 			</div>
 		</div>
 	</c:if>
+	
+	<c:if test="${contingut.registre && contingut.procesEstat == 'BACK_PENDENT'}">
+			</div>
+			<div class="tab-pane" id="backPendent" role="tabpanel">
+			
+				    <c:if test="${contingut.procesError != null }">
+						<div class="alert well-sm alert-danger alert-dismissable">
+							<span class="fa fa-exclamation-triangle"></span>
+							<spring:message code="registre.detalls.info.errors"/>
+							<a href="../${contingut.pare.id}/registre/${contingut.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+						</div>
+				    </c:if>	   
+				    <c:if test="${contingut.procesError == null and contingut.procesIntents > 0}">
+						<a href="../${contingut.pare.id}/registre/${contingut.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+				    </c:if>	
+					<dl class="dl-horizontal">
+						<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+						<dd>${contingut.procesEstat}</dd>
+						<c:if test="${not empty contingut.procesData}">
+							<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
+							<dd><fmt:formatDate value="${contingut.procesData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+						</c:if>	
+						<c:if test="${not empty contingut.backRetryEnviarData}">
+							<dt><spring:message code="registre.detalls.camp.proces.data.back.proxima.intent"/></dt>
+							<dd><fmt:formatDate value="${contingut.backRetryEnviarData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+						</c:if>													
+						<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
+						<dd>${contingut.procesIntents}</dd>
+					</dl>
+				<c:if test="${not empty contingut.procesError}">
+					<pre style="height:300px">${contingut.procesError}</pre>
+				</c:if>
+			</div>
+		</div>
+	</c:if>
+	
+	<c:if test="${contingut.registre && ( contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR')}">
+	
+		</div>
+		<div class="tab-pane" id="backAction" role="tabpanel">
+
+			<dl class="dl-horizontal">
+				<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+				<dd>${contingut.procesEstat}</dd>
+				<dt><spring:message code="registre.detalls.camp.proces.data.back.pendent"/></dt>
+				<dd><fmt:formatDate value="${contingut.backPendentData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<dt><spring:message code="registre.detalls.camp.proces.data.back.rebuda"/></dt>
+				<dd><fmt:formatDate value="${contingut.backRebudaData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				<c:choose>
+				   <c:when test = "${contingut.procesEstat == 'BACK_PROCESSADA'}">
+				      <dt><spring:message code="registre.detalls.camp.proces.data.back.processada"/></dt>
+				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				   </c:when>
+				   <c:when test = "${contingut.procesEstat == 'BACK_REBUTJADA'}">
+				      <dt><spring:message code="registre.detalls.camp.proces.data.back.rebutjada"/></dt>
+				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				   </c:when>
+				   <c:when test = "${contingut.procesEstat == 'BACK_ERROR'}">
+				      <dt><spring:message code="registre.detalls.camp.proces.data.back.error"/></dt>
+				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+				   </c:when>         
+				</c:choose>				
+			</dl>
+			<c:if test="${contingut.backObservacions != null}">
+				<pre style="height:300px">${contingut.backObservacions}</pre>
+			</c:if>
+		</div>
+	</div>
+</c:if>
+	
+	
+	
 	<div id="modal-botons" class="well">
 		<a href="<c:url value="/contingutAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>

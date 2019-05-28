@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.helper;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,6 +18,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -432,17 +432,20 @@ public class ContingutHelper {
 		return new Long(0);
 	}
 
+	@Transactional
 	public ContingutEntity ferCopiaContingut(
 			ContingutEntity contingutOriginal,
 			BustiaEntity bustiaDesti) {
 		RegistreEntity registreOriginal = (RegistreEntity)contingutOriginal;
+		Integer numeroCopies = registreHelper.getMaxNumeroCopia(registreOriginal);
 		RegistreEntity contingutCopia = RegistreEntity.getBuilder(
 				registreOriginal.getEntitat(), 
 				registreOriginal.getRegistreTipus(), 
 				registreOriginal.getUnitatAdministrativa(),
 				registreOriginal.getUnitatAdministrativaDescripcio(), 
-				registreOriginal.getNumero() + "_" + new Timestamp(System.currentTimeMillis()), 
-				registreOriginal.getData(), 
+				registreOriginal.getNumero(), 
+				registreOriginal.getData(),
+				numeroCopies +1,
 				registreOriginal.getIdentificador(), 
 				registreOriginal.getExtracte(), 
 				registreOriginal.getOficinaCodi(), 
@@ -476,7 +479,9 @@ public class ContingutHelper {
 				exposa(registreOriginal.getExposa()).
 				solicita(registreOriginal.getSolicita()).
 				regla(registreOriginal.getRegla()).
-				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
+				oficinaOrigen(registreOriginal.getDataOrigen(), 
+				registreOriginal.getOficinaOrigenCodi(), 
+				registreOriginal.getOficinaOrigenDescripcio()).
 				build();
 		if (registreOriginal.getInteressats() != null) {
 			for (RegistreInteressatEntity registreInteressat: registreOriginal.getInteressats()) {
@@ -524,7 +529,7 @@ public class ContingutHelper {
 		if (duplicarContingut) {
 			registreHelper.guardarAnnexosAmbPluginDistribucio(
 					contingutCopia,
-					bustiaDesti,
+					bustiaDesti.getEntitat().getCodiDir3(),
 					false);
 		} else {
 			contingutCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
