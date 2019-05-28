@@ -41,7 +41,7 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
 		name = "BustiaV1",
 		serviceName = "BustiaV1Service",
 		portName = "BustiaV1ServicePort",
-		endpointInterface = "es.caib.distribucio.core.api.service.ws.BustiaV1WsService",
+		endpointInterface = "es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService",
 		targetNamespace = "http://www.caib.es/distribucio/ws/v1/bustia")
 public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 
