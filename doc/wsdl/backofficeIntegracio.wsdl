@@ -47,6 +47,7 @@
 <xs:element minOccurs="0" name="entitatDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="expedientNumero" type="xs:string" />
 <xs:element minOccurs="0" name="exposa" type="xs:string" />
+<xs:element minOccurs="0" name="extracte" type="xs:string" />
 <xs:element minOccurs="0" name="identificador" type="xs:string" />
 <xs:element minOccurs="0" name="idiomaCodi" type="xs:string" />
 <xs:element minOccurs="0" name="idomaDescripcio" type="xs:string" />
@@ -58,6 +59,7 @@
 <xs:element minOccurs="0" name="oficinaDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="origenData" type="xs:dateTime" />
 <xs:element minOccurs="0" name="origenRegistreNumero" type="xs:string" />
+<xs:element minOccurs="0" name="procedimentCodi" type="xs:string" />
 <xs:element minOccurs="0" name="refExterna" type="xs:string" />
 <xs:element minOccurs="0" name="solicita" type="xs:string" />
 <xs:element minOccurs="0" name="transportNumero" type="xs:string" />

@@ -14,6 +14,8 @@ import java.util.List;
 public class AnotacioRegistreBase {
 
 	private String identificador;
+	private String procedimentCodi;
+	private String extracte;
 	private Date data;
 	private String entitatCodi;
 	private String entitatDescripcio;
@@ -51,6 +53,18 @@ public class AnotacioRegistreBase {
 	}
 	public void setIdentificador(String identificador) {
 		this.identificador = identificador;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
+	}
+	public String getExtracte() {
+		return extracte;
+	}
+	public void setExtracte(String extracte) {
+		this.extracte = extracte;
 	}
 	public Date getData() {
 		return data;

@@ -356,6 +356,7 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
+			anotacioPerBackoffice.setExtracte(registreEntity.getExtracte());
 			anotacioPerBackoffice.setEntitatCodi(registreEntity.getEntitatCodi());
 			anotacioPerBackoffice.setEntitatDescripcio(registreEntity.getEntitatDescripcio());
 			anotacioPerBackoffice.setUsuariCodi(registreEntity.getUsuariCodi());
