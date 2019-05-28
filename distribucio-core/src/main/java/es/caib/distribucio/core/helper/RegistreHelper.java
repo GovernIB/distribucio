@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -670,9 +672,32 @@ public class RegistreHelper {
 		return firmaEntity;
 	}
 
-	/** Esborra els documents temporals. Programa un esborrat en el cas que el commit vagi bé, si no els temporals no s'han d'esborrar. */
+	/** Esborra els documents temporals. Programa un esborrat en el cas que el commit vagi bé, si no els temporals no s'han d'esborrar. 
+	 * També posa a null l'id del gestor documental.
+	 */
+	@Transactional
 	private void esborrarDocsTemporals(RegistreEntity anotacioEntity) {
-		TransactionSynchronizationManager.registerSynchronization(new EsborrarDocsTemporalsHandler(anotacioEntity));
+
+		logger.debug("Programant l'esborrat de temporals després del commit per l'anotació de registre " + anotacioEntity.getNumero());
+
+		EsborrarDocsTemporalsHandler esborrarDocsTemporalsHandler = new EsborrarDocsTemporalsHandler();
+		
+		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
+			for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
+				if (annex.getGesdocDocumentId() != null) {
+					esborrarDocsTemporalsHandler.putIdentificador(PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, annex.getGesdocDocumentId());
+					annex.updateGesdocDocumentId(null);
+				}
+				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+					if (firma.getGesdocFirmaId() != null) {
+						esborrarDocsTemporalsHandler.putIdentificador(PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, firma.getGesdocFirmaId());
+						firma.updateGesdocFirmaId(null);
+					}
+				}
+			}
+		}
+		
+		TransactionSynchronizationManager.registerSynchronization(esborrarDocsTemporalsHandler);
 	}
 
 	/** Classe que implementa la sincronització de transacció pes esborrar els temporals només en el cas que la transacció
@@ -680,45 +705,36 @@ public class RegistreHelper {
 	 * amb la informació a BBDD.
 	 */
 	public class EsborrarDocsTemporalsHandler implements TransactionSynchronization {
-
-		/** Registre amb annexos */
-		private RegistreEntity anotacioEntity;
-
-		/** Constructor amb l'anotació */
-		public EsborrarDocsTemporalsHandler(RegistreEntity anotacioEntity) {
-			this.anotacioEntity = anotacioEntity;
+		
+		/** Map amb el nom de l'agrupació i la llista d'identficadors a esborrar. 
+		 * Map<agrupacio, List<identificadors> */
+		private Map<String,List<String>> identificadors = new HashMap<>();
+		
+		/** Afegeix un identificador a una agrupació
+		 * 
+		 * @param agrupacio
+		 * @param identificadorId
+		 */
+		public void putIdentificador(String agrupacio, String identificadorId) {
+			if (!identificadors.containsKey(agrupacio))
+				identificadors.put(agrupacio, new ArrayList<String>());
+			identificadors.get(agrupacio).add(identificadorId);
 		}
 
 		/** Mètode que s'executa després que s'hagi guardat correctament a BBDD i per tants els temporals es poden guardar correctament. */
 		@Override
 		@Transactional
 		public void afterCommit() {
-			if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
-				for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
-					if (annex.getGesdocDocumentId() != null) {
-						try {
-							pluginHelper.gestioDocumentalDelete(annex.getGesdocDocumentId(),
-									PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
-						} catch(Exception e) {
-							logger.error("Error esborrant l'annex amb id " + annex.getId() + " del gestor documental: " + e.getMessage(), e);
-						}
-						annex.updateGesdocDocumentId(null);
-						registreAnnexRepository.saveAndFlush(annex);
-					}
-					for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-						if (firma.getGesdocFirmaId() != null) {
-							try {
-								pluginHelper.gestioDocumentalDelete(firma.getGesdocFirmaId(),
-										PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
-							} catch (Exception e) {
-								logger.error("Error esborrant la firma d'annex amb id " + firma.getId() + " del gestor documental: " + e.getMessage(), e);
-							}
-							firma.updateGesdocFirmaId(null);
-							registreAnnexFirmaRepository.saveAndFlush(firma);
-						}
+			logger.debug("Esborrant els arxius temporals");
+			for (String agrupacio : identificadors.keySet())
+				for (String identificador : identificadors.get(agrupacio)) {
+					logger.debug("Esborrar arxiu temporal agrupacio=" + agrupacio + ", identificador=" + identificador);
+					try {
+						pluginHelper.gestioDocumentalDelete(identificador, agrupacio);
+					} catch(Exception e) {
+						logger.error("Error esborrant l'annex amb id " + identificador + " i agrupacio " + agrupacio + " del gestor documental: " + e.getMessage(), e);
 					}
 				}
-			}
 		}
 
 		@Override
