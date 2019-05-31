@@ -27,8 +27,10 @@ public class ReglaCommand {
 	@Size(max = 1024)
 	private String descripcio;
 	private ReglaTipusEnumDto tipus;
-	@NotEmpty @Size(max = 16)
+//	@NotEmpty @Size(max = 16)
 	private String assumpteCodi;
+	@NotEmpty @Size(max = 64)
+	private String procedimentCodi;
 	@Size(max = 9)
 	private String unitatCodi;
 	private Long unitatId;
@@ -116,6 +118,12 @@ public class ReglaCommand {
 	}
 	public void setBackofficeContrasenya(String backofficeContrasenya) {
 		this.backofficeContrasenya = backofficeContrasenya;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 	public Integer getBackofficeIntents() {
 		return backofficeIntents;

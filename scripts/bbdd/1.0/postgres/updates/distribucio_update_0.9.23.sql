@@ -1,4 +1,8 @@
 
+-- #59 Regles a partir del codi SIA
+ALTER TABLE DIS_REGLA ADD COLUMN PROCEDIMENT_CODI CHARACTER VARYING(64);
+ALTER TABLE DIS_REGLA ALTER COLUMN ASSUMPTE_CODI DROP NOT NULL;
+
 -- #98 Eliminar informació de la data de còpia en el número de registre
 -- Cal treure la data existent i modificar la restricció única per peremtre tenir números iguals
 

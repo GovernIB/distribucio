@@ -30,6 +30,7 @@ public class RegistreAnotacio {
 	private String assumpteTipusCodi;
 	private String assumpteTipusDescripcio;
 	private String assumpteCodi;
+	private String procedimentCodi;
 	private String assumpteDescripcio;
 	private String referencia;
 	private String expedientNumero;
@@ -52,7 +53,7 @@ public class RegistreAnotacio {
 	private List<RegistreInteressat> interessats;
 	private List<RegistreAnnex> annexos;
 	private RegistreAnnex justificant;
-
+	
 	public String getNumero() {
 		return numero;
 	}
@@ -149,6 +150,12 @@ public class RegistreAnotacio {
 	public void setAssumpteCodi(String assumpteCodi) {
 		this.assumpteCodi = assumpteCodi;
 	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
+	}	
 	public String getAssumpteDescripcio() {
 		return assumpteDescripcio;
 	}

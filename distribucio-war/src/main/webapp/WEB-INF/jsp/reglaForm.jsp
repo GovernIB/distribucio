@@ -111,7 +111,7 @@ $(document).ready(function() {
 				<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 				<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
 				<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
-				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="true"/>
+				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="true"/>
 <%-- 				<dis:inputText name="unitatCodi" textKey="regla.form.camp.unitat"/> --%>
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
