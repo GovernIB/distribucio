@@ -42,11 +42,11 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04015411";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	//private static final String ASSUMPTE_CODI = "BACK1";
-	private static final String PROCEDIMENT_CODI = "E5";
+	private static final String ASSUMPTE_CODI = "A1";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
+	private static final String PROCEDIMENT_CODI = "E5";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
@@ -99,7 +99,7 @@ public class BustiaV1Test {
 			anotacio = new RegistreAnotacio(); 
 			anotacio.setAplicacioCodi(APLICACIO_CODI);
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
-			//anotacio.setAssumpteCodi(ASSUMPTE_CODI);
+			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
 			anotacio.setProcedimentCodi(PROCEDIMENT_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
 	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);

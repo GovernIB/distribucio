@@ -27,7 +27,6 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.core.entity.ReglaEntity.Builder;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
@@ -78,6 +77,7 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				regla.getNom(),
 				regla.getTipus(),
+				regla.getAssumpteCodi(),
 				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
 				ordre).build();
@@ -124,6 +124,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getNom(),
 				regla.getDescripcio(),
 				regla.getTipus(),
+				regla.getAssumpteCodi(),
 				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
 		switch(regla.getTipus()) {

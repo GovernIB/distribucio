@@ -147,11 +147,13 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String nom,
 			String descripcio,
 			ReglaTipusEnumDto tipus,
+			String assumpteCodi,
 			String procedimentCodi,
 			UnitatOrganitzativaEntity unitatOrganitzativa) {
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
+		this.assumpteCodi = assumpteCodi;
 		this.procedimentCodi = procedimentCodi;
 		this.unitatOrganitzativa = unitatOrganitzativa;
 	}
@@ -186,6 +188,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			EntitatEntity entitat,
 			String nom,
 			ReglaTipusEnumDto tipus,
+			String assumpteCodi,
 			String procedimentCodi,
 			UnitatOrganitzativaEntity unitatOrganitzativa,
 			int ordre) {
@@ -193,6 +196,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				entitat,
 				nom,
 				tipus,
+				assumpteCodi,
 				procedimentCodi,
 				unitatOrganitzativa,
 				ordre);
@@ -203,6 +207,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				EntitatEntity entitat,
 				String nom,
 				ReglaTipusEnumDto tipus,
+				String assumpteCodi,
 				String procedimentCodi,
 				UnitatOrganitzativaEntity unitatOrganitzativa,
 				int ordre) {
@@ -210,6 +215,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.entitat = entitat;
 			built.nom = nom;
 			built.tipus = tipus;
+			built.assumpteCodi = assumpteCodi;
 			built.procedimentCodi = procedimentCodi;
 			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.ordre = ordre;
@@ -259,6 +265,11 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			if (other.assumpteCodi != null)
 				return false;
 		} else if (!assumpteCodi.equals(other.assumpteCodi))
+			return false;
+		if (procedimentCodi == null) {
+			if (other.procedimentCodi != null)
+				return false;
+		} else if (!procedimentCodi.equals(other.procedimentCodi))
 			return false;
 		if (entitat == null) {
 			if (other.entitat != null)

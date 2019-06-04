@@ -68,4 +68,26 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	
 	List<ReglaEntity> findByBustia(BustiaEntity bustia);
 
+	/** Mètode per trobar les regles aplicables per entitat i per codi procediment i codi assumpte.
+	 * 
+	 * @param entitat
+	 * @param b
+	 * @param procedimentCodi
+	 * @param c
+	 * @param assumpteCodi
+	 * @return
+	 */
+	@Query(	"from " +
+			"    ReglaEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"and r.activa = true " + 
+			"and (r.procedimentCodi is null or r.procedimentCodi = :procedimentCodi) " +
+			"and (r.assumpteCodi is null or r.assumpteCodi = :assumpteCodi) " + 
+			"order by r.ordre asc")
+	List<ReglaEntity> findAplicables(
+			@Param("entitat") EntitatEntity entitat, 
+			@Param("procedimentCodi") String procedimentCodi, 
+			@Param("assumpteCodi") String assumpteCodi);
+
 }

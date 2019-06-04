@@ -83,6 +83,7 @@ public class ReglaHelper {
 			EntitatEntity entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) {
+		// Mètode antic
 		List<ReglaEntity> regles = reglaRepository.findByEntitatAndActivaTrueOrderByOrdreAsc(entitat);
 		ReglaEntity reglaAplicable = null;
 		for (ReglaEntity regla: regles) {
@@ -93,6 +94,15 @@ public class ReglaHelper {
 				}
 			}
 		}
+		// Mètode amb filtre nou
+		regles = reglaRepository.findAplicables(
+				entitat,
+				anotacio.getProcedimentCodi(),
+				anotacio.getAssumpteCodi());
+		
+		if (regles.size() > 0)
+			reglaAplicable = regles.get(0);
+		
 		return reglaAplicable;
 	}
 
