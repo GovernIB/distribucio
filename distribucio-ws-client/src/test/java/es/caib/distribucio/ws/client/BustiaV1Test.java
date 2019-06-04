@@ -39,7 +39,7 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String ENTITAT_DIST_CODI = "A04019281";
-	private static final String UNITAT_ADM_CODI = "A04015411";
+	private static final String UNITAT_ADM_CODI = "A04018961";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = "A1";

@@ -57,20 +57,9 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			EntitatEntity entitat,
 			UnitatOrganitzativaEntity unitatOrganitzativa);
 
-	BustiaEntity findByEntitatAndUnitatCodiAndPerDefecteTrue(
+	List<BustiaEntity> findByEntitatAndUnitatCodiAndPerDefecteTrue(
 			EntitatEntity entitat,
 			String unitatCodi);
-	
-	@Query(	"from " +
-			"    BustiaEntity b " +
-			"where " +
-			"    b.entitat = :entitat " +
-			"and b.unitatOrganitzativa = :unitatOrganitzativa "
-			+ "and b.perDefecte = true"
-			)
-	BustiaEntity findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
 	
 	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
 			EntitatEntity entitat);

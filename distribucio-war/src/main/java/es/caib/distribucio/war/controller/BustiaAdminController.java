@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
+import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -90,8 +92,6 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		String vista = formGet(request, null, model);
-//		BustiaCommand command = (BustiaCommand)model.asMap().get("bustiaCommand");
-//		command.setUnitatCodi(unitatCodi);
 		return vista;
 	}
 	
@@ -100,7 +100,7 @@ public class BustiaAdminController extends BaseAdminController {
 	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
-			@Valid BustiaCommand command,
+			@Validated(CreateUpdate.class) BustiaCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);

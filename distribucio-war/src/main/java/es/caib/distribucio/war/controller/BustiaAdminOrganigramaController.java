@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
+import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreOrganigramaCommand;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -171,22 +173,29 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
-			@Valid BustiaCommand command,
+			@Validated(CreateUpdate.class) BustiaCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			return "bustiaAdminOrganigrama";
+		try {
+			if (bindingResult.hasErrors()) {
+				return "bustiaAdminOrganigrama";
+			}
+			bustiaService.update(
+					entitatActual.getId(),
+					BustiaCommand.asDto(command));
+			
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:/bustiaAdminOrganigrama",
+					"bustia.controller.modificat.ok");
+		} catch (RuntimeException ve) {
+			return getAjaxControllerReturnValueError(
+					request,
+					"redirect:/bustiaAdminOrganigrama",
+					"bustia.controller.modificat.error.validacio",
+					new Object[] {ve.getMessage()});			
 		}
-
-		bustiaService.update(
-				entitatActual.getId(),
-				BustiaCommand.asDto(command));
-		
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:/bustiaAdminOrganigrama",
-				"bustia.controller.modificat.ok");
 	}
 	
 	

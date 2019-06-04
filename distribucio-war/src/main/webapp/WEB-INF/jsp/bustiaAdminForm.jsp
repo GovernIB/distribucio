@@ -108,7 +108,8 @@
 			inline="false" 
 			placeholderKey="bustia.form.camp.unitat"
 			suggestValue="id"
-			suggestText="nom" />
+			suggestText="nom"
+			required="true" />
 <%-- 		<dis:inputText name="unitatCodi" textKey="bustia.form.camp.unitat" required="true"/> --%>
 		<dis:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>
 		<div id="modal-botons">

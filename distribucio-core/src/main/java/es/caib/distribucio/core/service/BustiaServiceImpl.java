@@ -216,9 +216,8 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
-		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
-				entitat,
-				unitat);
+		BustiaEntity bustiaPerDefecte = bustiaHelper.findBustiaPerDefecte(entitat, unitat.getCodi());
+		
 		if (bustiaPerDefecte == null) {
 			entity.updatePerDefecte(true);
 			contingutLogHelper.log(
@@ -255,10 +254,38 @@ public class BustiaServiceImpl implements BustiaService {
 		String nomOriginal = entity.getNom();
 		
 		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(bustia.getUnitatOrganitzativa().getId());
+		
+		BustiaEntity bustiaPerDefecteDesti = bustiaHelper.findBustiaDesti(entitat, unitatOrganitzativa.getCodi());
+		if (entity.isPerDefecte() 
+				&& !entity.getUnitatOrganitzativa().getId().equals(unitatOrganitzativa.getId())) {
+			// comprova si a la unitat orgánica destí ja hi ha alguna bústia per defecte, si ja hi ha desmarca la que estem movent
+			if (bustiaPerDefecteDesti != null 
+					&& unitatOrganitzativa.getId().equals(bustiaPerDefecteDesti.getUnitatOrganitzativa().getId()))
+				entity.updatePerDefecte(false);
+
+			// Comprova que si es mou la bústia a una altra unitat encara quedi una bústia per defecte per a la unitat organitzativa anterior
+			BustiaEntity bustiaPerDefecteAlternativa = this.findBustiaPerDefecteAlternativa(entitat, entity); 
+			if (bustiaPerDefecteAlternativa == null) {
+				String missatgeError = "No es pot moure la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+						"bustiaId=" + bustia.getId() + ", " +
+						"unitatOrganitzativaCodi=" + entity.getUnitatCodi() + ")";
+				logger.error(missatgeError);
+				throw new ValidationException(
+						bustia.getId() ,
+						BustiaEntity.class,
+						missatgeError);
+			}		
+
+		} else {
+			// Si a la bústia destí no n'hi ha cap per defecte llavors la marca com a defecte
+			if (bustiaPerDefecteDesti != null 
+					&& !unitatOrganitzativa.equals(bustiaPerDefecteDesti.getUnitatOrganitzativa()))
+				entity.updatePerDefecte(true);				
+		}
+		// Actualitza la bústia
 		entity.update(
 				bustia.getNom(),
 				unitatOrganitzativa);
-
 		
 		// Registra al log la modificació de la bústia
 		contingutLogHelper.log(
@@ -272,6 +299,36 @@ public class BustiaServiceImpl implements BustiaService {
 				entity,
 				false,
 				false);
+	}
+
+	/** Mètode per trobar una bústia per defecte alternativa a la bústia pasada com a paràmetre.
+	 *  Aquest mètode s'utilitza per validar a l'hora d'esborrar o moure una bústia en una unitat
+	 *  administratvia.
+	 * @param entitat
+	 * @param bustia
+	 * @return
+	 */
+	private BustiaEntity findBustiaPerDefecteAlternativa(
+			EntitatEntity entitat, 
+			BustiaEntity bustia) 
+	{
+		BustiaEntity bustiaPerDefecteAlternativa = null;
+		List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+				entitat.getCodiDir3(),
+				bustia.getUnitatCodi());
+		if (path != null && !path.isEmpty()) {
+			BustiaEntity bustiaAux;
+			for (UnitatOrganitzativaDto unitat: path) {
+				bustiaAux = bustiaHelper.findBustiaPerDefecte(
+						entitat,
+						unitat.getCodi());
+				if (bustiaAux != null && ! bustiaAux.getId().equals(bustia.getId())) {
+					bustiaPerDefecteAlternativa = bustiaAux;
+					break;
+				}
+			}
+		}
+		return bustiaPerDefecteAlternativa;
 	}
 
 	@Override
@@ -326,32 +383,17 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		if (bustia.isPerDefecte()) {
 			// Valida que si s'esborra encara hi hagi una altra per defecte d'alternativa
-			BustiaEntity bustiaPerDefecteAlternativa = null;
-			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
-					entitat.getCodiDir3(),
-					bustia.getUnitatCodi());
-			if (path != null && !path.isEmpty()) {
-				BustiaEntity bustiaAux;
-				for (UnitatOrganitzativaDto unitat: path) {
-					bustiaAux = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-							entitat,
-							unitat.getCodi());
-					if (bustiaAux != null && ! bustiaAux.getId().equals(id)) {
-						bustiaPerDefecteAlternativa = bustia;
-						break;
-					}
-				}
-				if (bustiaPerDefecteAlternativa == null) {
-					String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
-							"bustiaId=" + id + ", " +
-							"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
-					logger.error(missatgeError);
-					throw new ValidationException(
-							id,
-							BustiaEntity.class,
-							missatgeError);
-				}			
-			}
+			BustiaEntity bustiaPerDefecteAlternativa = this.findBustiaPerDefecteAlternativa(entitat, bustia);
+			if (bustiaPerDefecteAlternativa == null) {
+				String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+						"bustiaId=" + id + ", " +
+						"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
+				logger.error(missatgeError);
+				throw new ValidationException(
+						id,
+						BustiaEntity.class,
+						missatgeError);
+			}			
 		}
 		
 		// cannot remove busties containing any anotacions
