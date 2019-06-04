@@ -595,65 +595,9 @@ public class BustiaServiceImpl implements BustiaService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public PaginaDto<BustiaDto> findPermesesPerUsuari(
-			Long entitatId,
-			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta de busties permeses per un usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "paginacioParams=" + paginacioParams + ")");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
-		// Filtra la llista de bústies segons els permisos
-		permisosHelper.filterGrantedAll(
-				busties,
-				new ObjectIdentifierExtractor<BustiaEntity>() {
-					@Override
-					public Long getObjectIdentifier(BustiaEntity bustia) {
-						return bustia.getId();
-					}
-				},
-				BustiaEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		if (busties.isEmpty()) {
-			return paginacioHelper.getPaginaDtoBuida(BustiaDto.class);
-		}
-		List<Long> bustiaIds = new ArrayList<Long>();
-		for (BustiaEntity bustia: busties) {
-			bustiaIds.add(bustia.getId());
-		}
-		// Realitza la consulta
-		Page<BustiaEntity> pagina = bustiaRepository.findByEntitatAndIdsAndFiltrePaginat(
-				entitat,
-				bustiaIds,
-				paginacioParams.getFiltre() == null,
-				paginacioParams.getFiltre(),
-				paginacioHelper.toSpringDataPageable(
-						paginacioParams));
-		return paginacioHelper.toPaginaDto(
-				pagina,
-				BustiaDto.class,
-				new Converter<BustiaEntity, BustiaDto>() {
-					@Override
-					public BustiaDto convert(BustiaEntity source) {
-						return toBustiaDto(
-								source,
-								true,
-								true);
-					}
-				});
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
 	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId) {
+			Long entitatId,
+			boolean mostrarInactives) {
 		
 		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
 		Timer.Context findPermesesPerUsuariContext = findPermesesPerUsuariTimer.time();
@@ -667,7 +611,13 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		List<BustiaEntity> busties;		
+		if (mostrarInactives)
+			busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		else
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		
+		
 		// Filtra la llista de bústies segons els permisos
 		permisosHelper.filterGrantedAll(
 				busties,
@@ -2208,6 +2158,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
+		bustiaContingut.setBustiaActiva(pare.isActiva());
 		
 		toBustiaDtoContext.stop();
 		// TIMER STOP

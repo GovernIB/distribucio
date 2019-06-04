@@ -17,6 +17,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class BustiaUserFiltreDto implements Serializable {
 
 	private String bustia;
+	/** Per mostrar el contingut de les bústies innactives */
+	private boolean mostrarInnactives;
 	private String contingutDescripcio;
 	private String remitent;
 	private Date dataRecepcioInici;
@@ -86,4 +88,10 @@ public class BustiaUserFiltreDto implements Serializable {
 		this.estatContingut = estatContingut;
 	}
 
+	public boolean isMostrarInactives() {
+		return mostrarInnactives;
+	}
+	public void setMostrarInactives(boolean mostrarInactives) {
+		this.mostrarInnactives = mostrarInactives;
+	}
 }
