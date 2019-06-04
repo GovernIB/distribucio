@@ -29,7 +29,6 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	List<ReglaEntity> findByEntitatAndUnitatCodi(EntitatEntity entitat,String unitatCodi);
 
 	List<ReglaEntity> findByEntitatOrderByOrdreAsc(EntitatEntity entitat);
-	List<ReglaEntity> findByEntitatAndActivaTrueOrderByOrdreAsc(EntitatEntity entitat);
 
 	@Query(	"from " +
 			"    ReglaEntity reg " +

@@ -83,22 +83,11 @@ public class ReglaHelper {
 			EntitatEntity entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) {
-		// Mètode antic
-		List<ReglaEntity> regles = reglaRepository.findByEntitatAndActivaTrueOrderByOrdreAsc(entitat);
 		ReglaEntity reglaAplicable = null;
-		for (ReglaEntity regla: regles) {
-			if (regla.getUnitatCodi() == null || regla.getUnitatCodi().equals(unitatAdministrativa)) {
-				if (anotacio.getProcedimentCodi() != null && anotacio.getProcedimentCodi().equals(regla.getProcedimentCodi())) {
-					reglaAplicable = regla;
-					break;
-				}
-			}
-		}
-		// Mètode amb filtre nou
-		regles = reglaRepository.findAplicables(
-				entitat,
-				anotacio.getProcedimentCodi(),
-				anotacio.getAssumpteCodi());
+		List<ReglaEntity> regles = reglaRepository.findAplicables(
+					entitat,
+					anotacio.getProcedimentCodi(),
+					anotacio.getAssumpteCodi());
 		
 		if (regles.size() > 0)
 			reglaAplicable = regles.get(0);
