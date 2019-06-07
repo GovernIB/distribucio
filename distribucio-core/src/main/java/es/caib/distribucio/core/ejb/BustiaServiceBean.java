@@ -184,6 +184,19 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari, 
+			BustiaUserFiltreDto filtre) {
+		return delegate.findIdsAmbFiltre(
+				entitatId, 
+				bustiesUsuari, 
+				filtre);
+	}
+
+	
+	@Override
+	@RolesAllowed("tothom")
 	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
@@ -281,6 +294,12 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public String getApplictionMetrics(){
 		return delegate.getApplictionMetrics();
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void contingutPendentClassificar(Long id, Long bustiaId, String codiProcediment) {
+		delegate.contingutPendentClassificar(id, bustiaId, codiProcediment);
 	}
 
 }

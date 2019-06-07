@@ -135,8 +135,9 @@
 						$('td:last-child', row).html('<a href="#" class="btn btn-default btn-sm"><span class="fa fa-caret-down"></span></a>')
 					}
 					if (plugin.settings.rowhrefTemplate) {
-						if (plugin.settings.rowhrefToggle)
+						if (plugin.settings.rowhrefToggle) {
 							$(row).attr('data-toggle', plugin.settings.rowhrefToggle);
+						}
 						$(row).attr(
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
@@ -629,6 +630,7 @@
 			$taula.dataTable().api().ajax.url(url).load();
 		}
 		plugin.selectNone = function() {
+			debugger;
 			$taula.dataTable().api().rows({search: 'applied'}).deselect();
 		};
 		plugin.selectAll = function() {
