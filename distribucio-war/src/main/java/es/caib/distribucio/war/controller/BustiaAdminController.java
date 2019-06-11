@@ -20,12 +20,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
 import es.caib.distribucio.war.command.BustiaFiltreCommand;
+import es.caib.distribucio.war.command.MoureAnotacionsCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -165,8 +168,6 @@ public class BustiaAdminController extends BaseAdminController {
 	}
 
 
-	
-	
 	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
 	public String formGet(
 			HttpServletRequest request,
@@ -206,20 +207,111 @@ public class BustiaAdminController extends BaseAdminController {
 		return "bustiaAdminForm";
 	}
 
-//	
-//	@RequestMapping(value = "/{bustiaId}/new", method = RequestMethod.GET)
-//	public String getNewAmbPare(
-//			HttpServletRequest request,
-//			@PathVariable Long bustiaId,
-//			Model model) {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-//		BustiaCommand command = new BustiaCommand();
-//		command.setPareId(bustiaId);
-//		command.setEntitatId(entitatActual.getId());
-//		model.addAttribute(command);
-//		return "bustiaAdminForm";
-//	}
-//
+	/** Opció de l'usuari administrador per moure totes les anotacions de registre d'una bústia
+	 * cap a una altra.
+	 * @param bustiaId
+	 * 			Bústia orígen.
+	 * @return
+	 */
+	@RequestMapping(value = "/{bustiaId}/moureAnotacions", method = RequestMethod.GET)
+	public String moureAnotacionsGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		omplirModelPerMoureAnotacions(
+				entitatActual,
+				bustiaId,
+				model);
+		MoureAnotacionsCommand command = new MoureAnotacionsCommand();
+		command.setOrigenId(bustiaId);
+		model.addAttribute(command);
+		return "bustiaMoureAnotacions";
+	}
+	
+	/** Mou les anotacions de registre d'una bústia orígen cap a la bústia seleccionada per l'usuari.
+	 * Pot deixar un comentari en el moviment. Es valida que la bústia origen i destí no siguin la mateixa.
+	 * @param request
+	 * @param bustiaId
+	 * 			Bústia origen.
+	 * @param command
+	 * 			Bústia destí i comentaris.
+	 * @return
+	 */
+	@RequestMapping(value = "/{bustiaId}/moureAnotacions", method = RequestMethod.POST)
+	public String moureAnotacionsPost(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@Valid MoureAnotacionsCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		// Valida que el destí no sigui igual que l'origen.
+		if (bustiaId.equals(command.getDestiId())) {
+			bindingResult.rejectValue(
+					"destiId", 
+					"bustia.moure.anotacions.desti.origen.error");
+		}
+		if (bindingResult.hasErrors()) {
+			omplirModelPerMoureAnotacions(
+					entitatActual,
+					bustiaId,
+					model);
+			return "bustiaMoureAnotacions";
+		}
+		int anotacionsMogudes = 0;
+		try {
+			anotacionsMogudes = bustiaService.moureAnotacions(
+					entitatActual.getId(),
+					bustiaId,
+					command.getDestiId(),
+					command.getComentari()); 
+		} catch(Exception e) {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"bustia.moure.anotacions.error", 
+							new Object[] {e.getLocalizedMessage()}));
+			omplirModelPerMoureAnotacions(
+					entitatActual,
+					bustiaId,
+					model);
+			return "bustiaMoureAnotacions";	
+		}
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:/bustiaAdmin",
+				"bustia.moure.anotacions.ok",
+				new Object[] {anotacionsMogudes});
+	}
+	
+	private void omplirModelPerMoureAnotacions(
+			EntitatDto entitatActual,
+			Long bustiaId,
+			Model model) {
+		BustiaDto bustia = bustiaService.findById(entitatActual.getId(), bustiaId);
+		if (bustia == null)
+			throw new NotFoundException(
+					bustiaId,
+					BustiaDto.class);
+		model.addAttribute(
+				"bustia",
+				bustia);
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
+				entitatActual.getId());
+		model.addAttribute(
+				"busties",
+				busties);
+		model.addAttribute(
+				"arbreUnitatsOrganitzatives",
+				bustiaService.findArbreUnitatsOrganitzatives(
+						entitatActual.getId(),
+						true,
+						false,
+						true));
+	}	
+	
 	@RequestMapping(value = "/{bustiaId}/enable", method = RequestMethod.GET)
 	public String enable(
 			HttpServletRequest request,
@@ -284,16 +376,6 @@ public class BustiaAdminController extends BaseAdminController {
 					new Object[] {ve.getMessage()});			
 		}
 	}
-
-//	@RequestMapping(value = "/findAmbEntitat", method = RequestMethod.GET)
-//	@ResponseBody
-//	public List<BustiaDto> findAmbEntitat(
-//			HttpServletRequest request,
-//			Model model) {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-//		return bustiaService.findActivesAmbEntitat(
-//				entitatActual.getId());
-//	}
 
 	private BustiaFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {

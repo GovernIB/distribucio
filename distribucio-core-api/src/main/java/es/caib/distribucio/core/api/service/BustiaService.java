@@ -382,8 +382,22 @@ public interface BustiaService {
 
 	@PreAuthorize("hasRole('tothom')")
 	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
-			throws MessagingException;	
+			throws MessagingException;
 
-
+	/** Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
+	 * Enregistre el moviment amb un comentari opcional.
+	 * @param entitatId
+	 * @param bustiaId
+	 * @param destiId
+	 * @param comentari
+	 * @return
+	 * 		Retorna el número d'anotacions mogudes.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public int moureAnotacions(
+			long entitatId, 
+			long bustiaId, 
+			long destiId, 
+			String comentari);	
 }
 

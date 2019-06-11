@@ -2226,4 +2226,60 @@ public class BustiaServiceImpl implements BustiaService {
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 
+
+	@Override
+	@Transactional
+	public int moureAnotacions(
+			long entitatId, 
+			long bustiaId, 
+			long destiId, 
+			String comentari) {
+		logger.debug("Movent les anotacions de registre entre bústies ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + bustiaId + ", "
+				+ "destiId=" + destiId + ", "
+				+ "comentari=" + comentari + ")");
+		int ret = 0;
+
+		// Comprova permisos
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
+				entitat,
+				destiId,
+				false);
+
+		// Recupera totes les anotacions de registre
+		for (RegistreEntity registre : registreRepository.findByPareId(bustiaId)) {
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
+				throw new ValidationException(
+						registre.getNumero(),
+						RegistreEntity.class,
+						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
+			}
+			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+					registre,
+					bustiaDesti,
+					comentari);
+			// Registra al log l'enviament del contingut
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.MOVIMENT,
+					contingutMoviment,
+					true,
+					true);
+			ret++;
+		}
+		logger.debug("Moviment entre bústies finalitzat correctament. " + ret + " anotacions mogudes de la bustia \"" + bustiaOrigen.getId() + " " + bustiaOrigen.getNom() + 
+				 	"\" a la bustia \""+ bustiaDesti.getId() + " " + bustiaDesti.getNom() + "\"");
+		return ret;
+	}
+
 }

@@ -273,4 +273,10 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.getApplictionMetrics();
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public int moureAnotacions(long entitatId, long bustiaId, long destiId, String comentari) {
+		return delegate.moureAnotacions(entitatId, bustiaId, destiId, comentari);
+	}
+
 }
