@@ -24,13 +24,8 @@ import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 
 	List<BustiaEntity> findByEntitatAndPareNotNull(EntitatEntity entitat);
-	
-	
+		
 	List<BustiaEntity> findByEntitatAndActivaTrueAndPareNotNull(EntitatEntity entitat);
-
-//	List<BustiaEntity> findByEntitatAndUnitatCodiAndPareNotNull(
-//			EntitatEntity entitat,
-//			String unitatCodi);
 	
 	/**
 	 * Finds all the busties of given unitat except root bustia
@@ -107,20 +102,6 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("filtreNom") String filtreNom,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat);
 	
-	
-	@Query(	"from " +
-			"    BustiaEntity b " +
-			"where " +
-			"    b.entitat = :entitat " +
-			"and (b.id in (:bustiaIds)) " +
-			"and (:esNullFiltre = true or lower(b.nom) like lower('%'||:filtre||'%') or lower(b.pare.nom) like lower('%'||:filtre||'%')) ")
-	Page<BustiaEntity> findByEntitatAndIdsAndFiltrePaginat(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("bustiaIds") List<Long> bustiaIds, 
-			@Param("esNullFiltre") boolean esNullFiltre,
-			@Param("filtre") String filtre,		
-			Pageable pageable);
-	
 	@Query(	"from " +
 			"    BustiaEntity b " +
 			"where " +
@@ -169,5 +150,4 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("filtreNom") String filtreNom,	
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			Pageable pageable);
-	
 }

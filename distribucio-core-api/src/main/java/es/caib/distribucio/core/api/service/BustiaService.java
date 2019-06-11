@@ -171,33 +171,21 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
-
-	/**
-	 * Pàgina de les bústies a les quals te accés un usuari per datatable.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param paginacioParams
-	 *            Paràmetres per a dur a terme la paginació del resultats.
-	 * @return La pàgina de regles.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public PaginaDto<BustiaDto> findPermesesPerUsuari(
-			Long entitatId, 
-			PaginacioParamsDto paginacioParams);
 	
 	/**
 	 * Llistat de les bústies a les quals te accés un usuari.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
+	 * @param mostrarInactives 
+	 * 				Indica si incloure les bústies innactives en el resultat.
 	 * @param paginacioParams
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId);
+			Long entitatId, boolean mostrarInactives);
 
 	/**
 	 * Envia contingut a una bústia.

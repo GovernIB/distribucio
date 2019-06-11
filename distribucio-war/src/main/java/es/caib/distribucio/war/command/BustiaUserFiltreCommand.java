@@ -20,13 +20,15 @@ import es.caib.distribucio.war.helper.ConversioTipusHelper;
 public class BustiaUserFiltreCommand {
 
 	private String bustia;
+	/** Per mostrar el contingut de les bústies innactives */
+	private boolean mostrarInactives;
 	private String contingutDescripcio;
 	private String remitent;
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
 	private BustiaContingutFiltreEstatEnumDto estatContingut;
 	private String numeroOrigen;
-
+	
 	public String getNumeroOrigen() {
 		return numeroOrigen;
 	}
@@ -86,5 +88,11 @@ public class BustiaUserFiltreCommand {
 	}
 	public void setEstatContingut(BustiaContingutFiltreEstatEnumDto estatContingut) {
 		this.estatContingut = estatContingut;
+	}
+	public boolean isMostrarInactives() {
+		return mostrarInactives;
+	}
+	public void setMostrarInactives(boolean mostrarInactives) {
+		this.mostrarInactives = mostrarInactives;
 	}
 }
