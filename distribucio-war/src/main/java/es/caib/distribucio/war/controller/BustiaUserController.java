@@ -77,13 +77,11 @@ public class BustiaUserController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		BustiaUserFiltreCommand filtreCommand = getFiltreCommand(request);
-		model.addAttribute(
-				filtreCommand);
+		model.addAttribute(filtreCommand);
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
-		
 		return "bustiaUserList";
 	}
-	
+
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
 	@ResponseBody
 	public int select(
@@ -119,7 +117,7 @@ public class BustiaUserController extends BaseUserController {
 		}
 		return seleccio.size();
 	}
-	
+
 	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
 	@ResponseBody
 	public int deselect(
@@ -145,15 +143,13 @@ public class BustiaUserController extends BaseUserController {
 		}
 		return seleccio.size();
 	}
-	
-	
+
 	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
 	public String bustiaMetriques2(
 			HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		try{
+		try {
 			byte[] b = bustiaService.getApplictionMetrics().getBytes();
-		
 			writeFileToResponse(
 					"metrics.json",
 					b,
@@ -454,24 +450,31 @@ public class BustiaUserController extends BaseUserController {
 	}
 
 
-	@RequestMapping(value = "/{bustiaId}/classificar/{contingutId}", method = RequestMethod.GET)
-	public String bustiaPendentClassificarGet(
+	@RequestMapping(value = "/{bustiaId}/classificar/{registreId}", method = RequestMethod.GET)
+	public String bustiaClassificarGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			Model model) {
 		RegistreClassificarCommand command = new RegistreClassificarCommand();
 		command.setBustiaId(bustiaId);
-		command.setContingutId(contingutId);
+		command.setContingutId(registreId);
 		model.addAttribute(command);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		model.addAttribute(
+				"registre",
+				registreService.findOne(
+						entitatActual.getId(),
+						bustiaId,
+						registreId));
 		return "registreClassificar";
 	}
 	
-	@RequestMapping(value = "/{bustiaId}/classificar/{contingutId}", method = RequestMethod.POST)
-	public String bustiaPendentClassificarPost(
+	@RequestMapping(value = "/{bustiaId}/classificar/{registreId}", method = RequestMethod.POST)
+	public String bustiaClassificarPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@Validated(Classificar.class) RegistreClassificarCommand command,
 			BindingResult bindingResult,
 			Model model) {

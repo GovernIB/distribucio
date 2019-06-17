@@ -51,6 +51,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_VALIDASIG = "VALIDASIG";
 	public static final String INTCODI_GESDOC = "GESDOC";
 	public static final String INTCODI_BUSTIAWS = "BUSTIAWS";
+	public static final String INTCODI_PROCEDIMENT = "PROCEDIMENT";
 	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
@@ -82,6 +83,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_BUSTIAWS));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_PROCEDIMENT));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_DISTRIBUCIO));
@@ -127,8 +131,8 @@ public class IntegracioHelper {
 				errorDescripcio,
 				null);
 	}
-	
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void addAccioError(
 			String integracioCodi,
 			String descripcio,
@@ -146,8 +150,7 @@ public class IntegracioHelper {
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
 		accio.setErrorDescripcio(errorDescripcio);
-		
-		if (throwable!=null){
+		if (throwable != null){
 			accio.setExcepcioMessage(
 					ExceptionUtils.getMessage(throwable));
 			accio.setExcepcioStacktrace(
@@ -156,17 +159,13 @@ public class IntegracioHelper {
 		addAccio(
 				integracioCodi,
 				accio);
-		
 		logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
 				+ "integracioCodi=" + integracioCodi + ", "
 				+ "parametres=" + parametres + ", "
 				+ "tipus=" + tipus + ", "
 				+ "tempsResposta=" + tempsResposta + ")",
 				throwable);
-		
 	}
-
-
 
 	private LinkedList<IntegracioAccioDto> getLlistaAccions(
 			String integracioCodi) {
@@ -214,7 +213,7 @@ public class IntegracioHelper {
 				0,
 				accio);
 	}
-	
+
 	private void afegirParametreUsuari(
 			IntegracioAccioDto accio) {
 		String usuariNomCodi = "";
@@ -251,12 +250,14 @@ public class IntegracioHelper {
 			integracio.setNom("Gestió doc.");
 		} else if (INTCODI_BUSTIAWS.equals(codi)) {
 			integracio.setNom("Bústia WS");
+		} else if (INTCODI_PROCEDIMENT.equals(codi)) {
+			integracio.setNom("Procediments");
 		} else if (INTCODI_DISTRIBUCIO.equals(codi)) {
 			integracio.setNom("Distribució");
 		}
 		return integracio;
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 
 }

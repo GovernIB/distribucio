@@ -2413,10 +2413,5 @@ public class BustiaServiceImpl implements BustiaService {
 	
 		return ids;
 	}
-	@Override
-	public void contingutPendentClassificar(Long id, Long bustiaId, String codiProcediment) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

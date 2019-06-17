@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import javax.xml.namespace.QName;
 
 import es.caib.distribucio.ws.backofficeintegracio.BackofficeIntegracio;
-import es.caib.distribucio.ws.v1.bustia.BustiaV1;
 
 /**
  * Utilitat per a instanciar clients per al servei d'enviament

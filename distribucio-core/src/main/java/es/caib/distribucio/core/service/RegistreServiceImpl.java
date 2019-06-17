@@ -1290,6 +1290,46 @@ public class RegistreServiceImpl implements RegistreService {
 		return arxiuDetall;
 	}
 
+	@Override
+	public void classificar(
+			Long entitatId,
+			Long contingutId,
+			Long registreId,
+			String codiProcediment)
+			throws NotFoundException {
+		logger.debug("classificant l'anotació de registre (" +
+				"entitatId=" + entitatId + ", " +
+				"contingutId=" + contingutId + ", " +
+				"registreId=" + registreId + ", " +
+				"codiProcediment=" + codiProcediment + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		if (bustia instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					contingutId,
+					true);
+		} else {
+			// Comprova l'accés al path del contenidor pare
+			contingutHelper.comprovarPermisosPathContingut(
+					bustia,
+					true,
+					false,
+					false,
+					true);
+		}
+		RegistreEntity registre = registreRepository.findByPareAndId(
+				bustia,
+				registreId);
+		registre.up
+	}
 
 	private Exception processarAnotacioPendent(RegistreEntity anotacio) {
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(
@@ -1385,10 +1425,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return fileName;
 	}
 
-
-
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
-
-
 
 }

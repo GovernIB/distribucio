@@ -401,16 +401,10 @@ public interface BustiaService {
 	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
 			throws MessagingException;
 
-	/** Mètode per classificar una anotació de registre pendent de processar amb un codi de procediment.
-	 * 
-	 * @param id
-	 * @param bustiaId
-	 * @param codiProcediment
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void contingutPendentClassificar(Long id, Long bustiaId, String codiProcediment);
-	/** Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
+	/**
+	 * Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
 	 * Enregistre el moviment amb un comentari opcional.
+	 * 
 	 * @param entitatId
 	 * @param bustiaId
 	 * @param destiId
@@ -424,5 +418,6 @@ public interface BustiaService {
 			long bustiaId, 
 			long destiId, 
 			String comentari);	
+
 }
 

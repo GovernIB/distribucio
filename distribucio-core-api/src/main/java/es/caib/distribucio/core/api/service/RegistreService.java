@@ -209,13 +209,12 @@ public interface RegistreService {
 	/**
 	 * Marca com a llegida una anotació de registre
 	 * 
-	* @param entitatId
+	 * @param entitatId
 	 *            Atribut id de l'entitat.
 	 * @param contingutId
 	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
-	 *            
 	 * @return L'anotació modificada
 	 */
 	@PreAuthorize("hasRole('tothom')")
@@ -254,5 +253,26 @@ public interface RegistreService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId);
+
+	/** 
+	 * Mètode per classificar una anotació de registre pendent de processar amb un codi de procediment.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param contingutId
+	 *            Atribut id del contingut pare a on està situada l'anotació (bústia).
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol classificar.
+	 * @param codiProcediment
+	 *            Codi del procediment que es vol assignar a l'anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void classificar(
+			Long entitatId,
+			Long contingutId,
+			Long registreId,
+			String codiProcediment) throws NotFoundException;
 
 }
