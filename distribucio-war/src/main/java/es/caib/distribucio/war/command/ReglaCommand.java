@@ -12,33 +12,39 @@ import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.war.command.ReglaCommand.CreateUpdate;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
+import es.caib.distribucio.war.validation.Regla;
 
 /**
  * Command per al manteniment de regles.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Regla(groups = {CreateUpdate.class})
 public class ReglaCommand {
 
 	private Long id;
-	@NotEmpty @Size(max = 256)
+	@NotEmpty(groups = {CreateUpdate.class})
+	@Size(max = 256, groups = {CreateUpdate.class})
 	private String nom;
-	@Size(max = 1024)
+	@Size(max = 1024, groups = {CreateUpdate.class})
 	private String descripcio;
 	private ReglaTipusEnumDto tipus;
-	@NotEmpty @Size(max = 16)
+	@Size(max = 16, groups = {CreateUpdate.class})
 	private String assumpteCodi;
-	@Size(max = 9)
+	@Size(max = 64, groups = {CreateUpdate.class})
+	private String procedimentCodi;
+	@Size(max = 9, groups = {CreateUpdate.class})
 	private String unitatCodi;
 	private Long unitatId;
 	private Long bustiaId;
 	private BackofficeTipusEnumDto backofficeTipus;
-	@Size(max = 256)
+	@Size(max = 256, groups = {CreateUpdate.class})
 	private String backofficeUrl;
-	@Size(max = 64)
+	@Size(max = 64, groups = {CreateUpdate.class})
 	private String backofficeUsuari;
-	@Size(max = 64)
+	@Size(max = 64, groups = {CreateUpdate.class})
 	private String backofficeContrasenya;
 	private Integer backofficeIntents;
 	private Integer backofficeTempsEntreIntents;
@@ -117,6 +123,12 @@ public class ReglaCommand {
 	public void setBackofficeContrasenya(String backofficeContrasenya) {
 		this.backofficeContrasenya = backofficeContrasenya;
 	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
+	}
 	public Integer getBackofficeIntents() {
 		return backofficeIntents;
 	}
@@ -154,5 +166,7 @@ public class ReglaCommand {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+	
+	public interface CreateUpdate {}
 
 }

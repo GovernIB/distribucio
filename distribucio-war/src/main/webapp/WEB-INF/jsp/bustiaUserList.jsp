@@ -26,10 +26,26 @@
 
 <script>
 
+var mostrarInactives = '${bustiaUserFiltreCommand.mostrarInactives}' === 'true';
+var bustiesInactives = [];
+
+//Funció per donar format als itemps de la select d'agrupacions depenent de la herència
+function formatSelectBustia(item) {
+	if (bustiesInactives.includes(item.id))
+		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
+	else
+		return item.text;
+}
+
 $(document).ready(function() {
+	
 	$('#netejarFiltre').click(function(e) {
+		$('#bustia').val('');
 		$('#estatContingut').val('PENDENT').change();
+		$('#mostrarInactives').val(false).change();
+		$('#mostrarInactivesBtn').removeClass('active');
 	});
+	
 	$('#taulaDades').on( 'draw.dt', function () {
 		// Quan es refresca la llista consulta els pendents
 		$.get( "bustiaUser/getNumPendents")
@@ -38,14 +54,53 @@ $(document).ready(function() {
 		})
 	} );
 
+	$('#mostrarInactivesBtn').click(function() {
+		mostrarInactives = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#mostrarInactives').val(mostrarInactives).change();
+		$(this).blur();
+	});
+	
+	$('#mostrarInactives').change(function() {
+		var actual = $('#bustia').val();
+		$('#bustia').select2('val', '', true);
+		$('#bustia option[value!=""]').remove();
+		var baseUrl = "<c:url value='/bustiaUser/bustiesPermeses'/>?mostrarInactives=" + $(this).val();
+		$.get(baseUrl)
+			.done(function(data) {
+				bustiesInactives = [];
+				for (var i = 0; i < data.length; i++) {
+					$('#bustia').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
+					if (!data[i].activa) {
+						bustiesInactives.push(data[i].id.toString());
+					}
+				}
+				$('#bustia').val(actual).change();
+			})
+			.fail(function() {
+				alert("<spring:message code="error.jquery.ajax"/>");
+			});
+	});
+				
+	$('#mostrarInactives').change();	
 });
+
 </script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
 		<div class="row">
-			<div class="col-md-4">
-				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" optionMinimumResultsForSearch="3" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true"/>
+			<div class="col-md-3">
+				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+			</div>
+			<div class="col-md-1">
+				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default  <c:if test="${bustiaUserFiltreCommand.mostrarInactives}">active</c:if>" data-toggle="button">
+					<span class="fa-stack" aria-hidden="true">
+						<i class="fa fa-inbox fa-stack-1x"></i>
+    	    			<i class="fa fa-ban fa-stack-2x"></i>
+   					</span>
+				</button>
+				<dis:inputHidden name="mostrarInactives"/>
 			</div>
 			<div class="col-md-5">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
@@ -125,6 +180,9 @@ $(document).ready(function() {
 							{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
 							{{:nom}}
 						{{/for}}
+						{{if !bustiaActiva}}
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
+						{{/if}}
 					</script>
 				</th>
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
@@ -166,6 +224,7 @@ $(document).ready(function() {
 						</div>
 					</script>
 				</th>
+				<th data-col-name="bustiaActiva" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>

@@ -17,8 +17,8 @@ public interface DistribucioPlugin {
 	 * Crea un contenidor de contingut, per exemple un expedient
 	 * al gestor d'arxius remot
 	 * 
-	 * @param anotacio
-	 *            L'assentament registral a partir del qual es crea el contenidor
+	 * @param expedientNumero
+	 *            Numero de epxiedentque s’utilitzarà per crear expedient
 	 * @param unitatArrelCodi
 	 *            codi DIR3 de la unitat organtizativa del contenidor
 	 * @return L'identificador UUID del contenidor creat
@@ -26,7 +26,7 @@ public interface DistribucioPlugin {
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public String contenidorCrear(
-			DistribucioRegistreAnotacio anotacio,
+			String expedientNumero,
 			String unitatArrelCodi) throws SistemaExternException;
 
 	/**

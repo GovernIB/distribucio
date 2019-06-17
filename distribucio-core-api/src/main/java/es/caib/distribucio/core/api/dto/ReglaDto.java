@@ -17,8 +17,10 @@ public class ReglaDto extends AuditoriaDto {
 	private String descripcio;
 	private ReglaTipusEnumDto tipus;
 	private String assumpteCodi;
+	private String procedimentCodi;
 	private String unitatCodi;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
+
 	private Long metaExpedientId;
 	private Long arxiuId;
 	private Long bustiaId;
@@ -55,6 +57,12 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 	public ReglaTipusEnumDto getTipus() {
 		return tipus;

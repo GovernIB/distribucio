@@ -368,7 +368,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 		RegistreProcesEstatEnum procesEstat;
 		switch (procesEstatSistra) {
 		case PROCESSADA:
-			procesEstat = RegistreProcesEstatEnum.DISTRIBUIT_BACKOFFICE;
+			procesEstat = RegistreProcesEstatEnum.BACK_PROCESSADA;
 			break;
 		case ERROR:
 		case PENDENT:

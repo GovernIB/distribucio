@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
-import es.caib.distribucio.core.api.service.ws.BustiaV1WsService;
+import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 

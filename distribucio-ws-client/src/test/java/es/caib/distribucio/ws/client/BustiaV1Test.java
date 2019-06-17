@@ -46,6 +46,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
+	private static final String PROCEDIMENT_CODI = "E5";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
@@ -99,6 +100,7 @@ public class BustiaV1Test {
 			anotacio.setAplicacioCodi(APLICACIO_CODI);
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
 			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
+			anotacio.setProcedimentCodi(PROCEDIMENT_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
 	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);

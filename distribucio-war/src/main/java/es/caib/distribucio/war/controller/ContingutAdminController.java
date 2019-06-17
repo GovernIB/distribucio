@@ -194,6 +194,32 @@ public class ContingutAdminController extends BaseAdminController {
 //				"contingut.admin.controller.esborrat.definitiu.ok");
 //	}
 
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+					bustiaId,
+					registreId);
+			if (processatOk) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.ok",
+								null));
+			} else {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.error",
+								null));
+			}
+
+
+
+		return "redirect:../../../" + registreId + "/info";
+	}
+	
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,

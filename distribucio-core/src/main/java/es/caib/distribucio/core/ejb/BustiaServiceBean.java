@@ -118,16 +118,6 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public PaginaDto<BustiaDto> findPermesesPerUsuari(
-			Long entitatId,
-			PaginacioParamsDto paginacioParams) {
-		return delegate.findPermesesPerUsuari(
-				entitatId,
-				paginacioParams);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public ContingutDto enviarContingut(
 			Long entitatId,
 			Long bustiaId,
@@ -236,8 +226,8 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "tothom"})
-	public List<BustiaDto> findPermesesPerUsuari(Long entitatId) {
-		return delegate.findPermesesPerUsuari(entitatId);
+	public List<BustiaDto> findPermesesPerUsuari(Long entitatId, boolean mostrarInnactives) {
+		return delegate.findPermesesPerUsuari(entitatId, mostrarInnactives);
 	}
 
 	@Override
@@ -281,6 +271,12 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public String getApplictionMetrics(){
 		return delegate.getApplictionMetrics();
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public int moureAnotacions(long entitatId, long bustiaId, long destiId, String comentari) {
+		return delegate.moureAnotacions(entitatId, bustiaId, destiId, comentari);
 	}
 
 }

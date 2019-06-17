@@ -49,13 +49,15 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 								"llibre_codi",
 								"tipus",
 								"numero",
-								"data"})})
+								"data",
+								"numero_copia"})})
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
 	private static final int ERROR_MAX_LENGTH = 1000;
 
 	@Column(name = "tipus", length = 1, nullable = false)
+	@Enumerated(EnumType.STRING)
 	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
@@ -154,6 +156,24 @@ public class RegistreEntity extends ContingutEntity {
 	private String procesError;
 	@Column(name = "proces_intents")
 	private int procesIntents;
+	
+	
+	// Date when regla change state of anotacio to RegistreProcesEstatEnum.BACK_PENDENT
+	@Column(name = "back_pendent_data")
+	private Date backPendentData;
+	@Column(name = "back_rebuda_data")
+	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_REBUDA) method 
+	private Date backRebudaData;
+	@Column(name = "back_proces_rebutj_error_data")
+	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_PROCESADA) or (RegistreProcesEstatEnum.BACK_REBUTJADA) or (RegistreProcesEstatEnum.BACK_ERROR) method 
+	private Date backProcesRebutjErrorData;
+	@Column(name = "back_observacions")
+	private String backObservacions;
+	// Date when distribucio should retry to send anotacio to backoffice
+	@Column(name = "back_retry_enviar_data")
+	private Date backRetryEnviarData;
+	
+
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -181,6 +201,9 @@ public class RegistreEntity extends ContingutEntity {
 	private Boolean arxiuTancat;
 	@Column(name = "arxiu_tancat_error")
 	private Boolean arxiuTancatError;
+	/** Com que es pot reenviar un registre a una altra bústia amb el mateix número de registre es posa el número de còpia per distingir-los. */
+	@Column(name = "numero_copia")
+	private Integer numeroCopia;
 	
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
@@ -332,7 +355,22 @@ public class RegistreEntity extends ContingutEntity {
 	public Boolean getLlegida() {
 		return llegida;
 	}
+	public Integer getNumeroCopia() {
+		return numeroCopia != null? numeroCopia : 0;
+	}
+	public Date getBackRetryEnviarData() {
+		return backRetryEnviarData;
+	}
+	public Date getBackPendentData() {
+		return backPendentData;
+	}
+	public Date getBackRebudaData() {
+		return backRebudaData;
+	}
 
+	public String getBackObservacions() {
+		return backObservacions;
+	}
 	public void updateMotiuRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
@@ -350,7 +388,7 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
-			Exception exception) {
+			Throwable exception) {
 		this.procesData = new Date();
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;
@@ -363,6 +401,34 @@ public class RegistreEntity extends ContingutEntity {
 		} else {
 			this.procesError = null;
 		}
+	}
+	public void updateProcesBackPendent() {
+		this.procesData = null;
+		this.procesIntents = 0;
+		this.procesError = null;
+		this.procesEstat = RegistreProcesEstatEnum.BACK_PENDENT;
+	}
+	
+	public void updateBackRetryEnviarData(Date backRetryEnviarData) {
+		this.backRetryEnviarData = backRetryEnviarData;
+	}
+	public void updateBackPendentData(Date backPendentData) {
+		this.backPendentData = backPendentData;
+	}
+	public void updateBackRebudaData(Date backRebudaData) {
+		this.backRebudaData = backRebudaData;
+		this.procesError = null;
+	}
+
+	public Date getBackProcesRebutjErrorData() {
+		return backProcesRebutjErrorData;
+	}
+	public void updateBackProcesRebutjErrorData(Date backProcesRebutjErrorData) {
+		this.backProcesRebutjErrorData = backProcesRebutjErrorData;
+	}
+	public void updateBackEstat(RegistreProcesEstatEnum procesEstat, String backObservacions) {
+		this.procesEstat = procesEstat;
+		this.backObservacions = backObservacions;
 	}
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;
@@ -390,6 +456,7 @@ public class RegistreEntity extends ContingutEntity {
 			String unitatAdministrativaDescripcio,
 			String numero,
 			Date data,
+			Integer numeroCopia,
 			String identificador,
 			String extracte,
 			String oficinaCodi,
@@ -405,6 +472,7 @@ public class RegistreEntity extends ContingutEntity {
 				unitatAdministrativaDescripcio,
 				numero,
 				data,
+				numeroCopia,
 				identificador,
 				extracte,
 				oficinaCodi,
@@ -429,6 +497,7 @@ public class RegistreEntity extends ContingutEntity {
 				String unitatdAministrativaDescripcio,
 				String numero,
 				Date data,
+				Integer numeroCopia,
 				String identificador,
 				String extracte,
 				String oficinaCodi,
@@ -438,17 +507,21 @@ public class RegistreEntity extends ContingutEntity {
 				RegistreProcesEstatEnum procesEstat,
 				ContingutEntity pare) {
 			built = new RegistreEntity();
+			
+			// Nom del contingut
+			built.nom = numero;
 			if (extracte != null) {
-				built.nom = numero + " - " + extracte;
-			} else {
-				built.nom = numero;
+				built.nom += " - " + extracte;
 			}
+			if (numeroCopia != null && numeroCopia > 0)
+				built.nom += " (" + numeroCopia + ")";			
 			built.entitat = entitat;
 			built.registreTipus = tipus.getValor();
 			built.unitatAdministrativa = unitatAdministrativa;
 			built.unitatAdministrativaDescripcio = unitatdAministrativaDescripcio;
 			built.numero = numero;
 			built.data = data;
+			built.numeroCopia = numeroCopia;
 			built.identificador = identificador;
 			built.extracte = extracte;
 			built.oficinaCodi = oficinaCodi;
@@ -608,6 +681,7 @@ public class RegistreEntity extends ContingutEntity {
 		result = prime * result + ((llibreCodi == null) ? 0 : llibreCodi.hashCode());
 		result = prime * result + numero.hashCode();
 		result = prime * result + ((registreTipus == null) ? 0 : registreTipus.hashCode());
+		result = prime * result + ((numeroCopia == null) ? 0 : numeroCopia.hashCode());
 		return result;
 	}
 	@Override
@@ -640,6 +714,11 @@ public class RegistreEntity extends ContingutEntity {
 			if (other.registreTipus != null)
 				return false;
 		} else if (!registreTipus.equals(other.registreTipus))
+			return false;
+		if (numeroCopia == null) {
+			if (other.numeroCopia != null)
+				return false;
+		} else if (!numeroCopia.equals(other.numeroCopia))
 			return false;
 		return true;
 	}

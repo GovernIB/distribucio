@@ -30,7 +30,6 @@ import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
@@ -78,7 +77,7 @@ public class PluginHelper {
 
 	public String distribucioContenidorCrear(
 			String registreNumero,
-			DistribucioRegistreAnotacio registreAnotacio,
+			String expedientNumero,
 			String unitatOrganitzativaCodi) {
 		String accioDescripcio = "Creant contenidor per als documents annexos";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -87,7 +86,7 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			String contenidorUuid = getDistribucioPlugin().contenidorCrear(
-					registreAnotacio,
+					expedientNumero,
 					unitatOrganitzativaCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -117,14 +116,14 @@ public class PluginHelper {
 			String registreNumero,
 			DistribucioRegistreAnnex annex,
 			String unitatOrganitzativaCodi,
-			String uuidContenidor,
+			String uuidExpedient,
 			DocumentEniRegistrableDto documentEniRegistrableDto) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
-		accioParams.put("uuidContenidor", uuidContenidor);
+		accioParams.put("uuidExpedient", uuidExpedient);
 		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
 		long t0 = System.currentTimeMillis();
@@ -132,7 +131,7 @@ public class PluginHelper {
 			String documentUuid = getDistribucioPlugin().documentCrear(
 					annex,
 					unitatOrganitzativaCodi,
-					uuidContenidor,
+					uuidExpedient,
 					documentEniRegistrableDto);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -454,30 +453,24 @@ public class PluginHelper {
 	}
 
 	public Document arxiuDocumentConsultar(
-			ContingutEntity contingut,
-			String nodeId,
+			String arxiuUuid,
 			String versio,
 			boolean ambContingut) {
 		return arxiuDocumentConsultar(
-				contingut,
-				nodeId,
+				arxiuUuid,
 				versio,
 				ambContingut,
 				false);
 	}
 
 	public Document arxiuDocumentConsultar(
-			ContingutEntity contingut,
-			String nodeId,
+			String arxiuUuid,
 			String versio,
 			boolean ambContingut,
 			boolean ambVersioImprimible) {
 		String accioDescripcio = "Consulta d'un document";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("contingutId", contingut.getId().toString());
-		accioParams.put("contingutNom", contingut.getNom());
-		accioParams.put("nodeId", nodeId);
-		String arxiuUuid = nodeId;
+		accioParams.put("nodeId", arxiuUuid);
 		accioParams.put("arxiuUuidCalculat", arxiuUuid);
 		accioParams.put("versio", versio);
 		accioParams.put("ambContingut", new Boolean(ambContingut).toString());

@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,6 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -46,10 +44,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.http.HttpServletResponse;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -79,7 +73,7 @@ public class BustiaUserController extends BaseUserController {
 		BustiaUserFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(
 				filtreCommand);
-		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId()));
+		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
 		
 		return "bustiaUserList";
 	}
@@ -148,7 +142,7 @@ public class BustiaUserController extends BaseUserController {
 		BustiaUserFiltreCommand bustiaUserFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesUsuari = null;
 		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty()) {
-			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId());
+			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), bustiaUserFiltreCommand.isMostrarInactives());
 		}
 		return DatatablesHelper.getDatatableResponse(
 				request,
@@ -379,6 +373,19 @@ public class BustiaUserController extends BaseUserController {
 		Long ret = ElementsPendentsBustiaHelper.countElementsPendentsBusties(request, bustiaService);
 		return ret;
 	}
+	
+
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	@RequestMapping(value = "/bustiesPermeses", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> bustiesPermeses(
+			HttpServletRequest request,
+			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return bustiaService.findPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
+	}
+
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -428,6 +435,7 @@ public class BustiaUserController extends BaseUserController {
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
+			filtreCommand.setMostrarInactives(false);
 		}
 		return filtreCommand;
 	}

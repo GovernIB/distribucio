@@ -11,7 +11,6 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,6 @@ import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
@@ -193,36 +191,6 @@ public class EmailHelper {
 		return url.toString();
 	}
 
-	public void emailBustiaPendentRegistre(
-			BustiaEntity bustia,
-			RegistreEntity registre) {
-		logger.debug("Enviament emails nova anotació de registre a la bústia (" +
-				"bustiaId=" + bustia.getId() + ")" +
-				"registreId=" + registre.getId() + ")");
-		SimpleMailMessage missatge = new SimpleMailMessage();
-		if (emplenarDestinataris(
-				missatge,
-				bustia)) {
-			missatge.setFrom(getRemitent());
-//			String unitatOrganitzativa = getUnitatOrganitzativaNom(
-//					bustia.getEntitat(),
-//					bustia.getUnitatCodi());
-			String unitatOrganitzativa = bustia.getUnitatOrganitzativa().getDenominacio();
-			missatge.setSubject(PREFIX_DISTRIBUCIO + " Nova anotació de registre rebuda a la bústia: " + bustia.getNom());
-			missatge.setText(
-					"Nova anotació de registre pendent de processar a la bústia:\n" +
-					"\tEntitat: " + bustia.getEntitat().getNom() + "\n" +
-					"\tUnitat organitzativa: " + unitatOrganitzativa + "\n" +
-					"\tBústia: " + bustia.getNom() + "\n\n" +
-					"Dades de l'anotació: \n" +
-					"\tTipus: " + registre.getTipus() + "\n" +
-					"\tNúmero: " + registre.getIdentificador() + "\n" +
-					"\tData: " + registre.getData() + "\n" +
-					"\tExtracte: " + registre.getExtracte() + "\n");
-			mailSender.send(missatge);
-		}
-	}
-
 	public List<UsuariDto> obtenirCodiDestinatarisPerEmail(BustiaEntity bustia) {
 		List<UsuariDto> destinataris = new ArrayList<UsuariDto>();
 		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
@@ -240,28 +208,6 @@ public class EmailHelper {
 			}
 		}
 		return destinataris;
-	}
-	
-	private boolean emplenarDestinataris(
-			MailMessage mailMessage,
-			BustiaEntity bustia) {
-		List<String> destinataris = new ArrayList<String>();
-		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
-		for (String usuari: usuaris) {
-			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
-			if (dadesUsuari != null && dadesUsuari.getEmail() != null)
-				destinataris.add(dadesUsuari.getEmail());
-		}
-		if (!destinataris.isEmpty()) {
-			mailMessage.setTo(destinataris.get(0));
-			destinataris.remove(0);
-			if (!destinataris.isEmpty()) {
-				mailMessage.setCc(destinataris.toArray(new String[destinataris.size()]));
-			}
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	private String getUnitatOrganitzativaNom(
