@@ -461,6 +461,7 @@ public class ContingutHelper {
 				assumpteTipusDescripcio(registreOriginal.getAssumpteTipusDescripcio()).
 				assumpteCodi(registreOriginal.getAssumpteCodi()).
 				assumpteDescripcio(registreOriginal.getAssumpteDescripcio()).
+				procedimentCodi(registreOriginal.getProcedimentCodi()).
 				referencia(registreOriginal.getReferencia()).
 				expedientNumero(registreOriginal.getExpedientNumero()).
 				numeroOrigen(registreOriginal.getNumeroOrigen()).

@@ -94,8 +94,8 @@ $(document).ready(function() {
 				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
 					<spring:message code="regla.list.columna.tipus"/>
 				</th>
-				<th data-col-name="procedimentCodi" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
+				<th data-col-name="procedimentCodi" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="unitatOrganitzativa.codi" data-orderable="false"><spring:message code="regla.list.columna.unitat.codi"/></th>
 				<th data-col-name="unitatOrganitzativa.denominacio" data-orderable="false"><spring:message code="regla.list.columna.unitat.nom"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">

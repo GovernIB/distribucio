@@ -55,6 +55,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String assumpteTipusDescripcio;
 	private String assumpteCodi;
 	private String assumpteDescripcio;
+	private String procedimentCodi;
 	private String referencia;
 	private String expedientNumero;
 	private String numeroOrigen;
@@ -286,6 +287,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setAssumpteDescripcio(String assumpteDescripcio) {
 		this.assumpteDescripcio = assumpteDescripcio;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 	public String getReferencia() {
 		return referencia;

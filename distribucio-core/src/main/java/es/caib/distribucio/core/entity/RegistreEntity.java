@@ -92,6 +92,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String assumpteCodi;
 	@Column(name = "assumpte_desc", length = 100)
 	private String assumpteDescripcio;
+	@Column(name = "procediment_codi", length = 64)
+	private String procedimentCodi;
 	@Column(name = "referencia", length = 16)
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
@@ -264,6 +266,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getAssumpteDescripcio() {
 		return assumpteDescripcio;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
 	}
 	public String getReferencia() {
 		return referencia;
@@ -562,6 +567,10 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder assumpteDescripcio(String assumpteDescripcio) {
 			built.assumpteDescripcio = assumpteDescripcio;
+			return this;
+		}
+		public Builder procedimentCodi(String procedimentCodi) {
+			built.procedimentCodi = procedimentCodi;
 			return this;
 		}
 		public Builder referencia(String referencia) {

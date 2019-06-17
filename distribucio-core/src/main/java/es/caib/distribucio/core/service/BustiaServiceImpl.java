@@ -1382,6 +1382,10 @@ public class BustiaServiceImpl implements BustiaService {
 				"				<td colspan=\"2\">" + Objects.toString(registre.getAssumpteCodi(), "") + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
+				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.procediment") + "</th>"+
+				"				<td colspan=\"2\">" + Objects.toString(registre.getProcedimentCodi(), "") + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
 				"				<th>" + messageHelper.getMessage("registre.detalls.camp.refext") + "</th>"+
 				"				<td>" + Objects.toString(registre.getReferencia(), "") + "</td>"+
 				"				<th>" + messageHelper.getMessage("registre.detalls.camp.numexp") + "</th>"+
