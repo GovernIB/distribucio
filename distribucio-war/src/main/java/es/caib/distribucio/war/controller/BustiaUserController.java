@@ -6,7 +6,9 @@ package es.caib.distribucio.war.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +41,8 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.BustiaUserFiltreCommand;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
+import es.caib.distribucio.war.command.RegistreClassificarCommand;
+import es.caib.distribucio.war.command.RegistreClassificarCommand.Classificar;
 import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -55,6 +60,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 public class BustiaUserController extends BaseUserController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "BustiaUserController.session.seleccio";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -78,6 +84,67 @@ public class BustiaUserController extends BaseUserController {
 		return "bustiaUserList";
 	}
 	
+	@RequestMapping(value = "/select", method = RequestMethod.GET)
+	@ResponseBody
+	public int select(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			BustiaUserFiltreCommand filtreCommand = getFiltreCommand(request);
+			List<BustiaDto> bustiesUsuari = null;
+			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
+				bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
+			}
+			seleccio.addAll(
+					bustiaService.findIdsAmbFiltre(
+							entitatActual.getId(),
+							bustiesUsuari,
+							BustiaUserFiltreCommand.asDto(filtreCommand)));
+		}
+		return seleccio.size();
+	}
+	
+	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselect(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
+	}
 	
 	
 	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
@@ -387,6 +454,42 @@ public class BustiaUserController extends BaseUserController {
 	}
 
 
+	@RequestMapping(value = "/{bustiaId}/classificar/{contingutId}", method = RequestMethod.GET)
+	public String bustiaPendentClassificarGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			Model model) {
+		RegistreClassificarCommand command = new RegistreClassificarCommand();
+		command.setBustiaId(bustiaId);
+		command.setContingutId(contingutId);
+		model.addAttribute(command);
+		return "registreClassificar";
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/classificar/{contingutId}", method = RequestMethod.POST)
+	public String bustiaPendentClassificarPost(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long contingutId,
+			@Validated(Classificar.class) RegistreClassificarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			return "registreClassificar";
+		}
+		bustiaService.contingutPendentClassificar(
+				entitatActual.getId(),
+				bustiaId,
+				command.getCodiProcediment());
+		// TODO: posar quina regla s'ha aplicat i si s'ha mogut de bústia
+		return getModalControllerReturnValueSuccess(
+				request,
+				"redirect:../../../pendent",
+				"bustia.controller.pendent.contingut.reenviat.ok");
+	}
+	
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 	    binder.registerCustomEditor(

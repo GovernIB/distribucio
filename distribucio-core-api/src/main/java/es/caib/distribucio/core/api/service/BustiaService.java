@@ -250,6 +250,23 @@ public interface BustiaService {
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
 	/**
+	 * Consulta els identificadors del contingut pendent d'una bústia per filtre. Serveix per obtenir els ID's quan
+	 * se seleccionin tots els elements.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @param paginacioParamsDto 
+	 * 
+	 * @return Els identificadors del contingut pendent.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre);
+	
+	/**
 	 * Obté la informació d'un contingut pendent d'una bústia.
 	 * 
 	 * @param entitatId
@@ -384,6 +401,14 @@ public interface BustiaService {
 	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
 			throws MessagingException;
 
+	/** Mètode per classificar una anotació de registre pendent de processar amb un codi de procediment.
+	 * 
+	 * @param id
+	 * @param bustiaId
+	 * @param codiProcediment
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void contingutPendentClassificar(Long id, Long bustiaId, String codiProcediment);
 	/** Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
 	 * Enregistre el moviment amb un comentari opcional.
 	 * @param entitatId

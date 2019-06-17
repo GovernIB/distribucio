@@ -83,7 +83,6 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
-			"and (:esNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.remitent.nom) like lower('%'||:filtre||'%') or lower(c.darrerMoviment.comentari) like lower('%'||:filtre||'%')) " +
 			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PROCESSADA)) or (c.procesEstat = :estat))")
 	public Page<ContingutEntity> findRegistreByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
@@ -101,10 +100,37 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("dataFi") Date dataFi,
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") RegistreProcesEstatEnum estat,
-			@Param("esNullFiltre") boolean esNullFiltre,
-			@Param("filtre") String filtre,
 			Pageable pageable);
 	
+	@Query(	"select " +
+			"    c.id " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"    (:esPareNull = true or c.pare = :pare) " +
+			"and (:esPareNull = false or c.pare in (:pares)) " +
+			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
+			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
+			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PROCESSADA)) or (c.procesEstat = :estat))")
+	public List<Long> findRegistreIdsByPareAndFiltre(
+			@Param("esPareNull") boolean esPareNull,
+			@Param("pare") ContingutEntity pare,
+			@Param("pares") List<? extends ContingutEntity> pares,
+			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
+			@Param("contingutDescripcio") String contingutDescripcio,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") RegistreProcesEstatEnum estat);
 	
 	
 	@Query(	"select " +
