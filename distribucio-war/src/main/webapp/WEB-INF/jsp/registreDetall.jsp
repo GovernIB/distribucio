@@ -162,6 +162,10 @@ tr.clicable {
 									<td colspan="2">(${registre.assumpteCodi})</td>
 								</tr>
 								<tr>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
+									<td colspan="2">${registre.procedimentCodi}</td>
+								</tr>
+								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.refext"/></strong></td>
 									<td>${registre.referencia}</td>
 									<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>

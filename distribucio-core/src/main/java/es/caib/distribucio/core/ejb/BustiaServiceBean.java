@@ -292,10 +292,4 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.moureAnotacions(entitatId, bustiaId, destiId, comentari);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public void contingutPendentClassificar(Long id, Long bustiaId, String codiProcediment) {
-		delegate.contingutPendentClassificar(id, bustiaId, codiProcediment);
-	}
-
 }

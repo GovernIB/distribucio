@@ -70,9 +70,9 @@
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreClassificarCommand">
 		<form:hidden path="bustiaId"/>
 		<form:hidden path="contingutId"/>
-		<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.form.camp.codi.procediment" required="true"/>
+		<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.form.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" required="true"/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-magic"></span> <spring:message code="bustia.pendent.classificar.form.submit"/></button>
+			<button type="submit" class="btn btn-success"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.form.submit"/></button>
 			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

@@ -92,6 +92,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String assumpteCodi;
 	@Column(name = "assumpte_desc", length = 100)
 	private String assumpteDescripcio;
+	@Column(name = "procediment_codi", length = 64)
+	private String procedimentCodi;
 	@Column(name = "referencia", length = 16)
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
@@ -156,8 +158,6 @@ public class RegistreEntity extends ContingutEntity {
 	private String procesError;
 	@Column(name = "proces_intents")
 	private int procesIntents;
-	
-	
 	// Date when regla change state of anotacio to RegistreProcesEstatEnum.BACK_PENDENT
 	@Column(name = "back_pendent_data")
 	private Date backPendentData;
@@ -172,8 +172,6 @@ public class RegistreEntity extends ContingutEntity {
 	// Date when distribucio should retry to send anotacio to backoffice
 	@Column(name = "back_retry_enviar_data")
 	private Date backRetryEnviarData;
-	
-
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -204,7 +202,7 @@ public class RegistreEntity extends ContingutEntity {
 	/** Com que es pot reenviar un registre a una altra bústia amb el mateix número de registre es posa el número de còpia per distingir-los. */
 	@Column(name = "numero_copia")
 	private Integer numeroCopia;
-	
+
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
 	}
@@ -264,6 +262,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getAssumpteDescripcio() {
 		return assumpteDescripcio;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
 	}
 	public String getReferencia() {
 		return referencia;
@@ -367,10 +368,10 @@ public class RegistreEntity extends ContingutEntity {
 	public Date getBackRebudaData() {
 		return backRebudaData;
 	}
-
 	public String getBackObservacions() {
 		return backObservacions;
 	}
+
 	public void updateMotiuRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
@@ -408,7 +409,13 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesError = null;
 		this.procesEstat = RegistreProcesEstatEnum.BACK_PENDENT;
 	}
-	
+	public void updateRegla(ReglaEntity regla) {
+		this.regla = regla;
+		this.procesData = null;
+		this.procesIntents = 0;
+		this.procesError = null;
+		this.procesEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+	}
 	public void updateBackRetryEnviarData(Date backRetryEnviarData) {
 		this.backRetryEnviarData = backRetryEnviarData;
 	}
@@ -419,7 +426,6 @@ public class RegistreEntity extends ContingutEntity {
 		this.backRebudaData = backRebudaData;
 		this.procesError = null;
 	}
-
 	public Date getBackProcesRebutjErrorData() {
 		return backProcesRebutjErrorData;
 	}
@@ -438,6 +444,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateIdentificadorProcedimentSistra(String identificadorProcediment) {
 		this.identificadorProcedimentSistra = identificadorProcediment;
+	}
+	public void updateProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 	public void updateLlegida(Boolean llegida) {
 		this.llegida = llegida;
@@ -562,6 +571,10 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder assumpteDescripcio(String assumpteDescripcio) {
 			built.assumpteDescripcio = assumpteDescripcio;
+			return this;
+		}
+		public Builder procedimentCodi(String procedimentCodi) {
+			built.procedimentCodi = procedimentCodi;
 			return this;
 		}
 		public Builder referencia(String referencia) {

@@ -121,6 +121,7 @@ public class RegistreHelper {
 		anotacio.setAssumpteTipusDescripcio(entity.getAssumpteTipusDescripcio());
 		anotacio.setAssumpteCodi(entity.getAssumpteCodi());
 		anotacio.setAssumpteDescripcio(entity.getAssumpteDescripcio());
+		anotacio.setProcedimentCodi(entity.getProcedimentCodi());
 		anotacio.setReferencia(entity.getReferencia());
 		anotacio.setExpedientNumero(entity.getExpedientNumero());
 		anotacio.setIdiomaCodi(entity.getIdiomaCodi());
@@ -198,6 +199,7 @@ public class RegistreHelper {
 		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
 		assumpteCodi(anotacio.getAssumpteCodi()).
 		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
+		procedimentCodi(anotacio.getProcedimentCodi()).
 		referencia(anotacio.getReferencia()).
 		expedientNumero(anotacio.getExpedientNumero()).
 		numeroOrigen(anotacio.getNumeroOrigen()).

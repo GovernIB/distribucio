@@ -48,6 +48,9 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 					.addConstraintViolation();	
 			valid = false;
 		}
+		if (!valid)
+			context.disableDefaultConstraintViolation();
+		
         return valid;
 	}
 }

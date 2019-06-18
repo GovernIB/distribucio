@@ -8,10 +8,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +21,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -50,20 +50,18 @@ import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
-import es.caib.distribucio.core.helper.AlertaHelper;
+import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
-import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
-import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
-import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
@@ -81,33 +79,25 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
 @Service
 public class RegistreServiceImpl implements RegistreService {
 
-	@Resource
+	@Autowired
 	private RegistreRepository registreRepository;
-	@Resource
-	private BustiaRepository bustiaRepository;
-	@Resource
+	@Autowired
 	private RegistreAnnexRepository registreAnnexRepository;
 
-	@Resource
+	@Autowired
 	private ContingutHelper contingutHelper;
-	@Resource
-	private ContingutLogHelper contingutLogHelper;
-	@Resource
+	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
+	@Autowired
 	private EntityComprovarHelper entityComprovarHelper;
-	@Resource
-	private ReglaHelper reglaHelper;
-	@Resource
+	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Resource
+	@Autowired
 	private RegistreHelper registreHelper;
-	@Resource
+	@Autowired
 	private PluginHelper pluginHelper;
-	@Resource
-	private MessageHelper messageHelper;
-	@Resource
-	private AlertaHelper alertaHelper;
+	@Autowired
+	private ReglaHelper reglaHelper;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -145,192 +135,11 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		
-
 		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(
 				registre);
-		
-
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());		
-		
 		return registreAnotacio;
 	}
-	
-	
-
-	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
-		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
-		
-		RegistreEntity registre = registreRepository.findOne(registreId);
-		List<Annex> annexosPerBackoffice = new ArrayList<Annex>(); 
-		
-		for (RegistreAnnexEntity annexEntity : registre.getAnnexos()) {
-
-			Annex annexPerBackoffice = new Annex();
-			annexPerBackoffice.setTitol(annexEntity.getTitol());
-			annexPerBackoffice.setNom(annexEntity.getFitxerNom());
-			annexPerBackoffice.setUuid(annexEntity.getFitxerArxiuUuid());
-			annexPerBackoffice.setTamany(annexEntity.getFitxerTamany());
-			annexPerBackoffice.setTipusMime(annexEntity.getFitxerTipusMime());
-			annexPerBackoffice.setNtiTipoDocumental(toNtiTipoDocumento(annexEntity.getNtiTipusDocument()));
-			annexPerBackoffice.setNtiOrigen(toNtiOrigen(annexEntity.getOrigenCiutadaAdmin()));
-			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
-			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
-			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
-			
-			boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
-					"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
-			
-			// annex should be stored in arxiu
-			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
-				Document document = pluginHelper.arxiuDocumentConsultar(
-						annexEntity.getFitxerArxiuUuid(),
-						null,
-						retornarAnnexIFirmaContingut);
-
-				if(retornarAnnexIFirmaContingut)
-					annexPerBackoffice.setContingut(document.getContingut().getContingut());
-				
-				// if document is signed
-				if (document.getFirmes() != null) {
-					for (Firma firma : document.getFirmes()) {
-						// we want to use first firma that is not CSV type
-						if (!FirmaTipus.CSV.equals(firma.getTipus())) {
-
-							boolean detached = FirmaTipus.XADES_DET.equals(firma.getTipus())
-									|| FirmaTipus.CADES_DET.equals(firma.getTipus());
-							if (detached && retornarAnnexIFirmaContingut) {
-									annexPerBackoffice.setFirmaContingut(firma.getContingut());
-									annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
-							}
-							annexPerBackoffice.setFirmaTipus(
-									firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
-							annexPerBackoffice.setFirmaPerfil(
-									firma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
-							break;
-						}
-					}
-				}
-			} else {
-				throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
-			}
-			annexosPerBackoffice.add(annexPerBackoffice);
-		}
-		return annexosPerBackoffice;
-	}
-
-	private NtiTipoDocumento toNtiTipoDocumento(RegistreAnnexNtiTipusDocumentEnum registreAnnexNtiTipusDocument){
-		NtiTipoDocumento ntiTipoDocumento = null;
-		
-		if (registreAnnexNtiTipusDocument != null) {
-			switch (registreAnnexNtiTipusDocument) {
-			
-			case RESOLUCIO:
-				ntiTipoDocumento = NtiTipoDocumento.RESOLUCIO;
-				break;
-			case ACORD:
-				ntiTipoDocumento = NtiTipoDocumento.ACORD;
-				break;	
-			case CONTRACTE:
-				ntiTipoDocumento = NtiTipoDocumento.CONTRACTE;
-				break;	
-			case CONVENI:
-				ntiTipoDocumento = NtiTipoDocumento.CONVENI;
-				break;
-			case DECLARACIO:
-				ntiTipoDocumento = NtiTipoDocumento.DECLARACIO;
-				break;
-			case COMUNICACIO:
-				ntiTipoDocumento = NtiTipoDocumento.COMUNICACIO;
-				break;	
-			case NOTIFICACIO:
-				ntiTipoDocumento = NtiTipoDocumento.NOTIFICACIO;
-				break;	
-			case PUBLICACIO:
-				ntiTipoDocumento = NtiTipoDocumento.PUBLICACIO;
-				break;	
-			case ACUS_REBUT:
-				ntiTipoDocumento = NtiTipoDocumento.JUSTIFICANT_RECEPCIO;
-				break;	
-			case ACTE:
-				ntiTipoDocumento = NtiTipoDocumento.ACTA;
-				break;	
-			case CERTIFICAT:
-				ntiTipoDocumento = NtiTipoDocumento.CERTIFICAT;
-				break;	
-			case DILIGENCIA:
-				ntiTipoDocumento = NtiTipoDocumento.DILIGENCIA;
-				break;	
-			case INFORME:
-				ntiTipoDocumento = NtiTipoDocumento.INFORME;
-				break;	
-			case SOLICITUD:
-				ntiTipoDocumento = NtiTipoDocumento.SOLICITUD;
-				break;	
-			case DENUNCIA:
-				ntiTipoDocumento = NtiTipoDocumento.DENUNCIA;
-				break;	
-			case ALEGACIONS:
-				ntiTipoDocumento = NtiTipoDocumento.ALEGACIO;
-				break;	
-			case RECURSOS:
-				ntiTipoDocumento = NtiTipoDocumento.RECURS;
-				break;	
-			case COMUNICACIO_CIUTADA:
-				ntiTipoDocumento = NtiTipoDocumento.COMUNICACIO_CIUTADA;
-				break;	
-			case FACTURA:
-				ntiTipoDocumento = NtiTipoDocumento.FACTURA;
-				break;							
-			case ALTRES_INCAUTATS:
-				ntiTipoDocumento = NtiTipoDocumento.ALTRES_INCAUTATS;
-				break;	
-			case ALTRES:
-				ntiTipoDocumento = NtiTipoDocumento.ALTRES;
-				break;	
-			}
-		}	
-		return ntiTipoDocumento;
-	}
-	
-	
-	
-	private NtiOrigen toNtiOrigen(RegistreAnnexOrigenEnum registreAnnexOrigenEnum){
-		NtiOrigen ntiOrigen = null;
-		
-		if (registreAnnexOrigenEnum != null) {
-			switch (registreAnnexOrigenEnum) {
-			case CIUTADA:
-				ntiOrigen = NtiOrigen.CIUTADA;
-				break;
-			case ADMINISTRACIO:
-				ntiOrigen = NtiOrigen.ADMINISTRACIO;
-				break;	
-			}
-		}	
-		return ntiOrigen;
-	}
-	
-	
-	private SicresTipoDocumento toSicresTipoDocumento(RegistreAnnexSicresTipusDocumentEnum registreAnnexSicresTipusDocumentEnum) {
-		SicresTipoDocumento sicresTipoDocumento = null;
-
-		if (registreAnnexSicresTipusDocumentEnum != null) {
-			switch (registreAnnexSicresTipusDocumentEnum) {
-			case FORM:
-				sicresTipoDocumento = SicresTipoDocumento.FORMULARI;
-				break;
-			case FORM_ADJUNT:
-				sicresTipoDocumento = SicresTipoDocumento.ADJUNT;
-				break;
-			case INTERN:
-				sicresTipoDocumento = SicresTipoDocumento.TECNIC_INTERN;
-				break;
-			}
-		}
-		return sicresTipoDocumento;
-	}
-	
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -340,19 +149,19 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "id=" + id + ")");
 		
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
-
 		try {
 			// check if anotacio was sent with correct key
 			String clauSecreta = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.integracio.clau");
-			if (clauSecreta == null)
+			if (clauSecreta == null) {
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
-			String encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(),
+			}
+			String encryptedIdentificator = RegistreHelper.encrypt(
+					id.getIndetificador(),
 					clauSecreta);
-			if (!encryptedIdentificator.equals(id.getClauAcces()))
+			if (!encryptedIdentificator.equals(id.getClauAcces())) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
-			
+			}
 			RegistreEntity registreEntity = registreRepository.findByNumero(id.getIndetificador());
-			
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
 			anotacioPerBackoffice.setExtracte(registreEntity.getExtracte());
@@ -369,6 +178,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
+			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
 			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());
@@ -384,23 +194,15 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setExpedientNumero(registreEntity.getExpedientNumero());
 			anotacioPerBackoffice.setExposa(registreEntity.getExposa());
 			anotacioPerBackoffice.setSolicita(registreEntity.getSolicita());
-			
 			anotacioPerBackoffice.setDestiCodi(registreEntity.getUnitatAdministrativa());
 			anotacioPerBackoffice.setDestiDescripcio(registreEntity.getUnitatAdministrativaDescripcio());
-			
 			anotacioPerBackoffice.setInteressats(toInteressats(registreEntity.getInteressats()));
-			
 			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.getId()));
-			
-			
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
-		
 		return anotacioPerBackoffice;
 	}
-	
-	
 	
 	@SuppressWarnings("incomplete-switch")
 	@Transactional
@@ -409,7 +211,6 @@ public class RegistreServiceImpl implements RegistreService {
 			AnotacioRegistreId id,
 			Estat estat,
 			String observacions) {
-
 		try {
 			// check if anotacio was sent with correct key
 			String clauSecreta = PropertiesHelper.getProperties().getProperty(
@@ -420,10 +221,7 @@ public class RegistreServiceImpl implements RegistreService {
 					clauSecreta);
 			if (!encryptedIdentificator.equals(id.getClauAcces()))
 				throw new RuntimeException("La clau o identificador és incorrecte");
-
-			
 			RegistreEntity registre = registreRepository.findByNumero(id.getIndetificador());
-
 			switch (estat) {
 			case REBUDA:
 				registre.updateBackEstat(RegistreProcesEstatEnum.BACK_REBUDA,
@@ -448,141 +246,11 @@ public class RegistreServiceImpl implements RegistreService {
 				registre.updateBackProcesRebutjErrorData(new Date());
 				break;
 			}
-
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	private List<Interessat> toInteressats(List<RegistreInteressatEntity> registreInteressats) {
-
-		List<Interessat> interessatsPerBackoffice = new ArrayList<>();
-		for (RegistreInteressatEntity registreInteressatEntity : registreInteressats) {
-
-			Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
-			if (registreInteressatEntity.getRepresentant() != null) {
-				Representant representant = toRepresentant(registreInteressatEntity.getRepresentant());
-				interessatPerBackoffice.setRepresentant(representant);
-			}
-			interessatsPerBackoffice.add(interessatPerBackoffice);
-		}
-		return interessatsPerBackoffice;
-	}
-
-	
-
-	private Interessat toInteressat(RegistreInteressatEntity registreInteressatEntity) {
-		Interessat interessat = new Interessat();
-
-		switch (registreInteressatEntity.getTipus()) {
-		case PERSONA_FIS:
-			interessat.setTipus(InteressatTipus.PERSONA_FISICA);
-			break;
-		case PERSONA_JUR:
-			interessat.setTipus(InteressatTipus.PERSONA_JURIDICA);
-			break;
-		case ADMINISTRACIO:
-			interessat.setTipus(InteressatTipus.ADMINISTRACIO);
-			break;
-		}
-
-		switch (registreInteressatEntity.getDocumentTipus()) {
-		case NIF:
-			interessat.setDocumentTipus(DocumentTipus.NIF);
-			break;
-		case CIF:
-			interessat.setDocumentTipus(DocumentTipus.CIF);
-			break;
-		case PASSAPORT:
-			interessat.setDocumentTipus(DocumentTipus.PASSAPORT);
-			break;
-		case ESTRANGER:
-			interessat.setDocumentTipus(DocumentTipus.NIE);
-			break;
-		case ALTRES:
-			interessat.setDocumentTipus(DocumentTipus.ALTRES);
-			break;
-		case CODI_ORIGEN:
-			interessat.setDocumentTipus(DocumentTipus.ALTRES);
-			break;
-		}
-
-		interessat.setDocumentNumero(registreInteressatEntity.getDocumentNum());
-		interessat.setRaoSocial(registreInteressatEntity.getRaoSocial());
-		interessat.setNom(registreInteressatEntity.getNom());
-		interessat.setLlinatge1(registreInteressatEntity.getLlinatge1());
-		interessat.setLlinatge2(registreInteressatEntity.getLlinatge2());
-		interessat.setPaisCodi(registreInteressatEntity.getPais());
-		interessat.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipi());
-		interessat.setAdresa(registreInteressatEntity.getAdresa());
-		interessat.setCp(registreInteressatEntity.getCodiPostal());
-		interessat.setEmail(registreInteressatEntity.getEmail());
-		interessat.setTelefon(registreInteressatEntity.getTelefon());
-		interessat.setAdresaElectronica(registreInteressatEntity.getEmail());
-		interessat.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
-		interessat.setObservacions(registreInteressatEntity.getObservacions());
-
-		return interessat;
-	}
-	
-	private Representant toRepresentant(RegistreInteressatEntity registreInteressatEntity) {
-		Representant representant = new Representant();
-
-		switch (registreInteressatEntity.getTipus()) {
-		case PERSONA_FIS:
-			representant.setTipus(InteressatTipus.PERSONA_FISICA);
-			break;
-		case PERSONA_JUR:
-			representant.setTipus(InteressatTipus.PERSONA_JURIDICA);
-			break;
-		case ADMINISTRACIO:
-			representant.setTipus(InteressatTipus.ADMINISTRACIO);
-			break;
-		}
-
-		switch (registreInteressatEntity.getDocumentTipus()) {
-		case NIF:
-			representant.setDocumentTipus(DocumentTipus.NIF);
-			break;
-		case CIF:
-			representant.setDocumentTipus(DocumentTipus.CIF);
-			break;
-		case PASSAPORT:
-			representant.setDocumentTipus(DocumentTipus.PASSAPORT);
-			break;
-		case ESTRANGER:
-			representant.setDocumentTipus(DocumentTipus.NIE);
-			break;
-		case ALTRES:
-			representant.setDocumentTipus(DocumentTipus.ALTRES);
-			break;
-		case CODI_ORIGEN:
-			representant.setDocumentTipus(DocumentTipus.ALTRES);
-			break;
-		}
-
-		representant.setDocumentNumero(registreInteressatEntity.getDocumentNum());
-		representant.setRaoSocial(registreInteressatEntity.getRaoSocial());
-		representant.setNom(registreInteressatEntity.getNom());
-		representant.setLlinatge1(registreInteressatEntity.getLlinatge1());
-		representant.setLlinatge2(registreInteressatEntity.getLlinatge2());
-		representant.setPaisCodi(registreInteressatEntity.getPais());
-		representant.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		representant.setMunicipiCodi(registreInteressatEntity.getMunicipi());
-		representant.setAdresa(registreInteressatEntity.getAdresa());
-		representant.setCp(registreInteressatEntity.getCodiPostal());
-		representant.setEmail(registreInteressatEntity.getEmail());
-		representant.setTelefon(registreInteressatEntity.getTelefon());
-		representant.setAdresaElectronica(registreInteressatEntity.getEmail());
-		representant.setCanal(registreInteressatEntity.getCanalPreferent().toString());
-		representant.setObservacions(registreInteressatEntity.getObservacions());
-
-		return representant;
-	}
-	
-	
-	
 	@Transactional
 	@Override
 	public RegistreAnnexDetallDto getRegistreJustificant(
@@ -619,20 +287,15 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		
-
 		RegistreAnnexDetallDto justificant = getJustificantPerRegistre(
 					entitat, 
 					bustia, 
 					registre.getJustificantArxiuUuid(), 
 					true);
-		
 		justificant.setRegistreId(registreId);
-		
-		
 		return justificant;
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<RegistreAnnexDetallDto> getAnnexos(
@@ -1291,44 +954,387 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	@Override
-	public void classificar(
+	@Transactional
+	public boolean classificar(
 			Long entitatId,
 			Long contingutId,
 			Long registreId,
-			String codiProcediment)
+			String procedimentCodi)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
 				"contingutId=" + contingutId + ", " +
 				"registreId=" + registreId + ", " +
-				"codiProcediment=" + codiProcediment + ")");
+				"procedimentCodi=" + procedimentCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
 				contingutId,
 				null);
-		if (bustia instanceof BustiaEntity) {
+		if (contingut instanceof BustiaEntity) {
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					contingutId,
 					true);
 		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
+			throw new ValidationException(
+					contingutId,
+					ContingutEntity.class,
+					"El contingut especificat no és de tipus bústia");
 		}
 		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
+				contingut,
 				registreId);
-		registre.up
+		registre.updateProcedimentCodi(procedimentCodi);
+		BustiaEntity bustia = (BustiaEntity)contingut;
+		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
+				entitat,
+				bustia.getUnitatOrganitzativa().getCodi(),
+				registre.getProcedimentCodi(),
+				registre.getAssumpteCodi());
+		if (reglaAplicable != null) {
+			registre.updateRegla(reglaAplicable);
+			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+					entitat,
+					bustia);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProcedimentDto> classificarFindProcediments(
+			Long entitatId,
+			Long bustiaId) {
+		logger.debug("classificant l'anotació de registre (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				bustiaId,
+				null);
+		if (contingut instanceof BustiaEntity) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					bustiaId,
+					true);
+		} else {
+			throw new ValidationException(
+					bustiaId,
+					ContingutEntity.class,
+					"El contingut especificat no és de tipus bústia");
+		}
+		BustiaEntity bustia = (BustiaEntity)contingut;
+		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatCodi());
+		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
+		if (procediments != null) {
+			for (Procediment procediment: procediments) {
+				if (procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) {
+					ProcedimentDto dto = new ProcedimentDto();
+					dto.setCodi(procediment.getCodigo());
+					dto.setCodiSia(procediment.getCodigoSIA());
+					dto.setNom(procediment.getNombre());
+					dtos.add(dto);
+				}
+			}
+		}
+		return dtos;
+	}
+
+	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
+		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		List<Annex> annexosPerBackoffice = new ArrayList<Annex>(); 
+		for (RegistreAnnexEntity annexEntity : registre.getAnnexos()) {
+			Annex annexPerBackoffice = new Annex();
+			annexPerBackoffice.setTitol(annexEntity.getTitol());
+			annexPerBackoffice.setNom(annexEntity.getFitxerNom());
+			annexPerBackoffice.setUuid(annexEntity.getFitxerArxiuUuid());
+			annexPerBackoffice.setTamany(annexEntity.getFitxerTamany());
+			annexPerBackoffice.setTipusMime(annexEntity.getFitxerTipusMime());
+			annexPerBackoffice.setNtiTipoDocumental(toNtiTipoDocumento(annexEntity.getNtiTipusDocument()));
+			annexPerBackoffice.setNtiOrigen(toNtiOrigen(annexEntity.getOrigenCiutadaAdmin()));
+			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
+			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
+			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
+			boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
+					"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
+			// annex should be stored in arxiu
+			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
+				Document document = pluginHelper.arxiuDocumentConsultar(
+						annexEntity.getFitxerArxiuUuid(),
+						null,
+						retornarAnnexIFirmaContingut);
+
+				if(retornarAnnexIFirmaContingut)
+					annexPerBackoffice.setContingut(document.getContingut().getContingut());
+				
+				// if document is signed
+				if (document.getFirmes() != null) {
+					for (Firma firma : document.getFirmes()) {
+						// we want to use first firma that is not CSV type
+						if (!FirmaTipus.CSV.equals(firma.getTipus())) {
+
+							boolean detached = FirmaTipus.XADES_DET.equals(firma.getTipus())
+									|| FirmaTipus.CADES_DET.equals(firma.getTipus());
+							if (detached && retornarAnnexIFirmaContingut) {
+									annexPerBackoffice.setFirmaContingut(firma.getContingut());
+									annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
+							}
+							annexPerBackoffice.setFirmaTipus(
+									firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
+							annexPerBackoffice.setFirmaPerfil(
+									firma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
+							break;
+						}
+					}
+				}
+			} else {
+				throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
+			}
+			annexosPerBackoffice.add(annexPerBackoffice);
+		}
+		return annexosPerBackoffice;
+	}
+
+	private NtiTipoDocumento toNtiTipoDocumento(RegistreAnnexNtiTipusDocumentEnum registreAnnexNtiTipusDocument){
+		NtiTipoDocumento ntiTipoDocumento = null;
+		
+		if (registreAnnexNtiTipusDocument != null) {
+			switch (registreAnnexNtiTipusDocument) {
+			
+			case RESOLUCIO:
+				ntiTipoDocumento = NtiTipoDocumento.RESOLUCIO;
+				break;
+			case ACORD:
+				ntiTipoDocumento = NtiTipoDocumento.ACORD;
+				break;	
+			case CONTRACTE:
+				ntiTipoDocumento = NtiTipoDocumento.CONTRACTE;
+				break;	
+			case CONVENI:
+				ntiTipoDocumento = NtiTipoDocumento.CONVENI;
+				break;
+			case DECLARACIO:
+				ntiTipoDocumento = NtiTipoDocumento.DECLARACIO;
+				break;
+			case COMUNICACIO:
+				ntiTipoDocumento = NtiTipoDocumento.COMUNICACIO;
+				break;	
+			case NOTIFICACIO:
+				ntiTipoDocumento = NtiTipoDocumento.NOTIFICACIO;
+				break;	
+			case PUBLICACIO:
+				ntiTipoDocumento = NtiTipoDocumento.PUBLICACIO;
+				break;	
+			case ACUS_REBUT:
+				ntiTipoDocumento = NtiTipoDocumento.JUSTIFICANT_RECEPCIO;
+				break;	
+			case ACTE:
+				ntiTipoDocumento = NtiTipoDocumento.ACTA;
+				break;	
+			case CERTIFICAT:
+				ntiTipoDocumento = NtiTipoDocumento.CERTIFICAT;
+				break;	
+			case DILIGENCIA:
+				ntiTipoDocumento = NtiTipoDocumento.DILIGENCIA;
+				break;	
+			case INFORME:
+				ntiTipoDocumento = NtiTipoDocumento.INFORME;
+				break;	
+			case SOLICITUD:
+				ntiTipoDocumento = NtiTipoDocumento.SOLICITUD;
+				break;	
+			case DENUNCIA:
+				ntiTipoDocumento = NtiTipoDocumento.DENUNCIA;
+				break;	
+			case ALEGACIONS:
+				ntiTipoDocumento = NtiTipoDocumento.ALEGACIO;
+				break;	
+			case RECURSOS:
+				ntiTipoDocumento = NtiTipoDocumento.RECURS;
+				break;	
+			case COMUNICACIO_CIUTADA:
+				ntiTipoDocumento = NtiTipoDocumento.COMUNICACIO_CIUTADA;
+				break;	
+			case FACTURA:
+				ntiTipoDocumento = NtiTipoDocumento.FACTURA;
+				break;							
+			case ALTRES_INCAUTATS:
+				ntiTipoDocumento = NtiTipoDocumento.ALTRES_INCAUTATS;
+				break;	
+			case ALTRES:
+				ntiTipoDocumento = NtiTipoDocumento.ALTRES;
+				break;	
+			}
+		}	
+		return ntiTipoDocumento;
+	}
+	
+	private NtiOrigen toNtiOrigen(RegistreAnnexOrigenEnum registreAnnexOrigenEnum){
+		NtiOrigen ntiOrigen = null;
+		
+		if (registreAnnexOrigenEnum != null) {
+			switch (registreAnnexOrigenEnum) {
+			case CIUTADA:
+				ntiOrigen = NtiOrigen.CIUTADA;
+				break;
+			case ADMINISTRACIO:
+				ntiOrigen = NtiOrigen.ADMINISTRACIO;
+				break;	
+			}
+		}	
+		return ntiOrigen;
+	}
+	
+	
+	private SicresTipoDocumento toSicresTipoDocumento(RegistreAnnexSicresTipusDocumentEnum registreAnnexSicresTipusDocumentEnum) {
+		SicresTipoDocumento sicresTipoDocumento = null;
+
+		if (registreAnnexSicresTipusDocumentEnum != null) {
+			switch (registreAnnexSicresTipusDocumentEnum) {
+			case FORM:
+				sicresTipoDocumento = SicresTipoDocumento.FORMULARI;
+				break;
+			case FORM_ADJUNT:
+				sicresTipoDocumento = SicresTipoDocumento.ADJUNT;
+				break;
+			case INTERN:
+				sicresTipoDocumento = SicresTipoDocumento.TECNIC_INTERN;
+				break;
+			}
+		}
+		return sicresTipoDocumento;
+	}
+
+	private List<Interessat> toInteressats(List<RegistreInteressatEntity> registreInteressats) {
+
+		List<Interessat> interessatsPerBackoffice = new ArrayList<>();
+		for (RegistreInteressatEntity registreInteressatEntity : registreInteressats) {
+
+			Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
+			if (registreInteressatEntity.getRepresentant() != null) {
+				Representant representant = toRepresentant(registreInteressatEntity.getRepresentant());
+				interessatPerBackoffice.setRepresentant(representant);
+			}
+			interessatsPerBackoffice.add(interessatPerBackoffice);
+		}
+		return interessatsPerBackoffice;
+	}
+
+	private Interessat toInteressat(RegistreInteressatEntity registreInteressatEntity) {
+		Interessat interessat = new Interessat();
+
+		switch (registreInteressatEntity.getTipus()) {
+		case PERSONA_FIS:
+			interessat.setTipus(InteressatTipus.PERSONA_FISICA);
+			break;
+		case PERSONA_JUR:
+			interessat.setTipus(InteressatTipus.PERSONA_JURIDICA);
+			break;
+		case ADMINISTRACIO:
+			interessat.setTipus(InteressatTipus.ADMINISTRACIO);
+			break;
+		}
+
+		switch (registreInteressatEntity.getDocumentTipus()) {
+		case NIF:
+			interessat.setDocumentTipus(DocumentTipus.NIF);
+			break;
+		case CIF:
+			interessat.setDocumentTipus(DocumentTipus.CIF);
+			break;
+		case PASSAPORT:
+			interessat.setDocumentTipus(DocumentTipus.PASSAPORT);
+			break;
+		case ESTRANGER:
+			interessat.setDocumentTipus(DocumentTipus.NIE);
+			break;
+		case ALTRES:
+			interessat.setDocumentTipus(DocumentTipus.ALTRES);
+			break;
+		case CODI_ORIGEN:
+			interessat.setDocumentTipus(DocumentTipus.ALTRES);
+			break;
+		}
+		interessat.setDocumentNumero(registreInteressatEntity.getDocumentNum());
+		interessat.setRaoSocial(registreInteressatEntity.getRaoSocial());
+		interessat.setNom(registreInteressatEntity.getNom());
+		interessat.setLlinatge1(registreInteressatEntity.getLlinatge1());
+		interessat.setLlinatge2(registreInteressatEntity.getLlinatge2());
+		interessat.setPaisCodi(registreInteressatEntity.getPais());
+		interessat.setProvinciaCodi(registreInteressatEntity.getProvincia());
+		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		interessat.setAdresa(registreInteressatEntity.getAdresa());
+		interessat.setCp(registreInteressatEntity.getCodiPostal());
+		interessat.setEmail(registreInteressatEntity.getEmail());
+		interessat.setTelefon(registreInteressatEntity.getTelefon());
+		interessat.setAdresaElectronica(registreInteressatEntity.getEmail());
+		interessat.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
+		interessat.setObservacions(registreInteressatEntity.getObservacions());
+		return interessat;
+	}
+
+	private Representant toRepresentant(RegistreInteressatEntity registreInteressatEntity) {
+		Representant representant = new Representant();
+		switch (registreInteressatEntity.getTipus()) {
+		case PERSONA_FIS:
+			representant.setTipus(InteressatTipus.PERSONA_FISICA);
+			break;
+		case PERSONA_JUR:
+			representant.setTipus(InteressatTipus.PERSONA_JURIDICA);
+			break;
+		case ADMINISTRACIO:
+			representant.setTipus(InteressatTipus.ADMINISTRACIO);
+			break;
+		}
+		switch (registreInteressatEntity.getDocumentTipus()) {
+		case NIF:
+			representant.setDocumentTipus(DocumentTipus.NIF);
+			break;
+		case CIF:
+			representant.setDocumentTipus(DocumentTipus.CIF);
+			break;
+		case PASSAPORT:
+			representant.setDocumentTipus(DocumentTipus.PASSAPORT);
+			break;
+		case ESTRANGER:
+			representant.setDocumentTipus(DocumentTipus.NIE);
+			break;
+		case ALTRES:
+			representant.setDocumentTipus(DocumentTipus.ALTRES);
+			break;
+		case CODI_ORIGEN:
+			representant.setDocumentTipus(DocumentTipus.ALTRES);
+			break;
+		}
+		representant.setDocumentNumero(registreInteressatEntity.getDocumentNum());
+		representant.setRaoSocial(registreInteressatEntity.getRaoSocial());
+		representant.setNom(registreInteressatEntity.getNom());
+		representant.setLlinatge1(registreInteressatEntity.getLlinatge1());
+		representant.setLlinatge2(registreInteressatEntity.getLlinatge2());
+		representant.setPaisCodi(registreInteressatEntity.getPais());
+		representant.setProvinciaCodi(registreInteressatEntity.getProvincia());
+		representant.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		representant.setAdresa(registreInteressatEntity.getAdresa());
+		representant.setCp(registreInteressatEntity.getCodiPostal());
+		representant.setEmail(registreInteressatEntity.getEmail());
+		representant.setTelefon(registreInteressatEntity.getTelefon());
+		representant.setAdresaElectronica(registreInteressatEntity.getEmail());
+		representant.setCanal(registreInteressatEntity.getCanalPreferent().toString());
+		representant.setObservacions(registreInteressatEntity.getObservacions());
+		return representant;
 	}
 
 	private Exception processarAnotacioPendent(RegistreEntity anotacio) {
@@ -1364,11 +1370,8 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "entitatId=" + entitat.getId() + ", "
 				+ "registreId=" + registre.getId() + ", "
 				+ "justificantUuid=" + justificantUuid + ")");
-		
-
 		RegistreAnnexDetallDto annex = new RegistreAnnexDetallDto();
 		Document document = pluginHelper.arxiuDocumentConsultar(justificantUuid, null, ambContingut);
-		
 		annex.setFitxerNom(obtenirJustificantNom(document));
 		annex.setFitxerTamany(document.getContingut().getContingut().length);
 		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
@@ -1381,16 +1384,13 @@ public class RegistreServiceImpl implements RegistreService {
 			annex.setNtiTipusDocument(metadades.getTipusDocumental().name());
 			annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
 		}
-		
 		annex.setAmbDocument(true);
-		
 		return annex;
 	}
 
 	private String obtenirJustificantNom(Document document) {
 		String fileName = "";
 		String fileExtension = "";
-		
 		if (document.getContingut() != null) { 
 			if (document.getContingut().getTipusMime() != null)
 				fileExtension = document.getContingut().getTipusMime();
@@ -1404,7 +1404,6 @@ public class RegistreServiceImpl implements RegistreService {
 		} else {
 			fileName = document.getNom();
 		}
-		
 		String fragment = "";
     	if (fileName.length() > 4)
     		fragment = fileName.substring(fileName.length() -5);
@@ -1421,7 +1420,6 @@ public class RegistreServiceImpl implements RegistreService {
     			fileName += "." + fileExtension;
     		}
     	}
-    	
 		return fileName;
 	}
 

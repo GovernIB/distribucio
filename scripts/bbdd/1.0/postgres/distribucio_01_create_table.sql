@@ -165,6 +165,7 @@ CREATE TABLE DIS_REGISTRE
   ASSUMPTE_TIPUS_DESC  character varying(100),
   ASSUMPTE_CODI        character varying(16),
   ASSUMPTE_DESC        character varying(100),
+  PROCEDIMENT_CODI	   character varying(64),
   REFERENCIA           character varying(16),
   EXPEDIENT_NUM        character varying(80),
   NUM_ORIG 			   character varying(80),

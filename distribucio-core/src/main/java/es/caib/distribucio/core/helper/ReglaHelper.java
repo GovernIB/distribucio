@@ -30,7 +30,6 @@ import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
-import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
@@ -77,21 +76,19 @@ public class ReglaHelper {
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
-
-
 	public ReglaEntity findAplicable(
 			EntitatEntity entitat,
 			String unitatAdministrativa,
-			RegistreAnotacio anotacio) {
+			String procedimentCodi,
+			String assumpteCodi) {
 		ReglaEntity reglaAplicable = null;
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
-					anotacio.getProcedimentCodi(),
-					anotacio.getAssumpteCodi());
-		
-		if (regles.size() > 0)
+					procedimentCodi,
+					assumpteCodi);
+		if (regles.size() > 0) {
 			reglaAplicable = regles.get(0);
-		
+		}
 		return reglaAplicable;
 	}
 

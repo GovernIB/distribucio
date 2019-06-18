@@ -790,8 +790,8 @@ public class BustiaServiceImpl implements BustiaService {
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
-				anotacio);
-		
+				anotacio.getProcedimentCodi(),
+				anotacio.getAssumpteCodi());
 		// set anotacio processing state
 		RegistreProcesEstatEnum estat;
 		// if anotacio has annexos
@@ -803,7 +803,6 @@ public class BustiaServiceImpl implements BustiaService {
 		} else {
 			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 		}
-		
 		//save anotacio and interessats in db 
 		// and save annexos and firmes in db and their byte content in the folder in local file system
 		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
@@ -835,7 +834,6 @@ public class BustiaServiceImpl implements BustiaService {
 				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
 				"anotacio=" + anotacio.getNumero() + ", "  +
 				"bustia=" + bustia + ")");
-		
 		Exception exceptionProcessant = null;
 		// if asynchronous processing is turned off 
 		// save anotacio in arxiu and apply reglas now
@@ -1380,6 +1378,10 @@ public class BustiaServiceImpl implements BustiaService {
 				"			<tr>"+
 				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.assumpte.codi") + "</th>"+
 				"				<td colspan=\"2\">" + Objects.toString(registre.getAssumpteCodi(), "") + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.procediment") + "</th>"+
+				"				<td colspan=\"2\">" + Objects.toString(registre.getProcedimentCodi(), "") + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
 				"				<th>" + messageHelper.getMessage("registre.detalls.camp.refext") + "</th>"+

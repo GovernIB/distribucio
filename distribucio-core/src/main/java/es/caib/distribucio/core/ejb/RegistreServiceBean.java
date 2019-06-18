@@ -15,6 +15,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -38,8 +39,6 @@ public class RegistreServiceBean implements RegistreService {
 	@Autowired
 	RegistreService delegate;
 
-
-
 	@Override
 	@RolesAllowed("tothom")
 	public RegistreAnotacioDto findOne(
@@ -61,8 +60,6 @@ public class RegistreServiceBean implements RegistreService {
 			String motiu) {
 		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
 	}
-
-
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
@@ -205,6 +202,30 @@ public class RegistreServiceBean implements RegistreService {
 			Long bustiaId,
 			Long registreId) {
 		return delegate.reintentarEnviamentBackofficeAdmin(entitatId, bustiaId, registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean classificar(
+			Long entitatId,
+			Long contingutId,
+			Long registreId,
+			String procedimentCodi) throws NotFoundException {
+		return delegate.classificar(
+				entitatId,
+				contingutId,
+				registreId,
+				procedimentCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ProcedimentDto> classificarFindProcediments(
+			Long entitatId,
+			Long bustiaId) {
+		return delegate.classificarFindProcediments(
+				entitatId,
+				bustiaId);
 	}
 
 }
