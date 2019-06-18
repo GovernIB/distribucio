@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.war.command;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -35,8 +36,7 @@ public class ReglaCommand {
 	private String assumpteCodi;
 	@Size(max = 64, groups = {CreateUpdate.class})
 	private String procedimentCodi;
-	@Size(max = 9, groups = {CreateUpdate.class})
-	private String unitatCodi;
+	@NotNull(groups = {CreateUpdate.class})
 	private Long unitatId;
 	private Long bustiaId;
 	private BackofficeTipusEnumDto backofficeTipus;
@@ -86,12 +86,6 @@ public class ReglaCommand {
 	}
 	public void setAssumpteCodi(String assumpteCodi) {
 		this.assumpteCodi = assumpteCodi;
-	}
-	public String getUnitatCodi() {
-		return unitatCodi;
-	}
-	public void setUnitatCodi(String unitatCodi) {
-		this.unitatCodi = unitatCodi;
 	}
 	public Long getBustiaId() {
 		return bustiaId;

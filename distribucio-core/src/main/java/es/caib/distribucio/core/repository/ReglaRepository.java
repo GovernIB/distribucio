@@ -26,7 +26,7 @@ import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	
 	
-	List<ReglaEntity> findByEntitatAndUnitatCodi(EntitatEntity entitat,String unitatCodi);
+	List<ReglaEntity> findByEntitatAndUnitatOrganitzativaCodi(EntitatEntity entitat,String unitatOrganitzativaCodi);
 
 	List<ReglaEntity> findByEntitatOrderByOrdreAsc(EntitatEntity entitat);
 
@@ -34,7 +34,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    ReglaEntity reg " +
 			"where " +
 			"    reg.entitat = :entitat " +
-			"and (:esNullFiltre = true or lower(reg.nom) like lower('%'||:filtre||'%') or lower(reg.assumpteCodi) like lower('%'||:filtre||'%') or lower(reg.unitatCodi) like lower('%'||:filtre||'%')) ")
+			"and (:esNullFiltre = true or lower(reg.nom) like lower('%'||:filtre||'%') or lower(reg.assumpteCodi) like lower('%'||:filtre||'%') or lower(reg.unitatOrganitzativa.codi) like lower('%'||:filtre||'%')) ")
 	Page<ReglaEntity> findByEntitatAndFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltre") boolean esNullFiltre,
@@ -74,6 +74,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	 * @param procedimentCodi
 	 * @param c
 	 * @param assumpteCodi
+	 * @param string 
 	 * @return
 	 */
 	@Query(	"from " +
@@ -81,11 +82,13 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"where " +
 			"    r.entitat = :entitat " +
 			"and r.activa = true " + 
+			"and r.unitatOrganitzativa.codi = :unitatOrganitzativaCodi " + 
 			"and (r.procedimentCodi is null or r.procedimentCodi = :procedimentCodi) " +
 			"and (r.assumpteCodi is null or r.assumpteCodi = :assumpteCodi) " + 
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
 			@Param("entitat") EntitatEntity entitat, 
+			@Param("unitatOrganitzativaCodi") String unitatOrganitzativaCodi, 
 			@Param("procedimentCodi") String procedimentCodi, 
 			@Param("assumpteCodi") String assumpteCodi);
 

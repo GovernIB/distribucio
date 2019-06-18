@@ -54,8 +54,6 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	protected String assumpteCodi;
 	@Column(name = "procediment_codi", length = 64, nullable = false)
 	private String procedimentCodi;
-	@Column(name = "unitat_codi", length = 9)
-	protected String unitatCodi;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
@@ -108,9 +106,6 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	}
 	public String getProcedimentCodi() {
 		return procedimentCodi;
-	}
-	public String getUnitatCodi() {
-		return unitatCodi;
 	}
 	public BustiaEntity getBustia() {
 		return bustia;

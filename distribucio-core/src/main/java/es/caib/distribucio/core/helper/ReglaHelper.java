@@ -86,6 +86,7 @@ public class ReglaHelper {
 		ReglaEntity reglaAplicable = null;
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
+					unitatAdministrativa,
 					anotacio.getProcedimentCodi(),
 					anotacio.getAssumpteCodi());
 		

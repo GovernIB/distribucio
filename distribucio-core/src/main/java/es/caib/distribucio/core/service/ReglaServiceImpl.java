@@ -367,7 +367,7 @@ public class ReglaServiceImpl implements ReglaService {
 				+ ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
 
-		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatCodi(entitat, unitatCodi);
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatOrganitzativaCodi(entitat, unitatCodi);
 		List<ReglaDto> resposta = new ArrayList<ReglaDto>();
 		for (ReglaEntity regla : regles) {
 			resposta.add(toReglaDto(regla));

@@ -18,7 +18,6 @@ public class ReglaDto extends AuditoriaDto {
 	private ReglaTipusEnumDto tipus;
 	private String assumpteCodi;
 	private String procedimentCodi;
-	private String unitatCodi;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 
 	private Long metaExpedientId;
@@ -75,12 +74,6 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setAssumpteCodi(String assumpteCodi) {
 		this.assumpteCodi = assumpteCodi;
-	}
-	public String getUnitatCodi() {
-		return unitatCodi;
-	}
-	public void setUnitatCodi(String unitatCodi) {
-		this.unitatCodi = unitatCodi;
 	}
 	public Long getMetaExpedientId() {
 		return metaExpedientId;
