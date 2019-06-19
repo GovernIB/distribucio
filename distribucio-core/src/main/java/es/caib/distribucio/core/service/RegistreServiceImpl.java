@@ -19,11 +19,14 @@ import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -59,6 +62,7 @@ import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
+import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.plugin.procediment.Procediment;
@@ -98,6 +102,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private PluginHelper pluginHelper;
 	@Autowired
 	private ReglaHelper reglaHelper;
+	@Autowired
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -892,7 +898,6 @@ public class RegistreServiceImpl implements RegistreService {
 		logger.debug("Obtenint informació de l'arxiu per l'anotacio ("
 				+ "registreAnotacioId=" + registreAnotacioId + ")");
 		RegistreEntity registre = registreRepository.findOne(registreAnotacioId);
-		
 		ArxiuDetallDto arxiuDetall = null;
 		if (registre.getExpedientArxiuUuid() != null) {
 			arxiuDetall = new ArxiuDetallDto();
@@ -955,7 +960,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Override
 	@Transactional
-	public boolean classificar(
+	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long contingutId,
 			Long registreId,
@@ -996,15 +1001,34 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia.getUnitatOrganitzativa().getCodi(),
 				registre.getProcedimentCodi(),
 				registre.getAssumpteCodi());
+		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
 		if (reglaAplicable != null) {
 			registre.updateRegla(reglaAplicable);
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 					entitat,
 					bustia);
-			return true;
+			Exception ex = reglaHelper.aplicarControlantException(registre);
+			if (ex == null) {
+				if (ReglaTipusEnumDto.BUSTIA.equals(reglaAplicable.getTipus())) {
+					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
+					BustiaEntity novaBustia = (BustiaEntity)(registreRepository.findByPareAndId(
+							contingut,
+							registreId).getPare());
+					classificacioResultat.setBustiaNom(novaBustia.getNom());
+					classificacioResultat.setBustiaUnitatOrganitzativa(
+							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));
+				} else if (ReglaTipusEnumDto.BACKOFFICE.equals(reglaAplicable.getTipus())) {
+					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BACKOFFICE);
+				} else {
+					classificacioResultat.setResultat(ClassificacioResultatEnumDto.SENSE_CANVIS);
+				}
+			} else {
+				classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_ERROR);
+			}
 		} else {
-			return false;
+			classificacioResultat.setResultat(ClassificacioResultatEnumDto.SENSE_CANVIS);
 		}
+		return classificacioResultat;
 	}
 
 	@Override
@@ -1392,9 +1416,9 @@ public class RegistreServiceImpl implements RegistreService {
 		String fileName = "";
 		String fileExtension = "";
 		if (document.getContingut() != null) { 
-			if (document.getContingut().getTipusMime() != null)
+			if (document.getContingut().getTipusMime() != null) {
 				fileExtension = document.getContingut().getTipusMime();
-			
+			}
 			if (document.getContingut().getArxiuNom() != null && !document.getContingut().getArxiuNom().isEmpty()) {
 				fileName = document.getContingut().getArxiuNom();
 				fileExtension = document.getContingut().getTipusMime();
@@ -1405,12 +1429,12 @@ public class RegistreServiceImpl implements RegistreService {
 			fileName = document.getNom();
 		}
 		String fragment = "";
-    	if (fileName.length() > 4)
+    	if (fileName.length() > 4) {
     		fragment = fileName.substring(fileName.length() -5);
-    	
-    	if (fragment.contains("."))
+    	}
+    	if (fragment.contains(".")) {
     		return fileName;
-    	
+    	}
     	if (!fileExtension.isEmpty()) {
     		if (fileExtension.contains("/")) {
     			fileName += ("." + fileExtension.split("/")[1]);

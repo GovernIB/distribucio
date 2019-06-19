@@ -38,10 +38,8 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 }
 </style>
 <script>
-
 var mostrarInactives = '${bustiaUserFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
-
 //Funció per donar format als itemps de la select d'agrupacions depenent de la herència
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
@@ -49,16 +47,13 @@ function formatSelectBustia(item) {
 	else
 		return item.text;
 }
-
 $(document).ready(function() {
-	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
 		$('#estatContingut').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 	});
-	
 	$('#taulaDades').on( 'draw.dt', function () {
 		// Quan es refresca la llista consulta els pendents
 		$.get( "bustiaUser/getNumPendents")
@@ -94,15 +89,13 @@ $(document).ready(function() {
 					$("#seleccioCount").html(data);
 				}
 		);
-	});;
-
+	});
 	$('#mostrarInactivesBtn').click(function() {
 		mostrarInactives = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#mostrarInactives').val(mostrarInactives).change();
 		$(this).blur();
 	});
-	
 	$('#mostrarInactives').change(function() {
 		var actual = $('#bustia').val();
 		$('#bustia').select2('val', '', true);
@@ -123,46 +116,44 @@ $(document).ready(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
 			});
 	});
-				
-	$('#mostrarInactives').change();	
+	$('#mostrarInactives').change();
 });
-
 </script>
 </head>
 <body>
 	<form:form id="bustiaFiltreForm" action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
 		<div class="row">
-			<div class="col-md-3">
-				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
-			</div>
-			<div class="col-md-1">
-				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default  <c:if test="${bustiaUserFiltreCommand.mostrarInactives}">active</c:if>" data-toggle="button">
-					<span class="fa-stack" aria-hidden="true">
-						<i class="fa fa-inbox fa-stack-1x"></i>
-    	    			<i class="fa fa-ban fa-stack-2x"></i>
-   					</span>
-				</button>
-				<dis:inputHidden name="mostrarInactives"/>
-			</div>
-			<div class="col-md-5">
+			<div class="col-md-4">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
-			</div>			
-		</div>
-		<div class="row">
+			</div>
 			<div class="col-md-3">
 				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
-			</div>			
+			</div>
+			<div class="col-md-2">
+				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
 			</div>
 			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
-			<div class="col-md-2">
-				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+			<div class="col-md-3">
+				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+			</div>
+			<div class="col-md-1">
+				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${bustiaUserFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+					<span class="fa-stack" aria-hidden="true">
+						<i class="fa fa-inbox fa-stack-1x"></i>
+    	    			<i class="fa fa-ban fa-stack-2x"></i>
+   					</span>
+				</button>
+				<dis:inputHidden name="mostrarInactives"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
@@ -173,7 +164,6 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-	
 	<script id="botonsTemplate" type="text/x-jsrender">
 		<div class="text-right">
 			<div class="btn-group">
@@ -187,7 +177,6 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</script>
-	
 	<table 
 		id="taulaDades" 
 		class="table table-bordered table-striped" style="width:100%"

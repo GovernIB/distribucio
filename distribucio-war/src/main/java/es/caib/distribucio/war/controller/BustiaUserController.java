@@ -5,6 +5,7 @@ package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.service.AlertaService;
@@ -458,6 +460,7 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				bustiaId,
 				registreId,
+				null,
 				model);
 		RegistreClassificarCommand command = new RegistreClassificarCommand();
 		command.setBustiaId(bustiaId);
@@ -481,26 +484,94 @@ public class BustiaUserController extends BaseUserController {
 					request,
 					bustiaId,
 					registreId,
+					null,
 					model);
 			return "registreClassificar";
 		}
-		boolean anotacioMoguda = registreService.classificar(
+		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				bustiaId,
 				registreId,
 				command.getCodiProcediment());
-		if (anotacioMoguda) {
+		switch (resultat.getResultat()) {
+		case SENSE_CANVIS:
+			break;
+		case REGLA_BUSTIA:
 			MissatgesHelper.info(
 					request, 
 					getMessage(
 							request, 
 							"bustia.controller.pendent.contingut.classificat.mogut",
+							new Object[] {
+									resultat.getBustiaNom(),
+									resultat.getBustiaUnitatOrganitzativa().getNom()
+							}));
+			break;
+		case REGLA_BACKOFFICE:
+			MissatgesHelper.info(
+					request, 
+					getMessage(
+							request, 
+							"bustia.controller.pendent.contingut.classificat.backoffice",
 							null));
+			break;
+		case REGLA_ERROR:
+			MissatgesHelper.warning(
+					request, 
+					getMessage(
+							request, 
+							"bustia.controller.pendent.contingut.classificat.error",
+							null));
+			break;
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:../../../pendent",
 				"bustia.controller.pendent.contingut.classificat.ok");
+	}
+
+	@RequestMapping(value = "/{bustiaId}/classificarMultiple", method = RequestMethod.GET)
+	public String bustiaClassificarMultipleGet(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		List<Long> seleccioList = new ArrayList<Long>();
+		seleccioList.addAll(seleccio);
+		String procedimentCodi = emplenarModelClassificar(
+				request,
+				bustiaId,
+				null,
+				seleccioList,
+				model);
+		RegistreClassificarCommand command = new RegistreClassificarCommand();
+		command.setBustiaId(bustiaId);
+		command.setCodiProcediment(procedimentCodi);
+		model.addAttribute(command);
+		return "registreClassificarMultiple";
+	}
+
+	@RequestMapping(value = "/{bustiaId}/classificarMultiple/{registreId}", method = RequestMethod.POST)
+	@ResponseBody
+	public ClassificacioResultatDto bustiaClassificarMultiplePost(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@Validated(Classificar.class) RegistreClassificarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			// throw exception;
+		}
+		return registreService.classificar(
+				entitatActual.getId(),
+				bustiaId,
+				registreId,
+				command.getCodiProcediment());
 	}
 
 	@InitBinder
@@ -558,19 +629,29 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			Long bustiaId,
 			Long registreId,
+			List<Long> multipleRegistreIds,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		RegistreAnotacioDto registre = registreService.findOne(
-				entitatActual.getId(),
-				bustiaId,
-				registreId);
-		model.addAttribute("registre", registre);
 		model.addAttribute(
 				"procediments",
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
 						bustiaId));
-		return registre.getProcedimentCodi();
+		if (registreId != null) {
+			RegistreAnotacioDto registre = registreService.findOne(
+					entitatActual.getId(),
+					bustiaId,
+					registreId);
+			model.addAttribute("registre", registre);
+			return registre.getProcedimentCodi();
+		}
+		if (multipleRegistreIds != null) {
+			for (Long id: multipleRegistreIds) {
+				System.out.println(">>> registreId: " + id);
+			}
+			System.out.println(">>>    total: " + multipleRegistreIds.size());
+		}
+		return null;
 	}
 
 }
