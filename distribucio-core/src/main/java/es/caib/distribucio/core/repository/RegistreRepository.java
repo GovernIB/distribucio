@@ -203,5 +203,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("entitatCodi") String entitatCodi,
 			@Param("llibreCodi") String llibreCodi,
 			@Param("data") Date data);
-	
+
+	List<RegistreEntity> findByPareInAndIdIn(
+			List<? extends ContingutEntity> pares,
+			List<Long> ids);
+
 }

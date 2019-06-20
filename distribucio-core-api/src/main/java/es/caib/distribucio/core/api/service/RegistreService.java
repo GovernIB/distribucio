@@ -37,7 +37,7 @@ public interface RegistreService {
 	 * @param contingutId
 	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
-	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
+	 *            Atribut id del l'anotació que es vol consultar.
 	 * @return els detalls de l'anotació.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -47,6 +47,22 @@ public interface RegistreService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId) throws NotFoundException;
+
+	/**
+	 * Retorna la informació de múltples anotacions de registre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param multipleRegistreIds
+	 *            Atributs id del les anotacions que que es volen consultar.
+	 * @return els detalls de l'anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<RegistreAnotacioDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleRegistreIds) throws NotFoundException;
 
 	/**
 	 * Rebutja un registre situat dins una bústia.

@@ -23,7 +23,7 @@ public class ProcedimentPluginRolsacTest {
 	private static final String ENDPOINT_ADDRESS = "https://proves.caib.es/rolsac/api/rest/v1/procedimientos";
 	private static final String USERNAME = "$distribucio_rolsac";
 	private static final String PASSWORD = "distribucio_rolsac";
-	private static final String CODI_DIR3 = "A04019281";
+	private static final String CODI_DIR3 = "A04013512";
 
 	private ProcedimentPlugin plugin;
 

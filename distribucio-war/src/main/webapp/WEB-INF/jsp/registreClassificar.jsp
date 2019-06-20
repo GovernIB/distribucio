@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<c:set var="titol"><spring:message code="bustia.pendent.classificar.form.titol"/></c:set>
+<c:set var="titol"><spring:message code="bustia.pendent.classificar.titol"/></c:set>
 <html>
 <head>
 	<title>${titol}</title>
@@ -15,15 +15,21 @@
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<dis:modalHead/>
 <script>
-	$(document).ready(function() {
-
-	});
+$(document).ready(function() {
+	if (${fn:length(procediments)} > 0) {
+		$('#accio-classificar').removeAttr('disabled');
+	}
+});
 </script>
 </head>
 <body>
+	<div class="alert alert-warning" role="alert">
+		<span class="fa fa-warning"></span>
+		<spring:message code="bustia.pendent.classificar.warning"/>
+	</div>
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title"><spring:message code="bustia.pendent.classificar.form.detalls"/></h3>
+			<h3 class="panel-title"><spring:message code="bustia.pendent.classificar.detalls"/></h3>
 		</div>
 		<table class="table table-bordered">
 			<tbody>
@@ -70,9 +76,21 @@
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreClassificarCommand">
 		<form:hidden path="bustiaId"/>
 		<form:hidden path="contingutId"/>
-		<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.form.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" required="true"/>
+		<c:choose>
+			<c:when test="${empty procediments}">
+				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">
+					<p class="text-danger">
+						<spring:message code="bustia.pendent.classificar.no.procediments"/>
+						<!--"${registre.pare.nom}"-->
+					</p>
+				</dis:inputFixed>
+			</c:when>
+			<c:otherwise>
+				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" required="true"/>
+			</c:otherwise>
+		</c:choose>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.form.submit"/></button>
+			<button id="accio-classificar" type="submit" class="btn btn-success" disabled="disabled"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
 			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

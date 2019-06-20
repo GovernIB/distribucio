@@ -25,7 +25,7 @@ import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
- * Implementació del plugin de consulta de dades d'usuaris emprant JDBC.
+ * Implementació del plugin de consulta de procediments emprant ROLSAC.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -42,9 +42,9 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 		ProcedimientosResponse response = null;
 		try {
 			StringBuilder sb = new StringBuilder(getServiceUrl());
-			//sb.append("?codigo=");
-			//sb.append(codiDir3);
-			response = findProcedimentsRolsac(sb.toString(), "{\"lang\":\"ca\"}");
+			response = findProcedimentsRolsac(
+					sb.toString(),
+					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\"}");
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar els procediments de ROLSAC (" +

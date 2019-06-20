@@ -11,6 +11,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,13 +61,17 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
+import es.caib.distribucio.core.helper.PermisosHelper;
+import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
@@ -87,7 +94,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreRepository registreRepository;
 	@Autowired
 	private RegistreAnnexRepository registreAnnexRepository;
-
+	@Autowired
+	private BustiaRepository bustiaRepository;
 	@Autowired
 	private ContingutHelper contingutHelper;
 	@Autowired
@@ -102,6 +110,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private PluginHelper pluginHelper;
 	@Autowired
 	private ReglaHelper reglaHelper;
+	@Autowired
+	private PermisosHelper permisosHelper;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
@@ -141,19 +151,61 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(
-				registre);
+		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(registre);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());		
 		return registreAnotacio;
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<RegistreAnotacioDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleRegistreIds) {
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "multipleRegistreIds=" + multipleRegistreIds + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		List<BustiaEntity> bustiesPermeses = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		permisosHelper.filterGrantedAll(
+				bustiesPermeses,
+				new ObjectIdentifierExtractor<BustiaEntity>() {
+					@Override
+					public Long getObjectIdentifier(BustiaEntity bustia) {
+						return bustia.getId();
+					}
+				},
+				BustiaEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		List<RegistreEntity> registres = registreRepository.findByPareInAndIdIn(
+				bustiesPermeses,
+				multipleRegistreIds);
+		List<RegistreAnotacioDto> resposta = new ArrayList<RegistreAnotacioDto>();
+		for (RegistreEntity registre: registres) {
+			resposta.add((RegistreAnotacioDto)contingutHelper.toContingutDto(
+					registre,
+					false,
+					false,
+					false,
+					false,
+					true,
+					false,
+					false));
+		}
+		return resposta;
+	}
+
 	@Transactional(readOnly = true)
 	@Override
 	public AnotacioRegistreEntrada findOneForBackoffice(
 			AnotacioRegistreId id)  {
 		logger.debug("Obtenint anotació de registre per backoffice("
 				+ "id=" + id + ")");
-		
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 		try {
 			// check if anotacio was sent with correct key
@@ -209,7 +261,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return anotacioPerBackoffice;
 	}
-	
+
 	@SuppressWarnings("incomplete-switch")
 	@Transactional
 	@Override
@@ -392,7 +444,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustia);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public boolean reintentarEnviamentBackofficeAdmin(
@@ -447,8 +499,6 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
-	
-	
 
 	@Override
 	@Transactional
@@ -475,8 +525,7 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
-	
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getArxiuAnnex(
@@ -498,7 +547,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return arxiu;
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getJustificant(
@@ -520,7 +569,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return arxiu;
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getAnnexFirmaContingut(
@@ -645,8 +694,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return annexos;
 	}
-	
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public RegistreAnnexDetallDto getAnnexAmbArxiu(
@@ -685,25 +733,19 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		
-		
 		RegistreAnnexEntity chosenAnnexEntity=null;
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
 			if (annexEntity.getFitxerArxiuUuid().equals(fitxerArxiuUuid)) {
 				chosenAnnexEntity = annexEntity;
 			}
 		}
-			
 		RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
 				chosenAnnexEntity,
 				RegistreAnnexDetallDto.class);
 		annex.setAmbDocument(true);
-			
-			
 		return annex;
 	}
-	
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public RegistreAnnexDetallDto getAnnexFirmesAmbArxiu(
@@ -819,10 +861,6 @@ public class RegistreServiceImpl implements RegistreService {
 				resultadoProcesamiento != null ? new Exception(resultadoProcesamiento) : null);
 		registre.updateProcesSistra(procesEstatSistra);
 	}
-	
-
-	
-	
 
 	@Transactional (readOnly = true)
 	@Override
@@ -838,7 +876,6 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "procesEstatSistra=" + procesEstatSistra + ", "
 				+ "desdeDate=" + desdeDate + ", "
 				+ "finsDate=" + finsDate + ")");
-		
 		return registreRepository.findPerBackofficeSistra(
 				identificadorProcediment,
 				identificadorTramit,

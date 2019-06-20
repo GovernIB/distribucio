@@ -38,7 +38,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 public class RegistreServiceBean implements RegistreService {
 
 	@Autowired
-	RegistreService delegate;
+	private RegistreService delegate;
 
 	@Override
 	@RolesAllowed("tothom")
@@ -50,6 +50,16 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				contenidorId,
 				registreId);
+	}
+
+	@Override
+	public List<RegistreAnotacioDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleRegistreIds)
+			throws NotFoundException {
+		return delegate.findMultiple(
+				entitatId,
+				multipleRegistreIds);
 	}
 
 	@Override
@@ -149,8 +159,6 @@ public class RegistreServiceBean implements RegistreService {
 				registreId);
 	}
 
-
-	
 	@Override
 	@RolesAllowed("tothom")
 	public RegistreAnnexDetallDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId) {

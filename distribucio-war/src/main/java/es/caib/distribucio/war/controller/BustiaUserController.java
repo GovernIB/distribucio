@@ -35,8 +35,10 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -83,6 +85,49 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(filtreCommand);
 		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
 		return "bustiaUserList";
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public String bustiaPost(
+			HttpServletRequest request,
+			@Valid BustiaUserFiltreCommand filtreCommand,
+			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
+			Model model) {
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
+		}
+		return "redirect:bustiaUser";
+	}
+
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse datatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaUserFiltreCommand bustiaUserFiltreCommand = getFiltreCommand(request);
+		List<BustiaDto> bustiesUsuari = null;
+		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty()) {
+			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), bustiaUserFiltreCommand.isMostrarInactives());
+		}
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				bustiaService.contingutPendentFindByDatatable(
+						entitatActual.getId(),
+						bustiesUsuari,
+						BustiaUserFiltreCommand.asDto(bustiaUserFiltreCommand),
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
 	}
 
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
@@ -166,28 +211,6 @@ public class BustiaUserController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public String bustiaPost(
-			HttpServletRequest request,
-			@Valid BustiaUserFiltreCommand filtreCommand,
-			BindingResult bindingResult,
-			@RequestParam(value = "accio", required = false) String accio,
-			Model model) {
-		if ("netejar".equals(accio)) {
-			RequestSessionHelper.esborrarObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_FILTRE);
-		} else {
-			if (!bindingResult.hasErrors()) {
-				RequestSessionHelper.actualitzarObjecteSessio(
-						request,
-						SESSION_ATTRIBUTE_FILTRE,
-						filtreCommand);
-			}
-		}
-		return "redirect:bustiaUser";
-	}
-
 	@RequestMapping(value = "/netejar", method = RequestMethod.GET)
 	public String expedientNetejar(
 			HttpServletRequest request,
@@ -198,25 +221,6 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
 		return "redirect:bustiaUser";
-	}
-
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse datatable(
-			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		BustiaUserFiltreCommand bustiaUserFiltreCommand = getFiltreCommand(request);
-		List<BustiaDto> bustiesUsuari = null;
-		if (bustiaUserFiltreCommand.getBustia() == null || bustiaUserFiltreCommand.getBustia().isEmpty()) {
-			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), bustiaUserFiltreCommand.isMostrarInactives());
-		}
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				bustiaService.contingutPendentFindByDatatable(
-						entitatActual.getId(),
-						bustiesUsuari,
-						BustiaUserFiltreCommand.asDto(bustiaUserFiltreCommand),
-						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
 
 	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.GET)
@@ -244,7 +248,6 @@ public class BustiaUserController extends BaseUserController {
 		}
 		String adresses = command.getAddresses();
 		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
-//		String serverPortContext = request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 		try {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
@@ -280,6 +283,7 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(command);
 		return "bustiaPendentRegistreReenviar";
 	}
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/reenviar", method = RequestMethod.POST)
 	public String bustiaPendentReenviarPost(
 			HttpServletRequest request,
@@ -356,7 +360,7 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute(command);
 		return "bustiaContingutMarcarProcessat";
 	}
-	
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.POST)
 	public String bustiaMarcarProcessatPost(
 			HttpServletRequest request,
@@ -392,7 +396,7 @@ public class BustiaUserController extends BaseUserController {
 			return "bustiaContingutMarcarProcessat";
 		}
 	}
-	
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes", method = RequestMethod.GET)
 	public String bustiaListatAlertes(
 			HttpServletRequest request,
@@ -403,7 +407,7 @@ public class BustiaUserController extends BaseUserController {
 		model.addAttribute("contingutId", contingutId);
 		return "registreErrors";
 	}
-	
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse bustiaListatAlertesDatatable(
@@ -418,7 +422,7 @@ public class BustiaUserController extends BaseUserController {
 						contingutId,
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
-	
+
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/{alertaId}/llegir", method = RequestMethod.GET)
 	@ResponseBody
 	public void bustiaListatAlertesLlegir(
@@ -460,7 +464,6 @@ public class BustiaUserController extends BaseUserController {
 				request,
 				bustiaId,
 				registreId,
-				null,
 				model);
 		RegistreClassificarCommand command = new RegistreClassificarCommand();
 		command.setBustiaId(bustiaId);
@@ -484,7 +487,6 @@ public class BustiaUserController extends BaseUserController {
 					request,
 					bustiaId,
 					registreId,
-					null,
 					model);
 			return "registreClassificar";
 		}
@@ -504,7 +506,7 @@ public class BustiaUserController extends BaseUserController {
 							"bustia.controller.pendent.contingut.classificat.mogut",
 							new Object[] {
 									resultat.getBustiaNom(),
-									resultat.getBustiaUnitatOrganitzativa().getNom()
+									resultat.getBustiaUnitatOrganitzativa().getDenominacio()
 							}));
 			break;
 		case REGLA_BACKOFFICE:
@@ -530,28 +532,37 @@ public class BustiaUserController extends BaseUserController {
 				"bustia.controller.pendent.contingut.classificat.ok");
 	}
 
-	@RequestMapping(value = "/{bustiaId}/classificarMultiple", method = RequestMethod.GET)
+	@RequestMapping(value = "/classificarMultiple", method = RequestMethod.GET)
 	public String bustiaClassificarMultipleGet(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			Model model) {
 		@SuppressWarnings("unchecked")
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO);
-		List<Long> seleccioList = new ArrayList<Long>();
-		seleccioList.addAll(seleccio);
-		String procedimentCodi = emplenarModelClassificar(
-				request,
-				bustiaId,
-				null,
-				seleccioList,
-				model);
-		RegistreClassificarCommand command = new RegistreClassificarCommand();
-		command.setBustiaId(bustiaId);
-		command.setCodiProcediment(procedimentCodi);
-		model.addAttribute(command);
-		return "registreClassificarMultiple";
+		if (seleccio != null && !seleccio.isEmpty()) {
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			boolean mateixPare = emplenarModelClassificarMultiple(
+					request,
+					seleccioList,
+					model);
+			if (mateixPare) {
+				RegistreClassificarCommand command = new RegistreClassificarCommand();
+				model.addAttribute(command);
+				return "registreClassificarMultiple";
+			} else {
+				return getModalControllerReturnValueError(
+						request,
+						"redirect:../bustiaUser",
+						"bustia.controller.pendent.contingut.classificar.no.mateix.pare.error");
+			}
+		} else {
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:../bustiaUser",
+					"bustia.controller.pendent.contingut.classificar.seleccio.buida");
+		}
 	}
 
 	@RequestMapping(value = "/{bustiaId}/classificarMultiple/{registreId}", method = RequestMethod.POST)
@@ -561,17 +572,19 @@ public class BustiaUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@Validated(Classificar.class) RegistreClassificarCommand command,
-			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			// throw exception;
-		}
-		return registreService.classificar(
+		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				bustiaId,
 				registreId,
 				command.getCodiProcediment());
+		resultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
+		UnitatOrganitzativaDto uo = new UnitatOrganitzativaDto();
+		uo.setDenominacio("Ca una pu");
+		resultat.setBustiaUnitatOrganitzativa(uo);
+		resultat.setBustiaNom("Chupibústia");
+		return resultat;
 	}
 
 	@InitBinder
@@ -629,29 +642,51 @@ public class BustiaUserController extends BaseUserController {
 			HttpServletRequest request,
 			Long bustiaId,
 			Long registreId,
-			List<Long> multipleRegistreIds,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		RegistreAnotacioDto registre = registreService.findOne(
+				entitatActual.getId(),
+				bustiaId,
+				registreId);
+		model.addAttribute("registre", registre);
 		model.addAttribute(
 				"procediments",
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
 						bustiaId));
-		if (registreId != null) {
-			RegistreAnotacioDto registre = registreService.findOne(
-					entitatActual.getId(),
-					bustiaId,
-					registreId);
-			model.addAttribute("registre", registre);
-			return registre.getProcedimentCodi();
-		}
-		if (multipleRegistreIds != null) {
-			for (Long id: multipleRegistreIds) {
-				System.out.println(">>> registreId: " + id);
+		return registre.getProcedimentCodi();
+	}
+
+	private boolean emplenarModelClassificarMultiple(
+			HttpServletRequest request,
+			List<Long> multipleRegistreIds,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<RegistreAnotacioDto> registres = registreService.findMultiple(
+				entitatActual.getId(),
+				multipleRegistreIds);
+		model.addAttribute("registres", registres);
+		boolean mateixPare = true;
+		Long bustiaIdActual = null;
+		if (!registres.isEmpty()) {
+			for (RegistreAnotacioDto registre: registres) {
+				if (bustiaIdActual == null) {
+					bustiaIdActual = registre.getPare().getId();
+				}
+				if (!bustiaIdActual.equals(registre.getPare().getId())) {
+					mateixPare = false;
+					break;
+				}
 			}
-			System.out.println(">>>    total: " + multipleRegistreIds.size());
 		}
-		return null;
+		if (mateixPare && bustiaIdActual != null) {
+			model.addAttribute(
+					"procediments",
+					registreService.classificarFindProcediments(
+							entitatActual.getId(),
+							bustiaIdActual));
+		}
+		return mateixPare;
 	}
 
 }

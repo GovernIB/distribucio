@@ -55,9 +55,7 @@ $(document).ready(function() {
 		$('#mostrarInactivesBtn').removeClass('active');
 	});
 	$('#taulaDades').on( 'draw.dt', function () {
-		// Quan es refresca la llista consulta els pendents
-		$.get( "bustiaUser/getNumPendents")
-		.done(function( data ) {
+		$.get( "bustiaUser/getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
 		})
 		$('#seleccioAll').on('click', function() {
@@ -121,7 +119,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form id="bustiaFiltreForm" action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
+	<form:form id="bustiaFiltreForm" action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
 		<div class="row">
 			<div class="col-md-4">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
@@ -170,7 +168,7 @@ $(document).ready(function() {
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 				<div class="btn-group">
-					<a href="classificar" class="btn btn-default" aria-haspopup="true" aria-expanded="false">
+					<a href="bustiaUser/classificarMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
   						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.classificar"/></span>
 					</a>
 				</div>

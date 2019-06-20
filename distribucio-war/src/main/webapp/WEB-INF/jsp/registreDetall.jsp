@@ -105,10 +105,6 @@ tr.clicable {
 					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
 					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 				</tr>
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
-					<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
-				</tr>
 			</tbody>
 			</table>
 			<div class="row">
@@ -119,6 +115,10 @@ tr.clicable {
 						</div>
 						<table class="table table-bordered">
 							<tbody>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
+									<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
+								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.llibre"/></strong></td>
 									<td>${registre.llibreDescripcio} (${registre.llibreCodi})</td>

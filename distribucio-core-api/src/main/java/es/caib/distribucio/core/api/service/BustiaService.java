@@ -232,12 +232,11 @@ public interface BustiaService {
 			RegistreAnotacio anotacio) throws NotFoundException;
 
 	/**
-	 * Consulta el contingut pendent d'una bústia.
+	 * Consulta el contingut pendent a dins múltiples bústies.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @param filtre del datatable
-	 * 
 	 * @return El contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -265,7 +264,7 @@ public interface BustiaService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			BustiaUserFiltreDto filtre);
-	
+
 	/**
 	 * Obté la informació d'un contingut pendent d'una bústia.
 	 * 
@@ -393,7 +392,7 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
 			Long unitatIdFiltre, Boolean unitatObsoleta);
-	
+
 	@PreAuthorize("hasRole('tothom')")
 	public String getApplictionMetrics();
 
@@ -420,4 +419,3 @@ public interface BustiaService {
 			String comentari);	
 
 }
-
