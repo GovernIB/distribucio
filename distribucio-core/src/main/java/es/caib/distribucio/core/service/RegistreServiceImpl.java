@@ -1048,9 +1048,7 @@ public class RegistreServiceImpl implements RegistreService {
 			if (ex == null) {
 				if (ReglaTipusEnumDto.BUSTIA.equals(reglaAplicable.getTipus())) {
 					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
-					BustiaEntity novaBustia = (BustiaEntity)(registreRepository.findByPareAndId(
-							contingut,
-							registreId).getPare());
+					BustiaEntity novaBustia = (BustiaEntity)(registreRepository.getOne(registreId).getPare());
 					classificacioResultat.setBustiaNom(novaBustia.getNom());
 					classificacioResultat.setBustiaUnitatOrganitzativa(
 							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));

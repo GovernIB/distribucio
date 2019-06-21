@@ -35,10 +35,8 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
-import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -579,11 +577,11 @@ public class BustiaUserController extends BaseUserController {
 				bustiaId,
 				registreId,
 				command.getCodiProcediment());
-		resultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
+		/*resultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
 		UnitatOrganitzativaDto uo = new UnitatOrganitzativaDto();
 		uo.setDenominacio("Ca una pu");
 		resultat.setBustiaUnitatOrganitzativa(uo);
-		resultat.setBustiaNom("Chupibústia");
+		resultat.setBustiaNom("Chupibústia");*/
 		return resultat;
 	}
 
