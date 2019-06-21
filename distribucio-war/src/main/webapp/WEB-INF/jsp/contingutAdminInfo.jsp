@@ -12,6 +12,8 @@
 <body>
 	<dis:blocContenidorPath contingut="${contingut}"/>
 	<c:if test="${contingut.registre && contingut.procesEstat == 'BACK_PENDENT' || contingut.procesEstat == 'ARXIU_PENDENT' || contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR'}">
+	
+		<!------------------------------ TABLIST ------------------------------------------------->
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
 			</li>
@@ -25,12 +27,28 @@
 			</c:if>
 			<c:if test="${contingut.procesEstat == 'BACK_PENDENT'}">
 				<li role="presentation">
-					<a href="#backPendent"" aria-controls="proces" role="tab" data-toggle="tab">
+					<a href="#backPendent" aria-controls="proces" role="tab" data-toggle="tab">
 						<spring:message code="registre.detalls.pipella.pendent.backoffice"/>
 						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if>
 					</a>
 				</li>
-			</c:if>			
+			</c:if>	
+<%-- 			<c:if test="${contingut.procesEstat == 'BACK_REBUTJADA'}"> --%>
+<!-- 				<li role="presentation"> -->
+<!-- 					<a href="#backRebutjada" aria-controls="proces" role="tab" data-toggle="tab"> -->
+<%-- 						<spring:message code="registre.detalls.pipella.rebutjada.backoffice"/> --%>
+<%-- 						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if> --%>
+<!-- 					</a> -->
+<!-- 				</li> -->
+<%-- 			</c:if>			 --%>
+<%-- 			<c:if test="${contingut.procesEstat == 'BACK_ERROR'}"> --%>
+<!-- 				<li role="presentation"> -->
+<!-- 					<a href="#backError" aria-controls="proces" role="tab" data-toggle="tab"> -->
+<%-- 						<spring:message code="registre.detalls.pipella.error.backoffice"/> --%>
+<%-- 						<c:if test="${contingut.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if> --%>
+<!-- 					</a> -->
+<!-- 				</li> -->
+<%-- 			</c:if>							 --%>
 			<c:if test="${contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR'}">
 				<li role="presentation">
 					<a href="#backAction" aria-controls="proces" role="tab" data-toggle="tab">
@@ -40,7 +58,9 @@
 			</c:if>
 		</ul>
 		<br/>
+		
 		<div class="tab-content">
+			<!------------------------------ TABPANEL INFORMACIO ------------------------------------->
 			<div class="tab-pane active in" id="informacio" role="tabpanel">
 	</c:if>
 	<dl class="dl-horizontal">
@@ -90,6 +110,8 @@
 	</dl>
 	<c:if test="${contingut.registre && contingut.procesEstat == 'ARXIU_PENDENT' || contingut.procesEstat == 'REGLA_PENDENT'}">
 			</div>
+			
+			<!------------------------------ TABPANEL PROCES ------------------------------------->
 			<div class="tab-pane" id="proces" role="tabpanel">
 				<c:if test="${contingut.procesError != null }">
 					<div class="alert well-sm alert-danger alert-dismissable">
@@ -115,6 +137,7 @@
 	
 	<c:if test="${contingut.registre && contingut.procesEstat == 'BACK_PENDENT'}">
 			</div>
+			<!------------------------------ TABPANEL BACK_PENDENT ------------------------------------->
 			<div class="tab-pane" id="backPendent" role="tabpanel">
 			
 				    <c:if test="${contingut.procesError != null }">
@@ -148,10 +171,50 @@
 		</div>
 	</c:if>
 	
-	<c:if test="${contingut.registre && ( contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR')}">
+<%-- 	<c:if test="${contingut.registre && ( contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR')}"> --%>
 	
+<!-- 		</div> -->
+<!-- 		<div class="tab-pane" id="backAction" role="tabpanel"> -->
+<%-- 			<a href="../${contingut.pare.id}/registre/${contingut.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a> --%>
+
+<!-- 			<dl class="dl-horizontal"> -->
+<%-- 				<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt> --%>
+<%-- 				<dd>${contingut.procesEstat}</dd> --%>
+<%-- 				<dt><spring:message code="registre.detalls.camp.proces.data.back.pendent"/></dt> --%>
+<%-- 				<dd><fmt:formatDate value="${contingut.backPendentData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd> --%>
+<%-- 				<dt><spring:message code="registre.detalls.camp.proces.data.back.rebuda"/></dt> --%>
+<%-- 				<dd><fmt:formatDate value="${contingut.backRebudaData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd> --%>
+<%-- 				<c:choose> --%>
+<%-- 				   <c:when test = "${contingut.procesEstat == 'BACK_PROCESSADA'}"> --%>
+<%-- 				      <dt><spring:message code="registre.detalls.camp.proces.data.back.processada"/></dt> --%>
+<%-- 				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd> --%>
+<%-- 				   </c:when> --%>
+<%-- 				   <c:when test = "${contingut.procesEstat == 'BACK_REBUTJADA'}"> --%>
+<%-- 				      <dt><spring:message code="registre.detalls.camp.proces.data.back.rebutjada"/></dt> --%>
+<%-- 				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd> --%>
+<%-- 				   </c:when> --%>
+<%-- 				   <c:when test = "${contingut.procesEstat == 'BACK_ERROR'}"> --%>
+<%-- 				      <dt><spring:message code="registre.detalls.camp.proces.data.back.error"/></dt> --%>
+<%-- 				      <dd><fmt:formatDate value="${contingut.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd> --%>
+<%-- 				   </c:when>          --%>
+<%-- 				</c:choose>				 --%>
+<!-- 			</dl> -->
+<%-- 			<c:if test="${contingut.backObservacions != null}"> --%>
+<%-- 				<pre style="height:300px">${contingut.backObservacions}</pre> --%>
+<%-- 			</c:if> --%>
+<!-- 		</div> -->
+<!-- 	</div> -->
+<%-- </c:if>	 --%>
+	
+	<c:if test="${contingut.registre && ( contingut.procesEstat == 'BACK_REBUDA' || contingut.procesEstat == 'BACK_PROCESSADA' || contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR')}">
 		</div>
+		
+		<!------------------------------ TABPANEL BACK_ACTION ------------------------------------->
 		<div class="tab-pane" id="backAction" role="tabpanel">
+		
+		    <c:if test="${contingut.procesEstat == 'BACK_REBUTJADA' || contingut.procesEstat == 'BACK_ERROR'}">
+				<a href="../${contingut.pare.id}/registre/${contingut.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+		    </c:if>	
 
 			<dl class="dl-horizontal">
 				<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
@@ -175,12 +238,17 @@
 				   </c:when>         
 				</c:choose>				
 			</dl>
-			<c:if test="${contingut.backObservacions != null}">
-				<pre style="height:300px">${contingut.backObservacions}</pre>
-			</c:if>
+				<c:choose>
+				   <c:when test = "${not empty contingut.procesError}">
+						<pre style="height:300px">${contingut.procesError}</pre>
+				   </c:when>
+				   <c:when test = "${contingut.backObservacions != null}">
+						<pre style="height:300px">${contingut.backObservacions}</pre>
+				   </c:when>
+				</c:choose>			
 		</div>
 	</div>
-</c:if>
+	</c:if>
 	
 	
 	

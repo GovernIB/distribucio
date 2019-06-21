@@ -42,14 +42,14 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04015411";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	private static final String ASSUMPTE_CODI = "BACK1";
+	private static final String ASSUMPTE_CODI = "BACK";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
-	private static final String ENTITAT_CODI = "codientitat";
+	private static final String ENTITAT_CODI = "A04019281";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
 	private static final String OFICINA_DESC = "Oficina de proves";
@@ -58,7 +58,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM = "12345678";
+	private static final String EXPEDIENT_NUM = "BACK/76/2019";
 
 	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_PDF = true;
@@ -186,6 +186,11 @@ public class BustiaV1Test {
 	        		"02",
 	        		null);
 	        anotacio.setJustificant(justificant);
+	        
+	        
+	        
+	        afegirInteressats(anotacio);
+	        
 	        try {
 	    		getBustiaServicePort().enviarAnotacioRegistreEntrada(
 	    				ENTITAT_DIST_CODI,
@@ -291,7 +296,7 @@ public class BustiaV1Test {
 	}
 	private InputStream getContingutAnnexSenseFirmaPdf() {
 		InputStream is = getClass().getResourceAsStream(
-        		"/document.pdf");
+        		"/annex_sense_firma.pdf");
 		return is;
 	}
 	private InputStream getContingutAnnexSenseFirmaDocx() {

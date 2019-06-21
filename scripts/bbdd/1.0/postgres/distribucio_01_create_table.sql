@@ -206,7 +206,7 @@ CREATE TABLE DIS_REGISTRE
   BACK_PENDENT_DATA    timestamp without time zone,
   BACK_REBUDA_DATA    timestamp without time zone,
   BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
-  BACK_OBSERVACIONS 	character varying(1024),
+  BACK_OBSERVACIONS 	character varying(4000),
   BACK_RETRY_ENVIAR_DATA  timestamp without time zone
 );
 

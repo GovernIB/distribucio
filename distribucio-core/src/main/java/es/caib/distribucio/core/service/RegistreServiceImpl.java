@@ -459,13 +459,15 @@ public class RegistreServiceImpl implements RegistreService {
 
 		List<Interessat> interessatsPerBackoffice = new ArrayList<>();
 		for (RegistreInteressatEntity registreInteressatEntity : registreInteressats) {
-
-			Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
-			if (registreInteressatEntity.getRepresentant() != null) {
-				Representant representant = toRepresentant(registreInteressatEntity.getRepresentant());
-				interessatPerBackoffice.setRepresentant(representant);
+			
+			if (registreInteressatEntity.getRepresentat() == null) { // if interessat is not representant
+				Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
+				if (registreInteressatEntity.getRepresentant() != null) {
+					Representant representant = toRepresentant(registreInteressatEntity.getRepresentant()); 
+					interessatPerBackoffice.setRepresentant(representant);
+				}
+				interessatsPerBackoffice.add(interessatPerBackoffice);
 			}
-			interessatsPerBackoffice.add(interessatPerBackoffice);
 		}
 		return interessatsPerBackoffice;
 	}
@@ -738,20 +740,11 @@ public class RegistreServiceImpl implements RegistreService {
 
 		RegistreEntity anotacio = registreRepository.findOne(registreId);
 
-		boolean backPendent = RegistreProcesEstatEnum.BACK_PENDENT.equals(
-				anotacio.getProcesEstat());
-		if (backPendent) {
-			List<Long> pendentsIds = new ArrayList<>();
-			pendentsIds.add(anotacio.getId());
-			Throwable exceptionProcessant = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(
-					pendentsIds);
-			return exceptionProcessant == null;
-		} else {
-			throw new ValidationException(
-					anotacio.getId(),
-					RegistreEntity.class,
-					"L'anotació de registre no es troba en estat " + RegistreProcesEstatEnum.BACK_PENDENT);
-		}
+		List<Long> pendentsIds = new ArrayList<>();
+		pendentsIds.add(anotacio.getId());
+		Throwable exceptionProcessant = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIds);
+		return exceptionProcessant == null;
+
 	}
 
 	@Override
