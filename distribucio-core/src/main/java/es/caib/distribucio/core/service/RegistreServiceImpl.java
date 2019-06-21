@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -370,6 +369,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
+			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
 			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());

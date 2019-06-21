@@ -27,7 +27,6 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.core.entity.ReglaEntity.Builder;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
@@ -79,6 +78,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getNom(),
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
+				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
 				ordre).build();
 		switch(regla.getTipus()) {
@@ -125,6 +125,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getDescripcio(),
 				regla.getTipus(),
 				regla.getAssumpteCodi(),
+				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
@@ -366,7 +367,7 @@ public class ReglaServiceImpl implements ReglaService {
 				+ ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
 
-		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatCodi(entitat, unitatCodi);
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatOrganitzativaCodi(entitat, unitatCodi);
 		List<ReglaDto> resposta = new ArrayList<ReglaDto>();
 		for (ReglaEntity regla : regles) {
 			resposta.add(toReglaDto(regla));

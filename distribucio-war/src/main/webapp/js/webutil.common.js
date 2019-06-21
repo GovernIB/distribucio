@@ -365,12 +365,15 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 					}
 				}
 			});
-		}
+		};
+		templateFunction = window[$(this).data('option-template-function')];
 		$(this).select2({
 		    placeholder: $(this).data('placeholder'),
 		    theme: "bootstrap",
 		    allowClear: $(this).data('placeholder') ? true : false,
-		    minimumResultsForSearch: $(this).data('minimumresults')
+		    minimumResultsForSearch: $(this).data('minimumresults'),
+		    templateResult: templateFunction,
+		    templateSelection: templateFunction 
 		});
 		$(this).on('select2:open', function() {
 			webutilModalAdjustHeight();

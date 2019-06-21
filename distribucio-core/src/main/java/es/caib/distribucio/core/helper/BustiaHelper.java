@@ -11,6 +11,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -170,7 +172,7 @@ public class BustiaHelper {
 		}
 		BustiaEntity bustiaDesti = null;
 		for (UnitatOrganitzativaDto unitat: path) {
-			BustiaEntity bustia = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+			BustiaEntity bustia = this.findBustiaPerDefecte(
 					entitat,
 					unitat.getCodi());
 			if (bustia != null) {
@@ -211,5 +213,35 @@ public class BustiaHelper {
 		}
 		return false;
 	}
+
+	/** Mètode per trobar la bústia per defecte tenint en compte si la query retorna més d'un resultat.
+	 * Troba la bústia per entitat i codi d'unitat orgànica.
+	 * @param entitat
+	 * @param codi
+	 * @return
+	 */
+	public BustiaEntity findBustiaPerDefecte(EntitatEntity entitat, String codiUnitat) {
+		
+		BustiaEntity bustaPerDefecte = null;
+		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+				entitat,
+				codiUnitat);
+		if (bustiesPerDefecte.size() == 1) {
+			bustaPerDefecte = bustiesPerDefecte.get(0);
+		} else if (bustiesPerDefecte.size() > 1) {
+			// és un error que es recuperi més d'una, es llença excepció
+			StringBuilder errMsg = new StringBuilder("Error. S'ha recuperat més d'una bústia per defecte per la entitat ")
+										.append(entitat.getId() + " \"" + entitat.getCodi())
+										.append("\" i codi d'unitat ").append(codiUnitat).append(": ");
+			for (BustiaEntity b : bustiesPerDefecte)
+				errMsg.append("[" + b.getId() + " " + b.getUnitatCodi() + " \"" + b.getNom() + "\"]");
+			
+			logger.error(errMsg.toString());
+			throw new RuntimeException(errMsg.toString());
+		}
+		return bustaPerDefecte;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(BustiaHelper.class);
 
 }

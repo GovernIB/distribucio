@@ -6,12 +6,9 @@ package es.caib.distribucio.war.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -223,7 +220,6 @@ public class ContingutAdminController extends BaseAdminController {
 		return "redirect:../../../" + registreId + "/info";
 	}
 	
-	private static final Logger logger = LoggerFactory.getLogger(ContingutAdminController.class);
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,

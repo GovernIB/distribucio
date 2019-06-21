@@ -31,6 +31,7 @@ public class BustiaContingutDto implements Serializable {
 	private long numComentaris;
 	private boolean alerta;
 	private String numeroOrigen;
+	private boolean isBustiaActiva;
 
 	public String getNumeroOrigen() {
 		return numeroOrigen;
@@ -118,6 +119,12 @@ public class BustiaContingutDto implements Serializable {
 		this.alerta = alerta;
 	}
 
+	public boolean isBustiaActiva() {
+		return isBustiaActiva;
+	}
+	public void setBustiaActiva(boolean isBustiaActiva) {
+		this.isBustiaActiva = isBustiaActiva;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

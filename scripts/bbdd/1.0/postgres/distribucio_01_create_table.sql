@@ -165,6 +165,7 @@ CREATE TABLE DIS_REGISTRE
   ASSUMPTE_TIPUS_DESC  character varying(100),
   ASSUMPTE_CODI        character varying(16),
   ASSUMPTE_DESC        character varying(100),
+  PROCEDIMENT_CODI	   character varying(64),
   REFERENCIA           character varying(16),
   EXPEDIENT_NUM        character varying(80),
   NUM_ORIG 			   character varying(80),
@@ -299,7 +300,7 @@ CREATE TABLE DIS_REGLA
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   ACTIVA               boolean,
-  ASSUMPTE_CODI        character varying(16)    NOT NULL,
+  ASSUMPTE_CODI        character varying(16),
   DESCRIPCIO           character varying(1024),
   NOM                  character varying(256)   NOT NULL,
   ORDRE                integer                  NOT NULL,
@@ -317,7 +318,8 @@ CREATE TABLE DIS_REGLA
   USUARI               character varying(64),
   BUSTIA_ID            bigint,
   METAEXPEDIENT_ID     bigint,
-  UNITAT_ID 		   BIGINT
+  UNITAT_ID 		   BIGINT,
+  PROCEDIMENT_CODI     CHARACTER VARYING(64)
 );
 
 

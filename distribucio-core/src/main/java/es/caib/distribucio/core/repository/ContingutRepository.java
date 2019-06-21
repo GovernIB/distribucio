@@ -16,7 +16,6 @@ import org.springframework.data.repository.query.Param;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.UsuariEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base

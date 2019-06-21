@@ -74,22 +74,6 @@ $(document).ready(function() {
 						</div>
 					</div>
 				</c:if>
-<%-- 				<c:if --%>
-<%-- 					test="${reglaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
-<!-- 					<div class="row"> -->
-<%-- 						<label class="col-xs-4 text-right"><spring:message --%>
-<%-- 								code="unitat.transicioInfo.altresUnitatsFusionades" /></label> --%>
-<!-- 						<div class="col-xs-8"> -->
-<!-- 							<ul style="padding-left: 17px;"> -->
-<%-- 								<c:forEach --%>
-<%-- 									items="${reglaDto.unitatOrganitzativa.altresUnitatsFusionades}" --%>
-<%-- 									var="unitatMap" varStatus="loop"> --%>
-<%-- 									<li>${unitatMap.value} (${unitatMap.key})</li> --%>
-<%-- 								</c:forEach> --%>
-<!-- 							</ul> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
-<%-- 				</c:if> --%>
 			</div>
 		</div>
 	</c:if>
@@ -111,8 +95,6 @@ $(document).ready(function() {
 				<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 				<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
 				<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
-				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="true"/>
-<%-- 				<dis:inputText name="unitatCodi" textKey="regla.form.camp.unitat"/> --%>
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
@@ -123,7 +105,10 @@ $(document).ready(function() {
 					inline="false" 
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id"
-					suggestText="nom" />
+					suggestText="nom"
+					required="true" />
+				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="false"/>
+				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">
 				<div id="camps_tipus_BUSTIA">

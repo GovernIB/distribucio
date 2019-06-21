@@ -216,9 +216,8 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
-		BustiaEntity bustiaPerDefecte = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
-				entitat,
-				unitat);
+		BustiaEntity bustiaPerDefecte = bustiaHelper.findBustiaPerDefecte(entitat, unitat.getCodi());
+		
 		if (bustiaPerDefecte == null) {
 			entity.updatePerDefecte(true);
 			contingutLogHelper.log(
@@ -255,10 +254,38 @@ public class BustiaServiceImpl implements BustiaService {
 		String nomOriginal = entity.getNom();
 		
 		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(bustia.getUnitatOrganitzativa().getId());
+		
+		BustiaEntity bustiaPerDefecteDesti = bustiaHelper.findBustiaDesti(entitat, unitatOrganitzativa.getCodi());
+		if (entity.isPerDefecte() 
+				&& !entity.getUnitatOrganitzativa().getId().equals(unitatOrganitzativa.getId())) {
+			// comprova si a la unitat orgánica destí ja hi ha alguna bústia per defecte, si ja hi ha desmarca la que estem movent
+			if (bustiaPerDefecteDesti != null 
+					&& unitatOrganitzativa.getId().equals(bustiaPerDefecteDesti.getUnitatOrganitzativa().getId()))
+				entity.updatePerDefecte(false);
+
+			// Comprova que si es mou la bústia a una altra unitat encara quedi una bústia per defecte per a la unitat organitzativa anterior
+			BustiaEntity bustiaPerDefecteAlternativa = this.findBustiaPerDefecteAlternativa(entitat, entity); 
+			if (bustiaPerDefecteAlternativa == null) {
+				String missatgeError = "No es pot moure la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+						"bustiaId=" + bustia.getId() + ", " +
+						"unitatOrganitzativaCodi=" + entity.getUnitatCodi() + ")";
+				logger.error(missatgeError);
+				throw new ValidationException(
+						bustia.getId() ,
+						BustiaEntity.class,
+						missatgeError);
+			}		
+
+		} else {
+			// Si a la bústia destí no n'hi ha cap per defecte llavors la marca com a defecte
+			if (bustiaPerDefecteDesti != null 
+					&& !unitatOrganitzativa.equals(bustiaPerDefecteDesti.getUnitatOrganitzativa()))
+				entity.updatePerDefecte(true);				
+		}
+		// Actualitza la bústia
 		entity.update(
 				bustia.getNom(),
 				unitatOrganitzativa);
-
 		
 		// Registra al log la modificació de la bústia
 		contingutLogHelper.log(
@@ -272,6 +299,36 @@ public class BustiaServiceImpl implements BustiaService {
 				entity,
 				false,
 				false);
+	}
+
+	/** Mètode per trobar una bústia per defecte alternativa a la bústia pasada com a paràmetre.
+	 *  Aquest mètode s'utilitza per validar a l'hora d'esborrar o moure una bústia en una unitat
+	 *  administratvia.
+	 * @param entitat
+	 * @param bustia
+	 * @return
+	 */
+	private BustiaEntity findBustiaPerDefecteAlternativa(
+			EntitatEntity entitat, 
+			BustiaEntity bustia) 
+	{
+		BustiaEntity bustiaPerDefecteAlternativa = null;
+		List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+				entitat.getCodiDir3(),
+				bustia.getUnitatCodi());
+		if (path != null && !path.isEmpty()) {
+			BustiaEntity bustiaAux;
+			for (UnitatOrganitzativaDto unitat: path) {
+				bustiaAux = bustiaHelper.findBustiaPerDefecte(
+						entitat,
+						unitat.getCodi());
+				if (bustiaAux != null && ! bustiaAux.getId().equals(bustia.getId())) {
+					bustiaPerDefecteAlternativa = bustiaAux;
+					break;
+				}
+			}
+		}
+		return bustiaPerDefecteAlternativa;
 	}
 
 	@Override
@@ -326,32 +383,17 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		if (bustia.isPerDefecte()) {
 			// Valida que si s'esborra encara hi hagi una altra per defecte d'alternativa
-			BustiaEntity bustiaPerDefecteAlternativa = null;
-			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
-					entitat.getCodiDir3(),
-					bustia.getUnitatCodi());
-			if (path != null && !path.isEmpty()) {
-				BustiaEntity bustiaAux;
-				for (UnitatOrganitzativaDto unitat: path) {
-					bustiaAux = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
-							entitat,
-							unitat.getCodi());
-					if (bustiaAux != null && ! bustiaAux.getId().equals(id)) {
-						bustiaPerDefecteAlternativa = bustia;
-						break;
-					}
-				}
-				if (bustiaPerDefecteAlternativa == null) {
-					String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
-							"bustiaId=" + id + ", " +
-							"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
-					logger.error(missatgeError);
-					throw new ValidationException(
-							id,
-							BustiaEntity.class,
-							missatgeError);
-				}			
-			}
+			BustiaEntity bustiaPerDefecteAlternativa = this.findBustiaPerDefecteAlternativa(entitat, bustia);
+			if (bustiaPerDefecteAlternativa == null) {
+				String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+						"bustiaId=" + id + ", " +
+						"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
+				logger.error(missatgeError);
+				throw new ValidationException(
+						id,
+						BustiaEntity.class,
+						missatgeError);
+			}			
 		}
 		
 		// cannot remove busties containing any anotacions
@@ -595,65 +637,9 @@ public class BustiaServiceImpl implements BustiaService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public PaginaDto<BustiaDto> findPermesesPerUsuari(
-			Long entitatId,
-			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta de busties permeses per un usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "paginacioParams=" + paginacioParams + ")");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
-		// Filtra la llista de bústies segons els permisos
-		permisosHelper.filterGrantedAll(
-				busties,
-				new ObjectIdentifierExtractor<BustiaEntity>() {
-					@Override
-					public Long getObjectIdentifier(BustiaEntity bustia) {
-						return bustia.getId();
-					}
-				},
-				BustiaEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		if (busties.isEmpty()) {
-			return paginacioHelper.getPaginaDtoBuida(BustiaDto.class);
-		}
-		List<Long> bustiaIds = new ArrayList<Long>();
-		for (BustiaEntity bustia: busties) {
-			bustiaIds.add(bustia.getId());
-		}
-		// Realitza la consulta
-		Page<BustiaEntity> pagina = bustiaRepository.findByEntitatAndIdsAndFiltrePaginat(
-				entitat,
-				bustiaIds,
-				paginacioParams.getFiltre() == null,
-				paginacioParams.getFiltre(),
-				paginacioHelper.toSpringDataPageable(
-						paginacioParams));
-		return paginacioHelper.toPaginaDto(
-				pagina,
-				BustiaDto.class,
-				new Converter<BustiaEntity, BustiaDto>() {
-					@Override
-					public BustiaDto convert(BustiaEntity source) {
-						return toBustiaDto(
-								source,
-								true,
-								true);
-					}
-				});
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
 	public List<BustiaDto> findPermesesPerUsuari(
-			Long entitatId) {
+			Long entitatId,
+			boolean mostrarInactives) {
 		
 		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
 		Timer.Context findPermesesPerUsuariContext = findPermesesPerUsuariTimer.time();
@@ -667,7 +653,13 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		List<BustiaEntity> busties;		
+		if (mostrarInactives)
+			busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		else
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		
+		
 		// Filtra la llista de bústies segons els permisos
 		permisosHelper.filterGrantedAll(
 				busties,
@@ -1388,6 +1380,10 @@ public class BustiaServiceImpl implements BustiaService {
 				"			<tr>"+
 				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.assumpte.codi") + "</th>"+
 				"				<td colspan=\"2\">" + Objects.toString(registre.getAssumpteCodi(), "") + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.procediment") + "</th>"+
+				"				<td colspan=\"2\">" + Objects.toString(registre.getProcedimentCodi(), "") + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
 				"				<th>" + messageHelper.getMessage("registre.detalls.camp.refext") + "</th>"+
@@ -2208,6 +2204,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
+		bustiaContingut.setBustiaActiva(pare.isActiva());
 		
 		toBustiaDtoContext.stop();
 		// TIMER STOP
@@ -2274,5 +2271,61 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
+
+
+	@Override
+	@Transactional
+	public int moureAnotacions(
+			long entitatId, 
+			long bustiaId, 
+			long destiId, 
+			String comentari) {
+		logger.debug("Movent les anotacions de registre entre bústies ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + bustiaId + ", "
+				+ "destiId=" + destiId + ", "
+				+ "comentari=" + comentari + ")");
+		int ret = 0;
+
+		// Comprova permisos
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
+				entitat,
+				destiId,
+				false);
+
+		// Recupera totes les anotacions de registre
+		for (RegistreEntity registre : registreRepository.findByPareId(bustiaId)) {
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
+				throw new ValidationException(
+						registre.getNumero(),
+						RegistreEntity.class,
+						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
+			}
+			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+					registre,
+					bustiaDesti,
+					comentari);
+			// Registra al log l'enviament del contingut
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.MOVIMENT,
+					contingutMoviment,
+					true,
+					true);
+			ret++;
+		}
+		logger.debug("Moviment entre bústies finalitzat correctament. " + ret + " anotacions mogudes de la bustia \"" + bustiaOrigen.getId() + " " + bustiaOrigen.getNom() + 
+				 	"\" a la bustia \""+ bustiaDesti.getId() + " " + bustiaDesti.getNom() + "\"");
+		return ret;
+	}
 
 }

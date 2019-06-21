@@ -85,6 +85,8 @@
 			<dt><spring:message code="registre.detalls.camp.llibre"/></dt><dd>${contingut.llibreDescripcio} (${contingut.llibreCodi})</dd>
 			<dt><spring:message code="registre.detalls.camp.extracte"/></dt><dd>${contingut.extracte}</dd>
 			<dt><spring:message code="registre.detalls.camp.assumpte.tipus"/></dt><dd>${contingut.assumpteTipusDescripcio} (${contingut.assumpteTipusCodi})</dd>
+			<dt><spring:message code="registre.detalls.camp.assumpte.codi"/></dt><dd>${contingut.assumpteDescripcio} (${contingut.assumpteCodi})</dd>
+			<dt><spring:message code="registre.detalls.camp.procediment"/></dt><dd>${contingut.procedimentCodi}</dd>
 			<dt><spring:message code="registre.detalls.camp.idioma"/></dt><dd>${contingut.idiomaDescripcio} (${contingut.idiomaCodi})</dd>
 			<c:if test="${not empty contingut.transportTipusCodi}">
 				<dt><spring:message code="registre.detalls.camp.transport.tipus"/></dt><dd>${contingut.transportTipusDescripcio} (${contingut.transportTipusCodi})</dd>

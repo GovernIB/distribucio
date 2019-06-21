@@ -42,6 +42,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class ReglaEntity extends DistribucioAuditable<Long> {
 
+
 	@Column(name = "nom", length = 256, nullable = false)
 	protected String nom;
 	@Column(name = "descripcio", length = 1024)
@@ -49,10 +50,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "tipus", nullable = false)
 	@Enumerated(EnumType.STRING)
 	protected ReglaTipusEnumDto tipus;
-	@Column(name = "assumpte_codi", length = 16, nullable = false)
+	@Column(name = "assumpte_codi", length = 16)
 	protected String assumpteCodi;
-	@Column(name = "unitat_codi", length = 9)
-	protected String unitatCodi;
+	@Column(name = "procediment_codi", length = 64, nullable = false)
+	private String procedimentCodi;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
@@ -103,8 +104,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public String getAssumpteCodi() {
 		return assumpteCodi;
 	}
-	public String getUnitatCodi() {
-		return unitatCodi;
+	public String getProcedimentCodi() {
+		return procedimentCodi;
 	}
 	public BustiaEntity getBustia() {
 		return bustia;
@@ -142,11 +143,13 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String descripcio,
 			ReglaTipusEnumDto tipus,
 			String assumpteCodi,
+			String procedimentCodi,
 			UnitatOrganitzativaEntity unitatOrganitzativa) {
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
 		this.assumpteCodi = assumpteCodi;
+		this.procedimentCodi = procedimentCodi;
 		this.unitatOrganitzativa = unitatOrganitzativa;
 	}
 	public void updatePerTipusBustia(
@@ -181,6 +184,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String nom,
 			ReglaTipusEnumDto tipus,
 			String assumpteCodi,
+			String procedimentCodi,
 			UnitatOrganitzativaEntity unitatOrganitzativa,
 			int ordre) {
 		return new Builder(
@@ -188,6 +192,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				nom,
 				tipus,
 				assumpteCodi,
+				procedimentCodi,
 				unitatOrganitzativa,
 				ordre);
 	}
@@ -198,6 +203,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				String nom,
 				ReglaTipusEnumDto tipus,
 				String assumpteCodi,
+				String procedimentCodi,
 				UnitatOrganitzativaEntity unitatOrganitzativa,
 				int ordre) {
 			built = new ReglaEntity();
@@ -205,6 +211,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.nom = nom;
 			built.tipus = tipus;
 			built.assumpteCodi = assumpteCodi;
+			built.procedimentCodi = procedimentCodi;
 			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.ordre = ordre;
 			built.activa = true;
@@ -253,6 +260,11 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			if (other.assumpteCodi != null)
 				return false;
 		} else if (!assumpteCodi.equals(other.assumpteCodi))
+			return false;
+		if (procedimentCodi == null) {
+			if (other.procedimentCodi != null)
+				return false;
+		} else if (!procedimentCodi.equals(other.procedimentCodi))
 			return false;
 		if (entitat == null) {
 			if (other.entitat != null)

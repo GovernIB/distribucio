@@ -45,6 +45,9 @@ public class BustiaEntity extends ContingutEntity {
 			UnitatOrganitzativaEntity unitatOrganitzativa) {
 		this.nom = nom;
 		this.unitatOrganitzativa = unitatOrganitzativa;
+		this.unitatCodi = unitatOrganitzativa != null? 
+								unitatOrganitzativa.getCodi() 
+								: null;
 	}
 
 

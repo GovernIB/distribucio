@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.war.command;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,9 +21,11 @@ import es.caib.distribucio.war.helper.ConversioTipusHelper;
 public class BustiaCommand {
 
 	private Long id;
-	@NotEmpty @Size(max=256)
+	@NotEmpty(groups =  {CreateUpdate.class})
+	@Size(max=256, groups =  {CreateUpdate.class})
 	private String nom;
 	private String unitatCodi;
+	@NotNull(groups =  {CreateUpdate.class}) 
 	private Long unitatId;
 	private Long pareId;
 	private Long entitatId;
@@ -91,4 +94,5 @@ public class BustiaCommand {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
+	public interface CreateUpdate{}	
 }

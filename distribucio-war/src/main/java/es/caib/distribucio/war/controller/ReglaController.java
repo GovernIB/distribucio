@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.ReglaCommand;
+import es.caib.distribucio.war.command.ReglaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.ReglaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -135,22 +137,24 @@ public class ReglaController  extends BaseAdminController {
 					entitatActual.getId(),
 					reglaId);
 			
-			// setting last historicos to the unitat of this regla
-			regla.setUnitatOrganitzativa(unitatService.getLastHistoricos(regla.getUnitatOrganitzativa()));
-		
-			// getting all the regles connected with old unitat excluding the
-			// one you are currently in
-			List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatCodi(
-					entitatActual.getId(),
-					regla.getUnitatOrganitzativa().getCodi());
-			List<ReglaDto> reglesOfOldUnitatWithoutCurrent = new ArrayList<ReglaDto>();
-			for (ReglaDto reglaI : reglesOfOldUnitat) {
-				if (!reglaI.getId().equals(regla.getId())) {
-					reglesOfOldUnitatWithoutCurrent.add(reglaI);
+			if (regla.getUnitatOrganitzativa().getTipusTransicio() != null) {
+				// setting last historicos to the unitat of this regla
+				regla.setUnitatOrganitzativa(unitatService.getLastHistoricos(regla.getUnitatOrganitzativa()));
+			
+				// getting all the regles connected with old unitat excluding the
+				// one you are currently in
+				List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatCodi(
+						entitatActual.getId(),
+						regla.getUnitatOrganitzativa().getCodi());
+				List<ReglaDto> reglesOfOldUnitatWithoutCurrent = new ArrayList<ReglaDto>();
+				for (ReglaDto reglaI : reglesOfOldUnitat) {
+					if (!reglaI.getId().equals(regla.getId())) {
+						reglesOfOldUnitatWithoutCurrent.add(reglaI);
+					}
 				}
+				model.addAttribute("reglesOfOldUnitatWithoutCurrent", reglesOfOldUnitatWithoutCurrent);
 			}
-		model.addAttribute("reglesOfOldUnitatWithoutCurrent", reglesOfOldUnitatWithoutCurrent);
-		model.addAttribute(regla);	
+			model.addAttribute(regla);	
 		}
 		
 		ReglaCommand command = null;
@@ -169,7 +173,7 @@ public class ReglaController  extends BaseAdminController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
-			@Valid ReglaCommand command,
+			@Validated(CreateUpdate.class) ReglaCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
