@@ -121,10 +121,13 @@
 <xs:element minOccurs="0" name="llinatge1" type="xs:string" />
 <xs:element minOccurs="0" name="llinatge2" type="xs:string" />
 <xs:element minOccurs="0" name="municipi" type="xs:string" />
+<xs:element minOccurs="0" name="municipiCodi" type="xs:string" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
 <xs:element minOccurs="0" name="observacions" type="xs:string" />
 <xs:element minOccurs="0" name="pais" type="xs:string" />
+<xs:element minOccurs="0" name="paisCodi" type="xs:string" />
 <xs:element minOccurs="0" name="provincia" type="xs:string" />
+<xs:element minOccurs="0" name="provinciaCodi" type="xs:string" />
 <xs:element minOccurs="0" name="raoSocial" type="xs:string" />
 <xs:element minOccurs="0" name="representant" type="tns:registreInteressat" />
 <xs:element minOccurs="0" name="telefon" type="xs:string" />
