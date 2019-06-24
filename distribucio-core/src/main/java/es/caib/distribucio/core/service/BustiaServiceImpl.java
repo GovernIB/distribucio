@@ -1111,15 +1111,15 @@ public class BustiaServiceImpl implements BustiaService {
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.pais") + "</th>"+
-					"				<td>" + Objects.toString(representant.getPais(), "") + "</td>"+
+					"				<td>" + Objects.toString(representant.getPais(), "") + (representant.getPaisCodi() == null ? "" : " (" + representant.getPaisCodi() + ")") + "</td>"+
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.provincia") + "</th>"+
-					"				<td>" + Objects.toString(representant.getProvincia(), "") + "</td>"+
+					"				<td>" + Objects.toString(representant.getProvincia(), "") + (representant.getProvinciaCodi() == null ? "" : " (" + representant.getProvinciaCodi() + ")") +  "</td>"+
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.municipi") + "</th>"+
-					"				<td>"  + Objects.toString(representant.getMunicipi(), "") + "</td>"+
+					"				<td>"  + Objects.toString(representant.getMunicipi(), "") + (representant.getMunicipiCodi() == null ? "" : " (" + representant.getMunicipiCodi() + ")") + "</td>"+
 					"			</tr>"+	
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.adresa") + "</th>"+
@@ -1170,15 +1170,15 @@ public class BustiaServiceImpl implements BustiaService {
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.pais") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getPais(), "") + "</td>"+
+					"				<td>" + Objects.toString(interessat.getPais(), "") + (interessat.getPaisCodi() == null ? "" : " (" + interessat.getPaisCodi() + ")")  + "</td>"+
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.provincia") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getProvincia(), "") + "</td>"+
+					"				<td>" + Objects.toString(interessat.getProvincia(), "") + (interessat.getProvinciaCodi() == null ? "" : " (" + interessat.getProvinciaCodi() + ")")  + "</td>"+
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.municipi") + "</th>"+
-					"				<td>"  + Objects.toString(interessat.getMunicipi(), "") + "</td>"+
+					"				<td>"  + Objects.toString(interessat.getMunicipi(), "") + (interessat.getMunicipiCodi() == null ? "" : " (" + interessat.getMunicipiCodi() + ")")  + "</td>"+
 					"			</tr>"+	
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.adresa") + "</th>"+
