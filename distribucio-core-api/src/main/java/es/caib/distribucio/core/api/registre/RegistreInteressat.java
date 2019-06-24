@@ -18,8 +18,11 @@ public class RegistreInteressat {
 	private String llinatge2;
 	private String raoSocial;
 	private String pais;
+	private String paisCodi;
 	private String provincia;
+	private String provinciaCodi;
 	private String municipi;
+	private String municipiCodi;
 	private String adresa;
 	private String codiPostal;
 	private String email;
@@ -80,11 +83,29 @@ public class RegistreInteressat {
 	public void setPais(String pais) {
 		this.pais = pais;
 	}
+	public String getPaisCodi() {
+		return paisCodi;
+	}
+	public void setPaisCodi(String paisCodi) {
+		this.paisCodi = paisCodi;
+	}
+	public String getProvinciaCodi() {
+		return provinciaCodi;
+	}
+	public void setProvinciaCodi(String provinciaCodi) {
+		this.provinciaCodi = provinciaCodi;
+	}
 	public String getProvincia() {
 		return provincia;
 	}
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
+	}
+	public String getMunicipiCodi() {
+		return municipiCodi;
+	}
+	public void setMunicipiCodi(String municipiCodi) {
+		this.municipiCodi = municipiCodi;
 	}
 	public String getMunicipi() {
 		return municipi;

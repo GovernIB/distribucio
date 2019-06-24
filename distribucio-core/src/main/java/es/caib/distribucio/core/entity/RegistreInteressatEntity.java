@@ -46,12 +46,18 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	private String llinatge2;
 	@Column(name = "rao_social", length = 80)
 	private String raoSocial;
-	@Column(name = "pais", length = 4)
+	@Column(name = "pais", length = 100)
 	private String pais;
+	@Column(name = "pais_codi", length = 4)
+	private String paisCodi;
 	@Column(name = "provincia", length = 100)
 	private String provincia;
+	@Column(name = "provincia_codi", length = 4)
+	private String provinciaCodi;
 	@Column(name = "municipi", length = 100)
 	private String municipi;
+	@Column(name = "municipi_codi", length = 4)
+	private String municipiCodi;
 	@Column(name = "adresa", length = 160)
 	private String adresa;
 	@Column(name = "codi_postal", length = 5)
@@ -107,11 +113,20 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	public String getPais() {
 		return pais;
 	}
+	public String getPaisCodi() {
+		return paisCodi;
+	}
 	public String getProvincia() {
 		return provincia;
 	}
+	public String getProvinciaCodi() {
+		return provinciaCodi;
+	}
 	public String getMunicipi() {
 		return municipi;
+	}
+	public String getMunicipiCodi() {
+		return municipiCodi;
 	}
 	public String getAdresa() {
 		return adresa;
@@ -153,8 +168,11 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			String llinatge2,
 			String raoSocial,
 			String pais,
+			String paisCodi,
 			String provincia,
+			String provinciaCodi,
 			String municipi,
+			String municipiCodi,
 			String adresa,
 			String codiPostal,
 			String email,
@@ -179,10 +197,19 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 					raoSocial,
 					registre);
 		}
-		representantBuilder.
+		// Amb codis pais, municipi i provincia a partir de la versió 0.9.24
+		if (paisCodi == null || "".equals(paisCodi))
+			representantBuilder.
+				paisCodi(pais);
+		else
+			representantBuilder.
 				pais(pais).
+				paisCodi(paisCodi);
+		representantBuilder.
 				provincia(provincia).
+				provinciaCodi(provinciaCodi).
 				municipi(municipi).
+				municipiCodi(municipiCodi).
 				adresa(adresa).
 				codiPostal(codiPostal).
 				email(email).
@@ -202,8 +229,11 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			String llinatge2,
 			String raoSocial,
 			String pais,
+			String paisCodi,
 			String provincia,
+			String provinciaCodi,
 			String municipi,
+			String municipiCodi,
 			String adresa,
 			String codiPostal,
 			String email,
@@ -224,8 +254,11 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 				llinatge2,
 				raoSocial,
 				pais,
+				paisCodi,
 				provincia,
+				provinciaCodi,
 				municipi,
+				municipiCodi,
 				adresa,
 				codiPostal,
 				email,
@@ -281,8 +314,11 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 				String llinatge2,
 				String raoSocial,
 				String pais,
+				String paisCodi,
 				String provincia,
+				String provinciaCodi,
 				String municipi,
+				String municipiCodi,
 				String adresa,
 				String codiPostal,
 				String email,
@@ -304,8 +340,11 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			built.llinatge2 = llinatge2;
 			built.raoSocial = raoSocial;
 			built.pais = pais;
+			built.paisCodi = paisCodi;
 			built.provincia = provincia;
+			built.provinciaCodi = provinciaCodi;
 			built.municipi = municipi;
+			built.municipiCodi = municipiCodi;
 			built.adresa = adresa;
 			built.codiPostal = codiPostal;
 			built.email = email;
@@ -354,12 +393,24 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			built.pais = pais;
 			return this;
 		}
+		public Builder paisCodi(String paisCodi) {
+			built.paisCodi = paisCodi;
+			return this;
+		}
 		public Builder provincia(String provincia) {
 			built.provincia = provincia;
 			return this;
 		}
+		public Builder provinciaCodi(String provinciaCodi) {
+			built.provinciaCodi = provinciaCodi;
+			return this;
+		}
 		public Builder municipi(String municipi) {
 			built.municipi = municipi;
+			return this;
+		}
+		public Builder municipiCodi(String municipiCodi) {
+			built.municipiCodi = municipiCodi;
 			return this;
 		}
 		public Builder adresa(String adresa) {

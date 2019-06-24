@@ -651,8 +651,11 @@ public class RegistreHelper {
 		interessat.setLlinatge2(interessatEntity.getLlinatge2());
 		interessat.setRaoSocial(interessatEntity.getRaoSocial());
 		interessat.setPais(interessatEntity.getPais());
+		interessat.setPaisCodi(interessatEntity.getPaisCodi());
 		interessat.setProvincia(interessatEntity.getProvincia());
+		interessat.setProvinciaCodi(interessatEntity.getProvinciaCodi());
 		interessat.setMunicipi(interessatEntity.getMunicipi());
+		interessat.setMunicipiCodi(interessatEntity.getMunicipiCodi());
 		interessat.setAdresa(interessatEntity.getAdresa());
 		interessat.setCodiPostal(interessatEntity.getCodiPostal());
 		interessat.setEmail(interessatEntity.getEmail());
@@ -719,20 +722,30 @@ public class RegistreHelper {
 					registre);
 			break;
 		}
-		RegistreInteressatEntity interessatEntity = interessatBuilder.
-		pais(registreInteressat.getPais()).
-		provincia(registreInteressat.getProvincia()).
-		municipi(registreInteressat.getMunicipi()).
-		adresa(registreInteressat.getAdresa()).
-		codiPostal(registreInteressat.getCodiPostal()).
-		email(registreInteressat.getEmail()).
-		telefon(registreInteressat.getTelefon()).
-		emailHabilitat(registreInteressat.getEmailHabilitat()).
-		canalPreferent(
-				RegistreInteressatCanalEnum.valorAsEnum(
-						registreInteressat.getCanalPreferent())).
-		observacions(registreInteressat.getObservacions()).
-		build();
+		// Amb codis a partir de la versió 0.9.24
+		if (registreInteressat.getPaisCodi() == null || "".equals(registreInteressat.getPaisCodi()))
+			interessatBuilder.
+				paisCodi(registreInteressat.getPais());
+		else
+			interessatBuilder.
+				pais(registreInteressat.getPais()).
+				paisCodi(registreInteressat.getPaisCodi());
+		interessatBuilder.
+			provincia(registreInteressat.getProvincia()).
+			provinciaCodi(registreInteressat.getProvinciaCodi()).
+			municipi(registreInteressat.getMunicipi()).
+			municipiCodi(registreInteressat.getMunicipiCodi()).
+			adresa(registreInteressat.getAdresa()).
+			codiPostal(registreInteressat.getCodiPostal()).
+			email(registreInteressat.getEmail()).
+			telefon(registreInteressat.getTelefon()).
+			emailHabilitat(registreInteressat.getEmailHabilitat()).
+			canalPreferent(
+					RegistreInteressatCanalEnum.valorAsEnum(
+							registreInteressat.getCanalPreferent())).
+			observacions(registreInteressat.getObservacions());		
+		RegistreInteressatEntity interessatEntity = interessatBuilder.build();
+		
 		if (registreInteressat.getRepresentant() != null) {
 			RegistreInteressat representant = registreInteressat.getRepresentant();
 			interessatEntity.updateRepresentant(
@@ -744,8 +757,11 @@ public class RegistreHelper {
 					representant.getLlinatge2(),
 					representant.getRaoSocial(),
 					representant.getPais(),
+					representant.getPaisCodi(),
 					representant.getProvincia(),
+					representant.getProvinciaCodi(),
 					representant.getMunicipi(),
+					representant.getMunicipiCodi(),
 					representant.getAdresa(),
 					representant.getCodiPostal(),
 					representant.getEmail(),

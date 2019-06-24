@@ -516,8 +516,8 @@ public class RegistreServiceImpl implements RegistreService {
 		interessat.setLlinatge1(registreInteressatEntity.getLlinatge1());
 		interessat.setLlinatge2(registreInteressatEntity.getLlinatge2());
 		interessat.setPaisCodi(registreInteressatEntity.getPais());
-		interessat.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		interessat.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
+		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
 		interessat.setAdresa(registreInteressatEntity.getAdresa());
 		interessat.setCp(registreInteressatEntity.getCodiPostal());
 		interessat.setEmail(registreInteressatEntity.getEmail());
@@ -571,8 +571,8 @@ public class RegistreServiceImpl implements RegistreService {
 		representant.setLlinatge1(registreInteressatEntity.getLlinatge1());
 		representant.setLlinatge2(registreInteressatEntity.getLlinatge2());
 		representant.setPaisCodi(registreInteressatEntity.getPais());
-		representant.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		representant.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		representant.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
+		representant.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
 		representant.setAdresa(registreInteressatEntity.getAdresa());
 		representant.setCp(registreInteressatEntity.getCodiPostal());
 		representant.setEmail(registreInteressatEntity.getEmail());
