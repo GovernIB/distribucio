@@ -577,11 +577,6 @@ public class BustiaUserController extends BaseUserController {
 				bustiaId,
 				registreId,
 				command.getCodiProcediment());
-		/*resultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
-		UnitatOrganitzativaDto uo = new UnitatOrganitzativaDto();
-		uo.setDenominacio("Ca una pu");
-		resultat.setBustiaUnitatOrganitzativa(uo);
-		resultat.setBustiaNom("Chupibústia");*/
 		return resultat;
 	}
 
