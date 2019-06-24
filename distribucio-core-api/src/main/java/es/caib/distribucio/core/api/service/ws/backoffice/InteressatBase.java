@@ -20,6 +20,9 @@ public class InteressatBase {
 	private String paisCodi;
 	private String provinciaCodi;
 	private String municipiCodi;
+	private String pais;
+	private String provincia;
+	private String municipi;	
 	private String adresa;
 	private String cp;
 	private String email;
@@ -28,6 +31,24 @@ public class InteressatBase {
 	private String canal;
 	private String observacions;
 
+	public String getPais() {
+		return pais;
+	}
+	public void setPais(String pais) {
+		this.pais = pais;
+	}
+	public String getProvincia() {
+		return provincia;
+	}
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+	public String getMunicipi() {
+		return municipi;
+	}
+	public void setMunicipi(String municipi) {
+		this.municipi = municipi;
+	}
 	public InteressatTipus getTipus() {
 		return tipus;
 	}

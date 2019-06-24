@@ -45,6 +45,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.DocumentTipus;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 import es.caib.distribucio.core.api.service.ws.backoffice.Interessat;
 import es.caib.distribucio.core.api.service.ws.backoffice.InteressatTipus;
+import es.caib.distribucio.core.api.service.ws.backoffice.NtiEstadoElaboracio;
 import es.caib.distribucio.core.api.service.ws.backoffice.NtiOrigen;
 import es.caib.distribucio.core.api.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.core.api.service.ws.backoffice.Representant;
@@ -156,6 +157,7 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreAnotacio;
 	}
 
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<RegistreAnotacioDto> findMultiple(
@@ -199,6 +201,11 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return resposta;
 	}
+
+
+
+
+
 
 	@Transactional(readOnly = true)
 	@Override
@@ -1108,6 +1115,7 @@ public class RegistreServiceImpl implements RegistreService {
 			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
 			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
 			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
+			annexPerBackoffice.setNtiEstadoElaboracio(NtiEstadoElaboracio.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
 			boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
 					"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
 			// annex should be stored in arxiu
@@ -1131,6 +1139,8 @@ public class RegistreServiceImpl implements RegistreService {
 							if (detached && retornarAnnexIFirmaContingut) {
 									annexPerBackoffice.setFirmaContingut(firma.getContingut());
 									annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
+									annexPerBackoffice.setFirmaNom(firma.getFitxerNom());
+									annexPerBackoffice.setFirmaTipusMime(firma.getTipusMime());
 							}
 							annexPerBackoffice.setFirmaTipus(
 									firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
@@ -1147,6 +1157,14 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return annexosPerBackoffice;
 	}
+	
+	
+	
+						
+	
+	
+	
+	
 
 	private NtiTipoDocumento toNtiTipoDocumento(RegistreAnnexNtiTipusDocumentEnum registreAnnexNtiTipusDocument){
 		NtiTipoDocumento ntiTipoDocumento = null;
@@ -1309,9 +1327,15 @@ public class RegistreServiceImpl implements RegistreService {
 		interessat.setNom(registreInteressatEntity.getNom());
 		interessat.setLlinatge1(registreInteressatEntity.getLlinatge1());
 		interessat.setLlinatge2(registreInteressatEntity.getLlinatge2());
-		interessat.setPaisCodi(registreInteressatEntity.getPais());
-		interessat.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		
+		interessat.setPaisCodi(registreInteressatEntity.getPaisCodi());
+		interessat.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
+		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
+		
+		interessat.setPais(registreInteressatEntity.getPais());
+		interessat.setProvincia(registreInteressatEntity.getProvincia());
+		interessat.setMunicipi(registreInteressatEntity.getMunicipi());
+		
 		interessat.setAdresa(registreInteressatEntity.getAdresa());
 		interessat.setCp(registreInteressatEntity.getCodiPostal());
 		interessat.setEmail(registreInteressatEntity.getEmail());
@@ -1360,9 +1384,15 @@ public class RegistreServiceImpl implements RegistreService {
 		representant.setNom(registreInteressatEntity.getNom());
 		representant.setLlinatge1(registreInteressatEntity.getLlinatge1());
 		representant.setLlinatge2(registreInteressatEntity.getLlinatge2());
-		representant.setPaisCodi(registreInteressatEntity.getPais());
-		representant.setProvinciaCodi(registreInteressatEntity.getProvincia());
-		representant.setMunicipiCodi(registreInteressatEntity.getMunicipi());
+		
+		representant.setPaisCodi(registreInteressatEntity.getPaisCodi());
+		representant.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
+		representant.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
+		
+		representant.setPais(registreInteressatEntity.getPais());
+		representant.setProvincia(registreInteressatEntity.getProvincia());
+		representant.setMunicipi(registreInteressatEntity.getMunicipi());
+		
 		representant.setAdresa(registreInteressatEntity.getAdresa());
 		representant.setCp(registreInteressatEntity.getCodiPostal());
 		representant.setEmail(registreInteressatEntity.getEmail());

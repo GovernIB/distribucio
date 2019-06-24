@@ -46,7 +46,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "E5";
+	private static final String PROCEDIMENT_CODI = "BACK";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
@@ -255,7 +255,8 @@ public class BustiaV1Test {
 		representant.setMunicipiCodi("022");
 		representant.setNom("NomRep");
 		representant.setObservacions(null);
-		representant.setPais("ES");
+		representant.setPais("Espanya");
+		representant.setPaisCodi("ES");
 		representant.setProvincia("Illes Balears");
 		representant.setProvinciaCodi("07");
 		representant.setRaoSocial(null);
@@ -273,11 +274,13 @@ public class BustiaV1Test {
 		interessat.setLlinatge1("LlinatgeInt1");
 		interessat.setLlinatge2("LlinatgeInt2");
 		interessat.setMunicipi("Manacor");
+		interessat.setMunicipiCodi("022");
 		interessat.setNom("NomInt1");
 		interessat.setObservacions(null);
 		interessat.setPais("Espanya");
 		interessat.setPaisCodi("ES");
 		interessat.setProvincia("Illes Balears");
+		interessat.setProvinciaCodi("07");
 		interessat.setRaoSocial(null);
 		interessat.setRepresentant(representant);
 		interessat.setTelefon("999888777");

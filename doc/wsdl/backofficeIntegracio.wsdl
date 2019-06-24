@@ -73,10 +73,13 @@
 <xs:sequence>
 <xs:element minOccurs="0" name="contingut" type="xs:base64Binary" />
 <xs:element minOccurs="0" name="firmaContingut" type="xs:base64Binary" />
+<xs:element minOccurs="0" name="firmaNom" type="xs:string" />
 <xs:element minOccurs="0" name="firmaPerfil" type="tns:firmaPerfil" />
 <xs:element name="firmaTamany" type="xs:long" />
 <xs:element minOccurs="0" name="firmaTipus" type="tns:firmaTipus" />
+<xs:element minOccurs="0" name="firmaTipusMime" type="xs:string" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
+<xs:element minOccurs="0" name="ntiEstadoElaboracio" type="tns:ntiEstadoElaboracio" />
 <xs:element minOccurs="0" name="ntiFechaCaptura" type="xs:dateTime" />
 <xs:element minOccurs="0" name="ntiOrigen" type="tns:ntiOrigen" />
 <xs:element minOccurs="0" name="ntiTipoDocumental" type="tns:ntiTipoDocumento" />
@@ -109,10 +112,13 @@
 <xs:element minOccurs="0" name="email" type="xs:string" />
 <xs:element minOccurs="0" name="llinatge1" type="xs:string" />
 <xs:element minOccurs="0" name="llinatge2" type="xs:string" />
+<xs:element minOccurs="0" name="municipi" type="xs:string" />
 <xs:element minOccurs="0" name="municipiCodi" type="xs:string" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
 <xs:element minOccurs="0" name="observacions" type="xs:string" />
+<xs:element minOccurs="0" name="pais" type="xs:string" />
 <xs:element minOccurs="0" name="paisCodi" type="xs:string" />
+<xs:element minOccurs="0" name="provincia" type="xs:string" />
 <xs:element minOccurs="0" name="provinciaCodi" type="xs:string" />
 <xs:element minOccurs="0" name="raoSocial" type="xs:string" />
 <xs:element minOccurs="0" name="telefon" type="xs:string" />
@@ -158,6 +164,15 @@
 <xs:enumeration value="SMIME" />
 <xs:enumeration value="ODT" />
 <xs:enumeration value="OOXML" />
+</xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="ntiEstadoElaboracio">
+<xs:restriction base="xs:string">
+<xs:enumeration value="ORIGINAL" />
+<xs:enumeration value="COPIA_ELECT_AUTENTICA_CANVI_FORMAT" />
+<xs:enumeration value="COPIA_ELECT_AUTENTICA_PAPER" />
+<xs:enumeration value="COPIA_ELECT_AUTENTICA_PARCIAL" />
+<xs:enumeration value="ALTRES" />
 </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="ntiOrigen">

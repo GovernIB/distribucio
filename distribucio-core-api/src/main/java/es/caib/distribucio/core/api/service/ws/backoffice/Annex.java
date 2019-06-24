@@ -23,12 +23,34 @@ public class Annex {
 	private Date ntiFechaCaptura;
 	private SicresTipoDocumento sicresTipoDocumento;
 	private SicresValidezDocumento sicresValidezDocumento;
+	private NtiEstadoElaboracio ntiEstadoElaboracio;
 	private String observacions;
 	private FirmaTipus firmaTipus;
 	private FirmaPerfil firmaPerfil;
 	private byte[] firmaContingut;
 	private long firmaTamany;
+	private String firmaNom;
+	private String firmaTipusMime;
 
+	
+	public String getFirmaTipusMime() {
+		return firmaTipusMime;
+	}
+	public void setFirmaTipusMime(String firmaTipusMime) {
+		this.firmaTipusMime = firmaTipusMime;
+	}
+	public String getFirmaNom() {
+		return firmaNom;
+	}
+	public void setFirmaNom(String firmaNom) {
+		this.firmaNom = firmaNom;
+	}
+	public NtiEstadoElaboracio getNtiEstadoElaboracio() {
+		return ntiEstadoElaboracio;
+	}
+	public void setNtiEstadoElaboracio(NtiEstadoElaboracio ntiEstadoElaboracio) {
+		this.ntiEstadoElaboracio = ntiEstadoElaboracio;
+	}
 	public String getTitol() {
 		return titol;
 	}
