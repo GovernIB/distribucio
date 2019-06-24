@@ -252,10 +252,12 @@ public class BustiaV1Test {
 		representant.setLlinatge1("LlinatgeRep1");
 		representant.setLlinatge2("LlinatgeRep2");
 		representant.setMunicipi("Felanitx");
+		representant.setMunicipiCodi("022");
 		representant.setNom("NomRep");
 		representant.setObservacions(null);
 		representant.setPais("ES");
 		representant.setProvincia("Illes Balears");
+		representant.setProvinciaCodi("07");
 		representant.setRaoSocial(null);
 		representant.setRepresentant(null);
 		representant.setTelefon("666555444");
@@ -273,7 +275,8 @@ public class BustiaV1Test {
 		interessat.setMunicipi("Manacor");
 		interessat.setNom("NomInt1");
 		interessat.setObservacions(null);
-		interessat.setPais("ES");
+		interessat.setPais("Espanya");
+		interessat.setPaisCodi("ES");
 		interessat.setProvincia("Illes Balears");
 		interessat.setRaoSocial(null);
 		interessat.setRepresentant(representant);
