@@ -383,18 +383,16 @@ public class RegistreHelper {
 	@Transactional
 	public Exception processarAnotacioPendentRegla(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-
 		Exception exceptionAplicantRegla = null;
 		if (anotacio.getRegla() != null) {
-			exceptionAplicantRegla = reglaHelper.reglaAplicar(anotacio);
+			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio);
 		}
-
 		if (exceptionAplicantRegla != null) {
 			return exceptionAplicantRegla;
 		}
-
 		return null;
 	}
+
 	/**
 	 *  It saves anotacio with annexes in arxiu.
 	 * @param anotacio

@@ -38,13 +38,11 @@ tr.clicable {
 }
 </style>
 <script type="text/javascript">
-	
 	$(document).ready(function() {
 		$(".desplegable").click(function(){
 			$(this).find("span").toggleClass("fa-caret-up");
 			$(this).find("span").toggleClass("fa-caret-down");
 		});
-
 	    $("#collapse-justificant").on('show.bs.collapse', function(data){    
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
@@ -54,8 +52,6 @@ tr.clicable {
 		        $(this).data("loaded", true);
 		    }
 	    });
-
-
 	    $(".collapse-annex").on('show.bs.collapse', function(data){  
 		    if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
@@ -66,7 +62,6 @@ tr.clicable {
 		        $(this).data("loaded", true);
 		    }
 	    });
-
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
@@ -75,9 +70,7 @@ tr.clicable {
 		        $(this).data("loaded", true);
 		    }
 		});		    
-	    
 	});
-
 </script>
 </head>
 <body>
@@ -112,10 +105,6 @@ tr.clicable {
 					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
 					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 				</tr>
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
-					<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
-				</tr>
 			</tbody>
 			</table>
 			<div class="row">
@@ -126,6 +115,10 @@ tr.clicable {
 						</div>
 						<table class="table table-bordered">
 							<tbody>
+								<tr>
+									<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
+									<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
+								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.llibre"/></strong></td>
 									<td>${registre.llibreDescripcio} (${registre.llibreCodi})</td>
@@ -144,7 +137,6 @@ tr.clicable {
 										<c:if test="${registre.registreTipus == 'SORTIDA'}"><spring:message code="registre.detalls.camp.origen"/></c:if>
 									</strong></td>
 									<td>${registre.unitatAdministrativaDescripcio} (${registre.unitatAdministrativa})</td>
-									
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.assumpte.tipus"/></strong></td>
@@ -240,7 +232,6 @@ tr.clicable {
 					</table>
 				</div>
 			</div>
-
 <!-- 			JUSTIFICANT -->
 			<c:if test="${not empty registre.justificantArxiuUuid}">
 				<div class="panel panel-default">
@@ -256,7 +247,6 @@ tr.clicable {
 				</div>
 			</c:if>
 <!-- 			FI JUSTIFICANT -->
-			
 		</div>
 		<div class="tab-pane" id="interessats" role="tabpanel">
 			<c:choose>
@@ -314,7 +304,6 @@ tr.clicable {
 													<dt><spring:message code="interessat.form.camp.observacions"/></dt><dd>${interessat.observacions}</dd>
 												</dl>
 											</div>
-											
 											<!-- NOU APARTAT REPRESENTANT -->
 											<c:if test="${not empty interessat.representant}">
 												<c:set var="representant" value="${interessat.representant}"/>
@@ -434,7 +423,6 @@ tr.clicable {
 				</c:otherwise>
 			</c:choose>
 		</div>
-		
 		<c:if test="${not empty registre.expedientArxiuUuid}">
 			<div class="tab-pane" id="arxiuInfo" role="tabpanel" data-loaded=false>
 				<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>

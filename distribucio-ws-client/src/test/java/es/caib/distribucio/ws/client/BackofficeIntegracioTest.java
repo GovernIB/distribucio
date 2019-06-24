@@ -6,16 +6,9 @@ package es.caib.distribucio.ws.client;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Properties;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreEntrada;

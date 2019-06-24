@@ -19,7 +19,10 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
+import es.caib.distribucio.core.api.dto.MunicipiDto;
+import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusTransicioEnumDto;
+import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -52,101 +55,12 @@ public class UnitatOrganitzativaHelper {
 	@Resource
 	private EntitatRepository entitatRepository;
 	
-	
-
-	/**
-	 * Searches for and returns the unitat object with the given codi from the given list of unitats
-	 * @param codi
-	 * @param allUnitats
-	 * @return
-	 */
-	private UnitatOrganitzativa getUnitatFromCodi(
-			String codi, 
-			List<UnitatOrganitzativa> allUnitats){
-		
-		UnitatOrganitzativa unitatFromCodi = null;
-		for (UnitatOrganitzativa unitatWS : allUnitats) {
-			if (unitatWS.getCodi().equals(codi)) {
-				unitatFromCodi = unitatWS;
-			}
-		}
-		return unitatFromCodi;
-	}
-	
-	
-	/**
-	 * It gives the last (most current) unitat/unitats to which given obsolete unitat transitioned
-	 * Starting point of recursivie method
-	 * @param unitat - unitats which historicos we are looking for
-	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
-	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
-	 */
-	private List<UnitatOrganitzativa> getLastHistoricos(
-			UnitatOrganitzativa unitat, 
-			List<UnitatOrganitzativa> unitatsFromWebService){
-		
-		List<UnitatOrganitzativa> lastHistorcos = new ArrayList<>();
-		getLastHistoricosRecursive(
-				unitat, 
-				unitatsFromWebService, 
-				lastHistorcos);
-		return lastHistorcos;
-	}
-	
-	private void getLastHistoricosRecursive(
-			UnitatOrganitzativa unitat,
-			List<UnitatOrganitzativa> unitatsFromWebService,
-			List<UnitatOrganitzativa> lastHistorcos) {
-
-		logger.debug("Coloca historicos recursiu(" + "unitatCodi=" + unitat.getCodi() + ")");
-
-		if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
-			lastHistorcos.add(
-					unitat);
-		} else {
-			for (String historicoCodi : unitat.getHistoricosUO()) {
-
-				UnitatOrganitzativa unitatFromCodi = getUnitatFromCodi(
-						historicoCodi,
-						unitatsFromWebService);
-
-				if (unitatFromCodi == null) {
-					// Looks for historico in database
-					UnitatOrganitzativaEntity entity = unitatOrganitzativaRepository.findByCodi(historicoCodi);
-					if (entity != null) {
-						UnitatOrganitzativa uo = conversioTipusHelper.convertir(entity, UnitatOrganitzativa.class);
-						lastHistorcos.add(uo);						
-					} else {
-						String errorMissatge = "Error en la sincronització amb DIR3. La unitat orgánica (" + unitat.getCodi()
-								+ ") té l'estat (" + unitat.getEstat() + ") i l'històrica (" + historicoCodi
-								+ ") però no s'ha retornat la unitat orgánica (" + historicoCodi
-								+ ") en el resultat de la consulta del WS ni en la BBDD.";
-						throw new SistemaExternException(IntegracioHelper.INTCODI_UNITATS, errorMissatge);
-					}
-				} else {
-					getLastHistoricosRecursive(
-							unitatFromCodi,
-							unitatsFromWebService,
-							lastHistorcos);
-				}
-			}
-		}
-	}
-	
-	
 	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entidadId) throws SistemaExternException{
-		
-
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-		
 		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);*/
-		
-		
 		List<UnitatOrganitzativa> unitatsVigentsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-		
-		
 		// converting form UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentWSDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigentObsolete : unitatsVigentsWS){
@@ -154,10 +68,9 @@ public class UnitatOrganitzativaHelper {
 					vigentObsolete, 
 					UnitatOrganitzativaDto.class));
 		}
-		
 		return unitatsVigentWSDto;
 	}
-	
+
 	/**
 	 * Getting from WS obsolete unitats (with pointer to vigent unitat)  
 	 * @param entidadId
@@ -165,17 +78,12 @@ public class UnitatOrganitzativaHelper {
 	 * @throws SistemaExternException
 	 */
 	public List<UnitatOrganitzativaDto> getObsoletesFromWS(Long entidadId) throws SistemaExternException{
-		
-
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-		
 		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);*/
-		
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-		
 		logger.debug("Consulta d'unitats a WS [tot camps](" +
 				"codiDir3=" + entitat.getCodiDir3() + ", " +
 				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
@@ -190,18 +98,13 @@ public class UnitatOrganitzativaHelper {
 		for(UnitatOrganitzativa un: unitatsWS){
 			logger.debug(un.getCodi()+" "+un.getEstat()+" "+un.getHistoricosUO());
 		}
-
-		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
-		
 		logger.debug("Consulta d'unitats vigents a DB");
 		for(UnitatOrganitzativaEntity uv: vigentUnitats){
 			logger.debug(ToStringBuilder.reflectionToString(uv));
 		}
-		
-
 		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
 		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
 		// If since last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
@@ -229,9 +132,6 @@ public class UnitatOrganitzativaHelper {
 			// what we want is to add direct pointer from unitat A to C (A -> C)
 			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
 		}
-		
-		
-		
 		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
@@ -239,10 +139,8 @@ public class UnitatOrganitzativaHelper {
 					vigentObsolete, 
 					UnitatOrganitzativaDto.class));
 		}
-		
 		return unitatsVigentObsoleteDto;
 	}
-	
 
 	/**
 	 * Getting unitats that didn't transition to any other unitats, they only got some properties changed 
@@ -250,19 +148,13 @@ public class UnitatOrganitzativaHelper {
 	 * @return
 	 */
 	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId){
-		
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-		
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-		
-		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
-		
-		 
 		// list of vigent unitats from webservice
 		List<UnitatOrganitzativa> unitatsVigentsWithChangedAttributes = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
@@ -274,7 +166,6 @@ public class UnitatOrganitzativaHelper {
 				}
 			}
 		}
-		
 		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentsWithChangedAttributesDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigent : unitatsVigentsWithChangedAttributes){
@@ -282,45 +173,34 @@ public class UnitatOrganitzativaHelper {
 					vigent, 
 					UnitatOrganitzativaDto.class));
 		}
-		
 		return unitatsVigentsWithChangedAttributesDto;
 	}
-	
-	
+
 	/**
 	 * Getting unitats that are new (not transitioned from any other unitat)
 	 * @param entidadId
 	 * @return
 	 */
 	public List<UnitatOrganitzativaDto> getNewFromWS(Long entidadId){
-		
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
-		
 		// getting list of syncronization unitats from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-		
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitatsDB = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
-		
 		//List of new unitats that are vigent
 		List<UnitatOrganitzativa> vigentUnitatsWS = new ArrayList<>();
-		
 		//List of new unitats that are vigent and does not exist in database
 		List<UnitatOrganitzativa> vigentNotInDBUnitatsWS = new ArrayList<>();
-		
 		//List of new unitats (that are vigent, not pointed by any obsolete unitat and does not exist in database)
 		List<UnitatOrganitzativa> newUnitatsWS = new ArrayList<>();
-		
-		
 		//Filtering to only obtain vigents 
 		for (UnitatOrganitzativa unitatWS : unitatsWS) {
 			if (unitatWS.getEstat().equals("V") && !unitatWS.getCodi().equals(entitat.getCodiDir3())) {
 				vigentUnitatsWS.add(unitatWS);
 			}
 		}
-
 		// Filtering to only obtain vigents that does not already exist in
 		// database
 		for (UnitatOrganitzativa vigentUnitat : vigentUnitatsWS) {
@@ -334,8 +214,6 @@ public class UnitatOrganitzativaHelper {
 				vigentNotInDBUnitatsWS.add(vigentUnitat);
 			}
 		}
-		
-		
 		// Filtering to obtain unitats that are vigent, not pointed by any obsolete unitat and does not already exist in database
 		for (UnitatOrganitzativa vigentNotInDBUnitatWS : vigentNotInDBUnitatsWS) {
 			boolean pointed = false;
@@ -351,22 +229,17 @@ public class UnitatOrganitzativaHelper {
 			if (pointed == false) {
 				newUnitatsWS.add(vigentNotInDBUnitatWS);
 			}
-
 		}
-		
-		
 		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> newUnitatsDto = new ArrayList<>();
-		for(UnitatOrganitzativa vigent : newUnitatsWS){
+		for (UnitatOrganitzativa vigent : newUnitatsWS){
 			newUnitatsDto.add(conversioTipusHelper.convertir(
 					vigent, 
 					UnitatOrganitzativaDto.class));
 		}
-		
 		return newUnitatsDto;
 	}
-	
-	
+
 	/**
 	 * Method to get last historicos (recursive to cover cumulative synchro case)
 	 * @param unitat
@@ -384,8 +257,7 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Starting point, calls recursive method to get last historicos
 	 * and sets last historicos and sets the type of transition
@@ -394,7 +266,6 @@ public class UnitatOrganitzativaHelper {
 	 * @return
 	 */
 	public UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo) {
-		
 		// if there are no historicos leave them empty and don´t go into recursive method
 		if (uo.getNoves() == null || uo.getNoves().isEmpty()) {
 			return uo;
@@ -406,38 +277,27 @@ public class UnitatOrganitzativaHelper {
 			return uo;
 		}
 	}
-	
-	
-	
 
 	public void sincronizarOActualizar(EntitatEntity entitat) {
-
 		List<UnitatOrganitzativa> unitats;
-
 		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
 				null, null);*/
-
-
 		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
 		// Takes all the unitats from WS and saves them to database. If unitat did't exist in db it creates new one if it already existed it overrides existing one.  
 		for (UnitatOrganitzativa unidadWS : unitats) {
 			sincronizarUnitat(unidadWS, entitat.getCodiDir3());
 		}
-
 		// historicos
 		for (UnitatOrganitzativa unidadWS : unitats) {
 			UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository
 					.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unidadWS.getCodi());
 			sincronizarHistoricosUnitat(unitat, unidadWS);
 		}
-
 		List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3EntitatAndEstatNotV(entitat.getCodiDir3());
-
 		// setting type of transition
 		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
-
 			if (obsoleteUnitat.getNoves().size() > 1) {
 				obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
 			} else {
@@ -451,7 +311,6 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 	}
-	
 
 	public void sincronizarHistoricosUnitat(
 			UnitatOrganitzativaEntity unitat, 
@@ -465,8 +324,6 @@ public class UnitatOrganitzativaHelper {
 			}
 		}
 	}
-	
-
 
 	/**
 	 * Creating new unitat (if it doesn't exist in db) or overriding existing one (if it exists in db)
@@ -476,10 +333,7 @@ public class UnitatOrganitzativaHelper {
 	 * @throws Exception
 	 */
 	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS, String codiEntitat) {
-
-
 		UnitatOrganitzativaEntity unitat = null;
-		
 		if (unitatWS != null) {					
 			// checks if unitat already exists in database
 			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
@@ -491,7 +345,6 @@ public class UnitatOrganitzativaHelper {
 						nifCif(unitatWS.getNifCif()).
 						estat(unitatWS.getEstat()).
 						codiUnitatSuperior(unitatWS.getCodiUnitatSuperior()).
-//						codiUnitatArrel("A04025121").
 						codiUnitatArrel(unitatWS.getCodiUnitatArrel()).
 						codiPais(unitatWS.getCodiPais()).
 						codiComunitat(unitatWS.getCodiComunitat()).
@@ -511,7 +364,6 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNifCif(),
 						unitatWS.getEstat(),
 						unitatWS.getCodiUnitatSuperior(),
-//						"A04025121",
 						unitatWS.getCodiUnitatArrel(),
 						unitatWS.getCodiPais(),
 						unitatWS.getCodiComunitat(),
@@ -523,16 +375,13 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNumVia());
 				unitat.setCodiDir3Entitat(codiEntitat);
 			}
-			
-
-			
 			// Guardamos el Unitat
 			//unitat = unitatOrganitzativaRepository.save(unitat);
 			//unitatOrganitzativaRepository.flush();
 		}
 		return unitat;
 	}
-	
+
 	public static UnitatOrganitzativaDto assignAltresUnitatsFusionades(
 			UnitatOrganitzativaEntity unitatOrganitzativaEntity, UnitatOrganitzativaDto unitatOrganitzativaDto) {
 		if (unitatOrganitzativaEntity != null && unitatOrganitzativaDto != null) {
@@ -552,16 +401,14 @@ public class UnitatOrganitzativaHelper {
 			return null;
 
 	}
-	
-    
-	
+
 	public UnitatOrganitzativaDto toUnitatOrganitzativaDto(
 			UnitatOrganitzativaEntity source) {
 		return conversioTipusHelper.convertir(
 				source, 
 				UnitatOrganitzativaDto.class);
 	}
-	
+
 	public UnitatOrganitzativaDto findPerEntitatAndCodi(
 			String entitatCodi,
 			String unitatOrganitzativaCodi) {
@@ -572,25 +419,6 @@ public class UnitatOrganitzativaHelper {
 				entitat.getCodiDir3(),
 				unitatOrganitzativaCodi));
 	}
-
-//	public UnitatOrganitzativaDto findPerEntitatAndCodi(
-//			String entitatCodi,
-//			String unitatOrganitzativaCodi) {
-//		ArbreDto<UnitatOrganitzativaDto> arbre = cacheHelper.findUnitatsOrganitzativesPerEntitat(entitatCodi);
-//		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
-//			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
-//				return unitat;
-//			}
-//		}
-//		return null;
-//	}
-	
-	
-//	public UnitatOrganitzativaDto findAmbCodi(
-//			String unitatOrganitzativaCodi) {
-//		return pluginHelper.unitatsOrganitzativesFindByCodi(
-//				unitatOrganitzativaCodi);
-//	}
 
 	public UnitatOrganitzativaDto findAmbCodi(
 			String unitatOrganitzativaCodi) {
@@ -656,14 +484,7 @@ public class UnitatOrganitzativaHelper {
 		}
 		return arbre;
 	}
-	
-//	public List<UnitatOrganitzativaDto> findUnitatsOrganitzativesPerEntitatFromPlugin(String entitatCodi)
-//			throws SistemaExternException {
-//
-//		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-//		return pluginHelper.unitatsOrganitzativesFindListByPare(entitat.getCodiDir3());
-//	}
-	
+
 	/**
 	 * Returns unitat pare (of unitat: @param unitatOrganitzativaCodi) that is first child of the root unitat (given by: @param unitatPare) 
 	 * @param unitatPare
@@ -698,25 +519,41 @@ public class UnitatOrganitzativaHelper {
 	}
 
 
+	/**
+	 * Takes the list of unitats from database and converts it to the tree
+	 * 
+	 * @param pareCodi 
+	 * 				codiDir3
+	 * @return tree of unitats
+	 */
+	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPareAndEstatVigent(String pareCodi) {
 
-	private UnitatOrganitzativaDto cercaDinsArbreAmbCodi(
-			ArbreDto<UnitatOrganitzativaDto> arbre,
-			String unitatOrganitzativaCodi) {
-		UnitatOrganitzativaDto trobada = null;
-		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
-			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
-				trobada = unitat;
+		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
+				.findByCodiDir3AndEstatV(pareCodi);
+		
+		
+		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
+				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+
+		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
+		// Cerca l'unitat organitzativa arrel
+		UnitatOrganitzativa unitatOrganitzativaArrel = null;
+		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
+			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+				unitatOrganitzativaArrel = unitatOrganitzativa;
 				break;
 			}
 		}
-		return trobada;
+		if (unitatOrganitzativaArrel != null) {
+			// Omple l'arbre d'unitats organitzatives
+			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
+			return resposta;
+
+		} else {
+			return null;
+		}
 	}
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * Takes the list of unitats from database and converts it to the tree
 	 * 
@@ -749,8 +586,46 @@ public class UnitatOrganitzativaHelper {
 		}
 		return null;
 	}
-	
-	
+
+	public UnitatOrganitzativaDto toDto(UnitatOrganitzativaEntity entity) {
+		UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
+				entity,
+				UnitatOrganitzativaDto.class);
+		if (unitat != null) {
+			unitat.setAdressa(
+					getAdressa(
+							unitat.getTipusVia(), 
+							unitat.getNomVia(), 
+							unitat.getNumVia()));
+			if (unitat.getCodiPais() != null && !"".equals(unitat.getCodiPais())) {
+				unitat.setCodiPais(("000" + unitat.getCodiPais()).substring(unitat.getCodiPais().length()));
+			}
+			if (unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				unitat.setCodiComunitat(("00" + unitat.getCodiComunitat()).substring(unitat.getCodiComunitat().length()));
+			}
+			if ((unitat.getCodiProvincia() == null || "".equals(unitat.getCodiProvincia())) && 
+					unitat.getCodiComunitat() != null && !"".equals(unitat.getCodiComunitat())) {
+				List<ProvinciaDto> provincies = cacheHelper.findProvinciesPerComunitat(unitat.getCodiComunitat());
+				if (provincies != null && provincies.size() == 1) {
+					unitat.setCodiProvincia(provincies.get(0).getCodi());
+				}		
+			}
+			if (unitat.getCodiProvincia() != null && !"".equals(unitat.getCodiProvincia())) {
+				unitat.setCodiProvincia(("00" + unitat.getCodiProvincia()).substring(unitat.getCodiProvincia().length()));
+				if (unitat.getLocalitat() == null && unitat.getNomLocalitat() != null) {
+					MunicipiDto municipi = findMunicipiAmbNom(
+							unitat.getCodiProvincia(), 
+							unitat.getNomLocalitat());
+					if (municipi != null)
+						unitat.setLocalitat(municipi.getCodi());
+					else
+						logger.error("UNITAT ORGANITZATIVA. No s'ha trobat la localitat amb el nom: '" + unitat.getNomLocalitat() + "'");
+				}
+			}
+		}
+		return unitat;
+	}
+
 //	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(
 //			String pareCodi) {
 //		String accioDescripcio = "Consulta de l'arbre d'unitats donat un pare";
@@ -812,46 +687,96 @@ public class UnitatOrganitzativaHelper {
 //					ex);
 //		}
 //	}
-	
-	/**
-	 * Takes the list of unitats from database and converts it to the tree
-	 * 
-	 * @param pareCodi 
-	 * 				codiDir3
-	 * @return tree of unitats
-	 */
-	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPareAndEstatVigent(String pareCodi) {
 
-		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiDir3AndEstatV(pareCodi);
-		
-		
-		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
-				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
-
-		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
-		// Cerca l'unitat organitzativa arrel
-		UnitatOrganitzativa unitatOrganitzativaArrel = null;
-		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
-			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
-				unitatOrganitzativaArrel = unitatOrganitzativa;
+	private UnitatOrganitzativaDto cercaDinsArbreAmbCodi(
+			ArbreDto<UnitatOrganitzativaDto> arbre,
+			String unitatOrganitzativaCodi) {
+		UnitatOrganitzativaDto trobada = null;
+		for (UnitatOrganitzativaDto unitat: arbre.toDadesList()) {
+			if (unitat.getCodi().equals(unitatOrganitzativaCodi)) {
+				trobada = unitat;
 				break;
 			}
 		}
-		if (unitatOrganitzativaArrel != null) {
-			// Omple l'arbre d'unitats organitzatives
-			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
-			return resposta;
+		return trobada;
+	}
 
+	/**
+	 * Searches for and returns the unitat object with the given codi from the given list of unitats
+	 * @param codi
+	 * @param allUnitats
+	 * @return
+	 */
+	private UnitatOrganitzativa getUnitatFromCodi(
+			String codi, 
+			List<UnitatOrganitzativa> allUnitats){
+		
+		UnitatOrganitzativa unitatFromCodi = null;
+		for (UnitatOrganitzativa unitatWS : allUnitats) {
+			if (unitatWS.getCodi().equals(codi)) {
+				unitatFromCodi = unitatWS;
+			}
+		}
+		return unitatFromCodi;
+	}
+
+	/**
+	 * It gives the last (most current) unitat/unitats to which given obsolete unitat transitioned
+	 * Starting point of recursivie method
+	 * @param unitat - unitats which historicos we are looking for
+	 * @param unitatsFromWebService - unitats used for getting unitat object from codi 
+	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
+	 */
+	private List<UnitatOrganitzativa> getLastHistoricos(
+			UnitatOrganitzativa unitat, 
+			List<UnitatOrganitzativa> unitatsFromWebService){
+		
+		List<UnitatOrganitzativa> lastHistorcos = new ArrayList<>();
+		getLastHistoricosRecursive(
+				unitat, 
+				unitatsFromWebService, 
+				lastHistorcos);
+		return lastHistorcos;
+	}
+
+	private void getLastHistoricosRecursive(
+			UnitatOrganitzativa unitat,
+			List<UnitatOrganitzativa> unitatsFromWebService,
+			List<UnitatOrganitzativa> lastHistorcos) {
+
+		logger.debug("Coloca historicos recursiu(" + "unitatCodi=" + unitat.getCodi() + ")");
+
+		if (unitat.getHistoricosUO() == null || unitat.getHistoricosUO().isEmpty()) {
+			lastHistorcos.add(
+					unitat);
 		} else {
-			return null;
+			for (String historicoCodi : unitat.getHistoricosUO()) {
+				UnitatOrganitzativa unitatFromCodi = getUnitatFromCodi(
+						historicoCodi,
+						unitatsFromWebService);
+				if (unitatFromCodi == null) {
+					// Looks for historico in database
+					UnitatOrganitzativaEntity entity = unitatOrganitzativaRepository.findByCodi(historicoCodi);
+					if (entity != null) {
+						UnitatOrganitzativa uo = conversioTipusHelper.convertir(entity, UnitatOrganitzativa.class);
+						lastHistorcos.add(uo);						
+					} else {
+						String errorMissatge = "Error en la sincronització amb DIR3. La unitat orgánica (" + unitat.getCodi()
+								+ ") té l'estat (" + unitat.getEstat() + ") i l'històrica (" + historicoCodi
+								+ ") però no s'ha retornat la unitat orgánica (" + historicoCodi
+								+ ") en el resultat de la consulta del WS ni en la BBDD.";
+						throw new SistemaExternException(IntegracioHelper.INTCODI_UNITATS, errorMissatge);
+					}
+				} else {
+					getLastHistoricosRecursive(
+							unitatFromCodi,
+							unitatsFromWebService,
+							lastHistorcos);
+				}
+			}
 		}
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * 
 	 * @param unitatOrganitzativa - in first call it is unitat arrel, later the children nodes
@@ -884,8 +809,44 @@ public class UnitatOrganitzativaHelper {
 		}
 		return currentArbreNode;
 	}
-	
+
+	private String getAdressa(
+			Long tipusVia,
+			String nomVia,
+			String numVia) {
+		String adressa = "";
+		if (tipusVia != null) {
+			List<TipusViaDto> tipus = cacheHelper.findTipusVia();
+			for (TipusViaDto tvia: tipus) {
+				if (tvia.getCodi().equals(tipusVia)) {
+					adressa = tvia.getDescripcio() + " ";
+					break;
+				}
+			}
+		}
+		adressa += nomVia;
+		if (numVia != null) {
+			adressa += ", " + numVia;
+		}
+		return adressa;
+	}
+
+	private MunicipiDto findMunicipiAmbNom(
+			String provinciaCodi,
+			String municipiNom) {
+		MunicipiDto municipi = null;
+		List<MunicipiDto> municipis = cacheHelper.findMunicipisPerProvincia(provinciaCodi);
+		if (municipis != null) {
+			for (MunicipiDto mun: municipis) {
+				if (mun.getNom().equalsIgnoreCase(municipiNom)) { 
+					municipi = mun;
+					break;
+				}
+			}
+		}
+		return municipi;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaHelper.class);
-	
 
 }

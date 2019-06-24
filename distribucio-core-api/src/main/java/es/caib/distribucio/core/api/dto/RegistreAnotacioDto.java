@@ -35,7 +35,6 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private Date backRetryEnviarData;
 	private boolean error;
 	private boolean alerta;
-	
 	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
 	private String expedientArxiuUuid;
 	private String numero;

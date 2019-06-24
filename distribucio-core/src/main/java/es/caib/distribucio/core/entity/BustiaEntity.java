@@ -28,28 +28,14 @@ public class BustiaEntity extends ContingutEntity {
 
 	@Column(name = "unitat_codi", length = 9, nullable = false)
 	protected String unitatCodi;
-	
-	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
 	@ForeignKey(name = "dis_unitat_organitzativa_bustia_fk")
 	protected UnitatOrganitzativaEntity unitatOrganitzativa;
-	
 	@Column(name = "per_defecte")
 	protected boolean perDefecte;
 	@Column(name = "activa")
 	protected boolean activa;
-
-	
-	public void update(String nom,
-			UnitatOrganitzativaEntity unitatOrganitzativa) {
-		this.nom = nom;
-		this.unitatOrganitzativa = unitatOrganitzativa;
-		this.unitatCodi = unitatOrganitzativa != null? 
-								unitatOrganitzativa.getCodi() 
-								: null;
-	}
-
 
 	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
@@ -64,6 +50,13 @@ public class BustiaEntity extends ContingutEntity {
 		return activa;
 	}
 
+	public void update(
+			String nom,
+			UnitatOrganitzativaEntity unitatOrganitzativa) {
+		this.nom = nom;
+		this.unitatOrganitzativa = unitatOrganitzativa;
+		this.unitatCodi = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi()	: null;
+	}
 	public void updatePerDefecte(boolean perDefecte) {
 		this.perDefecte = perDefecte;
 	}
@@ -84,8 +77,6 @@ public class BustiaEntity extends ContingutEntity {
 				unitatOrganitzativa,
 				pare);
 	}
-	
-	
 	public static class Builder {
 		BustiaEntity built;
 		Builder(

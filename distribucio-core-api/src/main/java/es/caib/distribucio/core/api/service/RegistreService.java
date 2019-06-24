@@ -9,7 +9,9 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -35,7 +37,7 @@ public interface RegistreService {
 	 * @param contingutId
 	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
-	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
+	 *            Atribut id del l'anotació que es vol consultar.
 	 * @return els detalls de l'anotació.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -45,6 +47,22 @@ public interface RegistreService {
 			Long entitatId,
 			Long contingutId,
 			Long registreId) throws NotFoundException;
+
+	/**
+	 * Retorna la informació de múltples anotacions de registre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param multipleRegistreIds
+	 *            Atributs id del les anotacions que que es volen consultar.
+	 * @return els detalls de l'anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<RegistreAnotacioDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleRegistreIds) throws NotFoundException;
 
 	/**
 	 * Rebutja un registre situat dins una bústia.
@@ -66,9 +84,6 @@ public interface RegistreService {
 			Long bustiaId,
 			Long registreId,
 			String motiu) throws NotFoundException;
-
-
-
 	
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
@@ -209,13 +224,12 @@ public interface RegistreService {
 	/**
 	 * Marca com a llegida una anotació de registre
 	 * 
-	* @param entitatId
+	 * @param entitatId
 	 *            Atribut id de l'entitat.
 	 * @param contingutId
 	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
-	 *            
 	 * @return L'anotació modificada
 	 */
 	@PreAuthorize("hasRole('tothom')")
@@ -254,5 +268,43 @@ public interface RegistreService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId);
+
+	/** 
+	 * Mètode per classificar una anotació de registre pendent de processar amb un codi de procediment.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param contingutId
+	 *            Atribut id del contingut pare a on està situada l'anotació (bústia).
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol classificar.
+	 * @param procedimentCodi
+	 *            Codi del procediment que es vol assignar a l'anotació.
+	 * @return true si l'anotació ha canviat de bústia o d'estat, false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public ClassificacioResultatDto classificar(
+			Long entitatId,
+			Long contingutId,
+			Long registreId,
+			String procedimentCodi) throws NotFoundException;
+
+	/** 
+	 * Mètode que retorna la llista de procediments disponibles donada una bústia.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia.
+	 * @return la llista de procediments.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ProcedimentDto> classificarFindProcediments(
+			Long entitatId,
+			Long bustiaId);
 
 }

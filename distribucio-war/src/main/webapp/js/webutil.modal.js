@@ -96,16 +96,21 @@
 							});
 						}
 						$('#' + modalDivId).data('elementRetorn', plugin.settings.elementRetorn);
-						$('#' + modalDivId).on('hide.bs.modal', function() {
-							$('#frameModal').remove();
-							var valorCodi = localStorage['relval_' + modalDivId];
-							var nomElementRetorn = $(this).data('elementRetorn');
-							if (nomElementRetorn != null && valorCodi != undefined && valorCodi != '') {
-								$(nomElementRetorn).val(valorCodi);
-								$(nomElementRetorn).trigger('blur');
+						$('#' + modalDivId).on('hide.bs.modal', function(event) {
+							if (!$(this).data('nohide')) {
+								$('#frameModal').remove();
+								var valorCodi = localStorage['relval_' + modalDivId];
+								var nomElementRetorn = $(this).data('elementRetorn');
+								if (nomElementRetorn != null && valorCodi != undefined && valorCodi != '') {
+									$(nomElementRetorn).val(valorCodi);
+									$(nomElementRetorn).trigger('blur');
+								}
+							} else {
+								event.preventDefault();
+								event.stopImmediatePropagation();
+								return false; 
 							}
 						});
-						
 					} else {
 						window.open(href, '_blank');
 					}
@@ -139,7 +144,6 @@
 						iframe.css('height', '' + settings.height + 'px');
 					iframe.attr("src", settings.contentUrl);
 					iframe.load(function() {
-						//S'oculta l'icone loader
 						$('.modal-body .datatable-dades-carregant').hide();
 						if(!iframe.attr("hidden")){
 							iframe.show();
@@ -163,14 +167,16 @@
 										return false;
 									});
 								} else {
-									clon.on('click', function () {
-										iframe.hide();
-										$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
-										$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
-										$('.modal-body .datatable-dades-carregant').show();
-										element.click();
-										return false;
-									});
+									if (!clon.data('nosubmit')) {
+										clon.on('click', function () {
+											iframe.hide();
+											$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
+											$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
+											$('.modal-body .datatable-dades-carregant').show();
+											element.click();
+											return false;
+										});
+									}
 								}
 								$('.modal-footer', $(iframe).parent().parent()).append(clon);
 							});

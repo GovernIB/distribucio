@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
 import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -36,9 +38,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 public class RegistreServiceBean implements RegistreService {
 
 	@Autowired
-	RegistreService delegate;
-
-
+	private RegistreService delegate;
 
 	@Override
 	@RolesAllowed("tothom")
@@ -53,6 +53,16 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
+	public List<RegistreAnotacioDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleRegistreIds)
+			throws NotFoundException {
+		return delegate.findMultiple(
+				entitatId,
+				multipleRegistreIds);
+	}
+
+	@Override
 	@RolesAllowed("tothom")
 	public void rebutjar(
 			Long entitatId,
@@ -61,8 +71,6 @@ public class RegistreServiceBean implements RegistreService {
 			String motiu) {
 		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
 	}
-
-
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
@@ -151,8 +159,6 @@ public class RegistreServiceBean implements RegistreService {
 				registreId);
 	}
 
-
-	
 	@Override
 	@RolesAllowed("tothom")
 	public RegistreAnnexDetallDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId) {
@@ -205,6 +211,30 @@ public class RegistreServiceBean implements RegistreService {
 			Long bustiaId,
 			Long registreId) {
 		return delegate.reintentarEnviamentBackofficeAdmin(entitatId, bustiaId, registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public ClassificacioResultatDto classificar(
+			Long entitatId,
+			Long contingutId,
+			Long registreId,
+			String procedimentCodi) throws NotFoundException {
+		return delegate.classificar(
+				entitatId,
+				contingutId,
+				registreId,
+				procedimentCodi);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ProcedimentDto> classificarFindProcediments(
+			Long entitatId,
+			Long bustiaId) {
+		return delegate.classificarFindProcediments(
+				entitatId,
+				bustiaId);
 	}
 
 }

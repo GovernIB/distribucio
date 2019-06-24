@@ -40,6 +40,8 @@ import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManage
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
+import es.caib.distribucio.plugin.procediment.Procediment;
+import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -66,6 +68,7 @@ public class PluginHelper {
 	private IArxiuPlugin arxiuPlugin;
 	private IValidateSignaturePlugin validaSignaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
+	private ProcedimentPlugin procedimentPlugin;
 	private DistribucioPlugin distribucioPlugin;
 
 	@Autowired
@@ -817,17 +820,37 @@ public class PluginHelper {
 		}
 	}
 
-	/*private void actualitzarTamanyContingut(RegistreAnnexEntity annex) {
-		if (annex.getFitxerTamany() <= 0) {
-			Document document = this.arxiuDocumentConsultar(
-					annex.getRegistre(), 
-					annex.getFitxerArxiuUuid(), 
-					null, 
-					true);
-			if (document.getContingut() != null)
-				annex.updateFitxerTamany((int)document.getContingut().getTamany());
+	public List<Procediment> procedimentFindByCodiDir3(
+			String codiDir3) {
+		String accioDescripcio = "Consulta dels procediments pel codi DIR3";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiDir3", codiDir3);
+		long t0 = System.currentTimeMillis();
+		try {
+			List<Procediment> procediments = getProcedimentPlugin().findAmbCodiDir3(codiDir3);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return procediments;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					errorDescripcio,
+					ex);
 		}
-	}*/
+	}
 
 	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
@@ -982,6 +1005,27 @@ public class PluginHelper {
 		}
 		return validaSignaturaPlugin;
 	}
+	private ProcedimentPlugin getProcedimentPlugin() {
+		if (procedimentPlugin == null) {
+			String pluginClass = getPropertyPluginProcediment();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					procedimentPlugin = (ProcedimentPlugin)clazz.newInstance();
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PROCEDIMENT,
+							"Error al crear la instància del plugin de procediments",
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_PROCEDIMENT,
+						"No està configurada la classe per al plugin de procediments");
+			}
+		}
+		return procedimentPlugin;
+	}
 	private DistribucioPlugin getDistribucioPlugin() {
 		if (distribucioPlugin == null) {
 			String pluginClass = getPropertyPluginDistribucio();
@@ -1059,6 +1103,10 @@ public class PluginHelper {
 	private String getPropertyPluginValidaSignatura() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.validatesignature.class");
+	}
+	private String getPropertyPluginProcediment() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.procediment.class");
 	}
 	private String getPropertyPluginDistribucio() {
 		String pluginClass = PropertiesHelper.getProperties().getProperty(

@@ -98,9 +98,6 @@ public class ContingutHelper {
 			boolean ambPath,
 			boolean pathNomesFinsExpedientArrel,
 			boolean ambVersions) {
-		
-		
-		
 		ContingutDto resposta = null;
 		// Crea el contenidor del tipus correcte
 		ContingutEntity deproxied = HibernateHelper.deproxy(contingut);
@@ -110,13 +107,12 @@ public class ContingutHelper {
 			dto.setUnitatCodi(bustia.getUnitatCodi());
 			dto.setActiva(bustia.isActiva());
 			dto.setPerDefecte(bustia.isPerDefecte());
-			
 			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
 					bustia.getEntitat().getCodiDir3(),
 					bustia.getUnitatCodi());
-			if (unitatConselleria != null)
+			if (unitatConselleria != null) {
 				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
-			
+			}
 			UnitatOrganitzativaEntity unitatEntity = bustia.getUnitatOrganitzativa();
 			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
 					unitatEntity,
@@ -168,39 +164,30 @@ public class ContingutHelper {
 		}
 		if (resposta != null) {
 			if (ambPath) {
-				
-				
 				// TIMER START
 				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
 				Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
-				
 				// Calcula el path
 				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
 						ambPermisos,
 						pathNomesFinsExpedientArrel);
 				resposta.setPath(path);
-				
-				
 				getPathContingutComDtoContext.stop();
 				// TIMER STOP
 			}
 			if (ambFills) {
 				// Cerca els nodes fills
 				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
-				
 				// TIMER START
 				final Timer findByPareAndEsborratTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
 				Timer.Context findByPareAndEsborratContext = findByPareAndEsborratTimer.time();
-				
 				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
 						contingut,
 						0,
 						new Sort("createdDate"));
-				
 				findByPareAndEsborratContext.stop();
 				// TIMER STOP
-				
 				List<ContingutDto> fillPath = null;
 				if (ambPath) {
 					fillPath = new ArrayList<ContingutDto>();

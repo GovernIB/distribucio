@@ -23,14 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
-import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
@@ -77,42 +74,90 @@ public class ReglaHelper {
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
-
-
 	public ReglaEntity findAplicable(
 			EntitatEntity entitat,
 			String unitatAdministrativa,
-			RegistreAnotacio anotacio) {
+			String procedimentCodi,
+			String assumpteCodi) {
 		ReglaEntity reglaAplicable = null;
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
 					unitatAdministrativa,
-					anotacio.getProcedimentCodi(),
-					anotacio.getAssumpteCodi());
-		
-		if (regles.size() > 0)
+					procedimentCodi,
+					assumpteCodi);
+		if (regles.size() > 0) {
 			reglaAplicable = regles.get(0);
-		
+		}
 		return reglaAplicable;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void aplicar(
-			Long pendentId) {
-		RegistreEntity pendent = registreRepository.findOne(pendentId);
-		ReglaEntity regla = pendent.getRegla();
+	public static String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+		byte[] crypted = null;
+		SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		cipher.init(Cipher.ENCRYPT_MODE, skey);
+		crypted = cipher.doFinal(input.getBytes());
+		return new String(Base64.encode(crypted));
+	}
+
+	public Exception aplicarControlantException(
+			RegistreEntity registre) {
+		contingutLogHelper.log(
+				registre,
+				LogTipusEnumDto.PROCESSAMENT,
+				null,
+				null,
+				false,
+				false);
+		logger.debug("Aplicant regla a anotació de registre (" +
+				"registreId=" + registre.getId() + ", " +
+				"registreNumero=" + registre.getNumero() + ", " +
+				"reglaId=" + registre.getRegla().getId() + ", " +
+				"reglaTipus=" + registre.getRegla().getTipus().name() + ", " +
+				(registre.getRegla().getBackofficeTipus() != null ? "reglaBackofficeTipus=" + registre.getRegla().getBackofficeTipus().name() + ", "  : "") +
+				"bustia=" + registre.getRegla().getBustia() + ")");
+		try {
+			aplicar(registre);
+			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
+			alertaHelper.crearAlerta(
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles",
+							new Object[] {registre.getId()}),
+					null,
+					registre.getId());
+			return null;
+		} catch (Exception ex) {
+			String procesError;
+			if (ex instanceof ScheduledTaskException) {
+				procesError = ex.getMessage();
+			} else {
+				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
+			}
+			logger.debug("Processament anotació ERROR (" +
+					"id=" + registre.getId() + ", " +
+					"núm.=" + registre.getIdentificador() + "): " +
+					procesError);
+			alertaHelper.crearAlerta(
+					messageHelper.getMessage(
+							"alertes.segon.pla.aplicar.regles.error",
+							new Object[] {registre.getId()}),
+					ex,
+					registre.getId());
+			return ex;
+		}
+	}
+
+	private void aplicar(RegistreEntity registre) {
+		ReglaEntity regla = registre.getRegla();
 		String error = null;
 		try {
 			switch (regla.getTipus()) {
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
-				
 				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) { // ############################### BACKOFFICE SISTRA ###############################
-					
-					for (RegistreAnnexEntity annex: pendent.getAnnexos()) {
+					for (RegistreAnnexEntity annex: registre.getAnnexos()) {
 							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
-								processarAnnexSistra(pendent, annex);
+								processarAnnexSistra(registre, annex);
 					}
-					
 					BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
 							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
 							regla.getBackofficeUrl(),
@@ -126,8 +171,8 @@ public class ReglaHelper {
 					// Crea la llista de referències d'entrada
 					ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
 					ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-					referenciaEntrada.setNumeroEntrada(pendent.getNumero());
-					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));	
+					referenciaEntrada.setNumeroEntrada(registre.getNumero());
+					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(registre.getNumero()));	
 					referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
 					// Invoca el backoffice sistra
 					try {
@@ -135,36 +180,31 @@ public class ReglaHelper {
 					} catch (BantelFacadeException bfe) {
 						error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
 					}
-				
-			
 				} else if (BackofficeTipusEnumDto.DISTRIBUCIO.equals(regla.getBackofficeTipus())){ // ############################### BACKOFFICE DISTRIBUCIO ###############################
-					
-					pendent.updateProcesBackPendent();
-					pendent.updateBackPendentData(new Date());
+					registre.updateProcesBackPendent();
+					registre.updateBackPendentData(new Date());
 					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice 
 				}
 				break;
-				
 			case BUSTIA: // ############################### BUSTIA ###############################
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-						pendent,
+						registre,
 						regla.getBustia(),
 						null);
 				contingutLogHelper.log(
-						pendent,
+						registre,
 						LogTipusEnumDto.MOVIMENT,
 						contingutMoviment,
 						true,
 						true);
 				emailHelper.emailBustiaPendentContingut(
 						regla.getBustia(),
-						pendent,
+						registre,
 						contingutMoviment);
-				pendent.updateProces(
+				registre.updateProces(
 						RegistreProcesEstatEnum.BUSTIA_PENDENT, 
 						null);
 				break;
-				
 			default:
 				error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
 				break;
@@ -177,26 +217,21 @@ public class ReglaHelper {
 				t = ex;
 			error = ExceptionUtils.getStackTrace(t);
 		}
-		
-		
 		if (error != null) {
 			throw new AplicarReglaException(error);
 		} else {
 			BustiaEntity pendentBustia = null;
-			if (pendent.getPare() instanceof BustiaEntity) {
-				pendentBustia = (BustiaEntity)pendent.getPare();
+			if (registre.getPare() instanceof BustiaEntity) {
+				pendentBustia = (BustiaEntity)registre.getPare();
 			}
 			if (pendentBustia != null) {
 				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 						regla.getEntitat(),
 						pendentBustia);
 			}
-			
 		}
 	}
-	
-	
-	
+
 	/*
 	 * Mètode privat per obrir el document annex de tipus sistra i extreure'n
 	 * informació per a l'anotació de registre. La informació que es pot extreure
@@ -237,68 +272,6 @@ public class ReglaHelper {
 			logger.error(
 					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
 					e);
-		}
-	}
-	
-
-	public static String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		byte[] crypted = null;
-		SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
-		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-		cipher.init(Cipher.ENCRYPT_MODE, skey);
-		crypted = cipher.doFinal(input.getBytes());
-		return new String(Base64.encode(crypted));
-	}
-
-	public Exception reglaAplicar(
-			RegistreEntity anotacio) {
-		contingutLogHelper.log(
-				anotacio,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				null,
-				false,
-				false);
-		logger.debug("Aplicant regla a anotació de registre (" +
-				"anotacioId=" + anotacio.getId() + ", " +
-				"anotacioNumero=" + anotacio.getNumero() + ", " +
-				"reglaId=" + anotacio.getRegla().getId() + ", " +
-				"reglaTipus=" + anotacio.getRegla().getTipus().name() + ", " +
-				(anotacio.getRegla().getBackofficeTipus() != null ?
-						"reglaBackofficeTipus=" + anotacio.getRegla().getBackofficeTipus().name() + ", " 
-						: "") +
-				"bustia=" + anotacio.getRegla().getBustia() + ")");
-		try {
-			
-			//aplicar regla
-			aplicar(anotacio.getId());
-			
-			logger.debug("Processament anotació OK (id=" + anotacio.getId() + ", núm.=" + anotacio.getNumero() + ")");
-			alertaHelper.crearAlerta(
-					messageHelper.getMessage(
-							"alertes.segon.pla.aplicar.regles",
-							new Object[] {anotacio.getId()}),
-					null,
-					anotacio.getId());
-			return null;
-		} catch (Exception ex) {
-			String procesError;
-			if (ex instanceof ScheduledTaskException) {
-				procesError = ex.getMessage();
-			} else {
-				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
-			}
-			logger.debug("Processament anotació ERROR (" +
-					"id=" + anotacio.getId() + ", " +
-					"núm.=" + anotacio.getIdentificador() + "): " +
-					procesError);
-			alertaHelper.crearAlerta(
-					messageHelper.getMessage(
-							"alertes.segon.pla.aplicar.regles.error",
-							new Object[] {anotacio.getId()}),
-					ex,
-					anotacio.getId());
-			return ex;
 		}
 	}
 

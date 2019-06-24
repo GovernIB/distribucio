@@ -232,12 +232,11 @@ public interface BustiaService {
 			RegistreAnotacio anotacio) throws NotFoundException;
 
 	/**
-	 * Consulta el contingut pendent d'una bústia.
+	 * Consulta el contingut pendent a dins múltiples bústies.
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @param filtre del datatable
-	 * 
 	 * @return El contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -248,6 +247,23 @@ public interface BustiaService {
 			List<BustiaDto> bustiesUsuari,
 			BustiaUserFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
+	/**
+	 * Consulta els identificadors del contingut pendent d'una bústia per filtre. Serveix per obtenir els ID's quan
+	 * se seleccionin tots els elements.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @param paginacioParamsDto 
+	 * 
+	 * @return Els identificadors del contingut pendent.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre);
 
 	/**
 	 * Obté la informació d'un contingut pendent d'una bústia.
@@ -376,7 +392,7 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
 			Long unitatIdFiltre, Boolean unitatObsoleta);
-	
+
 	@PreAuthorize("hasRole('tothom')")
 	public String getApplictionMetrics();
 
@@ -384,8 +400,10 @@ public interface BustiaService {
 	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
 			throws MessagingException;
 
-	/** Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
+	/**
+	 * Mètode per moure les anotacions de registre d'una bústia a una altra bústia destí. 
 	 * Enregistre el moviment amb un comentari opcional.
+	 * 
 	 * @param entitatId
 	 * @param bustiaId
 	 * @param destiId
@@ -399,5 +417,5 @@ public interface BustiaService {
 			long bustiaId, 
 			long destiId, 
 			String comentari);	
-}
 
+}

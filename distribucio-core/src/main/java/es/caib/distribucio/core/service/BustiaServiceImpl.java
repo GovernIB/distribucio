@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -74,22 +73,18 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
-import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.HibernateHelper;
-import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
-import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
@@ -109,58 +104,50 @@ import es.caib.distribucio.core.security.ExtendedPermission;
 @Service
 public class BustiaServiceImpl implements BustiaService {
 
-	@Resource
+	@Autowired
 	private BustiaRepository bustiaRepository;
-	@Resource
+	@Autowired
 	private EntitatRepository entitatRepository;
-	@Resource
+	@Autowired
 	private RegistreRepository registreRepository;
-	@Resource
+	@Autowired
 	private ReglaRepository reglaRepository;
-	@Resource
+	@Autowired
 	private ContingutRepository contingutRepository;
-	@Resource
+	@Autowired
 	private ContingutComentariRepository contingutComentariRepository;
-	@Resource
+	@Autowired
 	private AlertaRepository alertaRepository;
-	@Resource
+	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-	@Resource
+	@Autowired
 	private PermisosHelper permisosHelper;
-	@Resource
-	private PluginHelper pluginHelper;
-	@Resource
+	@Autowired
 	private ContingutHelper contingutHelper;
-	@Resource
+	@Autowired
 	private ContingutLogHelper contingutLogHelper;
-	@Resource
+	@Autowired
 	private CacheHelper cacheHelper;
-	@Resource
+	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Resource
+	@Autowired
 	private EmailHelper emailHelper;
-	@Resource
-	private UsuariHelper usuariHelper;
-	@Resource
+	@Autowired
 	private ReglaHelper reglaHelper;
-	@Resource
+	@Autowired
 	private RegistreHelper registreHelper;
-	@Resource
+	@Autowired
 	private EntityComprovarHelper entityComprovarHelper;
-	@Resource
+	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Resource
+	@Autowired
 	private PaginacioHelper paginacioHelper;
-	@Resource
-	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
+	@Autowired
 	private MessageHelper messageHelper;
-	@Resource
-	private IntegracioHelper integracioHelper;
 
-	@Resource
+	@Autowired
 	private RegistreService registreService;
-	@Resource
+	@Autowired
 	private JavaMailSender mailSender;	
 	
 	@Autowired
@@ -584,7 +571,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 	}
-	
+
 	@Override
 	@Transactional
 	public List<BustiaDto> findAmbEntitat(
@@ -604,7 +591,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 	}
-	
+
 	@Override
 	@Transactional
 	public List<BustiaDto> findAmbEntitatAndFiltre(
@@ -634,18 +621,16 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<BustiaDto> findPermesesPerUsuari(
 			Long entitatId,
 			boolean mostrarInactives) {
-		
-		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
-		Timer.Context findPermesesPerUsuariContext = findPermesesPerUsuariTimer.time();
-		
 		logger.debug("Consulta de busties permeses per un usuari ("
 				+ "entitatId=" + entitatId + ")");
+		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
+		Timer.Context findPermesesPerUsuariContext = findPermesesPerUsuariTimer.time();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -654,12 +639,11 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		// Obté la llista d'id's amb permisos per a l'usuari
 		List<BustiaEntity> busties;		
-		if (mostrarInactives)
+		if (mostrarInactives) {
 			busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
-		else
+		} else {
 			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
-		
-		
+		}
 		// Filtra la llista de bústies segons els permisos
 		permisosHelper.filterGrantedAll(
 				busties,
@@ -673,10 +657,7 @@ public class BustiaServiceImpl implements BustiaService {
 				new Permission[] {ExtendedPermission.READ},
 				auth);
 		List<BustiaDto> bustiesRetorn = toBustiaDto(busties, false, true);
-		
-		
 		findPermesesPerUsuariContext.stop();
-		
 		return bustiesRetorn;
 	}
 
@@ -790,8 +771,8 @@ public class BustiaServiceImpl implements BustiaService {
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
-				anotacio);
-		
+				anotacio.getProcedimentCodi(),
+				anotacio.getAssumpteCodi());
 		// set anotacio processing state
 		RegistreProcesEstatEnum estat;
 		// if anotacio has annexos
@@ -803,7 +784,6 @@ public class BustiaServiceImpl implements BustiaService {
 		} else {
 			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 		}
-		
 		//save anotacio and interessats in db 
 		// and save annexos and firmes in db and their byte content in the folder in local file system
 		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
@@ -835,7 +815,6 @@ public class BustiaServiceImpl implements BustiaService {
 				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
 				"anotacio=" + anotacio.getNumero() + ", "  +
 				"bustia=" + bustia + ")");
-		
 		Exception exceptionProcessant = null;
 		// if asynchronous processing is turned off 
 		// save anotacio in arxiu and apply reglas now
@@ -1728,38 +1707,26 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
 				+ "estatContingut=" + filtre.getEstatContingut() + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
-		
-		
-
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable"));
-
 		Timer.Context contextTotal = timerTotal.time();
-	
-
 		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.comprovarEntitat"));
-
 		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
-		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		
 		comprovarEntitatContext.stop();
-			
-
 		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.comprovarBustia"));
-
 		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
-		
 		// Comprova la bústia i que l'usuari hi tengui accés
 		BustiaEntity bustia = null;
-		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
 					true);
+		}
 		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
 			for (BustiaDto bustiaUsuari: bustiesUsuari) {
@@ -1772,12 +1739,9 @@ public class BustiaServiceImpl implements BustiaService {
 		} else if (bustia != null) {
 			busties.add(bustia);
 		}
-		
 		comprovarBustiaContext.stop();
-		
 		final Timer findRegistreByPareAndFiltreTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.findRegistreByPareAndFiltre"));
 		Timer.Context findRegistreByPareAndFiltreContext = findRegistreByPareAndFiltreTimer.time();
-		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"recepcioData",
@@ -1788,21 +1752,17 @@ public class BustiaServiceImpl implements BustiaService {
 		mapeigOrdenacio.put(
 				"comentari",
 				new String[] {"darrerMoviment.comentari"});
-		
 		Page<ContingutEntity> pagina;
-		
 		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
 		if (bustia == null && busties.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
-			
 			RegistreProcesEstatEnum registreEstat = null;
 			if(filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PENDENT){
 				registreEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 			} else if (filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PROCESSAT ) { 
 				registreEstat = RegistreProcesEstatEnum.BUSTIA_PROCESSADA;
 			}					
-			
 			pagina = contingutRepository.findRegistreByPareAndFiltre(
 					(bustia == null),
 					bustia,
@@ -1819,20 +1779,13 @@ public class BustiaServiceImpl implements BustiaService {
 					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
 					registreEstat == null,
 					registreEstat,
-					paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
-					paginacioParams.getFiltre(),
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							mapeigOrdenacio));
 		}
-		
-		
 		findRegistreByPareAndFiltreContext.stop();
-		
-		
 		final Timer toPaginaDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable.toPaginaDto"));
 		Timer.Context toPaginaDtoContext = toPaginaDtoTimer.time();
-		
 		PaginaDto<BustiaContingutDto> pag = paginacioHelper.toPaginaDto(
 				pagina,
 				BustiaContingutDto.class,
@@ -1842,12 +1795,8 @@ public class BustiaServiceImpl implements BustiaService {
 						return toBustiaContingutDto(source);
 					}
 				});
-		
 		toPaginaDtoContext.stop();
-		
 		contextTotal.stop();
-		
-		
 		return pag;
 	}
 
@@ -1869,8 +1818,7 @@ public class BustiaServiceImpl implements BustiaService {
 			return "ERR";
 		}
 	}
-	
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public BustiaContingutDto contingutPendentFindOne(
@@ -2029,8 +1977,7 @@ public class BustiaServiceImpl implements BustiaService {
 				nomesBustiesPermeses,
 				comptarElementsPendents);
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
@@ -2038,10 +1985,10 @@ public class BustiaServiceImpl implements BustiaService {
 			String bustiaNomFiltre,
 			Long unitatIdFiltre,
 			Boolean unitatObsoleta) {
-		logger.debug("Consulta de l'arbre d'unitats organitzatives ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaNomFiltre=" + bustiaNomFiltre + ", "
-				+ "unitatIdFiltre=" + unitatIdFiltre + ")");
+		logger.debug("Consulta de l'arbre d'unitats organitzatives (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaNomFiltre=" + bustiaNomFiltre + ", " +
+				"unitatIdFiltre=" + unitatIdFiltre + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -2053,7 +2000,6 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatIdFiltre,
 				unitatObsoleta);
 	}
-	
 
 	@Override
 	@Transactional
@@ -2061,10 +2007,10 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long id,
 			PermisDto permis) {
-		logger.debug("Actualitzant permis per a la bústia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "permis=" + permis + ")");
+		logger.debug("Actualitzant permis per a la bústia (" +
+				"entitatId=" + entitatId + ", " +
+				"id=" + id + ", " +
+				"permis=" + permis + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -2089,10 +2035,10 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long id,
 			Long permisId) {
-		logger.debug("Esborrant permis per a la bústia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "id=" + id + ", "
-				+ "permisId=" + permisId + ")");
+		logger.debug("Esborrant permis per a la bústia (" +
+				"entitatId=" + entitatId + ", " +
+				"id=" + id + ", " +
+				"permisId=" + permisId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -2111,7 +2057,142 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia);
 	}
 
+	@Override
+	@Transactional
+	public int moureAnotacions(
+			long entitatId, 
+			long bustiaId, 
+			long destiId, 
+			String comentari) {
+		logger.debug("Movent les anotacions de registre entre bústies (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ", " +
+				"destiId=" + destiId + ", " +
+				"comentari=" + comentari + ")");
+		int ret = 0;
+		// Comprova permisos
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
+				entitat,
+				destiId,
+				false);
+		// Recupera totes les anotacions de registre
+		for (RegistreEntity registre : registreRepository.findByPareId(bustiaId)) {
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
+				throw new ValidationException(
+						registre.getNumero(),
+						RegistreEntity.class,
+						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (" +
+						"reglaId=" + registre.getRegla().getId() + ")");
+			}
+			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+					registre,
+					bustiaDesti,
+					comentari);
+			// Registra al log l'enviament del contingut
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.MOVIMENT,
+					contingutMoviment,
+					true,
+					true);
+			ret++;
+		}
+		logger.debug(
+				"Moviment entre bústies finalitzat correctament. " + ret + " anotacions mogudes de la bustia \"" +
+				bustiaOrigen.getId() + " " + bustiaOrigen.getNom() + "\" a la bustia \""+ bustiaDesti.getId() + 
+				" " + bustiaDesti.getNom() + "\"");
+		return ret;
+	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			BustiaUserFiltreDto filtre) {
+		logger.debug("Consultant els identificadors del contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getEstatContingut() + ")");
+		List<Long> ids;
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
+		Timer.Context contextTotal = timerTotal.time();
+		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds.comprovarEntitat"));
+		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		comprovarEntitatContext.stop();
+		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds.comprovarBustia"));
+		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					true);
+		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
+		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
+			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+				busties.add(
+						entityComprovarHelper.comprovarBustia(
+						entitat,
+						new Long(bustiaUsuari.getId()),
+						true));
+			}
+		} else if (bustia != null) {
+			busties.add(bustia);
+		}
+		comprovarBustiaContext.stop();
+		final Timer findRegistreByPareAndFiltreTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds.findRegistreByPareAndFiltre"));
+		Timer.Context findRegistreByPareAndFiltreContext = findRegistreByPareAndFiltreTimer.time();
+		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
+		if (bustia == null && busties.isEmpty()) {
+			ids = new ArrayList<Long>();
+		} else {
+			RegistreProcesEstatEnum registreEstat = null;
+			if (filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PENDENT){
+				registreEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+			} else if (filtre.getEstatContingut()==BustiaContingutFiltreEstatEnumDto.PROCESSAT ) { 
+				registreEstat = RegistreProcesEstatEnum.BUSTIA_PROCESSADA;
+			}					
+			ids = contingutRepository.findRegistreIdsByPareAndFiltre(
+					(bustia == null),
+					bustia,
+					busties,
+					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+					filtre.getContingutDescripcio(),
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen(),
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent(),
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(filtre.getDataRecepcioFi() == null),
+					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
+					registreEstat == null,
+					registreEstat);
+		}
+		findRegistreByPareAndFiltreContext.stop();
+		contextTotal.stop();
+		return ids;
+	}
 
 	private BustiaDto toBustiaDto(
 			BustiaEntity bustia,
@@ -2178,12 +2259,9 @@ public class BustiaServiceImpl implements BustiaService {
 
 	private BustiaContingutDto toBustiaContingutDto(
 			ContingutEntity contingut) {
-		
 		// TIMER START
 		final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaContingutDto.getPathContingutComDto"));
 		Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
-		
-		
 		Object deproxied = HibernateHelper.deproxy(contingut);
 		BustiaContingutDto bustiaContingut = new BustiaContingutDto();
 		bustiaContingut.setId(contingut.getId());
@@ -2193,34 +2271,24 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		bustiaContingut.setPath(path);
-		
 		getPathContingutComDtoContext.stop();
 		// TIMER STOP
-			
-		
 		// TIMER START
 		final Timer toBustiaDtoTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaContingutDto.toBustiaDto"));
 		Timer.Context toBustiaDtoContext = toBustiaDtoTimer.time();
-		
 		BustiaDto pare = toBustiaDto((BustiaEntity)(contingut.getPare()), false, false);
 		bustiaContingut.setPareId(pare.getId());
 		bustiaContingut.setBustiaActiva(pare.isActiva());
-		
 		toBustiaDtoContext.stop();
 		// TIMER STOP
-		
-		
 //		
 //		if (contingut.getEsborrat() < 2) {
 //			bustiaContingut.setEstatContingut(
 //					BustiaContingutFiltreEstatEnumDto.values()[contingut.getEsborrat()]);
 //		}
-		
-		
 		// TIMER START
 		final Timer countByContingutTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaContingutDto.countByContingut"));
 		Timer.Context countByContingutContext = countByContingutTimer.time();
-		
 		RegistreEntity registre = null;
 		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus()) {
 			registre = (RegistreEntity)contingut;
@@ -2231,7 +2299,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaContingut.setEstatContingut(BustiaContingutFiltreEstatEnumDto.PROCESSAT);
 			}
 		}
-		
 		if (deproxied instanceof RegistreEntity) {
 			RegistreEntity anotacio = (RegistreEntity)contingut;
 			bustiaContingut.setTipus(BustiaContingutPendentTipusEnumDto.REGISTRE);
@@ -2251,81 +2318,19 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiaContingut.setComentari(contingut.getDarrerMoviment().getComentari());
 		}
 		bustiaContingut.setNumComentaris(contingutComentariRepository.countByContingut(contingut));
-		
 		countByContingutContext.stop();
 		// TIMER STOP
-		
-		
 		// TIMER START
 		final Timer countByLlegidaAndContingutIdTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaContingutDto.countByLlegidaAndContingutId"));
 		Timer.Context countByLlegidaAndContingutIdContext = countByLlegidaAndContingutIdTimer.time();
-		
 		bustiaContingut.setAlerta(alertaRepository.countByLlegidaAndContingutId(
 				false,
 				contingut.getId()) > 0);
-		
 		countByLlegidaAndContingutIdContext.stop();
 		// TIMER STOP
-		
 		return bustiaContingut;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
-
-
-	@Override
-	@Transactional
-	public int moureAnotacions(
-			long entitatId, 
-			long bustiaId, 
-			long destiId, 
-			String comentari) {
-		logger.debug("Movent les anotacions de registre entre bústies ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "destiId=" + destiId + ", "
-				+ "comentari=" + comentari + ")");
-		int ret = 0;
-
-		// Comprova permisos
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				false);
-		BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
-				entitat,
-				destiId,
-				false);
-
-		// Recupera totes les anotacions de registre
-		for (RegistreEntity registre : registreRepository.findByPareId(bustiaId)) {
-			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
-				throw new ValidationException(
-						registre.getNumero(),
-						RegistreEntity.class,
-						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (reglaId=" + registre.getRegla().getId() + ")");
-			}
-			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-					registre,
-					bustiaDesti,
-					comentari);
-			// Registra al log l'enviament del contingut
-			contingutLogHelper.log(
-					registre,
-					LogTipusEnumDto.MOVIMENT,
-					contingutMoviment,
-					true,
-					true);
-			ret++;
-		}
-		logger.debug("Moviment entre bústies finalitzat correctament. " + ret + " anotacions mogudes de la bustia \"" + bustiaOrigen.getId() + " " + bustiaOrigen.getNom() + 
-				 	"\" a la bustia \""+ bustiaDesti.getId() + " " + bustiaDesti.getNom() + "\"");
-		return ret;
-	}
 
 }

@@ -12,10 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,52 +24,34 @@ import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
-import es.caib.distribucio.core.helper.AlertaHelper;
 import es.caib.distribucio.core.helper.BustiaHelper;
-import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
-import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
-import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
-import es.caib.distribucio.core.repository.UsuariRepository;
-
 
 /**
- * Implementació dels mètodes per a gestionar documents.
+ * Implementació dels mètodes per a gestionar accions en segon pla.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Service
 public class SegonPlaServiceImpl implements SegonPlaService {
 	
-	
-	@Resource
-	private AlertaHelper alertaHelper;
-	@Resource
-	private MessageHelper messageHelper;
-	@Resource
+	@Autowired
 	private EmailHelper emailHelper;
-	@Resource
-	private CacheHelper cacheHelper;
-	@Resource
-	private ContingutMovimentRepository contingutMovimentRepository;
-	@Resource
+	@Autowired
 	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
-	@Resource
-	private UsuariRepository usuariRepository;
-	@Resource
+	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Resource
+	@Autowired
 	private RegistreRepository registreRepository;
-	@Resource
+	@Autowired
 	private RegistreHelper registreHelper;
+
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
-	
-	
-	
+
 	/**
 	 * Tries to save anotacions and annexos in arxiu specified number of times 
 	 */
@@ -80,10 +61,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	public void guardarAnotacionsPendentsEnArxiu() {
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			logger.debug("Execució de tasca programada: guardar annexos pendents a l'arxiu");
-			
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
 			List<RegistreEntity> pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
-			
 			if (pendents != null && !pendents.isEmpty()) {
 				logger.debug("Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
 				Exception excepcio = null;
@@ -104,50 +83,37 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			}
 		}
 	}
-	
 
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio}")
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		logger.debug("Execució de tasca programada: enviar ids del anotacions pendents al backoffice");
-		
-
-			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
-			List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentEnviarBackoffice(new Date());
-			List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
-
-			if (pendents != null && !pendents.isEmpty()) {
-
-				ReglaEntity previousRegla = pendents.get(0).getRegla();
-				for (RegistreEntity pendent : pendents) {
-
-					ReglaEntity currentRegla = pendent.getRegla();
-
-					// if next group of anotacions is detected
-					if (!currentRegla.equals(previousRegla)) {
-						logger.debug(">>> Enviant grup d'anotacions " + pendentsIdsGroupedByRegla.size());
-						previousRegla = currentRegla;
-						registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
-						pendentsIdsGroupedByRegla.clear();
-					}
-					pendentsIdsGroupedByRegla.add(pendent.getId());
-					// if it is last iteration
-					if (pendent.equals(pendents.get(pendents.size() - 1))) {
-						logger.debug(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
-						registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
-					}
+		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
+		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentEnviarBackoffice(new Date());
+		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
+		if (pendents != null && !pendents.isEmpty()) {
+			ReglaEntity previousRegla = pendents.get(0).getRegla();
+			for (RegistreEntity pendent : pendents) {
+				ReglaEntity currentRegla = pendent.getRegla();
+				// if next group of anotacions is detected
+				if (!currentRegla.equals(previousRegla)) {
+					logger.debug(">>> Enviant grup d'anotacions " + pendentsIdsGroupedByRegla.size());
+					previousRegla = currentRegla;
+					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
+					pendentsIdsGroupedByRegla.clear();
+				}
+				pendentsIdsGroupedByRegla.add(pendent.getId());
+				// if it is last iteration
+				if (pendent.equals(pendents.get(pendents.size() - 1))) {
+					logger.debug(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
+					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 				}
 			}
-
-
+		}
 	}
-
-
-
 	
 	@Override
-	@Scheduled(
-			fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
+	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
 	public void aplicarReglesPendents() {
 		logger.debug("Execució de tasca programada: aplicar regles pendents");
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
@@ -156,7 +122,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		if (pendents != null && !pendents.isEmpty()) {
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent : pendents) {
-				
 				if (pendent.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) { //only for sistra
 					// comprova si ha passat el temps entre reintents o ha
 					// d'esperar
@@ -181,10 +146,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			logger.debug("No hi ha anotacions de registre amb regles pendents de processar");
 		}
 	}
-	
-	
-	
-	
 
 	@Override
 	@Scheduled(
@@ -202,22 +163,21 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			logger.debug("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
 		}
 	}
-	
-	
+
 	@Override
 	@Transactional
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
 	public void enviarEmailsPendentsNoAgrupats() {
 		enviarEmailsPendents(false);
 	}
-	
+
 	@Override
 	@Transactional
 	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
 	public void enviarEmailsPendentsAgrupats() {
 		enviarEmailsPendents(true);
 	}
-	
+
 	private int getGuardarAnnexosMaxReintentsProperty() {
 		//String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
 		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
@@ -227,7 +187,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			return 0;
 		}
 	}
-	
 
 	private int getAplicarReglesMaxReintentsProperty() {
 		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
@@ -237,9 +196,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			return 0;
 		}
 	}
-	
 
-	
 	private void enviarEmailsPendents(boolean agrupats) {
 		
 		List<ContingutMovimentEmailEntity> moviments = null;
@@ -268,14 +225,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			contingutMovimentEmailRepository.delete(contingutsEmail.get(email));
 		}
 	}
-	
+
 	public static void saveError(Long execucioMassivaContingutId, Throwable error) {
 		StringWriter out = new StringWriter();
 		error.printStackTrace(new PrintWriter(out));
 		errorsMassiva.put(execucioMassivaContingutId, out.toString());
 	}
-	
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(SegonPlaServiceImpl.class);
-	
+
 }

@@ -12,6 +12,8 @@
 	<script src="<c:url value="/webjars/datatables.net/1.10.11/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.11/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.11/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
@@ -23,12 +25,21 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-
+<style>
+#bustiaFiltreForm {
+	margin-bottom: 15px;
+}
+table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+	background-color: #fcf8e3;
+	color: #666666;
+}
+table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
+	cursor: pointer;
+}
+</style>
 <script>
-
 var mostrarInactives = '${bustiaUserFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
-
 //Funció per donar format als itemps de la select d'agrupacions depenent de la herència
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
@@ -36,31 +47,53 @@ function formatSelectBustia(item) {
 	else
 		return item.text;
 }
-
 $(document).ready(function() {
-	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
 		$('#estatContingut').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 	});
-	
 	$('#taulaDades').on( 'draw.dt', function () {
-		// Quan es refresca la llista consulta els pendents
-		$.get( "bustiaUser/getNumPendents")
-		.done(function( data ) {
+		$.get( "bustiaUser/getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
 		})
-	} );
-
+		$('#seleccioAll').on('click', function() {
+			$.get(
+					"bustiaUser/select",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+		$('#seleccioNone').on('click', function() {
+			$.get(
+					"bustiaUser/deselect",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('select-none');
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+	} ).on('selectionchange.dataTable', function (e, accio, ids) {
+		$.get(
+				"bustiaUser/" + accio,
+				{ids: ids},
+				function(data) {
+					$("#seleccioCount").html(data);
+				}
+		);
+	});
 	$('#mostrarInactivesBtn').click(function() {
 		mostrarInactives = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#mostrarInactives').val(mostrarInactives).change();
 		$(this).blur();
 	});
-	
 	$('#mostrarInactives').change(function() {
 		var actual = $('#bustia').val();
 		$('#bustia').select2('val', '', true);
@@ -81,46 +114,44 @@ $(document).ready(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
 			});
 	});
-				
-	$('#mostrarInactives').change();	
+	$('#mostrarInactives').change();
 });
-
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand" style="    margin-top: 40px;">
+	<form:form id="bustiaFiltreForm" action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
 		<div class="row">
-			<div class="col-md-3">
-				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
-			</div>
-			<div class="col-md-1">
-				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default  <c:if test="${bustiaUserFiltreCommand.mostrarInactives}">active</c:if>" data-toggle="button">
-					<span class="fa-stack" aria-hidden="true">
-						<i class="fa fa-inbox fa-stack-1x"></i>
-    	    			<i class="fa fa-ban fa-stack-2x"></i>
-   					</span>
-				</button>
-				<dis:inputHidden name="mostrarInactives"/>
-			</div>
-			<div class="col-md-5">
+			<div class="col-md-4">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
-			</div>			
-		</div>
-		<div class="row">
+			</div>
 			<div class="col-md-3">
 				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
-			</div>			
+			</div>
+			<div class="col-md-2">
+				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
 			</div>
 			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
-			<div class="col-md-2">
-				<dis:inputSelect name="estatContingut"  netejar="false" optionEnum="BustiaContingutFiltreEstatEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+			<div class="col-md-3">
+				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+			</div>
+			<div class="col-md-1">
+				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${bustiaUserFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+					<span class="fa-stack" aria-hidden="true">
+						<i class="fa fa-inbox fa-stack-1x"></i>
+    	    			<i class="fa fa-ban fa-stack-2x"></i>
+   					</span>
+				</button>
+				<dis:inputHidden name="mostrarInactives"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
@@ -131,11 +162,27 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
-	<table id="taulaDades" class="table table-bordered table-striped" style="width:100%"
+	<script id="botonsTemplate" type="text/x-jsrender">
+		<div class="text-right">
+			<div class="btn-group">
+				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
+				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
+				<div class="btn-group">
+					<a href="bustiaUser/classificarMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+  						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.classificar"/></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</script>
+	<table 
+		id="taulaDades" 
+		class="table table-bordered table-striped" style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/bustiaUser/datatable"/>"
 		data-filter="#bustiaUserFiltreCommand"
-		data-info-type="search"
+		data-botons-template="#botonsTemplate"
+		data-selection-enabled="true"
 		data-default-order="9"
 		data-default-dir="desc">
 		<thead>
@@ -210,15 +257,17 @@ $(document).ready(function() {
 									<c:if test="${potModificarExpedient}">
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:tipus}}/{{:id}}/addexp" data-toggle="modal"><span class="fa fa-sign-in"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.afegir.expedient"/>...</a></li>
 									</c:if>
-									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									{{if alerta}}
+										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
+									{{/if}}
+									<li role="separator" class="divider"></li>
+									<li><a href="./bustiaUser/{{:pareId}}/classificar/{{:id}}" data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+									<li role="separator" class="divider"></li>
 									<li><a href="./bustiaUser/{{:pareId}}/enviarByEmail/{{:id}}" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 									{{if estatContingut == 'PENDENT'}}
 										<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 									{{/if}}			
-									<%--li><a href="../../bustiaUser/${bustia.id}/pendent/contingut/{{:id}}/agafar" data-toggle="modal"><span class="fa fa-thumbs-o-up"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.agafar"/></a></li--%>
-								{{/if}}
-								{{if alerta}}
-									<li><a href="./bustiaUser/{{:pareId}}/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 							</ul>
 						</div>

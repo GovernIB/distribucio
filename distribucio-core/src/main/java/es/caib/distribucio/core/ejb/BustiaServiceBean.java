@@ -174,6 +174,19 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
+	public List<Long> findIdsAmbFiltre(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari, 
+			BustiaUserFiltreDto filtre) {
+		return delegate.findIdsAmbFiltre(
+				entitatId, 
+				bustiesUsuari, 
+				filtre);
+	}
+
+	
+	@Override
+	@RolesAllowed("tothom")
 	public BustiaContingutDto contingutPendentFindOne(
 			Long entitatId,
 			Long bustiaId,
