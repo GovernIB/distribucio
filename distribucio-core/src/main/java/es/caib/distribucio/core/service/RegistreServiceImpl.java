@@ -45,7 +45,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.DocumentTipus;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
 import es.caib.distribucio.core.api.service.ws.backoffice.Interessat;
 import es.caib.distribucio.core.api.service.ws.backoffice.InteressatTipus;
-import es.caib.distribucio.core.api.service.ws.backoffice.NtiEstadoElaboracio;
+import es.caib.distribucio.core.api.service.ws.backoffice.NtiEstadoElaboracion;
 import es.caib.distribucio.core.api.service.ws.backoffice.NtiOrigen;
 import es.caib.distribucio.core.api.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.core.api.service.ws.backoffice.Representant;
@@ -1115,7 +1115,7 @@ public class RegistreServiceImpl implements RegistreService {
 			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
 			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
 			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
-			annexPerBackoffice.setNtiEstadoElaboracio(NtiEstadoElaboracio.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
+			annexPerBackoffice.setNtiEstadoElaboracion(NtiEstadoElaboracion.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
 			boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
 					"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
 			// annex should be stored in arxiu

@@ -23,7 +23,7 @@ public class Annex {
 	private Date ntiFechaCaptura;
 	private SicresTipoDocumento sicresTipoDocumento;
 	private SicresValidezDocumento sicresValidezDocumento;
-	private NtiEstadoElaboracio ntiEstadoElaboracio;
+	private NtiEstadoElaboracion ntiEstadoElaboracion;
 	private String observacions;
 	private FirmaTipus firmaTipus;
 	private FirmaPerfil firmaPerfil;
@@ -45,11 +45,11 @@ public class Annex {
 	public void setFirmaNom(String firmaNom) {
 		this.firmaNom = firmaNom;
 	}
-	public NtiEstadoElaboracio getNtiEstadoElaboracio() {
-		return ntiEstadoElaboracio;
+	public NtiEstadoElaboracion getNtiEstadoElaboracion() {
+		return ntiEstadoElaboracion;
 	}
-	public void setNtiEstadoElaboracio(NtiEstadoElaboracio ntiEstadoElaboracio) {
-		this.ntiEstadoElaboracio = ntiEstadoElaboracio;
+	public void setNtiEstadoElaboracion(NtiEstadoElaboracion ntiEstadoElaboracion) {
+		this.ntiEstadoElaboracion = ntiEstadoElaboracion;
 	}
 	public String getTitol() {
 		return titol;

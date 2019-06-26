@@ -5,7 +5,7 @@ package es.caib.distribucio.core.api.service.ws.backoffice;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public enum NtiEstadoElaboracio {
+public enum NtiEstadoElaboracion {
 	
 	ORIGINAL,
 	COPIA_ELECT_AUTENTICA_CANVI_FORMAT,

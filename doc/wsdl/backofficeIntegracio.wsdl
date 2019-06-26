@@ -79,7 +79,7 @@
 <xs:element minOccurs="0" name="firmaTipus" type="tns:firmaTipus" />
 <xs:element minOccurs="0" name="firmaTipusMime" type="xs:string" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
-<xs:element minOccurs="0" name="ntiEstadoElaboracio" type="tns:ntiEstadoElaboracio" />
+<xs:element minOccurs="0" name="ntiEstadoElaboracion" type="tns:ntiEstadoElaboracion" />
 <xs:element minOccurs="0" name="ntiFechaCaptura" type="xs:dateTime" />
 <xs:element minOccurs="0" name="ntiOrigen" type="tns:ntiOrigen" />
 <xs:element minOccurs="0" name="ntiTipoDocumental" type="tns:ntiTipoDocumento" />
@@ -166,7 +166,7 @@
 <xs:enumeration value="OOXML" />
 </xs:restriction>
 </xs:simpleType>
-<xs:simpleType name="ntiEstadoElaboracio">
+<xs:simpleType name="ntiEstadoElaboracion">
 <xs:restriction base="xs:string">
 <xs:enumeration value="ORIGINAL" />
 <xs:enumeration value="COPIA_ELECT_AUTENTICA_CANVI_FORMAT" />
