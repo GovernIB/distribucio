@@ -1,30 +1,17 @@
 -- #109 Afegir codis de municipi, país i província a les anotacions de registre 
 
 -- Oracle
-
--- Reanomena la columna pais a pais_codi de la taula d'interessats
-ALTER TABLE
-	DIS_REGISTRE_INTER
-RENAME COLUMN
-   PAIS
-TO
-   PAIS_CODI;
--- Noves columnes
-ALTER TABLE DIS_REGISTRE_INTER ADD PAIS VARCHAR2(100);
+-- amplia la columna de la descripció del país
+ALTER TABLE DIS_REGISTRE_INTER MODIFY PAIS VARCHAR2(100);
+-- afegeix les noves columnes
+ALTER TABLE DIS_REGISTRE_INTER ADD PAIS_CODI VARCHAR2(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD PROVINCIA_CODI VARCHAR2(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD MUNICIPI_CODI VARCHAR2(4);
 
-
 -- PostgreSQL
-
--- Reanomena la columna pais a pais_codi de la taula d'interessats
-ALTER TABLE
-	DIS_REGISTRE_INTER
-RENAME COLUMN
-   PAIS
-TO
-   PAIS_CODI;
--- Noves columnes
-ALTER TABLE DIS_REGISTRE_INTER ADD COLUMN PAIS CHARACTER VARYING(100);
+-- amplia la columna de la descripció del país
+ALTER TABLE DIS_REGISTRE_INTER ALTER COLUMN PAIS TYPE character varying(100);
+-- afegeix les noves columnes
+ALTER TABLE DIS_REGISTRE_INTER ADD PAIS_CODI VARCHAR2(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD COLUMN PROVINCIA_CODI CHARACTER VARYING(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD COLUMN MUNICIPI_CODI CHARACTER VARYING(4);

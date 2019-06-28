@@ -197,15 +197,9 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 					raoSocial,
 					registre);
 		}
-		// Amb codis pais, municipi i provincia a partir de la versió 0.9.24
-		if (paisCodi == null || "".equals(paisCodi))
-			representantBuilder.
-				paisCodi(pais);
-		else
-			representantBuilder.
-				pais(pais).
-				paisCodi(paisCodi);
 		representantBuilder.
+				pais(pais).
+				paisCodi(paisCodi).
 				provincia(provincia).
 				provinciaCodi(provinciaCodi).
 				municipi(municipi).

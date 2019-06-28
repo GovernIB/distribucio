@@ -1,15 +1,9 @@
 ALTER TABLE DIS_REGISTRE MODIFY BACK_OBSERVACIONS VARCHAR2(4000);
 
 -- #109 Afegir codis de municipi, país i província a les anotacions de registre 
-
--- Reanomena la columna pais a pais_codi de la taula d'interessats
-ALTER TABLE
-	DIS_REGISTRE_INTER
-RENAME COLUMN
-   PAIS
-TO
-   PAIS_CODI;
--- Noves columnes
-ALTER TABLE DIS_REGISTRE_INTER ADD PAIS VARCHAR2(100);
+-- amplia la columna de la descripció del país
+ALTER TABLE DIS_REGISTRE_INTER MODIFY PAIS VARCHAR2(100);
+-- afegeix les noves columnes
+ALTER TABLE DIS_REGISTRE_INTER ADD PAIS_CODI VARCHAR2(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD PROVINCIA_CODI VARCHAR2(4);
 ALTER TABLE DIS_REGISTRE_INTER ADD MUNICIPI_CODI VARCHAR2(4);

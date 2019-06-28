@@ -720,15 +720,9 @@ public class RegistreHelper {
 					registre);
 			break;
 		}
-		// Amb codis a partir de la versió 0.9.24
-		if (registreInteressat.getPaisCodi() == null || "".equals(registreInteressat.getPaisCodi()))
-			interessatBuilder.
-				paisCodi(registreInteressat.getPais());
-		else
-			interessatBuilder.
-				pais(registreInteressat.getPais()).
-				paisCodi(registreInteressat.getPaisCodi());
 		interessatBuilder.
+			pais(registreInteressat.getPais()).
+			paisCodi(registreInteressat.getPaisCodi()).
 			provincia(registreInteressat.getProvincia()).
 			provinciaCodi(registreInteressat.getProvinciaCodi()).
 			municipi(registreInteressat.getMunicipi()).
