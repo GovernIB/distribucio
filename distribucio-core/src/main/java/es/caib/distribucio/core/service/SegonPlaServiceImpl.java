@@ -166,14 +166,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 	@Override
 	@Transactional
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
+//	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
 	public void enviarEmailsPendentsNoAgrupats() {
 		enviarEmailsPendents(false);
 	}
 
 	@Override
 	@Transactional
-	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
+//	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
 	public void enviarEmailsPendentsAgrupats() {
 		enviarEmailsPendents(true);
 	}

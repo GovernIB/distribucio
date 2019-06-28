@@ -59,9 +59,9 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM = "BACK/76/2019";
+	private static final String EXPEDIENT_NUM = "";
 
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
@@ -134,7 +134,7 @@ public class BustiaV1Test {
 		            firma.setPerfil("EPES");
 		            firmes.add(firma);
 		            annex = crearAnnex(
-			        		"Annex" + j,
+			        		"Annex222" + j,
 			        		//"annex.pdf",
 			        		"C23 Renovació autorització 121193 & 121194_s.pdf",
 			        		"application/pdf",
@@ -245,7 +245,7 @@ public class BustiaV1Test {
 		representant.setAdresa("Carrer companys");
 		representant.setCanalPreferent("02");
 		representant.setCodiPostal("07200");
-		representant.setDocumentNum("77788899P");
+		representant.setDocumentNum("77788899N");
 		representant.setDocumentTipus("N");
 		representant.setEmail("representant@limit.es");
 		representant.setEmailHabilitat("true");
@@ -256,7 +256,7 @@ public class BustiaV1Test {
 		representant.setNom("NomRep");
 		representant.setObservacions(null);
 		representant.setPais("Espanya");
-		representant.setPaisCodi("ES");
+		representant.setPaisCodi("724");
 		representant.setProvincia("Illes Balears");
 		representant.setProvinciaCodi("01");
 		representant.setRaoSocial(null);
@@ -267,7 +267,7 @@ public class BustiaV1Test {
 		interessat.setAdresa("Carrer del moix 2");
 		interessat.setCanalPreferent("02");
 		interessat.setCodiPostal("07500");
-		interessat.setDocumentNum("12312312P");
+		interessat.setDocumentNum("12312312N");
 		interessat.setDocumentTipus("N");
 		interessat.setEmail("interessat@limit.es");
 		interessat.setEmailHabilitat("true");
@@ -278,7 +278,7 @@ public class BustiaV1Test {
 		interessat.setNom("NomInt1");
 		interessat.setObservacions(null);
 		interessat.setPais("Espanya");
-		interessat.setPaisCodi("ES");
+		interessat.setPaisCodi("724");
 		interessat.setProvincia("Illes Balears");
 		interessat.setProvinciaCodi("01");
 		interessat.setRaoSocial(null);

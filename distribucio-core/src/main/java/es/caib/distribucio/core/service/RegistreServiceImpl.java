@@ -1128,6 +1128,8 @@ public class RegistreServiceImpl implements RegistreService {
 				if(retornarAnnexIFirmaContingut)
 					annexPerBackoffice.setContingut(document.getContingut().getContingut());
 				
+				RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
+				
 				// if document is signed
 				if (document.getFirmes() != null) {
 					for (Firma firma : document.getFirmes()) {
@@ -1139,13 +1141,13 @@ public class RegistreServiceImpl implements RegistreService {
 							if (detached && retornarAnnexIFirmaContingut) {
 									annexPerBackoffice.setFirmaContingut(firma.getContingut());
 									annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
-									annexPerBackoffice.setFirmaNom(firma.getFitxerNom());
-									annexPerBackoffice.setFirmaTipusMime(firma.getTipusMime());
+									annexPerBackoffice.setFirmaNom(registreAnneFirma.getFitxerNom());
+									annexPerBackoffice.setFirmaTipusMime(registreAnneFirma.getTipusMime());
 							}
 							annexPerBackoffice.setFirmaTipus(
 									firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
 							annexPerBackoffice.setFirmaPerfil(
-									firma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
+									registreAnneFirma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
 							break;
 						}
 					}
@@ -1157,10 +1159,6 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return annexosPerBackoffice;
 	}
-	
-	
-	
-						
 	
 	
 	
@@ -1279,12 +1277,15 @@ public class RegistreServiceImpl implements RegistreService {
 	private List<Interessat> toInteressats(List<RegistreInteressatEntity> registreInteressats) {
 		List<Interessat> interessatsPerBackoffice = new ArrayList<>();
 		for (RegistreInteressatEntity registreInteressatEntity : registreInteressats) {
-			Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
-			if (registreInteressatEntity.getRepresentant() != null) {
-				Representant representant = toRepresentant(registreInteressatEntity.getRepresentant());
-				interessatPerBackoffice.setRepresentant(representant);
+			
+			if (registreInteressatEntity.getRepresentat() == null) {
+				Interessat interessatPerBackoffice = toInteressat(registreInteressatEntity);
+				if (registreInteressatEntity.getRepresentant() != null) {
+					Representant representant = toRepresentant(registreInteressatEntity.getRepresentant());
+					interessatPerBackoffice.setRepresentant(representant);
+				}
+				interessatsPerBackoffice.add(interessatPerBackoffice);
 			}
-			interessatsPerBackoffice.add(interessatPerBackoffice);
 		}
 		return interessatsPerBackoffice;
 	}
