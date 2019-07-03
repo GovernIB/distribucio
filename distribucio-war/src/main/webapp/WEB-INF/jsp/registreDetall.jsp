@@ -74,6 +74,8 @@ tr.clicable {
 </script>
 </head>
 <body>
+
+	<!--------------------------------------------------- TABLIST ------------------------------------------------------>
 	<ul class="nav nav-tabs" role="tablist">
 		<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
 		</li>
@@ -90,6 +92,8 @@ tr.clicable {
 		</c:if>
 	</ul>
 	<div class="tab-content">
+	
+		<!------------------------------------------- TABPANEL INFORMACIO --------------------------------------------->
 		<div class="tab-pane active in" id="informacio" role="tabpanel">
 			<table class="table table-bordered">
 			<tbody>
@@ -248,6 +252,8 @@ tr.clicable {
 			</c:if>
 <!-- 			FI JUSTIFICANT -->
 		</div>
+		
+		<!------------------------------------------- TABPANEL INTERESSATS --------------------------------------------->
 		<div class="tab-pane" id="interessats" role="tabpanel">
 			<c:choose>
 				<c:when test="${not empty registre.interessats}">
@@ -384,6 +390,8 @@ tr.clicable {
 				</c:otherwise>
 			</c:choose>
 		</div>
+		
+		<!------------------------------------------- TABPANEL ANNEXOS --------------------------------------------->
 		<div class="tab-pane" id="annexos" role="tabpanel">
 			<c:choose>
 				<c:when test="${not empty registre.annexos}">
@@ -422,12 +430,15 @@ tr.clicable {
 				</c:otherwise>
 			</c:choose>
 		</div>
+		
+		<!------------------------------------------- TABPANEL ARXIU INFO --------------------------------------------->
 		<c:if test="${not empty registre.expedientArxiuUuid}">
 			<div class="tab-pane" id="arxiuInfo" role="tabpanel" data-loaded=false>
 				<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>
 			</div>
 		</c:if>
 	</div>
+	
 	<div id="modal-botons" class="well">
 		<a href="<c:url value="/bustiaUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>

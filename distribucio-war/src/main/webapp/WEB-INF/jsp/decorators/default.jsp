@@ -39,6 +39,9 @@
 	pageContext.setAttribute(
 			"requestParameterCanviRol",
 			es.caib.distribucio.war.helper.RolHelper.getRequestParameterCanviRol());
+	pageContext.setAttribute(
+			"avisos",
+			es.caib.distribucio.war.helper.AvisHelper.getAvisos(request));
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
 <c:set var="hiHaMesEntitats" value="${fn:length(sessionEntitats) > 1}"/>
@@ -164,6 +167,7 @@ body {
 										<li><a href="<c:url value="/bustiaUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>										
 									</ul>
 								</div>
+								<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
 							</c:when>
 							<c:when test="${isRolActualAdministrador}">
 								<div class="btn-group">
@@ -212,20 +216,46 @@ body {
 		</div>
 	</div>
 	<div class="container container-main">
+
+
+	<c:if test="${not empty avisos}">
+			<div id="accordion">
+				<c:forEach var="avis" items="${avisos}" varStatus="status">
+						<div class="card avisCard ${avis.avisNivell == 'INFO' ? 'avisCardInfo':''} ${avis.avisNivell == 'WARNING' ? 'avisCardWarning':''} ${avis.avisNivell == 'ERROR' ? 'avisCardError':''}">
+	
+							<div data-toggle="collapse" data-target="#collapse${status.index}" class="card-header avisCardHeader">
+								${avis.assumpte}
+							<button class="btn btn-default btn-xs pull-right"><span class="fa fa-chevron-down "></span></button>										
+							</div>
+	
+							<div id="collapse${status.index}" class="collapse" data-parent="#accordion">
+								<div class="card-body avisCardBody" >${avis.missatge}</div>
+							</div>
+						</div>
+				</c:forEach>
+			</div>
+		</c:if>
+		
 		<div class="panel panel-default">
-			<div class="panel-heading" id="header">
-				<h2 style="display: inline-block;">
-					<c:set var="metaTitleIconClass"><decorator:getProperty property="meta.title-icon-class"/></c:set>
-					<c:if test="${not empty metaTitleIconClass}"><span class="${metaTitleIconClass}"></span></c:if>
-					<decorator:title />
-					<small><decorator:getProperty property="meta.subtitle"/></small>
-				</h2>
+				<div class="panel-heading" id="header">
+					<h2 style="display: inline-block;">
+						<c:set var="metaTitleIconClass">
+							<decorator:getProperty property="meta.title-icon-class" />
+						</c:set>
+						<c:if test="${not empty metaTitleIconClass}">
+							<span class="${metaTitleIconClass}"></span>
+						</c:if>
+						<decorator:title />
+						<small><decorator:getProperty property="meta.subtitle" /></small>
+					</h2>
+				</div>
+				<div class="panel-body">
+					<div id="contingut-missatges">
+						<dis:missatges />
+					</div>
+					<decorator:body />
+				</div>
 			</div>
-			<div class="panel-body">
-				<div id="contingut-missatges"><dis:missatges/></div>
-    			<decorator:body />
-			</div>
-		</div>
 	</div>
     <div class="container container-foot">
     	<div class="pull-left app-version"><p>DISTRIBUCIÓ v<dis:versio/></p></div>
