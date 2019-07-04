@@ -224,7 +224,7 @@ body {
 						<div class="card avisCard ${avis.avisNivell == 'INFO' ? 'avisCardInfo':''} ${avis.avisNivell == 'WARNING' ? 'avisCardWarning':''} ${avis.avisNivell == 'ERROR' ? 'avisCardError':''}">
 	
 							<div data-toggle="collapse" data-target="#collapse${status.index}" class="card-header avisCardHeader">
-								${avis.assumpte}
+								${avis.avisNivell == 'INFO' ? '<span class="fa fa-info-circle text-info"></span>':''} ${avis.avisNivell == 'WARNING' ? '<span class="fa fa-exclamation-triangle text-warning"></span>':''} ${avis.avisNivell == 'ERROR' ? '<span class="fa fa-warning text-danger"></span>':''} ${avis.assumpte}
 							<button class="btn btn-default btn-xs pull-right"><span class="fa fa-chevron-down "></span></button>										
 							</div>
 	
