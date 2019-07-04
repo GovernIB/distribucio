@@ -15,5 +15,6 @@ public enum IntegracioEnumDto {
 	NOTIFICACIO,
 	DISTRIBUCIO,
 	GESDOC,
-	BUSTIAWS
+	BUSTIAWS,
+	PROCEDIMENT
 }
