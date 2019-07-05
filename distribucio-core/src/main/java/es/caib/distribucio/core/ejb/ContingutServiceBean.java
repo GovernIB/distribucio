@@ -235,4 +235,11 @@ public class ContingutServiceBean implements ContingutService {
 		return delegate.findAnotacionsRegistre(entitatId, filtre, paginacioParams);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(Long entitatId,
+			Long contingutId) {
+		return delegate.findLogsDetallsPerContingutUser(entitatId, contingutId);
+	}
+
 }

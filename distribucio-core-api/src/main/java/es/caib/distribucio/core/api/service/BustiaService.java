@@ -188,28 +188,6 @@ public interface BustiaService {
 			Long entitatId, boolean mostrarInactives);
 
 	/**
-	 * Envia contingut a una bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia de destí.
-	 * @param contingutId
-	 *            Atribut id del contingut que s'envia.
-	 * @param comentari
-	 *            Comentari per l'enviament.
-	 * @return el contenidor enviat
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ContingutDto enviarContingut(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId,
-			String comentari) throws NotFoundException;
-
-	/**
 	 * Crea l'anotació de registre i la distribueix.
 	 * 
 	 * @param entitatCodi

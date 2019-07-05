@@ -73,8 +73,16 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
+	<!------------------------------------ TABLIST --------------------------------------->
 	<ul class="nav nav-tabs">
 		<li class="active">
+			<a data-toggle="tab" href="#resum">
+				<spring:message code="comu.boto.resum"/>
+				<span class="badge">${fn:length(logsResum)}</span>
+			</a>
+		</li>	
+		<li>
 			<a data-toggle="tab" href="#accions">
 				<spring:message code="comu.boto.accions"/>
 				<span class="badge">${fn:length(logs)}</span>
@@ -94,7 +102,67 @@ $(document).ready(function() {
 	</ul>
 	<br/>
 	<div class="tab-content">
-		<div class="tab-pane active in" id="accions">
+	
+	
+	
+		<!------------------------------------ TABPANEL RESUM --------------------------------------->
+		<div class="tab-pane active in" id="resum">
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th width="15%"><spring:message code="contingut.log.columna.data"/></th>
+						<th width="85%"><spring:message code="contingut.log.columna.resum"/></th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="log" items="${logsResum}">
+						<tr>
+							<td><fmt:formatDate value="${log.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+							
+							<td>
+								<c:choose>
+									<c:when test="${log.tipus=='CREACIO'}">
+										<spring:message code="contingut.log.resum.msg.creacio"/>
+									</c:when>	
+									
+									<c:when test="${log.tipus=='MOVIMENT' || log.tipus=='REENVIAMENT'}">
+										<spring:message code="contingut.log.resum.msg.moure"/>
+										<c:if test="${not empty log.contingutMoviment.origen}">
+											<spring:message code="contingut.log.resum.msg.deLaBustia"/>: ${log.contingutMoviment.origen.nom}
+										</c:if>
+										<c:if test="${not empty log.contingutMoviment.desti}">
+											<spring:message code="contingut.log.resum.msg.aLaBustia"/>: ${log.contingutMoviment.desti.nom}
+										</c:if>									
+									</c:when>
+											
+									<c:when test="${log.tipus=='ENVIAMENT_EMAIL'}">
+										<spring:message code="contingut.log.resum.msg.enviamentEmail"/>
+									</c:when>	
+									
+									<c:when test="${log.tipus=='MARCAMENT_PROCESSAT'}">
+										<spring:message code="contingut.log.resum.msg.marcamentProcessat"/>
+									</c:when>	
+										
+									<c:when test="${log.tipus=='DISTRIBUCIO'}">
+										<spring:message code="contingut.log.resum.msg.distribucio"/>
+									</c:when>									
+									
+									<c:otherwise>
+										<spring:message code="contingut.log.resum.msg.accio"/>: "<spring:message code="log.tipus.enum.${log.tipus}"/>"
+										<c:if test="${not empty log.param1}">,&nbsp;&nbsp;<spring:message code="contingut.log.detall.param1"/>: "${log.param1}"</c:if>   
+										<c:if test="${not empty log.param2}">,&nbsp;&nbsp;<spring:message code="contingut.log.detall.param2"/>: "${log.param2}"</c:if>
+									</c:otherwise>									
+								</c:choose>							
+							</td>
+							
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>	
+	
+		<!------------------------------------ TABPANEL ACCIONS --------------------------------------->
+		<div class="tab-pane" id="accions">
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -174,6 +242,8 @@ $(document).ready(function() {
 				</div>
 			</div>
 		</div>
+		
+		<!------------------------------------ TABPANEL MOVIMENTS --------------------------------------->		
 		<div class="tab-pane" id="moviments">
 			<c:if test="${not empty moviments}">
 				<table class="table table-striped table-bordered">
@@ -194,14 +264,14 @@ $(document).ready(function() {
 								<td>
 									<c:if test="${not empty moviment.origen}">
 										<c:choose>
-											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
-										</c:choose>#${moviment.origen.id}
+											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
+										</c:choose>${moviment.origen.nom}
 									</c:if>
 								</td>
 								<td>
 									<c:choose>
-										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
-									</c:choose>#${moviment.desti.id}
+										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
+									</c:choose>${moviment.desti.nom}
 								</td>
 								<td>${moviment.comentari}</td>
 							</tr>
@@ -210,6 +280,8 @@ $(document).ready(function() {
 				</table>
 			</c:if>
 		</div>
+		
+		<!------------------------------------ TABPANEL AUDITORIA --------------------------------------->	
 		<div class="tab-pane" id="auditoria">
 			<div class="row">
 				<div class="col-sm-6">

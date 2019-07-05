@@ -144,6 +144,14 @@ public class ContingutLogHelper {
 		}
 		return dtos;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public ContingutLogDetallsDto findLogDetalls(
 			ContingutEntity contingut,

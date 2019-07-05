@@ -278,6 +278,15 @@ public class ContingutController extends BaseUserController {
 						contingutId,
 						true,
 						false));
+		
+		
+		model.addAttribute(
+				"logsResum",
+				contingutService.findLogsDetallsPerContingutUser(
+						entitatActual.getId(),
+						contingutId));
+		
+		
 		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutUser(

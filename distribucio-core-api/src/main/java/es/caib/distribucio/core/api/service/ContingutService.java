@@ -415,4 +415,9 @@ public interface ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String text) throws NotFoundException;
+	
+	@PreAuthorize("hasRole('tothom')")
+	List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId);
 }
