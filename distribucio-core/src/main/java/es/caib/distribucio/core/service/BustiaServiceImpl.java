@@ -1089,7 +1089,8 @@ public class BustiaServiceImpl implements BustiaService {
 				
 				String representantTitle="";
 				if(representant.getTipus().equals("PERSONA_FIS")){
-					representantTitle = representant.getNom()+" "+representant.getLlinatge1()+" "+representant.getLlinatge2();
+					String representatLlinatge2 = representant.getLlinatge2()!=null ? representant.getLlinatge2():"";
+					representantTitle = representant.getNom()+" "+representant.getLlinatge1()+" "+representatLlinatge2;
 				} else {
 					representantTitle = representant.getRaoSocial();
 				}
@@ -1143,7 +1144,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"			</tr>"+
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +"</th>"+
-					"				<td>"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))+ "</td>"+
+					"				<td>"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(representant.getCanalPreferent(), "")))+ "</td>"+
 					"			</tr>"+					
 					"			<tr>"+
 					"				<th>"+ messageHelper.getMessage("interessat.form.camp.observacions") + "</th>"+
@@ -1152,7 +1153,8 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 			String interesatTitle="";
 			if (interessat.getTipus().equals("PERSONA_FIS")) {
-				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+interessat.getLlinatge2();
+				String interessatLlinatge1 = interessat.getLlinatge2()!=null ? interessat.getLlinatge2() : "";
+				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+interessatLlinatge1;
 			} else {
 				interesatTitle = interessat.getRaoSocial();
 			}
@@ -1438,7 +1440,8 @@ public class BustiaServiceImpl implements BustiaService {
 			if (representant!=null) {
 				String representantTitle="";
 				if (representant.getTipus().equals("PERSONA_FIS")) {
-					representantTitle = representant.getNom()+" "+representant.getLlinatge1()+" "+representant.getLlinatge2();
+					String representantLlinatge = representant.getLlinatge2() == null ? " " : representant.getLlinatge2();
+					representantTitle = representant.getNom() + " " + representant.getLlinatge1() + " " + representantLlinatge;
 				} else {
 					representantTitle = representant.getRaoSocial();
 				}
@@ -1469,13 +1472,14 @@ public class BustiaServiceImpl implements BustiaService {
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat") + 
 					"\t" + Objects.toString(representant.getEmailHabilitat(), "") + "\n"+
 					"\t"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +
-					"\t\t\t"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))+ "\n"+
+					"\t\t\t"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(representant.getCanalPreferent(), "")))+ "\n"+
 					"\t"+ messageHelper.getMessage("interessat.form.camp.observacions") + 
 					"\t\t\t"  + Objects.toString(representant.getObservacions(), "") + "\n";											
 			}
 			String interesatTitle = "";
 			if (interessat.getTipus().equals("PERSONA_FIS")) {
-				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+interessat.getLlinatge2();
+				String interessatLlinatge2 = interessat.getLlinatge2() != null ? interessat.getLlinatge2() : "";
+				interesatTitle = interessat.getNom()+" "+interessat.getLlinatge1()+" "+ interessatLlinatge2;
 			} else {
 				interesatTitle = interessat.getRaoSocial();
 			}
