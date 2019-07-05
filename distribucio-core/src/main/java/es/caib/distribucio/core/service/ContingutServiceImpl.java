@@ -431,6 +431,7 @@ public class ContingutServiceImpl implements ContingutService {
 				dataFi,
 				(filtre.getEstat() == null),
 				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
 				paginacioHelper.toSpringDataPageable(paginacioParams));
 		return paginacioHelper.toPaginaDto(
 				registres,

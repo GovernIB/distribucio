@@ -26,7 +26,7 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 <style>
-#bustiaFiltreForm {
+#bustiaUserFiltreCommand {
 	margin-bottom: 15px;
 }
 table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
@@ -119,7 +119,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form id="bustiaFiltreForm" action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
+	<form:form action="" method="post" cssClass="well" commandName="bustiaUserFiltreCommand">
 		<div class="row">
 			<div class="col-md-4">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>

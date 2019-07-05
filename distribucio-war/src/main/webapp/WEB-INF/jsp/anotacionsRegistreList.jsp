@@ -39,8 +39,21 @@ $(document).ready(function() {
 		}
 	});
 	$('#netejarFiltre').click(function(e) {
+
+		$('#nomesAmbErrorsBtn').removeClass('active');
+		$('#estat').val(null).trigger('change');
+		
 	});
 	$('#unitatOrganitzativa').trigger('change');
+
+
+	$('#nomesAmbErrorsBtn').click(function() {
+		nomesAmbErrors = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#nomesAmbErrors').val(nomesAmbErrors);
+	})
+
+	
 });
 </script>
 </head>
@@ -92,6 +105,10 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat" emptyOption="true"/>
 			</div>
+			<div class="col-md-3">
+				<button id="nomesAmbErrorsBtn" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+				<dis:inputHidden name="nomesAmbErrors"/>
+			</div>	
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

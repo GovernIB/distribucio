@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -60,6 +61,9 @@ public class AnotacioRegistreController extends BaseAdminController {
 		AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
 		model.addAttribute(
 				filtreCommand);
+		model.addAttribute(
+				"nomesAmbErrors",
+				filtreCommand.isNomesAmbErrors());
 		return "anotacionsRegistreList";
 	}
 
@@ -68,12 +72,19 @@ public class AnotacioRegistreController extends BaseAdminController {
 			HttpServletRequest request,
 			@Valid AnotacioRegistreFiltreCommand filtreCommand,
 			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_ANOTACIO_FILTRE,
-					filtreCommand);
+					SESSION_ATTRIBUTE_ANOTACIO_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_ANOTACIO_FILTRE,
+						filtreCommand);
+			}
 		}
 		return "redirect:anotacionsRegistre";
 	}
