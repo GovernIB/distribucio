@@ -8,6 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
+import java.util.Arrays;
 
 import javax.annotation.Resource;
 import javax.crypto.BadPaddingException;
@@ -80,6 +81,7 @@ public class ReglaHelper {
 			String procedimentCodi,
 			String assumpteCodi) {
 		ReglaEntity reglaAplicable = null;
+		
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
 					unitatAdministrativa,
