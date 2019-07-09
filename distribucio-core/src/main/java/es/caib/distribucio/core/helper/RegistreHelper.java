@@ -176,7 +176,7 @@ public class RegistreHelper {
 			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
 		}
 		// save annotacio in db
-		RegistreEntity entity = RegistreEntity.getBuilder(
+		RegistreEntity registreEntity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
 				unitatAdministrativa,
@@ -224,26 +224,26 @@ public class RegistreHelper {
 				anotacio.getOficinaOrigenDescripcio()).
 		justificantArxiuUuid(justificantArxiuUuid).
 		build();
-		registreRepository.saveAndFlush(entity);
+		registreRepository.saveAndFlush(registreEntity);
 		// save interessats in db
 		if (anotacio.getInteressats() != null) { 
 			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
-				entity.getInteressats().add(
+				registreEntity.getInteressats().add(
 						crearInteressatEntity(
 								registreInteressat,
-								entity));
+								registreEntity));
 			}
 		}
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
 		if (anotacio.getAnnexos() != null) { 
 			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
-				entity.getAnnexos().add(
+				registreEntity.getAnnexos().add(
 						crearAnnexEntity(
 								registreAnnex,
-								entity));
+								registreEntity));
 			}
 		}
-		return entity;
+		return registreEntity;
 	}
 	
 	
@@ -720,15 +720,9 @@ public class RegistreHelper {
 					registre);
 			break;
 		}
-		// Amb codis a partir de la versió 0.9.24
-		if (registreInteressat.getPaisCodi() == null || "".equals(registreInteressat.getPaisCodi()))
-			interessatBuilder.
-				paisCodi(registreInteressat.getPais());
-		else
-			interessatBuilder.
-				pais(registreInteressat.getPais()).
-				paisCodi(registreInteressat.getPaisCodi());
 		interessatBuilder.
+			pais(registreInteressat.getPais()).
+			paisCodi(registreInteressat.getPaisCodi()).
 			provincia(registreInteressat.getProvincia()).
 			provinciaCodi(registreInteressat.getProvinciaCodi()).
 			municipi(registreInteressat.getMunicipi()).

@@ -31,6 +31,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
+import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
@@ -471,11 +472,15 @@ public class ContingutHelper {
 				registreOriginal.getOficinaOrigenCodi(), 
 				registreOriginal.getOficinaOrigenDescripcio()).
 				build();
+		// Copia els interessats
 		if (registreOriginal.getInteressats() != null) {
 			for (RegistreInteressatEntity registreInteressat: registreOriginal.getInteressats()) {
-				contingutCopia.getInteressats().add(registreInteressat);
+				// Filtra els representants
+				if (registreInteressat.getRepresentat() == null)
+					contingutCopia.getInteressats().add(this.copiarInteressatEntity(registreInteressat, contingutCopia));
 			}
 		}
+		// Copia els annexos
 		if (registreOriginal.getAnnexos() != null) {
 			for (RegistreAnnexEntity registreAnnex: registreOriginal.getAnnexos()) {
 				RegistreAnnexEntity nouAnnex = RegistreAnnexEntity.getBuilder(
@@ -523,6 +528,83 @@ public class ContingutHelper {
 			contingutCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
 		}
   		return contingutCopia;
+	}
+	
+	/** Fa una còpia de l'interessat i dels seus representants. Si es passa el registre com a paràmetre llavors s'assigna aquest
+	 * a l'interessat i als representants.
+	 * 
+	 * @param registreInteressat
+	 * 			Interessat a copiar.
+	 * @param registre
+	 * 			Paràmetre per assignar un registre diferent a l'interessat i als seus representants.
+	 * @return
+	 * 		Retorna una còpia de l'interessat.
+	 */
+	@Transactional
+	public RegistreInteressatEntity copiarInteressatEntity(RegistreInteressatEntity registreInteressat, RegistreEntity registre) {
+
+		RegistreInteressatTipusEnum interessatTipus =registreInteressat.getTipus();
+		RegistreInteressatEntity.Builder interessatBuilder;
+		switch (interessatTipus) {
+		case PERSONA_FIS:
+			interessatBuilder = RegistreInteressatEntity.getBuilder(
+					interessatTipus,
+					registreInteressat.getDocumentTipus(),
+					registreInteressat.getDocumentNum(),
+					registreInteressat.getNom(),
+					registreInteressat.getLlinatge1(),
+					registreInteressat.getLlinatge2(),
+					registre);
+			break;
+		default: // PERSONA_JUR o ADMINISTRACIO
+			interessatBuilder = RegistreInteressatEntity.getBuilder(
+					interessatTipus,
+					registreInteressat.getDocumentTipus(),
+					registreInteressat.getDocumentNum(),
+					registreInteressat.getRaoSocial(),
+					registre);
+			break;
+		}
+		interessatBuilder.
+			pais(registreInteressat.getPais()).
+			paisCodi(registreInteressat.getPaisCodi()).
+			provincia(registreInteressat.getProvincia()).
+			provinciaCodi(registreInteressat.getProvinciaCodi()).
+			municipi(registreInteressat.getMunicipi()).
+			municipiCodi(registreInteressat.getMunicipiCodi()).
+			adresa(registreInteressat.getAdresa()).
+			codiPostal(registreInteressat.getCodiPostal()).
+			email(registreInteressat.getEmail()).
+			telefon(registreInteressat.getTelefon()).
+			emailHabilitat(registreInteressat.getEmailHabilitat()).
+			canalPreferent(registreInteressat.getCanalPreferent()).
+			observacions(registreInteressat.getObservacions());		
+		RegistreInteressatEntity interessatCopiaEntity = interessatBuilder.build();
+		
+		if (registreInteressat.getRepresentant() != null) {
+			RegistreInteressatEntity representant = registreInteressat.getRepresentant();
+			interessatCopiaEntity.updateRepresentant(
+					representant.getTipus(),
+					representant.getDocumentTipus(),
+					representant.getDocumentNum(),
+					representant.getNom(),
+					representant.getLlinatge1(),
+					representant.getLlinatge2(),
+					representant.getRaoSocial(),
+					representant.getPais(),
+					representant.getPaisCodi(),
+					representant.getProvincia(),
+					representant.getProvinciaCodi(),
+					representant.getMunicipi(),
+					representant.getMunicipiCodi(),
+					representant.getAdresa(),
+					representant.getCodiPostal(),
+					representant.getEmail(),
+					representant.getTelefon(),
+					representant.getEmailHabilitat(),
+					representant.getCanalPreferent());
+		}
+		return interessatCopiaEntity;
 	}
 
 	private List<ContingutEntity> getPathContingut(
