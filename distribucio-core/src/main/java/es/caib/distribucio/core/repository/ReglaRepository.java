@@ -84,7 +84,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and r.activa = true " + 
 			"and r.unitatOrganitzativa.codi = :unitatOrganitzativaCodi " + 
 			"and (r.procedimentCodi is null "
-			+ "or (r.procedimentCodi like ('% '||:procedimentCodi||' %') or r.procedimentCodi like (:procedimentCodi||' %') or r.procedimentCodi like ('% '||:procedimentCodi))) " +
+			+ "or (r.procedimentCodi like ('% '||:procedimentCodi||' %') or r.procedimentCodi = :procedimentCodi or r.procedimentCodi like (:procedimentCodi||' %') or r.procedimentCodi like ('% '||:procedimentCodi))) " +
 			"and (r.assumpteCodi is null or r.assumpteCodi = :assumpteCodi) " + 
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
