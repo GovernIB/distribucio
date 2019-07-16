@@ -79,7 +79,7 @@ $(document).ready(function() {
 		<li class="active">
 			<a data-toggle="tab" href="#resum">
 				<spring:message code="comu.boto.resum"/>
-				<span class="badge">${fn:length(logsResum)}</span>
+				<span class="badge">${fn:length(logsDetall)}</span>
 			</a>
 		</li>	
 		<li>
@@ -107,6 +107,10 @@ $(document).ready(function() {
 	
 		<!------------------------------------ TABPANEL RESUM --------------------------------------->
 		<div class="tab-pane active in" id="resum">
+			<a href="<c:url value="/contingut/${contingut.id}/log/informe"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
+				<i class="fa fa-file-text-o" aria-hidden="true"></i>
+				<spring:message code="comu.boto.informe"/>
+			</a>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -117,44 +121,10 @@ $(document).ready(function() {
 				<tbody>
 					<c:forEach var="log" items="${logsResum}">
 						<tr>
-							<td><fmt:formatDate value="${log.createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-							
+							<td><fmt:formatDate value="${log[0].createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 							<td>
-								<c:choose>
-									<c:when test="${log.tipus=='CREACIO'}">
-										<spring:message code="contingut.log.resum.msg.creacio"/>
-									</c:when>	
-									
-									<c:when test="${log.tipus=='MOVIMENT' || log.tipus=='REENVIAMENT'}">
-										<spring:message code="contingut.log.resum.msg.moure"/>
-										<c:if test="${not empty log.contingutMoviment.origen}">
-											<spring:message code="contingut.log.resum.msg.deLaBustia"/>: ${log.contingutMoviment.origen.nom}
-										</c:if>
-										<c:if test="${not empty log.contingutMoviment.desti}">
-											<spring:message code="contingut.log.resum.msg.aLaBustia"/>: ${log.contingutMoviment.desti.nom}
-										</c:if>									
-									</c:when>
-											
-									<c:when test="${log.tipus=='ENVIAMENT_EMAIL'}">
-										<spring:message code="contingut.log.resum.msg.enviamentEmail"/>
-									</c:when>	
-									
-									<c:when test="${log.tipus=='MARCAMENT_PROCESSAT'}">
-										<spring:message code="contingut.log.resum.msg.marcamentProcessat"/>
-									</c:when>	
-										
-									<c:when test="${log.tipus=='DISTRIBUCIO'}">
-										<spring:message code="contingut.log.resum.msg.distribucio"/>
-									</c:when>									
-									
-									<c:otherwise>
-										<spring:message code="contingut.log.resum.msg.accio"/>: "<spring:message code="log.tipus.enum.${log.tipus}"/>"
-										<c:if test="${not empty log.param1}">,&nbsp;&nbsp;<spring:message code="contingut.log.detall.param1"/>: "${log.param1}"</c:if>   
-										<c:if test="${not empty log.param2}">,&nbsp;&nbsp;<spring:message code="contingut.log.detall.param2"/>: "${log.param2}"</c:if>
-									</c:otherwise>									
-								</c:choose>							
+								${log[1]}					
 							</td>
-							
 						</tr>
 					</c:forEach>
 				</tbody>

@@ -3,10 +3,14 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,15 +28,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.RequestContext;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -40,6 +47,12 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.SessioHelper;
+import fr.opensagres.xdocreport.converter.ConverterTypeTo;
+import fr.opensagres.xdocreport.converter.Options;
+import fr.opensagres.xdocreport.document.IXDocReport;
+import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
+import fr.opensagres.xdocreport.template.IContext;
+import fr.opensagres.xdocreport.template.TemplateEngineKind;
 
 /**
  * Controlador per a la gestió de contenidors i mètodes compartits entre
@@ -278,14 +291,26 @@ public class ContingutController extends BaseUserController {
 						contingutId,
 						true,
 						false));
-		
-		
+
+		List<ContingutLogDetallsDto> logsDetall = contingutService.findLogsDetallsPerContingutUser(
+				entitatActual.getId(),
+				contingutId); 
 		model.addAttribute(
-				"logsResum",
-				contingutService.findLogsDetallsPerContingutUser(
+				"logsDetall",
+				logsDetall);
+		// Recupera la informació
+		ContingutDto contingut = contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						contingutId));
-		
+						contingutId,
+						true,
+						false);
+		RegistreAnotacioDto registre = registreService.findOne(
+				entitatActual.getId(), 
+				contingut.getPare().getId(), 
+				contingutId);
+		model.addAttribute(
+				"logsResum", 
+				this.buildLogsResum(request, registre, logsDetall));
 		
 		model.addAttribute(
 				"logs",
@@ -310,6 +335,30 @@ public class ContingutController extends BaseUserController {
 		return "contingutLog";
 	}
 
+	/** Construeix una llista on per cada fila:
+	 * llista[i][0] És el log amb la informació
+	 * llista[i][1] És el text descriptiu
+	 * 
+	 * @param request
+	 * @param registre
+	 * @param logsDetall
+	 * @return Una llista on en cada posició hi ha un array d'objectes amb el log i el text descriptiu construït a partir del log.
+	 */
+	private List<Object[]> buildLogsResum(
+			HttpServletRequest request, 
+			RegistreAnotacioDto registre,
+			List<ContingutLogDetallsDto> logsDetall) {
+		List<Object[]> ret = new ArrayList<Object[]>();
+		Object[] item;
+		for (ContingutLogDetallsDto log : logsDetall) {
+			item = new Object[2];
+			item[0] = log;
+			item[1] = this.getLogText(request, log);
+			ret.add(item);
+		}
+		return ret;
+	}
+
 	@RequestMapping(value = "/contingut/{contingutId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
 	@ResponseBody
 	public ContingutLogDetallsDto logDetalls(
@@ -322,6 +371,176 @@ public class ContingutController extends BaseUserController {
 				entitatActual.getId(),
 				contingutId,
 				contingutLogId);
+	}
+	
+	/** Descarrega un informe del resum de moviments a partir d'una plantilla 
+	 * @throws Exception */
+	@RequestMapping(value = "/contingut/{contingutId}/log/informe", method = RequestMethod.GET)
+	public String informe(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long contingutId,
+			Model model) throws Exception {
+		
+		String ret = null;
+		try {
+			// Data de l'informe
+			Date data = new Date();
+			
+			// Recupera la informació
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			ContingutDto contingut = contingutService.findAmbIdUser(
+							entitatActual.getId(),
+							contingutId,
+							true,
+							false);
+			RegistreAnotacioDto registre = registreService.findOne(
+					entitatActual.getId(), 
+					contingut.getPare().getId(), 
+					contingutId);
+			List<ContingutLogDetallsDto> logsResum = contingutService.findLogsDetallsPerContingutUser(
+							entitatActual.getId(),
+							contingutId);
+			// Genera el report
+			byte[] informeContingut = this.generaInformeTracabilitat(
+					request,
+					data,
+					contingut,
+					registre, 
+					logsResum);
+			
+			String informeNom = this.getMessage(request, "contingut.log.informe.nom.template", new Object[] {
+					registre.getNumero(),
+					new SimpleDateFormat("yyyyMMddHHmm").format(data)
+			});
+			
+			// Descarrega el report escrivint-lo a la resposta
+			writeFileToResponse(
+					informeNom,
+					informeContingut,
+					response);	
+		} catch (Exception e) {
+			logger.error("Error generant l'informe de tracabilitat pel contingut amb id " + contingutId, e);
+			ret =  getAjaxControllerReturnValueError(
+					request,
+					"redirect:" + request.getHeader("referer"),
+					"contingut.log.informe.error",
+					new Object[] {e.getMessage()});
+		}
+		return ret;
+	}
+
+	/** Retorna el contingut PDF de la generació del report. Construeix els textos i els passa a la plantilla.
+	 * @param request 
+	 * @param data 
+	 * @param contingut 
+	 * @param registre 
+	 * @param logsResum 
+	 * 
+	 * @return
+	 */
+	private byte[] generaInformeTracabilitat(
+			HttpServletRequest request, 
+			Date data, 
+			ContingutDto contingut, 
+			RegistreAnotacioDto registre, 
+			List<ContingutLogDetallsDto> logsResum) throws Exception{
+		Locale locale = new RequestContext(request).getLocale();
+
+
+		// 1) Load ODT file and set Velocity template engine and cache it to the registry					
+    	InputStream in= this.getClass().getResourceAsStream("/plantilles/informe_" + locale.getLanguage() + ".odt");
+    	IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,TemplateEngineKind.Velocity);
+
+    	// 2) Create Java model context 
+    	IContext context = report.createContext();
+    	context.put("contingut", contingut);
+    	context.put("registre", registre);
+    	List<String> textList = new ArrayList<String>();
+    	String text;
+    	for (ContingutLogDetallsDto log : logsResum) {
+    		text = this.getLogText(request, log);
+    		// posa la 1a lletra en minúscula
+    		text = decapitalize(text);
+    		// Afegeix "A data XXX "
+    		text = this.getMessage(
+    				request, 
+    				"contingut.log.informe.text", 
+    				new Object[] {
+    						log.getCreatedDateAmbFormat(),
+    						text});
+    		textList.add(text);
+    	}
+    	context.put("text_list", textList);
+    	context.put("data", new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", locale).format(data));
+
+    	// 3) Set PDF as format converter
+    	Options options = Options.getTo(ConverterTypeTo.PDF);
+
+    	// 3) Generate report by merging Java model with the ODT and convert it to PDF
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	report.convert(context, options, bos);
+    	return bos.toByteArray();
+    }
+	
+	public static String decapitalize(String string) {
+	    if (string == null || string.length() == 0) {
+	        return string;
+	    }
+	    char c[] = string.toCharArray();
+	    c[0] = Character.toLowerCase(c[0]);
+	    return new String(c);
+	}
+
+	/** Mètode per crear la descripció per a una línia del log
+	 * @param request 
+	 * 
+	 * @param log
+	 * @return
+	 */
+	private String getLogText(HttpServletRequest request, ContingutLogDetallsDto log) {
+		
+		StringBuilder sb = new StringBuilder();
+		String usuari = log.getCreatedBy() != null ? log.getCreatedBy().getCodi() + " - " + log.getCreatedBy().getNom() : "-";
+		switch(log.getTipus()) {
+		case CREACIO:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParam1()}));
+			break;
+		case MOVIMENT:
+		case REENVIAMENT:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.moure"));
+			if (log.getContenidorMoviment() != null) {
+				if (log.getContingutMoviment().getOrigen() != null) {
+					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
+					sb.append(log.getContenidorMoviment().getOrigen().getNom()).append("\"");
+				}
+				if (log.getContingutMoviment().getDesti() != null) {
+					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
+					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+				}
+			}
+			break;
+		case ENVIAMENT_EMAIL:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.enviamentEmail", 
+								new Object[] {usuari,
+											 log.getParam2()}));
+			break;
+		case MARCAMENT_PROCESSAT:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.marcamentProcessat", new Object[] {usuari}));
+			break;
+		case DISTRIBUCIO:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.distribucio"));
+			break;
+		default:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
+			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");
+			if (log.getParam1() != null)
+				sb.append(" param1: \"").append(log.getParam1()).append("\"");
+			if (log.getParam2() != null)
+				sb.append(" param2: \"").append(log.getParam2()).append("\"");
+			break;
+		}
+		return sb.toString();
 	}
 
 	@RequestMapping(value = "/contingut/{contingutId}/comentaris", method = RequestMethod.GET)

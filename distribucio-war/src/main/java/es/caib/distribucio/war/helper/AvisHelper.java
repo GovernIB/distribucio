@@ -8,9 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import es.caib.distribucio.core.api.dto.AvisDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.AvisService;
-import es.caib.distribucio.core.api.service.BustiaService;
 
 /**
  * Utilitat per a contar els elements pendents de les bústies
