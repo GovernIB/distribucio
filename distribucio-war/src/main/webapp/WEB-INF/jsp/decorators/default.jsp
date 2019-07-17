@@ -77,7 +77,7 @@ body {
 <body>
 
 	<div class="navbar navbar-default navbar-fixed-top navbar-app" role="navigation">
-		<div class="container">
+		<div class="container container-caib">
 			<div class="navbar-header">
 				<div class="navbar-brand">
 					<div id="govern-logo" class="pull-left">
@@ -215,7 +215,7 @@ body {
 			</div>
 		</div>
 	</div>
-	<div class="container container-main">
+	<div class="container container-main container-caib">
 
 
 	<c:if test="${not empty avisos}">
@@ -257,7 +257,7 @@ body {
 				</div>
 			</div>
 	</div>
-    <div class="container container-foot">
+    <div class="container container-foot container-caib">
     	<div class="pull-left app-version"><p>DISTRIBUCIÓ v<dis:versio/></p></div>
         <div class="pull-right govern-footer">
         	<p>
