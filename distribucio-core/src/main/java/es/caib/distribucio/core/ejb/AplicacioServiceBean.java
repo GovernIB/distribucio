@@ -127,4 +127,10 @@ public class AplicacioServiceBean implements AplicacioService {
 		return delegate.propertyPluginPassarelaFirmaIgnorarModalIds();
 	}
 
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public String propertyFindByNom(String nom) {
+		return delegate.propertyFindByNom(nom);
+	}
+
 }

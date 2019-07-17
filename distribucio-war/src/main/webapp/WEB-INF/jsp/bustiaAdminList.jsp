@@ -75,7 +75,7 @@
 					<script id="nomTemplate" type="text/x-jsrender">
 						{{:nom}}
 						{{if unitatOrganitzativa.estat=='E'||unitatOrganitzativa.estat=='A' || unitatOrganitzativa.estat=='T'}}
-							<a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/bustiaTransicioInfo" data-toggle="modal">
+							<a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/transicioInfo" data-toggle="modal">
 								<span class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.obsoleta"/>"></span>
 							</a>
 						{{/if}}

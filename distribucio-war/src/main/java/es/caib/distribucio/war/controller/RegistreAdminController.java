@@ -29,6 +29,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.AnotacioRegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
@@ -41,20 +42,22 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/anotacionsRegistre")
-public class AnotacioRegistreController extends BaseAdminController {
+@RequestMapping("/registreAdmin")
+public class RegistreAdminController extends BaseAdminController {
 
 	private static final String SESSION_ATTRIBUTE_ANOTACIO_FILTRE = "ContingutAdminController.session.anotacio.filtre";
 
 	@Autowired
 	private ContingutService contingutService;
 	@Autowired
+	private RegistreService registreService;	
+	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
 	@Autowired
 	private BustiaService bustiaService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String anotacionsRegistre(
+	public String registreAdminGet(
 			HttpServletRequest request,
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
@@ -64,11 +67,11 @@ public class AnotacioRegistreController extends BaseAdminController {
 		model.addAttribute(
 				"nomesAmbErrors",
 				filtreCommand.isNomesAmbErrors());
-		return "anotacionsRegistreList";
+		return "registreAdminList";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public String anotacionsRegistrePost(
+	public String registreAdminPost(
 			HttpServletRequest request,
 			@Valid AnotacioRegistreFiltreCommand filtreCommand,
 			BindingResult bindingResult,
@@ -86,18 +89,18 @@ public class AnotacioRegistreController extends BaseAdminController {
 						filtreCommand);
 			}
 		}
-		return "redirect:anotacionsRegistre";
+		return "redirect:registreAdmin";
 	}
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
-	public DatatablesResponse anotacionsDatatable(
+	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				contingutService.findAnotacionsRegistre(
+				registreService.findRegistreAdmin(
 						entitatActual.getId(),
 						AnotacioRegistreFiltreCommand.asDto(filtreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),

@@ -12,6 +12,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.core.audit.DistribucioAuditable;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity.Builder;
 
 @Entity
 @Table(	name = "dis_registre_annex_firma")
@@ -116,6 +117,11 @@ public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 			built.csvRegulacio =csvRegulacio;
 			built.autofirma = autofirma;
 			built.annex = annex;
+		}
+		
+		public Builder gesdocFirmaId(String gesdocFirmaId) {
+			built.gesdocFirmaId = gesdocFirmaId;
+			return this;
 		}
 		public RegistreAnnexFirmaEntity build() {
 			return built;

@@ -4,7 +4,9 @@
 package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -22,16 +24,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.war.command.ContingutFiltreCommand;
 import es.caib.distribucio.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -100,19 +105,37 @@ public class ContingutAdminController extends BaseAdminController {
 				"id");
 	}
 
-	@RequestMapping(value = "/{contingutId}/info", method = RequestMethod.GET)
-	public String info(
+	@RequestMapping(value = "/{contingutId}/detall", method = RequestMethod.GET)
+	public String detall(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		ContingutDto contingutDto = contingutService.findAmbIdAdmin(
+				entitatActual.getId(),
+				contingutId,
+				true);
+
 		model.addAttribute(
 				"contingut",
-				contingutService.findAmbIdAdmin(
-						entitatActual.getId(),
-						contingutId,
-						true));
-		return "contingutAdminInfo";
+				contingutDto);
+
+		switch (contingutDto.getTipus()) {
+		case BUSTIA:
+			model.addAttribute(
+					"bustia",
+					contingutDto);			
+			return "bustiaAdminDetall";
+
+		case REGISTRE:
+			model.addAttribute(
+					"registre",
+					contingutDto);			
+			return "registreAdminDetall";
+		}
+
+		return null;
 	}
 
 	@RequestMapping(value = "/{contingutId}/log", method = RequestMethod.GET)
@@ -217,7 +240,7 @@ public class ContingutAdminController extends BaseAdminController {
 
 
 
-		return "redirect:../../../" + registreId + "/info";
+		return "redirect:../../../" + registreId + "/detall";
 	}
 	
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
@@ -246,7 +269,7 @@ public class ContingutAdminController extends BaseAdminController {
 							"contingut.admin.controller.registre.reintentat.error",
 							null));
 		}
-		return "redirect:../../../" + registreId + "/info";
+		return "redirect:../../../" + registreId + "/detall";
 	}
 	
 

@@ -25,7 +25,7 @@ public interface DistribucioPlugin {
 	 * @throws SistemaExternException
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
-	public String contenidorCrear(
+	public String expedientCrear(
 			String expedientNumero,
 			String unitatArrelCodi) throws SistemaExternException;
 
@@ -43,7 +43,7 @@ public interface DistribucioPlugin {
 	 * @throws SistemaExternException
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
-	public String documentCrear(
+	public String saveAnnexAsDocumentInArxiu(
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
 			String contenidorArxiuUuid,

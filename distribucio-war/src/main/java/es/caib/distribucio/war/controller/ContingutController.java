@@ -32,7 +32,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -57,86 +57,27 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private RegistreService registreService;
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}", method = RequestMethod.GET)
-	public String registreInfo(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			@PathVariable Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"registre",
-				registreService.findOne(
-						entitatActual.getId(),
-						contingutId,
-						registreId));
-		model.addAttribute("contingutId", contingutId);
-		return "registreDetall";
-	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}/registreFirmes", method = RequestMethod.GET)
-	public String registreAnnexFirmes(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			@PathVariable Long registreId,
-			@PathVariable String fitxerArxiuUuid,
-			Model model) {
-		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			model.addAttribute(
-					"annex",
-					registreService.getAnnexFirmesAmbArxiu(
-							entitatActual.getId(),
-							contingutId,
-							registreId,
-							fitxerArxiuUuid));
-			model.addAttribute("registreId", registreId);
-			model.addAttribute("fitxerArxiuUuid", fitxerArxiuUuid);
-		} catch(Exception ex) {
-			logger.error("Error recuperant informació de firma", ex);
-			model.addAttribute("missatgeError", ex.getMessage());
-			return "ajaxErrorPage";
-		}
 
-		return "registreAnnexFirmes";
-	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{fitxerArxiuUuid}", method = RequestMethod.GET)
-	public String registreAnnex(
-			HttpServletRequest request,
-			@PathVariable Long contingutId,
-			@PathVariable Long registreId,
-			@PathVariable String fitxerArxiuUuid,
-			Model model) {
-		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			model.addAttribute(
-					"annex",
-					registreService.getAnnexAmbArxiu(
-							entitatActual.getId(),
-							contingutId,
-							registreId,
-							fitxerArxiuUuid));
-			model.addAttribute("registreId", registreId);
-		} catch(Exception ex) {
-			logger.error("Error recuperant informació de l'annex", ex);
-			model.addAttribute("missatgeError", ex.getMessage());
-			return "ajaxErrorPage";
-		}
-		return "registreAnnex";
-	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
+
+
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreAnnexDetallDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), contingutId, registreId);
-			model.addAttribute("justificant",
+			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), bustiaId, registreId);
+			model.addAttribute(
+					"justificant",
 					justificant);
+			model.addAttribute("bustiaId",
+					bustiaId);			
+			
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació del justificant", ex);
 			model.addAttribute("missatgeError", ex.getMessage());
@@ -145,10 +86,10 @@ public class ContingutController extends BaseUserController {
 		return "registreJustificant";
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
 	public String arxiuInfo(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		try {
@@ -165,16 +106,16 @@ public class ContingutController extends BaseUserController {
 		return "arxiuInfo";
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/llegir", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/llegir", method = RequestMethod.GET)
 	public String registreMarcarLlegida(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		registreService.marcarLlegida(
 				entitatActual.getId(),
-				contingutId,
+				bustiaId,
 				registreId);
 		SessioHelper.marcatLlegit(request);		
 		return getAjaxControllerReturnValueSuccess(
@@ -183,16 +124,16 @@ public class ContingutController extends BaseUserController {
 				"contingut.registre.missatge.anotacio.marcada");
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
 	public String descarregar(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws IOException {
 		try {
-			FitxerDto fitxer = registreService.getArxiuAnnex(annexId);
+			FitxerDto fitxer = registreService.getAnnexFitxer(annexId);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -201,17 +142,17 @@ public class ContingutController extends BaseUserController {
 			logger.error("Error descarregant el document", ex);
 			return getModalControllerReturnValueError(
 					request,
-					"/contingut/" + contingutId + "/registre/" + registreId,
+					"/contingut/" + bustiaId + "/registre/" + registreId,
 					"contingut.controller.document.descarregar.error");
 		}
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/justificant", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/justificant", method = RequestMethod.GET)
 	public String descarregarJustificant(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId) throws IOException {
 		FitxerDto fitxer = registreService.getJustificant(registreId);
 		writeFileToResponse(
@@ -221,15 +162,15 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
 	public String descarregarFirma(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable int firmaIndex) throws IOException {
-		FitxerDto fitxer = registreService.getAnnexFirmaContingut(annexId,
+		FitxerDto fitxer = registreService.getAnnexFirmaFitxer(annexId,
 				firmaIndex);
 		writeFileToResponse(
 				fitxer.getNom(),
@@ -238,21 +179,21 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
-				contingutId,
+				bustiaId,
 				registreId);
 		if (processatOk) {
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../" + contingutId,
+					"redirect:../../../" + bustiaId,
 					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
@@ -265,29 +206,29 @@ public class ContingutController extends BaseUserController {
 		}
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contingut",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						contingutId,
+						bustiaId,
 						true,
 						false));
 		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutUser(
 						entitatActual.getId(),
-						contingutId));
+						bustiaId));
 		model.addAttribute(
 				"moviments",
 				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
-						contingutId));
+						bustiaId));
 		model.addAttribute(
 				"logTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(
@@ -301,31 +242,31 @@ public class ContingutController extends BaseUserController {
 		return "contingutLog";
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/log/{contingutLogId}/detalls", method = RequestMethod.GET)
 	@ResponseBody
 	public ContingutLogDetallsDto logDetalls(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			@PathVariable Long contingutLogId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		return contingutService.findLogDetallsPerContingutUser(
 				entitatActual.getId(),
-				contingutId,
+				bustiaId,
 				contingutLogId);
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/comentaris", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{bustiaId}/comentaris", method = RequestMethod.GET)
 	public String comentaris(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long bustiaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contingut",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						contingutId,
+						bustiaId,
 						true,
 						false));
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();
@@ -335,20 +276,20 @@ public class ContingutController extends BaseUserController {
 		return "contingutComentaris";
 	}
 
-	@RequestMapping(value = "/contingut/{contingutId}/comentaris/publicar", method = RequestMethod.POST)
+	@RequestMapping(value = "/contingut/{registreId}/comentaris/publicar", method = RequestMethod.POST)
 	@ResponseBody
 	public List<ContingutComentariDto> publicarComentari(
 			HttpServletRequest request,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@RequestParam String text,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (text != null && !text.isEmpty()) {
-			contingutService.publicarComentariPerContingut(entitatActual.getId(), contingutId, text);
+			contingutService.publicarComentariPerContingut(entitatActual.getId(), registreId, text);
 		}
 		return contingutService.findComentarisPerContingut(
 				entitatActual.getId(), 
-				contingutId);
+				registreId);
 	}
 
 	@InitBinder

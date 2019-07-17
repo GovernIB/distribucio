@@ -164,7 +164,7 @@ body {
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
 										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
-										<li><a href="<c:url value="/bustiaUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>										
+										<li><a href="<c:url value="/registreUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>										
 									</ul>
 								</div>
 								<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
@@ -184,7 +184,7 @@ body {
 									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
-										<li><a href="<c:url value="/anotacionsRegistre"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
+										<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 									</ul>
 								</div>
 							</c:when>
@@ -192,7 +192,7 @@ body {
 								<c:if test="${teAccesExpedients}">
 									<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 								</c:if>
-								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">
+								<a href="<c:url value="/registreUser"/>" class="btn btn-primary">
 									<spring:message code="decorator.menu.busties"/>
 									<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
 								</a>

@@ -7,8 +7,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.BustiaContingutFiltreEstatEnumDto;
-import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**
@@ -17,7 +17,7 @@ import es.caib.distribucio.war.helper.ConversioTipusHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class BustiaUserFiltreCommand {
+public class RegistreFiltreCommand {
 
 	private String bustia;
 	/** Per mostrar el contingut de les bústies innactives */
@@ -26,7 +26,7 @@ public class BustiaUserFiltreCommand {
 	private String remitent;
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
-	private BustiaContingutFiltreEstatEnumDto estatContingut;
+	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private String numeroOrigen;
 	
 	public String getNumeroOrigen() {
@@ -36,16 +36,16 @@ public class BustiaUserFiltreCommand {
 		this.numeroOrigen = numeroOrigen;
 	}
 	
-	public static BustiaUserFiltreCommand asCommand(BustiaUserFiltreDto dto) {
-		BustiaUserFiltreCommand command = ConversioTipusHelper.convertir(
+	public static RegistreFiltreCommand asCommand(RegistreFiltreDto dto) {
+		RegistreFiltreCommand command = ConversioTipusHelper.convertir(
 				dto,
-				BustiaUserFiltreCommand.class);
+				RegistreFiltreCommand.class);
 		return command;
 	}
-	public static BustiaUserFiltreDto asDto(BustiaUserFiltreCommand command) {
-		BustiaUserFiltreDto dto = ConversioTipusHelper.convertir(
+	public static RegistreFiltreDto asDto(RegistreFiltreCommand command) {
+		RegistreFiltreDto dto = ConversioTipusHelper.convertir(
 				command,
-				BustiaUserFiltreDto.class);
+				RegistreFiltreDto.class);
 		return dto;
 	}
 
@@ -83,11 +83,11 @@ public class BustiaUserFiltreCommand {
 	public void setDataRecepcioFi(Date dataRecepcioFi) {
 		this.dataRecepcioFi = dataRecepcioFi;
 	}
-	public BustiaContingutFiltreEstatEnumDto getEstatContingut() {
-		return estatContingut;
+	public RegistreProcesEstatSimpleEnumDto getProcesEstatSimple() {
+		return procesEstatSimple;
 	}
-	public void setEstatContingut(BustiaContingutFiltreEstatEnumDto estatContingut) {
-		this.estatContingut = estatContingut;
+	public void setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto procesEstatSimple) {
+		this.procesEstatSimple = procesEstatSimple;
 	}
 	public boolean isMostrarInactives() {
 		return mostrarInactives;

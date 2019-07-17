@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.entity.AlertaEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import ma.glasnost.orika.CustomConverter;
@@ -51,9 +51,9 @@ public class ConversioTipusHelper {
 					}
 				});
 		mapperFactory.getConverterFactory().registerConverter(
-				new CustomConverter<RegistreAnnexEntity, RegistreAnnexDetallDto>() {
-					public RegistreAnnexDetallDto convert(RegistreAnnexEntity source, Type<? extends RegistreAnnexDetallDto> destinationClass) {
-						RegistreAnnexDetallDto target = new RegistreAnnexDetallDto();
+				new CustomConverter<RegistreAnnexEntity, RegistreAnnexDto>() {
+					public RegistreAnnexDto convert(RegistreAnnexEntity source, Type<? extends RegistreAnnexDto> destinationClass) {
+						RegistreAnnexDto target = new RegistreAnnexDto();
 						target.setId(source.getId());
 						target.setTitol(source.getTitol());
 						target.setFitxerNom(source.getTitol());

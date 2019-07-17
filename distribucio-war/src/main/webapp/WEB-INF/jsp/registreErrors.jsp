@@ -41,7 +41,7 @@
 	<table 
 		id="taulaAlertes"
 		data-toggle="datatable"
-		data-url="<c:url value="/bustiaUser/${bustiaId}/pendent/${contingutId}/alertes/datatable"/>"
+		data-url="<c:url value="/registreUser/${bustiaId}/pendent/${contingutId}/alertes/datatable"/>"
 		data-paging-enabled="false"
 		class="table table-bordered table-striped"
 		data-row-info="true"
@@ -63,7 +63,7 @@
 	</table>
 		
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/bustiaUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/registreUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>

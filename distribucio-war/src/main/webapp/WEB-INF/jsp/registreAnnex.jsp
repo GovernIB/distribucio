@@ -12,13 +12,12 @@
 	
 	$(document).ready(function() {
 
-	    $("#collapse-registre-firmes-<c:out value='${annex.fitxerArxiuUuid}'/>").on('show.bs.collapse', function(data){  	
+	    $("#collapse-registre-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
 		    if (!$(this).data("loaded")) {
 		    	var registreId = $(this).parents(".collapse-annex").data("registreId"); 
-		        var contingutId = $(this).parents(".collapse-annex").data("contingutId"); 
-		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
+		        var bustiaId = $(this).parents(".collapse-annex").data("bustiaId"); 
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid + "/registreFirmes");
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + bustiaId + "/" + registreId + "/" + ${annex.id});
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -69,8 +68,8 @@
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
-			${annex.fitxerNom} (${annex.fitxerTamany} bytes)
-			<a href="${registreId}/annex/${annex.id}/arxiu/DOCUMENT" class="btn btn-default btn-sm pull-right">
+		
+			<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right">
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 			</a>
 		</td>
@@ -83,10 +82,10 @@
 						<h3 class="panel-title">
 							<span class="fa fa-certificate"></span>
 							<spring:message code="registre.annex.detalls.camp.firmes"/>
-							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-registre-firmes-${annex.fitxerArxiuUuid}"><span class="fa fa-chevron-down"></span></button>
+							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-registre-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
 						</h3>
 					</div>
-					<div id="collapse-registre-firmes-${annex.fitxerArxiuUuid}" class="panel-collapse collapse collapse-annex collapse-registre-firmes" role="tabpanel" data-fitxer-arxiu-uuid="${annex.fitxerArxiuUuid}"> 
+					<div id="collapse-registre-firmes-${annex.id}" class="panel-collapse collapse collapse-annex collapse-registre-firmes" role="tabpanel"> 
 
 					</div> 
 				</div>

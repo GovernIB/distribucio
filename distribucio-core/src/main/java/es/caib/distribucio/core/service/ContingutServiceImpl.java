@@ -26,7 +26,7 @@ import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -378,80 +378,6 @@ public class ContingutServiceImpl implements ContingutService {
 					}
 				});
 	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(
-			Long entitatId,
-			AnotacioRegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
-				"entitatId=" + entitatId + ", " +
-				"filtre=" + filtre + ", " +
-				"paginacioParams=" + paginacioParams + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		Date dataInici = filtre.getDataCreacioInici();
-		if (dataInici != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataInici);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			cal.set(Calendar.MILLISECOND, 0);
-			dataInici = cal.getTime();
-		}
-		Date dataFi = filtre.getDataCreacioFi();
-		if (dataFi != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataFi);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			cal.set(Calendar.SECOND, 59);
-			cal.set(Calendar.MILLISECOND, 999);
-			dataFi = cal.getTime();
-		}
-		logger.debug(">>> Filtre: " + filtre);
-		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
-				entitat, 
-				(filtre.getNom() == null || filtre.getNom().isEmpty()),
-				filtre.getNom(),
-				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
-				filtre.getNumeroOrigen(),
-				(filtre.getUnitatOrganitzativa() == null),
-				filtre.getUnitatOrganitzativa(),
-				(filtre.getBustia() == null),
-				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
-				(dataInici == null),
-				dataInici,
-				(dataFi == null),
-				dataFi,
-				(filtre.getEstat() == null),
-				filtre.getEstat(),
-				filtre.isNomesAmbErrors(),
-				paginacioHelper.toSpringDataPageable(paginacioParams));
-		return paginacioHelper.toPaginaDto(
-				registres,
-				RegistreAnotacioDto.class,
-				new Converter<RegistreEntity, RegistreAnotacioDto>() {
-					@Override
-					public RegistreAnotacioDto convert(RegistreEntity source) {
-						return (RegistreAnotacioDto)contingutHelper.toContingutDto(
-								source,
-								false,
-								false,
-								false,
-								false,
-								true,
-								false,
-								false);
-					}
-				});
-	}
-
 
 
 	@Transactional(readOnly = true)

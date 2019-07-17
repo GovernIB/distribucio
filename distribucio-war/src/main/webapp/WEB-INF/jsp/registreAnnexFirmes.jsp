@@ -33,7 +33,7 @@
 					<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 					<td>
 						${firma.fitxerNom}
-						<a href="${registreId}/annex/${annex.id}/firma/${status.index}" class="btn btn-default btn-sm pull-right">
+						<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/firma/${status.index}"/>" class="btn btn-default btn-sm pull-right">
 							<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 						</a>
 					</td>

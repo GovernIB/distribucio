@@ -46,27 +46,27 @@ tr.clicable {
 	    $("#collapse-justificant").on('show.bs.collapse', function(data){    
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
-		        var contingutId = $(this).data("contingutId"); 
+		        var bustiaId = $(this).data("bustiaId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/registreJustificant");
 		        $(this).data("loaded", true);
 		    }
 	    });
 	    $(".collapse-annex").on('show.bs.collapse', function(data){  
 		    if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var contingutId = $(this).data("contingutId"); 
-		        var fitxerArxiuUuid = $(this).data("fitxerArxiuUuid");
+		        var bustiaId = $(this).data("bustiaId"); 
+		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/annex/" + fitxerArxiuUuid);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + bustiaId + "/" + registreId + "/" + annexId);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var contingutId = $(this).data("contingutId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + contingutId + "/registre/" + registreId + "/arxiuInfo");
+		        var bustiaId = $(this).data("bustiaId"); 
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/arxiuInfo");
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -87,9 +87,29 @@ tr.clicable {
 		</li>
 		<c:if test="${not empty registre.expedientArxiuUuid}">
 			<li role="presentation">
-				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" data-contingut-id="${contingutId}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
+				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
 			</li>
 		</c:if>
+		
+		
+		
+		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT'}">
+			<li role="presentation">
+				<a href="#processamentAutomatic"  role="tab" data-toggle="tab">
+					<spring:message code="registre.detalls.pipella.proces"/>
+					<c:if test="${registre.procesError != null}"><span class="fa fa-warning text-danger"></span></c:if>
+				</a>
+			</li>
+		</c:if>
+		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+			<li role="presentation">
+				<a href="#processamentBackoffice"  role="tab" data-toggle="tab">
+					<spring:message code="registre.detalls.pipella.proces.backoffice"/>
+				</a>
+			</li>
+		</c:if>		
+		
+		
 	</ul>
 	<div class="tab-content">
 	
@@ -109,6 +129,10 @@ tr.clicable {
 					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
 					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 				</tr>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
+					<td>${registre.procesEstat}</td>
+				</tr>		
 			</tbody>
 			</table>
 			<div class="row">
@@ -245,7 +269,7 @@ tr.clicable {
 							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-justificant"><span class="fa fa-chevron-down"></span></button>
 						</h3>
 					</div>
-					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}" data-contingut-id="${contingutId}">
+					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}">
 
 					</div>
 				</div>
@@ -404,7 +428,7 @@ tr.clicable {
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>
- 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-contingut-id="${contingutId}" data-fitxer-arxiu-uuid="${annex.fitxerArxiuUuid}"> 
+ 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}" data-annex-id="${annex.id}"> 
 
  							</div> 
 						</div>
@@ -431,16 +455,130 @@ tr.clicable {
 			</c:choose>
 		</div>
 		
-		<!------------------------------------------- TABPANEL ARXIU INFO --------------------------------------------->
+		
 		<c:if test="${not empty registre.expedientArxiuUuid}">
+			<!------------------------------------------- TABPANEL ARXIU INFO --------------------------------------------->
 			<div class="tab-pane" id="arxiuInfo" role="tabpanel" data-loaded=false>
 				<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>
 			</div>
 		</c:if>
+	
+	
+	
+	
+		
+		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT'}">
+	
+			<!------------------------------ TABPANEL PROCESSAMENT_AUTOMATIC ------------------------------------->
+			<div class="tab-pane" id="processamentAutomatic" role="tabpanel">
+			
+			
+				<!------ REINTENTAR PROCESSAMENT ------>
+				<c:if test="${registre.procesError != null }">
+					<div class="alert well-sm alert-danger alert-dismissable">
+						<span class="fa fa-exclamation-triangle"></span>
+						<spring:message code="registre.detalls.info.errors"/>
+						
+						<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT'}">
+<%-- 							<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a> --%>
+						</c:if>
+						<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
+<%-- 							<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>					 --%>
+						</c:if>
+						
+					</div>
+				</c:if>   
+			    <c:if test="${registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0}">
+<%-- 					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a> --%>
+			    </c:if>					
+				
+				<!------ PROCESSAMENT INFO ------>
+				<dl class="dl-horizontal">
+				
+					<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+					<dd>${registre.procesEstat}</dd>
+					
+					<c:if test="${not empty registre.procesData}">
+						<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
+						<dd><fmt:formatDate value="${registre.procesData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+					</c:if>	
+					
+					<c:if test="${registre.procesEstat == 'BACK_PENDENT' && not empty registre.backRetryEnviarData}">
+						<dt><spring:message code="registre.detalls.camp.proces.data.back.proxima.intent"/></dt>
+						<dd><fmt:formatDate value="${registre.backRetryEnviarData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+					</c:if>						
+					
+					<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
+					<dd>${registre.procesIntents}</dd>
+					
+				</dl>
+				
+				<c:if test="${not empty registre.procesError}">
+					<pre style="height:300px">${registre.procesError}</pre>
+				</c:if>
+				
+			</div>
+		</c:if>
+		
+		
+		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+			
+			<!------------------------------ TABPANEL PROCESSAMENT_BACKOFFICE ------------------------------------->
+			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
+			
+			    <c:if test="${registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+			    </c:if>	
+	
+				<dl class="dl-horizontal">
+				
+					<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+					<dd>${registre.procesEstat}</dd>
+					
+					<dt><spring:message code="registre.detalls.camp.proces.data.back.pendent"/></dt>
+					<dd><fmt:formatDate value="${registre.backPendentData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+					
+					<dt><spring:message code="registre.detalls.camp.proces.data.back.rebuda"/></dt>
+					<dd><fmt:formatDate value="${registre.backRebudaData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+					
+					<c:choose>
+					   <c:when test = "${registre.procesEstat == 'BACK_PROCESSADA'}">
+					      <dt><spring:message code="registre.detalls.camp.proces.data.back.processada"/></dt>
+					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+					   </c:when>
+					   
+					   <c:when test = "${registre.procesEstat == 'BACK_REBUTJADA'}">
+					      <dt><spring:message code="registre.detalls.camp.proces.data.back.rebutjada"/></dt>
+					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+					   </c:when>
+					   
+					   <c:when test = "${registre.procesEstat == 'BACK_ERROR'}">
+					      <dt><spring:message code="registre.detalls.camp.proces.data.back.error"/></dt>
+					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+					   </c:when>         
+					</c:choose>	
+								
+				</dl>
+				
+					<c:choose>
+					   <c:when test = "${not empty registre.procesError}">
+							<pre style="height:300px">${registre.procesError}</pre>
+					   </c:when>
+					   <c:when test = "${registre.backObservacions != null}">
+							<pre style="height:300px">${registre.backObservacions}</pre>
+					   </c:when>
+					</c:choose>			
+			</div>
+		</c:if>	
+	
+	
+	
+	
+	
 	</div>
 	
 	<div id="modal-botons" class="well">
-		<a href="<c:url value="/bustiaUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
+		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
 </html>

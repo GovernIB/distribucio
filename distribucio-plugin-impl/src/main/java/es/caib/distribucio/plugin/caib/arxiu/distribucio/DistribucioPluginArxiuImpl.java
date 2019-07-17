@@ -80,7 +80,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 
 
 	@Override
-	public String contenidorCrear(
+	public String expedientCrear(
 			String expedientNumero,
 			String unitatArrelCodi) throws SistemaExternException {
 
@@ -139,7 +139,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	}
 
 	@Override
-	public String documentCrear(
+	public String saveAnnexAsDocumentInArxiu(
 			DistribucioRegistreAnnex distribucioAnnex,
 			String unitatArrelCodi,
 			String uuidExpedient,
@@ -148,7 +148,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;
 		
-		// if annex was already created in arxiu 
+		// if annex is already created in arxiu 
 		if (distribucioAnnex.getFitxerArxiuUuid() != null) {
 			// Obtenim contingut bytes i les firmes de l'arxiu
 			Document arxiuDocument = this.arxiuDocumentConsultar(
@@ -229,7 +229,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					arxiuFirmes.add(arxiuFirma);
 				}
 			}
-		// if annex is not created in arxiu 	
+		// if annex is not yet created in arxiu 	
 		} else { 
 			if (distribucioAnnex.getGesdocDocumentId() != null) {
 			    // get contingut bytes from local file system
@@ -244,11 +244,6 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			}
 		}
 		
-		FitxerDto fitxerContingut = new FitxerDto();
-		fitxerContingut.setNom(distribucioAnnex.getFitxerNom());
-		fitxerContingut.setContentType(distribucioAnnex.getFitxerTipusMime());
-		fitxerContingut.setContingut(annexContingut);
-		fitxerContingut.setTamany(distribucioAnnex.getFitxerTamany());
 		
 		if (annexContingut != null) {
 			// Si l'annex no està firmat el firma amb el plugin de firma
@@ -299,6 +294,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 						distribucioAnnex.getFirmes());
 			}
 		}
+		
+		FitxerDto fitxerContingut = new FitxerDto();
+		fitxerContingut.setNom(distribucioAnnex.getFitxerNom());
+		fitxerContingut.setContentType(distribucioAnnex.getFitxerTipusMime());
+		fitxerContingut.setContingut(annexContingut);
+		fitxerContingut.setTamany(distribucioAnnex.getFitxerTamany());
+		
 		String uuidDocumentCreat = arxiuDocumentAnnexCrear(
 				distribucioAnnex,
 				unitatArrelCodi,

@@ -12,7 +12,7 @@ import java.util.List;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class RegistreAnnexDetallDto implements Serializable {
+public class RegistreAnnexDto implements Serializable {
 
 	private Long id;
 	private String titol;
@@ -32,7 +32,6 @@ public class RegistreAnnexDetallDto implements Serializable {
 	private String validacioOCSP;
 	private String fitxerArxiuUuid;
 	private List<ArxiuFirmaDto> firmes;
-	private boolean ambDocument;
 	private boolean ambFirma;
 	private String firmaCsv;
 	private Long registreId;
@@ -142,12 +141,7 @@ public class RegistreAnnexDetallDto implements Serializable {
 	public void setFirmes(List<ArxiuFirmaDto> firmes) {
 		this.firmes = firmes;
 	}
-	public boolean isAmbDocument() {
-		return ambDocument;
-	}
-	public void setAmbDocument(boolean ambDocument) {
-		this.ambDocument = ambDocument;
-	}
+
 	public boolean isAmbFirma() {
 		return ambFirma;
 	}

@@ -3,32 +3,49 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
+import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -62,6 +79,9 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
+import es.caib.distribucio.core.helper.GestioDocumentalHelper;
+import es.caib.distribucio.core.helper.PaginacioHelper;
+import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.helper.PluginHelper;
@@ -70,6 +90,7 @@ import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -115,10 +136,19 @@ public class RegistreServiceImpl implements RegistreService {
 	private PermisosHelper permisosHelper;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	@Autowired
+	private MetricRegistry metricRegistry;
+	@Autowired
+	private PaginacioHelper paginacioHelper;
+	@Autowired
+	private ContingutRepository contingutRepository;
+	@Autowired
+	private GestioDocumentalHelper gestioDocumentalHelper;	
 
+	
 	@Transactional(readOnly = true)
 	@Override
-	public RegistreAnotacioDto findOne(
+	public RegistreDto findOne(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException {
@@ -152,7 +182,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		RegistreAnotacioDto registreAnotacio = (RegistreAnotacioDto)contingutHelper.toContingutDto(registre);
+		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());		
 		return registreAnotacio;
 	}
@@ -160,7 +190,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<RegistreAnotacioDto> findMultiple(
+	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds) {
 		logger.debug("Obtenint anotació de registre ("
@@ -187,9 +217,9 @@ public class RegistreServiceImpl implements RegistreService {
 		List<RegistreEntity> registres = registreRepository.findByPareInAndIdIn(
 				bustiesPermeses,
 				multipleRegistreIds);
-		List<RegistreAnotacioDto> resposta = new ArrayList<RegistreAnotacioDto>();
+		List<RegistreDto> resposta = new ArrayList<RegistreDto>();
 		for (RegistreEntity registre: registres) {
-			resposta.add((RegistreAnotacioDto)contingutHelper.toContingutDto(
+			resposta.add((RegistreDto)contingutHelper.toContingutDto(
 					registre,
 					false,
 					false,
@@ -203,8 +233,195 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<RegistreDto> findRegistreAdmin(
+			Long entitatId,
+			AnotacioRegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
+				"entitatId=" + entitatId + ", " +
+				"filtre=" + filtre + ", " +
+				"paginacioParams=" + paginacioParams + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		Date dataInici = filtre.getDataCreacioInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataCreacioFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
+		logger.debug(">>> Filtre: " + filtre);
+		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
+				entitat, 
+				(filtre.getNom() == null || filtre.getNom().isEmpty()),
+				filtre.getNom(),
+				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
+				filtre.getNumeroOrigen(),
+				(filtre.getUnitatOrganitzativa() == null),
+				filtre.getUnitatOrganitzativa(),
+				(filtre.getBustia() == null),
+				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
+				(dataInici == null),
+				dataInici,
+				(dataFi == null),
+				dataFi,
+				(filtre.getEstat() == null),
+				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
+				paginacioHelper.toSpringDataPageable(paginacioParams));
+		return paginacioHelper.toPaginaDto(
+				registres,
+				RegistreDto.class,
+				new Converter<RegistreEntity, RegistreDto>() {
+					@Override
+					public RegistreDto convert(RegistreEntity source) {
+						return (RegistreDto)contingutHelper.toContingutDto(
+								source,
+								false,
+								false,
+								false,
+								false,
+								true,
+								false,
+								false);
+					}
+				});
+	}
 
+	
 
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<ContingutDto> findRegistreUser(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		logger.debug("Consultant el contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "paginacioParams=" + paginacioParams + ")");
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable"));
+		Timer.Context contextTotal = timerTotal.time();
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					true);
+		}
+		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
+		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
+			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+				busties.add(
+						entityComprovarHelper.comprovarBustia(
+						entitat,
+						new Long(bustiaUsuari.getId()),
+						true));
+			}
+		} else if (bustia != null) {
+			busties.add(bustia);
+		}
+		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
+		mapeigOrdenacio.put(
+				"darrerMovimentData",
+				new String[] {"darrerMoviment.createdDate"});
+		mapeigOrdenacio.put(
+				"darrerMovimentUsuari",
+				new String[] {"darrerMoviment.remitent.nom"});
+		mapeigOrdenacio.put(
+				"darrerMovimentComentari",
+				new String[] {"darrerMoviment.comentari"});
+		Page<ContingutEntity> pagina;
+		
+		
+		// Hibernate doesn't support empty collection as parameter in database query so if pares is empty we dont make query but just create a new empty page 
+		if (bustia == null && busties.isEmpty()) {
+			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
+		} else {
+			
+			boolean isFiltreProcessat = false;
+			if (filtre.getProcesEstatSimple() != null) {
+				if (filtre.getProcesEstatSimple() == RegistreProcesEstatSimpleEnumDto.PENDENT) {
+					isFiltreProcessat = false;
+				} else if (filtre.getProcesEstatSimple() == RegistreProcesEstatSimpleEnumDto.PROCESSAT) {
+					isFiltreProcessat = true;
+				}
+			}
+
+			pagina = contingutRepository.findRegistreByPareAndFiltre(
+					(bustia == null),
+					bustia,
+					busties,
+					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+					filtre.getContingutDescripcio(),
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen(),
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent(),
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(filtre.getDataRecepcioFi() == null),
+					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
+					filtre.getProcesEstatSimple() == null,
+					isFiltreProcessat,
+					paginacioHelper.toSpringDataPageable(
+							paginacioParams,
+							mapeigOrdenacio));
+		}
+
+		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
+				pagina,
+				ContingutDto.class,
+				new Converter<ContingutEntity, ContingutDto>() {
+					@Override
+					public ContingutDto convert(ContingutEntity source) {
+						return contingutHelper.toContingutDto(
+								source,
+								false,
+								false,
+								false,
+								false,
+								true,
+								false,
+								false);
+					}
+				});
+
+		
+		contextTotal.stop();
+		return pag;
+	}
 
 
 	@Transactional(readOnly = true)
@@ -318,7 +535,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional
 	@Override
-	public RegistreAnnexDetallDto getRegistreJustificant(
+	public RegistreAnnexDto getRegistreJustificant(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException {
@@ -352,7 +569,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		RegistreAnnexDetallDto justificant = getJustificantPerRegistre(
+		RegistreAnnexDto justificant = getJustificantPerRegistre(
 					entitat, 
 					bustia, 
 					registre.getJustificantArxiuUuid(), 
@@ -363,7 +580,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<RegistreAnnexDetallDto> getAnnexos(
+	public List<RegistreAnnexDto> getAnnexos(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId	
@@ -398,13 +615,12 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		List<RegistreAnnexDetallDto> anexosDto = new ArrayList<>();
+		List<RegistreAnnexDto> anexosDto = new ArrayList<>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
 			
-			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
+			RegistreAnnexDto annex = conversioTipusHelper.convertir(
 					annexEntity,
-					RegistreAnnexDetallDto.class);
-			annex.setAmbDocument(true);
+					RegistreAnnexDto.class);
 			anexosDto.add(annex);
 		}
 		return anexosDto;
@@ -522,23 +738,128 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public FitxerDto getArxiuAnnex(
+	public FitxerDto getAnnexFitxer(
 			Long annexId) {
-		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
-		FitxerDto arxiu = new FitxerDto();
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		FitxerDto fitxerDto = new FitxerDto();
 		Document document = null;
-		document = pluginHelper.arxiuDocumentConsultar(annex.getFitxerArxiuUuid(), null, true, true);
-		if (document != null) {
-			DocumentContingut documentContingut = document.getContingut();
-			if (documentContingut != null) {
-				arxiu.setNom(annex.getFitxerNom());
-				arxiu.setContentType(documentContingut.getTipusMime());
-				arxiu.setContingut(documentContingut.getContingut());
-				arxiu.setTamany(documentContingut.getContingut().length);
+		
+		// if annex is already created in arxiu take content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+			
+			document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, true);
+			if (document != null) {
+				DocumentContingut documentContingut = document.getContingut();
+				if (documentContingut != null) {
+					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+					fitxerDto.setContentType(documentContingut.getTipusMime());
+					fitxerDto.setContingut(documentContingut.getContingut());
+					fitxerDto.setTamany(documentContingut.getContingut().length);
+				}
+			}
+
+		// if annex is not yet created in arxiu take content from gestio documental
+		} else {
+			
+			// if annex has signature attached, contingut of document is located in firma
+			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty()) {
+				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
+				if (firmaEntity.getTipus() != "TF02" && firmaEntity.getTipus() != "TF04") {
+
+					if (firmaEntity.getGesdocFirmaId() != null) {
+						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								firmaEntity.getGesdocFirmaId(), 
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+								streamAnnexFirma);
+						byte[] firmaContingut = streamAnnexFirma.toByteArray();
+						
+						fitxerDto.setNom(firmaEntity.getFitxerNom());
+						fitxerDto.setContentType(firmaEntity.getTipusMime());
+						fitxerDto.setContingut(firmaContingut);
+						fitxerDto.setTamany(firmaContingut.length);
+					}
+				}
+			} else {
+				
+				if (registreAnnexEntity.getGesdocDocumentId() != null) {
+					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							registreAnnexEntity.getGesdocDocumentId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							streamAnnex);
+					byte[] annexContingut = streamAnnex.toByteArray();
+					
+					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+					fitxerDto.setContingut(annexContingut);
+					fitxerDto.setTamany(annexContingut.length);
+					
+				} 
 			}
 		}
-		return arxiu;
+
+		return fitxerDto;
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public FitxerDto getAnnexFirmaFitxer(
+			Long annexId,
+			int indexFirma) {
+		FitxerDto fitxerDto = new FitxerDto();
+		
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
+		
+		// if annex is already created in arxiu take firma content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+		
+			Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true);
+			if (document != null) {
+				List<Firma> firmes = document.getFirmes();
+				if (firmes != null && firmes.size() > 0) {
+					
+					Iterator<Firma> it = firmes.iterator();
+					while (it.hasNext()) {
+						Firma firma = it.next();
+						if (firma.getTipus() == FirmaTipus.CSV) {
+							it.remove();
+						}
+					}
+					Firma firma = firmes.get(indexFirma);
+					
+					if (firma != null && firmaEntity != null) {
+						fitxerDto.setNom(firmaEntity.getFitxerNom());
+						fitxerDto.setContentType(firmaEntity.getTipusMime());
+						fitxerDto.setContingut(firma.getContingut());
+						fitxerDto.setTamany(firma.getContingut().length);
+					}
+				}
+			}
+		
+		// if annex is not yet created in arxiu take firma content from gestio documental
+		} else {
+			if (firmaEntity.getGesdocFirmaId() != null) {
+				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+				gestioDocumentalHelper.gestioDocumentalGet(
+						firmaEntity.getGesdocFirmaId(), 
+						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+						streamAnnexFirma);
+				byte[] firmaContingut = streamAnnexFirma.toByteArray();
+				
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firmaContingut);
+				fitxerDto.setTamany(firmaContingut.length);
+			} 
+		}
+		
+		return fitxerDto;
+	}
+	
+	
+	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -560,43 +881,10 @@ public class RegistreServiceImpl implements RegistreService {
 		return arxiu;
 	}
 
-	@Transactional(readOnly = true)
-	@Override
-	public FitxerDto getAnnexFirmaContingut(
-			Long annexId,
-			int indexFirma) {
-		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
-		FitxerDto arxiu = new FitxerDto();
-		Document document = null;
-		document = pluginHelper.arxiuDocumentConsultar(annex.getFitxerArxiuUuid(), null, true);
-		if (document != null) {
-			List<Firma> firmes = document.getFirmes();
-			if (firmes != null && firmes.size() > 0) {
-				
-				Iterator<Firma> it = firmes.iterator();
-				while (it.hasNext()) {
-					Firma firma = it.next();
-					if (firma.getTipus() == FirmaTipus.CSV) {
-						it.remove();
-					}
-				}
-				
-				Firma firma = firmes.get(indexFirma);
-				RegistreAnnexFirmaEntity firmaEntity = annex.getFirmes().get(indexFirma);
-				if (firma != null && firmaEntity != null) {
-					arxiu.setNom(firmaEntity.getFitxerNom());
-					arxiu.setContentType(firmaEntity.getTipusMime());
-					arxiu.setContingut(firma.getContingut());
-					arxiu.setTamany(firma.getContingut().length);
-				}
-			}
-		}
-		return arxiu;
-	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException {
@@ -630,11 +918,11 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		List<RegistreAnnexDetallDto> annexos = new ArrayList<RegistreAnnexDetallDto>();
+		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
+			RegistreAnnexDto annex = conversioTipusHelper.convertir(
 					annexEntity,
-					RegistreAnnexDetallDto.class);
+					RegistreAnnexDto.class);
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
 				Document document = pluginHelper.arxiuDocumentConsultar(
 						annex.getFitxerArxiuUuid(),
@@ -645,7 +933,6 @@ public class RegistreServiceImpl implements RegistreService {
 					annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
 					
 				}
-				annex.setAmbDocument(true);
 				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
 					List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(annexEntity, null);
@@ -685,11 +972,11 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public RegistreAnnexDetallDto getAnnexAmbArxiu(
+	public RegistreAnnexDto getAnnexSenseFirmes(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId,
-			String fitxerArxiuUuid
+			Long annexId
 			) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
@@ -718,34 +1005,28 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true);
 		}
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
-		RegistreAnnexEntity chosenAnnexEntity=null;
-		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			if (annexEntity.getFitxerArxiuUuid().equals(fitxerArxiuUuid)) {
-				chosenAnnexEntity = annexEntity;
-			}
-		}
-		RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
-				chosenAnnexEntity,
-				RegistreAnnexDetallDto.class);
-		annex.setAmbDocument(true);
+		
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		
+		RegistreAnnexDto annex = conversioTipusHelper.convertir(
+				registreAnnexEntity,
+				RegistreAnnexDto.class);
 		return annex;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public RegistreAnnexDetallDto getAnnexFirmesAmbArxiu(
+	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId,
-			String fitxerArxiuUuid
+			Long annexId
 			) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + bustiaId + ", "
 				+ "registreId=" + registreId + ")");
+		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -769,26 +1050,20 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true);
 		}
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
-		RegistreAnnexEntity chosenAnnexEntity=null;
-		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			if (annexEntity.getFitxerArxiuUuid().equals(fitxerArxiuUuid)) {
-				chosenAnnexEntity = annexEntity;
-			}
-		}
-		RegistreAnnexDetallDto annex = conversioTipusHelper.convertir(
-				chosenAnnexEntity,
-				RegistreAnnexDetallDto.class);
-		if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
+		
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		RegistreAnnexDto registreAnnexDto = conversioTipusHelper.convertir(
+				registreAnnexEntity,
+				RegistreAnnexDto.class);
+		
+		// if annex is already created in arxiu use document and firma content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			Document document = pluginHelper.arxiuDocumentConsultar(
-					annex.getFitxerArxiuUuid(),
+					registreAnnexEntity.getFitxerArxiuUuid(),
 					null,
 					true);
-			annex.setAmbDocument(true);
 			if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(chosenAnnexEntity, null);
+				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(registreAnnexEntity, null);
 				Iterator<Firma> it = document.getFirmes().iterator();
 				int firmaIndex = 0;
 				while (it.hasNext()) {
@@ -798,10 +1073,6 @@ public class RegistreServiceImpl implements RegistreService {
 						if (pluginHelper.isValidaSignaturaPluginActiu()) {
 							byte[] documentContingut = document.getContingut().getContingut();
 							byte[] firmaContingut = arxiuFirma.getContingut();
-							if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
-									ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
-								firmaContingut = arxiuFirma.getContingut();
-							}
 							firma.setDetalls(
 									pluginHelper.validaSignaturaObtenirDetalls(
 											documentContingut,
@@ -812,20 +1083,62 @@ public class RegistreServiceImpl implements RegistreService {
 						it.remove();
 					}
 				}
-				annex.setFirmes(firmes);
-				annex.setAmbFirma(true);
+				registreAnnexDto.setFirmes(firmes);
+				registreAnnexDto.setAmbFirma(true);
 			}
+			// if annex is not yet created in arxiu use document and firma content from gestio documental
+		} else {
+
+			List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
+					registreAnnexEntity,
+					null);
+
+			for (int i = 0; i < firmes.size(); i++) {
+
+				ArxiuFirmaDto arxiuFirmaDto = firmes.get(i);
+				RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexEntity.getFirmes().get(i);
+
+				if (pluginHelper.isValidaSignaturaPluginActiu()) {
+					
+					byte[] documentContingut = null;
+					if (registreAnnexEntity.getGesdocDocumentId() != null && !registreAnnexEntity.getGesdocDocumentId().isEmpty()) {
+						
+						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								registreAnnexEntity.getGesdocDocumentId(),
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
+								streamAnnex);
+						documentContingut = streamAnnex.toByteArray();
+					}
+					byte[] firmaContingut = null;
+					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
+						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								registreAnnexFirmaEntity.getGesdocFirmaId(),
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+								streamAnnexFirma);
+						firmaContingut = streamAnnexFirma.toByteArray();
+					}
+					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
+							documentContingut,
+							firmaContingut));
+				}
+			}
+
+			registreAnnexDto.setFirmes(firmes);
+			registreAnnexDto.setAmbFirma(true);
+
 		}
-		return annex;
+		return registreAnnexDto;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
-		RegistreAnotacioDto registreAnotacioDto;
+	public RegistreDto findAmbIdentificador(String identificador) {
+		RegistreDto registreAnotacioDto;
 		RegistreEntity registre = registreRepository.findByIdentificador(identificador);
 		if (registre != null)
-			registreAnotacioDto = (RegistreAnotacioDto) contingutHelper.toContingutDto(registre);
+			registreAnotacioDto = (RegistreDto) contingutHelper.toContingutDto(registre);
 		else
 			registreAnotacioDto = null;
 		return registreAnotacioDto;
@@ -877,7 +1190,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional
 	@Override
-	public RegistreAnotacioDto marcarLlegida(
+	public RegistreDto marcarLlegida(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) {
@@ -913,7 +1226,7 @@ public class RegistreServiceImpl implements RegistreService {
 					registreId);
 		registre.updateLlegida(true);
 		
-		return (RegistreAnotacioDto) contingutHelper.toContingutDto(
+		return (RegistreDto) contingutHelper.toContingutDto(
 				registre);		
 	}
 
@@ -987,13 +1300,13 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
-			Long contingutId,
+			Long bustiaId,
 			Long registreId,
 			String procedimentCodi)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
-				"contingutId=" + contingutId + ", " +
+				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ", " +
 				"procedimentCodi=" + procedimentCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1003,16 +1316,16 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
 				entitat,
-				contingutId,
+				bustiaId,
 				null);
 		if (contingut instanceof BustiaEntity) {
 			entityComprovarHelper.comprovarBustia(
 					entitat,
-					contingutId,
+					bustiaId,
 					true);
 		} else {
 			throw new ValidationException(
-					contingutId,
+					bustiaId,
 					ContingutEntity.class,
 					"El contingut especificat no és de tipus bústia");
 		}
@@ -1428,7 +1741,7 @@ public class RegistreServiceImpl implements RegistreService {
 		return exceptionProcessant;
 	}
 
-	private RegistreAnnexDetallDto getJustificantPerRegistre(
+	private RegistreAnnexDto getJustificantPerRegistre(
 			EntitatEntity entitat,
 			ContingutEntity registre,
 			String justificantUuid,
@@ -1437,7 +1750,7 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "entitatId=" + entitat.getId() + ", "
 				+ "registreId=" + registre.getId() + ", "
 				+ "justificantUuid=" + justificantUuid + ")");
-		RegistreAnnexDetallDto annex = new RegistreAnnexDetallDto();
+		RegistreAnnexDto annex = new RegistreAnnexDto();
 		Document document = pluginHelper.arxiuDocumentConsultar(justificantUuid, null, ambContingut);
 		annex.setFitxerNom(obtenirJustificantNom(document));
 		annex.setFitxerTamany(document.getContingut().getContingut().length);
@@ -1451,7 +1764,6 @@ public class RegistreServiceImpl implements RegistreService {
 			annex.setNtiTipusDocument(metadades.getTipusDocumental().name());
 			annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
 		}
-		annex.setAmbDocument(true);
 		return annex;
 	}
 

@@ -21,7 +21,7 @@ import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ContingutService;
 
@@ -228,11 +228,6 @@ public class ContingutServiceBean implements ContingutService {
 		return delegate.marcarProcessat(entitatId, contingutId, text);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public PaginaDto<RegistreAnotacioDto> findAnotacionsRegistre(Long entitatId, AnotacioRegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		return delegate.findAnotacionsRegistre(entitatId, filtre, paginacioParams);
-	}
+
 
 }

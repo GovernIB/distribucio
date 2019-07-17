@@ -37,6 +37,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	RegistreEntity findByNumero(String numero);
 	
+	
+	@Query(
+			"from" +
+			"    RegistreEntity r " +
+			"where r.numero = :numero" )
+	List<RegistreEntity> findRegistresByNumero(
+			@Param("numero") String numero);
+	
+	
 	@Query(
 			"from" +
 			"    RegistreEntity r " +

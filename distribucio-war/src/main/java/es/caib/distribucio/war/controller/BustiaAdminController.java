@@ -135,7 +135,7 @@ public class BustiaAdminController extends BaseAdminController {
 	
 	
 
-	@RequestMapping(value = "/{bustiaId}/bustiaTransicioInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/transicioInfo", method = RequestMethod.GET)
 	public String bustiaTransicioInfo(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
@@ -164,7 +164,7 @@ public class BustiaAdminController extends BaseAdminController {
 		model.addAttribute(bustia);	
 		}
 		
-		return "bustiaTransicioInfo";
+		return "bustiaAdminTransicioInfo";
 	}
 
 
@@ -226,7 +226,7 @@ public class BustiaAdminController extends BaseAdminController {
 		MoureAnotacionsCommand command = new MoureAnotacionsCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
-		return "bustiaMoureAnotacions";
+		return "bustiaAdminMoureAnotacions";
 	}
 	
 	/** Mou les anotacions de registre d'una bústia orígen cap a la bústia seleccionada per l'usuari.
@@ -257,7 +257,7 @@ public class BustiaAdminController extends BaseAdminController {
 					entitatActual,
 					bustiaId,
 					model);
-			return "bustiaMoureAnotacions";
+			return "bustiaAdminMoureAnotacions";
 		}
 		int anotacionsMogudes = 0;
 		try {
@@ -277,7 +277,7 @@ public class BustiaAdminController extends BaseAdminController {
 					entitatActual,
 					bustiaId,
 					model);
-			return "bustiaMoureAnotacions";	
+			return "bustiaAdminMoureAnotacions";	
 		}
 		return getModalControllerReturnValueSuccess(
 				request,

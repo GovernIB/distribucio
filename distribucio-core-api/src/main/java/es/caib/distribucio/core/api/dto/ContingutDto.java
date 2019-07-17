@@ -150,12 +150,12 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 
 
-	public List<RegistreAnotacioDto> getFillsRegistres() {
-		List<RegistreAnotacioDto> registres = new ArrayList<RegistreAnotacioDto>();
+	public List<RegistreDto> getFillsRegistres() {
+		List<RegistreDto> registres = new ArrayList<RegistreDto>();
 		if (fills != null) {
 			for (ContingutDto contenidor: fills) {
-				if (contenidor instanceof RegistreAnotacioDto)
-					registres.add((RegistreAnotacioDto)contenidor);
+				if (contenidor instanceof RegistreDto)
+					registres.add((RegistreDto)contenidor);
 			}
 		}
 		return registres;
@@ -164,7 +164,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		List<ContingutDto> noRegistres = new ArrayList<ContingutDto>();
 		if (fills != null) {
 			for (ContingutDto contenidor: fills) {
-				if (!(contenidor instanceof RegistreAnotacioDto))
+				if (!(contenidor instanceof RegistreDto))
 					noRegistres.add(contenidor);
 			}
 		}
@@ -180,7 +180,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		} else {
 			int count = 0;
 			for (ContingutDto contenidor: fills) {
-				if (contenidor instanceof RegistreAnotacioDto)
+				if (contenidor instanceof RegistreDto)
 					count++;
 			}
 			return count;
@@ -192,7 +192,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		} else {
 			int count = 0;
 			for (ContingutDto contenidor: fills) {
-				if (!(contenidor instanceof RegistreAnotacioDto))
+				if (!(contenidor instanceof RegistreDto))
 					count++;
 			}
 			return count;
@@ -226,7 +226,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 		return this instanceof BustiaDto;
 	}
 	public boolean isRegistre() {
-		return this instanceof RegistreAnotacioDto;
+		return this instanceof RegistreDto;
 	}
 
 	public ContingutTipusEnumDto getTipus() {

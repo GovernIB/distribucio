@@ -16,7 +16,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
-import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -158,44 +158,21 @@ public class BustiaServiceBean implements BustiaService {
 				adresses);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
-			Long entitatId,
-			List<BustiaDto> bustiesUsuari,
-			BustiaUserFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) {
-		return delegate.contingutPendentFindByDatatable(
-				entitatId,
-				bustiesUsuari,
-				filtre,
-				paginacioParams);
-	}
+
 
 	@Override
 	@RolesAllowed("tothom")
 	public List<Long> findIdsAmbFiltre(
 			Long entitatId, 
 			List<BustiaDto> bustiesUsuari, 
-			BustiaUserFiltreDto filtre) {
+			RegistreFiltreDto filtre) {
 		return delegate.findIdsAmbFiltre(
 				entitatId, 
 				bustiesUsuari, 
 				filtre);
 	}
 
-	
-	@Override
-	@RolesAllowed("tothom")
-	public BustiaContingutDto contingutPendentFindOne(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId) {
-		return delegate.contingutPendentFindOne(
-				entitatId,
-				bustiaId,
-				contingutId);
-	}
+
 
 	@Override
 	@RolesAllowed("tothom")
@@ -264,14 +241,14 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void contingutPendentReenviar(
+	public void registreReenviar(
 			Long entitatId,
 			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
 			Long contingutId,
 			boolean deixarCopia,
 			String comentari) throws NotFoundException {
-		delegate.contingutPendentReenviar(
+		delegate.registreReenviar(
 				entitatId,
 				bustiaOrigenId,
 				bustiaDestiIds,

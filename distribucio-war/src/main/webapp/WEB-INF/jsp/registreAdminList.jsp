@@ -79,8 +79,8 @@ $(document).ready(function() {
 					suggestText="nom" />
 			</div>
 			<div class="col-md-3" style="margin-bottom: 15px">
-				<c:url value="/anotacionsRegistre/ajaxBustia" var="urlConsultaInicial"/>
-				<c:url value="/anotacionsRegistre/ajaxBusties/null" var="urlConsultaLlistat"/>
+				<c:url value="/registreAdmin/ajaxBustia" var="urlConsultaInicial"/>
+				<c:url value="/registreAdmin/ajaxBusties/null" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="bustia" 
 					urlConsultaInicial="${urlConsultaInicial}" 
@@ -121,7 +121,7 @@ $(document).ready(function() {
 	<table
 		id="taulaDades"
 		data-toggle="datatable"
-		data-url="<c:url value="/anotacionsRegistre/datatable"/>"
+		data-url="<c:url value="/registreAdmin/datatable"/>"
 		data-filter="#anotacioRegistreFiltreCommand"
 		data-default-order="5"
 		data-default-dir="desc"
@@ -186,7 +186,7 @@ $(document).ready(function() {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								<li><a href="contingutAdmin/{{:id}}/info" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
+								<li><a href="contingutAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 							</ul>
 						</div>
 					</script>
