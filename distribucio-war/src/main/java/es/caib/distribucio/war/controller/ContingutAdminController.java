@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -100,19 +101,37 @@ public class ContingutAdminController extends BaseAdminController {
 				"id");
 	}
 
-	@RequestMapping(value = "/{contingutId}/info", method = RequestMethod.GET)
-	public String info(
+	@RequestMapping(value = "/{contingutId}/detall", method = RequestMethod.GET)
+	public String detall(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		ContingutDto contingutDto = contingutService.findAmbIdAdmin(
+				entitatActual.getId(),
+				contingutId,
+				true);
+
 		model.addAttribute(
 				"contingut",
-				contingutService.findAmbIdAdmin(
-						entitatActual.getId(),
-						contingutId,
-						true));
-		return "contingutAdminInfo";
+				contingutDto);
+
+		switch (contingutDto.getTipus()) {
+		case BUSTIA:
+			model.addAttribute(
+					"bustia",
+					contingutDto);			
+			return "bustiaAdminDetall";
+
+		case REGISTRE:
+			model.addAttribute(
+					"registre",
+					contingutDto);			
+			return "registreAdminDetall";
+		}
+
+		return null;
 	}
 
 	@RequestMapping(value = "/{contingutId}/log", method = RequestMethod.GET)
@@ -121,12 +140,6 @@ public class ContingutAdminController extends BaseAdminController {
 			@PathVariable Long contingutId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdAdmin(
-						entitatActual.getId(),
-						contingutId,
-						true));
 		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutAdmin(
@@ -137,6 +150,13 @@ public class ContingutAdminController extends BaseAdminController {
 				contingutService.findMovimentsPerContingutAdmin(
 						entitatActual.getId(),
 						contingutId));
+		
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdAdmin(
+						entitatActual.getId(),
+						contingutId,
+						true));
 		return "contingutLog";
 	}
 	
@@ -217,7 +237,7 @@ public class ContingutAdminController extends BaseAdminController {
 
 
 
-		return "redirect:../../../" + registreId + "/info";
+		return "redirect:../../../" + registreId + "/detall";
 	}
 	
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
@@ -246,7 +266,7 @@ public class ContingutAdminController extends BaseAdminController {
 							"contingut.admin.controller.registre.reintentat.error",
 							null));
 		}
-		return "redirect:../../../" + registreId + "/info";
+		return "redirect:../../../" + registreId + "/detall";
 	}
 	
 

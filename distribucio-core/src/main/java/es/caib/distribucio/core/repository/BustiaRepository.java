@@ -66,7 +66,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"    b.entitat = :entitat " +
 			"and b.pare != null " +
 			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
-			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) ")
+			"and (:esNullFiltreNom = true or lower(b.nom) like lower('% '||:filtreNom||' %')) ")
 	List<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,

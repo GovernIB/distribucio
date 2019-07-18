@@ -26,6 +26,8 @@ public class AnotacioRegistreFiltreCommand {
 	private RegistreProcesEstatEnum estat;
 	private String nom;
 	private String numeroOrigen;
+	private boolean nomesAmbErrors;
+
 
 	public String getNumeroOrigen() {
 		return numeroOrigen;
@@ -33,7 +35,6 @@ public class AnotacioRegistreFiltreCommand {
 	public void setNumeroOrigen(String numeroOrigen) {
 		this.numeroOrigen = numeroOrigen;
 	}
-
 	public String getNom() {
 		return nom;
 	}
@@ -87,6 +88,12 @@ public class AnotacioRegistreFiltreCommand {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	public boolean isNomesAmbErrors() {
+		return nomesAmbErrors;
+	}
+	public void setNomesAmbErrors(boolean nomesAmbErrors) {
+		this.nomesAmbErrors = nomesAmbErrors;
 	}
 
 }

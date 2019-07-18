@@ -163,4 +163,7 @@ public interface AplicacioService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public Properties propertyFindByPrefix(String prefix);
 
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	String propertyFindByNom(String nom);
+
 }

@@ -47,7 +47,7 @@
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
 			${justificant.fitxerNom} (${justificant.fitxerTamany} bytes)
-			<a href="${justificant.registreId}/justificant" class="btn btn-default btn-sm pull-right">
+			<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${justificant.registreId}/justificant"/>" class="btn btn-default btn-sm pull-right">
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 			</a>
 		</td>

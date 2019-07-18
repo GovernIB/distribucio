@@ -60,5 +60,8 @@
 			id="bantelBackofficeWs"
 			jndi-name="distribucio/BantelBackofficeWsBean/local"
 			business-interface="es.caib.distribucio.core.api.service.bantel.ws.v2.BantelBackofficeWs"/>
-
+	<jee:local-slsb
+			id="avisService"
+			jndi-name="distribucio/AvisServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.AvisService"/>
 </beans>

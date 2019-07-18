@@ -25,7 +25,7 @@ public class BustiaContingutDto implements Serializable {
 	private String comentari;
 	private long pareId;
 	private List<ContingutDto> path;
-	private BustiaContingutFiltreEstatEnumDto estatContingut;
+	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private boolean procesAutomatic;
 	private boolean error;
 	private long numComentaris;
@@ -88,11 +88,11 @@ public class BustiaContingutDto implements Serializable {
 	public void setPath(List<ContingutDto> path) {
 		this.path = path;
 	}
-	public BustiaContingutFiltreEstatEnumDto getEstatContingut() {
-		return estatContingut;
+	public RegistreProcesEstatSimpleEnumDto getProcesEstatSimple() {
+		return procesEstatSimple;
 	}
-	public void setEstatContingut(BustiaContingutFiltreEstatEnumDto estatContingut) {
-		this.estatContingut = estatContingut;
+	public void setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto procesEstatSimple) {
+		this.procesEstatSimple = procesEstatSimple;
 	}
 	public boolean isProcesAutomatic() {
 		return procesAutomatic;

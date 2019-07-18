@@ -130,6 +130,16 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	public List<AlertaEntity> getAlertes() {
 		return alertes;
 	}
+	public List<AlertaEntity> getAlertesNoLlegides() {
+		List<AlertaEntity> alertesNoLlegides = new ArrayList<>();
+		if (alertes != null && !alertes.isEmpty()) {
+			for (AlertaEntity alertaEntity : alertes) {
+				if (alertaEntity.getLlegida() == Boolean.FALSE)
+					alertesNoLlegides.add(alertaEntity);
+			}
+		}
+		return alertes;
+	}
 	public void update(String nom) {
 		this.nom = nom;
 	}

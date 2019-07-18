@@ -18,7 +18,7 @@
 		<dis:inputTextarea required="true" name="motiu" textKey="bustia.pendent.contingut.camp.motiu"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="bustia.pendent.contingut.marcar.processat.boto"/></button>
-			<a href="<c:url value="/bustiaUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/registreUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>
