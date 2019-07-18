@@ -662,70 +662,7 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiesRetorn;
 	}
 
-	@Transactional
-	@Override
-	public ContingutDto enviarContingut(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId,
-			String comentari) {
-		logger.debug("Enviant contingut a bústia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "registreId=" + registreId + ","
-				+ "comentari=" + comentari + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				registreId,
-				null);
-		// Comprova l'accés al path del contingutOrigen
-		contingutHelper.comprovarPermisosPathContingut(
-				contingut,
-				true,
-				false,
-				false,
-				true);
-		// Comprova la bústia
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		// Fa l'enviament
-		ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-				contingut,
-				bustia,
-				comentari);
-		// Registra al log l'enviament del contingut
-		contingutLogHelper.log(
-				contingut,
-				LogTipusEnumDto.ENVIAMENT,
-				contingutMoviment,
-				true,
-				true);
-		// Avisam per correu als responsables de la bústia de destí
-		emailHelper.emailBustiaPendentContingut(
-				bustia,
-				contingut,
-				contingutMoviment);
-		// Refrescam cache usuaris bústia de destí
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustia);
-		return contingutHelper.toContingutDto(
-				contingut,
-				true,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false);
-	}
+	
 	
 	
 	private EntitatEntity validateRegistre(

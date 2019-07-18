@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,11 +12,9 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutFiltreDto;
@@ -26,12 +25,12 @@ import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
@@ -47,6 +46,7 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
+import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
@@ -88,7 +88,9 @@ public class ContingutServiceImpl implements ContingutService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
-
+	@Resource
+	private ContingutLogRepository contingutLogRepository;
+	
 
 
 
@@ -221,6 +223,48 @@ public class ContingutServiceImpl implements ContingutService {
 				true);
 		return contingutLogHelper.findLogsContingut(contingut);
 	}
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		contingutHelper.comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		
+		List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(
+				contingut);
+		List<ContingutLogDetallsDto> dtos = new ArrayList<ContingutLogDetallsDto>();
+		
+		for (ContingutLogEntity log : logs) {
+			ContingutLogDetallsDto dto = contingutLogHelper.findLogDetalls(
+					contingut,
+					log.getId());
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	
+	
 
 	
 	@Transactional(readOnly = true)

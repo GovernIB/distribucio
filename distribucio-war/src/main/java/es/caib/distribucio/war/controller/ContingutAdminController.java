@@ -145,12 +145,6 @@ public class ContingutAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
-				"contingut",
-				contingutService.findAmbIdAdmin(
-						entitatActual.getId(),
-						contingutId,
-						true));
-		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutAdmin(
 						entitatActual.getId(),
@@ -160,6 +154,13 @@ public class ContingutAdminController extends BaseAdminController {
 				contingutService.findMovimentsPerContingutAdmin(
 						entitatActual.getId(),
 						contingutId));
+		
+		model.addAttribute(
+				"contingut",
+				contingutService.findAmbIdAdmin(
+						entitatActual.getId(),
+						contingutId,
+						true));
 		return "contingutLog";
 	}
 	

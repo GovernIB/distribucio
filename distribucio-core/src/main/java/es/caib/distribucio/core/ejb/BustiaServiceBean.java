@@ -116,19 +116,7 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.findActivesAmbEntitat(entitatId);
 	}
 
-	@Override
-	@RolesAllowed("tothom")
-	public ContingutDto enviarContingut(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId,
-			String comentari) {
-		return delegate.enviarContingut(
-				entitatId,
-				bustiaId,
-				contingutId,
-				comentari);
-	}
+
 
 	@Override
 	@RolesAllowed("DIS_BSTWS")

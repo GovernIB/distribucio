@@ -107,13 +107,15 @@ public class ReglaHelper {
 
 	public Exception aplicarControlantException(
 			RegistreEntity registre) {
-		contingutLogHelper.log(
-				registre,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				null,
-				false,
-				false);
+		
+//TODO: remove this state		
+//		contingutLogHelper.log(
+//				registre,
+//				LogTipusEnumDto.PROCESSAMENT,
+//				null,
+//				null,
+//				false,
+//				false);
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
 				"registreNumero=" + registre.getNumero() + ", " +

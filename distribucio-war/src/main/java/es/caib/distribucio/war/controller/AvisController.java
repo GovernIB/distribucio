@@ -36,8 +36,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 @RequestMapping("/avis")
 public class AvisController extends BaseAdminController {
 	
-	private static final String SESSION_ATTRIBUTE_FILTRE = "AvisController.session.filtre";
-
 	@Autowired
 	private AvisService avisService;
 
