@@ -25,7 +25,15 @@ public class RegistreFiltreDto implements Serializable {
 	private Date dataRecepcioFi;
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private String numeroOrigen;
+	private String interessat;
+	
 
+	public String getInteressat() {
+		return interessat;
+	}
+	public void setInteressat(String interessat) {
+		this.interessat = interessat;
+	}
 	public String getNumeroOrigen() {
 		return numeroOrigen;
 	}

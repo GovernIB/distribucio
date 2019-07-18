@@ -794,24 +794,24 @@ public class BustiaServiceImpl implements BustiaService {
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatOrganitzativa,
-			RegistreAnotacio anotacio) {
+			RegistreAnotacio registreAnotacio) {
 		
 		logger.debug("Creant anotació provinent del servei d'enviament a bústia ("
 				+ "entitatCodi=" + entitatCodi + ", "
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
-				+ "anotacio=" + anotacio.getNumero() + ")");
+				+ "anotacio=" + registreAnotacio.getNumero() + ")");
 		
-		EntitatEntity entitat = validateRegistre(entitatCodi, anotacio);
+		EntitatEntity entitat = validateRegistre(entitatCodi, registreAnotacio);
 		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
-				anotacio.getProcedimentCodi(),
-				anotacio.getAssumpteCodi());
+				registreAnotacio.getProcedimentCodi(),
+				registreAnotacio.getAssumpteCodi());
 
 		RegistreProcesEstatEnum estat;
-		if (anotacio.getAnnexos() != null && !anotacio.getAnnexos().isEmpty()) {
+		if (registreAnotacio.getAnnexos() != null && !registreAnotacio.getAnnexos().isEmpty()) {
 			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
 		} else if (reglaAplicable != null) {
 			estat = RegistreProcesEstatEnum.REGLA_PENDENT;
@@ -825,7 +825,7 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				tipus,
 				unitatOrganitzativa,
-				anotacio,
+				registreAnotacio,
 				reglaAplicable,
 				estat);
 		
@@ -846,7 +846,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
-					"anotacio=" + anotacio.getNumero() + ")");
+					"anotacio=" + registreAnotacio.getNumero() + ")");
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getId());
 			if (exceptionProcessant == null) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
@@ -857,7 +857,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
-					"anotacio=" + anotacio.getNumero() + ")");
+					"anotacio=" + registreAnotacio.getNumero() + ")");
 		}
 		
 		return exceptionProcessant;

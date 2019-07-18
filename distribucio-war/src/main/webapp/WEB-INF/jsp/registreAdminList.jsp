@@ -180,7 +180,7 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false"><spring:message code="contingut.admin.columna.interessats"/></th>
+				<th data-col-name="interessatsAndRepresentantsResum" data-orderable="false"><spring:message code="contingut.admin.columna.interessats"/></th>
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">

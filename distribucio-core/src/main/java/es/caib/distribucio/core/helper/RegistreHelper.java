@@ -168,15 +168,15 @@ public class RegistreHelper {
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
-			RegistreAnotacio anotacio,
+			RegistreAnotacio registreAnotacio,
 			ReglaEntity regla,
 			RegistreProcesEstatEnum estat) {
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
 		String justificantArxiuUuid = null;
-		if (anotacio.getJustificant() != null) {
-			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
+		if (registreAnotacio.getJustificant() != null) {
+			justificantArxiuUuid = registreAnotacio.getJustificant().getFitxerArxiuUuid();
 		}
 		// save annotacio in db
 		RegistreEntity registreEntity = RegistreEntity.getBuilder(
@@ -184,53 +184,53 @@ public class RegistreHelper {
 				tipus,
 				unitatAdministrativa,
 				unitat != null ? unitat.getDenominacio() : null,
-				anotacio.getNumero(),
-				anotacio.getData(),
+				registreAnotacio.getNumero(),
+				registreAnotacio.getData(),
 				0, // número de còpia
-				anotacio.getIdentificador(),
-				anotacio.getExtracte(),
-				anotacio.getOficinaCodi(),
-				anotacio.getLlibreCodi(),
-				anotacio.getAssumpteTipusCodi(),
-				anotacio.getIdiomaCodi(),
+				registreAnotacio.getIdentificador(),
+				registreAnotacio.getExtracte(),
+				registreAnotacio.getOficinaCodi(),
+				registreAnotacio.getLlibreCodi(),
+				registreAnotacio.getAssumpteTipusCodi(),
+				registreAnotacio.getIdiomaCodi(),
 				estat,
 				null).
-		entitatCodi(anotacio.getEntitatCodi()).
-		entitatDescripcio(anotacio.getEntitatDescripcio()).
-		oficinaDescripcio(anotacio.getOficinaDescripcio()).
-		llibreDescripcio(anotacio.getLlibreDescripcio()).
-		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
-		assumpteCodi(anotacio.getAssumpteCodi()).
-		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
-		procedimentCodi(anotacio.getProcedimentCodi()).
-		referencia(anotacio.getReferencia()).
-		expedientNumero(anotacio.getExpedientNumero()).
-		numeroOrigen(anotacio.getNumeroOrigen()).
-		idiomaDescripcio(anotacio.getIdiomaDescripcio()).
-		transportTipusCodi(anotacio.getTransportTipusCodi()).
-		transportTipusDescripcio(anotacio.getTransportTipusDescripcio()).
-		transportNumero(anotacio.getTransportNumero()).
-		usuariCodi(anotacio.getUsuariCodi()).
-		usuariNom(anotacio.getUsuariNom()).
-		usuariContacte(anotacio.getUsuariContacte()).
-		aplicacioCodi(anotacio.getAplicacioCodi()).
-		aplicacioVersio(anotacio.getAplicacioVersio()).
-		documentacioFisicaCodi(anotacio.getDocumentacioFisicaCodi()).
-		documentacioFisicaDescripcio(anotacio.getDocumentacioFisicaDescripcio()).
-		observacions(anotacio.getObservacions()).
-		exposa(anotacio.getExposa()).
-		solicita(anotacio.getSolicita()).
+		entitatCodi(registreAnotacio.getEntitatCodi()).
+		entitatDescripcio(registreAnotacio.getEntitatDescripcio()).
+		oficinaDescripcio(registreAnotacio.getOficinaDescripcio()).
+		llibreDescripcio(registreAnotacio.getLlibreDescripcio()).
+		assumpteTipusDescripcio(registreAnotacio.getAssumpteTipusDescripcio()).
+		assumpteCodi(registreAnotacio.getAssumpteCodi()).
+		assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
+		procedimentCodi(registreAnotacio.getProcedimentCodi()).
+		referencia(registreAnotacio.getReferencia()).
+		expedientNumero(registreAnotacio.getExpedientNumero()).
+		numeroOrigen(registreAnotacio.getNumeroOrigen()).
+		idiomaDescripcio(registreAnotacio.getIdiomaDescripcio()).
+		transportTipusCodi(registreAnotacio.getTransportTipusCodi()).
+		transportTipusDescripcio(registreAnotacio.getTransportTipusDescripcio()).
+		transportNumero(registreAnotacio.getTransportNumero()).
+		usuariCodi(registreAnotacio.getUsuariCodi()).
+		usuariNom(registreAnotacio.getUsuariNom()).
+		usuariContacte(registreAnotacio.getUsuariContacte()).
+		aplicacioCodi(registreAnotacio.getAplicacioCodi()).
+		aplicacioVersio(registreAnotacio.getAplicacioVersio()).
+		documentacioFisicaCodi(registreAnotacio.getDocumentacioFisicaCodi()).
+		documentacioFisicaDescripcio(registreAnotacio.getDocumentacioFisicaDescripcio()).
+		observacions(registreAnotacio.getObservacions()).
+		exposa(registreAnotacio.getExposa()).
+		solicita(registreAnotacio.getSolicita()).
 		regla(regla).
 		oficinaOrigen(
-				anotacio.getDataOrigen(),
-				anotacio.getOficinaOrigenCodi(),
-				anotacio.getOficinaOrigenDescripcio()).
+				registreAnotacio.getDataOrigen(),
+				registreAnotacio.getOficinaOrigenCodi(),
+				registreAnotacio.getOficinaOrigenDescripcio()).
 		justificantArxiuUuid(justificantArxiuUuid).
 		build();
 		registreRepository.saveAndFlush(registreEntity);
 		// save interessats in db
-		if (anotacio.getInteressats() != null) { 
-			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
+		if (registreAnotacio.getInteressats() != null) { 
+			for (RegistreInteressat registreInteressat: registreAnotacio.getInteressats()) {
 				registreEntity.getInteressats().add(
 						crearInteressatEntity(
 								registreInteressat,
@@ -238,8 +238,8 @@ public class RegistreHelper {
 			}
 		}
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
-		if (anotacio.getAnnexos() != null) { 
-			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
+		if (registreAnotacio.getAnnexos() != null) { 
+			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
 				registreEntity.getAnnexos().add(
 						crearAnnexEntity(
 								registreAnnex,

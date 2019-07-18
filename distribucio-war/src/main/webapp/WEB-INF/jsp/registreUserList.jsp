@@ -144,6 +144,9 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
 			</div>
+			<div class="col-md-2">
+				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
+			</div>			
 			<div class="col-md-1">
 				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 					<span class="fa-stack" aria-hidden="true">
@@ -183,7 +186,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="8"
+		data-default-order="10"
 		data-default-dir="desc">
 		<thead>
 			<tr>
@@ -192,19 +195,23 @@ $(document).ready(function() {
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="procesEstat"  data-visible="false">
-				<th data-col-name="nom" data-template="#contingutTemplate">
-					<spring:message code="bustia.pendent.columna.contingut"/>
+				<th data-col-name="procesError" data-visible="false">#</th>
+				<th data-col-name="numero" width="15%" data-template="#contingutTemplate">
+					<spring:message code="bustia.pendent.columna.numero"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
 						<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>
-						{{:nom}}
+						{{:numero}}
 						{{if alerta}}
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="extracte" width="15%">
+					<spring:message code="bustia.pendent.columna.titol"/>
+				</th>					
+				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				<th data-col-name="darrerMovimentUsuari.nom"><spring:message code="bustia.pendent.columna.remitent"/></th>
-				<th data-col-name="darrerMovimentData" data-converter="datetime" width="15%"><spring:message code="bustia.pendent.columna.recepcio.data"/></th>
+				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstatSimple" data-orderable="false" width="10%" data-template="#procesEstatSimpleTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/>
 					<script id="procesEstatSimpleTemplate" type="text/x-jsrender">
@@ -227,9 +234,8 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="procesError" data-visible="false">#</th>
-		
-				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
+						
+				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
@@ -241,6 +247,9 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
+				<th data-col-name="interessatsResum" data-orderable="false">
+					<spring:message code="bustia.pendent.columna.interessats"/>
+				</th>				
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>

@@ -163,7 +163,6 @@ public class ContingutHelper {
 			registreDto.setNumComentaris(contingutComentariRepository.countByContingut(registreEntity));
 			// toBustiaContingut //
 			
-			
 			contingutDto = registreDto;
 		}
 		

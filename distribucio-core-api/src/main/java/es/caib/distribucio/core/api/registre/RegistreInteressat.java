@@ -10,6 +10,7 @@ package es.caib.distribucio.core.api.registre;
  */
 public class RegistreInteressat {
 
+	private Long id;
 	private String tipus;
 	private String documentTipus;
 	private String documentNum;
@@ -166,6 +167,12 @@ public class RegistreInteressat {
 	}
 	public void setRepresentat(RegistreInteressat representat) {
 		this.representat = representat;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }

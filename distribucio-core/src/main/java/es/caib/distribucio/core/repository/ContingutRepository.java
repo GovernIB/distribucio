@@ -85,9 +85,16 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
 			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
 			"and (:esNullEstatSimple = true " +
-			"or (:isProcessat = false and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.REGLA_PENDENT)) " +
-			"or (:isProcessat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PROCESSADA or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_REBUDA or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PROCESSADA or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_REBUTJADA or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR)) " +
-			")")
+			"		or (:isProcessat = false " +
+			"				and (c.procesEstat in ('BUSTIA_PENDENT', 'ARXIU_PENDENT', 'REGLA_PENDENT'))) " +
+			"		or (:isProcessat = true " +
+			"				and (c.procesEstat in ('BUSTIA_PROCESSADA', 'BACK_PENDENT', 'BACK_REBUDA', 'BACK_PROCESSADA', 'BACK_REBUTJADA', 'BACK_ERROR')))) " +
+			"and (:esNullInteressat = true " +
+			"		or c.id in (" +
+			"			select interessat.registre.id " +
+			"			from RegistreInteressatEntity interessat " +	
+			"			where interessat.representat is null " +
+			"				and lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%'))) ")
 	public Page<ContingutEntity> findRegistreByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,
@@ -104,6 +111,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("dataFi") Date dataFi,
 			@Param("esNullEstatSimple") boolean esNullEstatSimple,
 			@Param("isProcessat") boolean isProcessat,
+			@Param("esNullInteressat") boolean esNullInteressat,
+			@Param("interessat") String interessat,
 			Pageable pageable);
 	
 	@Query(	"select " +

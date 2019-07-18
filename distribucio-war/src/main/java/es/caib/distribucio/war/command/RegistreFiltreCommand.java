@@ -28,13 +28,16 @@ public class RegistreFiltreCommand {
 	private Date dataRecepcioFi;
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private String numeroOrigen;
+	private String interessat;
 	
-	public String getNumeroOrigen() {
-		return numeroOrigen;
+
+	public String getInteressat() {
+		return interessat;
 	}
-	public void setNumeroOrigen(String numeroOrigen) {
-		this.numeroOrigen = numeroOrigen;
+	public void setInteressat(String interessat) {
+		this.interessat = interessat;
 	}
+	
 	
 	public static RegistreFiltreCommand asCommand(RegistreFiltreDto dto) {
 		RegistreFiltreCommand command = ConversioTipusHelper.convertir(
@@ -95,4 +98,11 @@ public class RegistreFiltreCommand {
 	public void setMostrarInactives(boolean mostrarInactives) {
 		this.mostrarInactives = mostrarInactives;
 	}
+	public String getNumeroOrigen() {
+		return numeroOrigen;
+	}
+	public void setNumeroOrigen(String numeroOrigen) {
+		this.numeroOrigen = numeroOrigen;
+	}	
+	
 }

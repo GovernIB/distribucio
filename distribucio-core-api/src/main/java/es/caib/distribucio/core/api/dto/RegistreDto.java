@@ -74,6 +74,7 @@ public class RegistreDto extends ContingutDto {
 	private String exposa;
 	private String solicita;
 	private List<RegistreInteressat> interessats;
+	private String interessatsNoms;
 	private List<RegistreAnnex> annexos;
 	private RegistreAnnexDto justificant;
 	
@@ -493,7 +494,7 @@ public class RegistreDto extends ContingutDto {
 		this.justificant = justificant;
 	}
 	
-	public String getInteressatsResum() {
+	public String getInteressatsAndRepresentantsResum() {
 		String interessatsResum = "";
 		if (this.interessats != null)
 			for (RegistreInteressat interessat: this.interessats) {
@@ -502,6 +503,19 @@ public class RegistreDto extends ContingutDto {
 				interessatsResum+=  interessat.getLlinatge2()==null ? "" : interessat.getLlinatge2()  + "<br>"; 
 			}
 		
+		return interessatsResum;
+	}
+	
+	public String getInteressatsResum() {
+		String interessatsResum = "";
+		if (this.interessats != null)
+			for (RegistreInteressat interessat : this.interessats) {
+				if (interessat.getRepresentat() == null) {
+					interessatsResum += interessat.getNom() == null ? "" : interessat.getNom() + " ";
+					interessatsResum += interessat.getLlinatge1() == null ? "" : interessat.getLlinatge1() + " ";
+					interessatsResum += interessat.getLlinatge2() == null ? "" : interessat.getLlinatge2() + "<br>";
+				}
+			}
 		return interessatsResum;
 	}
 	
@@ -517,6 +531,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
+	}
+	public String getInteressatsNoms() {
+		return interessatsNoms;
+	}
+	public void setInteressatsNoms(String interessatsNoms) {
+		this.interessatsNoms = interessatsNoms;
 	}
 	
 }

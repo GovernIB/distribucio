@@ -395,6 +395,8 @@ public class RegistreServiceImpl implements RegistreService {
 					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
 					filtre.getProcesEstatSimple() == null,
 					isFiltreProcessat,
+					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+					filtre.getInteressat(),
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							mapeigOrdenacio));
