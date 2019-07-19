@@ -25,7 +25,15 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	private RegistreProcesEstatEnum estat;
 	private String nom;
 	private String numeroOrigen;
+	private boolean nomesAmbErrors;
 
+	
+	public boolean isNomesAmbErrors() {
+		return nomesAmbErrors;
+	}
+	public void setNomesAmbErrors(boolean nomesAmbErrors) {
+		this.nomesAmbErrors = nomesAmbErrors;
+	}
 	public String getNumeroOrigen() {
 		return numeroOrigen;
 	}

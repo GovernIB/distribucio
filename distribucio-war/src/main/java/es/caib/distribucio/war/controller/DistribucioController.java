@@ -47,7 +47,7 @@ public class DistribucioController {
 			if (RolHelper.isRolActualAdministrador(request)) {
 				return "redirect:bustiaAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
-				return "redirect:bustiaUser";
+				return "redirect:registreUser";
 			} else {
 				return "index";
 			}

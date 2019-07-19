@@ -8,12 +8,18 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
@@ -43,9 +49,9 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnotacioDto findOne(
+	public RegistreDto findOne(
 			Long entitatId,
-			Long contingutId,
+			Long bustiaId,
 			Long registreId) throws NotFoundException;
 
 	/**
@@ -60,7 +66,7 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<RegistreAnotacioDto> findMultiple(
+	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds) throws NotFoundException;
 
@@ -84,6 +90,42 @@ public interface RegistreService {
 			Long bustiaId,
 			Long registreId,
 			String motiu) throws NotFoundException;
+	
+	/**
+	 * Consulta el contingut pendent a dins múltiples bústies.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @return El contingut pendent.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<ContingutDto> findRegistreUser(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException;
+	
+	/**
+	 * Obté una llista d'anotacions de registre donades d'alta dins DISTRIBUCIO
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param filtre
+	 *            El filtre de la consulta.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return Una pàgina amb els continguts trobats.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public PaginaDto<RegistreDto> findRegistreAdmin(
+			Long entitatId,
+			AnotacioRegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException;	
 	
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
@@ -124,7 +166,7 @@ public interface RegistreService {
 			Long registreId) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('tothom')")
-	public FitxerDto getArxiuAnnex(
+	public FitxerDto getAnnexFitxer(
 			Long annexId) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('tothom')")
@@ -132,7 +174,7 @@ public interface RegistreService {
 			Long registreId) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('tothom')")
-	public FitxerDto getAnnexFirmaContingut(
+	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) throws NotFoundException;
 	
@@ -150,7 +192,7 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
 			Long entitatId,
 			Long contingutId,
 			Long registreId) throws NotFoundException;
@@ -185,7 +227,7 @@ public interface RegistreService {
 	 * @return els detalls de l'anotació o null si no es troba.
 	 */
 	//@PreAuthorize("hasRole('DIS_BSTWS')")
-	public RegistreAnotacioDto findAmbIdentificador(String identificador);
+	public RegistreDto findAmbIdentificador(String identificador);
 
 	/**
 	 * Mètode per actualitzar l'estat d'una anotació de registre.
@@ -233,7 +275,7 @@ public interface RegistreService {
 	 * @return L'anotació modificada
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnotacioDto marcarLlegida(
+	public RegistreDto marcarLlegida(
 			Long entitatId,
 			Long contingutId,
 			Long registreId);
@@ -247,16 +289,16 @@ public interface RegistreService {
 	 */
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
-	RegistreAnnexDetallDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
+	RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException;
 
-	RegistreAnnexDetallDto getAnnexAmbArxiu(Long entitatId, Long contingutId, Long registreId, String fitxerArxiuUuid)
+	RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId, Long annexId)
 			throws NotFoundException;
 
-	RegistreAnnexDetallDto getAnnexFirmesAmbArxiu(Long entitatId, Long contingutId, Long registreId,
-			String fitxerArxiuUuid) throws NotFoundException;
+	RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
+			Long annexId) throws NotFoundException;
 	
-	List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
+	List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
 
 	AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
@@ -287,7 +329,7 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
-			Long contingutId,
+			Long bustiaId,
 			Long registreId,
 			String procedimentCodi) throws NotFoundException;
 

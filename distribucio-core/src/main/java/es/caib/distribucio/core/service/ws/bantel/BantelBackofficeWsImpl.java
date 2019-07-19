@@ -31,7 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
@@ -89,7 +89,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
     		throw new BantelBackofficeWsException("No s'ha informat correctament el número d'entrada");
     	
 		// Recuperar anotació registre i establir resultat Sistra i resultat processament (descripció error)
-    	RegistreAnotacioDto registre = registreService.findAmbIdentificador(referencia.getNumeroEntrada());
+    	RegistreDto registre = registreService.findAmbIdentificador(referencia.getNumeroEntrada());
 		if (registre == null)
     		throw new BantelBackofficeWsException("No s'ha trobat cap entrada amb aquest número d'entrada: " + referencia.getNumeroEntrada());          	
 		
@@ -112,7 +112,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 
 	/** Obté les dades de l'anotació de registre per construir la resposta Sistra. 
 	 * @throws Exception */
-	private TramiteBTE getDadesSistra(RegistreAnotacioDto registre) throws Exception {
+	private TramiteBTE getDadesSistra(RegistreDto registre) throws Exception {
 		TramiteBTE tramitBte = new TramiteBTE();
     	
 		// Dades de Distribucio
@@ -146,7 +146,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 	 * 			Objexte annex del registre amb la informació per accedir al fitxer físic
 	 * @throws Exception
 	 */
-	private void extreureDadesAnnex(RegistreAnotacioDto registre, TramiteBTE tramitBte, RegistreAnnex annex) throws Exception {
+	private void extreureDadesAnnex(RegistreDto registre, TramiteBTE tramitBte, RegistreAnnex annex) throws Exception {
 
 		try {
 			ObjectFactory bantelObjectFactory = new ObjectFactory();
@@ -276,7 +276,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 	 * @throws IOException 
 	 *				Error si no es pot obrir el fitxer annex.
 	 */
-	private void extreureDadesDocumentsAnnexos(RegistreAnotacioDto registre, TramiteBTE tramitBte, Document doc) throws IOException {
+	private void extreureDadesDocumentsAnnexos(RegistreDto registre, TramiteBTE tramitBte, Document doc) throws IOException {
 
 		ObjectFactory bantelObjectFactory = new ObjectFactory();
 		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.bustia.contingut.documents.dir");
@@ -377,7 +377,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 			break;		
 		}
 		// Recuperar anotació registre i establir resultat Sistra i resultat processament (descripció error)
-    	RegistreAnotacioDto registre = registreService.findAmbIdentificador(referencia.getNumeroEntrada());
+    	RegistreDto registre = registreService.findAmbIdentificador(referencia.getNumeroEntrada());
 		if (registre == null)
     		throw new BantelBackofficeWsException("No s'ha trobat cap entrada amb aquest número d'entrada: " + referencia.getNumeroEntrada());          	
 		// Si s'ha processat sense errors posar el resultat de processament a null

@@ -241,6 +241,10 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 			built.validacioOCSP = validacioOCSP;
 			return this;
 		}
+		public Builder gesdocDocumentId(String gesdocDocumentId) {
+			built.gesdocDocumentId = gesdocDocumentId;
+			return this;
+		}
 		public RegistreAnnexEntity build() {
 			return built;
 		}

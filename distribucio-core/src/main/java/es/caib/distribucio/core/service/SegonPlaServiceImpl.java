@@ -115,16 +115,19 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
 	public void aplicarReglesPendents() {
+		
 		logger.debug("Execució de tasca programada: aplicar regles pendents");
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
 		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentAplicar(maxReintents);
 		logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
+		
 		if (pendents != null && !pendents.isEmpty()) {
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent : pendents) {
-				if (pendent.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) { //only for sistra
-					// comprova si ha passat el temps entre reintents o ha
-					// d'esperar
+				
+				// ######################## BACKOFFICE SISTRA ############################
+				if (pendent.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) { 
+					// comprova si ha passat el temps entre reintents o ha d'esperar
 					boolean esperar = false;
 					Date darrerProcessament = pendent.getProcesData();
 					Integer minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
@@ -138,6 +141,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					if (!esperar) {
 						registreHelper.processarAnotacioPendentRegla(pendent.getId());
 					}
+					
+				// ######################## BACKOFFICE DISTRIBUCIO #######################
 				} else {
 					registreHelper.processarAnotacioPendentRegla(pendent.getId());
 				}
@@ -148,8 +153,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	}
 
 	@Override
-	@Scheduled(
-			fixedDelayString = "${config:es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio}")
+	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio}")
 	//@Scheduled(fixedRate = 120000)
 	public void tancarContenidorsArxiuPendents() {
 		logger.debug("Execució de tasca programada: tancar contenidors arxiu pendents");

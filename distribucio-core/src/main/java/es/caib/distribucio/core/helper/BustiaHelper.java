@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -156,6 +158,36 @@ public class BustiaHelper {
 		return arbre;
 	}
 
+	
+	
+	public BustiaDto toBustiaDto(
+			BustiaEntity bustia,
+			boolean ambFills,
+			boolean filtrarFillsSegonsPermisRead) {
+		return (BustiaDto)contingutHelper.toContingutDto(
+				bustia,
+				false,
+				ambFills,
+				filtrarFillsSegonsPermisRead,
+				false,
+				true,
+				false,
+				false);
+	}
+	public List<BustiaDto> toBustiaDto(
+			List<BustiaEntity> busties,
+			boolean ambFills,
+			boolean filtrarFillsSegonsPermisRead) {
+		List<BustiaDto> resposta = new ArrayList<BustiaDto>();
+		for (BustiaEntity bustia: busties) {
+			resposta.add(
+					toBustiaDto(
+							bustia,
+							ambFills,
+							filtrarFillsSegonsPermisRead));
+		}
+		return resposta;
+	}
 	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {

@@ -61,8 +61,6 @@ public class ReglaHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private RegistreHelper registreHelper;
-	@Autowired
-	private PluginHelper pluginHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
 	@Resource
@@ -71,6 +69,8 @@ public class ReglaHelper {
 	private MessageHelper messageHelper;
 	@Resource
 	private AlertaHelper alertaHelper;
+	@Autowired
+	private GestioDocumentalHelper gestioDocumentalHelper;		
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
@@ -80,6 +80,7 @@ public class ReglaHelper {
 			String procedimentCodi,
 			String assumpteCodi) {
 		ReglaEntity reglaAplicable = null;
+		
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
 					unitatAdministrativa,
@@ -102,13 +103,15 @@ public class ReglaHelper {
 
 	public Exception aplicarControlantException(
 			RegistreEntity registre) {
-		contingutLogHelper.log(
-				registre,
-				LogTipusEnumDto.PROCESSAMENT,
-				null,
-				null,
-				false,
-				false);
+		
+//TODO: remove this state		
+//		contingutLogHelper.log(
+//				registre,
+//				LogTipusEnumDto.PROCESSAMENT,
+//				null,
+//				null,
+//				false,
+//				false);
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
 				"registreNumero=" + registre.getNumero() + ", " +
@@ -117,7 +120,13 @@ public class ReglaHelper {
 				(registre.getRegla().getBackofficeTipus() != null ? "reglaBackofficeTipus=" + registre.getRegla().getBackofficeTipus().name() + ", "  : "") +
 				"bustia=" + registre.getRegla().getBustia() + ")");
 		try {
+			boolean throwException = false;
+			if (throwException) {
+				throw new RuntimeException("Exception when aplying rule!!!!!!");
+			}
+			
 			aplicar(registre);
+			
 			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
@@ -126,6 +135,7 @@ public class ReglaHelper {
 					null,
 					registre.getId());
 			return null;
+			
 		} catch (Exception ex) {
 			String procesError;
 			if (ex instanceof ScheduledTaskException) {
@@ -201,9 +211,27 @@ public class ReglaHelper {
 						regla.getBustia(),
 						registre,
 						contingutMoviment);
+				
+				RegistreProcesEstatEnum estat;
+				
+				
+				boolean alreadySavedInArxiu = true;
+				if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
+					for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
+						if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+							alreadySavedInArxiu = false;
+						}
+					}
+				}
+				if (!alreadySavedInArxiu) {
+					estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
+				} else {
+					estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+				}
 				registre.updateProces(
-						RegistreProcesEstatEnum.BUSTIA_PENDENT, 
+						estat,
 						null);
+				
 				break;
 			default:
 				error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
@@ -223,11 +251,11 @@ public class ReglaHelper {
 			BustiaEntity pendentBustia = null;
 			if (registre.getPare() instanceof BustiaEntity) {
 				pendentBustia = (BustiaEntity)registre.getPare();
-			}
-			if (pendentBustia != null) {
-				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-						regla.getEntitat(),
-						pendentBustia);
+				if (pendentBustia != null) {
+					bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+							regla.getEntitat(),
+							pendentBustia);
+				}				
 			}
 		}
 	}
@@ -251,9 +279,9 @@ public class ReglaHelper {
 			byte[] annexContingut = null;
 			if (annex.getGesdocDocumentId() != null) {
 				ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
-				pluginHelper.gestioDocumentalGet(
+				gestioDocumentalHelper.gestioDocumentalGet(
 					annex.getGesdocDocumentId(), 
-					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 					baos_doc);
 				annexContingut = baos_doc.toByteArray();
 				annex.updateGesdocDocumentId(null);

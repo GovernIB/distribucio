@@ -108,7 +108,7 @@ $(document).ready(function() {
 					suggestText="nom"
 					required="true" />
 				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="false"/>
-				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false"/>
+				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false" comment="regla.form.camp.procediment.codi.info"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">
 				<div id="camps_tipus_BUSTIA">

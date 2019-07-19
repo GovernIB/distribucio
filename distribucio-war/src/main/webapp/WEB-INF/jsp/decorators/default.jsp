@@ -39,6 +39,9 @@
 	pageContext.setAttribute(
 			"requestParameterCanviRol",
 			es.caib.distribucio.war.helper.RolHelper.getRequestParameterCanviRol());
+	pageContext.setAttribute(
+			"avisos",
+			es.caib.distribucio.war.helper.AvisHelper.getAvisos(request));
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
 <c:set var="hiHaMesEntitats" value="${fn:length(sessionEntitats) > 1}"/>
@@ -74,7 +77,7 @@ body {
 <body>
 
 	<div class="navbar navbar-default navbar-fixed-top navbar-app" role="navigation">
-		<div class="container">
+		<div class="container container-caib">
 			<div class="navbar-header">
 				<div class="navbar-brand">
 					<div id="govern-logo" class="pull-left">
@@ -161,9 +164,10 @@ body {
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
 										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
-										<li><a href="<c:url value="/bustiaUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>										
+										<li><a href="<c:url value="/registreUser/metriques"/>"><spring:message code="decorator.menu.metriques"/></a></li>										
 									</ul>
 								</div>
+								<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
 							</c:when>
 							<c:when test="${isRolActualAdministrador}">
 								<div class="btn-group">
@@ -180,7 +184,7 @@ body {
 									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
 									<ul class="dropdown-menu">
 										<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
-										<li><a href="<c:url value="/anotacionsRegistre"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
+										<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 									</ul>
 								</div>
 							</c:when>
@@ -188,7 +192,7 @@ body {
 								<c:if test="${teAccesExpedients}">
 									<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 								</c:if>
-								<a href="<c:url value="/bustiaUser"/>" class="btn btn-primary">
+								<a href="<c:url value="/registreUser"/>" class="btn btn-primary">
 									<spring:message code="decorator.menu.busties"/>
 									<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
 								</a>
@@ -211,23 +215,49 @@ body {
 			</div>
 		</div>
 	</div>
-	<div class="container container-main">
+	<div class="container container-main container-caib">
+
+
+	<c:if test="${not empty avisos}">
+			<div id="accordion">
+				<c:forEach var="avis" items="${avisos}" varStatus="status">
+						<div class="card avisCard ${avis.avisNivell == 'INFO' ? 'avisCardInfo':''} ${avis.avisNivell == 'WARNING' ? 'avisCardWarning':''} ${avis.avisNivell == 'ERROR' ? 'avisCardError':''}">
+	
+							<div data-toggle="collapse" data-target="#collapse${status.index}" class="card-header avisCardHeader">
+								${avis.avisNivell == 'INFO' ? '<span class="fa fa-info-circle text-info"></span>':''} ${avis.avisNivell == 'WARNING' ? '<span class="fa fa-exclamation-triangle text-warning"></span>':''} ${avis.avisNivell == 'ERROR' ? '<span class="fa fa-warning text-danger"></span>':''} ${avis.assumpte}
+							<button class="btn btn-default btn-xs pull-right"><span class="fa fa-chevron-down "></span></button>										
+							</div>
+	
+							<div id="collapse${status.index}" class="collapse" data-parent="#accordion">
+								<div class="card-body avisCardBody" >${avis.missatge}</div>
+							</div>
+						</div>
+				</c:forEach>
+			</div>
+		</c:if>
+		
 		<div class="panel panel-default">
-			<div class="panel-heading" id="header">
-				<h2 style="display: inline-block;">
-					<c:set var="metaTitleIconClass"><decorator:getProperty property="meta.title-icon-class"/></c:set>
-					<c:if test="${not empty metaTitleIconClass}"><span class="${metaTitleIconClass}"></span></c:if>
-					<decorator:title />
-					<small><decorator:getProperty property="meta.subtitle"/></small>
-				</h2>
+				<div class="panel-heading" id="header">
+					<h2 style="display: inline-block;">
+						<c:set var="metaTitleIconClass">
+							<decorator:getProperty property="meta.title-icon-class" />
+						</c:set>
+						<c:if test="${not empty metaTitleIconClass}">
+							<span class="${metaTitleIconClass}"></span>
+						</c:if>
+						<decorator:title />
+						<small><decorator:getProperty property="meta.subtitle" /></small>
+					</h2>
+				</div>
+				<div class="panel-body">
+					<div id="contingut-missatges">
+						<dis:missatges />
+					</div>
+					<decorator:body />
+				</div>
 			</div>
-			<div class="panel-body">
-				<div id="contingut-missatges"><dis:missatges/></div>
-    			<decorator:body />
-			</div>
-		</div>
 	</div>
-    <div class="container container-foot">
+    <div class="container container-foot container-caib">
     	<div class="pull-left app-version"><p>DISTRIBUCIÓ v<dis:versio/></p></div>
         <div class="pull-right govern-footer">
         	<p>
