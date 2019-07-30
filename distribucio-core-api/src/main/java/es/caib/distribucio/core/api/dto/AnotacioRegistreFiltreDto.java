@@ -26,6 +26,7 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 	private String nom;
 	private String numeroOrigen;
 	private boolean nomesAmbErrors;
+	private String backCodi;
 
 	
 	public boolean isNomesAmbErrors() {
@@ -89,6 +90,12 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 		this.estat = estat;
 	}
 
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

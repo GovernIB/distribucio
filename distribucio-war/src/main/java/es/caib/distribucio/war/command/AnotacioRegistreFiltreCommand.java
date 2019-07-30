@@ -27,6 +27,7 @@ public class AnotacioRegistreFiltreCommand {
 	private String nom;
 	private String numeroOrigen;
 	private boolean nomesAmbErrors;
+	private String backCodi;
 
 
 	public String getNumeroOrigen() {
@@ -72,6 +73,12 @@ public class AnotacioRegistreFiltreCommand {
 		this.estat = estat;
 	}
 	
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}
 	public static AnotacioRegistreFiltreCommand asCommand(AnotacioRegistreFiltreDto dto) {
 		AnotacioRegistreFiltreCommand command = ConversioTipusHelper.convertir(
 				dto,

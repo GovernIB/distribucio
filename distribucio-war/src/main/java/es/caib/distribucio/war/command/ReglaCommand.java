@@ -40,6 +40,8 @@ public class ReglaCommand {
 	private Long unitatId;
 	private Long bustiaId;
 	private BackofficeTipusEnumDto backofficeTipus;
+	@Size(max = 20, groups = {CreateUpdate.class})
+	private String backofficeCodi;
 	@Size(max = 256, groups = {CreateUpdate.class})
 	private String backofficeUrl;
 	@Size(max = 64, groups = {CreateUpdate.class})
@@ -98,6 +100,12 @@ public class ReglaCommand {
 	}
 	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
 		this.backofficeTipus = backofficeTipus;
+	}
+	public String getBackofficeCodi() {
+		return backofficeCodi;
+	}
+	public void setBackofficeCodi(String backofficeCodi) {
+		this.backofficeCodi = backofficeCodi;
 	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;

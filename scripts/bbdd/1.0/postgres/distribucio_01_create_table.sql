@@ -322,7 +322,8 @@ CREATE TABLE DIS_REGLA
   BUSTIA_ID            bigint,
   METAEXPEDIENT_ID     bigint,
   UNITAT_ID 		   BIGINT,
-  PROCEDIMENT_CODI     CHARACTER VARYING(64)
+  PROCEDIMENT_CODI     CHARACTER VARYING(64),
+  BACKOFFICE_CODI      CHARACTER VARYING(64)
 );
 
 
@@ -427,5 +428,4 @@ CREATE TABLE DIS_AVIS
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDBY_CODI  character varying(64),
   LASTMODIFIEDDATE     timestamp without time zone
-
 );

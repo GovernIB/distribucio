@@ -286,6 +286,8 @@ public class RegistreServiceImpl implements RegistreService {
 				(filtre.getEstat() == null),
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
+				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
+				filtre.getBackCodi(),
 				paginacioHelper.toSpringDataPageable(paginacioParams));
 		return paginacioHelper.toPaginaDto(
 				registres,

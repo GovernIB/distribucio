@@ -52,7 +52,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullFiltreUnitat = true or r.unitatOrganitzativa = :unitatOrganitzativa) " +
 			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " + 			
-			"and (:esNullFiltreEstat = true or r.unitatOrganitzativa.estat = 'E' or r.unitatOrganitzativa.estat = 'A' or r.unitatOrganitzativa.estat = 'T')")
+			"and (:esNullFiltreEstat = true or r.unitatOrganitzativa.estat = 'E' or r.unitatOrganitzativa.estat = 'A' or r.unitatOrganitzativa.estat = 'T') " + 
+			"and (:esNullBackofficeCodi = true or lower(r.backofficeCodi) like lower('%'||:backofficeCodi||'%'))")
 	Page<BustiaEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
@@ -62,6 +63,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,			
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
+			@Param("esNullBackofficeCodi") boolean esNullBackofficeCodi,
+			@Param("backofficeCodi") String backofficeCodi,
 			Pageable pageable);
 	
 	

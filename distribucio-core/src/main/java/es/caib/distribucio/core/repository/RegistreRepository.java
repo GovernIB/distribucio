@@ -164,7 +164,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
 			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
 			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
-			"	and (:nomesAmbErrors = false or r.procesError != null )" )
+			"	and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"	and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) ")
 	public Page<RegistreEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullNom") boolean esNullNom,
@@ -182,6 +183,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
 			@Param("nomesAmbErrors") boolean nomesAmbErrors, 			
+			@Param("esNullBackCodi") boolean esNullBackCodi,
+			@Param("backCodi") String backCodi,
 			Pageable pageable);
 
 	/** Consulta les anotacions de registre que tenen 

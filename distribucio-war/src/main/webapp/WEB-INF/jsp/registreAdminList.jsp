@@ -91,9 +91,6 @@ $(document).ready(function() {
 					suggestValue="id"
 					suggestText="nom" />
 			</div>
-<!-- 			<div class="col-md-3"> -->
-<%-- 				<dis:inputText name="bustia" inline="true" placeholderKey="contingut.admin.filtre.bustia"/> --%>
-<!-- 			</div> -->
 		</div>
 		<div class="row">
 			<div class="col-md-3">
@@ -103,13 +100,22 @@ $(document).ready(function() {
 				<dis:inputDate name="dataCreacioFi" inline="true" placeholderKey="contingut.admin.filtre.data.fi"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat" emptyOption="true"/>
-			</div>
-			<div class="col-md-3">
-				<button id="nomesAmbErrorsBtn" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
-				<dis:inputHidden name="nomesAmbErrors"/>
+				<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat" emptyOption="true"/>
+					</div>
+					<div class="col-md-2">
+						<button id="nomesAmbErrorsBtn" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+						<dis:inputHidden name="nomesAmbErrors"/>
+					</div>
+				</div>
 			</div>	
-			<div class="col-md-3 pull-right">
+			<div class="col-md-3">
+				<dis:inputText name="backCodi" inline="true" placeholderKey="bustia.list.filtre.back.codi"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
 					<button id="netejarFiltre"  type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -181,6 +187,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="interessatsAndRepresentantsResum" data-orderable="false"><spring:message code="contingut.admin.columna.interessats"/></th>
+				<th data-col-name="backCodi" data-orderable="true"><spring:message code="contingut.admin.columna.backoffice"/></th>
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">

@@ -158,6 +158,9 @@ public class RegistreEntity extends ContingutEntity {
 	private String procesError;
 	@Column(name = "proces_intents")
 	private int procesIntents;
+	/** Codi del backoffice que ha processat l'anotació, s'informa a partir de la Regla.codiBackoffice */
+	@Column(name = "back_codi", length = 20)
+	private String backCodi;
 	// Date when regla change state of anotacio to RegistreProcesEstatEnum.BACK_PENDENT
 	@Column(name = "back_pendent_data")
 	private Date backPendentData;
@@ -359,6 +362,9 @@ public class RegistreEntity extends ContingutEntity {
 	public Integer getNumeroCopia() {
 		return numeroCopia != null? numeroCopia : 0;
 	}
+	public String getBackCodi() {
+		return backCodi;
+	}
 	public Date getBackRetryEnviarData() {
 		return backRetryEnviarData;
 	}
@@ -415,6 +421,9 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesIntents = 0;
 		this.procesError = null;
 		this.procesEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+	}
+	public void updateBackCodi(String backCodi) {
+		this.backCodi = backCodi;
 	}
 	public void updateBackRetryEnviarData(Date backRetryEnviarData) {
 		this.backRetryEnviarData = backRetryEnviarData;

@@ -56,8 +56,8 @@ $(document).ready(function() {
 					suggestValue="id"
 					suggestText="nom" />
 			</div>
-			<div class="col-md-2" style="padding-left: 30px;">
-				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+			<div class="col-md-2">
+				<dis:inputText name="backofficeCodi" inline="true" placeholderKey="bustia.list.filtre.backofficeCodi"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
@@ -96,8 +96,8 @@ $(document).ready(function() {
 				</th>
 				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="procedimentCodi" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
-				<th data-col-name="unitatOrganitzativa.codi" data-orderable="false"><spring:message code="regla.list.columna.unitat.codi"/></th>
-				<th data-col-name="unitatOrganitzativa.denominacio" data-orderable="false"><spring:message code="regla.list.columna.unitat.nom"/></th>
+				<th data-col-name="unitatOrganitzativa.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
+				<th data-col-name="backofficeCodi" data-orderable="false"><spring:message code="regla.list.columna.codi.backoffice"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.activa"/>
 					<script id="cellActivaTemplate" type="text/x-jsrender">

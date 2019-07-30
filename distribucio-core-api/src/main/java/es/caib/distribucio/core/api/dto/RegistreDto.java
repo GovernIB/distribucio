@@ -28,6 +28,7 @@ public class RegistreDto extends ContingutDto {
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
+	private String backCodi;
 	private Date backPendentData;
 	private Date backRebudaData;
 	private Date backProcesRebutjErrorData;
@@ -131,29 +132,12 @@ public class RegistreDto extends ContingutDto {
 	public void setBustiaActiva(boolean isBustiaActiva) {
 		this.isBustiaActiva = isBustiaActiva;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}	
 	public Date getBackRetryEnviarData() {
 		return backRetryEnviarData;
 	}
