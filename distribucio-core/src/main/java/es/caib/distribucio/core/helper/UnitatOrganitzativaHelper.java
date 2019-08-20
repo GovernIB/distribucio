@@ -426,6 +426,12 @@ public class UnitatOrganitzativaHelper {
 				unitatOrganitzativaCodi));
 	}
 
+	/**
+	 * Finds path of unitats that starts from given unitat and stops with unitata arrel unitat arrel
+	 * @param codiDir3
+	 * @param unitatOrganitzativaCodi
+	 * @return
+	 */
 	public List<UnitatOrganitzativaDto> findPath(
 			String codiDir3,
 			String unitatOrganitzativaCodi) {

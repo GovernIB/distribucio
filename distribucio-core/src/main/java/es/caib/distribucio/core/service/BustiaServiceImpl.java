@@ -224,65 +224,68 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public BustiaDto update(
 			Long entitatId,
-			BustiaDto bustia) {
+			BustiaDto bustiaModifications) {
 		logger.debug("Modificant la bústia ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustia=" + bustia + ")");
+				+ "bustia=" + bustiaModifications + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		BustiaEntity entity = entityComprovarHelper.comprovarBustia(
+		BustiaEntity bustiaOriginal = entityComprovarHelper.comprovarBustia(
 				entitat,
-				bustia.getId(),
+				bustiaModifications.getId(),
 				false);
-		String nomOriginal = entity.getNom();
 		
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(bustia.getUnitatOrganitzativa().getId());
-		
-		BustiaEntity bustiaPerDefecteDesti = bustiaHelper.findBustiaDesti(entitat, unitatOrganitzativa.getCodi());
-		if (entity.isPerDefecte() 
-				&& !entity.getUnitatOrganitzativa().getId().equals(unitatOrganitzativa.getId())) {
+		String nomOriginalBustia = bustiaOriginal.getNom();
+		UnitatOrganitzativaEntity unitatOrganitzativaDesti = unitatOrganitzativaRepository.findOne(bustiaModifications.getUnitatOrganitzativa().getId());
+		boolean bustiaPerDefecteInUnitatDesti = bustiaHelper.findBustiaPerDefecte(entitat, unitatOrganitzativaDesti.getCodi()) != null;
+		boolean unitatChanged = !bustiaOriginal.getUnitatOrganitzativa().getId().equals(unitatOrganitzativaDesti.getId());
+
+		if (unitatChanged && bustiaOriginal.isPerDefecte()) {
+			
+			UnitatOrganitzativaEntity unitatOrganitzativaSource = bustiaOriginal.getUnitatOrganitzativa();
+			boolean unitatSourceObsoleta = unitatOrganitzativaSource.getEstat().equals("E") || unitatOrganitzativaSource.getEstat().equals("A") || unitatOrganitzativaSource.getEstat().equals("T");
+			if (!unitatSourceObsoleta) {
+				// Comprova que si es mou la bústia per defecte a una altra unitat encara quedi una bústia per defecte per a la unitat organitzativa anterior en path
+				BustiaEntity alternativaBustiaPerDefecteInPath = this.findBustiaPerDefecteAlternativa(entitat, bustiaOriginal); 
+				if (alternativaBustiaPerDefecteInPath == null) {
+					String missatgeError = "No es pot moure la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
+							"bustiaId=" + bustiaModifications.getId() + ", " +
+							"unitatOrganitzativaCodi=" + bustiaOriginal.getUnitatCodi() + ")";
+					logger.error(missatgeError);
+					throw new ValidationException(
+							bustiaModifications.getId() ,
+							BustiaEntity.class,
+							missatgeError);
+				}		
+			}
+			
 			// comprova si a la unitat orgánica destí ja hi ha alguna bústia per defecte, si ja hi ha desmarca la que estem movent
-			if (bustiaPerDefecteDesti != null 
-					&& unitatOrganitzativa.getId().equals(bustiaPerDefecteDesti.getUnitatOrganitzativa().getId()))
-				entity.updatePerDefecte(false);
-
-			// Comprova que si es mou la bústia a una altra unitat encara quedi una bústia per defecte per a la unitat organitzativa anterior
-			BustiaEntity bustiaPerDefecteAlternativa = this.findBustiaPerDefecteAlternativa(entitat, entity); 
-			if (bustiaPerDefecteAlternativa == null) {
-				String missatgeError = "No es pot moure la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
-						"bustiaId=" + bustia.getId() + ", " +
-						"unitatOrganitzativaCodi=" + entity.getUnitatCodi() + ")";
-				logger.error(missatgeError);
-				throw new ValidationException(
-						bustia.getId() ,
-						BustiaEntity.class,
-						missatgeError);
-			}		
-
-		} else {
-			// Si a la bústia destí no n'hi ha cap per defecte llavors la marca com a defecte
-			if (bustiaPerDefecteDesti != null 
-					&& !unitatOrganitzativa.equals(bustiaPerDefecteDesti.getUnitatOrganitzativa()))
-				entity.updatePerDefecte(true);				
+			if (bustiaPerDefecteInUnitatDesti) {
+				bustiaOriginal.updatePerDefecte(false);
+			}
+		
+		// Si a la bústia destí no n'hi ha cap per defecte llavors la marca com a defecte
+		} else if (!bustiaPerDefecteInUnitatDesti) {
+			bustiaOriginal.updatePerDefecte(true);
 		}
 		// Actualitza la bústia
-		entity.update(
-				bustia.getNom(),
-				unitatOrganitzativa);
+		bustiaOriginal.update(
+				bustiaModifications.getNom(),
+				unitatOrganitzativaDesti);
 		
 		// Registra al log la modificació de la bústia
 		contingutLogHelper.log(
-				entity,
+				bustiaOriginal,
 				LogTipusEnumDto.MODIFICACIO,
-				(!nomOriginal.equals(entity.getNom())) ? entity.getNom() : null,
+				(!nomOriginalBustia.equals(bustiaOriginal.getNom())) ? bustiaOriginal.getNom() : null,
 				null,
 				false,
 				false);
 		return bustiaHelper.toBustiaDto(
-				entity,
+				bustiaOriginal,
 				false,
 				false);
 	}
