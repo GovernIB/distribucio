@@ -129,7 +129,8 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				false,
-				ambVersions);
+				ambVersions,
+				true);
 		
 		
 		result.setAlerta(alertaRepository.countByLlegidaAndContingutId(
@@ -172,6 +173,7 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				false,
+				true,
 				true);
 	}
 
@@ -418,7 +420,8 @@ public class ContingutServiceImpl implements ContingutService {
 								false,
 								true,
 								false,
-								false);
+								false,
+								true);
 					}
 				});
 	}

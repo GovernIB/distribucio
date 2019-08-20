@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -79,7 +80,8 @@ public class RegistreUserController extends BaseUserController {
 	private AlertaService alertaService;
 	@Autowired
 	private AplicacioService aplicacioService;	
-
+	
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
 			HttpServletRequest request,
@@ -87,7 +89,7 @@ public class RegistreUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
-		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
+//		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
 		return "registreUserList";
 	}
 
@@ -673,6 +675,7 @@ public class RegistreUserController extends BaseUserController {
 			Long registreId,
 			Model model) {
 
+
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
 		
@@ -693,6 +696,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute(
 				"busties",
 				busties);
+
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(

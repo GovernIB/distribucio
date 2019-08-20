@@ -91,7 +91,8 @@ public class ContingutHelper {
 				false,
 				false,
 				false,
-				false);
+				false,
+				true);
 	}
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut,
@@ -101,7 +102,8 @@ public class ContingutHelper {
 			boolean ambDades,
 			boolean ambPath,
 			boolean pathNomesFinsExpedientArrel,
-			boolean ambVersions) {
+			boolean ambVersions,
+			boolean ambUnitatOrganitzativa) {
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto"));
 		Timer.Context contextTotal = timerTotal.time();
 		
@@ -115,29 +117,43 @@ public class ContingutHelper {
 			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatCodi());
 			bustiaDto.setActiva(bustiaEntity.isActiva());
 			bustiaDto.setPerDefecte(bustiaEntity.isPerDefecte());
-			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
-					bustiaEntity.getEntitat().getCodiDir3(),
-					bustiaEntity.getUnitatCodi());
-			if (unitatConselleria != null) {
-				bustiaDto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
+
+			if (ambUnitatOrganitzativa) {
+				
+				final Timer timerToContingutDtoUnitatOrganitzativa = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.UnitatOrganitzativa"));
+				Timer.Context contextToContingutDtoUnitatOrganitzativa  = timerToContingutDtoUnitatOrganitzativa.time();
+				
+				UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
+						bustiaEntity.getEntitat().getCodiDir3(),
+						bustiaEntity.getUnitatCodi());
+				if (unitatConselleria != null) {
+					bustiaDto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
+				}
+				UnitatOrganitzativaEntity unitatEntity = bustiaEntity.getUnitatOrganitzativa();
+				UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(unitatEntity,
+						UnitatOrganitzativaDto.class);
+				unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity,
+						unitatDto);
+
+				bustiaDto.setUnitatOrganitzativa(unitatDto);
+				bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+				
+				contextToContingutDtoUnitatOrganitzativa.stop();
 			}
-			UnitatOrganitzativaEntity unitatEntity = bustiaEntity.getUnitatOrganitzativa();
-			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
-					unitatEntity,
-					UnitatOrganitzativaDto.class);
-			unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
-			
-			bustiaDto.setUnitatOrganitzativa(unitatDto);
-			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+
 			contingutDto = bustiaDto;
 			
 		// ########################################### REGISTRE ####################################################	
 		} else if (deproxied instanceof RegistreEntity) {
 			RegistreEntity registreEntity = (RegistreEntity)deproxied;
+			
+			final Timer timerToContingutDtoconvertirToRegistreDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.convertirToRegistreDto"));
+			Timer.Context contextToContingutDtoconvertirToRegistreDto  = timerToContingutDtoconvertirToRegistreDto.time();
 			RegistreDto registreDto = conversioTipusHelper.convertir(
-					registreEntity,
-					RegistreDto.class);
+						registreEntity,
+						RegistreDto.class);
 			registreDto.setLlegida(registreEntity.getLlegida() == null || registreEntity.getLlegida());
+			contextToContingutDtoconvertirToRegistreDto.stop();
 			
 			// toBustiaContingut 
 			registreDto.setPareId(registreEntity.getPare().getId());
@@ -160,84 +176,90 @@ public class ContingutHelper {
 		// ########################################### CONTINGUT ####################################################
 		contingutDto.setId(contingut.getId());
 		contingutDto.setNom(contingut.getNom());
-		contingutDto.setEsborrat(contingut.getEsborrat());
-		contingutDto.setArxiuUuid(contingut.getArxiuUuid());
-		contingutDto.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
-		contingutDto.setEntitat(
-				conversioTipusHelper.convertir(
-						contingut.getEntitat(),
-							EntitatDto.class));
-		contingutDto.setAlerta(!contingut.getAlertesNoLlegides().isEmpty());
-		// DARRER MOVIMENT
-		if (contingut.getDarrerMoviment() != null) {
-			ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
-			contingutDto.setDarrerMovimentUsuari(
+			contingutDto.setEsborrat(contingut.getEsborrat());
+			contingutDto.setArxiuUuid(contingut.getArxiuUuid());
+			contingutDto.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
+			
+			final Timer timerToContingutDtoEntitatMoviemntAudtioria = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.EntitatMoviemntAudtioria"));
+			Timer.Context contextToContingutDtoEntitatMoviemntAudtioria  = timerToContingutDtoEntitatMoviemntAudtioria.time();
+			contingutDto.setEntitat(
 					conversioTipusHelper.convertir(
-							darrerMoviment.getRemitent(),
+							contingut.getEntitat(),
+							EntitatDto.class));
+			contingutDto.setAlerta(!contingut.getAlertesNoLlegides().isEmpty());
+			// DARRER MOVIMENT
+			if (contingut.getDarrerMoviment() != null) {
+				ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
+				contingutDto.setDarrerMovimentUsuari(
+						conversioTipusHelper.convertir(
+								darrerMoviment.getRemitent(),
+								UsuariDto.class));
+				contingutDto.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
+				contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());
+			}
+			// AUDITORIA
+			contingutDto.setCreatedBy(
+					conversioTipusHelper.convertir(
+							contingut.getCreatedBy(),
 							UsuariDto.class));
-			contingutDto.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
-			contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());
-		}
-		// AUDITORIA
-		contingutDto.setCreatedBy(
-				conversioTipusHelper.convertir(
-						contingut.getCreatedBy(),
-						UsuariDto.class));
-		contingutDto.setCreatedDate(contingut.getCreatedDate().toDate());
-		contingutDto.setLastModifiedBy(
-				conversioTipusHelper.convertir(
-						contingut.getLastModifiedBy(),
-						UsuariDto.class));
-		contingutDto.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
-		// PATH
-		if (ambPath) {
-			List<ContingutDto> path = getPathContingutComDto(
-					contingut,
-					ambPermisos,
-					pathNomesFinsExpedientArrel);
-			contingutDto.setPath(path);
-		}
-		// FILLS
-		if (ambFills) {
-			List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
-			List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
-					contingut,
-					0,
-					new Sort("createdDate"));
-			List<ContingutDto> fillPath = null;
+			contingutDto.setCreatedDate(contingut.getCreatedDate().toDate());
+			contingutDto.setLastModifiedBy(
+					conversioTipusHelper.convertir(
+							contingut.getLastModifiedBy(),
+							UsuariDto.class));
+			contingutDto.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
+			contextToContingutDtoEntitatMoviemntAudtioria.stop();
+			
+			// PATH
 			if (ambPath) {
-				fillPath = new ArrayList<ContingutDto>();
-				if (contingutDto.getPath() != null)
-					fillPath.addAll(contingutDto.getPath());
-				fillPath.add(toContingutDto(
+				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
-						false,
-						false,
-						false,
-						false,
-						false,
-						false,
-						false));
+						ambPermisos,
+						pathNomesFinsExpedientArrel);
+				contingutDto.setPath(path);
 			}
-			for (ContingutEntity fill: fills) {
-				if (fill.getEsborrat() == 0) {
-					ContingutDto fillDto = toContingutDto(
-							fill,
-							ambPermisos,
+			// FILLS
+			if (ambFills) {
+				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
+				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
+						contingut,
+						0,
+						new Sort("createdDate"));
+				List<ContingutDto> fillPath = null;
+				if (ambPath) {
+					fillPath = new ArrayList<ContingutDto>();
+					if (contingutDto.getPath() != null)
+						fillPath.addAll(contingutDto.getPath());
+					fillPath.add(toContingutDto(
+							contingut,
 							false,
 							false,
 							false,
 							false,
 							false,
-							false);
-					// Configura el pare de cada fill
-					fillDto.setPath(fillPath);
-					contenidorDtos.add(fillDto);
+							false,
+							false,
+							true));
 				}
+				for (ContingutEntity fill: fills) {
+					if (fill.getEsborrat() == 0) {
+						ContingutDto fillDto = toContingutDto(
+								fill,
+								ambPermisos,
+								false,
+								false,
+								false,
+								false,
+								false,
+								false,
+								true);
+						// Configura el pare de cada fill
+						fillDto.setPath(fillPath);
+						contenidorDtos.add(fillDto);
+					}
+				}
+				contingutDto.setFills(contenidorDtos);
 			}
-			contingutDto.setFills(contenidorDtos);
-		}
-
 
 		contextTotal.stop();
 		return contingutDto;
@@ -629,6 +651,10 @@ public class ContingutHelper {
 
 	private List<ContingutEntity> getPathContingut(
 			ContingutEntity contingut) {
+		
+		final Timer getPathContingutComDtoTimergetPathContingut = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingut"));
+		Timer.Context getPathContingutComDtoContextgetPathContingut = getPathContingutComDtoTimergetPathContingut.time();
+		
 		List<ContingutEntity> path = null;
 		ContingutEntity contingutActual = contingut;
 		while (contingutActual != null && contingutActual.getPare() != null) {
@@ -641,6 +667,8 @@ public class ContingutHelper {
 		if (path != null) {
 			Collections.reverse(path);
 		}
+		
+		getPathContingutComDtoContextgetPathContingut.stop();
 		return path;
 	}
 
@@ -655,9 +683,11 @@ public class ContingutHelper {
 		List<ContingutDto> pathDto = null;
 		if (path != null) {
 			pathDto = new ArrayList<ContingutDto>();
-			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
+//			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
 			for (ContingutEntity contingutPath: path) {
-				if (expedientArrelTrobat) {
+//				if (expedientArrelTrobat) {
+				final Timer getPathContingutPathToContingutDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto.getPathContingutPathToContingutDto"));
+				Timer.Context getPathContingutComDtoContextPathToContingutDto = getPathContingutPathToContingutDto.time();
 					pathDto.add(
 						toContingutDto(
 								contingutPath,
@@ -667,9 +697,12 @@ public class ContingutHelper {
 								false,
 								false,
 								false,
+								false,
 								false));
-				}
+					getPathContingutComDtoContextPathToContingutDto.stop();
+//				}
 			}
+			
 		}
 		getPathContingutComDtoContext.stop();
 		return pathDto;
