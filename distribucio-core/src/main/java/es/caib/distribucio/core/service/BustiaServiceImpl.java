@@ -37,12 +37,8 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.BustiaContingutDto;
-import es.caib.distribucio.core.api.dto.BustiaContingutPendentTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
-import es.caib.distribucio.core.api.dto.ContingutDto;
-import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -74,7 +70,6 @@ import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
-import es.caib.distribucio.core.helper.HibernateHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
@@ -84,9 +79,7 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.BustiaRepository;
-import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -114,10 +107,6 @@ public class BustiaServiceImpl implements BustiaService {
 	private ReglaRepository reglaRepository;
 	@Autowired
 	private ContingutRepository contingutRepository;
-	@Autowired
-	private ContingutComentariRepository contingutComentariRepository;
-	@Autowired
-	private AlertaRepository alertaRepository;
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired

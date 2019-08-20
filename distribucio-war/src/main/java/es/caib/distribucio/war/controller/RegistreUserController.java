@@ -86,7 +86,6 @@ public class RegistreUserController extends BaseUserController {
 	public String registreUserGet(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
 //		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
@@ -332,11 +331,12 @@ public class RegistreUserController extends BaseUserController {
 					command.getBustiaId(),
 					command.getContingutId(),
 					adressesParsed);
-		} catch (MessagingException messagingException) {
+		} catch (Exception exception) {
+			logger.error("Error enviant email", exception);
 			getModalControllerReturnValueError(
 					request, 
 					"redirect:../../../pendent", 
-					ExceptionUtils.getRootCauseMessage(messagingException));
+					ExceptionUtils.getRootCauseMessage(exception));
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
