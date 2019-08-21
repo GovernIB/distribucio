@@ -36,6 +36,12 @@ tr.detall {
 tr.clicable {
 	cursor: pointer;
 }
+
+@media (min-width: 768px){
+.dl-horizontal dt {
+   text-overflow: clip !important;
+}
+
 </style>
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -132,7 +138,11 @@ tr.clicable {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
 					<td>${registre.procesEstat}</td>
-				</tr>		
+				</tr>
+				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
+					<td>${registre.presencial}</td>
+				</tr>						
 			</tbody>
 			</table>
 			<div class="row">
@@ -323,6 +333,7 @@ tr.clicable {
 													<dt><spring:message code="interessat.form.camp.municipi"/></dt><dd>${interessat.municipi} <c:if test="${not empty interessat.municipiCodi}">(${interessat.municipiCodi})</c:if></dd>
 													<dt><spring:message code="interessat.form.camp.adresa"/></dt><dd>${interessat.adresa}</dd>
 													<dt><spring:message code="interessat.form.camp.codiPostal"/></dt><dd>${interessat.codiPostal}</dd>
+													<dt><spring:message code="interessat.form.camp.codiDire"/></dt><dd>${interessat.codiDire}</dd>
 												</dl>
 											</div>
 											<div class="col-xs-6">
@@ -379,6 +390,7 @@ tr.clicable {
 																				<dt><spring:message code="interessat.form.camp.municipi"/></dt><dd>${representant.municipi} <c:if test="${not empty representant.municipiCodi}">(${representant.municipiCodi})</c:if></dd>
 																				<dt><spring:message code="interessat.form.camp.adresa"/></dt><dd>${representant.adresa}</dd>
 																				<dt><spring:message code="interessat.form.camp.codiPostal"/></dt><dd>${representant.codiPostal}</dd>
+																				<dt><spring:message code="interessat.form.camp.codiDire"/></dt><dd>${representant.codiDire}</dd>
 																			</dl>
 																		</div>
 																		<div class="col-xs-6">

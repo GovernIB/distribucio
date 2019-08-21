@@ -644,7 +644,8 @@ public class ContingutHelper {
 					representant.getEmail(),
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
-					representant.getCanalPreferent());
+					representant.getCanalPreferent(),
+					representant.getCodiDire());
 		}
 		return interessatCopiaEntity;
 	}

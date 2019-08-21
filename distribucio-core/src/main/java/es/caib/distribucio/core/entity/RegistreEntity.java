@@ -172,9 +172,13 @@ public class RegistreEntity extends ContingutEntity {
 	private Date backProcesRebutjErrorData;
 	@Column(name = "back_observacions")
 	private String backObservacions;
-	// Date when distribucio should retry to send anotacio to backoffice
+	// Date when distribucio will retry to send anotacio to backoffice
 	@Column(name = "back_retry_enviar_data")
 	private Date backRetryEnviarData;
+	
+	@Column(name = "presencial")
+	private Boolean presencial;
+	
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -250,6 +254,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getLlibreDescripcio() {
 		return llibreDescripcio;
+	}
+	public Boolean getPresencial() {
+		return presencial;
 	}
 	public String getExtracte() {
 		return extracte;
@@ -465,6 +472,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateJustificantArxiuUuid(String justificantArxiuUuid) {
 		this.justificantArxiuUuid = justificantArxiuUuid;
+	}
+	public void updatePresencial(boolean presencial) {
+		this.presencial = presencial;
 	}
 
 	public static Builder getBuilder(
@@ -687,6 +697,10 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		public Builder justificantArxiuUuid(String justificantArxiuUuid) {
 			built.justificantArxiuUuid = justificantArxiuUuid;
+			return this;
+		}
+		public Builder presencial(boolean presencial) {
+			built.presencial = presencial;
 			return this;
 		}
 		public RegistreEntity build() {

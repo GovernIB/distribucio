@@ -86,8 +86,8 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	protected RegistreEntity registre;
 	@Version
 	private long version = 0;
-
-
+	@Column(name = "codi_dire", length = 20)
+	private String codiDire;
 
 	public RegistreInteressatTipusEnum getTipus() {
 		return RegistreInteressatTipusEnum.valorAsEnum(tipus);
@@ -158,6 +158,9 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	public RegistreEntity getRegistre() {
 		return registre;
 	}
+	public String getCodiDire() {
+		return codiDire;
+	}
 
 	public void updateRepresentant(
 			RegistreInteressatTipusEnum tipus,
@@ -178,7 +181,8 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			String email,
 			String telefon,
 			String emailHabilitat,
-			RegistreInteressatCanalEnum canalPreferent) {
+			RegistreInteressatCanalEnum canalPreferent,
+			String codiDire) {
 		Builder representantBuilder;
 		if (RegistreInteressatTipusEnum.PERSONA_FIS == tipus) {
 			representantBuilder = getBuilder(
@@ -210,6 +214,7 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 				telefon(telefon).
 				emailHabilitat(emailHabilitat).
 				canalPreferent(canalPreferent).
+				codiDire(codiDire).
 				representat(this);
 		this.representant = representantBuilder.build();
 	}
@@ -440,6 +445,10 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			built.representat = representat;
 			return this;
 		}
+		public Builder codiDire(String codiDire) {
+			built.codiDire = codiDire;
+			return this;
+		}		
 		public RegistreInteressatEntity build() {
 			return built;
 		}

@@ -7,16 +7,6 @@
 <xs:element name="enviarDocumentResponse" type="tns:enviarDocumentResponse" />
 <xs:element name="enviarExpedient" type="tns:enviarExpedient" />
 <xs:element name="enviarExpedientResponse" type="tns:enviarExpedientResponse" />
-<xs:complexType name="enviarDocument">
-<xs:sequence>
-<xs:element name="entitat" type="xs:string" />
-<xs:element name="unitatAdministrativa" type="xs:string" />
-<xs:element name="referenciaDocument" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
-<xs:complexType name="enviarDocumentResponse">
-<xs:sequence />
-</xs:complexType>
 <xs:complexType name="enviarExpedient">
 <xs:sequence>
 <xs:element name="entitat" type="xs:string" />
@@ -40,7 +30,6 @@
 <xs:element minOccurs="0" name="aplicacioCodi" type="xs:string" />
 <xs:element minOccurs="0" name="aplicacioVersio" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteCodi" type="xs:string" />
-<xs:element minOccurs="0" name="procedimentCodi" type="xs:string"></xs:element>
 <xs:element minOccurs="0" name="assumpteDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteTipusCodi" type="xs:string" />
 <xs:element minOccurs="0" name="assumpteTipusDescripcio" type="xs:string" />
@@ -67,6 +56,8 @@
 <xs:element minOccurs="0" name="oficinaDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="oficinaOrigenCodi" type="xs:string" />
 <xs:element minOccurs="0" name="oficinaOrigenDescripcio" type="xs:string" />
+<xs:element name="presencial" type="xs:boolean" />
+<xs:element minOccurs="0" name="procedimentCodi" type="xs:string" />
 <xs:element minOccurs="0" name="referencia" type="xs:string" />
 <xs:element minOccurs="0" name="solicita" type="xs:string" />
 <xs:element minOccurs="0" name="transportNumero" type="xs:string" />
@@ -113,11 +104,13 @@
 <xs:sequence>
 <xs:element minOccurs="0" name="adresa" type="xs:string" />
 <xs:element minOccurs="0" name="canalPreferent" type="xs:string" />
+<xs:element minOccurs="0" name="codiDire" type="xs:string" />
 <xs:element minOccurs="0" name="codiPostal" type="xs:string" />
 <xs:element minOccurs="0" name="documentNum" type="xs:string" />
 <xs:element minOccurs="0" name="documentTipus" type="xs:string" />
 <xs:element minOccurs="0" name="email" type="xs:string" />
 <xs:element minOccurs="0" name="emailHabilitat" type="xs:string" />
+<xs:element minOccurs="0" name="id" type="xs:long" />
 <xs:element minOccurs="0" name="llinatge1" type="xs:string" />
 <xs:element minOccurs="0" name="llinatge2" type="xs:string" />
 <xs:element minOccurs="0" name="municipi" type="xs:string" />
@@ -130,11 +123,22 @@
 <xs:element minOccurs="0" name="provinciaCodi" type="xs:string" />
 <xs:element minOccurs="0" name="raoSocial" type="xs:string" />
 <xs:element minOccurs="0" name="representant" type="tns:registreInteressat" />
+<xs:element minOccurs="0" name="representat" type="tns:registreInteressat" />
 <xs:element minOccurs="0" name="telefon" type="xs:string" />
 <xs:element minOccurs="0" name="tipus" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="enviarAnotacioRegistreEntradaResponse">
+<xs:sequence />
+</xs:complexType>
+<xs:complexType name="enviarDocument">
+<xs:sequence>
+<xs:element name="entitat" type="xs:string" />
+<xs:element name="unitatAdministrativa" type="xs:string" />
+<xs:element name="referenciaDocument" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="enviarDocumentResponse">
 <xs:sequence />
 </xs:complexType>
 </xs:schema>
@@ -151,25 +155,19 @@
     <wsdl:part element="tns:enviarExpedientResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="enviarExpedient">
-    <wsdl:part element="tns:enviarExpedient" name="parameters">
+  <wsdl:message name="enviarDocumentResponse">
+    <wsdl:part element="tns:enviarDocumentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="enviarAnotacioRegistreEntradaResponse">
     <wsdl:part element="tns:enviarAnotacioRegistreEntradaResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="enviarDocumentResponse">
-    <wsdl:part element="tns:enviarDocumentResponse" name="parameters">
+  <wsdl:message name="enviarExpedient">
+    <wsdl:part element="tns:enviarExpedient" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="BustiaV1">
-    <wsdl:operation name="enviarDocument">
-      <wsdl:input message="tns:enviarDocument" name="enviarDocument">
-    </wsdl:input>
-      <wsdl:output message="tns:enviarDocumentResponse" name="enviarDocumentResponse">
-    </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="enviarExpedient">
       <wsdl:input message="tns:enviarExpedient" name="enviarExpedient">
     </wsdl:input>
@@ -182,18 +180,15 @@
       <wsdl:output message="tns:enviarAnotacioRegistreEntradaResponse" name="enviarAnotacioRegistreEntradaResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="enviarDocument">
+      <wsdl:input message="tns:enviarDocument" name="enviarDocument">
+    </wsdl:input>
+      <wsdl:output message="tns:enviarDocumentResponse" name="enviarDocumentResponse">
+    </wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BustiaV1ServiceSoapBinding" type="tns:BustiaV1">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="enviarDocument">
-      <soap:operation soapAction="" style="document" />
-      <wsdl:input name="enviarDocument">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="enviarDocumentResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="enviarExpedient">
       <soap:operation soapAction="" style="document" />
       <wsdl:input name="enviarExpedient">
@@ -212,10 +207,19 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="enviarDocument">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="enviarDocument">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="enviarDocumentResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="BustiaV1Service">
     <wsdl:port binding="tns:BustiaV1ServiceSoapBinding" name="BustiaV1ServicePort">
-      <soap:address location="http://PROGRAMACIO14:8080/distribucio/ws/v1/bustia" />
+      <soap:address location="http://PROGRAMACIO19:8081/distribucio/ws/v1/bustia" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

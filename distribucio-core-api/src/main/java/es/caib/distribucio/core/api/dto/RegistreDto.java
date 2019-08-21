@@ -82,10 +82,8 @@ public class RegistreDto extends ContingutDto {
 	private String justificantArxiuUuid;
 	
 	private Boolean llegida;
+	private Boolean presencial;
 	
-	
-	
-	// BustiaContingutDto
 	private long pareId;
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private boolean procesAutomatic;
@@ -94,8 +92,12 @@ public class RegistreDto extends ContingutDto {
 	// == BustiaContingutDto
 	
 	
-	
-
+	public Boolean getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(Boolean presencial) {
+		this.presencial = presencial;
+	}
 	public long getPareId() {
 		return pareId;
 	}

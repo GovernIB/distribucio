@@ -50,6 +50,7 @@ public class RegistreAnotacio {
 	private String observacions;
 	private String exposa;
 	private String solicita;
+	private boolean presencial;
 	private List<RegistreInteressat> interessats;
 	private List<RegistreAnnex> annexos;
 	private RegistreAnnex justificant;
@@ -288,5 +289,12 @@ public class RegistreAnotacio {
 	public void setJustificant(RegistreAnnex justificant) {
 		this.justificant = justificant;
 	}
+	public boolean isPresencial() {
+		return presencial;
+	}
+	public void setPresencial(boolean presencial) {
+		this.presencial = presencial;
+	}
 
+	
 }
