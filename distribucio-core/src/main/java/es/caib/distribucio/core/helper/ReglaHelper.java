@@ -163,6 +163,8 @@ public class ReglaHelper {
 		try {
 			switch (regla.getTipus()) {
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
+				// Informa del codi del backoffice que processarà l'anotació
+				registre.updateBackCodi(regla.getBackofficeCodi());
 				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) { // ############################### BACKOFFICE SISTRA ###############################
 					for (RegistreAnnexEntity annex: registre.getAnnexos()) {
 							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))

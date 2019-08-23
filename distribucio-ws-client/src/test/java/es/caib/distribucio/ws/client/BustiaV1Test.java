@@ -42,11 +42,11 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04018961";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	private static final String ASSUMPTE_CODI = "BACK";
+	private static final String ASSUMPTE_CODI = "";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK";
+	private static final String PROCEDIMENT_CODI = "";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
@@ -59,7 +59,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM = "";
+	private static final String EXPEDIENT_NUM = "testBackoffice/45/2019";
 
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
@@ -119,6 +119,7 @@ public class BustiaV1Test {
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
+	        anotacio.setPresencial(true);
 	        List<Firma> firmes = null;
 	        RegistreAnnex annex;
 	        int nAnnexos = 1;
@@ -263,6 +264,7 @@ public class BustiaV1Test {
 		representant.setRepresentant(null);
 		representant.setTelefon("666555444");
 		representant.setTipus("2");
+		representant.setCodiDire("r4444444");
 		RegistreInteressat interessat = new RegistreInteressat();
 		interessat.setAdresa("Carrer del moix 2");
 		interessat.setCanalPreferent("02");
@@ -285,6 +287,7 @@ public class BustiaV1Test {
 		interessat.setRepresentant(representant);
 		interessat.setTelefon("999888777");
 		interessat.setTipus("2");
+		interessat.setCodiDire("i3333333");
 		anotacio.getInteressats().add(interessat);
 	}
 

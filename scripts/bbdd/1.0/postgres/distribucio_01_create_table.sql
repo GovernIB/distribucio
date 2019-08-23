@@ -208,7 +208,8 @@ CREATE TABLE DIS_REGISTRE
   BACK_REBUDA_DATA    timestamp without time zone,
   BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
   BACK_OBSERVACIONS 	character varying(4000),
-  BACK_RETRY_ENVIAR_DATA  timestamp without time zone
+  BACK_RETRY_ENVIAR_DATA  timestamp without time zone,
+  PRESENCIAL 			BOOLEAN
 );
 
 
@@ -293,7 +294,8 @@ CREATE TABLE DIS_REGISTRE_INTER
   LASTMODIFIEDBY_CODI  character varying(256),
   REGISTRE_ID          bigint                   NOT NULL,
   REPRESENTANT_ID      bigint,
-  REPRESENTAT_ID       bigint
+  REPRESENTAT_ID       bigint,
+  CODI_DIRE 			CHARACTER VARYING(64)
 );
 
 
@@ -322,7 +324,8 @@ CREATE TABLE DIS_REGLA
   BUSTIA_ID            bigint,
   METAEXPEDIENT_ID     bigint,
   UNITAT_ID 		   BIGINT,
-  PROCEDIMENT_CODI     CHARACTER VARYING(64)
+  PROCEDIMENT_CODI     CHARACTER VARYING(64),
+  BACKOFFICE_CODI      CHARACTER VARYING(64)
 );
 
 
@@ -427,5 +430,4 @@ CREATE TABLE DIS_AVIS
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDBY_CODI  character varying(64),
   LASTMODIFIEDDATE     timestamp without time zone
-
 );

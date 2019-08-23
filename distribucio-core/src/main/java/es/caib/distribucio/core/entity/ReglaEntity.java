@@ -67,6 +67,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "tipus_backoffice", length = 256)
 	@Enumerated(EnumType.STRING)
 	protected BackofficeTipusEnumDto backofficeTipus;
+	@Column(name = "backoffice_codi", length = 20)
+	protected String backofficeCodi;
 	@Column(name = "url", length = 256)
 	protected String backofficeUrl;
 	@Column(name = "usuari", length = 64)
@@ -113,6 +115,9 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public BackofficeTipusEnumDto getBackofficeTipus() {
 		return backofficeTipus;
 	}
+	public String getBackofficeCodi() {
+		return backofficeCodi;
+	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;
 	}
@@ -158,11 +163,13 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	}
 	public void updatePerTipusBackoffice(
 			BackofficeTipusEnumDto backofficeTipus,
+			String backofficeCodi,
 			String backofficeUrl,
 			String backofficeUsuari,
 			String backofficeContrasenya,
 			Integer backofficeIntents,
 			Integer backofficeTempsEntreIntents) {
+		this.backofficeCodi= backofficeCodi;
 		this.backofficeTipus = backofficeTipus;
 		this.backofficeUrl = backofficeUrl;
 		this.backofficeUsuari = backofficeUsuari;
@@ -222,6 +229,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		}
 		public Builder backofficeUrl(String backofficeUrl) {
 			built.backofficeUrl = backofficeUrl;
+			return this;
+		}
+		public Builder backofficeCodi(String backofficeCodi) {
+			built.backofficeCodi = backofficeCodi;
 			return this;
 		}
 		public Builder backofficeUsuari(String backofficeUsuari) {

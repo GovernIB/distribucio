@@ -227,7 +227,8 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true,
 					false,
-					false));
+					false,
+					true));
 		}
 		return resposta;
 	}
@@ -286,6 +287,8 @@ public class RegistreServiceImpl implements RegistreService {
 				(filtre.getEstat() == null),
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
+				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
+				filtre.getBackCodi(),
 				paginacioHelper.toSpringDataPageable(paginacioParams));
 		return paginacioHelper.toPaginaDto(
 				registres,
@@ -301,7 +304,8 @@ public class RegistreServiceImpl implements RegistreService {
 								false,
 								true,
 								false,
-								false);
+								false,
+								true);
 					}
 				});
 	}
@@ -324,7 +328,7 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
 				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
 				+ "paginacioParams=" + paginacioParams + ")");
-		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindByDatatable"));
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser"));
 		Timer.Context contextTotal = timerTotal.time();
 
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -378,6 +382,9 @@ public class RegistreServiceImpl implements RegistreService {
 					isFiltreProcessat = true;
 				}
 			}
+			
+			final Timer timerTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre"));
+			Timer.Context contextTotalfindRegistreByPareAndFiltre = timerTotalfindRegistreByPareAndFiltre.time();
 
 			pagina = contingutRepository.findRegistreByPareAndFiltre(
 					(bustia == null),
@@ -400,7 +407,12 @@ public class RegistreServiceImpl implements RegistreService {
 					paginacioHelper.toSpringDataPageable(
 							paginacioParams,
 							mapeigOrdenacio));
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			
 		}
+		
+		final Timer timerTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.toPaginaDto"));
+		Timer.Context contextTotaltoPaginaDto = timerTotaltoPaginaDto.time();
 
 		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
 				pagina,
@@ -416,10 +428,11 @@ public class RegistreServiceImpl implements RegistreService {
 								false,
 								true,
 								false,
-								false);
+								false,
+								true);
 					}
 				});
-
+		contextTotaltoPaginaDto.stop();
 		
 		contextTotal.stop();
 		return pag;
@@ -541,6 +554,11 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException {
+		
+		final Timer timegetRegistreJustificant = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getRegistreJustificant"));
+		Timer.Context contexgetRegistreJustificant = timegetRegistreJustificant.time();
+		
+		
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + bustiaId + ", "
@@ -577,6 +595,8 @@ public class RegistreServiceImpl implements RegistreService {
 					registre.getJustificantArxiuUuid(), 
 					true);
 		justificant.setRegistreId(registreId);
+		
+		contexgetRegistreJustificant.stop();
 		return justificant;
 	}
 
@@ -890,6 +910,11 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId) throws NotFoundException {
+		
+		final Timer timegetgetAnnexosAmbArxiu = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu"));
+		Timer.Context contexgetgetAnnexosAmbArxiu = timegetgetAnnexosAmbArxiu.time();
+		
+		
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + bustiaId + ", "
@@ -926,14 +951,18 @@ public class RegistreServiceImpl implements RegistreService {
 					annexEntity,
 					RegistreAnnexDto.class);
 			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
+				
+				final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
+				Timer.Context contexarxiuDocumentConsultar = timearxiuDocumentConsultar.time();
 				Document document = pluginHelper.arxiuDocumentConsultar(
 						annex.getFitxerArxiuUuid(),
 						null,
 						true);
+				contexarxiuDocumentConsultar.stop();
+				
 				DocumentMetadades metadades = document.getMetadades();
 				if (metadades != null) {
 					annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
-					
 				}
 				
 				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
@@ -952,10 +981,16 @@ public class RegistreServiceImpl implements RegistreService {
 										ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
 									firmaContingut = arxiuFirma.getContingut();
 								}
+								
+								final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
+								Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
 								firma.setDetalls(
 										pluginHelper.validaSignaturaObtenirDetalls(
 												documentContingut,
 												firmaContingut));
+								contevalidaSignaturaObtenirDetalls.stop();
+								
+								
 							}
 							firmaIndex++;
 						} else {
@@ -969,6 +1004,9 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 			annexos.add(annex);
 		}
+		
+		
+		contexgetgetAnnexosAmbArxiu.stop();
 		return annexos;
 	}
 

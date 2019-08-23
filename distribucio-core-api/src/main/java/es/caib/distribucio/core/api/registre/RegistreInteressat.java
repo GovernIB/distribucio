@@ -31,6 +31,7 @@ public class RegistreInteressat {
 	private String emailHabilitat;
 	private String canalPreferent;
 	private String observacions;
+	private String codiDire; 
 	private RegistreInteressat representant;
 	private RegistreInteressat representat;
 
@@ -173,6 +174,12 @@ public class RegistreInteressat {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getCodiDire() {
+		return codiDire;
+	}
+	public void setCodiDire(String codiDire) {
+		this.codiDire = codiDire;
 	}
 
 }

@@ -28,7 +28,7 @@ public class BustiaDto extends ContingutDto {
 	private String pareNom;
 	
 	public boolean isUnitatObsoleta() {
-		if (unitatOrganitzativa.getEstat().equals("E") || unitatOrganitzativa.getEstat().equals("A") || unitatOrganitzativa.getEstat().equals("T")) {
+		if (unitatOrganitzativa != null && (unitatOrganitzativa.getEstat().equals("E") || unitatOrganitzativa.getEstat().equals("A") || unitatOrganitzativa.getEstat().equals("T"))) {
 			return true;
 		} else {
 			return false;

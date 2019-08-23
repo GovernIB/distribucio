@@ -142,20 +142,24 @@ $(document).ready(function() {
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+				<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+					</div>
+					<div class="col-md-2">
+						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+							<span class="fa-stack" aria-hidden="true">
+								<i class="fa fa-inbox fa-stack-1x"></i>
+		    	    			<i class="fa fa-ban fa-stack-2x"></i>
+		   					</span>
+						</button>
+						<dis:inputHidden name="mostrarInactives"/>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>			
-			<div class="col-md-1">
-				<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
-					<span class="fa-stack" aria-hidden="true">
-						<i class="fa fa-inbox fa-stack-1x"></i>
-    	    			<i class="fa fa-ban fa-stack-2x"></i>
-   					</span>
-				</button>
-				<dis:inputHidden name="mostrarInactives"/>
-			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>

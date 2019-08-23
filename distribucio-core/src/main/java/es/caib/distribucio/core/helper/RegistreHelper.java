@@ -222,6 +222,7 @@ public class RegistreHelper {
 				registreAnotacio.getOficinaOrigenCodi(),
 				registreAnotacio.getOficinaOrigenDescripcio()).
 		justificantArxiuUuid(justificantArxiuUuid).
+		presencial(registreAnotacio.isPresencial()).
 		build();
 		registreRepository.saveAndFlush(registreEntity);
 		// save interessats in db
@@ -757,7 +758,8 @@ public class RegistreHelper {
 			canalPreferent(
 					RegistreInteressatCanalEnum.valorAsEnum(
 							registreInteressat.getCanalPreferent())).
-			observacions(registreInteressat.getObservacions());		
+			observacions(registreInteressat.getObservacions()).	
+			codiDire(registreInteressat.getCodiDire());
 		RegistreInteressatEntity interessatEntity = interessatBuilder.build();
 		
 		if (registreInteressat.getRepresentant() != null) {
@@ -781,7 +783,8 @@ public class RegistreHelper {
 					representant.getEmail(),
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
-					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()));
+					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()),
+					representant.getCodiDire());
 		}
 		registreInteressatRepository.save(interessatEntity);
 		return interessatEntity;

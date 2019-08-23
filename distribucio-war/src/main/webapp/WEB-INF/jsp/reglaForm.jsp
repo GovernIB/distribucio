@@ -116,6 +116,7 @@ $(document).ready(function() {
 				</div>
 				<div id="camps_tipus_BACKOFFICE">
 					<dis:inputSelect name="backofficeTipus" textKey="regla.form.camp.backoffice.tipus" optionItems="${backofficeTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+					<dis:inputText name="backofficeCodi" textKey="regla.form.camp.backoffice.codi" required="true" comment="regla.form.camp.backoffice.codi.comment"/>
 					<dis:inputText name="backofficeUrl" textKey="regla.form.camp.backoffice.url" required="true"/>
 					<dis:inputText name="backofficeUsuari" textKey="regla.form.camp.backoffice.usuari"/>
 					<dis:inputText name="backofficeContrasenya" textKey="regla.form.camp.backoffice.contrasenya"/>

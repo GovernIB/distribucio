@@ -28,6 +28,7 @@ public class RegistreDto extends ContingutDto {
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
+	private String backCodi;
 	private Date backPendentData;
 	private Date backRebudaData;
 	private Date backProcesRebutjErrorData;
@@ -81,10 +82,8 @@ public class RegistreDto extends ContingutDto {
 	private String justificantArxiuUuid;
 	
 	private Boolean llegida;
+	private Boolean presencial;
 	
-	
-	
-	// BustiaContingutDto
 	private long pareId;
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private boolean procesAutomatic;
@@ -93,8 +92,12 @@ public class RegistreDto extends ContingutDto {
 	// == BustiaContingutDto
 	
 	
-	
-
+	public Boolean getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(Boolean presencial) {
+		this.presencial = presencial;
+	}
 	public long getPareId() {
 		return pareId;
 	}
@@ -131,29 +134,12 @@ public class RegistreDto extends ContingutDto {
 	public void setBustiaActiva(boolean isBustiaActiva) {
 		this.isBustiaActiva = isBustiaActiva;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}	
 	public Date getBackRetryEnviarData() {
 		return backRetryEnviarData;
 	}
