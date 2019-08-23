@@ -45,5 +45,11 @@ public enum LogTipusEnumDto {
 	NOTIFICACIO_REINTENT,
 	ENVIAMENT_EMAIL,// used
 	MARCAMENT_PROCESSAT,// used
-	DISTRIBUCIO // used
+	DISTRIBUCIO, // used
+	REGLA_APLICAR, // newly added
+	BACK_REBUDA, // newly added
+	BACK_PROCESSADA, // newly added
+	BACK_REBUTJADA, // newly added
+	BACK_ERROR // newly added
+	
 }

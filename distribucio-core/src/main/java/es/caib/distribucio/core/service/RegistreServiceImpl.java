@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioRe
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
@@ -77,6 +80,7 @@ import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
+import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
@@ -144,6 +148,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private ContingutRepository contingutRepository;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
+	@Resource
+	private ContingutLogHelper contingutLogHelper;	
 
 	
 	@Transactional(readOnly = true)
@@ -521,26 +527,57 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreEntity registre = registreRepository.findByNumero(id.getIndetificador());
 			switch (estat) {
 			case REBUDA:
-				registre.updateBackEstat(RegistreProcesEstatEnum.BACK_REBUDA,
+				registre.updateBackEstat(
+						RegistreProcesEstatEnum.BACK_REBUDA,
 						observacions);
 				registre.updateBackRebudaData(new Date());
-
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.BACK_REBUDA,
+						null,
+						null,
+						false,
+						false);
 				break;
 			case PROCESSADA:
-				registre.updateBackEstat(RegistreProcesEstatEnum.BACK_PROCESSADA,
+				registre.updateBackEstat(
+						RegistreProcesEstatEnum.BACK_PROCESSADA,
 						observacions);
 				registre.updateBackProcesRebutjErrorData(new Date());
 				registreHelper.tancarExpedientArxiu(registre.getId());
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.BACK_PROCESSADA,
+						null,
+						null,
+						false,
+						false);
 				break;
 			case REBUTJADA:
-				registre.updateBackEstat(RegistreProcesEstatEnum.BACK_REBUTJADA,
+				registre.updateBackEstat(
+						RegistreProcesEstatEnum.BACK_REBUTJADA,
 						observacions);
 				registre.updateBackProcesRebutjErrorData(new Date());
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.BACK_REBUTJADA,
+						null,
+						null,
+						false,
+						false);				
 				break;
 			case ERROR:
-				registre.updateBackEstat(RegistreProcesEstatEnum.BACK_ERROR,
+				registre.updateBackEstat(
+						RegistreProcesEstatEnum.BACK_ERROR,
 						observacions);
 				registre.updateBackProcesRebutjErrorData(new Date());
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.BACK_ERROR,
+						null,
+						null,
+						false,
+						false);
 				break;
 			}
 		} catch (Exception ex) {

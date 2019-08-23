@@ -239,6 +239,15 @@ public class ReglaHelper {
 				error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
 				break;
 			}
+			
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.REGLA_APLICAR,
+					regla.getNom(),
+					regla.getTipus().toString(),
+					false,
+					false);
+			
 		} catch (Exception ex) {
 			Throwable t = ExceptionUtils.getRootCause(ex);
 			if (t == null)

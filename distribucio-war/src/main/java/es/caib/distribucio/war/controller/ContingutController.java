@@ -472,6 +472,22 @@ public class ContingutController extends BaseUserController {
 		case DISTRIBUCIO:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.distribucio"));
 			break;
+		case REGLA_APLICAR:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.reglaAplicar", new Object[] {log.getParam1(), log.getParam2()}));
+			break;
+		case BACK_REBUDA:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));
+			break;
+		case BACK_PROCESSADA:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_PROCESSADA"));
+			break;
+		case BACK_REBUTJADA:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUTJADA"));
+			break;
+		case BACK_ERROR:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_ERROR"));
+			break;
+		
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");

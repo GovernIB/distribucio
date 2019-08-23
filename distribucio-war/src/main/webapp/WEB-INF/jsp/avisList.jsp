@@ -53,7 +53,7 @@
 								{{else}}
 									<li><a href="avis/{{:id}}/disable"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
 								{{/if}}
-								<li><a href="avis/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="avis.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
+								<li><a href="avis/{{:id}}/delete" data-confirm="<spring:message code="avis.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 							</ul>
 						</div>
 					</script>
@@ -62,6 +62,6 @@
 		</thead>
 	</table>
 	<script id="botonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="avis/new" data-toggle="modal" data-maximized="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="avis.list.boto.nova.avis"/></a></p>
+		<p style="text-align:right"><a class="btn btn-default" href="avis/new" data-toggle="modal" data-maximized="true" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="avis.list.boto.nova.avis"/></a></p>
 	</script>
 </body>
