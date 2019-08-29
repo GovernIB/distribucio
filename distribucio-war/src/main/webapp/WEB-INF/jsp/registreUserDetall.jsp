@@ -141,7 +141,7 @@ tr.clicable {
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
-					<td>${registre.presencial}</td>
+					<td>${registre.presencial} #{bool.true}</td>
 				</tr>						
 			</tbody>
 			</table>

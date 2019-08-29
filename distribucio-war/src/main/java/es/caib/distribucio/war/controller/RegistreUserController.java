@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,25 +32,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import es.caib.distribucio.core.api.dto.AlertaDto;
-import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand.Classificar;
 import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
+import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
@@ -331,17 +329,20 @@ public class RegistreUserController extends BaseUserController {
 					command.getBustiaId(),
 					command.getContingutId(),
 					adressesParsed);
+			MissatgesHelper.success(
+					request,
+					getMessage(request, " bustia.controller.pendent.contingut.enviat.email.ok "));
 		} catch (Exception exception) {
-			logger.error("Error enviant email", exception);
-			getModalControllerReturnValueError(
-					request, 
-					"redirect:../../../pendent", 
-					ExceptionUtils.getRootCauseMessage(exception));
+			String errMsg = getMessage(
+					request, 	
+					"bustia.controller.pendent.contingut.enviat.email.ko",
+					new Object[] {ExceptionUtils.getRootCauseMessage(exception)});
+			MissatgesHelper.error(
+					request,
+					errMsg);
+			logger.error(errMsg, exception);
 		}
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.enviat.email.ok");
+		return modalUrlTancar();
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/reenviar", method = RequestMethod.GET)

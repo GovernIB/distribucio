@@ -84,7 +84,7 @@ public class RegistreEntity extends ContingutEntity {
 	private String llibreDescripcio;
 	@Column(name = "extracte", length = 240)
 	private String extracte;
-	@Column(name = "assumpte_tipus_codi", length = 16, nullable = false)
+	@Column(name = "assumpte_tipus_codi", length = 16)
 	private String assumpteTipusCodi;
 	@Column(name = "assumpte_tipus_desc", length = 100)
 	private String assumpteTipusDescripcio;

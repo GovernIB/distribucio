@@ -161,7 +161,7 @@ CREATE TABLE DIS_REGISTRE
   LLIBRE_CODI          character varying(4)     NOT NULL,
   LLIBRE_DESC          character varying(100),
   EXTRACTE             character varying(240),
-  ASSUMPTE_TIPUS_CODI  character varying(16)    NOT NULL,
+  ASSUMPTE_TIPUS_CODI  character varying(16),
   ASSUMPTE_TIPUS_DESC  character varying(100),
   ASSUMPTE_CODI        character varying(16),
   ASSUMPTE_DESC        character varying(100),
