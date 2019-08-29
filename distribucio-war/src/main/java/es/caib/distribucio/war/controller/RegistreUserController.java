@@ -331,7 +331,7 @@ public class RegistreUserController extends BaseUserController {
 					adressesParsed);
 			MissatgesHelper.success(
 					request,
-					getMessage(request, " bustia.controller.pendent.contingut.enviat.email.ok "));
+					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
 		} catch (Exception exception) {
 			String errMsg = getMessage(
 					request, 	
