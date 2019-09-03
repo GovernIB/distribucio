@@ -26,6 +26,7 @@ import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
+import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -43,6 +44,8 @@ public class EmailHelper {
 	private UsuariRepository usuariRepository;
 	@Resource
 	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
+	@Resource 
+	private ContingutMovimentRepository contingutMovimentRepository;
 	
 	@Resource
 	private JavaMailSender mailSender;
@@ -74,7 +77,22 @@ public class EmailHelper {
 			sb.append(destinatari.getCodi() + " " + destinatari.getEmail()).append(", ");
 		sb.append("})");
 		logger.debug(sb.toString());
-		
+
+		// Comprova que hi hagi un moviment
+		if (contenidorMoviment == null && bustia != null && contingut != null) {
+			contenidorMoviment = contingut.getDarrerMoviment();
+			if (contenidorMoviment == null) {
+				logger.warn("El contingut amb id=" + contingut + " no té el darrer moviment informat. Es buscarà el darrer moviment a la taula de moviments.");
+				// Cerca el darrer moviment
+				List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
+				if (!moviments.isEmpty()) 
+					contenidorMoviment = moviments.get(moviments.size() - 1);
+				else {
+					logger.warn("No s'ha trobat cap moviment pel contingut amb id=" + contingut.getId() + ". S'en crearà un de relacionat amb la bústia");
+					contenidorMoviment = contenidorHelper.ferIEnregistrarMoviment(contingut, bustia, null);
+				}
+			}			
+		}
 		// Validació
 		if (bustia == null 
 				|| contingut == null 
@@ -101,74 +119,91 @@ public class EmailHelper {
 		}
 	}
 	
-	public void sendEmailBustiaPendentContingut(
+	/** Envia un email d'avís amb els continguts pendents de notificar agrupats en el mateix email.
+	 * 
+	 * @param emailDestinatari
+	 * 			Email a qui s'enviarà l'email.
+	 * @param contingutMovimentEmails
+	 * 			Llista de contiguts pendents d'avís per email.
+	 */
+	public void sendEmailAvisAgrupatNousElementsBustia(
 			String emailDestinatari,
-			boolean enviarAgrupat,
 			List<ContingutMovimentEmailEntity> contingutMovimentEmails) {
+		
 		logger.debug("Enviament emails nou contenidor a bústies");
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
-		if (enviarAgrupat && contingutMovimentEmails.size() > 1) {
 			
-			SimpleMailMessage missatge = new SimpleMailMessage();
-			missatge.setTo(emailDestinatari);
-			missatge.setFrom(getRemitent());
-			missatge.setSubject(PREFIX_DISTRIBUCIO + " Nous elements rebuts a les bústies");
-			
-			BustiaEntity bustia = null;
-			EntitatEntity entitat = null;
-			String text = "";
-			Integer contadorElement = 1;
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		missatge.setTo(emailDestinatari);
+		missatge.setFrom(getRemitent());
+		missatge.setSubject(PREFIX_DISTRIBUCIO + " Nous elements rebuts a les bústies");
+		
+		BustiaEntity bustia = null;
+		EntitatEntity entitat = null;
+		String text = "";
+		Integer contadorElement = 1;
 
-			for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
-				if (bustia == null || !contingutEmail.getBustia().getId().equals(bustia.getId())) { 
-					bustia = contingutEmail.getBustia();
-					entitat = bustia != null ? bustia.getEntitat() : null;
-					text += "\nNous elements rebuts a la bústia:\n" +
-							"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
-							"\tUnitat organitzativa: " + contingutEmail.getUnitatOrganitzativa() + "\n" +
-							"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n";
-					contadorElement = 1;
-				}
-				ContingutEntity contingut = contingutEmail.getContingut();
-				ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
-				String tipus = contingut.getContingutType();
-				text += "\t" + contadorElement++ + ". Dades de l'element: \n" +
-						"\t\tTipus: " + tipus + "\n" +
-						"\t\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
-						"\t\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
-						"\t\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
-						"\t\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n";
-			}
-			missatge.setText(text);
-			mailSender.send(missatge);
-		} else {
-			for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
-				SimpleMailMessage missatge = new SimpleMailMessage();
-				missatge.setTo(emailDestinatari);
-				missatge.setFrom(getRemitent());
-				missatge.setSubject(PREFIX_DISTRIBUCIO + " Nou element rebut a la bústia: " + (contingutEmail.getBustia() != null ? contingutEmail.getBustia().getNom() : ""));
-				BustiaEntity bustia = contingutEmail.getBustia();
-				EntitatEntity entitat = bustia != null ? bustia.getEntitat() : null;
-				ContingutEntity contingut = contingutEmail.getContingut();
-				ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
-				String tipus = contingut.getContingutType();
-				missatge.setText(
-						"Nou element rebut a la bústia:\n" +
+		for (ContingutMovimentEmailEntity contingutEmail: contingutMovimentEmails) {
+			if (bustia == null || !contingutEmail.getBustia().getId().equals(bustia.getId())) { 
+				bustia = contingutEmail.getBustia();
+				entitat = bustia != null ? bustia.getEntitat() : null;
+				text += "\nNous elements rebuts a la bústia:\n" +
 						"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
 						"\tUnitat organitzativa: " + contingutEmail.getUnitatOrganitzativa() + "\n" +
-						"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n" +
-						"Dades de l'element: \n" +
-						"\tTipus: " + tipus + "\n" +
-						"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
-						"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
-						"\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
-						"\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n");
-				
-				mailSender.send(missatge);
+						"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n";
+				contadorElement = 1;
 			}
+			ContingutEntity contingut = contingutEmail.getContingut();
+			ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
+			String tipus = contingut.getContingutType();
+			text += "\t" + contadorElement++ + ". Dades de l'element: \n" +
+					"\t\tTipus: " + tipus + "\n" +
+					"\t\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+					"\t\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
+					"\t\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
+					"\t\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n";
 		}
+		missatge.setText(text);
+		mailSender.send(missatge);
+	}
+	
+	/** Envia un email d'avís amb un contingut pendent de notificar per email. Es diferencia del mètode agrupat perquè només envia
+	 * un moviment i canvia l'assumpte i el cos del missatge.
+	 * 
+	 * @param emailDestinatari
+	 * 			Email a qui s'enviarà l'email.
+	 * @param contingutEmail
+	 */
+	public void sendEmailAvisSimpleNouElementBustia(
+			String emailDestinatari,
+			ContingutMovimentEmailEntity contingutEmail) {
+		logger.debug("Enviament email moviment a destinatari");
 		
+		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		missatge.setTo(emailDestinatari);
+		missatge.setFrom(getRemitent());
+		missatge.setSubject(PREFIX_DISTRIBUCIO + " Nou element rebut a la bústia: " + (contingutEmail.getBustia() != null ? contingutEmail.getBustia().getNom() : ""));
+		BustiaEntity bustia = contingutEmail.getBustia();
+		EntitatEntity entitat = bustia != null ? bustia.getEntitat() : null;
+		ContingutEntity contingut = contingutEmail.getContingut();
+		ContingutMovimentEntity contenidorMoviment = contingutEmail.getContingutMoviment();
+		String tipus = contingut.getContingutType();
+		missatge.setText(
+				"Nou element rebut a la bústia:\n" +
+				"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+				"\tUnitat organitzativa: " + contingutEmail.getUnitatOrganitzativa() + "\n" +
+				"\tBústia: " + (bustia != null ? bustia.getNom() : "") + "\n\n" +
+				"Dades de l'element: \n" +
+				"\tTipus: " + tipus + "\n" +
+				"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+				"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
+				"\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
+				"\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n");
+		
+		mailSender.send(missatge);		
 	}
 
 	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/contingut/642/registre/2669"

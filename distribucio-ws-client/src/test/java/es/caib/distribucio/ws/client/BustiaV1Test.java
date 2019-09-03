@@ -49,7 +49,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = "BACK";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
+	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";// 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012";
 	private static final String ENTITAT_CODI = "A04019281";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";

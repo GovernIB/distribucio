@@ -117,20 +117,6 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
-	public ContingutDto enviarContingut(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId,
-			String comentari) {
-		return delegate.enviarContingut(
-				entitatId,
-				bustiaId,
-				contingutId,
-				comentari);
-	}
-
-	@Override
 	@RolesAllowed("DIS_BSTWS")
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,

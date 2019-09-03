@@ -14,7 +14,6 @@ import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
-import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -186,28 +185,6 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findPermesesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
-
-	/**
-	 * Envia contingut a una bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia de destí.
-	 * @param contingutId
-	 *            Atribut id del contingut que s'envia.
-	 * @param comentari
-	 *            Comentari per l'enviament.
-	 * @return el contenidor enviat
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public ContingutDto enviarContingut(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId,
-			String comentari) throws NotFoundException;
 
 	/**
 	 * Crea l'anotació de registre i la distribueix.

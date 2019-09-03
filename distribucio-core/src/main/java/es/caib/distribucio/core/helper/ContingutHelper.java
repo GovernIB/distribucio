@@ -310,7 +310,6 @@ public class ContingutHelper {
 
 	public Set<String> findUsuarisAmbPermisReadPerContenidor(
 			ContingutEntity contingut) {
-		StringBuilder sb = new StringBuilder("Preparant la llista d'usuaris per enviar l'email: ");
 		List<PermisDto> permisos = new ArrayList<PermisDto>();
 		if (contingut instanceof BustiaEntity) {
 			permisos = permisosHelper.findPermisos(
@@ -322,23 +321,18 @@ public class ContingutHelper {
 			switch (permis.getPrincipalTipus()) {
 			case USUARI:
 				usuaris.add(permis.getPrincipalNom());
-				sb.append(" usuari ").append(permis.getPrincipalNom());
 				break;
 			case ROL:
 				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(
 						permis.getPrincipalNom());
-				sb.append(" rol ").append(permis.getPrincipalNom()).append(" (");
 				if (usuarisGrup != null) {
 					for (DadesUsuari usuariGrup: usuarisGrup) {
 						usuaris.add(usuariGrup.getCodi());
-						sb.append(" ").append(usuariGrup.getCodi());
 					}
 				}
-				sb.append(")");
 				break;
 			}
 		}
-		logger.debug(sb.toString());
 		return usuaris;
 	}
 

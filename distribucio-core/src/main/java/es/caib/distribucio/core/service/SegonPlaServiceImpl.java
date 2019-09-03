@@ -6,6 +6,7 @@ package es.caib.distribucio.core.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
@@ -164,18 +166,90 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 
+	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents no agrupats per enviar
+	 * els emails als destinataris dels avisos.
+	 */
 	@Override
 	@Transactional
-//	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
+	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
 	public void enviarEmailsPendentsNoAgrupats() {
-		enviarEmailsPendents(false);
+		int movimentsEnviats = 0;
+		int errors = 0;
+		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats");
+		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
+		for (ContingutMovimentEmailEntity moviment : moviments) {
+			try {
+				this.enviarEmailPendent(
+						moviment.getEmail(), 
+						Arrays.asList(moviment));
+				logger.debug("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail());
+				movimentsEnviats++;
+			} catch (Exception e) {
+				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail() + ": " + e.getMessage(), e);
+				errors++;
+			}
+		}
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats. Moviments enviats: " + movimentsEnviats + ". Errors: " + errors);
 	}
 
+	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents agrupats per enviar
+	 * els emails als destinataris dels avisos amb els moviments pendents agrupats.
+	 */
 	@Override
 	@Transactional
-//	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
+	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
 	public void enviarEmailsPendentsAgrupats() {
-		enviarEmailsPendents(true);
+		int movimentsEnviats = 0;
+		int errors = 0;
+		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats");
+		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
+		// Agrupa per destinataris Map<email, continguts> 
+		Map<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
+		for (ContingutMovimentEmailEntity contingutEmail : moviments) {
+			if (contingutsEmail.containsKey(contingutEmail.getEmail())) {
+				contingutsEmail.get(contingutEmail.getEmail()).add(contingutEmail);
+			} else {
+				List<ContingutMovimentEmailEntity> lContingutEmails = new ArrayList<ContingutMovimentEmailEntity>();
+				lContingutEmails.add(contingutEmail);
+				contingutsEmail.put(contingutEmail.getEmail(), lContingutEmails);
+			}
+		}
+		// Envia i esborra per agrupació
+		for (String email: contingutsEmail.keySet()) {
+			moviments = contingutsEmail.get(email);
+			try {
+				this.enviarEmailPendent(
+						email, 
+						moviments);
+				logger.debug("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email);
+				movimentsEnviats += moviments.size();
+			} catch (Exception e) {
+				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email + ": " + e.getMessage(), e);
+				errors++;
+			}
+		}
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats. Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors);
+	}
+	
+	/** Mètode comú per enviar dins d'un email l'avís amb els moviments pendents a un destinatari. En acabar esborra els movimentsp
+	 * pendents de notificar.
+	 * @param email
+	 * @param moviments
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private void enviarEmailPendent(String email, List<ContingutMovimentEmailEntity> moviments) {
+		// Envia l'email
+		if (moviments.size() > 1) {
+			emailHelper.sendEmailAvisAgrupatNousElementsBustia(
+					email,
+					moviments); 
+		} else {
+			emailHelper.sendEmailAvisSimpleNouElementBustia(
+					email, 
+					moviments.get(0));
+		}
+		// Esborra els moviments pendents de notificar
+		contingutMovimentEmailRepository.delete(moviments);
 	}
 
 	private int getGuardarAnnexosMaxReintentsProperty() {
@@ -194,35 +268,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			return Integer.parseInt(maxReintents);
 		} else {
 			return 0;
-		}
-	}
-
-	private void enviarEmailsPendents(boolean agrupats) {
-		
-		List<ContingutMovimentEmailEntity> moviments = null;
-		
-		if (agrupats)
-			moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
-		else
-			moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
-		
-		HashMap<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
-		for (ContingutMovimentEmailEntity contingutEmail : moviments) {
-			if (contingutsEmail.containsKey(contingutEmail.getEmail())) {
-				contingutsEmail.get(contingutEmail.getEmail()).add(contingutEmail);
-			} else {
-				List<ContingutMovimentEmailEntity> lContingutEmails = new ArrayList<ContingutMovimentEmailEntity>();
-				lContingutEmails.add(contingutEmail);
-				contingutsEmail.put(contingutEmail.getEmail(), lContingutEmails);
-			}
-		}
-		
-		for (String email: contingutsEmail.keySet()) {
-			emailHelper.sendEmailBustiaPendentContingut(
-					email,
-					agrupats,
-					contingutsEmail.get(email));
-			contingutMovimentEmailRepository.delete(contingutsEmail.get(email));
 		}
 	}
 
