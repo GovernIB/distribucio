@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,6 +32,9 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @Table(name = "dis_cont_log")
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutLogEntity extends DistribucioAuditable<Long> {
+
+	/** Llargada màxima del paràmetre */
+	private static final int PARAM_MAX_LENGTH = 255;
 
 	@Column(name = "tipus", nullable = false)
 	private LogTipusEnumDto tipus;
@@ -89,8 +93,8 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 	public void updateParams(
 			String param1,
 			String param2) {
-		this.param1 = param1;
-		this.param2 = param2;
+		this.param1 = StringUtils.abbreviate(param1, PARAM_MAX_LENGTH);
+		this.param2 = StringUtils.abbreviate(param2, PARAM_MAX_LENGTH);
 	}
 
 	public static Builder getBuilder(
@@ -122,11 +126,11 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 			return this;
 		}
 		public Builder param1(String param1) {
-			built.param1 = param1;
+			built.param1 = StringUtils.abbreviate(param1, PARAM_MAX_LENGTH);
 			return this;
 		}
 		public Builder param2(String param2) {
-			built.param2 = param2;
+			built.param2 = StringUtils.abbreviate(param2, PARAM_MAX_LENGTH);
 			return this;
 		}
 		public Builder pare(ContingutLogEntity pare) {
