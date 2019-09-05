@@ -108,7 +108,7 @@ $(document).ready(function() {
 					suggestText="nom"
 					required="true" />
 				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="false"/>
-				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false"/>
+				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false" comment="regla.form.camp.procediment.codi.info"/>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="especifiques">
 				<div id="camps_tipus_BUSTIA">
@@ -116,6 +116,7 @@ $(document).ready(function() {
 				</div>
 				<div id="camps_tipus_BACKOFFICE">
 					<dis:inputSelect name="backofficeTipus" textKey="regla.form.camp.backoffice.tipus" optionItems="${backofficeTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+					<dis:inputText name="backofficeCodi" textKey="regla.form.camp.backoffice.codi" required="true" comment="regla.form.camp.backoffice.codi.comment"/>
 					<dis:inputText name="backofficeUrl" textKey="regla.form.camp.backoffice.url" required="true"/>
 					<dis:inputText name="backofficeUsuari" textKey="regla.form.camp.backoffice.usuari"/>
 					<dis:inputText name="backofficeContrasenya" textKey="regla.form.camp.backoffice.contrasenya"/>

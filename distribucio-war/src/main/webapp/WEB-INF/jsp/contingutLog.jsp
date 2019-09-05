@@ -73,8 +73,16 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
+	<!------------------------------------ TABLIST --------------------------------------->
 	<ul class="nav nav-tabs">
 		<li class="active">
+			<a data-toggle="tab" href="#resum">
+				<spring:message code="comu.boto.resum"/>
+				<span class="badge">${fn:length(logsDetall)}</span>
+			</a>
+		</li>	
+		<li>
 			<a data-toggle="tab" href="#accions">
 				<spring:message code="comu.boto.accions"/>
 				<span class="badge">${fn:length(logs)}</span>
@@ -94,7 +102,37 @@ $(document).ready(function() {
 	</ul>
 	<br/>
 	<div class="tab-content">
-		<div class="tab-pane active in" id="accions">
+	
+	
+	
+		<!------------------------------------ TABPANEL RESUM --------------------------------------->
+		<div class="tab-pane active in" id="resum">
+			<a href="<c:url value="/contingut/${contingut.id}/log/informe"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
+				<i class="fa fa-file-text-o" aria-hidden="true"></i>
+				<spring:message code="comu.boto.informe"/>
+			</a>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th width="15%"><spring:message code="contingut.log.columna.data"/></th>
+						<th width="85%"><spring:message code="contingut.log.columna.resum"/></th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="log" items="${logsResum}">
+						<tr>
+							<td><fmt:formatDate value="${log[0].createdDate}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+							<td>
+								${log[1]}					
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>	
+	
+		<!------------------------------------ TABPANEL ACCIONS --------------------------------------->
+		<div class="tab-pane" id="accions">
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -174,6 +212,8 @@ $(document).ready(function() {
 				</div>
 			</div>
 		</div>
+		
+		<!------------------------------------ TABPANEL MOVIMENTS --------------------------------------->		
 		<div class="tab-pane" id="moviments">
 			<c:if test="${not empty moviments}">
 				<table class="table table-striped table-bordered">
@@ -194,14 +234,14 @@ $(document).ready(function() {
 								<td>
 									<c:if test="${not empty moviment.origen}">
 										<c:choose>
-											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
-										</c:choose>#${moviment.origen.id}
+											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
+										</c:choose>${moviment.origen.nom}
 									</c:if>
 								</td>
 								<td>
 									<c:choose>
-										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/></c:when>
-									</c:choose>#${moviment.desti.id}
+										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
+									</c:choose>${moviment.desti.nom}
 								</td>
 								<td>${moviment.comentari}</td>
 							</tr>
@@ -210,6 +250,8 @@ $(document).ready(function() {
 				</table>
 			</c:if>
 		</div>
+		
+		<!------------------------------------ TABPANEL AUDITORIA --------------------------------------->	
 		<div class="tab-pane" id="auditoria">
 			<div class="row">
 				<div class="col-sm-6">

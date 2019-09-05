@@ -5,10 +5,14 @@ package es.caib.distribucio.core.helper;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
@@ -46,7 +50,8 @@ public class EntityComprovarHelper {
 	private ReglaRepository reglaRepository;
 	@Resource
 	private PermisosHelper permisosHelper;
-
+	@Autowired
+	private MetricRegistry metricRegistry;
 
 
 	public EntitatEntity comprovarEntitat(
@@ -54,6 +59,9 @@ public class EntityComprovarHelper {
 			boolean comprovarPermisUsuari,
 			boolean comprovarPermisAdmin,
 			boolean comprovarPermisUsuariOrAdmin) throws NotFoundException {
+		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarEntitat"));
+		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
+		
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		if (entitat == null) {
 			throw new NotFoundException(
@@ -105,6 +113,8 @@ public class EntityComprovarHelper {
 						"ADMINISTRATION || READ");
 			}
 		}
+		
+		comprovarEntitatContext.stop();
 		return entitat;
 	}
 
@@ -141,6 +151,9 @@ public class EntityComprovarHelper {
 			EntitatEntity entitat,
 			Long bustiaId,
 			boolean comprovarPermisRead) {
+		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarBustia"));
+		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
+		
 		BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
 		if (bustia == null) {
 			throw new NotFoundException(
@@ -168,6 +181,8 @@ public class EntityComprovarHelper {
 						"READ");
 			}
 		}
+		
+		comprovarBustiaContext.stop();
 		return bustia;
 	}
 

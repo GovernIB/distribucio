@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,13 +14,18 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -30,6 +36,7 @@ import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
+
 
 /**
  * Mètodes comuns per a gestionar bústies.
@@ -51,12 +58,17 @@ public class BustiaHelper {
 	private PermisosHelper permisosHelper;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-
+	@Autowired
+	private MetricRegistry metricRegistry;
+	
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			EntitatEntity entitat,
 			boolean nomesAmbBusties,
 			boolean nomesAmbBustiesPermeses,
 			boolean ambContadorElementsPendents) {
+		
+		final Timer timerbustiesPermeses = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.bustiesPermeses"));
+		Timer.Context contextbustiesPermeses = timerbustiesPermeses.time();
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
 		Set<String> bustiaUnitatCodis = null;
 		if (nomesAmbBusties) {
@@ -78,11 +90,21 @@ public class BustiaHelper {
 			for (BustiaEntity bustia: busties)
 				bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
 		}
+		contextbustiesPermeses.stop();
+		
+		final Timer timerfindPerCodiDir3EntitatAmbCodisPermesos = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.findPerCodiDir3EntitatAmbCodisPermesos"));
+		Timer.Context contextfindPerCodiDir3EntitatAmbCodisPermesos = timerfindPerCodiDir3EntitatAmbCodisPermesos.time();
 		// Consulta l'arbre
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
 				entitat.getCodiDir3(),
 				bustiaUnitatCodis);
+		contextfindPerCodiDir3EntitatAmbCodisPermesos.stop();
+		
+		
 		if (ambContadorElementsPendents && !busties.isEmpty()) {
+			
+			final Timer timerAcumulats = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.Acumulats"));
+			Timer.Context contextAcumulats = timerAcumulats.time();
 			// Consulta els contadors d'elements pendents per a totes les bústies
 			long[] countContenidors = contingutHelper.countFillsAmbPermisReadByContinguts(
 					entitat,
@@ -103,6 +125,10 @@ public class BustiaHelper {
 							acumulat + countContenidors[i]);
 				}
 			}
+			contextAcumulats.stop();
+			
+			final Timer timerCalculaRecorr = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.CalculaRecorr"));
+			Timer.Context contextCalculaRecorr = timerCalculaRecorr.time();
 			// Calcula el nombre de nivells de l'arbre
 			int nivellsCount = 0;
 			for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
@@ -130,6 +156,7 @@ public class BustiaHelper {
 					}
 				}
 			}
+			contextCalculaRecorr.stop();
 		}
 		return arbre;
 	}
@@ -156,6 +183,42 @@ public class BustiaHelper {
 		return arbre;
 	}
 
+	
+	
+	public BustiaDto toBustiaDto(
+			BustiaEntity bustia,
+			boolean ambFills,
+			boolean filtrarFillsSegonsPermisRead,
+			boolean ambUnitatOrganitzativa) {
+		return (BustiaDto)contingutHelper.toContingutDto(
+				bustia,
+				false,
+				ambFills,
+				filtrarFillsSegonsPermisRead,
+				false,
+				true,
+				false,
+				false,
+				ambUnitatOrganitzativa);
+	}
+	public List<BustiaDto> toBustiaDto(
+			List<BustiaEntity> busties,
+			boolean ambFills,
+			boolean filtrarFillsSegonsPermisRead,
+			boolean ambUnitatOrganitzativa) {
+		List<BustiaDto> resposta = new ArrayList<BustiaDto>();
+		for (BustiaEntity bustia: busties) {
+			resposta.add(
+					toBustiaDto(
+							bustia,
+							ambFills,
+							filtrarFillsSegonsPermisRead,
+							ambUnitatOrganitzativa));
+		}
+		return resposta;
+	}
+	
+	
 	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,
 			String unitatOrganitzativaCodi) {

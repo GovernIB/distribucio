@@ -17,7 +17,7 @@
 		<orika.version>1.1.7</orika.version>
 		<groovy.version>2.1.6</groovy.version>
 		<jackson.version>2.7.0</jackson.version>
-		<xdocreport.version>1.0.3</xdocreport.version>
+		<xdocreport.version>2.0.1</xdocreport.version>
 		<bouncycastle.version>1.46</bouncycastle.version>
 		<cxf.version>2.2.12</cxf.version>
 		<portafib.version>1.1.0</portafib.version>
@@ -30,7 +30,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<version.revision>24.1</version.revision>
+		<version.revision>25_rc_1</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
 	</properties>
 	<modules>

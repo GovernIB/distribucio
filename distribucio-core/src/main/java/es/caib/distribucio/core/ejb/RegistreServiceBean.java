@@ -13,12 +13,18 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDetallDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
@@ -42,7 +48,7 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnotacioDto findOne(
+	public RegistreDto findOne(
 			Long entitatId,
 			Long contenidorId,
 			Long registreId) {
@@ -53,7 +59,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public List<RegistreAnotacioDto> findMultiple(
+	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds)
 			throws NotFoundException {
@@ -61,6 +67,26 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				multipleRegistreIds);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<ContingutDto> findRegistreUser(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findRegistreUser(
+				entitatId,
+				bustiesUsuari,
+				filtre,
+				paginacioParams);
+	}
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<RegistreDto> findRegistreAdmin(Long entitatId, AnotacioRegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) throws NotFoundException {
+		return delegate.findRegistreAdmin(entitatId, filtre, paginacioParams);
+	}	
 
 	@Override
 	@RolesAllowed("tothom")
@@ -98,7 +124,7 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<RegistreAnnexDetallDto> getAnnexosAmbArxiu(
+	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
 			Long entitatId, 
 			Long contingutId, 
 			Long registreId)
@@ -111,20 +137,20 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto getArxiuAnnex(Long annexId) throws NotFoundException {
-		return delegate.getArxiuAnnex(annexId);
+	public FitxerDto getAnnexFitxer(Long annexId) throws NotFoundException {
+		return delegate.getAnnexFitxer(annexId);
 	}
 	
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto getAnnexFirmaContingut(Long annexId,
+	public FitxerDto getAnnexFirmaFitxer(Long annexId,
 			int indexFirma) throws NotFoundException {
-		return delegate.getAnnexFirmaContingut(annexId, indexFirma);
+		return delegate.getAnnexFirmaFitxer(annexId, indexFirma);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnotacioDto findAmbIdentificador(String identificador) {
+	public RegistreDto findAmbIdentificador(String identificador) {
 		return delegate.findAmbIdentificador(identificador);
 	}
 
@@ -149,7 +175,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public RegistreAnotacioDto marcarLlegida(
+	public RegistreDto marcarLlegida(
 			Long entitatId,
 			Long contingutId,
 			Long registreId) {
@@ -161,27 +187,27 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDetallDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId) {
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId) {
 		return delegate.getRegistreJustificant(entitatId, contingutId, registreId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDetallDto getAnnexAmbArxiu(Long entitatId, Long contingutId, Long registreId,
-			String fitxerArxiuUuid) throws NotFoundException {
-		return delegate.getAnnexAmbArxiu(entitatId, contingutId, registreId, fitxerArxiuUuid);
+	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId,
+			Long annexId) throws NotFoundException {
+		return delegate.getAnnexSenseFirmes(entitatId, contingutId, registreId, annexId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDetallDto getAnnexFirmesAmbArxiu(Long entitatId, Long contingutId, Long registreId,
-			String fitxerArxiuUuid) throws NotFoundException {
-		return delegate.getAnnexFirmesAmbArxiu(entitatId, contingutId, registreId, fitxerArxiuUuid);
+	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
+			Long annexId) throws NotFoundException {
+		return delegate.getAnnexAmbFirmes(entitatId, contingutId, registreId, annexId);
 	}
 	
 	@Override
 	@RolesAllowed("tothom")
-	public List<RegistreAnnexDetallDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
+	public List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException {
 		return delegate.getAnnexos(entitatId, contingutId, registreId);
 	}

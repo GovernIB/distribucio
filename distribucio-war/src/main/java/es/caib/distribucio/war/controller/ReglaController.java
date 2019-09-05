@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
@@ -90,12 +91,19 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@Valid ReglaFiltreCommand filtreCommand,
 			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_FILTRE,
-					filtreCommand);
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
 		}
 		return "redirect:regla";
 	}

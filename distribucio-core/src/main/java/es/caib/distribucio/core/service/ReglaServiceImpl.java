@@ -85,6 +85,7 @@ public class ReglaServiceImpl implements ReglaService {
 		case BACKOFFICE:
 			entity.updatePerTipusBackoffice(
 					regla.getBackofficeTipus(),
+					regla.getBackofficeCodi(),
 					regla.getBackofficeUrl(),
 					regla.getBackofficeUsuari(),
 					regla.getBackofficeContrasenya(),
@@ -131,6 +132,7 @@ public class ReglaServiceImpl implements ReglaService {
 		case BACKOFFICE:
 			entity.updatePerTipusBackoffice(
 					regla.getBackofficeTipus(),
+					regla.getBackofficeCodi(),
 					regla.getBackofficeUrl(),
 					regla.getBackofficeUsuari(),
 					regla.getBackofficeContrasenya(),
@@ -350,6 +352,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
+						filtre.getBackofficeCodi() == null || filtre.getBackofficeCodi().trim().isEmpty(),
+						filtre.getBackofficeCodi(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				ReglaDto.class);
 		

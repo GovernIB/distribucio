@@ -27,11 +27,13 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
-import es.caib.distribucio.core.api.dto.RegistreAnotacioDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
@@ -42,6 +44,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
+import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -59,7 +62,8 @@ public class ContingutHelper {
 	private ContingutRepository contingutRepository;
 	@Autowired
 	private ContingutMovimentRepository contenidorMovimentRepository;
-
+	@Autowired
+	private ContingutComentariRepository contingutComentariRepository;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
@@ -71,8 +75,7 @@ public class ContingutHelper {
 	@Autowired
 	private UsuariHelper usuariHelper;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;	
 	@Autowired
 	private MetricRegistry metricRegistry;
 
@@ -88,7 +91,8 @@ public class ContingutHelper {
 				false,
 				false,
 				false,
-				false);
+				false,
+				true);
 	}
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut,
@@ -98,102 +102,134 @@ public class ContingutHelper {
 			boolean ambDades,
 			boolean ambPath,
 			boolean pathNomesFinsExpedientArrel,
-			boolean ambVersions) {
-		ContingutDto resposta = null;
-		// Crea el contenidor del tipus correcte
+			boolean ambVersions,
+			boolean ambUnitatOrganitzativa) {
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto"));
+		Timer.Context contextTotal = timerTotal.time();
+		
+		ContingutDto contingutDto = null;
 		ContingutEntity deproxied = HibernateHelper.deproxy(contingut);
+		
+		// ########################################### BUSTIA ####################################################
 		if (deproxied instanceof BustiaEntity) {
-			BustiaEntity bustia = (BustiaEntity)deproxied;
-			BustiaDto dto = new BustiaDto();
-			dto.setUnitatCodi(bustia.getUnitatCodi());
-			dto.setActiva(bustia.isActiva());
-			dto.setPerDefecte(bustia.isPerDefecte());
-			UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
-					bustia.getEntitat().getCodiDir3(),
-					bustia.getUnitatCodi());
-			if (unitatConselleria != null) {
-				dto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
+			BustiaEntity bustiaEntity = (BustiaEntity)deproxied;
+			BustiaDto bustiaDto = new BustiaDto();
+			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatCodi());
+			bustiaDto.setActiva(bustiaEntity.isActiva());
+			bustiaDto.setPerDefecte(bustiaEntity.isPerDefecte());
+
+			if (ambUnitatOrganitzativa) {
+				
+				final Timer timerToContingutDtoUnitatOrganitzativa = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.UnitatOrganitzativa"));
+				Timer.Context contextToContingutDtoUnitatOrganitzativa  = timerToContingutDtoUnitatOrganitzativa.time();
+				
+				UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
+						bustiaEntity.getEntitat().getCodiDir3(),
+						bustiaEntity.getUnitatCodi());
+				if (unitatConselleria != null) {
+					bustiaDto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
+				}
+				UnitatOrganitzativaEntity unitatEntity = bustiaEntity.getUnitatOrganitzativa();
+				UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(unitatEntity,
+						UnitatOrganitzativaDto.class);
+				unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity,
+						unitatDto);
+
+				bustiaDto.setUnitatOrganitzativa(unitatDto);
+				bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+				
+				contextToContingutDtoUnitatOrganitzativa.stop();
 			}
-			UnitatOrganitzativaEntity unitatEntity = bustia.getUnitatOrganitzativa();
-			UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
-					unitatEntity,
-					UnitatOrganitzativaDto.class);
-			unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
+
+			contingutDto = bustiaDto;
 			
-			dto.setUnitatOrganitzativa(unitatDto);
-			dto.setUnitatCodi(bustia.getUnitatOrganitzativa().getCodi());
-			resposta = dto;
+		// ########################################### REGISTRE ####################################################	
 		} else if (deproxied instanceof RegistreEntity) {
-			RegistreEntity registre = (RegistreEntity)deproxied;
-			RegistreAnotacioDto dto = conversioTipusHelper.convertir(
-					registre,
-					RegistreAnotacioDto.class);
-			dto.setLlegida(registre.getLlegida() == null || registre.getLlegida());
-			resposta = dto;
+			RegistreEntity registreEntity = (RegistreEntity)deproxied;
+			
+			final Timer timerToContingutDtoconvertirToRegistreDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.convertirToRegistreDto"));
+			Timer.Context contextToContingutDtoconvertirToRegistreDto  = timerToContingutDtoconvertirToRegistreDto.time();
+			RegistreDto registreDto = conversioTipusHelper.convertir(
+						registreEntity,
+						RegistreDto.class);
+			registreDto.setLlegida(registreEntity.getLlegida() == null || registreEntity.getLlegida());
+			contextToContingutDtoconvertirToRegistreDto.stop();
+			
+			// toBustiaContingut 
+			registreDto.setPareId(registreEntity.getPare().getId());
+			ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
+			registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());
+			
+			if (registreEntity.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
+			} else if (registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_REBUDA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_PROCESSADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_REBUTJADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_ERROR) {
+				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
+			}
+
+			registreDto.setNumeroOrigen(registreEntity.getNumeroOrigen());
+			registreDto.setNumComentaris(contingutComentariRepository.countByContingut(registreEntity));
+			// toBustiaContingut //
+			
+			contingutDto = registreDto;
 		}
-		resposta.setId(contingut.getId());
-		resposta.setNom(contingut.getNom());
-		resposta.setEsborrat(contingut.getEsborrat());
-		resposta.setArxiuUuid(contingut.getArxiuUuid());
-		resposta.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
-		resposta.setEntitat(
-				conversioTipusHelper.convertir(
-						contingut.getEntitat(),
-							EntitatDto.class));
-		resposta.setAlerta(!contingut.getAlertes().isEmpty());
-		if (contingut.getDarrerMoviment() != null) {
-			ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
-			resposta.setDarrerMovimentUsuari(
+		
+		// ########################################### CONTINGUT ####################################################
+		contingutDto.setId(contingut.getId());
+		contingutDto.setNom(contingut.getNom());
+			contingutDto.setEsborrat(contingut.getEsborrat());
+			contingutDto.setArxiuUuid(contingut.getArxiuUuid());
+			contingutDto.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
+			
+			final Timer timerToContingutDtoEntitatMoviemntAudtioria = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.EntitatMoviemntAudtioria"));
+			Timer.Context contextToContingutDtoEntitatMoviemntAudtioria  = timerToContingutDtoEntitatMoviemntAudtioria.time();
+			contingutDto.setEntitat(
 					conversioTipusHelper.convertir(
-							darrerMoviment.getRemitent(),
-							UsuariDto.class));
-			resposta.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
-			resposta.setDarrerMovimentComentari(darrerMoviment.getComentari());
-		}
-		if (resposta != null) {
-			// Omple la informació d'auditoria
-			resposta.setCreatedBy(
+							contingut.getEntitat(),
+							EntitatDto.class));
+			contingutDto.setAlerta(!contingut.getAlertesNoLlegides().isEmpty());
+			// DARRER MOVIMENT
+			if (contingut.getDarrerMoviment() != null) {
+				ContingutMovimentEntity darrerMoviment = contingut.getDarrerMoviment();
+				contingutDto.setDarrerMovimentUsuari(
+						conversioTipusHelper.convertir(
+								darrerMoviment.getRemitent(),
+								UsuariDto.class));
+				contingutDto.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
+				contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());
+			}
+			// AUDITORIA
+			contingutDto.setCreatedBy(
 					conversioTipusHelper.convertir(
 							contingut.getCreatedBy(),
 							UsuariDto.class));
-			resposta.setCreatedDate(contingut.getCreatedDate().toDate());
-			resposta.setLastModifiedBy(
+			contingutDto.setCreatedDate(contingut.getCreatedDate().toDate());
+			contingutDto.setLastModifiedBy(
 					conversioTipusHelper.convertir(
 							contingut.getLastModifiedBy(),
 							UsuariDto.class));
-			resposta.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
-		}
-		if (resposta != null) {
+			contingutDto.setLastModifiedDate(contingut.getLastModifiedDate().toDate());
+			contextToContingutDtoEntitatMoviemntAudtioria.stop();
+			
+			// PATH
 			if (ambPath) {
-				// TIMER START
-				final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
-				Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
-				// Calcula el path
 				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
 						ambPermisos,
 						pathNomesFinsExpedientArrel);
-				resposta.setPath(path);
-				getPathContingutComDtoContext.stop();
-				// TIMER STOP
+				contingutDto.setPath(path);
 			}
+			// FILLS
 			if (ambFills) {
-				// Cerca els nodes fills
 				List<ContingutDto> contenidorDtos = new ArrayList<ContingutDto>();
-				// TIMER START
-				final Timer findByPareAndEsborratTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.getPathContingutComDto"));
-				Timer.Context findByPareAndEsborratContext = findByPareAndEsborratTimer.time();
 				List<ContingutEntity> fills = contingutRepository.findByPareAndEsborrat(
 						contingut,
 						0,
 						new Sort("createdDate"));
-				findByPareAndEsborratContext.stop();
-				// TIMER STOP
 				List<ContingutDto> fillPath = null;
 				if (ambPath) {
 					fillPath = new ArrayList<ContingutDto>();
-					if (resposta.getPath() != null)
-						fillPath.addAll(resposta.getPath());
+					if (contingutDto.getPath() != null)
+						fillPath.addAll(contingutDto.getPath());
 					fillPath.add(toContingutDto(
 							contingut,
 							false,
@@ -202,7 +238,8 @@ public class ContingutHelper {
 							false,
 							false,
 							false,
-							false));
+							false,
+							true));
 				}
 				for (ContingutEntity fill: fills) {
 					if (fill.getEsborrat() == 0) {
@@ -214,16 +251,18 @@ public class ContingutHelper {
 								false,
 								false,
 								false,
-								false);
+								false,
+								true);
 						// Configura el pare de cada fill
 						fillDto.setPath(fillPath);
 						contenidorDtos.add(fillDto);
 					}
 				}
-				resposta.setFills(contenidorDtos);
+				contingutDto.setFills(contenidorDtos);
 			}
-		}
-		return resposta;
+
+		contextTotal.stop();
+		return contingutDto;
 	}
 
 	public void comprovarPermisosContingut(
@@ -415,12 +454,12 @@ public class ContingutHelper {
 	}
 
 	@Transactional
-	public ContingutEntity ferCopiaContingut(
+	public ContingutEntity ferCopiaRegistre(
 			ContingutEntity contingutOriginal,
 			BustiaEntity bustiaDesti) {
 		RegistreEntity registreOriginal = (RegistreEntity)contingutOriginal;
 		Integer numeroCopies = registreHelper.getMaxNumeroCopia(registreOriginal);
-		RegistreEntity contingutCopia = RegistreEntity.getBuilder(
+		RegistreEntity registreCopia = RegistreEntity.getBuilder(
 				registreOriginal.getEntitat(), 
 				registreOriginal.getRegistreTipus(), 
 				registreOriginal.getUnitatAdministrativa(),
@@ -471,7 +510,7 @@ public class ContingutHelper {
 			for (RegistreInteressatEntity registreInteressat: registreOriginal.getInteressats()) {
 				// Filtra els representants
 				if (registreInteressat.getRepresentat() == null)
-					contingutCopia.getInteressats().add(this.copiarInteressatEntity(registreInteressat, contingutCopia));
+					registreCopia.getInteressats().add(this.copiarInteressatEntity(registreInteressat, registreCopia));
 			}
 		}
 		// Copia els annexos
@@ -486,7 +525,7 @@ public class ContingutHelper {
 						registreAnnex.getOrigenCiutadaAdmin(), 
 						registreAnnex.getNtiTipusDocument(), 
 						registreAnnex.getSicresTipusDocument(), 
-						contingutCopia).
+						registreCopia).
 						ntiElaboracioEstat(registreAnnex.getNtiElaboracioEstat()).
 						fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 						localitzacio(registreAnnex.getLocalitzacio()).
@@ -494,6 +533,7 @@ public class ContingutHelper {
 						firmaMode(registreAnnex.getFirmaMode()).
 						timestamp(registreAnnex.getTimestamp()).
 						validacioOCSP(registreAnnex.getValidacioOCSP()).
+						gesdocDocumentId(registreAnnex.getGesdocDocumentId()).
 						build();
 				for (RegistreAnnexFirmaEntity firma: registreAnnex.getFirmes()) {
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
@@ -503,25 +543,27 @@ public class ContingutHelper {
 							firma.getTipusMime(), 
 							firma.getCsvRegulacio(), 
 							firma.isAutofirma(), 
-							nouAnnex).build();
+							nouAnnex).
+							gesdocFirmaId(firma.getGesdocFirmaId()).
+							build();
 					nouAnnex.getFirmes().add(novaFirma);
 				}
-				contingutCopia.getAnnexos().add(nouAnnex);
+				registreCopia.getAnnexos().add(nouAnnex);
 			}
 		}
-		contingutCopia.updateJustificantArxiuUuid(
+		registreCopia.updateJustificantArxiuUuid(
 				registreOriginal.getJustificantArxiuUuid());
-		contingutRepository.saveAndFlush(contingutCopia);
-		boolean duplicarContingut = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
-		if (duplicarContingut) {
-			registreHelper.guardarAnnexosAmbPluginDistribucio(
-					contingutCopia,
+		contingutRepository.saveAndFlush(registreCopia);
+		boolean duplicarContingutArxiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
+		if (duplicarContingutArxiu) {
+			registreHelper.createRegistreAndAnnexosInArxiu(
+					registreCopia,
 					bustiaDesti.getEntitat().getCodiDir3(),
-					false);
+					true);
 		} else {
-			contingutCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
+			registreCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
 		}
-  		return contingutCopia;
+  		return registreCopia;
 	}
 	
 	/** Fa una còpia de l'interessat i dels seus representants. Si es passa el registre com a paràmetre llavors s'assigna aquest
@@ -596,13 +638,18 @@ public class ContingutHelper {
 					representant.getEmail(),
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
-					representant.getCanalPreferent());
+					representant.getCanalPreferent(),
+					representant.getCodiDire());
 		}
 		return interessatCopiaEntity;
 	}
 
 	private List<ContingutEntity> getPathContingut(
 			ContingutEntity contingut) {
+		
+		final Timer getPathContingutComDtoTimergetPathContingut = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingut"));
+		Timer.Context getPathContingutComDtoContextgetPathContingut = getPathContingutComDtoTimergetPathContingut.time();
+		
 		List<ContingutEntity> path = null;
 		ContingutEntity contingutActual = contingut;
 		while (contingutActual != null && contingutActual.getPare() != null) {
@@ -615,6 +662,8 @@ public class ContingutHelper {
 		if (path != null) {
 			Collections.reverse(path);
 		}
+		
+		getPathContingutComDtoContextgetPathContingut.stop();
 		return path;
 	}
 
@@ -622,13 +671,18 @@ public class ContingutHelper {
 			ContingutEntity contingut,
 			boolean ambPermisos,
 			boolean nomesFinsExpedientArrel) {
+		final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto"));
+		Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
+		
 		List<ContingutEntity> path = getPathContingut(contingut);
 		List<ContingutDto> pathDto = null;
 		if (path != null) {
 			pathDto = new ArrayList<ContingutDto>();
-			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
+//			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
 			for (ContingutEntity contingutPath: path) {
-				if (expedientArrelTrobat) {
+//				if (expedientArrelTrobat) {
+				final Timer getPathContingutPathToContingutDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto.getPathContingutPathToContingutDto"));
+				Timer.Context getPathContingutComDtoContextPathToContingutDto = getPathContingutPathToContingutDto.time();
 					pathDto.add(
 						toContingutDto(
 								contingutPath,
@@ -638,10 +692,14 @@ public class ContingutHelper {
 								false,
 								false,
 								false,
+								false,
 								false));
-				}
+					getPathContingutComDtoContextPathToContingutDto.stop();
+//				}
 			}
+			
 		}
+		getPathContingutComDtoContext.stop();
 		return pathDto;
 	}
 	

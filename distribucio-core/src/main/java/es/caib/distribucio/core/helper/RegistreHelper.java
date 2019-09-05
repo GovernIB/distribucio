@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
@@ -28,14 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
@@ -91,6 +88,8 @@ public class RegistreHelper {
 	private BustiaHelper bustiaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
+	@Autowired
+	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Autowired
 	private ReglaHelper reglaHelper;
 	@Resource
@@ -165,15 +164,15 @@ public class RegistreHelper {
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
-			RegistreAnotacio anotacio,
+			RegistreAnotacio registreAnotacio,
 			ReglaEntity regla,
 			RegistreProcesEstatEnum estat) {
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
 		String justificantArxiuUuid = null;
-		if (anotacio.getJustificant() != null) {
-			justificantArxiuUuid = anotacio.getJustificant().getFitxerArxiuUuid();
+		if (registreAnotacio.getJustificant() != null) {
+			justificantArxiuUuid = registreAnotacio.getJustificant().getFitxerArxiuUuid();
 		}
 		// save annotacio in db
 		RegistreEntity registreEntity = RegistreEntity.getBuilder(
@@ -181,53 +180,54 @@ public class RegistreHelper {
 				tipus,
 				unitatAdministrativa,
 				unitat != null ? unitat.getDenominacio() : null,
-				anotacio.getNumero(),
-				anotacio.getData(),
+				registreAnotacio.getNumero(),
+				registreAnotacio.getData(),
 				0, // número de còpia
-				anotacio.getIdentificador(),
-				anotacio.getExtracte(),
-				anotacio.getOficinaCodi(),
-				anotacio.getLlibreCodi(),
-				anotacio.getAssumpteTipusCodi(),
-				anotacio.getIdiomaCodi(),
+				registreAnotacio.getIdentificador(),
+				registreAnotacio.getExtracte(),
+				registreAnotacio.getOficinaCodi(),
+				registreAnotacio.getLlibreCodi(),
+				registreAnotacio.getAssumpteTipusCodi(),
+				registreAnotacio.getIdiomaCodi(),
 				estat,
 				null).
-		entitatCodi(anotacio.getEntitatCodi()).
-		entitatDescripcio(anotacio.getEntitatDescripcio()).
-		oficinaDescripcio(anotacio.getOficinaDescripcio()).
-		llibreDescripcio(anotacio.getLlibreDescripcio()).
-		assumpteTipusDescripcio(anotacio.getAssumpteTipusDescripcio()).
-		assumpteCodi(anotacio.getAssumpteCodi()).
-		assumpteDescripcio(anotacio.getAssumpteDescripcio()).
-		procedimentCodi(anotacio.getProcedimentCodi()).
-		referencia(anotacio.getReferencia()).
-		expedientNumero(anotacio.getExpedientNumero()).
-		numeroOrigen(anotacio.getNumeroOrigen()).
-		idiomaDescripcio(anotacio.getIdiomaDescripcio()).
-		transportTipusCodi(anotacio.getTransportTipusCodi()).
-		transportTipusDescripcio(anotacio.getTransportTipusDescripcio()).
-		transportNumero(anotacio.getTransportNumero()).
-		usuariCodi(anotacio.getUsuariCodi()).
-		usuariNom(anotacio.getUsuariNom()).
-		usuariContacte(anotacio.getUsuariContacte()).
-		aplicacioCodi(anotacio.getAplicacioCodi()).
-		aplicacioVersio(anotacio.getAplicacioVersio()).
-		documentacioFisicaCodi(anotacio.getDocumentacioFisicaCodi()).
-		documentacioFisicaDescripcio(anotacio.getDocumentacioFisicaDescripcio()).
-		observacions(anotacio.getObservacions()).
-		exposa(anotacio.getExposa()).
-		solicita(anotacio.getSolicita()).
+		entitatCodi(registreAnotacio.getEntitatCodi()).
+		entitatDescripcio(registreAnotacio.getEntitatDescripcio()).
+		oficinaDescripcio(registreAnotacio.getOficinaDescripcio()).
+		llibreDescripcio(registreAnotacio.getLlibreDescripcio()).
+		assumpteTipusDescripcio(registreAnotacio.getAssumpteTipusDescripcio()).
+		assumpteCodi(registreAnotacio.getAssumpteCodi()).
+		assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
+		procedimentCodi(registreAnotacio.getProcedimentCodi()).
+		referencia(registreAnotacio.getReferencia()).
+		expedientNumero(registreAnotacio.getExpedientNumero()).
+		numeroOrigen(registreAnotacio.getNumeroOrigen()).
+		idiomaDescripcio(registreAnotacio.getIdiomaDescripcio()).
+		transportTipusCodi(registreAnotacio.getTransportTipusCodi()).
+		transportTipusDescripcio(registreAnotacio.getTransportTipusDescripcio()).
+		transportNumero(registreAnotacio.getTransportNumero()).
+		usuariCodi(registreAnotacio.getUsuariCodi()).
+		usuariNom(registreAnotacio.getUsuariNom()).
+		usuariContacte(registreAnotacio.getUsuariContacte()).
+		aplicacioCodi(registreAnotacio.getAplicacioCodi()).
+		aplicacioVersio(registreAnotacio.getAplicacioVersio()).
+		documentacioFisicaCodi(registreAnotacio.getDocumentacioFisicaCodi()).
+		documentacioFisicaDescripcio(registreAnotacio.getDocumentacioFisicaDescripcio()).
+		observacions(registreAnotacio.getObservacions()).
+		exposa(registreAnotacio.getExposa()).
+		solicita(registreAnotacio.getSolicita()).
 		regla(regla).
 		oficinaOrigen(
-				anotacio.getDataOrigen(),
-				anotacio.getOficinaOrigenCodi(),
-				anotacio.getOficinaOrigenDescripcio()).
+				registreAnotacio.getDataOrigen(),
+				registreAnotacio.getOficinaOrigenCodi(),
+				registreAnotacio.getOficinaOrigenDescripcio()).
 		justificantArxiuUuid(justificantArxiuUuid).
+		presencial(registreAnotacio.isPresencial()).
 		build();
 		registreRepository.saveAndFlush(registreEntity);
 		// save interessats in db
-		if (anotacio.getInteressats() != null) { 
-			for (RegistreInteressat registreInteressat: anotacio.getInteressats()) {
+		if (registreAnotacio.getInteressats() != null) { 
+			for (RegistreInteressat registreInteressat: registreAnotacio.getInteressats()) {
 				registreEntity.getInteressats().add(
 						crearInteressatEntity(
 								registreInteressat,
@@ -235,14 +235,23 @@ public class RegistreHelper {
 			}
 		}
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
-		if (anotacio.getAnnexos() != null) { 
-			for (RegistreAnnex registreAnnex: anotacio.getAnnexos()) {
+		if (registreAnotacio.getAnnexos() != null) { 
+			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
 				registreEntity.getAnnexos().add(
 						crearAnnexEntity(
 								registreAnnex,
 								registreEntity));
 			}
 		}
+		
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.CREACIO,
+				registreEntity.getNom(),
+				null,
+				false,
+				false);
+		
 		return registreEntity;
 	}
 	
@@ -301,10 +310,10 @@ public class RegistreHelper {
 				
 				if (annexFirma.getGesdocFirmaId() != null) {
 					ByteArrayOutputStream baos_fir = new ByteArrayOutputStream();
-					pluginHelper.gestioDocumentalGet(
+					gestioDocumentalHelper.gestioDocumentalGet(
 							annexFirma.getGesdocFirmaId(), 
-						PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-						baos_fir);
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+							baos_fir);
 					firmaContingut = baos_fir.toByteArray();
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
@@ -350,16 +359,31 @@ public class RegistreHelper {
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				anotacio.getEntitat(),
 				anotacio.getUnitatAdministrativa());
-		Exception exceptionGuardantAnnexos = guardarAnnexosAmbPluginDistribucio(
+		
+		Exception exceptionGuardantAnnexos = createRegistreAndAnnexosInArxiu(
 				anotacio,
 				bustia.getEntitat().getCodiDir3(),
 				true);
 		if (exceptionGuardantAnnexos == null) {
 			
-			esborrarDocsTemporals(anotacio);
+			boolean allRegistresWithSameNumeroSavedInArxiu = true;
+			List<RegistreEntity> registres = registreRepository.findRegistresByNumero(anotacio.getNumero());
+			if (registres != null && !registres.isEmpty()) {
+				for (RegistreEntity registreEntity : registres) {
+					if (registreEntity.getAnnexos() != null && !registreEntity.getAnnexos().isEmpty()) {
+						for (RegistreAnnexEntity registreAnnexEntity : registreEntity.getAnnexos()) {
+							if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+								allRegistresWithSameNumeroSavedInArxiu = false;
+							}
+						}
+					}
+				}
+			}
+			if (allRegistresWithSameNumeroSavedInArxiu)
+				gestioDocumentalHelper.esborrarDocsTemporals(anotacio);
 			
 			RegistreProcesEstatEnum nouEstat;
-			if (anotacio.getRegla() != null) {
+			if (anotacio.getRegla() != null && anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE) {
 				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 			} else {
 				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
@@ -384,86 +408,84 @@ public class RegistreHelper {
 	public Exception processarAnotacioPendentRegla(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
 		Exception exceptionAplicantRegla = null;
-		if (anotacio.getRegla() != null) {
+		
+//		if (anotacio.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT && anotacio.getRegla() != null) {
 			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio);
-		}
-		if (exceptionAplicantRegla != null) {
-			return exceptionAplicantRegla;
-		}
-		return null;
+//		}
+		return exceptionAplicantRegla;
+
 	}
 
 	/**
 	 *  It saves anotacio with annexes in arxiu.
-	 * @param anotacio
+	 * @param registreEntity
 	 * @param codiDir3
 	 * @param crearAutofirma
 	 * @return
 	 */
-	public Exception guardarAnnexosAmbPluginDistribucio(
-			RegistreEntity anotacio,
+	public Exception createRegistreAndAnnexosInArxiu(
+			RegistreEntity registreEntity,
 			String unitatOrganitzativaCodi,
 			boolean crearAutofirma) {
 		
 		Exception exception = null;
 		
-		if (anotacio.getAnnexos() != null && anotacio.getAnnexos().size() > 0) {
+		if (registreEntity.getAnnexos() != null && registreEntity.getAnnexos().size() > 0) {
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
-					anotacio,
+					registreEntity,
 					DistribucioRegistreAnotacio.class);
 			String uuidExpedient = null;
 			
-			// Cream el contenidor per als annexos de l'anotació de registre
-			// només si no s'ha creat anteriorment
-			if (anotacio.getExpedientArxiuUuid() == null) {
+			// check if registre is not already created in arxiu
+			if (registreEntity.getExpedientArxiuUuid() == null) {
 				logger.debug("Creant contenidor pels annexos de l'anotació (" +
-						"anotacioNumero=" + anotacio.getNumero() + ", " +
+						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 				try {
-					
-					//convert anotacio into arxiu expedient and save it as expedient in arxiu
-					uuidExpedient = pluginHelper.distribucioContenidorCrear(
-							anotacio.getNumero(),
+					// ============= SAVE REGISTRE AS EXPEDIENT IN ARXIU ============
+					uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
+							registreEntity.getNumero(),
 							distribucioRegistreAnotacio.getNumero(),
 							unitatOrganitzativaCodi);
-					anotacio.updateExpedientArxiuUuid(uuidExpedient);
+					registreEntity.updateExpedientArxiuUuid(uuidExpedient);
 				} catch (Exception ex) {
 					return ex;
 				}
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
-				uuidExpedient = anotacio.getExpedientArxiuUuid();
+				uuidExpedient = registreEntity.getExpedientArxiuUuid();
 			}
+			
 			if (uuidExpedient != null) {
-
-			// Emmagatzemam cada un dels annexos de l'anotació de registre
-				for (int i = 0; i < anotacio.getAnnexos().size(); i++) {
+				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
 					try {
-						RegistreAnnexEntity annex = anotacio.getAnnexos().get(i);
-						// Només crea l'annex a dins el contenidor si encara
-						// no s'ha creat
+						
+						RegistreAnnexEntity annex = registreEntity.getAnnexos().get(i);
+						// Només crea l'annex a dins el contenidor si encara no s'ha creat
 						if (annex.getFitxerArxiuUuid() == null) {
 							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
-									"anotacioNumero=" + anotacio.getNumero() + ", " +
+									"anotacioNumero=" + registreEntity.getNumero() + ", " +
 									"annexTitol=" + annex.getTitol() + ", " +
 									"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
 													
 							DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-							documentEniRegistrableDto.setNumero(anotacio.getNumero());
-							documentEniRegistrableDto.setData(anotacio.getData());
-							documentEniRegistrableDto.setOficinaDescripcio(anotacio.getOficinaDescripcio());
-							documentEniRegistrableDto.setOficinaCodi(anotacio.getOficinaCodi());
+							documentEniRegistrableDto.setNumero(registreEntity.getNumero());
+							documentEniRegistrableDto.setData(registreEntity.getData());
+							documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
+							documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
 							
-							// sign annex if unsigned and save it with firma in arxiu
-							String uuidDocument = pluginHelper.distribucioDocumentCrear(
-									anotacio.getNumero(),
+							// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
+							String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
+									registreEntity.getNumero(),
 									distribucioAnnex,
 									unitatOrganitzativaCodi,
 									uuidExpedient,
 									documentEniRegistrableDto);
 							annex.updateFitxerArxiuUuid(uuidDocument);
-							if (annex.getFitxerTamany() <= 0) { //if fitxer tamany is not set fill it
+							
+							// set fitxer size if unset
+							if (annex.getFitxerTamany() <= 0) { 
 								Document document = pluginHelper.arxiuDocumentConsultar(
 										annex.getFitxerArxiuUuid(), 
 										null, 
@@ -473,6 +495,7 @@ public class RegistreHelper {
 											(int)document.getContingut().getTamany());
 								}
 							}
+							
 							if (distribucioAnnex.getFirmes() != null) {
 								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
 									// if firma was created with autofirma save info about firma(without content bytes) in db
@@ -503,12 +526,12 @@ public class RegistreHelper {
 			return exception;
 		} else {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
-					"anotacioNumero=" + anotacio.getNumero() + ", " +
+					"anotacioNumero=" + registreEntity.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 			contingutLogHelper.log(
-					anotacio,
+					registreEntity,
 					LogTipusEnumDto.DISTRIBUCIO,
-					anotacio.getNom(),
+					registreEntity.getNom(),
 					null,
 					false,
 					false);
@@ -735,7 +758,8 @@ public class RegistreHelper {
 			canalPreferent(
 					RegistreInteressatCanalEnum.valorAsEnum(
 							registreInteressat.getCanalPreferent())).
-			observacions(registreInteressat.getObservacions());		
+			observacions(registreInteressat.getObservacions()).	
+			codiDire(registreInteressat.getCodiDire());
 		RegistreInteressatEntity interessatEntity = interessatBuilder.build();
 		
 		if (registreInteressat.getRepresentant() != null) {
@@ -759,7 +783,8 @@ public class RegistreHelper {
 					representant.getEmail(),
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
-					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()));
+					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()),
+					representant.getCodiDire());
 		}
 		registreInteressatRepository.save(interessatEntity);
 		return interessatEntity;
@@ -770,8 +795,8 @@ public class RegistreHelper {
 			RegistreEntity registre) {
 		String gestioDocumentalId = null;
 		if (registreAnnex.getFitxerContingut() != null) {
-			gestioDocumentalId = pluginHelper.gestioDocumentalCreate(
-					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
+			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 					registreAnnex.getFitxerContingut());
 		}
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
@@ -807,8 +832,8 @@ public class RegistreHelper {
 			RegistreAnnexEntity annex) {
 		String gestioDocumentalId = null;
 		if (firma.getContingut() != null) {
-			gestioDocumentalId = pluginHelper.gestioDocumentalCreate(
-					PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
 					firma.getContingut());
 		}
 		RegistreAnnexFirmaEntity firmaEntity = RegistreAnnexFirmaEntity.getBuilder(
@@ -823,86 +848,6 @@ public class RegistreHelper {
 		registreAnnexFirmaRepository.save(firmaEntity);
 		return firmaEntity;
 	}
-
-	/** Esborra els documents temporals. Programa un esborrat en el cas que el commit vagi bé, si no els temporals no s'han d'esborrar. 
-	 * També posa a null l'id del gestor documental.
-	 */
-	@Transactional
-	private void esborrarDocsTemporals(RegistreEntity anotacioEntity) {
-
-		logger.debug("Programant l'esborrat de temporals després del commit per l'anotació de registre " + anotacioEntity.getNumero());
-
-		EsborrarDocsTemporalsHandler esborrarDocsTemporalsHandler = new EsborrarDocsTemporalsHandler();
-		
-		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
-			for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
-				if (annex.getGesdocDocumentId() != null) {
-					esborrarDocsTemporalsHandler.putIdentificador(PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, annex.getGesdocDocumentId());
-					annex.updateGesdocDocumentId(null);
-				}
-				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-					if (firma.getGesdocFirmaId() != null) {
-						esborrarDocsTemporalsHandler.putIdentificador(PluginHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, firma.getGesdocFirmaId());
-						firma.updateGesdocFirmaId(null);
-					}
-				}
-			}
-		}
-		
-		TransactionSynchronizationManager.registerSynchronization(esborrarDocsTemporalsHandler);
-	}
-
-	/** Classe que implementa la sincronització de transacció pes esborrar els temporals només en el cas que la transacció
-	 * hagi finalitzat correctament. D'aquesta forma no s'esborren els temporals si no s'han guardat correctament a l'arxiu
-	 * amb la informació a BBDD.
-	 */
-	public class EsborrarDocsTemporalsHandler implements TransactionSynchronization {
-		
-		/** Map amb el nom de l'agrupació i la llista d'identficadors a esborrar. 
-		 * Map<agrupacio, List<identificadors> */
-		private Map<String,List<String>> identificadors = new HashMap<>();
-		
-		/** Afegeix un identificador a una agrupació
-		 * 
-		 * @param agrupacio
-		 * @param identificadorId
-		 */
-		public void putIdentificador(String agrupacio, String identificadorId) {
-			if (!identificadors.containsKey(agrupacio))
-				identificadors.put(agrupacio, new ArrayList<String>());
-			identificadors.get(agrupacio).add(identificadorId);
-		}
-
-		/** Mètode que s'executa després que s'hagi guardat correctament a BBDD i per tants els temporals es poden guardar correctament. */
-		@Override
-		@Transactional
-		public void afterCommit() {
-			logger.debug("Esborrant els arxius temporals");
-			for (String agrupacio : identificadors.keySet())
-				for (String identificador : identificadors.get(agrupacio)) {
-					logger.debug("Esborrar arxiu temporal agrupacio=" + agrupacio + ", identificador=" + identificador);
-					try {
-						pluginHelper.gestioDocumentalDelete(identificador, agrupacio);
-					} catch(Exception e) {
-						logger.error("Error esborrant l'annex amb id " + identificador + " i agrupacio " + agrupacio + " del gestor documental: " + e.getMessage(), e);
-					}
-				}
-		}
-
-		@Override
-		public void suspend() {}
-		@Override
-		public void resume() {}
-		@Override
-		public void flush() {}
-		@Override
-		public void beforeCommit(boolean readOnly) {}
-		@Override
-		public void beforeCompletion() {}
-		@Override
-		public void afterCompletion(int status) {}
-	}
-
 
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);

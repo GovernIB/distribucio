@@ -10,9 +10,9 @@ package es.caib.distribucio.core.api.dto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum LogTipusEnumDto {
-	CREACIO,
+	CREACIO, // used in anotacio
 	CONSULTA,
-	MODIFICACIO,
+	MODIFICACIO, 
 	ELIMINACIO,
 	RECUPERACIO,
 	ELIMINACIODEF,
@@ -21,9 +21,9 @@ public enum LogTipusEnumDto {
 	AGAFAR,
 	ALLIBERAR,
 	COPIA,
-	MOVIMENT,
+	MOVIMENT,// used in anotacio
 	ENVIAMENT,
-	REENVIAMENT,
+	REENVIAMENT,// used in anotacio
 	PROCESSAMENT,
 	TANCAMENT,
 	REOBERTURA,
@@ -43,7 +43,13 @@ public enum LogTipusEnumDto {
 	NOTIFICACIO_ENTREGADA,
 	NOTIFICACIO_REBUTJADA,
 	NOTIFICACIO_REINTENT,
-	ENVIAMENT_EMAIL,
-	MARCAMENT_PROCESSAT,
-	DISTRIBUCIO
+	ENVIAMENT_EMAIL,// used
+	MARCAMENT_PROCESSAT,// used
+	DISTRIBUCIO, // used
+	REGLA_APLICAR, // newly added
+	BACK_REBUDA, // newly added
+	BACK_PROCESSADA, // newly added
+	BACK_REBUTJADA, // newly added
+	BACK_ERROR // newly added
+	
 }

@@ -18,7 +18,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class RegistreAnotacioDto extends ContingutDto {
+public class RegistreDto extends ContingutDto {
 
 	private RegistreTipusEnum registreTipus;
 	private String unitatAdministrativa;
@@ -28,6 +28,7 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
+	private String backCodi;
 	private Date backPendentData;
 	private Date backRebudaData;
 	private Date backProcesRebutjErrorData;
@@ -74,13 +75,71 @@ public class RegistreAnotacioDto extends ContingutDto {
 	private String exposa;
 	private String solicita;
 	private List<RegistreInteressat> interessats;
+	private String interessatsNoms;
 	private List<RegistreAnnex> annexos;
-	private RegistreAnnexDetallDto justificant;
+	private RegistreAnnexDto justificant;
 	
 	private String justificantArxiuUuid;
 	
 	private Boolean llegida;
+	private Boolean presencial;
 	
+	private long pareId;
+	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
+	private boolean procesAutomatic;
+	private long numComentaris;
+	private boolean isBustiaActiva;
+	// == BustiaContingutDto
+	
+	
+	public Boolean getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(Boolean presencial) {
+		this.presencial = presencial;
+	}
+	public long getPareId() {
+		return pareId;
+	}
+	public RegistreProcesEstatSimpleEnumDto getProcesEstatSimple() {
+		return procesEstatSimple;
+	}
+	public void setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto procesEstatSimple) {
+		this.procesEstatSimple = procesEstatSimple;
+	}
+	public void setPareId(long pareId) {
+		this.pareId = pareId;
+	}
+	public List<ContingutDto> getPath() {
+		return path;
+	}
+	public void setPath(List<ContingutDto> path) {
+		this.path = path;
+	}
+	public boolean isProcesAutomatic() {
+		return procesAutomatic;
+	}
+	public void setProcesAutomatic(boolean procesAutomatic) {
+		this.procesAutomatic = procesAutomatic;
+	}
+	public long getNumComentaris() {
+		return numComentaris;
+	}
+	public void setNumComentaris(long numComentaris) {
+		this.numComentaris = numComentaris;
+	}
+	public boolean isBustiaActiva() {
+		return isBustiaActiva;
+	}
+	public void setBustiaActiva(boolean isBustiaActiva) {
+		this.isBustiaActiva = isBustiaActiva;
+	}
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}	
 	public Date getBackRetryEnviarData() {
 		return backRetryEnviarData;
 	}
@@ -172,8 +231,8 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.procesIntents = procesIntents;
 	}
 
-	protected RegistreAnotacioDto copiarContenidor(ContingutDto original) {
-		RegistreAnotacioDto copia = new RegistreAnotacioDto();
+	protected RegistreDto copiarContenidor(ContingutDto original) {
+		RegistreDto copia = new RegistreDto();
 		copia.setId(original.getId());
 		copia.setNom(original.getNom());
 		return copia;
@@ -414,14 +473,14 @@ public class RegistreAnotacioDto extends ContingutDto {
 		this.annexos = annexos;
 	}
 
-	public RegistreAnnexDetallDto getJustificant() {
+	public RegistreAnnexDto getJustificant() {
 		return justificant;
 	}
-	public void setJustificant(RegistreAnnexDetallDto justificant) {
+	public void setJustificant(RegistreAnnexDto justificant) {
 		this.justificant = justificant;
 	}
 	
-	public String getInteressatsResum() {
+	public String getInteressatsAndRepresentantsResum() {
 		String interessatsResum = "";
 		if (this.interessats != null)
 			for (RegistreInteressat interessat: this.interessats) {
@@ -430,6 +489,19 @@ public class RegistreAnotacioDto extends ContingutDto {
 				interessatsResum+=  interessat.getLlinatge2()==null ? "" : interessat.getLlinatge2()  + "<br>"; 
 			}
 		
+		return interessatsResum;
+	}
+	
+	public String getInteressatsResum() {
+		String interessatsResum = "";
+		if (this.interessats != null)
+			for (RegistreInteressat interessat : this.interessats) {
+				if (interessat.getRepresentat() == null) {
+					interessatsResum += interessat.getNom() == null ? "" : interessat.getNom() + " ";
+					interessatsResum += interessat.getLlinatge1() == null ? "" : interessat.getLlinatge1() + " ";
+					interessatsResum += interessat.getLlinatge2() == null ? "" : interessat.getLlinatge2() + "<br>";
+				}
+			}
 		return interessatsResum;
 	}
 	
@@ -445,6 +517,12 @@ public class RegistreAnotacioDto extends ContingutDto {
 	}
 	public void setExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
+	}
+	public String getInteressatsNoms() {
+		return interessatsNoms;
+	}
+	public void setInteressatsNoms(String interessatsNoms) {
+		this.interessatsNoms = interessatsNoms;
 	}
 	
 }

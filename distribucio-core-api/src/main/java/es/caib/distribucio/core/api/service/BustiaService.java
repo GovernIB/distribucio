@@ -10,13 +10,15 @@ import javax.mail.MessagingException;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
-import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+
 import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
+
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
@@ -208,22 +210,7 @@ public interface BustiaService {
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) throws NotFoundException;
 
-	/**
-	 * Consulta el contingut pendent a dins múltiples bústies.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param filtre del datatable
-	 * @return El contingut pendent.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public PaginaDto<BustiaContingutDto> contingutPendentFindByDatatable(
-			Long entitatId,
-			List<BustiaDto> bustiesUsuari,
-			BustiaUserFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
 
 	/**
 	 * Consulta els identificadors del contingut pendent d'una bústia per filtre. Serveix per obtenir els ID's quan
@@ -240,26 +227,9 @@ public interface BustiaService {
 	public List<Long> findIdsAmbFiltre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
-			BustiaUserFiltreDto filtre);
+			RegistreFiltreDto filtre);
 
-	/**
-	 * Obté la informació d'un contingut pendent d'una bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia que es vol consultar.
-	 * @param contingutId
-	 *            Atribut id del contingut que es vol consultar.
-	 * @return la informació del contingut pendent.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public BustiaContingutDto contingutPendentFindOne(
-			Long entitatId,
-			Long bustiaId,
-			Long contingutId) throws NotFoundException;
+
 
 	/**
 	 * Consulta el nombre d'elements pendents (tant contenidors com registres)
@@ -292,7 +262,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public void contingutPendentReenviar(
+	public void registreReenviar(
 			Long entitatId,
 			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,

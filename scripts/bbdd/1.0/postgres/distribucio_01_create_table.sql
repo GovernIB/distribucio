@@ -161,7 +161,7 @@ CREATE TABLE DIS_REGISTRE
   LLIBRE_CODI          character varying(4)     NOT NULL,
   LLIBRE_DESC          character varying(100),
   EXTRACTE             character varying(240),
-  ASSUMPTE_TIPUS_CODI  character varying(16)    NOT NULL,
+  ASSUMPTE_TIPUS_CODI  character varying(16),
   ASSUMPTE_TIPUS_DESC  character varying(100),
   ASSUMPTE_CODI        character varying(16),
   ASSUMPTE_DESC        character varying(100),
@@ -208,7 +208,8 @@ CREATE TABLE DIS_REGISTRE
   BACK_REBUDA_DATA    timestamp without time zone,
   BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
   BACK_OBSERVACIONS 	character varying(4000),
-  BACK_RETRY_ENVIAR_DATA  timestamp without time zone
+  BACK_RETRY_ENVIAR_DATA  timestamp without time zone,
+  PRESENCIAL 			BOOLEAN
 );
 
 
@@ -293,7 +294,8 @@ CREATE TABLE DIS_REGISTRE_INTER
   LASTMODIFIEDBY_CODI  character varying(256),
   REGISTRE_ID          bigint                   NOT NULL,
   REPRESENTANT_ID      bigint,
-  REPRESENTAT_ID       bigint
+  REPRESENTAT_ID       bigint,
+  CODI_DIRE 			CHARACTER VARYING(64)
 );
 
 
@@ -322,7 +324,8 @@ CREATE TABLE DIS_REGLA
   BUSTIA_ID            bigint,
   METAEXPEDIENT_ID     bigint,
   UNITAT_ID 		   BIGINT,
-  PROCEDIMENT_CODI     CHARACTER VARYING(64)
+  PROCEDIMENT_CODI     CHARACTER VARYING(64),
+  BACKOFFICE_CODI      CHARACTER VARYING(64)
 );
 
 
@@ -411,4 +414,20 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
 CREATE TABLE DIS_UO_SINC_REL (
   ANTIGA_UO         			BIGINT          NOT NULL,
   NOVA_UO           			BIGINT          NOT NULL
+);
+
+
+CREATE TABLE DIS_AVIS
+(
+  ID                   BIGSERIAL               			 NOT NULL,
+  ASSUMPTE             character varying(256)            NOT NULL,
+  MISSATGE             character varying(2048)           NOT NULL,
+  DATA_INICI           timestamp without time zone(6)    NOT NULL,
+  DATA_FINAL           timestamp without time zone(6)    NOT NULL,
+  ACTIU                boolean                		     NOT NULL,
+  AVIS_NIVELL          character varying(10)             NOT NULL,
+  CREATEDBY_CODI       character varying(64),
+  CREATEDDATE          timestamp without time zone,
+  LASTMODIFIEDBY_CODI  character varying(64),
+  LASTMODIFIEDDATE     timestamp without time zone
 );

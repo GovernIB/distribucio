@@ -202,10 +202,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'llibreCodi'");
 		}
-		if (registreEntrada.getAssumpteTipusCodi() == null) {
-			throw new ValidationException(
-					"Es obligatori especificar un valor pel camp 'assumpteTipusCodi'");
-		}
 		if (registreEntrada.getIdiomaCodi() == null) {
 			throw new ValidationException(
 					"Es obligatori especificar un valor pel camp 'idiomaCodi'");

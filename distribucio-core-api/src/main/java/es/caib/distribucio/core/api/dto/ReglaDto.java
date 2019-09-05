@@ -21,9 +21,9 @@ public class ReglaDto extends AuditoriaDto {
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 
 	private Long metaExpedientId;
-	private Long arxiuId;
 	private Long bustiaId;
 	private BackofficeTipusEnumDto backofficeTipus;
+	private String backofficeCodi;
 	private String backofficeUrl;
 	private String backofficeUsuari;
 	private String backofficeContrasenya;
@@ -81,12 +81,6 @@ public class ReglaDto extends AuditoriaDto {
 	public void setMetaExpedientId(Long metaExpedientId) {
 		this.metaExpedientId = metaExpedientId;
 	}
-	public Long getArxiuId() {
-		return arxiuId;
-	}
-	public void setArxiuId(Long arxiuId) {
-		this.arxiuId = arxiuId;
-	}
 	public Long getBustiaId() {
 		return bustiaId;
 	}
@@ -98,6 +92,12 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
 		this.backofficeTipus = backofficeTipus;
+	}
+	public String getBackofficeCodi() {
+		return backofficeCodi;
+	}
+	public void setBackofficeCodi(String backofficeCodi) {
+		this.backofficeCodi = backofficeCodi;
 	}
 	public String getBackofficeUrl() {
 		return backofficeUrl;

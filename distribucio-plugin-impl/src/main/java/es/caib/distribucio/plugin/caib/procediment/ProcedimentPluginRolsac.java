@@ -44,7 +44,7 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 			StringBuilder sb = new StringBuilder(getServiceUrl());
 			response = findProcedimentsRolsac(
 					sb.toString(),
-					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\"}");
+					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}");
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar els procediments de ROLSAC (" +

@@ -117,6 +117,11 @@ public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 			built.autofirma = autofirma;
 			built.annex = annex;
 		}
+		
+		public Builder gesdocFirmaId(String gesdocFirmaId) {
+			built.gesdocFirmaId = gesdocFirmaId;
+			return this;
+		}
 		public RegistreAnnexFirmaEntity build() {
 			return built;
 		}
