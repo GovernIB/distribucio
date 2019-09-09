@@ -52,8 +52,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:tipusBustia = true or type(c) <> es.caib.distribucio.core.entity.BustiaEntity) " +
 			"and (:tipusRegistre = true or type(c) <> es.caib.distribucio.core.entity.RegistreEntity) " +
 			"and (:esNullNom = true or lower(c.nom) like lower('%'||:nom||'%')) " +
-			"and (:esNullDataInici = true or c.lastModifiedDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.lastModifiedDate <= :dataFi) " +
+			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
+			"and (:esNullDataFi = true or c.createdDate <= :dataFi) " +
 			"and ((:mostrarEsborrats = true and c.esborrat > 0) or (:mostrarNoEsborrats = true and c.esborrat = 0)) ")
 	public Page<ContingutEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
@@ -81,8 +81,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
 			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
 			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
-			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
+			"and (:esNullDataInici = true or c.data >= :dataInici) " +
+			"and (:esNullDataFi = true or c.data < :dataFi) " +
 			"and (:esNullEstatSimple = true " +
 			"		or (:isProcessat = false " +
 			"				and (c.procesEstat in ('BUSTIA_PENDENT', 'ARXIU_PENDENT', 'REGLA_PENDENT'))) " +

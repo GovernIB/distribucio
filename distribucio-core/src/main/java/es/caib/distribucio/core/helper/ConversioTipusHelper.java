@@ -11,8 +11,11 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
+import es.caib.distribucio.core.api.dto.ContingutComentariDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.entity.AlertaEntity;
+import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
@@ -50,6 +53,19 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<ContingutComentariEntity, ContingutComentariDto>() {
+					public ContingutComentariDto convert(ContingutComentariEntity source, Type<? extends ContingutComentariDto> destinationClass) {
+						ContingutComentariDto target = new ContingutComentariDto();
+						target.setId(source.getId());
+						target.setText(source.getText());
+						target.setCreatedBy(convertir(source.getCreatedBy(), UsuariDto.class));
+						target.setCreatedDate(source.getCreatedDate().toDate());
+						target.setLastModifiedBy(convertir(source.getLastModifiedBy(), UsuariDto.class));
+						target.setLastModifiedDate(source.getLastModifiedDate().toDate());
+						return target;
+					}
+				});		
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<RegistreAnnexEntity, RegistreAnnexDto>() {
 					public RegistreAnnexDto convert(RegistreAnnexEntity source, Type<? extends RegistreAnnexDto> destinationClass) {

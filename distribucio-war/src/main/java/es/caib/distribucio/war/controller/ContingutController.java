@@ -219,36 +219,41 @@ public class ContingutController extends BaseUserController {
 		}
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/log", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{registreId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		model.addAttribute(
+				"isPanelUser",
+				true);
+		
 		model.addAttribute(
 				"contingut",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						bustiaId,
+						registreId,
 						true,
 						false));
 
 		List<ContingutLogDetallsDto> logsDetall = contingutService.findLogsDetallsPerContingutUser(
 				entitatActual.getId(),
-				bustiaId); 
+				registreId); 
 		model.addAttribute(
 				"logsDetall",
 				logsDetall);
 		// Recupera la informació
 		ContingutDto contingut = contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						bustiaId,
+						registreId,
 						true,
 						false);
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(), 
 				contingut.getPare().getId(), 
-				bustiaId);
+				registreId);
 		model.addAttribute(
 				"logsResum", 
 				this.buildLogsResum(request, registre, logsDetall));
@@ -257,12 +262,12 @@ public class ContingutController extends BaseUserController {
 				"logs",
 				contingutService.findLogsPerContingutUser(
 						entitatActual.getId(),
-						bustiaId));
+						registreId));
 		model.addAttribute(
 				"moviments",
 				contingutService.findMovimentsPerContingutUser(
 						entitatActual.getId(),
-						bustiaId));
+						registreId));
 		model.addAttribute(
 				"logTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(

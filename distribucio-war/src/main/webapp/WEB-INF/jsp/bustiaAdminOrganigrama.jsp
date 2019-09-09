@@ -80,10 +80,13 @@ function changedCallback(e, data) {
 			if(isActiva) {
 				$('#activarBtn').hide();
 				$('#desactivarBtn').show();
-				} else {
+				if(bustiaDto.perDefecte) {
+					$('#desactivarBtn').prop("disabled", true);
+				}
+			} else {
 					$('#activarBtn').show();
 					$('#desactivarBtn').hide();
-				}
+			}
 			// showing obsolete panel if unitat of this bustia is obsoleta
 			if(bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
 				$('#panelUnitatObsoleta').show();	
@@ -379,7 +382,7 @@ $(document).ready(
 						
 							<div class="col-md-2">
 								<button id="activarBtn" type="button" onclick="activar()" style="display: none;" class="btn btn-default"><span class="fa fa-check"></span> <spring:message code="comu.boto.activar"/></button>
-								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
+								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default" ><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
 							</div>
 						
 							<div class="col-md-3" style="margin-left: 15px;">

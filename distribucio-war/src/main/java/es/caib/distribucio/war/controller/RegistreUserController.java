@@ -135,7 +135,7 @@ public class RegistreUserController extends BaseUserController {
 	
 	
 	
-	@RequestMapping(value = "/registreUserDetall/{bustiaId}/{registreId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/bustia/{bustiaId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreUserDetall(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,

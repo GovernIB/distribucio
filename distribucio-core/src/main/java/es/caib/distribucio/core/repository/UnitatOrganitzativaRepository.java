@@ -40,8 +40,8 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    UnitatOrganitzativaEntity uo " +
 			"where " +
 			"    uo.codiDir3Entitat = :codiDir3Entitat " +
-			"and (:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
-			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%')) ")
+			"and ((:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
+			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) ")
 	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
 			@Param("codiDir3Entitat") String codiDir3Entitat,
 			@Param("esNullFiltre") boolean esNullFiltreCodi,

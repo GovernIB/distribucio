@@ -141,6 +141,9 @@ public class ContingutAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
+				"isPanelUser",
+				false);
+		model.addAttribute(
 				"logs",
 				contingutService.findLogsPerContingutAdmin(
 						entitatActual.getId(),
