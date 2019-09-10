@@ -740,6 +740,7 @@ public class RegistreHelper {
 					RegistreInteressatDocumentTipusEnum.valorAsEnum(registreInteressat.getDocumentTipus()),
 					registreInteressat.getDocumentNum(),
 					registreInteressat.getRaoSocial(),
+					registreInteressat.getOrganCodi(),
 					registre);
 			break;
 		}
@@ -784,7 +785,8 @@ public class RegistreHelper {
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
 					RegistreInteressatCanalEnum.valorAsEnum(representant.getCanalPreferent()),
-					representant.getCodiDire());
+					representant.getCodiDire(),
+					representant.getOrganCodi());
 		}
 		registreInteressatRepository.save(interessatEntity);
 		return interessatEntity;

@@ -116,6 +116,7 @@
 <xs:element minOccurs="0" name="municipiCodi" type="xs:string" />
 <xs:element minOccurs="0" name="nom" type="xs:string" />
 <xs:element minOccurs="0" name="observacions" type="xs:string" />
+<xs:element minOccurs="0" name="organCodi" type="xs:string" />
 <xs:element minOccurs="0" name="pais" type="xs:string" />
 <xs:element minOccurs="0" name="paisCodi" type="xs:string" />
 <xs:element minOccurs="0" name="provincia" type="xs:string" />

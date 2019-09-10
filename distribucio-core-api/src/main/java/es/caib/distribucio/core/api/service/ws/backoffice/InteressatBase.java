@@ -30,6 +30,7 @@ public class InteressatBase {
 	private String adresaElectronica;
 	private String canal;
 	private String observacions;
+    private String organCodi;
 
 	public String getPais() {
 		return pais;
@@ -150,6 +151,12 @@ public class InteressatBase {
 	}
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
+	}
+	public String getOrganCodi() {
+		return organCodi;
+	}
+	public void setOrganCodi(String organCodi) {
+		this.organCodi = organCodi;
 	}
 
 }

@@ -42,11 +42,11 @@ public class BustiaV1Test {
 	private static final String UNITAT_ADM_CODI = "A04018961";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
-	private static final String ASSUMPTE_CODI = "";
+	private static final String ASSUMPTE_CODI = "BACK";
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
-	private static final String ASSUMPTE_TIPUS_CODI = null; //"A1";
-	private static final String ASSUMPTE_TIPUS_DESC = null; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "";
+	private static final String ASSUMPTE_TIPUS_CODI = "A1"; //"A1";
+	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
+	private static final String PROCEDIMENT_CODI = "BACK";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";// 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012";
@@ -59,7 +59,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM = "testBackoffice/45/2019";
+	private static final String EXPEDIENT_NUM = "";//"testBackoffice/45/2019"
 
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
@@ -240,55 +240,74 @@ public class BustiaV1Test {
         return annex;
 	}
 
-	@SuppressWarnings("unused")
 	private void afegirInteressats(RegistreAnotacio anotacio) {
-		RegistreInteressat representant = new RegistreInteressat();
-		representant.setAdresa("Carrer companys");
-		representant.setCanalPreferent("02");
-		representant.setCodiPostal("07200");
-		representant.setDocumentNum("77788899N");
-		representant.setDocumentTipus("N");
-		representant.setEmail("representant@limit.es");
-		representant.setEmailHabilitat("true");
-		representant.setLlinatge1("LlinatgeRep1");
-		representant.setLlinatge2("LlinatgeRep2");
-		representant.setMunicipi("Felanitx");
-		representant.setMunicipiCodi("162");
-		representant.setNom("NomRep");
-		representant.setObservacions(null);
-		representant.setPais("Espanya");
-		representant.setPaisCodi("724");
-		representant.setProvincia("Illes Balears");
-		representant.setProvinciaCodi("01");
-		representant.setRaoSocial(null);
-		representant.setRepresentant(null);
-		representant.setTelefon("666555444");
-		representant.setTipus("2");
-		representant.setCodiDire("r4444444");
-		RegistreInteressat interessat = new RegistreInteressat();
-		interessat.setAdresa("Carrer del moix 2");
-		interessat.setCanalPreferent("02");
-		interessat.setCodiPostal("07500");
-		interessat.setDocumentNum("12312312N");
-		interessat.setDocumentTipus("N");
-		interessat.setEmail("interessat@limit.es");
-		interessat.setEmailHabilitat("true");
-		interessat.setLlinatge1("LlinatgeInt1");
-		interessat.setLlinatge2("LlinatgeInt2");
-		interessat.setMunicipi("Manacor");
-		interessat.setMunicipiCodi("162");
-		interessat.setNom("NomInt1");
-		interessat.setObservacions(null);
-		interessat.setPais("Espanya");
-		interessat.setPaisCodi("724");
-		interessat.setProvincia("Illes Balears");
-		interessat.setProvinciaCodi("01");
-		interessat.setRaoSocial(null);
-		interessat.setRepresentant(representant);
-		interessat.setTelefon("999888777");
-		interessat.setTipus("2");
-		interessat.setCodiDire("i3333333");
-		anotacio.getInteressats().add(interessat);
+		RegistreInteressat representantPersonaFisica = new RegistreInteressat();
+		representantPersonaFisica.setAdresa("Carrer companys");
+		representantPersonaFisica.setCanalPreferent("02");
+		representantPersonaFisica.setCodiPostal("07200");
+		representantPersonaFisica.setDocumentNum("77788899N");
+		representantPersonaFisica.setDocumentTipus("N");
+		representantPersonaFisica.setEmail("representant@limit.es");
+		representantPersonaFisica.setEmailHabilitat("true");
+		representantPersonaFisica.setLlinatge1("LlinatgeRep1");
+		representantPersonaFisica.setLlinatge2("LlinatgeRep2");
+		representantPersonaFisica.setMunicipi("Felanitx");
+		representantPersonaFisica.setMunicipiCodi("162");
+		representantPersonaFisica.setNom("NomRep");
+		representantPersonaFisica.setObservacions(null);
+		representantPersonaFisica.setPais("Espanya");
+		representantPersonaFisica.setPaisCodi("724");
+		representantPersonaFisica.setProvincia("Illes Balears");
+		representantPersonaFisica.setProvinciaCodi("01");
+		representantPersonaFisica.setRaoSocial(null);
+		representantPersonaFisica.setRepresentant(null);
+		representantPersonaFisica.setTelefon("666555444");
+		representantPersonaFisica.setTipus("2");
+		representantPersonaFisica.setCodiDire("r4444444");
+		
+		RegistreInteressat interessatPersonaFisica = new RegistreInteressat();
+		interessatPersonaFisica.setAdresa("Carrer del moix 2");
+		interessatPersonaFisica.setCanalPreferent("02");
+		interessatPersonaFisica.setCodiPostal("07500");
+		interessatPersonaFisica.setDocumentNum("12312312N");
+		interessatPersonaFisica.setDocumentTipus("N");
+		interessatPersonaFisica.setEmail("interessat@limit.es");
+		interessatPersonaFisica.setEmailHabilitat("true");
+		interessatPersonaFisica.setLlinatge1("LlinatgeInt1");
+		interessatPersonaFisica.setLlinatge2("LlinatgeInt2");
+		interessatPersonaFisica.setMunicipi("Manacor");
+		interessatPersonaFisica.setMunicipiCodi("162");
+		interessatPersonaFisica.setNom("NomInt1");
+		interessatPersonaFisica.setObservacions(null);
+		interessatPersonaFisica.setPais("Espanya");
+		interessatPersonaFisica.setPaisCodi("724");
+		interessatPersonaFisica.setProvincia("Illes Balears");
+		interessatPersonaFisica.setProvinciaCodi("01");
+		interessatPersonaFisica.setRaoSocial(null);
+		interessatPersonaFisica.setRepresentant(representantPersonaFisica);
+		interessatPersonaFisica.setTelefon("999888777");
+		interessatPersonaFisica.setTipus("2");
+		interessatPersonaFisica.setCodiDire("i3333333");
+		anotacio.getInteressats().add(interessatPersonaFisica);
+		
+		
+		RegistreInteressat representantAdministracio = new RegistreInteressat();
+		representantAdministracio.setTipus("1");
+		representantAdministracio.setDocumentTipus("O");
+		representantAdministracio.setDocumentNum("A04026953");
+		representantAdministracio.setRaoSocial("raoSocialRepresentant");
+		representantAdministracio.setOrganCodi("A04019281");
+		representantAdministracio.setRepresentant(null);
+		
+		RegistreInteressat interessatAdministracio = new RegistreInteressat();
+		interessatAdministracio.setTipus("1");
+		interessatAdministracio.setDocumentTipus("O");
+		interessatAdministracio.setDocumentNum("A04026953");
+		interessatAdministracio.setRaoSocial("raoSocialInteressant");
+		interessatAdministracio.setOrganCodi("A04019281");
+		interessatAdministracio.setRepresentant(representantAdministracio);
+
+		anotacio.getInteressats().add(interessatAdministracio);
 	}
 
 	private BustiaV1 getBustiaServicePort() throws IOException {

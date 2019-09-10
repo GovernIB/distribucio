@@ -34,6 +34,7 @@ public class RegistreInteressat {
 	private String codiDire; 
 	private RegistreInteressat representant;
 	private RegistreInteressat representat;
+    private String organCodi;
 
 
 
@@ -180,6 +181,12 @@ public class RegistreInteressat {
 	}
 	public void setCodiDire(String codiDire) {
 		this.codiDire = codiDire;
+	}
+	public String getOrganCodi() {
+		return organCodi;
+	}
+	public void setOrganCodi(String organCodi) {
+		this.organCodi = organCodi;
 	}
 
 }

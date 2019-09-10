@@ -598,6 +598,7 @@ public class ContingutHelper {
 					registreInteressat.getDocumentTipus(),
 					registreInteressat.getDocumentNum(),
 					registreInteressat.getRaoSocial(),
+					registreInteressat.getOrganCodi(),
 					registre);
 			break;
 		}
@@ -639,7 +640,8 @@ public class ContingutHelper {
 					representant.getTelefon(),
 					representant.getEmailHabilitat(),
 					representant.getCanalPreferent(),
-					representant.getCodiDire());
+					representant.getCodiDire(),
+					representant.getOrganCodi());
 		}
 		return interessatCopiaEntity;
 	}
