@@ -88,13 +88,7 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	private long version = 0;
 	@Column(name = "codi_dire", length = 20)
 	private String codiDire;
-	@Column(name = "organ_codi", length = 9)
-	private String organCodi;
-	
 
-	public String getOrganCodi() {
-		return organCodi;
-	}
 	public RegistreInteressatTipusEnum getTipus() {
 		return RegistreInteressatTipusEnum.valorAsEnum(tipus);
 	}
@@ -188,8 +182,7 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			String telefon,
 			String emailHabilitat,
 			RegistreInteressatCanalEnum canalPreferent,
-			String codiDire,
-			String organCodi) {
+			String codiDire) {
 		Builder representantBuilder;
 		if (RegistreInteressatTipusEnum.PERSONA_FIS == tipus) {
 			representantBuilder = getBuilder(
@@ -206,7 +199,6 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 					documentTipus,
 					documentNum,
 					raoSocial,
-					organCodi,
 					registre);
 		}
 		representantBuilder.
@@ -300,14 +292,12 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 			RegistreInteressatDocumentTipusEnum documentTipus,
 			String documentNum,
 			String raoSocial,
-			String organCodi,
 			RegistreEntity registre) {
 		return new Builder(
 				tipus,
 				documentTipus,
 				documentNum,
 				raoSocial,
-				organCodi,
 				registre);
 	}
 
@@ -389,7 +379,6 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 				RegistreInteressatDocumentTipusEnum documentTipus,
 				String documentNum,
 				String raoSocial,
-				String organCodi,
 				RegistreEntity registre) {
 			built = new RegistreInteressatEntity();
 			built.tipus = tipus.getValor();
@@ -397,7 +386,6 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 				built.documentTipus = documentTipus.getValor();
 			built.documentNum = documentNum;
 			built.raoSocial = raoSocial;
-			built.organCodi = organCodi;
 			built.registre = registre;
 		}
 		public Builder pais(String pais) {

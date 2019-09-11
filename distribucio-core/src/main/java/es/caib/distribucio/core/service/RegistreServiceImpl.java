@@ -55,6 +55,8 @@ import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
+import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum;
+import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -1740,7 +1742,10 @@ public class RegistreServiceImpl implements RegistreService {
 		interessatBase.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
 		interessatBase.setObservacions(registreInteressatEntity.getObservacions());
 		
-		interessatBase.setOrganCodi(registreInteressatEntity.getOrganCodi());
+		if (registreInteressatEntity.getTipus() == RegistreInteressatTipusEnum.ADMINISTRACIO && registreInteressatEntity.getDocumentTipus() == RegistreInteressatDocumentTipusEnum.CODI_ORIGEN) {
+			interessatBase.setOrganCodi(registreInteressatEntity.getDocumentNum());
+		}
+		
 		
 		return interessatBase;
 	}

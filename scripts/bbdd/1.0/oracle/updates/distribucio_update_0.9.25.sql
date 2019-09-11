@@ -34,6 +34,3 @@ ALTER TABLE DIS_REGISTRE_INTER ADD CODI_DIRE VARCHAR2(64);
 
 -- #123 Eliminar obligatorietat del camp Tipo Asunto
 ALTER TABLE DIS_REGISTRE MODIFY (ASSUMPTE_TIPUS_CODI NULL);
-
---#130: Falta el codi d'òrgan pels interessats de tipus administració pública 
-ALTER TABLE DIS_REGISTRE_INTER ADD ORGAN_CODI VARCHAR(9);

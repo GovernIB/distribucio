@@ -290,23 +290,11 @@ public class BustiaV1Test {
 		interessatPersonaFisica.setCodiDire("i3333333");
 		anotacio.getInteressats().add(interessatPersonaFisica);
 		
-		
-		RegistreInteressat representantAdministracio = new RegistreInteressat();
-		representantAdministracio.setTipus("1");
-		representantAdministracio.setDocumentTipus("O");
-		representantAdministracio.setDocumentNum("A04026953");
-		representantAdministracio.setRaoSocial("raoSocialRepresentant");
-		representantAdministracio.setOrganCodi("A04019281");
-		representantAdministracio.setRepresentant(null);
-		
 		RegistreInteressat interessatAdministracio = new RegistreInteressat();
 		interessatAdministracio.setTipus("1");
 		interessatAdministracio.setDocumentTipus("O");
-		interessatAdministracio.setDocumentNum("A04026954");
+		interessatAdministracio.setDocumentNum("A04019281");
 		interessatAdministracio.setRaoSocial("raoSocialInteressant");
-		interessatAdministracio.setOrganCodi("A04019281");
-		interessatAdministracio.setRepresentant(representantAdministracio);
-
 		anotacio.getInteressats().add(interessatAdministracio);
 	}
 
