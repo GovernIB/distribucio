@@ -302,7 +302,7 @@ public class BustiaV1Test {
 		RegistreInteressat interessatAdministracio = new RegistreInteressat();
 		interessatAdministracio.setTipus("1");
 		interessatAdministracio.setDocumentTipus("O");
-		interessatAdministracio.setDocumentNum("A04026953");
+		interessatAdministracio.setDocumentNum("A04026954");
 		interessatAdministracio.setRaoSocial("raoSocialInteressant");
 		interessatAdministracio.setOrganCodi("A04019281");
 		interessatAdministracio.setRepresentant(representantAdministracio);

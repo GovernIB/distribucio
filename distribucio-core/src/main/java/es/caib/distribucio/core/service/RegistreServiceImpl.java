@@ -1670,9 +1670,9 @@ public class RegistreServiceImpl implements RegistreService {
 		for (RegistreInteressatEntity registreInteressatEntity : registreInteressats) {
 			
 			if (registreInteressatEntity.getRepresentat() == null) {
-				Interessat interessatPerBackoffice = (Interessat) toInteressatBase(registreInteressatEntity);
+				Interessat interessatPerBackoffice = (Interessat) toInteressatBase(registreInteressatEntity, true);
 				if (registreInteressatEntity.getRepresentant() != null) {
-					Representant representant = (Representant) toInteressatBase(registreInteressatEntity.getRepresentant());
+					Representant representant = (Representant) toInteressatBase(registreInteressatEntity.getRepresentant(), false);
 					interessatPerBackoffice.setRepresentant(representant);
 				}
 				interessatsPerBackoffice.add(interessatPerBackoffice);
@@ -1681,62 +1681,68 @@ public class RegistreServiceImpl implements RegistreService {
 		return interessatsPerBackoffice;
 	}
 
-	private InteressatBase toInteressatBase(RegistreInteressatEntity registreInteressatEntity) {
-		InteressatBase interessat = new Interessat();
+	private InteressatBase toInteressatBase(RegistreInteressatEntity registreInteressatEntity, boolean isInteressat) {
+		InteressatBase interessatBase;
+		if (isInteressat) {
+			interessatBase = new Interessat();
+		} else {
+			interessatBase = new Representant();
+		}
+		
 		switch (registreInteressatEntity.getTipus()) {
 		case PERSONA_FIS:
-			interessat.setTipus(InteressatTipus.PERSONA_FISICA);
+			interessatBase.setTipus(InteressatTipus.PERSONA_FISICA);
 			break;
 		case PERSONA_JUR:
-			interessat.setTipus(InteressatTipus.PERSONA_JURIDICA);
+			interessatBase.setTipus(InteressatTipus.PERSONA_JURIDICA);
 			break;
 		case ADMINISTRACIO:
-			interessat.setTipus(InteressatTipus.ADMINISTRACIO);
+			interessatBase.setTipus(InteressatTipus.ADMINISTRACIO);
 			break;
 		}
 		switch (registreInteressatEntity.getDocumentTipus()) {
 		case NIF:
-			interessat.setDocumentTipus(DocumentTipus.NIF);
+			interessatBase.setDocumentTipus(DocumentTipus.NIF);
 			break;
 		case CIF:
-			interessat.setDocumentTipus(DocumentTipus.CIF);
+			interessatBase.setDocumentTipus(DocumentTipus.CIF);
 			break;
 		case PASSAPORT:
-			interessat.setDocumentTipus(DocumentTipus.PASSAPORT);
+			interessatBase.setDocumentTipus(DocumentTipus.PASSAPORT);
 			break;
 		case ESTRANGER:
-			interessat.setDocumentTipus(DocumentTipus.NIE);
+			interessatBase.setDocumentTipus(DocumentTipus.NIE);
 			break;
 		case ALTRES:
-			interessat.setDocumentTipus(DocumentTipus.ALTRES);
+			interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
 			break;
 		case CODI_ORIGEN:
-			interessat.setDocumentTipus(DocumentTipus.ALTRES);
+			interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
 			break;
 		}
-		interessat.setDocumentNumero(registreInteressatEntity.getDocumentNum());
-		interessat.setRaoSocial(registreInteressatEntity.getRaoSocial());
-		interessat.setNom(registreInteressatEntity.getNom());
-		interessat.setLlinatge1(registreInteressatEntity.getLlinatge1());
-		interessat.setLlinatge2(registreInteressatEntity.getLlinatge2());
+		interessatBase.setDocumentNumero(registreInteressatEntity.getDocumentNum());
+		interessatBase.setRaoSocial(registreInteressatEntity.getRaoSocial());
+		interessatBase.setNom(registreInteressatEntity.getNom());
+		interessatBase.setLlinatge1(registreInteressatEntity.getLlinatge1());
+		interessatBase.setLlinatge2(registreInteressatEntity.getLlinatge2());
 		
-		interessat.setPaisCodi(registreInteressatEntity.getPaisCodi());
-		interessat.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
-		interessat.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
-		interessat.setPais(registreInteressatEntity.getPais());
-		interessat.setProvincia(registreInteressatEntity.getProvincia());
-		interessat.setMunicipi(registreInteressatEntity.getMunicipi());
-		interessat.setAdresa(registreInteressatEntity.getAdresa());
-		interessat.setCp(registreInteressatEntity.getCodiPostal());
-		interessat.setEmail(registreInteressatEntity.getEmail());
-		interessat.setTelefon(registreInteressatEntity.getTelefon());
-		interessat.setAdresaElectronica(registreInteressatEntity.getEmail());
-		interessat.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
-		interessat.setObservacions(registreInteressatEntity.getObservacions());
+		interessatBase.setPaisCodi(registreInteressatEntity.getPaisCodi());
+		interessatBase.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
+		interessatBase.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
+		interessatBase.setPais(registreInteressatEntity.getPais());
+		interessatBase.setProvincia(registreInteressatEntity.getProvincia());
+		interessatBase.setMunicipi(registreInteressatEntity.getMunicipi());
+		interessatBase.setAdresa(registreInteressatEntity.getAdresa());
+		interessatBase.setCp(registreInteressatEntity.getCodiPostal());
+		interessatBase.setEmail(registreInteressatEntity.getEmail());
+		interessatBase.setTelefon(registreInteressatEntity.getTelefon());
+		interessatBase.setAdresaElectronica(registreInteressatEntity.getEmail());
+		interessatBase.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
+		interessatBase.setObservacions(registreInteressatEntity.getObservacions());
 		
-		interessat.setOrganCodi(registreInteressatEntity.getOrganCodi());
+		interessatBase.setOrganCodi(registreInteressatEntity.getOrganCodi());
 		
-		return interessat;
+		return interessatBase;
 	}
 
 //	private Representant toRepresentant(RegistreInteressatEntity registreInteressatEntity) {
