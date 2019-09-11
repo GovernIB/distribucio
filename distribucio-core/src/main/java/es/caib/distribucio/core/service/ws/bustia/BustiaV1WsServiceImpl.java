@@ -217,6 +217,12 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				validarFormatAnnex(annex);
 			}
 		}
+		
+		if (registreEntrada.getExtracte().length() > 240) {
+			throw new ValidationException(
+					"La llargada màxima de l'extracte no pot superar els 240 caràcters");
+		}
+		
 	}
 
 	/** Valida que l'annex:
