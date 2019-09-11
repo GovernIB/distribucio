@@ -62,7 +62,7 @@ public class EmailHelper {
 	@Resource
 	private PermisosHelper permisosHelper;
 
-	public void emailBustiaPendentContingut(
+	public void createEmailsPendingToSend(
 			BustiaEntity bustia,
 			ContingutEntity contingut,
 			ContingutMovimentEntity contenidorMoviment) {

@@ -179,6 +179,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	public void enviarEmailsPendentsNoAgrupats() {
 		int movimentsEnviats = 0;
 		int errors = 0;
+		int anticsEsborrats = 0;
 		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
 		for (ContingutMovimentEmailEntity moviment : moviments) {
@@ -186,14 +187,25 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				this.enviarEmailPendent(
 						moviment.getEmail(), 
 						Arrays.asList(moviment));
+				
 				logger.debug("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail());
 				movimentsEnviats++;
 			} catch (Exception e) {
-				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail() + ": " + e.getMessage(), e);
+				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail() + ": " + e.getMessage());
 				errors++;
+				
+				// remove pending email if it is older that one week
+				Date formattedToday = new Date();
+				Date formattedExpired = moviment.getCreatedDate().toDate();
+				int diffInDays = (int)( (formattedToday.getTime() - formattedExpired.getTime()) / (1000 * 60 * 60 * 24) );
+				if (diffInDays > 7) {
+					contingutMovimentEmailRepository.delete(moviment);
+					anticsEsborrats++;
+				}
+				
 			}
 		}
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats. Moviments enviats: " + movimentsEnviats + ". Errors: " + errors);
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats. Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats);
 	}
 
 	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents agrupats per enviar
@@ -205,6 +217,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	public void enviarEmailsPendentsAgrupats() {
 		int movimentsEnviats = 0;
 		int errors = 0;
+		int anticsEsborrats = 0;
 		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
 		// Agrupa per destinataris Map<email, continguts> 
@@ -228,11 +241,22 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				logger.debug("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email);
 				movimentsEnviats += moviments.size();
 			} catch (Exception e) {
-				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email + ": " + e.getMessage(), e);
+				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email + ": " + e.getMessage());
 				errors++;
+				
+				for (ContingutMovimentEmailEntity moviment : moviments) {
+					// remove pending email if it is older that one week
+					Date formattedToday = new Date();
+					Date formattedExpired = moviment.getCreatedDate().toDate();
+					int diffInDays = (int)( (formattedToday.getTime() - formattedExpired.getTime()) / (1000 * 60 * 60 * 24) );
+					if (diffInDays > 7) {
+						contingutMovimentEmailRepository.delete(moviment);
+						anticsEsborrats++;
+					}
+				}
 			}
 		}
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats. Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors);
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats. Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats);
 	}
 	
 	/** Mètode comú per enviar dins d'un email l'avís amb els moviments pendents a un destinatari. En acabar esborra els movimentsp

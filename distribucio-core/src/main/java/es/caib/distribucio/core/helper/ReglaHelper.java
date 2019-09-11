@@ -209,7 +209,7 @@ public class ReglaHelper {
 						contingutMoviment,
 						true,
 						true);
-				emailHelper.emailBustiaPendentContingut(
+				emailHelper.createEmailsPendingToSend(
 						regla.getBustia(),
 						registre,
 						contingutMoviment);

@@ -1090,7 +1090,7 @@ public class BustiaServiceImpl implements BustiaService {
 					contingutMoviment,
 					true,
 					true);
-			emailHelper.emailBustiaPendentContingut(
+			emailHelper.createEmailsPendingToSend(
 					bustia,
 					contingutEnviar,
 					contingutMoviment);

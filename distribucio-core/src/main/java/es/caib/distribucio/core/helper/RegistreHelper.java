@@ -387,7 +387,7 @@ public class RegistreHelper {
 				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 			} else {
 				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-				emailHelper.emailBustiaPendentContingut(
+				emailHelper.createEmailsPendingToSend(
 						bustia, 
 						anotacio, 
 						anotacio.getDarrerMoviment());	
