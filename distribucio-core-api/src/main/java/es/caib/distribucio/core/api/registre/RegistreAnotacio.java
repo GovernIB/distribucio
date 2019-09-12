@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class RegistreAnotacio {
 
+	private String tipusES;
 	private String numero;
 	private Date data;
 	private Date dataOrigen;
@@ -294,6 +295,12 @@ public class RegistreAnotacio {
 	}
 	public void setPresencial(boolean presencial) {
 		this.presencial = presencial;
+	}
+	public String getTipusES() {
+		return tipusES;
+	}
+	public void setTipusES(String tipusES) {
+		this.tipusES = tipusES;
 	}
 
 	

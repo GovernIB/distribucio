@@ -60,6 +60,7 @@
 <xs:element minOccurs="0" name="procedimentCodi" type="xs:string" />
 <xs:element minOccurs="0" name="referencia" type="xs:string" />
 <xs:element minOccurs="0" name="solicita" type="xs:string" />
+<xs:element minOccurs="0" name="tipusES" type="xs:string" />
 <xs:element minOccurs="0" name="transportNumero" type="xs:string" />
 <xs:element minOccurs="0" name="transportTipusCodi" type="xs:string" />
 <xs:element minOccurs="0" name="transportTipusDescripcio" type="xs:string" />

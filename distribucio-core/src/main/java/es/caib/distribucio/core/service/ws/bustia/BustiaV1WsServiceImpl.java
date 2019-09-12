@@ -88,9 +88,15 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
 					"annexosFirmats=" + ambFirma.toString() + ")");
 			validarAnotacioRegistre(registreEntrada);
+			
+			RegistreTipusEnum registreTipus = RegistreTipusEnum.ENTRADA;
+			if (registreEntrada.getTipusES() != null && registreEntrada.getTipusES().equals("S")) {
+				registreTipus = RegistreTipusEnum.SORTIDA;
+			}
+			
 			Exception exception = bustiaService.registreAnotacioCrearIProcessar(
 					entitat,
-					RegistreTipusEnum.ENTRADA,
+					registreTipus,
 					unitatAdministrativa,
 					registreEntrada);
 			if (exception == null) {

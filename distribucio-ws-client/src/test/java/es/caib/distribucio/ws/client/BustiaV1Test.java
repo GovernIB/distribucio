@@ -38,6 +38,7 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
  */
 public class BustiaV1Test {
 
+	private static final String REGISTRE_TIPUS = "";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04019281";
 	private static final String UNITAT_ADM_CODI = "A04018961";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
@@ -61,6 +62,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM = "";//"testBackoffice/45/2019"
+	
 
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
@@ -98,6 +100,7 @@ public class BustiaV1Test {
 		for (int i=1; i<=nAnotacions; i++) {
 			System.out.println("Enviant l'anotació " + i);
 			anotacio = new RegistreAnotacio(); 
+			anotacio.setTipusES(REGISTRE_TIPUS);
 			anotacio.setAplicacioCodi(APLICACIO_CODI);
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
 			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
