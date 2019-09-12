@@ -1404,7 +1404,7 @@ public class BustiaServiceImpl implements BustiaService {
 		String htmlAnnexos = "";
 		for (RegistreAnnexDto annex: anexos) {
 			String htmlFirmes="";
-			if(!annex.getFirmes().isEmpty()){
+			if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()){
 				htmlFirmes+=
 				"			<tr>"+
 				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.annex.detalls.camp.firmes") + "</th>"+
@@ -2035,7 +2035,7 @@ private String getPlaintTextAnnexos(RegistreDto registre, List<RegistreAnnexDto>
 	}
 	for (RegistreAnnexDto annex: anexos) {
 		String plainTextFirmes = "";
-		if (!annex.getFirmes().isEmpty()) {
+		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
 			plainTextFirmes += 
 					"\n" + 
 					messageHelper.getMessage("registre.annex.detalls.camp.firmes").toUpperCase()
