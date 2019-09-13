@@ -1785,14 +1785,22 @@ public class BustiaServiceImpl implements BustiaService {
 				"				<td>" + registreData + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.oficina") + "</th>"+
-				"				<td>" + Objects.toString(registre.getOficinaDescripcio(), "") + " (" + Objects.toString(registre.getOficinaCodi(), "") + ")" + "</td>"+
+				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.proces.estat") + "</th>"+
+				"				<td>" + messageHelper.getMessage("registre.proces.estat.enum." + registre.getProcesEstat()) + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.proces.presencial") + "</th>"+
+				"				<td>" + messageHelper.getMessage("boolean." + Objects.toString(registre.getPresencial(), "")) + "</td>"+
 				"			</tr>"+
 				"		</table>"+
 
 				"		<table>"+
 				"			<tr>"+
 				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.obligatories") + "</th>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.oficina") + "</th>"+
+				"				<td>" + Objects.toString(registre.getOficinaDescripcio(), "") + " (" + Objects.toString(registre.getOficinaCodi(), "") + ")" + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
 				"				<th>" + messageHelper.getMessage("registre.detalls.camp.llibre") + "</th>"+

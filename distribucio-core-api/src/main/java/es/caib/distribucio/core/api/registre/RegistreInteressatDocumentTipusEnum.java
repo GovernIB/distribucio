@@ -19,8 +19,8 @@ public enum RegistreInteressatDocumentTipusEnum {
 	CIF("C"),
 	PASSAPORT("P"),
 	ESTRANGER("E"),
-	ALTRES("X"),
-	CODI_ORIGEN("O");
+	CODI_ORIGEN("O"),
+	ALTRES("X");
 
 	private final String valor;
 	private RegistreInteressatDocumentTipusEnum(String valor) {

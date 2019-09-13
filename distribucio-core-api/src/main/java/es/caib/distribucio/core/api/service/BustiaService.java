@@ -12,9 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
-
-import es.caib.distribucio.core.api.dto.BustiaUserFiltreDto;
-
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
