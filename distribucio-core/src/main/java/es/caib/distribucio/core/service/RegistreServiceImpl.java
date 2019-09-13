@@ -1719,7 +1719,7 @@ public class RegistreServiceImpl implements RegistreService {
 			interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
 			break;
 		case CODI_ORIGEN:
-			interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
+			interessatBase.setDocumentTipus(DocumentTipus.CODI_ORIGEN);
 			break;
 		}
 		interessatBase.setDocumentNumero(registreInteressatEntity.getDocumentNum());
@@ -1749,63 +1749,6 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return interessatBase;
 	}
-
-//	private Representant toRepresentant(RegistreInteressatEntity registreInteressatEntity) {
-//		Representant representant = new Representant();
-//		switch (registreInteressatEntity.getTipus()) {
-//		case PERSONA_FIS:
-//			representant.setTipus(InteressatTipus.PERSONA_FISICA);
-//			break;
-//		case PERSONA_JUR:
-//			representant.setTipus(InteressatTipus.PERSONA_JURIDICA);
-//			break;
-//		case ADMINISTRACIO:
-//			representant.setTipus(InteressatTipus.ADMINISTRACIO);
-//			break;
-//		}
-//		switch (registreInteressatEntity.getDocumentTipus()) {
-//		case NIF:
-//			representant.setDocumentTipus(DocumentTipus.NIF);
-//			break;
-//		case CIF:
-//			representant.setDocumentTipus(DocumentTipus.CIF);
-//			break;
-//		case PASSAPORT:
-//			representant.setDocumentTipus(DocumentTipus.PASSAPORT);
-//			break;
-//		case ESTRANGER:
-//			representant.setDocumentTipus(DocumentTipus.NIE);
-//			break;
-//		case ALTRES:
-//			representant.setDocumentTipus(DocumentTipus.ALTRES);
-//			break;
-//		case CODI_ORIGEN:
-//			representant.setDocumentTipus(DocumentTipus.ALTRES);
-//			break;
-//		}
-//		representant.setDocumentNumero(registreInteressatEntity.getDocumentNum());
-//		representant.setRaoSocial(registreInteressatEntity.getRaoSocial());
-//		representant.setNom(registreInteressatEntity.getNom());
-//		representant.setLlinatge1(registreInteressatEntity.getLlinatge1());
-//		representant.setLlinatge2(registreInteressatEntity.getLlinatge2());
-//		
-//		representant.setPaisCodi(registreInteressatEntity.getPaisCodi());
-//		representant.setProvinciaCodi(registreInteressatEntity.getProvinciaCodi());
-//		representant.setMunicipiCodi(registreInteressatEntity.getMunicipiCodi());
-//		
-//		representant.setPais(registreInteressatEntity.getPais());
-//		representant.setProvincia(registreInteressatEntity.getProvincia());
-//		representant.setMunicipi(registreInteressatEntity.getMunicipi());
-//		
-//		representant.setAdresa(registreInteressatEntity.getAdresa());
-//		representant.setCp(registreInteressatEntity.getCodiPostal());
-//		representant.setEmail(registreInteressatEntity.getEmail());
-//		representant.setTelefon(registreInteressatEntity.getTelefon());
-//		representant.setAdresaElectronica(registreInteressatEntity.getEmail());
-//		representant.setCanal(registreInteressatEntity.getCanalPreferent().toString());
-//		representant.setObservacions(registreInteressatEntity.getObservacions());
-//		return representant;
-//	}
 
 	private Exception processarAnotacioPendent(RegistreEntity anotacio) {
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(

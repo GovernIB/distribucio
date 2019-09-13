@@ -137,11 +137,11 @@ tr.clicable {
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
-					<td>${registre.procesEstat}</td>
+					<td class="${registre.procesEstat}"><spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/></td>
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
-					<td>${registre.presencial}</td>
+					<td class="${registre.presencial}"><spring:message code="boolean.${registre.presencial}"/></td>
 				</tr>						
 			</tbody>
 			</table>

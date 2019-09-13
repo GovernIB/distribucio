@@ -10,5 +10,6 @@ public enum DocumentTipus {
 	CIF,
 	PASSAPORT,
 	NIE,
+	CODI_ORIGEN,
 	ALTRES
 }

@@ -227,6 +227,7 @@
 <xs:enumeration value="CIF" />
 <xs:enumeration value="PASSAPORT" />
 <xs:enumeration value="NIE" />
+<xs:enumeration value="CODI_ORIGEN" />
 <xs:enumeration value="ALTRES" />
 </xs:restriction>
 </xs:simpleType>
