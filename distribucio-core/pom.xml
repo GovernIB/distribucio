@@ -45,7 +45,11 @@
 			<version>${slf4j.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>es.caib.distribucio</groupId>
+			<artifactId>distribucio-backoffice-utils</artifactId>
+			<version>0.9</version>
+		</dependency>	
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-json</artifactId>
