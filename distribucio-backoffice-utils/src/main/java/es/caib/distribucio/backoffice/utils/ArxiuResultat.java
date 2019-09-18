@@ -19,6 +19,20 @@ public class ArxiuResultat {
 	public String getIdentificadorExpedient() {
 		return identificadorExpedient;
 	}
+	public void setErrorCodi(int errorCodi) {
+		this.errorCodi = errorCodi;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+	public void setIdentificadorExpedient(String identificadorExpedient) {
+		this.identificadorExpedient = identificadorExpedient;
+	}
+	
+	
 	
 	
 	

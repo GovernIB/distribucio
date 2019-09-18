@@ -45,8 +45,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.fundaciobit.plugins</groupId>
-			<artifactId>plugin-arxiu-caib</artifactId>
+			<groupId>org.fundaciobit.pluginsib.arxiu</groupId>
+			<artifactId>pluginsib-arxiu-caib</artifactId>
 			<version>${arxiu.api.version}</version>
 			<exclusions>
 				<exclusion>

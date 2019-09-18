@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ejb.CreateException;
 import javax.jws.WebService;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import es.caib.distribucio.backoffice.utils.ArxiuResultat;
 import es.caib.distribucio.backoffice.utils.BackofficeUtilsImpl;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -32,11 +34,13 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.WsClientHelper;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.gesdoc.GestioDocumentalArxiu;
 import es.caib.loginModule.client.AuthenticationFailureException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
+import es.caib.plugins.arxiu.api.IArxiuPlugin;
 import es.caib.plugins.arxiu.caib.ArxiuPluginCaib;
 
 /**
@@ -53,7 +57,8 @@ import es.caib.plugins.arxiu.caib.ArxiuPluginCaib;
 		targetNamespace = "http://www.caib.es/distribucio/ws/backoffice")
 public class BackofficeWsServiceImpl implements BackofficeWsService {
 
-
+	private IArxiuPlugin arxiuPlugin;
+	private String integracioArxiuCodi = "ARXIU";
 	
 	@Override
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
@@ -76,7 +81,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 						Estat.REBUDA,
 						"Canviar l'estat a rebuda");
 				
-				
+				String backofficeWsServiceImplserieDocuemntal="S0002";
 				
 				Expedient expedient = toArxiuExpedient(
 						null,
@@ -87,26 +92,69 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 						"000000",
 						ExpedientEstatEnumDto.OBERT,
 						null,
-						"S0001");
+						backofficeWsServiceImplserieDocuemntal);
 				
 				BackofficeUtilsImpl backofficeUtilsImpl = new BackofficeUtilsImpl(new ArxiuPluginCaib());
-				backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(expedient, anotacioRegistreEntrada);
-
+				ArxiuResultat arxiuResultat = backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(expedient, anotacioRegistreEntrada);
 				
-
+				
+				Expedient expedientDetalls = getArxiuPlugin().expedientDetalls(arxiuResultat.getIdentificadorExpedient(), null);
+				
+				List<ContingutArxiu> continguts = expedientDetalls.getContinguts();
+				
+				logger.info("Uuid of expedient created in arxiu: "+ arxiuResultat.getIdentificadorExpedient());
+				
+				backofficeClient.canviEstat(id,
+						Estat.PROCESSADA,
+						"Canviar l'estat a rebuda");
+				
 			}
 			
 			
-			
-			
 		} catch (Throwable ex) {
-			logger.error("Error al recibir anotacions al test backoffice");
+			logger.error("Error al processar anotacions al test backoffice");
 			throw new RuntimeException(ex);
 		}
 	}
 
 
 	
+	
+	private IArxiuPlugin getArxiuPlugin() throws SistemaExternException {
+		if (arxiuPlugin == null) {
+			String pluginClass = getPropertyPluginArxiu();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class).newInstance(
+								"es.caib.distribucio.");
+					} else {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class,
+								Properties.class).newInstance(
+								"es.caib.distribucio.",
+								PropertiesHelper.getProperties().findAll());
+					}
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							integracioArxiuCodi,
+							"Error al crear la instància del plugin d'arxiu digital",
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						integracioArxiuCodi,
+						"No està configurada la classe per al plugin d'arxiu digital");
+			}
+		}
+		return arxiuPlugin;
+	}
+	private String getPropertyPluginArxiu() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.arxiu.class");
+	}
 	
 	private Expedient toArxiuExpedient(
 			String identificador,
