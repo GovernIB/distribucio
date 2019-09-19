@@ -1,12 +1,18 @@
 
 package es.caib.distribucio.backoffice.utils;
 
+import java.util.Date;
+import java.util.List;
+
+import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.plugins.arxiu.api.Carpeta;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutTipus;
 import es.caib.plugins.arxiu.api.Expedient;
+import es.caib.plugins.arxiu.api.ExpedientEstat;
+import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
 public class BackofficeUtilsImpl implements BackofficeUtils {
@@ -15,6 +21,30 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 	// name of carpeta to which annexos should be moved, if null annexos are moved directly to expedient without creating carpeta
 	private String carpetaAnnexos;
 	
+	public ArxiuResultat crearExpedientAmbAnotacioRegistre(
+			String identificador,
+			String nom,
+			String ntiIdentificador,
+			List<String> ntiOrgans,
+			Date ntiDataObertura,
+			String ntiClassificacio,
+			ExpedientEstatEnumDto ntiEstat,
+			List<String> ntiInteressats,
+			String serieDocumental,
+			AnotacioRegistreEntrada anotacioRegistreEntrada){
+		
+		
+		return this.crearExpedientAmbAnotacioRegistre(toArxiuExpedient(
+				identificador,
+				nom,
+				ntiIdentificador,
+				ntiOrgans,
+				ntiDataObertura,
+				ntiClassificacio,
+				ntiEstat,
+				ntiInteressats,
+				serieDocumental), anotacioRegistreEntrada);
+	}
 	
 	public ArxiuResultat crearExpedientAmbAnotacioRegistre(
 			Expedient expedient,
@@ -80,7 +110,7 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 						
 						// if document was dispatched, new docuement will be returned
 						if (nouDocumentDispatched != null) {
-							
+							annex.setUuid(nouDocumentDispatched.getIdentificador());
 						}
 					}
 				} else {
@@ -123,6 +153,42 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 		return carpeta;
 	}
 
+	private Expedient toArxiuExpedient(
+			String identificador,
+			String nom,
+			String ntiIdentificador,
+			List<String> ntiOrgans,
+			Date ntiDataObertura,
+			String ntiClassificacio,
+			ExpedientEstatEnumDto ntiEstat,
+			List<String> ntiInteressats,
+			String serieDocumental) {
+		Expedient expedient = new Expedient();
+		expedient.setNom(nom);
+		expedient.setIdentificador(identificador);
+		ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setIdentificador(ntiIdentificador);
+		metadades.setDataObertura(ntiDataObertura);
+		metadades.setClassificacio(ntiClassificacio);
+		if (ntiEstat != null) {
+			switch (ntiEstat) {
+			case OBERT:
+				metadades.setEstat(ExpedientEstat.OBERT);
+				break;
+			case TANCAT:
+				metadades.setEstat(ExpedientEstat.TANCAT);
+				break;
+			case INDEX_REMISSIO:
+				metadades.setEstat(ExpedientEstat.INDEX_REMISSIO);
+				break;
+			}
+		}
+		metadades.setOrgans(ntiOrgans);
+		metadades.setInteressats(ntiInteressats);
+		metadades.setSerieDocumental(serieDocumental);
+		expedient.setMetadades(metadades);
+		return expedient;
+	}
 	
 
 	public BackofficeUtilsImpl(

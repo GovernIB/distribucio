@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.backoffice.utils.ArxiuResultat;
 import es.caib.distribucio.backoffice.utils.BackofficeUtilsImpl;
+import es.caib.distribucio.backoffice.utils.DistribucioArxiuError;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -63,6 +64,9 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 	@Override
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
 
+		BackofficeIntegracioWsService backofficeClient = getBackofficeIntergracioWsClient();
+			
+
 		try {
 			
 			logger.debug("Ids rebuts al backoffice : ");
@@ -70,9 +74,6 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 				logger.debug("indetificador: " + id.getIndetificador() + ", clauAcces: " + id.getClauAcces());
 			}
 			
-			
-			BackofficeIntegracioWsService backofficeClient = getBackofficeIntergracioWsClient();
-
 			
 			for (AnotacioRegistreId id : ids) {
 				
@@ -83,7 +84,8 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 				
 				String backofficeWsServiceImplserieDocuemntal="S0002";
 				
-				Expedient expedient = toArxiuExpedient(
+				BackofficeUtilsImpl backofficeUtilsImpl = new BackofficeUtilsImpl(getArxiuPlugin());
+				ArxiuResultat arxiuResultat = backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(
 						null,
 						anotacioRegistreEntrada.getIdentificador(),
 						null,
@@ -92,10 +94,28 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 						"000000",
 						ExpedientEstatEnumDto.OBERT,
 						null,
-						backofficeWsServiceImplserieDocuemntal);
+						backofficeWsServiceImplserieDocuemntal,
+						anotacioRegistreEntrada);
 				
-				BackofficeUtilsImpl backofficeUtilsImpl = new BackofficeUtilsImpl(new ArxiuPluginCaib());
-				ArxiuResultat arxiuResultat = backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(expedient, anotacioRegistreEntrada);
+				
+				if (arxiuResultat.getErrorCodi() == DistribucioArxiuError.ARXIU_ERROR) {
+					backofficeClient.canviEstat(id,
+							Estat.ERROR,
+							"ArxiuResultat: Error!");
+				}
+				
+				
+				ArxiuResultat arxiuResultatSecondCall = backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(
+						arxiuResultat.getIdentificadorExpedient(),
+						anotacioRegistreEntrada.getIdentificador(),
+						null,
+						Arrays.asList("A04019281"),
+						new Date(),
+						"000000",
+						ExpedientEstatEnumDto.OBERT,
+						null,
+						backofficeWsServiceImplserieDocuemntal,
+						anotacioRegistreEntrada);
 				
 				
 				Expedient expedientDetalls = getArxiuPlugin().expedientDetalls(arxiuResultat.getIdentificadorExpedient(), null);
@@ -112,6 +132,13 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 			
 			
 		} catch (Throwable ex) {
+			
+			for (AnotacioRegistreId id : ids){
+				backofficeClient.canviEstat(id,
+						Estat.ERROR,
+						"Error!");
+			}
+			
 			logger.error("Error al processar anotacions al test backoffice");
 			throw new RuntimeException(ex);
 		}
@@ -156,45 +183,10 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	
-	private Expedient toArxiuExpedient(
-			String identificador,
-			String nom,
-			String ntiIdentificador,
-			List<String> ntiOrgans,
-			Date ntiDataObertura,
-			String ntiClassificacio,
-			ExpedientEstatEnumDto ntiEstat,
-			List<String> ntiInteressats,
-			String serieDocumental) {
-		Expedient expedient = new Expedient();
-		expedient.setNom(nom);
-		expedient.setIdentificador(identificador);
-		ExpedientMetadades metadades = new ExpedientMetadades();
-		metadades.setIdentificador(ntiIdentificador);
-		metadades.setDataObertura(ntiDataObertura);
-		metadades.setClassificacio(ntiClassificacio);
-		if (ntiEstat != null) {
-			switch (ntiEstat) {
-			case OBERT:
-				metadades.setEstat(ExpedientEstat.OBERT);
-				break;
-			case TANCAT:
-				metadades.setEstat(ExpedientEstat.TANCAT);
-				break;
-			case INDEX_REMISSIO:
-				metadades.setEstat(ExpedientEstat.INDEX_REMISSIO);
-				break;
-			}
-		}
-		metadades.setOrgans(ntiOrgans);
-		metadades.setInteressats(ntiInteressats);
-		metadades.setSerieDocumental(serieDocumental);
-		expedient.setMetadades(metadades);
-		return expedient;
-	}
+
 	
 	
-	private BackofficeIntegracioWsService getBackofficeIntergracioWsClient() throws Exception {
+	private BackofficeIntegracioWsService getBackofficeIntergracioWsClient(){
 
 		String url = PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.backoffice.test.backofficeIntegracio.url");
@@ -208,14 +200,18 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 		if (url != null && usuari != null && contrasenya != null) {
 			// create ws client
 			logger.debug(">>> Abans de crear backofficeIntegracio WS");
-			backofficeClient = new WsClientHelper<BackofficeIntegracioWsService>().generarClientWs(
-					getClass().getResource("/es/caib/distribucio/core/service/ws/backoffice/backofficeIntegracio.wsdl"),
-					url,
-					new QName("http://www.caib.es/distribucio/ws/backofficeIntegracio", "BackofficeIntegracioService"),
-					usuari,
-					contrasenya,
-					null,
-					BackofficeIntegracioWsService.class);
+			try {
+				backofficeClient = new WsClientHelper<BackofficeIntegracioWsService>().generarClientWs(
+						getClass().getResource("/es/caib/distribucio/core/service/ws/backoffice/backofficeIntegracio.wsdl"),
+						url,
+						new QName("http://www.caib.es/distribucio/ws/backofficeIntegracio", "BackofficeIntegracioService"),
+						usuari,
+						contrasenya,
+						null,
+						BackofficeIntegracioWsService.class);
+			} catch (Exception e) {
+				throw new RuntimeException();
+			}
 
 		}
 		return backofficeClient;
