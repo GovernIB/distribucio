@@ -454,7 +454,7 @@ public class ContingutController extends BaseUserController {
 			break;
 		case MOVIMENT:
 		case REENVIAMENT:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.moure"));
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
 			if (log.getContenidorMoviment() != null) {
 				if (log.getContingutMoviment().getOrigen() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");

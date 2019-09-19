@@ -1026,7 +1026,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
 			Long registreId,
-			boolean deixarCopia,
+			boolean opcioDeixarCopiaSelectada,
 			String comentari) throws NotFoundException {
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
@@ -1051,59 +1051,69 @@ public class BustiaServiceImpl implements BustiaService {
 					false);
 			bustiesDesti.add(bustiaDesti);
 		}
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+		ContingutEntity registreOriginal = entityComprovarHelper.comprovarContingut(
 				entitat,
 				registreId,
 				bustiaOrigen);
 
-		ContingutEntity contingutAux = entityComprovarHelper.comprovarContingut(
-				entitat,
-				registreId,
-				bustiaOrigen);
-
-		boolean primerEnviament = true;
-		for (BustiaEntity bustia: bustiesDesti) {
-			ContingutEntity contingutEnviar = null;
-			if (!deixarCopia && primerEnviament) {
-				contingutEnviar = contingut;
+		for (int i = 0; i < bustiesDesti.size(); i++) {
+			BustiaEntity bustia = bustiesDesti.get(i);
+			
+			ContingutEntity registrePerReenviar = null;
+			boolean ferCopia = opcioDeixarCopiaSelectada || !isLastIteration(i, bustiesDesti);
+			if (ferCopia) {
+				registrePerReenviar = contingutHelper.ferCopiaRegistre(
+						registreOriginal,
+						bustia.getEntitat().getCodiDir3());
 			} else {
-				contingutEnviar = contingutHelper.ferCopiaRegistre(contingutAux, bustia);
+				registrePerReenviar = registreOriginal;
 			}
 			
-			if (contingutEnviar.getClass() == RegistreEntity.class) {
-				RegistreEntity registre = (RegistreEntity) contingutEnviar;
+			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+					registrePerReenviar,
+					bustia,
+					comentari);
+			
+			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
+			if (registrePerReenviar.getClass() == RegistreEntity.class) {
+				RegistreEntity registre = (RegistreEntity) registrePerReenviar;
 				if (registre.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
 					registre.updateProces(
 							RegistreProcesEstatEnum.BUSTIA_PENDENT,
 							null);
 				}
-			}		
-			
-			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-					contingutEnviar,
-					bustia,
-					comentari);
-			
+			}	
+			if (opcioDeixarCopiaSelectada) {
+				contingutLogHelper.log(
+						registreOriginal,
+						LogTipusEnumDto.REENVIAMENT,
+						contingutMoviment,
+						true,
+						true);
+			}
 			contingutLogHelper.log(
-					contingutEnviar,
+					registrePerReenviar,
 					LogTipusEnumDto.REENVIAMENT,
 					contingutMoviment,
 					true,
 					true);
 			emailHelper.createEmailsPendingToSend(
 					bustia,
-					contingutEnviar,
+					registrePerReenviar,
 					contingutMoviment);
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 					entitat,
 					bustia);
-			primerEnviament = false;
 		}
+		
 		// Refrescam cache d'elements pendents de les bústies
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustiaOrigen);
 	}
+	
+	
+
 
 	@Transactional(readOnly = true)
 	@Override
@@ -2287,8 +2297,19 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 //
 //		
 //		return bustiaContingut;
-//	}
+// }
+	
+	private boolean isLastIteration(
+			int i,
+			List<BustiaEntity> bustiesDesti) {
 
+		boolean lastIteration = false;
+		if (i == bustiesDesti.size() -
+				1) {
+			lastIteration = true;
+		}
+		return lastIteration;
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 

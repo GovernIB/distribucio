@@ -456,7 +456,7 @@ public class ContingutHelper {
 	@Transactional
 	public ContingutEntity ferCopiaRegistre(
 			ContingutEntity contingutOriginal,
-			BustiaEntity bustiaDesti) {
+			String codiDir3Desti) {
 		RegistreEntity registreOriginal = (RegistreEntity)contingutOriginal;
 		Integer numeroCopies = registreHelper.getMaxNumeroCopia(registreOriginal);
 		RegistreEntity registreCopia = RegistreEntity.getBuilder(
@@ -501,9 +501,8 @@ public class ContingutHelper {
 				exposa(registreOriginal.getExposa()).
 				solicita(registreOriginal.getSolicita()).
 				regla(registreOriginal.getRegla()).
-				oficinaOrigen(registreOriginal.getDataOrigen(), 
-				registreOriginal.getOficinaOrigenCodi(), 
-				registreOriginal.getOficinaOrigenDescripcio()).
+				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
+				presencial(registreOriginal.getPresencial()).
 				build();
 		// Copia els interessats
 		if (registreOriginal.getInteressats() != null) {
@@ -558,7 +557,7 @@ public class ContingutHelper {
 		if (duplicarContingutArxiu) {
 			registreHelper.createRegistreAndAnnexosInArxiu(
 					registreCopia,
-					bustiaDesti.getEntitat().getCodiDir3(),
+					codiDir3Desti,
 					true);
 		} else {
 			registreCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());

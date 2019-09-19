@@ -473,7 +473,7 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateJustificantArxiuUuid(String justificantArxiuUuid) {
 		this.justificantArxiuUuid = justificantArxiuUuid;
 	}
-	public void updatePresencial(boolean presencial) {
+	public void updatePresencial(Boolean presencial) {
 		this.presencial = presencial;
 	}
 
@@ -699,7 +699,7 @@ public class RegistreEntity extends ContingutEntity {
 			built.justificantArxiuUuid = justificantArxiuUuid;
 			return this;
 		}
-		public Builder presencial(boolean presencial) {
+		public Builder presencial(Boolean presencial) {
 			built.presencial = presencial;
 			return this;
 		}
