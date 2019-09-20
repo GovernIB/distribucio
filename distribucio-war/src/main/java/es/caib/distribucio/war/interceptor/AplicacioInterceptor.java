@@ -31,6 +31,7 @@ public class AplicacioInterceptor extends HandlerInterceptorAdapter {
 			HttpServletResponse response,
 			Object handler) throws Exception {
 		AplicacioHelper.comprovarVersioActual(request, aplicacioService);
+		AplicacioHelper.comprovarVersioData(request, aplicacioService);
 		request.setAttribute(
 				"requestLocale",
 				RequestContextUtils.getLocale(request).getLanguage());

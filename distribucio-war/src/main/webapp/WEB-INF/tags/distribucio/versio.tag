@@ -1,1 +1,1 @@
-<%=es.caib.distribucio.war.helper.AplicacioHelper.getVersioActual(request)%>
+<%=es.caib.distribucio.war.helper.AplicacioHelper.getVersioActual(request)%> <span id="versioData"style="display:none;">(<%=es.caib.distribucio.war.helper.AplicacioHelper.getVersioData(request)%>)</span>

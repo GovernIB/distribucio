@@ -39,6 +39,13 @@ public class AplicacioServiceBean implements AplicacioService {
 	public String getVersioActual() {
 		return delegate.getVersioActual();
 	}
+
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public String getVersioData() {
+		return delegate.getVersioData();
+	}
+
 	
 	@Override
 	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})

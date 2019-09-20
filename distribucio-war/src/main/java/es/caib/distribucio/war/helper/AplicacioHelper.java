@@ -15,8 +15,7 @@ import es.caib.distribucio.core.api.service.AplicacioService;
 public class AplicacioHelper {
 
 	public static final String APPLICATION_ATTRIBUTE_VERSIO_ACTUAL = "AplicacioHelper.versioActual";
-
-
+	public static final String APPLICATION_ATTRIBUTE_VERSIO_DATA = "AplicacioHelper.versioData";
 
 	public static void comprovarVersioActual(
 			HttpServletRequest request,
@@ -29,9 +28,30 @@ public class AplicacioHelper {
 					versioActual);
 		}
 	}
-	public static String getVersioActual(HttpServletRequest request) {
-		return (String)request.getSession().getServletContext().getAttribute(
-				APPLICATION_ATTRIBUTE_VERSIO_ACTUAL);
+
+	public static void comprovarVersioData(
+			HttpServletRequest request,
+			AplicacioService aplicacioService) {
+		String versioData = (String)request.getSession().getServletContext().getAttribute(APPLICATION_ATTRIBUTE_VERSIO_DATA);
+		if (versioData == null) {
+			versioData = aplicacioService.getVersioData();
+			request.getSession().getServletContext().setAttribute(
+					APPLICATION_ATTRIBUTE_VERSIO_DATA,
+					versioData);
+		}
 	}
+
+	public static String getVersioActual(HttpServletRequest request) {
+		String versioActual = (String)request.getSession().getServletContext().getAttribute(
+				APPLICATION_ATTRIBUTE_VERSIO_ACTUAL);
+		return versioActual;
+	}
+	
+	public static String getVersioData(HttpServletRequest request) {
+		String versioData = (String)request.getSession().getServletContext().getAttribute(
+				APPLICATION_ATTRIBUTE_VERSIO_DATA);
+		return versioData;
+	}
+
 	
 }

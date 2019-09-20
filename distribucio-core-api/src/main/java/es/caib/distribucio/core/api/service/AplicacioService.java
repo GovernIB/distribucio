@@ -30,6 +30,15 @@ public interface AplicacioService {
 	public String getVersioActual();
 
 	/**
+	 * Obté la propietat de la data de la versió actual de l'aplicació.
+	 * 
+	 * @return La versió actual.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public String getVersioData();
+
+	
+	/**
 	 * Processa l'autenticació d'un usuari.
 	 * 
 	 * @throws NotFoundException

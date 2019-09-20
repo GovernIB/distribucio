@@ -72,6 +72,17 @@ public class AplicacioServiceImpl implements AplicacioService {
 			return "???";
 		}
 	}
+	
+	@Override
+	public String getVersioData() {
+		logger.debug("Obtenint data de l'aplicació");
+		try {
+			return getVersionProperties().getProperty("app.date");
+		} catch (IOException ex) {
+			logger.error("No s'ha pogut llegir el fitxer version.properties", ex);
+			return "???";
+		}
+	}
 
 	@Transactional
 	@Override

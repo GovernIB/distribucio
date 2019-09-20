@@ -32,6 +32,7 @@
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<version.revision>25</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
+		<version.date>2019.09.20</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-core</module>
