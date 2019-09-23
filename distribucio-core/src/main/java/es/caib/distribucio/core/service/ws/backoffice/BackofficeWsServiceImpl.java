@@ -98,11 +98,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 						anotacioRegistreEntrada);
 				
 				
-				if (arxiuResultat.getErrorCodi() == DistribucioArxiuError.ARXIU_ERROR) {
-					backofficeClient.canviEstat(id,
-							Estat.ERROR,
-							"ArxiuResultat: Error!");
-				}
+
 				
 				
 				ArxiuResultat arxiuResultatSecondCall = backofficeUtilsImpl.crearExpedientAmbAnotacioRegistre(
@@ -116,6 +112,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 						null,
 						backofficeWsServiceImplserieDocuemntal,
 						anotacioRegistreEntrada);
+
 				
 				
 				Expedient expedientDetalls = getArxiuPlugin().expedientDetalls(arxiuResultat.getIdentificadorExpedient(), null);
@@ -124,10 +121,26 @@ public class BackofficeWsServiceImpl implements BackofficeWsService {
 				
 				logger.info("Uuid of expedient created in arxiu: "+ arxiuResultat.getIdentificadorExpedient());
 				
-				backofficeClient.canviEstat(id,
-						Estat.PROCESSADA,
-						"Canviar l'estat a rebuda");
 				
+				
+				
+				if (arxiuResultatSecondCall.getErrorCodi() == DistribucioArxiuError.ARXIU_ERROR) {
+					backofficeClient.canviEstat(
+							id,
+							Estat.ERROR,
+							"ArxiuResultat: Error second call!");
+				} 
+				if (arxiuResultat.getErrorCodi() == DistribucioArxiuError.ARXIU_ERROR) {
+					backofficeClient.canviEstat(id,
+							Estat.ERROR,
+							"ArxiuResultat: Error first call!");
+				}
+				if (arxiuResultat.getErrorCodi() == DistribucioArxiuError.NO_ERROR && arxiuResultatSecondCall.getErrorCodi() == DistribucioArxiuError.NO_ERROR) {
+					backofficeClient.canviEstat(
+							id,
+							Estat.PROCESSADA,
+							"Canviar l'estat a rebuda");
+				} 
 			}
 			
 			

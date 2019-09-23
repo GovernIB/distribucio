@@ -34,16 +34,18 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 			AnotacioRegistreEntrada anotacioRegistreEntrada){
 		
 		
-		return this.crearExpedientAmbAnotacioRegistre(toArxiuExpedient(
-				identificador,
-				nom,
-				ntiIdentificador,
-				ntiOrgans,
-				ntiDataObertura,
-				ntiClassificacio,
-				ntiEstat,
-				ntiInteressats,
-				serieDocumental), anotacioRegistreEntrada);
+		return this.crearExpedientAmbAnotacioRegistre(
+				toArxiuExpedient(
+					identificador,
+					nom,
+					ntiIdentificador,
+					ntiOrgans,
+					ntiDataObertura,
+					ntiClassificacio,
+					ntiEstat,
+					ntiInteressats,
+					serieDocumental),
+				anotacioRegistreEntrada);
 	}
 	
 	public ArxiuResultat crearExpedientAmbAnotacioRegistre(
@@ -57,11 +59,18 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 		
 		try {
 			// CREATE EXPEDIENT IN ARXIU
-			ContingutArxiu expedientCreat = iArxiuPlugin.expedientCrear(expedient);
+			String expedientCreatIdentificador;
+			if (expedient.getIdentificador() == null || expedient.getIdentificador().isEmpty()) {
+				ContingutArxiu expedientCreat = iArxiuPlugin.expedientCrear(expedient);
+				expedientCreatIdentificador = expedientCreat.getIdentificador();
+			} else {
+				expedientCreatIdentificador = expedient.getIdentificador();
+			}
+			
 			Expedient expedientDetalls = iArxiuPlugin.expedientDetalls(
-					expedientCreat.getIdentificador(),
+					expedientCreatIdentificador,
 					null);
-			arxiuResultat.setIdentificadorExpedient(expedientCreat.getIdentificador());
+			arxiuResultat.setIdentificadorExpedient(expedientCreatIdentificador);
 			
 			// CREATE CARPETA IN ARXIU
 			if (isCarpetaActive) {
@@ -83,7 +92,7 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 				if (!carpetaExistsInArxiu) {
 					ContingutArxiu carpetaCreada = iArxiuPlugin.carpetaCrear(toArxiuCarpeta(null,
 							carpetaAnnexos),
-							expedientCreat.getIdentificador());
+							expedientCreatIdentificador);
 					carpetaUuid = carpetaCreada.getIdentificador();
 				}
 			}
@@ -97,7 +106,7 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 					if (carpeta.getContinguts() != null) {
 						for (ContingutArxiu contingutArxiu : carpeta.getContinguts()) {
 							if (contingutArxiu.getTipus() == ContingutTipus.DOCUMENT && contingutArxiu.getNom().equals(
-									annex.getNom())) {
+									annex.getTitol())) {
 								documentExistsInArxiu = true;
 							}
 						}
@@ -106,7 +115,7 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 						ContingutArxiu nouDocumentDispatched = iArxiuPlugin.documentMoure(
 								annex.getUuid(),
 								carpetaUuid,
-								expedientCreat.getIdentificador());
+								expedientCreatIdentificador);
 						
 						// if document was dispatched, new docuement will be returned
 						if (nouDocumentDispatched != null) {
@@ -119,7 +128,7 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 					if (expedientDetalls.getContinguts() != null) {
 						for (ContingutArxiu contingutArxiu : expedientDetalls.getContinguts()) {
 							if (contingutArxiu.getTipus() == ContingutTipus.DOCUMENT && contingutArxiu.getNom().equals(
-									annex.getNom())) {
+									annex.getTitol())) {
 								documentExistsInArxiu = true;
 							}
 						}
@@ -127,19 +136,18 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 					if (!documentExistsInArxiu) {
 						ContingutArxiu nouDocumentDispatched = iArxiuPlugin.documentMoure(
 								annex.getUuid(),
-								expedientCreat.getIdentificador(),
-								expedientCreat.getIdentificador());
+								expedientCreatIdentificador,
+								expedientCreatIdentificador);
 					}
 				}
 			}
-			
+		arxiuResultat.setErrorCodi(DistribucioArxiuError.NO_ERROR);	
+		
 		} catch (Exception e) {
 			arxiuResultat.setException(e);
 			arxiuResultat.setErrorCodi(DistribucioArxiuError.ARXIU_ERROR);
 			arxiuResultat.setErrorMessage(e.getMessage());
 		}
-		
-		arxiuResultat.setErrorCodi(DistribucioArxiuError.NO_ERROR);
 		return arxiuResultat;
 	}
 	
