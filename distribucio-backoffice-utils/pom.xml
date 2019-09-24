@@ -8,6 +8,7 @@
 		<version>0.9</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
+	<version>0.9.26</version>
 	<dependencies>
 
 		<dependency>
@@ -64,7 +65,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-core-api</artifactId>
-			<version>${project.version}</version>
+			<version>0.9</version>
 		</dependency>		
 	</dependencies>
 	<build>
