@@ -80,7 +80,6 @@ tr.clicable {
 </script>
 </head>
 <body>
-
 	<!--------------------------------------------------- TABLIST ------------------------------------------------------>
 	<ul class="nav nav-tabs" role="tablist">
 		<li class="active" role="presentation"><a href="#informacio" aria-controls="informacio" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.informacio"/></a>
@@ -137,7 +136,28 @@ tr.clicable {
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
-					<td class="${registre.procesEstat}"><spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/></td>
+					<td class="${registre.procesEstat}">
+						<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>
+						<c:if test="${! empty registre.procesError }">
+							<c:choose>
+								<c:when test="${registre.procesEstat ==  'ARXIU_PENDENT'} ">
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>:${registre.procesError}"></span>
+								</c:when>
+								<c:when test="${registre.procesEstat ==  'REGLA_PENDENT'}">
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>:${registre.procesError}"></span>
+								</c:when>
+								<c:when test="${registre.procesEstat ==  'BACK_PENDENT'}">
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>:${registre.procesError}"></span>
+								</c:when>
+								<c:when test="${registre.procesEstat ==  'BACK_ERROR'}">
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>:${registre.procesError}"></span>
+								</c:when>
+								<c:otherwise>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>:${registre.procesError}"></span>
+								</c:otherwise>
+							</c:choose>
+						</c:if>						
+					</td>
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
@@ -437,6 +457,9 @@ tr.clicable {
 								<h3 class="panel-title">
 									<span class="fa fa-file"></span>
 									${annex.titol}
+									<c:if test="${annex.fitxerArxiuUuid == null }">
+										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
+									</c:if>
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>

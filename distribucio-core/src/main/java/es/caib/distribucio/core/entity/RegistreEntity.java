@@ -400,6 +400,14 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateArxiuTancatError(Boolean arxiuTancatError){
 		this.arxiuTancatError = arxiuTancatError;
 	}
+	/** Forces updating process state without deleting error information. */
+	public void setProces(
+			RegistreProcesEstatEnum procesEstat) {
+		this.procesData = new Date();
+		if (procesEstat != null) {
+			this.procesEstat = procesEstat;
+		}
+	}
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
 			Throwable exception) {

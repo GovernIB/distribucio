@@ -86,7 +86,6 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
-//		model.addAttribute("bustiesUsuari", bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives()));
 		return "registreUserList";
 	}
 
@@ -281,7 +280,8 @@ public class RegistreUserController extends BaseUserController {
 			return getModalControllerReturnValueError(
 					request,
 					"redirect:.",
-					"contingut.controller.document.descarregar.error");
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
 		}
 		return null;
 	}

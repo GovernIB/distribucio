@@ -156,7 +156,8 @@ public class ContingutController extends BaseUserController {
 			return getModalControllerReturnValueError(
 					request,
 					"/contingut/" + bustiaId + "/registre/" + registreId,
-					"contingut.controller.document.descarregar.error");
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
 		}
 		return null;
 	}

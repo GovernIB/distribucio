@@ -22,6 +22,10 @@
 		    }
 	    });
 	    
+	    $('.arxiu-download').click(function(event) {
+	    	webutilDownloadAndRefresh($(this).attr('href'), event);
+	    });
+	    
 	});
 
 </script>
@@ -66,10 +70,19 @@
 		</tr>
 	</c:if>
 	<tr>
+		<td><strong><spring:message code="registre.annex.detalls.camp.arxiu.uuid"/></strong></td>
+		<td>
+			${annex.fitxerArxiuUuid}
+			<c:if test="${annex.fitxerArxiuUuid == null }">
+				<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
+			</c:if>
+		</td>
+	</tr>
+	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
 		
-			<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right">
+			<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 			</a>
 		</td>

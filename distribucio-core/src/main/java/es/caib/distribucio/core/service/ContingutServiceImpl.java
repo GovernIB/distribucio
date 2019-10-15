@@ -514,7 +514,7 @@ public class ContingutServiceImpl implements ContingutService {
 		}
 		
 		if (registre != null) {
-			registre.updateProces(RegistreProcesEstatEnum.BUSTIA_PROCESSADA, null);
+			registre.setProces(RegistreProcesEstatEnum.BUSTIA_PROCESSADA);
 		}
 		
 		// Marca per evitar la cache de la bustia

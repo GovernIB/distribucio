@@ -22,6 +22,7 @@
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
+	<script src="<c:url value="/webjars/Sortable/1.4.2/Sortable.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
@@ -115,6 +116,11 @@ $(document).ready(function() {
 			});
 	});
 	$('#mostrarInactives').change();
+	
+	$('#showModalProcesEstatButton').click(function(e) {
+		$('#modalProcesEstat').modal();
+		e.stopPropagation();
+	});
 });
 </script>
 </head>
@@ -198,7 +204,7 @@ $(document).ready(function() {
 				<th data-col-name="pareId" data-visible="false"></th>
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
-				<th data-col-name="procesEstat"  data-visible="false">
+				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="numero" width="15%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
@@ -216,16 +222,14 @@ $(document).ready(function() {
 				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				<th data-col-name="darrerMovimentUsuari.nom"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstatSimple" data-orderable="false" width="10%" data-template="#procesEstatSimpleTemplate">
-					<spring:message code="bustia.pendent.columna.estat"/>
-					<script id="procesEstatSimpleTemplate" type="text/x-jsrender">
-						{{if procesEstatSimple == 'PENDENT'}}
-							<spring:message code="bustia.contingut.filtre.estat.enum.PENDENT"/>
-						{{else procesEstatSimple == 'PROCESSAT'}}
-							<spring:message code="bustia.contingut.filtre.estat.enum.PROCESSAT"/>
-						{{/if}}
+				<th data-col-name="procesEstat" data-orderable="true" width="10%" data-renderer="enum(RegistreProcesEstatEnumDto)">
+					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
+				</th>
+				<th data-col-name="procesError" data-orderable="true" data-template="#procesErrorTemplate">
+					<spring:message code="comu.error"/>
+					<script id="procesErrorTemplate" type="text/x-jsrender">
+						<center>
 						{{if procesError != null}}
-
 							{{if procesEstat == 'ARXIU_PENDENT'}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"></span>
 							{{else procesEstat == 'REGLA_PENDENT'}}
@@ -234,11 +238,13 @@ $(document).ready(function() {
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>"></span>
 							{{else procesEstat == 'BACK_ERROR'}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>"></span>
+							{{else}}
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"></span>
 							{{/if}}
 						{{/if}}
+						</center>
 					</script>
 				</th>
-						
 				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
@@ -273,10 +279,10 @@ $(document).ready(function() {
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
-								<li {{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/enviarByEmail/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li><a href="./registreUser/{{:pareId}}/enviarByEmail/{{:id}}" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								<li><a href="./registreUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
-									<li {{if procesEstat != 'BUSTIA_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT'}} href="./registreUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									<li {{if procesEstat != 'BUSTIA_PENDENT' && procesEstat != 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || procesEstat == 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 								{{/if}}			
 							</ul>
 						</div>
@@ -286,5 +292,33 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
+	
+	<!-- Modal pels estats del processament -->
+	<div id="modalProcesEstat" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="<spring:message code="comu.boto.tancar"/>"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><span class="fa fa-list"></span> <spring:message code="bustia.user.proces.estat.legend"></spring:message></h4>
+				</div>
+				<div class="modal-body">
+					<ul>
+						<c:set var="enumValues" value="<%=es.caib.distribucio.core.api.dto.RegistreProcesEstatEnumDto.values()%>"/>
+						<c:forEach items="${enumValues}" var="enumValue">
+						  	<li>
+						  		<strong><spring:message code="registre.proces.estat.enum.${enumValue}"/></strong> :
+						  		<br/>
+						  		<span><spring:message code="registre.proces.estat.enum.${enumValue}.info"/></span>
+						  	</li>
+						</c:forEach>
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="comu.boto.tancar"/></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </body>
 </html>
