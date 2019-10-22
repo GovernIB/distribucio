@@ -179,6 +179,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		try {
 			if (bindingResult.hasErrors()) {
+				model.addAttribute("bustiaFiltreOrganigramaCommand", getFiltreOrganigramaCommand(request));
 				return "bustiaAdminOrganigrama";
 			}
 			bustiaService.update(

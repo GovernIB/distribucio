@@ -11,13 +11,16 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
+import es.caib.distribucio.war.validation.Bustia;
 
 /**
  * Command per al manteniment de bústies.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Bustia(groups = {CreateUpdate.class})
 public class BustiaCommand {
 
 	private Long id;
