@@ -523,10 +523,7 @@ tr.clicable {
 						
 					</div>
 				</c:if>   
-			    <c:if test="${registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0}">
-<%-- 					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a> --%>
-			    </c:if>					
-				
+
 				<!------ PROCESSAMENT INFO ------>
 				<dl class="dl-horizontal">
 				
@@ -562,7 +559,7 @@ tr.clicable {
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 			
 			    <c:if test="${registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
-					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="<c:url value="/registreUser/${registre.pareId}/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
 	
 				<dl class="dl-horizontal">

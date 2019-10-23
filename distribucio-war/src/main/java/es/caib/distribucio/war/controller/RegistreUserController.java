@@ -427,6 +427,30 @@ public class RegistreUserController extends BaseUserController {
 			return "redirect:../" + registreId;
 		}
 	}
+	
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+					bustiaId,
+					registreId);
+			if (processatOk) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.ok",
+								null));
+			} else {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.error",
+								null));
+			}
+
+		return "redirect:../../../../modal/registreUser/bustia/" + bustiaId + "/registre/" + registreId;
+	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.GET)
 	public String bustiaMarcarProcessatGet(

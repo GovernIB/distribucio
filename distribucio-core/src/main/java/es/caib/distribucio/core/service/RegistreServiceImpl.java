@@ -741,6 +741,8 @@ public class RegistreServiceImpl implements RegistreService {
 
 		List<Long> pendentsIds = new ArrayList<>();
 		pendentsIds.add(anotacio.getId());
+		anotacio.updateProcesBackPendent();
+		anotacio.updateBackPendentData(new Date());
 		Throwable exceptionProcessant = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIds);
 		return exceptionProcessant == null;
 
