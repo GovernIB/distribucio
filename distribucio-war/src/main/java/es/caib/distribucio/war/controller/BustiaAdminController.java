@@ -9,6 +9,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,7 +45,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 public class BustiaAdminController extends BaseAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
-//
+
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
@@ -106,30 +108,39 @@ public class BustiaAdminController extends BaseAdminController {
 			@Validated(CreateUpdate.class) BustiaCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			return "bustiaAdminForm";
-		}
 		String isOrganigrama = request.getParameter("isOrganigrama");
-		// if it is modified
-		if (command.getId() != null) {
-			bustiaService.update(
-					entitatActual.getId(),
-					BustiaCommand.asDto(command));
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			if (bindingResult.hasErrors()) {
+				return "bustiaAdminForm";
+			}
 			
-			return getModalControllerReturnValueSuccess(
+			// if it is modified
+			if (command.getId() != null) {
+				bustiaService.update(
+						entitatActual.getId(),
+						BustiaCommand.asDto(command));
+				
+				return getModalControllerReturnValueSuccess(
+						request,
+						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
+						"bustia.controller.modificat.ok");
+			//if it is new	
+			} else {
+				bustiaService.create(
+						entitatActual.getId(),
+						BustiaCommand.asDto(command));
+				return getModalControllerReturnValueSuccess(
+						request,
+						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
+						"bustia.controller.creat.ok");
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
 					request,
 					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
-					"bustia.controller.modificat.ok");
-		//if it is new	
-		} else {
-			bustiaService.create(
-					entitatActual.getId(),
-					BustiaCommand.asDto(command));
-			return getModalControllerReturnValueSuccess(
-					request,
-					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
-					"bustia.controller.creat.ok");
+					e.getMessage());
 		}
 	}
 	
@@ -316,43 +327,67 @@ public class BustiaAdminController extends BaseAdminController {
 	public String enable(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		bustiaService.updateActiva(
-				entitatActual.getId(),
-				bustiaId,
-				true);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../bustiaAdmin",
-				"bustia.controller.activat.ok");
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			bustiaService.updateActiva(
+					entitatActual.getId(),
+					bustiaId,
+					true);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.activat.ok");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"redirect:../../bustiaAdmin",
+					e.getMessage());
+		}
 	}
 	@RequestMapping(value = "/{bustiaId}/disable", method = RequestMethod.GET)
 	public String disable(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		bustiaService.updateActiva(
-				entitatActual.getId(),
-				bustiaId,
-				false);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../bustiaAdmin",
-				"bustia.controller.desactivat.ok");
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			bustiaService.updateActiva(
+					entitatActual.getId(),
+					bustiaId,
+					false);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.desactivat.ok");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"redirect:../../bustiaAdmin",
+					e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/{bustiaId}/default", method = RequestMethod.GET)
 	public String defecte(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		bustiaService.marcarPerDefecte(
-				entitatActual.getId(),
-				bustiaId);
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../bustiaAdmin",
-				"bustia.controller.defecte.ok");
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			bustiaService.marcarPerDefecte(
+					entitatActual.getId(),
+					bustiaId);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.defecte.ok");
+		} catch (NotFoundException e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"redirect:../../bustiaAdmin",
+					e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/{bustiaId}/delete", method = RequestMethod.GET)
@@ -391,4 +426,7 @@ public class BustiaAdminController extends BaseAdminController {
 		}
 		return bustiaFiltreCommand;
 	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(BustiaAdminController.class);
+	
 }

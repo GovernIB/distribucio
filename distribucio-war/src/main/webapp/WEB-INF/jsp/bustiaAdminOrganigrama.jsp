@@ -62,176 +62,179 @@ function changedCallback(e, data) {
 	var unitatSel = $('#unitatId', $('#panellInfo'));
  
 	$.ajax({
-		type: 'GET',
-		url: bustiaUrl,
-		success: function(bustiaDto) {
+	    type: 'GET',
+	    url: bustiaUrl,
+	    success: function(bustiaDto) {
 
-			// setting bustia id and pare id
-			$('#id', $('#panellInfo')).val(bustiaDto.id);
-			$('#pareId', $('#panellInfo')).val(bustiaDto.pare.id);
+	        // setting bustia id and pare id
+	        $('#id', $('#panellInfo')).val(bustiaDto.id);
+	        $('#pareId', $('#panellInfo')).val(bustiaDto.pare.id);
 
-			// setting selected bustia name and unitat
-			bustiaNomSel.val(bustiaDto.nom);
-			var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
-			unitatSel.append(newOption).trigger('change');
+	        // setting selected bustia name and unitat
+	        bustiaNomSel.val(bustiaDto.nom);
+	        var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
+	        unitatSel.append(newOption).trigger('change');
 
-			// showing activate or desactivate button depending on whether bustia is active or not
-			var isActiva = bustiaDto.activa;
-			if(isActiva) {
-				$('#activarBtn').hide();
-				$('#desactivarBtn').show();
-				if(bustiaDto.perDefecte) {
-					$('#desactivarBtn').prop("disabled", true);
-				}
-			} else {
-					$('#activarBtn').show();
-					$('#desactivarBtn').hide();
-			}
-			// showing obsolete panel if unitat of this bustia is obsoleta
-			if(bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
-				$('#panelUnitatObsoleta').show();	
-			} else {
-				$('#panelUnitatObsoleta').hide();
-			}
-			// setting last historico unitats
-			$("#lastHistoricosUnitats").empty();
+	        // showing activate or desactivate button depending on whether bustia is active or not
+	        var isActiva = bustiaDto.activa;
+	        if (isActiva) {
+	            $('#activarBtn').hide();
+	            $('#desactivarBtn').show();
+	            if (bustiaDto.perDefecte) {
+	                $('#desactivarBtn').prop("disabled", true);
+	            } else {
+	            	$('#desactivarBtn').prop("disabled", false);
+		        }
+	        } else {
+	            $('#activarBtn').show();
+	            $('#desactivarBtn').hide();
+	        }
+
+	        if (bustiaDto.perDefecte) {
+	            $('#marcarPerDefecteBtn').hide();
+	        } else {
+	            $('#marcarPerDefecteBtn').show();
+	        }
+	        
+	        // showing obsolete panel if unitat of this bustia is obsoleta
+	        if (bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
+	            $('#panelUnitatObsoleta').show();
+	        } else {
+	            $('#panelUnitatObsoleta').hide();
+	        }
+	        // setting last historico unitats
+	        $("#lastHistoricosUnitats").empty();
 			$.each( bustiaDto.unitatOrganitzativa.lastHistoricosUnitats, function( key, newUnitat ) {
 				$("#lastHistoricosUnitats").append('<li>'+newUnitat.denominacio+' ('+newUnitat.codi+')'+'</li>');
-			});
+	            });
 
-		},
-	 	complete: function() {		
-			$('#panellInfo').css('display', 'block');
-			$(".datatable-dades-carregant").css("display", "none");
-		}
+	    },
+	    complete: function() {
+	        $('#panellInfo').css('display', 'block');
+	        $(".datatable-dades-carregant").css("display", "none");
+	    }
 
 	});
 
 	var otherBustiesOfUnitatObsoletaUrl = "bustiaAdminOrganigrama/" + bustiaId +"/otherBustiesOfUnitatObsoleta";
-	$.ajax({
-		type: 'GET',
-		url: otherBustiesOfUnitatObsoletaUrl,
-		success: function(otherBustiesOfUnitatObsoleta) {
+		$.ajax({
+			type : 'GET',
+			url : otherBustiesOfUnitatObsoletaUrl,
+			success : function(otherBustiesOfUnitatObsoleta) {
 
-			// showing obsolete panel if unitat of this bustia is obsoleta
-			if(!$.isEmptyObject(otherBustiesOfUnitatObsoleta)) {
-				$('#otherBustiesOfUnitatObsoletaPanel').show();	
-			} else {
-				$('#otherBustiesOfUnitatObsoletaPanel').hide();
-			}
+				// showing obsolete panel if unitat of this bustia is obsoleta
+				if (!$.isEmptyObject(otherBustiesOfUnitatObsoleta)) {
+					$('#otherBustiesOfUnitatObsoletaPanel').show();
+				} else {
+					$('#otherBustiesOfUnitatObsoletaPanel').hide();
+				}
 
-			$("#otherBustiesOfUnitatObsoleta").empty();
+				$("#otherBustiesOfUnitatObsoleta").empty();
 			$.each( otherBustiesOfUnitatObsoleta, function( key, otherBustia ) {
 				$("#otherBustiesOfUnitatObsoleta").append('<li>'+otherBustia.nom+'</li>');
-			});
+						});
 
-		},
-	 	complete: function() {		
-			$('#panellInfo').css('display', 'block');
-			$(".datatable-dades-carregant").css("display", "none");
-		}
+			},
+			complete : function() {
+				$('#panellInfo').css('display', 'block');
+				$(".datatable-dades-carregant").css("display", "none");
+			}
 
-	});
+		});
 
- };
+	};
 
-
-function deleteBustia() {
-	 if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
+	function deleteBustia() {
+		if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
 	  location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
-	 } 
-}
+		}
+	}
 
-function marcarPerDefecte() {
-	location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/default";
-}
+	function marcarPerDefecte() {
+		location.href = "bustiaAdminOrganigrama/" + $('#id').val() + "/default";
+	}
 
-function activar() {
-	$('#panellInfo').css('visibility', '');
-	$('#panellInfo').css('display', 'none');
-	$(".datatable-dades-carregant").css("display", "block");
+	function activar() {
+		$('#panellInfo').css('visibility', '');
+		$('#panellInfo').css('display', 'none');
+		$(".datatable-dades-carregant").css("display", "block");
 
-	var enableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/enable";
+		var enableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/enable";
 
 	$.ajax({
-		type: 'GET',
-		url: enableUrl,
-		success: function() {
+					type : 'GET',
+					url : enableUrl,
+					success : function() {
 
-			var bustiaId = $('#id', $('#panellInfo')).val();
-			
+						var bustiaId = $('#id', $('#panellInfo')).val();
+
 			var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
 
-			$(fullaSel).removeClass("fullesAtributCssClass");
-			
-			// showing desactivate and hiding activate button 
-			$('#activarBtn').hide();
-			$('#desactivarBtn').show();
+						$(fullaSel).removeClass("fullesAtributCssClass");
 
- 			$('#contingut-missatges *').remove();
+						// showing desactivate and hiding activate button 
+						$('#activarBtn').hide();
+						$('#desactivarBtn').show();
+
+						$('#contingut-missatges *').remove();
 			$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.activat.ok"/> </div>');
-		
-		},
-	 	complete: function() {		
-			$('#panellInfo').css('display', 'block');
-			$(".datatable-dades-carregant").css("display", "none");
-		}
-	});
-	
-}
 
-function desactivar() {
+					},
+					complete : function() {
+						$('#panellInfo').css('display', 'block');
+						$(".datatable-dades-carregant").css("display", "none");
+					}
+				});
 
-	$('#panellInfo').css('visibility', '');
-	$('#panellInfo').css('display', 'none');
-	$(".datatable-dades-carregant").css("display", "block");
+	}
+
+	function desactivar() {
+
+		$('#panellInfo').css('visibility', '');
+		$('#panellInfo').css('display', 'none');
+		$(".datatable-dades-carregant").css("display", "block");
 
 	var disableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
 
 	$.ajax({
-		type: 'GET',
-		url: disableUrl,
-		success: function() {
+					type : 'GET',
+					url : disableUrl,
+					success : function() {
 
-			var bustiaId = $('#id', $('#panellInfo')).val();
-			
+						var bustiaId = $('#id', $('#panellInfo')).val();
+
 			var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
 
-			$(fullaSel).addClass("fullesAtributCssClass");
-			
-			// showing activate and hiding disactivate button 
-			$('#desactivarBtn').hide();
-			$('#activarBtn').show();
+						$(fullaSel).addClass("fullesAtributCssClass");
 
- 			$('#contingut-missatges *').remove();
+						// showing activate and hiding disactivate button 
+						$('#desactivarBtn').hide();
+						$('#activarBtn').show();
+
+						$('#contingut-missatges *').remove();
 			$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.desactivat.ok"/> </div>');
-		
-		},
-	 	complete: function() {		
-			$('#panellInfo').css('display', 'block');
-			$(".datatable-dades-carregant").css("display", "none");
-		}
-	});
 
-}
+					},
+					complete : function() {
+						$('#panellInfo').css('display', 'block');
+						$(".datatable-dades-carregant").css("display", "none");
+					}
+				});
+
+	}
 
 $(document).ready(
-	function() {
-		if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()){
-			$('#arbreUnitatsOrganitzatives').jstree('open_all');
-		}
+					function() {
+						if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
+							$('#arbreUnitatsOrganitzatives').jstree('open_all');
+						}
 
 		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
 
 		$("#canviVistaBusties").click(function(){
 			window.location.replace("/distribucio/bustiaAdmin");
-		});
-});
-
-
-
-
-
+										});
+					});
 </script>
 <style>
 .fullesAtributCssClass {
@@ -347,14 +350,8 @@ $(document).ready(
 										<tr>
 											<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
 											<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
-											<th data-col-name="administration" data-template="#cellAdministrationTemplate">
-												<spring:message code="permis.list.columna.administracio"/>
-												<script id="cellAdministrationTemplate" type="text/x-jsrender">
-														{{if administration}}<span class="fa fa-check"></span>{{/if}}
-												</script>
-											</th>
 											<th data-col-name="read" data-template="#cellReadTemplate">
-												<spring:message code="permis.list.columna.usuari"/>
+												<spring:message code="bustia.permis.columna.acces"/>
 												<script id="cellReadTemplate" type="text/x-jsrender">
 														{{if read}}<span class="fa fa-check"></span>{{/if}}
 												</script>
@@ -377,7 +374,7 @@ $(document).ready(
 						</div>
 						<div class="row">
 							<div class="col-md-4">
-								<button type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
+								<button id="marcarPerDefecteBtn" type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
 							</div>
 						
 							<div class="col-md-2">

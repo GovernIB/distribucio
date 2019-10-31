@@ -93,7 +93,8 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"			select interessat.registre.id " +
 			"			from RegistreInteressatEntity interessat " +	
 			"			where interessat.representat is null " +
-			"				and lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%'))) ")
+			"				and (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%')" +
+			"				or lower(interessat.raoSocial) like lower('%'||:interessat||'%')))) ")
 	public Page<ContingutEntity> findRegistreByPareAndFiltre(
 			@Param("esPareNull") boolean esPareNull,
 			@Param("pare") ContingutEntity pare,

@@ -563,16 +563,24 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
-		String procedimentCodi = emplenarModelClassificar(
-				request,
-				bustiaId,
-				registreId,
-				model);
-		RegistreClassificarCommand command = new RegistreClassificarCommand();
-		command.setBustiaId(bustiaId);
-		command.setContingutId(registreId);
-		command.setCodiProcediment(procedimentCodi);
-		model.addAttribute(command);
+		try {
+			String procedimentCodi = emplenarModelClassificar(
+					request,
+					bustiaId,
+					registreId,
+					model);
+			RegistreClassificarCommand command = new RegistreClassificarCommand();
+			command.setBustiaId(bustiaId);
+			command.setContingutId(registreId);
+			command.setCodiProcediment(procedimentCodi);
+			model.addAttribute(command);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"",
+					e.getMessage());
+		}
 		return "registreClassificar";
 	}
 

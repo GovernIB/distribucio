@@ -128,7 +128,7 @@ $(document).ready(function() {
 	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
 		<div class="row">
 			<div class="col-md-4">
-				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.contingut"/>
+				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.numero"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
@@ -265,7 +265,7 @@ $(document).ready(function() {
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
-				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="10%">
+				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>

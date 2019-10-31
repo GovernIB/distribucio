@@ -497,9 +497,13 @@ public class RegistreDto extends ContingutDto {
 		if (this.interessats != null)
 			for (RegistreInteressat interessat : this.interessats) {
 				if (interessat.getRepresentat() == null) {
+					if (interessat.getTipus().equals("PERSONA_FIS")) {
 					interessatsResum += interessat.getNom() == null ? "" : interessat.getNom() + " ";
 					interessatsResum += interessat.getLlinatge1() == null ? "" : interessat.getLlinatge1() + " ";
 					interessatsResum += interessat.getLlinatge2() == null ? "" : interessat.getLlinatge2() + "<br>";
+					} else {
+						interessatsResum += interessat.getRaoSocial() + "<br>";
+					}
 				}
 			}
 		return interessatsResum;
