@@ -206,7 +206,7 @@ public class EmailHelper {
 		mailSender.send(missatge);		
 	}
 
-	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/contingut/642/registre/2669"
+	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/registreUser/bustia/642/registre/2669"
 	 * 
 	 * @param appBaseUrl
 	 * @param bustia
@@ -220,7 +220,7 @@ public class EmailHelper {
 			ContingutEntity contingut,
 			EntitatEntity entitat) {
 
-		StringBuilder url = new StringBuilder(appBaseUrl).append("/contingut/").append(bustia.getId()).append("/registre/").append(contingut.getId());
+		StringBuilder url = new StringBuilder(appBaseUrl).append("/registreUser/bustia/").append(bustia.getId()).append("/registre/").append(contingut.getId());
 		if (entitat != null)
 			url.append("?canviEntitat=").append(entitat.getId());
 		return url.toString();
