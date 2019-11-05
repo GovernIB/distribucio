@@ -108,7 +108,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	} else {
 		message = "Unknown Error: (" + jqxhr.status + ", " + thrownError + ")";
 	}*/
-	alert(message);
+	console.error(message);
 });
 
 (function($) {
