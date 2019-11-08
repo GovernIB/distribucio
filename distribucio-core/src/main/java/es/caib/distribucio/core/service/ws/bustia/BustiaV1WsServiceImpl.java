@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
@@ -93,12 +94,14 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			if (registreEntrada.getTipusES() != null && registreEntrada.getTipusES().equals("S")) {
 				registreTipus = RegistreTipusEnum.SORTIDA;
 			}
-			
-			Exception exception = bustiaService.registreAnotacioCrearIProcessar(
-					entitat,
-					registreTipus,
-					unitatAdministrativa,
-					registreEntrada);
+			Exception exception = null;
+			synchronized(SemaphoreDto.getSemaphore()) {
+				exception = bustiaService.registreAnotacioCrearIProcessar(
+						entitat,
+						registreTipus,
+						unitatAdministrativa,
+						registreEntrada);
+			}
 			if (exception == null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_BUSTIAWS,

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
+import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -54,6 +55,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 
+	
 	/**
 	 * Tries to save anotacions and annexos in arxiu specified number of times 
 	 */
@@ -64,24 +66,26 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			logger.debug("Execució de tasca programada: guardar annexos pendents a l'arxiu");
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
-			List<RegistreEntity> pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
-			if (pendents != null && !pendents.isEmpty()) {
-				logger.debug("Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
-				Exception excepcio = null;
-				for (RegistreEntity pendent: pendents)
-					try {
-						logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() +", pendentNom=" + pendent.getNom() + ")");
-						
-						excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
-						
-					} catch (Exception e) {
-						excepcio = e;
-					} finally {
-						if (excepcio != null)
-							logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
-					}
-			} else {
-				logger.debug("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
+			synchronized(SemaphoreDto.getSemaphore()) {
+				List<RegistreEntity> pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
+				if (pendents != null && !pendents.isEmpty()) {
+					logger.debug("Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
+					Exception excepcio = null;
+					for (RegistreEntity pendent: pendents)
+						try {
+							logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() +", pendentNom=" + pendent.getNom() + ")");
+							
+							excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
+							
+						} catch (Exception e) {
+							excepcio = e;
+						} finally {
+							if (excepcio != null)
+								logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
+						}
+				} else {
+					logger.debug("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
+				}
 			}
 		}
 	}

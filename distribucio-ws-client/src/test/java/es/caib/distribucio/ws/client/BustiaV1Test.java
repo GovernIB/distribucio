@@ -47,7 +47,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = "A1"; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK";
+	private static final String PROCEDIMENT_CODI = "";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
@@ -244,6 +244,8 @@ public class BustiaV1Test {
 	}
 
 	private void afegirInteressats(RegistreAnotacio anotacio) {
+		
+		// PERSONA FISICA
 		RegistreInteressat representantPersonaFisica = new RegistreInteressat();
 		representantPersonaFisica.setAdresa("Carrer companys");
 		representantPersonaFisica.setCanalPreferent("02");
@@ -267,7 +269,6 @@ public class BustiaV1Test {
 		representantPersonaFisica.setTelefon("666555444");
 		representantPersonaFisica.setTipus("2");
 		representantPersonaFisica.setCodiDire("r4444444");
-		
 		RegistreInteressat interessatPersonaFisica = new RegistreInteressat();
 		interessatPersonaFisica.setAdresa("Carrer del moix 2");
 		interessatPersonaFisica.setCanalPreferent("02");
@@ -287,17 +288,24 @@ public class BustiaV1Test {
 		interessatPersonaFisica.setProvincia("Illes Balears");
 		interessatPersonaFisica.setProvinciaCodi("01");
 		interessatPersonaFisica.setRaoSocial(null);
-		interessatPersonaFisica.setRepresentant(representantPersonaFisica);
 		interessatPersonaFisica.setTelefon("999888777");
 		interessatPersonaFisica.setTipus("2");
 		interessatPersonaFisica.setCodiDire("i3333333");
 		anotacio.getInteressats().add(interessatPersonaFisica);
 		
+		// PERSONA JURIDICA
+		RegistreInteressat interessatPersonaJuridica = new RegistreInteressat();
+		interessatPersonaJuridica.setTipus("3");
+		interessatPersonaJuridica.setDocumentNum("12312312N");
+		interessatPersonaJuridica.setRaoSocial("raoSocialJuridica");
+		anotacio.getInteressats().add(interessatPersonaJuridica);
+		
+		//ADMINISTRACIO
 		RegistreInteressat interessatAdministracio = new RegistreInteressat();
 		interessatAdministracio.setTipus("1");
 		interessatAdministracio.setDocumentTipus("O");
 		interessatAdministracio.setDocumentNum("A04019281");
-		interessatAdministracio.setRaoSocial("raoSocialInteressant");
+		interessatAdministracio.setRaoSocial("raoSocialAdministracio");
 		anotacio.getInteressats().add(interessatAdministracio);
 	}
 
