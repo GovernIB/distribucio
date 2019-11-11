@@ -360,6 +360,7 @@ public class RegistreHelper {
 				anotacio.getEntitat(),
 				anotacio.getUnitatAdministrativa());
 		
+		// PROCESSAR ARXIU
 		Exception exceptionGuardantAnnexos = createRegistreAndAnnexosInArxiu(
 				anotacio,
 				bustia.getEntitat().getCodiDir3(),

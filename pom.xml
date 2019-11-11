@@ -23,14 +23,14 @@
 		<portafib.version>1.1</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
-		<arxiu.api.version>1.0.4</arxiu.api.version>
+		<arxiu.api.version>2.0.2</arxiu.api.version>
 		<slf4j.version>1.5.11</slf4j.version>
 		<maven.test.skip>true</maven.test.skip>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<version.revision>25.1</version.revision>
+		<version.revision>26</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
 		<version.date>2019.10.15</version.date>
 	</properties>

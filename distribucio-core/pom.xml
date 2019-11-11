@@ -45,7 +45,11 @@
 			<version>${slf4j.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>es.caib.distribucio</groupId>
+			<artifactId>distribucio-backoffice-utils</artifactId>
+			<version>0.9.26</version>
+		</dependency>	
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-json</artifactId>
@@ -141,8 +145,8 @@
 			<version>1.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.fundaciobit.plugins</groupId>
-			<artifactId>plugin-arxiu-caib</artifactId>
+			<groupId>org.fundaciobit.pluginsib.arxiu</groupId>
+			<artifactId>pluginsib-arxiu-caib</artifactId>
 			<version>${arxiu.api.version}</version>
 			<exclusions>
 				<exclusion>
