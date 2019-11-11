@@ -222,7 +222,7 @@ public class EmailHelper {
 
 		StringBuilder url = new StringBuilder(appBaseUrl).append("/registreUser/bustia/").append(bustia.getId()).append("/registre/").append(contingut.getId());
 		if (entitat != null)
-			url.append("?canviEntitat=").append(entitat.getId());
+			url.append("/?canviEntitat=").append(entitat.getId());
 		return url.toString();
 	}
 

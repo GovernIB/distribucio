@@ -38,14 +38,14 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
  */
 public class BustiaV1Test {
 
-	private static final String REGISTRE_TIPUS = "S";//"S"
+	private static final String REGISTRE_TIPUS = "E";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04019281";
 	private static final String UNITAT_ADM_CODI = "A04018961";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
-	private static final String ASSUMPTE_TIPUS_CODI = "A1"; //"A1";
+	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
 	private static final String PROCEDIMENT_CODI = "BACK_DIST";
 	private static final String USUARI_CODI = "u104848";
