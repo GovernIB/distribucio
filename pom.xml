@@ -43,6 +43,7 @@
 		<module>distribucio-plugin</module>
 		<module>distribucio-plugin-impl</module>
 		<module>distribucio-ws-client</module>
+		<module>distribucio-backoffice-utils</module>
 	</modules>
 	<build>
 		<plugins>
