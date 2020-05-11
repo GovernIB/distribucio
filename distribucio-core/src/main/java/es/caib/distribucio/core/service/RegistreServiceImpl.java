@@ -1523,10 +1523,11 @@ public class RegistreServiceImpl implements RegistreService {
 				if(retornarAnnexIFirmaContingut)
 					annexPerBackoffice.setContingut(document.getContingut().getContingut());
 				
-				RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
+				
 				
 				// if document is signed
-				if (document.getFirmes() != null) {
+				if (document.getFirmes() != null && !document.getFirmes().isEmpty()) {
+					RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
 					for (Firma firma : document.getFirmes()) {
 						// we want to use first firma that is not CSV type
 						if (!FirmaTipus.CSV.equals(firma.getTipus())) {
