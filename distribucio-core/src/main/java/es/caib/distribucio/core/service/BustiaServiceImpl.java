@@ -638,7 +638,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<BustiaDto> findPermesesPerUsuari(
+	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId,
 			boolean mostrarInactives) {
 		logger.debug("Consulta de busties permeses per un usuari ("

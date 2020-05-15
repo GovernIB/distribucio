@@ -301,6 +301,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		fitxerContingut.setContingut(annexContingut);
 		fitxerContingut.setTamany(distribucioAnnex.getFitxerTamany());
 		
+		// SAVE IN ARXIU
 		String uuidDocumentCreat = arxiuDocumentAnnexCrear(
 				distribucioAnnex,
 				unitatArrelCodi,
@@ -453,7 +454,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		try {
 			
 			
-			String annexTitol = inArxiu(
+			String annexTitol = uniqueNameArxiu(
 					annex.getTitol(),
 					identificadorPare);
 			
@@ -496,7 +497,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	
 	
 	
-	private String inArxiu(
+	private String uniqueNameArxiu(
 			String arxiuNom,
 			String identificadorPare) throws ArxiuException, SistemaExternException {
 
@@ -506,16 +507,16 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				null).getContinguts();
 		int ocurrences = 0;
 		if (continguts != null) {
-			List<String> noms = new ArrayList<String>();
+			List<String> nomsExistingInArxiu = new ArrayList<String>();
 			// Itreating over the files and saving their names in a List
 			for (ContingutArxiu contingut : continguts) {
-				noms.add(contingut.getNom());
+				nomsExistingInArxiu.add(contingut.getNom().toLowerCase());
 			}
-			// comping the name of the new file we try to store
-			String nName = new String(arxiuNom);
+			// copying the name of the new file we try to store
+			String nName = new String(arxiuNom.toLowerCase());
 			
 			// Checking if the file name exist in the expedient
-			while (noms.indexOf(nName) >= 0) {
+			while (nomsExistingInArxiu.indexOf(nName) >= 0) {
 				// if it does 'ocurrences' increments
 				ocurrences++;
 				// and the number of ocurences is added to the file name

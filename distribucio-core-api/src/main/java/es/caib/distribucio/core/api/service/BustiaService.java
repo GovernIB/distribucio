@@ -182,7 +182,7 @@ public interface BustiaService {
 	 * @return La pàgina de regles.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findPermesesPerUsuari(
+	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
 
 	/**

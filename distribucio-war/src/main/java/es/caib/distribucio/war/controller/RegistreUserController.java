@@ -117,15 +117,15 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
-		List<BustiaDto> bustiesUsuari = null;
+		List<BustiaDto> bustiesPermesesPerUsuari = null;
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-			bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 		}
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistreUser(
 						entitatActual.getId(),
-						bustiesUsuari,
+						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id",
@@ -229,7 +229,7 @@ public class RegistreUserController extends BaseUserController {
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesUsuari = null;
 			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				bustiesUsuari = bustiaService.findPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
+				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
 			}
 			seleccio.addAll(
 					bustiaService.findIdsAmbFiltre(
@@ -554,7 +554,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return bustiaService.findPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
+		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 
 	@RequestMapping(value = "/{bustiaId}/classificar/{registreId}", method = RequestMethod.GET)

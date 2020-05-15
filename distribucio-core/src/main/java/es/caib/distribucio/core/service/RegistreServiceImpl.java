@@ -325,7 +325,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public PaginaDto<ContingutDto> findRegistreUser(
 			Long entitatId,
-			List<BustiaDto> bustiesUsuari,
+			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consultant el contingut de l'usuari ("
@@ -354,8 +354,8 @@ public class RegistreServiceImpl implements RegistreService {
 					true);
 		}
 		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
-		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
-			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) {
+			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
 				busties.add(
 						entityComprovarHelper.comprovarBustia(
 						entitat,
@@ -378,7 +378,7 @@ public class RegistreServiceImpl implements RegistreService {
 		Page<ContingutEntity> pagina;
 		
 		
-		// Hibernate doesn't support empty collection as parameter in database query so if pares is empty we dont make query but just create a new empty page 
+		// Hibernate doesn't support empty collection as parameter in database query so if busties is empty we dont make query but just create a new empty page 
 		if (bustia == null && busties.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
