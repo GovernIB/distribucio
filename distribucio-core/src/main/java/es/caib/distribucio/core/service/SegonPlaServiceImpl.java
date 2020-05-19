@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.SegonPlaService;
@@ -33,6 +36,7 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -54,52 +58,74 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private RegistreHelper registreHelper;
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
-
+	@Autowired
+	private MetricRegistry metricRegistry;
 	
 	/**
 	 * Tries to save anotacions and annexos in arxiu specified number of times 
 	 */
 	@Override
-	@Scheduled(
-			fixedDelayString = "${config:es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio}")
+	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio}")
 	public void guardarAnotacionsPendentsEnArxiu() {
+
+		long startTime = new Date().getTime();
+
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
-			logger.debug("Execució de tasca programada: guardar annexos pendents a l'arxiu");
+			logger.debug("Execució de tasca programada: guardar annexos pendents a l'arxiu: " + startTime);
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
-			synchronized(SemaphoreDto.getSemaphore()) {
+			synchronized (SemaphoreDto.getSemaphore()) {
 				List<RegistreEntity> pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
 				if (pendents != null && !pendents.isEmpty()) {
-					logger.debug("Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
+					logger.debug(
+							"Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
 					Exception excepcio = null;
-					for (RegistreEntity pendent: pendents)
+					for (RegistreEntity pendent : pendents) {
+
+						final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class,
+								"guardarAnotacionsPendentsEnArxiu"));
+						Timer.Context context = timer.time();
 						try {
-							logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() +", pendentNom=" + pendent.getNom() + ")");
-							
+							logger.debug(
+									"Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + ")");
 							excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
-							
 						} catch (Exception e) {
 							excepcio = e;
 						} finally {
 							if (excepcio != null)
-								logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
+								logger.error(
+										"Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(),
+										excepcio);
 						}
+						context.stop();
+
+					}
 				} else {
 					logger.debug("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
 				}
 			}
+			
+			long stopTime = new Date().getTime();
+			logger.debug("Fi de tasca programada: guardar annexos pendents a l'arxiu:  "+ stopTime + ": " + (stopTime - startTime) + "ms");
+
 		}
 	}
 
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio}")
 	public void enviarIdsAnotacionsPendentsBackoffice() {
-		logger.debug("Execució de tasca programada: enviar ids del anotacions pendents al backoffice");
+		
+		long startTime = new Date().getTime();
+		
+		logger.debug("Execució de tasca programada: enviar ids del anotacions pendents al backoffice: "+ startTime);
 		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
 		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentEnviarBackoffice(new Date());
 		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
 		if (pendents != null && !pendents.isEmpty()) {
+
 			ReglaEntity previousRegla = pendents.get(0).getRegla();
 			for (RegistreEntity pendent : pendents) {
+				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
+				Timer.Context context = timer.time();
 				ReglaEntity currentRegla = pendent.getRegla();
 				// if next group of anotacions is detected
 				if (!currentRegla.equals(previousRegla)) {
@@ -114,15 +140,21 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					logger.debug(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
 					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 				}
+				context.stop();
 			}
 		}
+		
+		long stopTime = new Date().getTime();
+		logger.debug("Fi de tasca programada: enviar ids del anotacions pendents al backoffice: "+ stopTime + ": " + (stopTime - startTime) + "ms");
 	}
 	
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
 	public void aplicarReglesPendents() {
 		
-		logger.debug("Execució de tasca programada: aplicar regles pendents");
+		long startTime = new Date().getTime();
+		
+		logger.debug("Execució de tasca programada: aplicar regles pendents: " + startTime);
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
 		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentAplicar(maxReintents);
 		logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
@@ -130,6 +162,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		if (pendents != null && !pendents.isEmpty()) {
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent : pendents) {
+				
+				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "aplicarReglesPendents"));
+				Timer.Context context = timer.time();
 				
 				// ######################## BACKOFFICE SISTRA ############################
 				if (pendent.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) { 
@@ -152,26 +187,45 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				} else {
 					registreHelper.processarAnotacioPendentRegla(pendent.getId());
 				}
+				
+				context.stop();
 			}
 		} else {
 			logger.debug("No hi ha anotacions de registre amb regles pendents de processar");
 		}
+		
+		
+		long stopTime = new Date().getTime();
+		logger.debug("Fi de de tasca programada: aplicar regles pendents:  "+ stopTime + ": " + (stopTime - startTime) + "ms");
+		
+		
 	}
 
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio}")
 	//@Scheduled(fixedRate = 120000)
 	public void tancarContenidorsArxiuPendents() {
-		logger.debug("Execució de tasca programada: tancar contenidors arxiu pendents");
+		
+		long startTime = new Date().getTime();
+		
+		logger.debug("Execució de tasca programada: tancar contenidors arxiu pendents: " + startTime);
 		List<RegistreEntity> pendents = registreRepository.findPendentsTancarArxiu(new Date());
 		if (pendents != null && !pendents.isEmpty()) {
 			logger.debug("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {
+				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
+				Timer.Context context = timer.time();
 				registreHelper.tancarExpedientArxiu(registre.getId());
+				context.stop();
 			}
 		} else {
 			logger.debug("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
 		}
+		
+		long stopTime = new Date().getTime();
+		logger.debug("Fi de tasca programada: tancar contenidors arxiu pendents:  "+ stopTime + ": " + (stopTime - startTime) + "ms");
+		
+		
 	}
 
 	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents no agrupats per enviar
@@ -181,12 +235,19 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Transactional
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
 	public void enviarEmailsPendentsNoAgrupats() {
+		
+		long startTime = new Date().getTime();
+		
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
-		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats");
+		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats: " + startTime);
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
 		for (ContingutMovimentEmailEntity moviment : moviments) {
+			
+			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarEmailsPendentsNoAgrupats"));
+			Timer.Context context = timer.time();
+			
 			try {
 				this.enviarEmailPendent(
 						moviment.getEmail(), 
@@ -208,8 +269,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				}
 				
 			}
+			context.stop();
 		}
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats. Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats);
+		long stopTime = new Date().getTime();
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats. Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + ":  "+ stopTime + ": " + (stopTime - startTime) + "ms");
+		
+
 	}
 
 	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents agrupats per enviar
@@ -219,10 +284,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Transactional
 	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
 	public void enviarEmailsPendentsAgrupats() {
+		
+		long startTime = new Date().getTime();
+		
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
-		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats");
+		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats: " + startTime);
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
 		// Agrupa per destinataris Map<email, continguts> 
 		Map<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
@@ -237,6 +305,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		// Envia i esborra per agrupació
 		for (String email: contingutsEmail.keySet()) {
+			
+			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarEmailsPendentsAgrupats"));
+			Timer.Context context = timer.time();
+			
 			moviments = contingutsEmail.get(email);
 			try {
 				this.enviarEmailPendent(
@@ -259,8 +331,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					}
 				}
 			}
+			context.stop();
 		}
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats. Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats);
+		
+		long stopTime = new Date().getTime();
+		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats. Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats +  stopTime + ": " + (stopTime - startTime) + "ms");
+		
 	}
 	
 	/** Mètode comú per enviar dins d'un email l'avís amb els moviments pendents a un destinatari. En acabar esborra els movimentsp
@@ -270,6 +346,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	private void enviarEmailPendent(String email, List<ContingutMovimentEmailEntity> moviments) {
+		
 		// Envia l'email
 		if (moviments.size() > 1) {
 			emailHelper.sendEmailAvisAgrupatNousElementsBustia(
