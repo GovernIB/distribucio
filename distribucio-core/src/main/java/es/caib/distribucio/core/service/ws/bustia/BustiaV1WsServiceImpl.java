@@ -12,7 +12,11 @@ import javax.jws.WebService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
@@ -25,6 +29,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
+import es.caib.distribucio.core.service.RegistreServiceImpl;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
 import es.caib.plugins.arxiu.api.DocumentTipus;
@@ -50,12 +55,19 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private BustiaService bustiaService;
 	@Resource
 	private IntegracioHelper integracioHelper;
+	@Autowired
+	private MetricRegistry metricRegistry;
 
 	@Override
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
+		
+		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
+		Timer.Context context = timer.time();
+
+		
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
 		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;
 		int numAnnexos = (registreEntrada != null && registreEntrada.getAnnexos() != null) ? registreEntrada.getAnnexos().size() : 0;
@@ -88,13 +100,21 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"extracte=" + registreEntradaExtracte + ", " +
 					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
 					"annexosFirmats=" + ambFirma.toString() + ")");
+			
+			
+			final Timer timerTotalvalidarAnotacioRegistre = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada.validarAnotacioRegistre"));
+			Timer.Context contextTotalvalidarAnotacioRegistre = timerTotalvalidarAnotacioRegistre.time();
 			validarAnotacioRegistre(registreEntrada);
+			contextTotalvalidarAnotacioRegistre.stop();
 			
 			RegistreTipusEnum registreTipus = RegistreTipusEnum.ENTRADA;
 			if (registreEntrada.getTipusES() != null && registreEntrada.getTipusES().equals("S")) {
 				registreTipus = RegistreTipusEnum.SORTIDA;
 			}
 			Exception exception = null;
+			
+			final Timer timerregistreAnotacioCrearIProcessar = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada.registreAnotacioCrearIProcessar"));
+			Timer.Context contextregistreAnotacioCrearIProcessar = timerregistreAnotacioCrearIProcessar.time();
 			synchronized(SemaphoreDto.getSemaphore()) {
 				exception = bustiaService.registreAnotacioCrearIProcessar(
 						entitat,
@@ -102,6 +122,9 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 						unitatAdministrativa,
 						registreEntrada);
 			}
+			contextregistreAnotacioCrearIProcessar.stop();
+			
+			
 			if (exception == null) {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_BUSTIAWS,
@@ -112,6 +135,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			} else {
 				throw exception;
 			}
+			
+		context.stop();	
 		} catch (Exception ex) {
 			logger.error(
 					"Error al processar nou registre d'entrada en el servei web de bústia (" +

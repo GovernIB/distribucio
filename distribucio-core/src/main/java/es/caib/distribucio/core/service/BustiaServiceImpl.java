@@ -86,6 +86,7 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
+import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
 
 
@@ -557,6 +558,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
 		
+		
 		final Timer timerfindActivesAmbEntitat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findActivesAmbEntitat"));
 		Timer.Context contextfindActivesAmbEntitat = timerfindActivesAmbEntitat.time();
 		
@@ -757,20 +759,27 @@ public class BustiaServiceImpl implements BustiaService {
 			String unitatOrganitzativa,
 			RegistreAnotacio registreAnotacio) {
 		
+		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar"));
+		Timer.Context context = timer.time();
+		
 		logger.debug("Creant anotació provinent del servei d'enviament a bústia ("
 				+ "entitatCodi=" + entitatCodi + ", "
 				+ "tipus=" + tipus + ", "
 				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
 				+ "anotacio=" + registreAnotacio.getNumero() + ")");
 		
+		final Timer timervalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre"));
+		Timer.Context contextvalidateRegistre = timervalidateRegistre.time();
 		EntitatEntity entitat = validateRegistre(entitatCodi, registreAnotacio);
+		contextvalidateRegistre.stop();
 		
+		final Timer timerfindAplicable = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findAplicable"));
+		Timer.Context contextfindAplicable = timerfindAplicable.time();
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
 				registreAnotacio.getProcedimentCodi(),
 				registreAnotacio.getAssumpteCodi());
-
 		RegistreProcesEstatEnum estat;
 		if (registreAnotacio.getAnnexos() != null && !registreAnotacio.getAnnexos().isEmpty()) {
 			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
@@ -779,7 +788,11 @@ public class BustiaServiceImpl implements BustiaService {
 		} else {
 			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 		}
+		contextfindAplicable.stop();
+
 		
+		final Timer timercrearRegistreEntity = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.crearRegistreEntity"));
+		Timer.Context contextcrearRegistreEntity = timercrearRegistreEntity.time();
 		//save anotacio and interessats in db 
 		// and save annexos and firmes in db and their byte content in the folder in local file system
 		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
@@ -789,18 +802,24 @@ public class BustiaServiceImpl implements BustiaService {
 				registreAnotacio,
 				reglaAplicable,
 				estat);
+		contextcrearRegistreEntity.stop();
 		
+		final Timer timermoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte"));
+		Timer.Context contextmoveAnotacioToBustiaPerDefecte = timermoveAnotacioToBustiaPerDefecte.time();
 		moveAnotacioToBustiaPerDefecte(
 				entitat,
 				unitatOrganitzativa,
 				anotacioEntity);
-		
 		//if regla is of type bustia we apply it immediately
 		Exception exceptionProcessant = null;
 		if (reglaAplicable != null && reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA) {
 			exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 		}
+		contextmoveAnotacioToBustiaPerDefecte.stop();
 		
+		
+		final Timer timerprocess = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.process"));
+		Timer.Context contextprocess = timerprocess.time();
 		// if asynchronous processing is turned off save anotacio in arxiu and apply reglas immediately
 		if (!bustiaHelper.isProcessamentAsincronProperty()) {
 			logger.debug("L'anotació es processarà inmediatament (" +
@@ -820,7 +839,9 @@ public class BustiaServiceImpl implements BustiaService {
 					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
 					"anotacio=" + registreAnotacio.getNumero() + ")");
 		}
+		contextprocess.stop();
 		
+		context.stop();
 		return exceptionProcessant;
 	}
 

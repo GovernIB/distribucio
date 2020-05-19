@@ -27,6 +27,9 @@ import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -60,6 +63,7 @@ import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -98,6 +102,9 @@ public class RegistreHelper {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private ContingutLogHelper contingutLogHelper;
+	
+	@Autowired
+	private MetricRegistry metricRegistry;
 	
 
 	public RegistreAnotacio fromRegistreEntity(
@@ -167,9 +174,16 @@ public class RegistreHelper {
 			RegistreAnotacio registreAnotacio,
 			ReglaEntity regla,
 			RegistreProcesEstatEnum estat) {
+		
+		final Timer timerfindPerEntitatAndCodi = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.findPerEntitatAndCodi"));
+		Timer.Context contextfindPerEntitatAndCodi = timerfindPerEntitatAndCodi.time();
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
 				unitatAdministrativa);
+		contextfindPerEntitatAndCodi.stop();
+		
+		final Timer timersaveRegistre = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveRegistre"));
+		Timer.Context contextsaveRegistre = timersaveRegistre.time();
 		String justificantArxiuUuid = null;
 		if (registreAnotacio.getJustificant() != null) {
 			justificantArxiuUuid = registreAnotacio.getJustificant().getFitxerArxiuUuid();
@@ -225,6 +239,12 @@ public class RegistreHelper {
 		presencial(registreAnotacio.isPresencial()).
 		build();
 		registreRepository.saveAndFlush(registreEntity);
+		
+		contextsaveRegistre.stop();
+		
+		
+		final Timer timersaveInteressats = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveInteressats"));
+		Timer.Context contextsaveInteressats = timersaveInteressats.time();
 		// save interessats in db
 		if (registreAnotacio.getInteressats() != null) { 
 			for (RegistreInteressat registreInteressat: registreAnotacio.getInteressats()) {
@@ -234,6 +254,12 @@ public class RegistreHelper {
 								registreEntity));
 			}
 		}
+		contextsaveInteressats.stop();
+		
+		
+		final Timer timersaveAnnexos = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveAnnexos"));
+		Timer.Context contextsaveAnnexos = timersaveAnnexos.time();
+		
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
 		if (registreAnotacio.getAnnexos() != null) { 
 			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
@@ -243,7 +269,6 @@ public class RegistreHelper {
 								registreEntity));
 			}
 		}
-		
 		contingutLogHelper.log(
 				registreEntity,
 				LogTipusEnumDto.CREACIO,
@@ -251,6 +276,8 @@ public class RegistreHelper {
 				null,
 				false,
 				false);
+		contextsaveAnnexos.stop();
+		
 		
 		return registreEntity;
 	}
