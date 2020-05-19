@@ -328,15 +328,7 @@ public class RegistreServiceImpl implements RegistreService {
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consultant el contingut de l'usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + filtre.getBustia() + ", "
-				+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
-				+ "remitent=" + filtre.getRemitent() + ", "
-				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
-				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
-				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
-				+ "paginacioParams=" + paginacioParams + ")");
+
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser"));
 		Timer.Context contextTotal = timerTotal.time();
 
@@ -353,18 +345,23 @@ public class RegistreServiceImpl implements RegistreService {
 					new Long(filtre.getBustia()),
 					true);
 		}
+		String bustiesIds="";
+			
 		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
-		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) {
+		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
-				busties.add(
+				busties.add( // TODO: probably unnecessary code, bustiesPermesesPerUsuari are busties permitted for current user
 						entityComprovarHelper.comprovarBustia(
 						entitat,
 						new Long(bustiaUsuari.getId()),
 						true));
+				bustiesIds +=  bustiaUsuari.getId() + ", ";
 			}
-		} else if (bustia != null) {
+		} else if (bustia != null) { // TODO: probably unnecessary code , if bustia!=null we dont use busties in sql query 	
 			busties.add(bustia);
 		}
+		
+
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"darrerMovimentData",
@@ -377,8 +374,7 @@ public class RegistreServiceImpl implements RegistreService {
 				new String[] {"darrerMoviment.comentari"});
 		Page<ContingutEntity> pagina;
 		
-		
-		// Hibernate doesn't support empty collection as parameter in database query so if busties is empty we dont make query but just create a new empty page 
+		// Hibernate doesn't support empty collection as parameter in database query so if busties is empty we dont execute query but just create a new empty pagina 
 		if (bustia == null && busties.isEmpty()) {
 			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
 		} else {
@@ -392,31 +388,55 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 			
+			logger.info("Consultant el contingut de l'usuari ("
+					+ "entitatId=" + entitatId + ", "
+					+ "bustiaId=" + filtre.getBustia() + ", "
+					+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+					+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+					+ "remitent=" + filtre.getRemitent() + ", "
+					+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+					+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+					+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+					+ "interessat=" + filtre.getInteressat() + ", " 
+					+ "bustiesIds= " + bustiesIds + ", " 
+					+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
+
+			
 			final Timer timerTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre"));
 			Timer.Context contextTotalfindRegistreByPareAndFiltre = timerTotalfindRegistreByPareAndFiltre.time();
+			long beginTime = new Date().getTime();
+			try {
+				pagina = contingutRepository.findRegistreByPareAndFiltre(
+						(bustia == null),
+						bustia,
+						busties,
+						filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+						filtre.getContingutDescripcio(),
+						filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+						filtre.getNumeroOrigen(),
+						filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+						filtre.getRemitent(),
+						(filtre.getDataRecepcioInici() == null),
+						filtre.getDataRecepcioInici(),
+						(filtre.getDataRecepcioFi() == null),
+						new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(),
+						filtre.getProcesEstatSimple() == null,
+						isFiltreProcessat,
+						filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+						filtre.getInteressat(),
+						paginacioHelper.toSpringDataPageable(paginacioParams,
+								mapeigOrdenacio));
 
-			pagina = contingutRepository.findRegistreByPareAndFiltre(
-					(bustia == null),
-					bustia,
-					busties,
-					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
-					filtre.getContingutDescripcio(),
-					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
-					filtre.getNumeroOrigen(),
-					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
-					filtre.getRemitent(),
-					(filtre.getDataRecepcioInici() == null),
-					filtre.getDataRecepcioInici(),
-					(filtre.getDataRecepcioFi() == null),
-					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
-					filtre.getProcesEstatSimple() == null,
-					isFiltreProcessat,
-					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
-					filtre.getInteressat(),
-					paginacioHelper.toSpringDataPageable(
-							paginacioParams,
-							mapeigOrdenacio));
-			contextTotalfindRegistreByPareAndFiltre.stop();
+				contextTotalfindRegistreByPareAndFiltre.stop();
+				long endTime = new Date().getTime();
+				logger.info("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+			} catch (Exception e) {
+				long endTime = new Date().getTime();
+				logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
+				contextTotalfindRegistreByPareAndFiltre.stop();
+				throw new RuntimeException(e);
+			}
+			
 			
 		}
 		
