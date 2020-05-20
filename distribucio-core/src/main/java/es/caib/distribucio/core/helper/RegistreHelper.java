@@ -63,7 +63,6 @@ import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
-import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;

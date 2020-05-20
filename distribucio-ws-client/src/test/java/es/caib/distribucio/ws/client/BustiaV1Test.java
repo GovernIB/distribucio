@@ -3,14 +3,14 @@
  */
 package es.caib.distribucio.ws.client;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
@@ -47,10 +47,10 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio CodA";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK";
+	private static final String PROCEDIMENT_CODI = "BACK_DIST";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Anotació provinent de JUnit (" + System.currentTimeMillis() + ")";
+	private static final String EXTRACTE = "Alta anotació des de JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = "A04019281";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -204,7 +204,7 @@ public class BustiaV1Test {
 	    				anotacio);        	
 	        } catch (Exception ex) {
 	        	ex.printStackTrace();
-	        	fail();
+	        	//fail();
 	        }			
 		}
 	}
@@ -269,6 +269,7 @@ public class BustiaV1Test {
 		representantPersonaFisica.setTelefon("666555444");
 		representantPersonaFisica.setTipus("2");
 		representantPersonaFisica.setCodiDire("r4444444");
+		
 		RegistreInteressat interessatPersonaFisica = new RegistreInteressat();
 		interessatPersonaFisica.setAdresa("Carrer del moix 2");
 		interessatPersonaFisica.setCanalPreferent("02");
@@ -291,13 +292,13 @@ public class BustiaV1Test {
 		interessatPersonaFisica.setTelefon("999888777");
 		interessatPersonaFisica.setTipus("2");
 		interessatPersonaFisica.setCodiDire("i3333333");
+		interessatPersonaFisica.setRepresentant(representantPersonaFisica);
 		anotacio.getInteressats().add(interessatPersonaFisica);
 		
 		// PERSONA JURIDICA
 		RegistreInteressat interessatPersonaJuridica = new RegistreInteressat();
 		interessatPersonaJuridica.setTipus("3");
-		interessatPersonaJuridica.setDocumentTipus("N");
-		interessatPersonaJuridica.setDocumentNum("12312312N");
+		interessatPersonaJuridica.setDocumentNum("11111111T");
 		interessatPersonaJuridica.setRaoSocial("raoSocialJuridica");
 		anotacio.getInteressats().add(interessatPersonaJuridica);
 		

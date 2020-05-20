@@ -36,7 +36,6 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
-import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.

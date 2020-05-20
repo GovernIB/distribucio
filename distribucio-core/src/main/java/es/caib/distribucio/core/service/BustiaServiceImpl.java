@@ -86,7 +86,6 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 
 
 
