@@ -226,12 +226,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	@Query(	"select distinct r " +
 			"from " +
 			"    RegistreEntity r " +
-			"	left outer join r.interessats as interessat "	+
+			"		left outer join r.interessats as interessat "	+
+			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
 			"	 (r.pare.id in (:bustiesIds)) " +
 			"and (:esNullContingutDescripcio = true or lower(r.nom) like lower('%'||:contingutDescripcio||'%')) " +
 			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"and (:esNullRemitent = true or lower(r.darrerMoviment.remitent.codi) like lower('%'||:remitent||'%')) " +
+			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or r.data >= :dataInici) " +
 			"and (:esNullDataFi = true or r.data < :dataFi) " +
 			"and (:esProcessat = false or r.pendent = false) " +
