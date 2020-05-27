@@ -221,5 +221,40 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findByPareInAndIdIn(
 			List<? extends ContingutEntity> pares,
 			List<Long> ids);
+	
+	/** Consulta pel datatable del registreuser */
+	@Query(	"select distinct r " +
+			"from " +
+			"    RegistreEntity r " +
+			"	left outer join r.interessats as interessat "	+
+			"where " +
+			"	 (r.pare.id in (:bustiesIds)) " +
+			"and (:esNullContingutDescripcio = true or lower(r.nom) like lower('%'||:contingutDescripcio||'%')) " +
+			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"and (:esNullRemitent = true or lower(r.darrerMoviment.remitent.codi) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"and (:esNullDataFi = true or r.data < :dataFi) " +
+			"and (:esProcessat = false or r.pendent = false) " +
+			"and (:esPendent = false or r.pendent = true) " +
+			"and (:esNullInteressat = true " +
+			"		or (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"			or lower(interessat.raoSocial) like lower('%'||:interessat||'%')))")
+	public Page<RegistreEntity> findRegistreByPareAndFiltre(
+			@Param("bustiesIds") List<Long> bustiesIds,
+			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
+			@Param("contingutDescripcio") String contingutDescripcio,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esProcessat") boolean esProcessat,
+			@Param("esPendent") boolean esPendent,
+			@Param("esNullInteressat") boolean esNullInteressat,
+			@Param("interessat") String interessat,
+			Pageable pageable);
 
 }

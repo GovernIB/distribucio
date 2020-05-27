@@ -68,52 +68,6 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("mostrarEsborrats") boolean mostrarEsborrats,
 			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
 			Pageable pageable);
-
-
-
-	@Query(	"select " +
-			"    c " +
-			"from " +
-			"    ContingutEntity c " +
-			"where " +
-			"    (:esPareNull = true or c.pare = :pare) " +
-			"and (:esPareNull = false or c.pare in (:pares)) " +
-			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
-			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
-			"and (:esNullDataInici = true or c.data >= :dataInici) " +
-			"and (:esNullDataFi = true or c.data < :dataFi) " +
-			"and (:esNullEstatSimple = true " +
-			"		or (:isProcessat = false " +
-			"				and (c.procesEstat in ('BUSTIA_PENDENT', 'ARXIU_PENDENT', 'REGLA_PENDENT'))) " +
-			"		or (:isProcessat = true " +
-			"				and (c.procesEstat in ('BUSTIA_PROCESSADA', 'BACK_PENDENT', 'BACK_REBUDA', 'BACK_PROCESSADA', 'BACK_REBUTJADA', 'BACK_ERROR')))) " +
-			"and (:esNullInteressat = true " +
-			"		or c.id in (" +
-			"			select interessat.registre.id " +
-			"			from RegistreInteressatEntity interessat " +	
-			"			where interessat.representat is null " +
-			"				and (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%')" +
-			"				or lower(interessat.raoSocial) like lower('%'||:interessat||'%')))) ")
-	public Page<ContingutEntity> findRegistreByPareAndFiltre(
-			@Param("esPareNull") boolean esPareNull,
-			@Param("pare") ContingutEntity pare,
-			@Param("pares") List<? extends ContingutEntity> pares,
-			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
-			@Param("contingutDescripcio") String contingutDescripcio,
-			@Param("esNumeroOrigen") boolean esNumeroOrigen,
-			@Param("numeroOrigen") String numeroOrigen,
-			@Param("esNullRemitent") boolean esNullRemitent,
-			@Param("remitent") String remitent,
-			@Param("esNullDataInici") boolean esNullDataInici,
-			@Param("dataInici") Date dataInici,
-			@Param("esNullDataFi") boolean esNullDataFi,
-			@Param("dataFi") Date dataFi,
-			@Param("esNullEstatSimple") boolean esNullEstatSimple,
-			@Param("isProcessat") boolean isProcessat,
-			@Param("esNullInteressat") boolean esNullInteressat,
-			@Param("interessat") String interessat,
-			Pageable pageable);
 	
 	@Query(	"select " +
 			"    c.id " +

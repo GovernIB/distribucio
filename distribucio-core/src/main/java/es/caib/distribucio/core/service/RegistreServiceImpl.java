@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.joda.time.DateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,6 @@ import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
-import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -147,8 +147,6 @@ public class RegistreServiceImpl implements RegistreService {
 	private MetricRegistry metricRegistry;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
-	@Autowired
-	private ContingutRepository contingutRepository;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Resource
@@ -328,7 +326,7 @@ public class RegistreServiceImpl implements RegistreService {
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-
+		
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser"));
 		Timer.Context contextTotal = timerTotal.time();
 
@@ -347,18 +345,14 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		String bustiesIds="";
 			
-		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
+		List<Long> busties = new ArrayList<Long>();
 		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
-				busties.add( // TODO: probably unnecessary code, bustiesPermesesPerUsuari are busties permitted for current user
-						entityComprovarHelper.comprovarBustia(
-						entitat,
-						new Long(bustiaUsuari.getId()),
-						true));
+				busties.add(bustiaUsuari.getId());
 				bustiesIds +=  bustiaUsuari.getId() + ", ";
 			}
-		} else if (bustia != null) { // TODO: probably unnecessary code , if bustia!=null we dont use busties in sql query 	
-			busties.add(bustia);
+		} else if (bustia != null) {	
+			busties.add(bustia.getId());
 		}
 		
 
@@ -372,22 +366,23 @@ public class RegistreServiceImpl implements RegistreService {
 		mapeigOrdenacio.put(
 				"darrerMovimentComentari",
 				new String[] {"darrerMoviment.comentari"});
-		Page<ContingutEntity> pagina;
+		Page<RegistreEntity> pagina;
 		
 		// Hibernate doesn't support empty collection as parameter in database query so if busties is empty we dont execute query but just create a new empty pagina 
 		if (bustia == null && busties.isEmpty()) {
-			pagina = new PageImpl<ContingutEntity>(new ArrayList<ContingutEntity>());
+			pagina = new PageImpl<RegistreEntity>(new ArrayList<RegistreEntity>());
 		} else {
 			
-			boolean isFiltreProcessat = false;
-			if (filtre.getProcesEstatSimple() != null) {
-				if (filtre.getProcesEstatSimple() == RegistreProcesEstatSimpleEnumDto.PENDENT) {
-					isFiltreProcessat = false;
-				} else if (filtre.getProcesEstatSimple() == RegistreProcesEstatSimpleEnumDto.PROCESSAT) {
-					isFiltreProcessat = true;
-				}
+			boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+			boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+			Date dataRecepcioFi = filtre.getDataRecepcioFi();
+			if (dataRecepcioFi != null) {
+				Calendar c = new GregorianCalendar();
+				c.setTime(dataRecepcioFi);
+				c.add(Calendar.HOUR, 24);
+				dataRecepcioFi = c.getTime();
 			}
-			
 			logger.info("Consultant el contingut de l'usuari ("
 					+ "entitatId=" + entitatId + ", "
 					+ "bustiaId=" + filtre.getBustia() + ", "
@@ -401,16 +396,13 @@ public class RegistreServiceImpl implements RegistreService {
 					+ "bustiesIds= " + bustiesIds + ", " 
 					+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
 
-			
 			final Timer timerTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre"));
 			Timer.Context contextTotalfindRegistreByPareAndFiltre = timerTotalfindRegistreByPareAndFiltre.time();
 			long beginTime = new Date().getTime();
 			try {
-				pagina = contingutRepository.findRegistreByPareAndFiltre(
-						(bustia == null),
-						bustia,
+				pagina = registreRepository.findRegistreByPareAndFiltre(
 						busties,
-						filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
+						StringUtils.isEmpty(filtre.getContingutDescripcio()),
 						filtre.getContingutDescripcio(),
 						filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
 						filtre.getNumeroOrigen(),
@@ -418,15 +410,14 @@ public class RegistreServiceImpl implements RegistreService {
 						filtre.getRemitent(),
 						(filtre.getDataRecepcioInici() == null),
 						filtre.getDataRecepcioInici(),
-						(filtre.getDataRecepcioFi() == null),
-						new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(),
-						filtre.getProcesEstatSimple() == null,
-						isFiltreProcessat,
+						(dataRecepcioFi == null),
+						dataRecepcioFi,
+						esProcessat,
+						esPendent,
 						filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
 						filtre.getInteressat(),
 						paginacioHelper.toSpringDataPageable(paginacioParams,
 								mapeigOrdenacio));
-
 				contextTotalfindRegistreByPareAndFiltre.stop();
 				long endTime = new Date().getTime();
 				logger.info("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
@@ -436,8 +427,6 @@ public class RegistreServiceImpl implements RegistreService {
 				contextTotalfindRegistreByPareAndFiltre.stop();
 				throw new RuntimeException(e);
 			}
-			
-			
 		}
 		
 		final Timer timerTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.toPaginaDto"));
@@ -446,9 +435,9 @@ public class RegistreServiceImpl implements RegistreService {
 		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
 				pagina,
 				ContingutDto.class,
-				new Converter<ContingutEntity, ContingutDto>() {
+				new Converter<RegistreEntity, ContingutDto>() {
 					@Override
-					public ContingutDto convert(ContingutEntity source) {
+					public ContingutDto convert(RegistreEntity source) {
 						return contingutHelper.toContingutDto(
 								source,
 								false,

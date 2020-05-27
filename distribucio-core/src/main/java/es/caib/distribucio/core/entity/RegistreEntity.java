@@ -140,6 +140,9 @@ public class RegistreEntity extends ContingutEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "proces_estat", length = 16, nullable = false)
 	private RegistreProcesEstatEnum procesEstat;
+	/** Indica si l'anotació de registre està pendent de processament (true) o processada (false). */
+	@Column(name = "pendent")
+	private Boolean pendent;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_orig")
 	private Date dataOrigen;
@@ -342,6 +345,10 @@ public class RegistreEntity extends ContingutEntity {
 	public RegistreProcesEstatEnum getProcesEstat() {
 		return procesEstat;
 	}
+	/** Retorna true si està pendent de processament. */
+	public Boolean getPendent() {
+		return pendent;
+	}
 	public RegistreProcesEstatSistraEnum getProcesEstatSistra() {
 		return procesEstatSistra;
 	}
@@ -407,6 +414,7 @@ public class RegistreEntity extends ContingutEntity {
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;
 		}
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
@@ -415,6 +423,7 @@ public class RegistreEntity extends ContingutEntity {
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;
 			this.procesIntents = 0;
+			this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 		}
 		this.procesIntents++;
 		if (exception != null) {
@@ -429,6 +438,8 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesIntents = 0;
 		this.procesError = null;
 		this.procesEstat = RegistreProcesEstatEnum.BACK_PENDENT;
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
+
 	}
 	public void updateRegla(ReglaEntity regla) {
 		this.regla = regla;
@@ -436,6 +447,7 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesIntents = 0;
 		this.procesError = null;
 		this.procesEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
 	public void updateBackCodi(String backCodi) {
 		this.backCodi = backCodi;
@@ -459,6 +471,7 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateBackEstat(RegistreProcesEstatEnum procesEstat, String backObservacions) {
 		this.procesEstat = procesEstat;
 		this.backObservacions = backObservacions;
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;
@@ -565,6 +578,7 @@ public class RegistreEntity extends ContingutEntity {
 			built.assumpteTipusCodi = assumpteTipusCodi;
 			built.idiomaCodi = idiomaCodi;
 			built.procesEstat = procesEstat;
+			built.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 			built.pare = pare;
 			built.tipus = ContingutTipusEnumDto.REGISTRE;
 			built.procesData = new Date();

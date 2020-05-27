@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.core.api.registre;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Enumeració amb els possibles valors de l'estat de processament
  * d'una anotació de registre:
@@ -16,6 +19,8 @@ package es.caib.distribucio.core.api.registre;
  *	 BACK_REBUTJADA: Anotació rebutjada pel backoffice
  *	 BACK_ERROR: Anotació processada al backoffice amb errors
  * 
+ *  També conté mètodes estàtics per determinar si un estat és pendent o processat.
+ *  
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum RegistreProcesEstatEnum {
@@ -27,5 +32,38 @@ public enum RegistreProcesEstatEnum {
 	BACK_REBUDA,
 	BACK_PROCESSADA,
 	BACK_REBUTJADA,
-	BACK_ERROR
+	BACK_ERROR;
+	
+	/** Llista d'estats pendents */
+	public static final List<RegistreProcesEstatEnum> estatsPendents = new ArrayList<RegistreProcesEstatEnum>();	
+	static {
+		estatsPendents.add(BUSTIA_PENDENT);
+		estatsPendents.add(ARXIU_PENDENT);
+		estatsPendents.add(REGLA_PENDENT);
+	}
+	
+	/** Llista d'estats processats. */
+	public static final List<RegistreProcesEstatEnum> estatsProcessats = new ArrayList<RegistreProcesEstatEnum>();	
+	static {
+		estatsProcessats.add(BUSTIA_PROCESSADA);
+		estatsProcessats.add(BACK_PENDENT);
+		estatsProcessats.add(BACK_REBUDA);
+		estatsProcessats.add(BACK_PROCESSADA);
+		estatsProcessats.add(BACK_REBUTJADA);
+		estatsProcessats.add(BACK_ERROR);
+	}
+
+	/** Mètode per consultar si un estat és pendent. */
+	public static boolean isPendent(RegistreProcesEstatEnum estat) {
+		return estatsPendents.contains(estat);
+	}
+	
+	/** Mètode per consultar si un estat és pendent. */
+	public static boolean isProcessat(RegistreProcesEstatEnum estat) {
+		return 	estatsProcessats.contains(estat);
+	}
+	
+	
+	
+	
 }
