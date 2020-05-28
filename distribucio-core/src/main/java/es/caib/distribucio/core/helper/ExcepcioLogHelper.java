@@ -25,21 +25,25 @@ public class ExcepcioLogHelper {
 
 
 	public List<ExcepcioLogDto> findAll() {
-		int index = 0;
-		for (ExcepcioLogDto excepcio: excepcions) {
-			excepcio.setIndex(new Long(index++));
+		synchronized(excepcions) {
+			int index = 0;
+			for (ExcepcioLogDto excepcio: excepcions) {
+				excepcio.setIndex(new Long(index++));
+			}			
 		}
 		return excepcions;
 	}
 
 	public void addExcepcio(
 			Throwable exception) {
-		while (excepcions.size() >= DEFAULT_MAX_EXCEPCIONS) {
-			excepcions.remove(excepcions.size() - 1);
+		synchronized(excepcions) {
+			while (excepcions.size() >= DEFAULT_MAX_EXCEPCIONS) {
+				excepcions.remove(excepcions.size() - 1);
+			}
+			excepcions.add(
+					0,
+					new ExcepcioLogDto(exception));
 		}
-		excepcions.add(
-				0,
-				new ExcepcioLogDto(exception));
 	}
 
 }

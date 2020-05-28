@@ -95,7 +95,7 @@ public class BustiaV1Test {
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
 		RegistreAnotacio anotacio; 
-		int nAnotacions = 1;
+		int nAnotacions = 1000;
 		for (int i=1; i<=nAnotacions; i++) {
 			System.out.println("Enviant l'anotació " + i);
 			anotacio = new RegistreAnotacio(); 

@@ -475,15 +475,24 @@ public class RegistreHelper {
 							distribucioRegistreAnotacio.getNumero(),
 							unitatOrganitzativaCodi);
 					registreEntity.updateExpedientArxiuUuid(uuidExpedient);
+					logger.debug("Creat el contenidor a l'Arxiu per l'anotació (" +
+							"anotacioNumero=" + registreEntity.getNumero() + ", " +
+							"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
 				} catch (Exception ex) {
 					return ex;
 				}
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
 				uuidExpedient = registreEntity.getExpedientArxiuUuid();
+				logger.debug("L'anotació (" +
+						"anotacioNumero=" + registreEntity.getNumero() + ", " +
+						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") ja estava a l'Arxiu amb uuid " + uuidExpedient);
 			}
 			
 			if (uuidExpedient != null) {
+				logger.debug("Guardant " + registreEntity.getAnnexos().size() + " annexos de l'anotació (" +
+						"anotacioNumero=" + registreEntity.getNumero() + ", " +
+						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
 				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
 					try {
 						
