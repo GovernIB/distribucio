@@ -220,7 +220,7 @@ $(document).ready(function() {
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>					
 				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="false"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%" data-renderer="enum(RegistreProcesEstatEnumDto)">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>

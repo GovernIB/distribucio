@@ -156,9 +156,11 @@ public class ContingutHelper {
 			contextToContingutDtoconvertirToRegistreDto.stop();
 			
 			// toBustiaContingut 
-			registreDto.setPareId(registreEntity.getPare().getId());
-			ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
-			registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());
+			if (registreEntity.getPare() != null) {
+				registreDto.setPareId(registreEntity.getPare().getId());
+				ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
+				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
+			}
 			
 			if (registreEntity.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
 				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
