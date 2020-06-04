@@ -126,6 +126,9 @@ $(document).ready(function() {
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
+
+		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+	
 		<div class="row">
 			<div class="col-md-4">
 				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.numero"/>
@@ -168,7 +171,6 @@ $(document).ready(function() {
 			</div>			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
@@ -220,7 +222,7 @@ $(document).ready(function() {
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>					
 				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="false"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%" data-renderer="enum(RegistreProcesEstatEnumDto)">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>

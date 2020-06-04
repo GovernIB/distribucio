@@ -95,7 +95,7 @@ public class BustiaV1Test {
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
 		RegistreAnotacio anotacio; 
-		int nAnotacions = 1000;
+		int nAnotacions = 1;
 		for (int i=1; i<=nAnotacions; i++) {
 			System.out.println("Enviant l'anotació " + i);
 			anotacio = new RegistreAnotacio(); 
@@ -123,6 +123,8 @@ public class BustiaV1Test {
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(true);
+	        anotacio.setExposa("Text exposa " + i);
+	        anotacio.setSolicita("Text sol·licita " + i);
 	        List<Firma> firmes = null;
 	        RegistreAnnex annex;
 	        int nAnnexos = 1;

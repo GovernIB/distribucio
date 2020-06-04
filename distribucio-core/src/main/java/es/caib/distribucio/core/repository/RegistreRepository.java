@@ -223,10 +223,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			List<Long> ids);
 	
 	/** Consulta pel datatable del registreuser */
-	@Query(	"select distinct r " +
+	@Query(	"select r " +
 			"from " +
 			"    RegistreEntity r " +
-			"		left outer join r.interessats as interessat "	+
 			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
 			"	 (r.pare.id in (:bustiesIds)) " +
@@ -238,8 +237,12 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esProcessat = false or r.pendent = false) " +
 			"and (:esPendent = false or r.pendent = true) " +
 			"and (:esNullInteressat = true " +
-			"		or (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
-			"			or lower(interessat.raoSocial) like lower('%'||:interessat||'%')))")
+			"		or (select count(interessat) " +
+			"			from r.interessats as interessat" +
+			"			where " +
+			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
+			"			) > 0 )")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("bustiesIds") List<Long> bustiesIds,
 			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,

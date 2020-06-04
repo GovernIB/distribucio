@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -128,11 +129,14 @@ public class RegistreEntity extends ContingutEntity {
 	private String documentacioFisicaDescripcio;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
-	@Column(name = "exposa", length = 4000)
+    @Lob
+    @Column(name = "exposa", nullable = true)
 	private String exposa;
-	@Column(name = "solicita", length = 4000)
+    @Lob
+    @Column(name = "solicita", nullable = true)
 	private String solicita;
-	@Column(name = "motiu_rebuig", length = 1024)
+    @Lob
+    @Column(name = "motiu_rebuig", nullable = true)
 	private String motiuRebuig;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "proces_data")
