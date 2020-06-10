@@ -256,7 +256,7 @@ public class BustiaHelper {
 	public void evictCountElementsPendentsBustiesUsuari(
 			EntitatEntity entitat,
 			BustiaEntity bustia) {
-		Set<String> usuaris = contingutHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
+		Set<String> usuaris = contingutHelper.findUsuarisCodisAmbPermisReadPerContenidor(bustia);
 		if (usuaris != null) {
 			for (String usuari: usuaris)
 				cacheHelper.evictCountElementsPendentsBustiesUsuari(

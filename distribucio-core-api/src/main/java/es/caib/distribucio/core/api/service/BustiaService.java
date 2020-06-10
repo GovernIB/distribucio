@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
@@ -360,6 +361,11 @@ public interface BustiaService {
 			long entitatId, 
 			long bustiaId, 
 			long destiId, 
-			String comentari);	
+			String comentari);
+
+	List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId);
+
+	List<BustiaDto> findAmbUnitatId(Long entitatId,
+			Long unitatId);	
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -28,8 +29,10 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
+import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreOrganigramaCommand;
+import es.caib.distribucio.war.helper.BustiaHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -47,7 +50,8 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	private BustiaService bustiaService;
 	@Autowired
 	private UnitatOrganitzativaService unitatService;
-
+	@Autowired
+	private BustiaHelper bustiaHelper;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -82,6 +86,26 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			}
 		}
 		return "redirect:bustiaAdminOrganigrama";
+	}
+	
+	
+	@RequestMapping(value = "/excelUsuarisPerBustia", method = RequestMethod.GET)
+	public void excelUsuarisPermissionsPerBustia(
+			HttpServletRequest request,
+			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaFiltreOrganigramaCommand bustiaFiltreCommand = getFiltreOrganigramaCommand(request);
+		
+		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
+				entitatActual.getId(),
+				bustiaFiltreCommand.getNomFiltre(),
+				bustiaFiltreCommand.getUnitatIdFiltre(),
+				bustiaFiltreCommand.getUnitatObsoleta());
+
+		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
+				response,
+				busties);
 	}
 	
 	

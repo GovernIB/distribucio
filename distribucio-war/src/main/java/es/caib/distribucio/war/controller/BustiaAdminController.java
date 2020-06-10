@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import es.caib.distribucio.war.command.BustiaCommand;
 import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.command.MoureAnotacionsCommand;
+import es.caib.distribucio.war.helper.BustiaHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.MissatgesHelper;
@@ -50,7 +52,8 @@ public class BustiaAdminController extends BaseAdminController {
 	private BustiaService bustiaService;
 	@Autowired
 	private UnitatOrganitzativaService unitatService;
-	
+	@Autowired
+	private BustiaHelper bustiaHelper;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -177,6 +180,28 @@ public class BustiaAdminController extends BaseAdminController {
 		
 		return "bustiaAdminTransicioInfo";
 	}
+	
+	
+	@RequestMapping(value = "/excelUsuarisPerBustia", method = RequestMethod.GET)
+	public void excelUsuarisPermissionsPerBustia(
+			HttpServletRequest request,
+			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
+		
+		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
+				entitatActual.getId(),
+				bustiaFiltreCommand.getNom(),
+				bustiaFiltreCommand.getUnitatId(),
+				bustiaFiltreCommand.getUnitatObsoleta());
+
+		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
+				response,
+				busties);
+	}
+	
+
 
 
 	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
@@ -206,6 +231,8 @@ public class BustiaAdminController extends BaseAdminController {
 			}
 			model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
 			model.addAttribute(bustia);	
+		
+			model.addAttribute("usuaris", bustiaService.getUsersPermittedForBustia(bustiaId));
 		}
 		
 		BustiaCommand command = null;

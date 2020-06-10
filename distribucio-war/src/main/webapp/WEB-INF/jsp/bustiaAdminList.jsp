@@ -29,6 +29,7 @@
 			$("#canviVistaBusties").click(function(){
 				window.location.replace("/distribucio/bustiaAdminOrganigrama");
 			});
+
 		});
 	</script>
 </head>
@@ -57,6 +58,9 @@
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
+					<a href="${unitatCodiUrlPrefix}bustiaAdmin/excelUsuarisPerBustia" class="btn btn-success"> 
+						<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="bustia.usuaris" />
+					</a>
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>

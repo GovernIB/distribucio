@@ -228,7 +228,7 @@ public class EmailHelper {
 
 	public List<UsuariDto> obtenirCodiDestinatarisPerEmail(BustiaEntity bustia) {
 		List<UsuariDto> destinataris = new ArrayList<UsuariDto>();
-		Set<String> usuaris = contenidorHelper.findUsuarisAmbPermisReadPerContenidor(bustia);
+		Set<String> usuaris = contenidorHelper.findUsuarisCodisAmbPermisReadPerContenidor(bustia);
 		for (String usuari: usuaris) {
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
 			if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
@@ -244,6 +244,8 @@ public class EmailHelper {
 		}
 		return destinataris;
 	}
+	
+
 	
 	private String getUnitatOrganitzativaNom(
 			EntitatEntity entitat,

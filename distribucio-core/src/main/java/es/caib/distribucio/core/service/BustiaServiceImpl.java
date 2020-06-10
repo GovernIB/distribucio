@@ -49,6 +49,7 @@ import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
@@ -281,6 +282,15 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true);
 	}
+	
+	
+	@Override
+	public List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId){
+		BustiaEntity bustiaEntity =  bustiaRepository.findOne(bustiaId);
+		return contingutHelper.findUsuarisAmbPermisReadPerContenidor(bustiaEntity);
+	}
+			
+	
 
 	/** Mètode per trobar una bústia per defecte alternativa a la bústia pasada com a paràmetre.
 	 *  Aquest mètode s'utilitza per validar a l'hora d'esborrar o moure una bústia en una unitat
@@ -501,6 +511,30 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false);
 		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(unitatCodi);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, unitatOrganitzativa);
+		List<BustiaDto> resposta = bustiaHelper.toBustiaDto(
+				busties,
+				false,
+				false,
+				true);
+		omplirPermisosPerBusties(resposta, false);
+		return resposta;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDto> findAmbUnitatId(
+			Long entitatId,
+			Long unitatId) {
+		logger.debug("Cercant les bústies de la unitat per admins ("
+				+ "entitatId=" + entitatId + ", "
+				+ "unitatId=" + unitatId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(unitatId);
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, unitatOrganitzativa);
 		List<BustiaDto> resposta = bustiaHelper.toBustiaDto(
 				busties,

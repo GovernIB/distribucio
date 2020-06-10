@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -78,7 +81,8 @@ public class ContingutHelper {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;	
 	@Autowired
 	private MetricRegistry metricRegistry;
-
+	@Resource
+	private CacheHelper cacheHelper;
 
 
 	public ContingutDto toContingutDto(
@@ -349,7 +353,7 @@ public class ContingutHelper {
 		}
 	}
 
-	public Set<String> findUsuarisAmbPermisReadPerContenidor(
+	public Set<String> findUsuarisCodisAmbPermisReadPerContenidor(
 			ContingutEntity contingut) {
 		List<PermisDto> permisos = new ArrayList<PermisDto>();
 		if (contingut instanceof BustiaEntity) {
@@ -376,6 +380,62 @@ public class ContingutHelper {
 		}
 		return usuaris;
 	}
+	
+	public List<UsuariPermisDto> findUsuarisAmbPermisReadPerContenidor(
+			ContingutEntity contingut) {
+		List<PermisDto> permisos = new ArrayList<PermisDto>();
+		if (contingut instanceof BustiaEntity) {
+			permisos = permisosHelper.findPermisos(contingut.getId(),
+					BustiaEntity.class);
+		}
+		List<UsuariPermisDto> usuaris = new ArrayList<UsuariPermisDto>();
+		for (PermisDto permis : permisos) {
+			switch (permis.getPrincipalTipus()) {
+			case USUARI:
+				UsuariPermisDto usuariUserPermisDto = null;
+				for (UsuariPermisDto usuari : usuaris) {
+					if (usuari.getCodi().equals(permis.getPrincipalNom())) {
+						usuariUserPermisDto = usuari;
+					}
+				}
+				if (usuariUserPermisDto != null) { // if already exists
+					usuariUserPermisDto.setHasUsuariPermission(true);
+				} else { // if doesnt exists
+					DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
+					usuariUserPermisDto = new UsuariPermisDto();
+					usuariUserPermisDto.setCodi(permis.getPrincipalNom());
+					usuariUserPermisDto.setNom(dadesUsuari.getNom());
+					usuariUserPermisDto.setHasUsuariPermission(true);
+					usuaris.add(usuariUserPermisDto);
+				}
+				break;
+			case ROL:
+				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(permis.getPrincipalNom());
+				if (usuarisGrup != null) {
+					for (DadesUsuari usuariGrup : usuarisGrup) {
+						UsuariPermisDto usuariRolPermisDto = null;
+						for (UsuariPermisDto usuari : usuaris) {
+							if (usuari.getCodi().equals(usuariGrup.getCodi())) {
+								usuariRolPermisDto = usuari;
+							}
+						}
+						if (usuariRolPermisDto != null) { // if already exists
+							usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+						} else { // if doesnt exists
+							usuariRolPermisDto = new UsuariPermisDto();
+							usuariRolPermisDto.setCodi(usuariGrup.getCodi());
+							usuariRolPermisDto.setNom(usuariGrup.getNom());
+							usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+							usuaris.add(usuariRolPermisDto);
+						}
+					}
+				}
+				break;
+			}
+		}
+		return usuaris;
+	}
+
 
 	public ContingutMovimentEntity ferIEnregistrarMoviment(
 			ContingutEntity contingut,

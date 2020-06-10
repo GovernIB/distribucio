@@ -118,7 +118,44 @@
 		</div>		
 	</form:form>
 
-
+	<c:if test="${!empty usuaris}">
+		<table class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th colspan="4"><div align="center"><spring:message code="bustia.usuarisTable"/></div></th>
+				</tr>
+				<tr>
+					<th width="15%"><spring:message code="bustia.usuarisTable.codi"/></th>
+					<th width="15%"><spring:message code="bustia.usuarisTable.nom"/></th>
+					<th width="5%"><spring:message code="bustia.usuarisTable.permisPerUsuari"/></th>
+					<th width="15%"><spring:message code="bustia.usuarisTable.rols"/></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="usuari" items="${usuaris}">
+					<tr>
+						<td>${usuari.codi}</td>
+						<td>${usuari.nom}</td>
+						<td>
+							<c:choose>
+								<c:when test="${usuari.hasUsuariPermission}">
+									<span class="fa fa-check-square-o"></span>
+								</c:when>
+								<c:otherwise>
+									<span class="fa fa-square-o"></span>
+								</c:otherwise>
+							</c:choose>
+						</td>
+						<td>
+							<c:if test="${!empty usuari.rols}">
+								${usuari.rols}
+							</c:if>
+						</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</c:if>
 
 </body>
 </html>

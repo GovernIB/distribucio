@@ -21,6 +21,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
@@ -255,6 +256,19 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("DIS_ADMIN")
 	public int moureAnotacions(long entitatId, long bustiaId, long destiId, String comentari) {
 		return delegate.moureAnotacions(entitatId, bustiaId, destiId, comentari);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId) {
+		return delegate.getUsersPermittedForBustia(bustiaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public List<BustiaDto> findAmbUnitatId(Long entitatId,
+			Long unitatId) {
+		return delegate.findAmbUnitatId(entitatId, unitatId);
 	}
 
 }
