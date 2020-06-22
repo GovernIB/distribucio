@@ -8,16 +8,21 @@ import java.util.Properties;
 
 import javax.jws.WebService;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.backoffice.utils.ArxiuPluginListener;
-import es.caib.distribucio.backoffice.utils.ArxiuResultat;
-import es.caib.distribucio.backoffice.utils.ArxiuResultatAnnex;
-import es.caib.distribucio.backoffice.utils.BackofficeUtils;
-import es.caib.distribucio.backoffice.utils.BackofficeUtilsImpl;
-import es.caib.distribucio.backoffice.utils.DistribucioArxiuError;
+import es.caib.distribucio.backoffice.utils.arxiu.ArxiuPluginListener;
+import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultat;
+import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultatAnnex;
+import es.caib.distribucio.backoffice.utils.arxiu.BackofficeArxiuUtils;
+import es.caib.distribucio.backoffice.utils.arxiu.BackofficeArxiuUtilsImpl;
+import es.caib.distribucio.backoffice.utils.arxiu.DistribucioArxiuError;
+import es.caib.distribucio.backoffice.utils.sistra.BackofficeSistra2Utils;
+import es.caib.distribucio.backoffice.utils.sistra.BackofficeSistra2UtilsImpl;
+import es.caib.distribucio.backoffice.utils.sistra.formulario.Formulario;
+import es.caib.distribucio.backoffice.utils.sistra.pago.Pago;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
@@ -25,10 +30,12 @@ import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.ws.backofficeintegracio.Annex;
 import es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreEntrada;
 import es.caib.distribucio.ws.backofficeintegracio.BackofficeIntegracio;
 import es.caib.distribucio.ws.client.BackofficeIntegracioWsClientFactory;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
+import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
@@ -75,11 +82,11 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					
 					// Prepara la cria a la llibreria d'utilitats pel backoffice de DISTRIBUCIO
 					// Constructor amb la referència al plugin d'Arxiu
-					BackofficeUtils backofficeUtils = new BackofficeUtilsImpl(getArxiuPlugin());
+					BackofficeArxiuUtils backofficeArxiuUtils = new BackofficeArxiuUtilsImpl(getArxiuPlugin());
 					// Afegeix la instància de la classe com a escoltador d'events
-					backofficeUtils.setArxiuPluginListener(this);
+					backofficeArxiuUtils.setArxiuPluginListener(this);
 					// Estableix la carpeta on guardar els annexos de l'anotació
-					backofficeUtils.setCarpeta(anotacio.getIdentificador());
+					backofficeArxiuUtils.setCarpeta(anotacio.getIdentificador());
 		
 					// Crida a la creació de l'expedient
 					String SERIE_DOCUMENTAL = "S0002"; 
@@ -89,7 +96,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					String expedientUuid = null;
 					do {
 						// Crida al mètode de creació de la llibreria
-						arxiuResultat = backofficeUtils.crearExpedientAmbAnotacioRegistre(
+						arxiuResultat = backofficeArxiuUtils.crearExpedientAmbAnotacioRegistre(
 								expedientUuid,
 								anotacio.getIdentificador(),
 								null,
@@ -115,6 +122,33 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 						}
 					} else {
 						logger.warn("L'expedient no s'ha pogut crear per l'anotació " + anotacio.getIdentificador());
+					}
+					// Processament dels annexos de documents tècnics segons el títol
+					String titol;
+					for (Annex annex : anotacio.getAnnexos()) {
+						titol = annex.getTitol();
+						if (titol != null 
+								&& ("FORMULARIO".equals(titol) 
+										|| "PAGO".equals(titol))) {
+							// Recupera el contingut de l'annex
+							Document document = getArxiuPlugin().documentDetalls(annex.getUuid(), null, true);							
+							byte[] contingut = document.getContingut().getContingut();
+							// Interpreta el contingut amb la classe BackofficeSistra2Utils
+							BackofficeSistra2Utils sistra2Utils = new BackofficeSistra2UtilsImpl();
+							logger.debug("  Document tècnic \"" + titol + "\". Dades:");
+							try {
+								if ("FORMULARIO".equals(titol)) {
+									Formulario formulario = sistra2Utils.parseXmlFormulario(contingut);
+									logger.debug("  formulario: " + ToStringBuilder.reflectionToString(formulario));								
+								} else if ("PAGO".equals(titol)) {
+									Pago pago = sistra2Utils.parseXmlPago(contingut);
+									logger.debug("  pago: " + ToStringBuilder.reflectionToString(pago));								
+								}
+							} catch(Exception e) {								
+								logger.error("Error obtenint la informació del document tècnic " + titol + ":" + e.getMessage(), e);
+							}
+						}
+
 					}
 					// Es comunica el resultat a DISTRIBUCIO
 					switch(arxiuResultat.getErrorCodi()) {

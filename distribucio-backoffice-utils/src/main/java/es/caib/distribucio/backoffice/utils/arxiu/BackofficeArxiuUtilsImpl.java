@@ -1,5 +1,5 @@
 
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,8 +10,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.distribucio.backoffice.utils.ArxiuResultat.ExpedientAccio;
-import es.caib.distribucio.backoffice.utils.ArxiuResultatAnnex.AnnexAccio;
+import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultat.ExpedientAccio;
+import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultatAnnex.AnnexAccio;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.ws.backofficeintegracio.Annex;
 import es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreEntrada;
@@ -24,7 +24,7 @@ import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
-public class BackofficeUtilsImpl implements BackofficeUtils {
+public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 	
 	/** Referència al plugin d'Arxiu per realitzar crides i comprovacions. */
 	private IArxiuPlugin iArxiuPlugin = null;
@@ -439,11 +439,11 @@ public class BackofficeUtilsImpl implements BackofficeUtils {
 	 * 
 	 * @param iArxiuPlugin
 	 */
-	public BackofficeUtilsImpl(
+	public BackofficeArxiuUtilsImpl(
 			IArxiuPlugin iArxiuPlugin) {
 		super();
 		this.iArxiuPlugin = iArxiuPlugin;
 	}
 	
-	private static final Logger logger = LoggerFactory.getLogger(BackofficeUtilsImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(BackofficeArxiuUtilsImpl.class);
 }

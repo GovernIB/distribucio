@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="urn:es:caib:sistra2:xml:formulario:v1:model" targetNamespace="urn:es:caib:sistra2:xml:formulario:v1:model"
+	version="1.0">
+
+	<xs:element name="FORMULARIO" type="tns:FORMULARIO" />
+
+	<xs:complexType name="FORMULARIO">
+		<xs:sequence>
+			<xs:element name="CAMPO" type="tns:CAMPO" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+    	<xs:attribute name="accion" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="CAMPO">
+		<xs:sequence>
+			<xs:element name="VALOR" type="tns:VALOR" maxOccurs="unbounded"
+				minOccurs="0" nillable="true"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required" />
+		<xs:attribute name="tipo" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="simple"></xs:enumeration>
+					<xs:enumeration value="compuesto"></xs:enumeration>
+					<xs:enumeration value="multivaluado"></xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="VALOR">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="codigo" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+
+</xs:schema>

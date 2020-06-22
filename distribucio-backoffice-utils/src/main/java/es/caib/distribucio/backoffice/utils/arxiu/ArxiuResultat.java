@@ -1,4 +1,4 @@
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 import es.caib.distribucio.ws.backofficeintegracio.Annex;
 
 /** Classe que conté el resultat de l'operació de moure un expedient de l'Arxiu amb el mètode
- * crearExpedientAmbAnotacioRegistre de la funció d'utilitats {@link BackofficeUtils}.
+ * crearExpedientAmbAnotacioRegistre de la funció d'utilitats {@link BackofficeArxiuUtils}.
  *
  */
 public class ArxiuResultat {

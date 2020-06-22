@@ -1714,25 +1714,27 @@ public class RegistreServiceImpl implements RegistreService {
 			interessatBase.setTipus(InteressatTipus.ADMINISTRACIO);
 			break;
 		}
-		switch (registreInteressatEntity.getDocumentTipus()) {
-		case NIF:
-			interessatBase.setDocumentTipus(DocumentTipus.NIF);
-			break;
-		case CIF:
-			interessatBase.setDocumentTipus(DocumentTipus.CIF);
-			break;
-		case PASSAPORT:
-			interessatBase.setDocumentTipus(DocumentTipus.PASSAPORT);
-			break;
-		case ESTRANGER:
-			interessatBase.setDocumentTipus(DocumentTipus.NIE);
-			break;
-		case ALTRES:
-			interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
-			break;
-		case CODI_ORIGEN:
-			interessatBase.setDocumentTipus(DocumentTipus.CODI_ORIGEN);
-			break;
+		if (registreInteressatEntity.getDocumentTipus() != null) {
+			switch (registreInteressatEntity.getDocumentTipus()) {
+			case NIF:
+				interessatBase.setDocumentTipus(DocumentTipus.NIF);
+				break;
+			case CIF:
+				interessatBase.setDocumentTipus(DocumentTipus.CIF);
+				break;
+			case PASSAPORT:
+				interessatBase.setDocumentTipus(DocumentTipus.PASSAPORT);
+				break;
+			case ESTRANGER:
+				interessatBase.setDocumentTipus(DocumentTipus.NIE);
+				break;
+			case ALTRES:
+				interessatBase.setDocumentTipus(DocumentTipus.ALTRES);
+				break;
+			case CODI_ORIGEN:
+				interessatBase.setDocumentTipus(DocumentTipus.CODI_ORIGEN);
+				break;
+			}
 		}
 		interessatBase.setDocumentNumero(registreInteressatEntity.getDocumentNum());
 		interessatBase.setRaoSocial(registreInteressatEntity.getRaoSocial());

@@ -1,4 +1,4 @@
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 /** Classe amb les constants dels codis d'errors.
  * 

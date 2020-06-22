@@ -1,5 +1,5 @@
 
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 import java.util.Map;
 

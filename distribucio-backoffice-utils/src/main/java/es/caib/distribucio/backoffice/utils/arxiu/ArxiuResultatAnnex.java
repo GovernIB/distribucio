@@ -1,9 +1,9 @@
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 import es.caib.distribucio.ws.backofficeintegracio.Annex;
 
 /** Classe que conté el resultat de l'operació de moure un annex de l'Arxiu amb el mètode
- * crearExpedientAmbAnotacioRegistre de la funció d'utilitats {@link BackofficeUtils}.
+ * crearExpedientAmbAnotacioRegistre de la funció d'utilitats {@link BackofficeArxiuUtils}.
  *
  */
 public class ArxiuResultatAnnex {

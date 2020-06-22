@@ -1,5 +1,5 @@
 
-package es.caib.distribucio.backoffice.utils;
+package es.caib.distribucio.backoffice.utils.arxiu;
 
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,7 @@ import es.caib.plugins.arxiu.api.IArxiuPlugin;
 /** Interfície amb els métodes de les funcions d'utilitats per a backoffices
  * 
  */
-public interface BackofficeUtils {	
+public interface BackofficeArxiuUtils {	
 	
 
 	/** Crea un expedient i mou el contingut dels annexos i interessats de l'expedient de l'anotació de registre de Distribució.

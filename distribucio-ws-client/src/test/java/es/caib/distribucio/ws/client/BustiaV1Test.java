@@ -65,6 +65,7 @@ public class BustiaV1Test {
 
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
+	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indca si adjuntar els documents tècnics de sistra2 com annexos
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
 	 * @throws Exception */
@@ -123,7 +124,11 @@ public class BustiaV1Test {
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(true);
-	        anotacio.setExposa("Text exposa " + i);
+	        int nCaracters = 5000;
+	        StringBuilder textGran = new StringBuilder("Text gran " + i + ": ");
+	        while (textGran.length() < nCaracters)
+	        	textGran.append("0123456789 ");
+	        anotacio.setExposa(textGran.toString());
 	        anotacio.setSolicita("Text sol·licita " + i);
 	        List<Firma> firmes = null;
 	        RegistreAnnex annex;
@@ -180,7 +185,34 @@ public class BustiaV1Test {
 		        }
 		        anotacio.getAnnexos().add(annex);
 		    }
-
+	        if (TEST_ANNEX_DOC_TECNIC) {
+	        	// FORMULARIO
+		        anotacio.getAnnexos().add(		        
+		        		crearAnnex(
+			        		"FORMULARIO",
+			        		"formulario.xml",
+			        		"application/xml",
+			        		null,
+			        		getContingutAltre("formulario.xml"),
+			        		"0",
+			        		"EE01",
+			        		"TD99",
+			        		"01",
+			        		null));
+	        	// PAGO
+		        anotacio.getAnnexos().add(		        
+		        		crearAnnex(
+			        		"PAGO",
+			        		"pago.xml",
+			        		"application/xml",
+			        		null,
+			        		getContingutAltre("pago.xml"),
+			        		"0",
+			        		"EE01",
+			        		"TD99",
+			        		"01",
+			        		null));
+	        }
 	        	        
 	        RegistreAnnex justificant = crearAnnex(
 	        		"justificant",
@@ -340,6 +372,11 @@ public class BustiaV1Test {
 	private InputStream getContingutAnnexFirmat() {
 		InputStream is = getClass().getResourceAsStream(
         		"/annex_firmat.pdf");
+		return is;
+	}
+	private InputStream getContingutAltre(String arxiuNom) {
+		InputStream is = getClass().getResourceAsStream(
+        		"/" + arxiuNom);
 		return is;
 	}
 
