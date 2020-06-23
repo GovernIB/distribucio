@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -54,7 +56,8 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 
 	@Column(name = "nom", length = 256, nullable = false)
 	protected String nom;
-	@Column(name = "tipus", nullable = false)
+	@Column(name = "tipus", length = 8, nullable = false)
+	@Enumerated(EnumType.STRING)
 	protected ContingutTipusEnumDto tipus;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pare_id")

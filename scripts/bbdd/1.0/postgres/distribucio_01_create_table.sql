@@ -69,7 +69,7 @@ CREATE TABLE DIS_CONTINGUT
 (
   ID                   BIGSERIAL                   NOT NULL,
   NOM                  character varying(1024)  NOT NULL,
-  TIPUS                integer                  NOT NULL,
+  TIPUS                character varying(8)       	NOT NULL,
   PARE_ID              bigint,
   ESBORRAT             integer,
   ARXIU_UUID           character varying(36),
@@ -119,13 +119,13 @@ CREATE TABLE DIS_CONT_MOV_EMAIL
 CREATE TABLE DIS_CONT_LOG
 (
   ID                   BIGSERIAL                   NOT NULL,
-  TIPUS                integer                  NOT NULL,
+  TIPUS                character varying(30)       NOT NULL,
   CONTINGUT_ID         bigint                   NOT NULL,
   PARE_ID              bigint,
   CONTMOV_ID           bigint,
   OBJECTE_ID           character varying(256),
-  OBJECTE_LOG_TIPUS    integer,
-  OBJECTE_TIPUS        integer,
+  OBJECTE_LOG_TIPUS    character varying(30),
+  OBJECTE_TIPUS        character varying(12),
   PARAM1               character varying(256),
   PARAM2               character varying(256),
   CREATEDDATE          timestamp without time zone,
@@ -402,7 +402,7 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
   TIPUS_VIA 	 			BIGINT,
   NOM_VIA 					CHARACTER VARYING(200),
   NUM_VIA 					CHARACTER VARYING(100),
-  TIPUS_TRANSICIO 		    INTEGER,
+  TIPUS_TRANSICIO 		    character varying(12),
 
   CREATEDDATE          		TIMESTAMP WITHOUT TIME ZONE,
   CREATEDBY_CODI       		CHARACTER VARYING(256),

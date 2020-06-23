@@ -11,38 +11,38 @@ package es.caib.distribucio.core.api.dto;
  */
 public enum LogTipusEnumDto {
 	CREACIO, // used in anotacio
-	CONSULTA,
-	MODIFICACIO, 
-	ELIMINACIO,
-	RECUPERACIO,
-	ELIMINACIODEF,
-	ACTIVACIO,
-	DESACTIVACIO,
-	AGAFAR,
-	ALLIBERAR,
-	COPIA,
+	CONSULTA,  //to delete
+	MODIFICACIO, //used
+	ELIMINACIO, //to delete
+	RECUPERACIO, //to delete
+	ELIMINACIODEF, // to delete
+	ACTIVACIO, // used
+	DESACTIVACIO, // used
+	AGAFAR,// to delete
+	ALLIBERAR, // to delete
+	COPIA, // to delete
 	MOVIMENT,// used in anotacio
-	ENVIAMENT,
+	ENVIAMENT, // to delete
 	REENVIAMENT,// used in anotacio
-	PROCESSAMENT,
-	TANCAMENT,
-	REOBERTURA,
-	ACUMULACIO,
-	DISGREGACIO,
-	PER_DEFECTE,
-	PFIRMA_ENVIAMENT,
-	PFIRMA_CANCELACIO,
-	PFIRMA_CALLBACK,
-	PFIRMA_FIRMA,
-	PFIRMA_REBUIG,
-	PFIRMA_REINTENT,
-	ARXIU_CSV,
-	ARXIU_CUSTODIAT,
-	CUSTODIA_CANCELACIO,
-	FIRMA_CLIENT,
-	NOTIFICACIO_ENTREGADA,
-	NOTIFICACIO_REBUTJADA,
-	NOTIFICACIO_REINTENT,
+	PROCESSAMENT, //to delete
+	TANCAMENT, // to delete
+	REOBERTURA, // to delete
+	ACUMULACIO,// to delete
+	DISGREGACIO, // to delete
+	PER_DEFECTE, // used
+	PFIRMA_ENVIAMENT, // to delete
+	PFIRMA_CANCELACIO, // to delete
+	PFIRMA_CALLBACK, // to delete
+	PFIRMA_FIRMA, //to delete
+	PFIRMA_REBUIG,// to delete
+	PFIRMA_REINTENT,// to delete
+	ARXIU_CSV,// to delete
+	ARXIU_CUSTODIAT, // to delete
+	CUSTODIA_CANCELACIO, //to delete
+	FIRMA_CLIENT, // to delete
+	NOTIFICACIO_ENTREGADA,// to delete
+	NOTIFICACIO_REBUTJADA,// to delete
+	NOTIFICACIO_REINTENT,// to delete
 	ENVIAMENT_EMAIL,// used
 	MARCAMENT_PROCESSAT,// used
 	DISTRIBUCIO, // used

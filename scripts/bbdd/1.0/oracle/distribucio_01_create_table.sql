@@ -49,7 +49,7 @@ CREATE TABLE DIS_CONTINGUT
 (
   ID                   NUMBER(19)               NOT NULL,
   NOM                  VARCHAR2(1024)           NOT NULL,
-  TIPUS                NUMBER(10)               NOT NULL,
+  TIPUS                VARCHAR2(8)              NOT NULL,
   PARE_ID              NUMBER(19),
   ESBORRAT             NUMBER(10),
   ARXIU_UUID           VARCHAR2(36),
@@ -99,13 +99,13 @@ CREATE TABLE DIS_CONT_MOV_EMAIL
 CREATE TABLE DIS_CONT_LOG
 (
   ID                   NUMBER(19)               NOT NULL,
-  TIPUS                NUMBER(10)               NOT NULL,
+  TIPUS                VARCHAR2(30)             NOT NULL,
   CONTINGUT_ID         NUMBER(19)               NOT NULL,
   PARE_ID              NUMBER(19),
   CONTMOV_ID           NUMBER(19),
   OBJECTE_ID           VARCHAR2(256),
-  OBJECTE_LOG_TIPUS    NUMBER(10),
-  OBJECTE_TIPUS        NUMBER(10),
+  OBJECTE_LOG_TIPUS    VARCHAR2(30),
+  OBJECTE_TIPUS        VARCHAR2(12),
   PARAM1               VARCHAR2(256),
   PARAM2               VARCHAR2(256),
   CREATEDDATE          TIMESTAMP(6),
@@ -385,7 +385,7 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
   TIPUS_VIA 	 			NUMBER(19),
   NOM_VIA 					VARCHAR2(200),
   NUM_VIA 					VARCHAR2(100),
-  TIPUS_TRANSICIO 		    NUMBER(1),
+  TIPUS_TRANSICIO 		    VARCHAR2(12),
 
   CREATEDDATE          		TIMESTAMP(6),
   CREATEDBY_CODI       		VARCHAR2(256),

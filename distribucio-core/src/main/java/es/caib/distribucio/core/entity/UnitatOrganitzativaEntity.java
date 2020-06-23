@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -33,7 +35,8 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	@ManyToMany(mappedBy = "noves")
 	private List<UnitatOrganitzativaEntity> antigues = new ArrayList<UnitatOrganitzativaEntity>();
 	
-	@Column(name = "tipus_transicio")
+	@Column(name = "tipus_transicio", length = 12)
+	@Enumerated(EnumType.STRING)
 	private TipusTransicioEnumDto tipusTransicio;
 
 	private static final long serialVersionUID = 1L;

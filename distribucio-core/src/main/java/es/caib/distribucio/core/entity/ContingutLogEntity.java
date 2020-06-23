@@ -8,6 +8,8 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,16 +38,19 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 	/** Llargada màxima del paràmetre */
 	private static final int PARAM_MAX_LENGTH = 255;
 
-	@Column(name = "tipus", nullable = false)
+	@Column(name = "tipus", length = 30, nullable = false)
+	@Enumerated(EnumType.STRING)
 	private LogTipusEnumDto tipus;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contingut_id")
 	protected ContingutEntity contingut;
 	@Column(name = "objecte_id", length = 64)
 	private String objecteId;
-	@Column(name = "objecte_tipus")
+	@Column(name = "objecte_tipus", length = 12)
+	@Enumerated(EnumType.STRING)
 	private LogObjecteTipusEnumDto objecteTipus;
-	@Column(name = "objecte_log_tipus")
+	@Column(name = "objecte_log_tipus", length = 30)
+	@Enumerated(EnumType.STRING)
 	private LogTipusEnumDto objecteLogTipus;
 	@Column(name = "param1", length = 256)
 	private String param1;
