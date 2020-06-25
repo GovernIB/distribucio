@@ -18,15 +18,15 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 	
-	@Column(name = "tipus")
+	@Column(name = "tipus", length = 30)
 	private String tipus;
-	@Column(name = "perfil")
+	@Column(name = "perfil", length = 30)
 	private String perfil;
-	@Column(name = "fitxer_nom", length = 80)
+	@Column(name = "fitxer_nom", length = 256)
 	private String fitxerNom;
 	@Column(name = "tipus_mime", length = 30)
 	private String tipusMime;
-	@Column(name = "csv_regulacio")
+	@Column(name = "csv_regulacio", length = 640)
 	private String csvRegulacio;
 	@Column(name = "autofirma")
 	private Boolean autofirma = false;

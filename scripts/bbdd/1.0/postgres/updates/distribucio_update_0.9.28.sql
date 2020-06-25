@@ -12,8 +12,6 @@ alter table dis_contingut drop column temp_tipus;
 update dis_contingut set tipus = 'BUSTIA' where tipus = '0';  
 update dis_contingut set tipus = 'REGISTRE' where tipus = '1';  
 
-
-
 -- dis_cont_log.tipus
 alter table dis_cont_log add column temp_tipus character varying(30);
 update dis_cont_log set temp_tipus = tipus;
@@ -66,8 +64,6 @@ update dis_cont_log set tipus = 'BACK_PROCESSADA' where tipus = '38';
 update dis_cont_log set tipus = 'BACK_REBUTJADA' where tipus = '39';
 update dis_cont_log set tipus = 'BACK_ERROR' where tipus = '40';
 
-
-
 -- dis_cont_log.objecte_log_tipus
 alter table dis_cont_log add column temp_tipus character varying(30);
 update dis_cont_log set temp_tipus = objecte_log_tipus;
@@ -118,10 +114,6 @@ update dis_cont_log set objecte_log_tipus = 'BACK_PROCESSADA' where objecte_log_
 update dis_cont_log set objecte_log_tipus = 'BACK_REBUTJADA' where objecte_log_tipus = '39';
 update dis_cont_log set objecte_log_tipus = 'BACK_ERROR' where objecte_log_tipus = '40';
 
-
-
-
-
 -- dis_cont_log.objecte_tipus
 alter table dis_cont_log add column temp_tipus character varying(12);
 update dis_cont_log set temp_tipus = objecte_tipus;
@@ -144,8 +136,6 @@ update dis_cont_log set objecte_tipus= 'NOTIFICACIO' where objecte_tipus = '10';
 update dis_cont_log set objecte_tipus= 'PUBLICACIO' where objecte_tipus = '11';
 update dis_cont_log set objecte_tipus= 'ALTRES' where objecte_tipus = '12';
 
-
-
 -- dis_unitat_organitzativa.tipus_transicio
 alter table dis_unitat_organitzativa add column temp_tipus character varying(12);
 update dis_unitat_organitzativa set temp_tipus = tipus_transicio;
@@ -157,3 +147,32 @@ alter table dis_unitat_organitzativa drop column temp_tipus;
 update dis_unitat_organitzativa set tipus_transicio= 'DIVISIO' where tipus_transicio = '0';
 update dis_unitat_organitzativa set tipus_transicio= 'FUSIO' where tipus_transicio = '1';
 update dis_unitat_organitzativa set tipus_transicio= 'SUBSTITUCIO' where tipus_transicio = '2';
+
+
+
+
+
+-- 142: Revisar i corregir llargades dels camps de les anotacions ------------------------------
+alter table dis_registre alter column numero type character varying(255);
+alter table dis_registre alter column idioma_codi type character varying(19);
+alter table dis_registre alter column entitat_codi type character varying(255);
+alter table dis_registre alter column entitat_desc type character varying(255);
+alter table dis_registre alter column oficina_desc type character varying(300);
+alter table dis_registre alter column llibre_desc type character varying(255);
+alter table dis_registre alter column assumpte_desc type character varying(255);
+alter table dis_registre alter column transport_tipus_codi type character varying(20);
+alter table dis_registre alter column usuari_nom type character varying(767);
+alter table dis_registre alter column usuari_contacte type character varying(255);
+alter table dis_registre alter column aplicacio_codi type character varying(255);
+alter table dis_registre alter column aplicacio_versio type character varying(255);
+alter table dis_registre alter column docfis_codi type character varying(19);
+alter table dis_registre alter column justificant_arxiu_uuid type character varying(256);
+
+alter table dis_registre_inter alter column tipus type character varying(19);
+alter table dis_registre_inter alter column nom type character varying(255);
+alter table dis_registre_inter alter column llinatge1 type character varying(255);
+alter table dis_registre_inter alter column llinatge2 type character varying(255);
+alter table dis_registre_inter alter column rao_social type character varying(2000);
+
+alter table dis_registre_annex alter column fitxer_arxiu_uuid type character varying(256);
+

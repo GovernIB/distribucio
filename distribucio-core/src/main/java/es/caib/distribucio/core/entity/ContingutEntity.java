@@ -54,7 +54,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 
-	@Column(name = "nom", length = 256, nullable = false)
+	@Column(name = "nom", length = 1024, nullable = false)
 	protected String nom;
 	@Column(name = "tipus", length = 8, nullable = false)
 	@Enumerated(EnumType.STRING)

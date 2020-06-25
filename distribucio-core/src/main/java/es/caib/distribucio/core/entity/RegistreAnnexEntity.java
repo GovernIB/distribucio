@@ -53,13 +53,13 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 
 	@Column(name = "titol", length = 200, nullable = false)
 	private String titol;
-	@Column(name = "fitxer_nom", length = 80, nullable = false)
+	@Column(name = "fitxer_nom", length = 256, nullable = false)
 	private String fitxerNom;
 	@Column(name = "fitxer_tamany", nullable = false)
 	private int fitxerTamany;
 	@Column(name = "fitxer_mime", length = 30)
 	private String fitxerTipusMime;
-	@Column(name = "fitxer_arxiu_uuid", length = 100)
+	@Column(name = "fitxer_arxiu_uuid", length = 256)
 	private String fitxerArxiuUuid;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_captura", nullable = false)

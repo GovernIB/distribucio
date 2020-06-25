@@ -2,13 +2,13 @@ package es.caib.distribucio.core.api.registre;
 
 public class Firma {
 
-	private String tipus;
-	private String perfil;
-	private String fitxerNom;
-	private byte[] contingut;
-	private String tipusMime;
-	private String csv;
-	private String csvRegulacio;
+	private String tipus;//4
+	private String perfil;//4
+	private String fitxerNom;//comes from document custody plugin
+	private byte[] contingut;//comes from document custody plugin
+	private String tipusMime;//comes from document custody plugin
+	private String csv;//255
+	private String csvRegulacio;//13
 
 	public String getTipus() {
 		return tipus;

@@ -32,19 +32,19 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 
-	@Column(name = "tipus", length = 1, nullable = false)
+	@Column(name = "tipus", length = 19, nullable = false)
 	private String tipus;
 	@Column(name = "doc_tipus", length = 1)
 	private String documentTipus;
 	@Column(name = "doc_num", length = 17)
 	private String documentNum;
-	@Column(name = "nom", length = 30)
+	@Column(name = "nom", length = 255)
 	private String nom;
-	@Column(name = "llinatge1", length = 30)
+	@Column(name = "llinatge1", length = 255)
 	private String llinatge1;
-	@Column(name = "llinatge2", length = 30)
+	@Column(name = "llinatge2", length = 255)
 	private String llinatge2;
-	@Column(name = "rao_social", length = 80)
+	@Column(name = "rao_social", length = 2000)
 	private String raoSocial;
 	@Column(name = "pais", length = 100)
 	private String pais;

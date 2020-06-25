@@ -64,24 +64,24 @@ public class RegistreEntity extends ContingutEntity {
 	private String unitatAdministrativa;
 	@Column(name = "unitat_adm_desc", length = 100)
 	private String unitatAdministrativaDescripcio;
-	@Column(name = "numero", length = 100, nullable = false)
+	@Column(name = "numero", length = 255, nullable = false)
 	private String numero;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data", nullable = false)
 	private Date data;
 	@Column(name = "identificador", length = 100, nullable = false)
 	private String identificador;
-	@Column(name = "entitat_codi", length = 21, nullable = false)
+	@Column(name = "entitat_codi", length = 255, nullable = false)
 	private String entitatCodi;
-	@Column(name = "entitat_desc", length = 100)
+	@Column(name = "entitat_desc", length = 255)
 	private String entitatDescripcio;
 	@Column(name = "oficina_codi", length = 21, nullable = false)
 	private String oficinaCodi;
-	@Column(name = "oficina_desc", length = 100)
+	@Column(name = "oficina_desc", length = 300)
 	private String oficinaDescripcio;
 	@Column(name = "llibre_codi", length = 4, nullable = false)
 	private String llibreCodi;
-	@Column(name = "llibre_desc", length = 100)
+	@Column(name = "llibre_desc", length = 255)
 	private String llibreDescripcio;
 	@Column(name = "extracte", length = 240)
 	private String extracte;
@@ -91,7 +91,7 @@ public class RegistreEntity extends ContingutEntity {
 	private String assumpteTipusDescripcio;
 	@Column(name = "assumpte_codi", length = 16)
 	private String assumpteCodi;
-	@Column(name = "assumpte_desc", length = 100)
+	@Column(name = "assumpte_desc", length = 255)
 	private String assumpteDescripcio;
 	@Column(name = "procediment_codi", length = 64)
 	private String procedimentCodi;
@@ -107,7 +107,7 @@ public class RegistreEntity extends ContingutEntity {
 	private String idiomaCodi;
 	@Column(name = "idioma_desc", length = 100)
 	private String idiomaDescripcio;
-	@Column(name = "transport_tipus_codi", length = 2)
+	@Column(name = "transport_tipus_codi", length = 20)
 	private String transportTipusCodi;
 	@Column(name = "transport_tipus_desc", length = 100)
 	private String transportTipusDescripcio;
@@ -115,15 +115,15 @@ public class RegistreEntity extends ContingutEntity {
 	private String transportNumero;
 	@Column(name = "usuari_codi", length = 20)
 	private String usuariCodi;
-	@Column(name = "usuari_nom", length = 80)
+	@Column(name = "usuari_nom", length = 767)
 	private String usuariNom;
-	@Column(name = "usuari_contacte", length = 160)
+	@Column(name = "usuari_contacte", length = 255)
 	private String usuariContacte;
-	@Column(name = "aplicacio_codi", length = 20)
+	@Column(name = "aplicacio_codi", length = 255)
 	private String aplicacioCodi;
-	@Column(name = "aplicacio_versio", length = 15)
+	@Column(name = "aplicacio_versio", length = 255)
 	private String aplicacioVersio;
-	@Column(name = "docfis_codi", length = 1)
+	@Column(name = "docfis_codi", length = 19)
 	private String documentacioFisicaCodi;
 	@Column(name = "docfis_desc", length = 100)
 	private String documentacioFisicaDescripcio;
@@ -198,7 +198,7 @@ public class RegistreEntity extends ContingutEntity {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexEntity> annexos = new ArrayList<RegistreAnnexEntity>();
-	@Column(name = "justificant_arxiu_uuid", length = 100)
+	@Column(name = "justificant_arxiu_uuid", length = 256)
 	private String justificantArxiuUuid;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "regla_id")

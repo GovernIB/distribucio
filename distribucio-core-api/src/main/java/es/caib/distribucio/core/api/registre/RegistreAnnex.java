@@ -15,22 +15,22 @@ import java.util.List;
 public class RegistreAnnex {
 
 	private Long id;
-	private String titol;
-	private String fitxerNom;
+	private String titol;//200
+	private String fitxerNom;//comes from document custody plugin
 	private int fitxerTamany;
-	private String fitxerTipusMime;
-	private String fitxerArxiuUuid;
+	private String fitxerTipusMime;//comes from document custody plugin
+	private String fitxerArxiuUuid;//256
 	private byte[] fitxerContingut;
 	private Date eniDataCaptura;
-	private String eniOrigen;
-	private String eniEstatElaboracio;
-	private String eniTipusDocumental;
-	private String sicresTipusDocument;
-	private String localitzacio;
-	private String observacions;
+	private String eniOrigen;//10 (Integer to String)
+	private String eniEstatElaboracio;//4
+	private String eniTipusDocumental;//255
+	private String sicresTipusDocument;//2
+	private String localitzacio;//is not set
+	private String observacions;//50
 	private List<Firma> firmes;
-	private String timestamp;
-	private String validacioOCSP;
+	private String timestamp;//is not set
+	private String validacioOCSP;//255
 
 	public Long getId() {
 		return id;

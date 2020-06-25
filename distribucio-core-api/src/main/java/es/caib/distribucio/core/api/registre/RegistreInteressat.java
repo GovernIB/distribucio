@@ -11,30 +11,30 @@ package es.caib.distribucio.core.api.registre;
 public class RegistreInteressat {
 
 	private Long id;
-	private String tipus;
-	private String documentTipus;
-	private String documentNum;
-	private String nom;
-	private String llinatge1;
-	private String llinatge2;
-	private String raoSocial;
-	private String pais;
-	private String paisCodi;
-	private String provincia;
-	private String provinciaCodi;
-	private String municipi;
-	private String municipiCodi;
-	private String adresa;
-	private String codiPostal;
-	private String email;
-	private String telefon;
-	private String emailHabilitat;
-	private String canalPreferent;
-	private String observacions;
-	private String codiDire; 
+	private String tipus;//19 (Long to String)
+	private String documentTipus;//1
+	private String documentNum;//17
+	private String nom;//255
+	private String llinatge1;//255
+	private String llinatge2;//255
+	private String raoSocial;//2000
+	private String pais;//100
+	private String paisCodi;//19 (Long to String) //3
+	private String provincia;//50
+	private String provinciaCodi;//19 (Long to String) //2
+	private String municipi;//50
+	private String municipiCodi;//19 (Long to String) //4
+	private String adresa;//160
+	private String codiPostal;//5
+	private String email;//160
+	private String telefon;//20
+	private String emailHabilitat;//160
+	private String canalPreferent;//2
+	private String observacions;//160
+	private String codiDire;//15
 	private RegistreInteressat representant;
 	private RegistreInteressat representat;
-    private String organCodi;
+    private String organCodi;//is not set
 
 
 
