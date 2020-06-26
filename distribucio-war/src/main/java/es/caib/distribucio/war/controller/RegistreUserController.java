@@ -332,6 +332,7 @@ public class RegistreUserController extends BaseUserController {
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
+			return modalUrlTancar();
 		} catch (Exception exception) {
 			String errMsg = getMessage(
 					request, 	
@@ -341,8 +342,9 @@ public class RegistreUserController extends BaseUserController {
 					request,
 					errMsg);
 			logger.error(errMsg, exception);
+			return "registreViaEmail";
 		}
-		return modalUrlTancar();
+		
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/reenviar", method = RequestMethod.GET)

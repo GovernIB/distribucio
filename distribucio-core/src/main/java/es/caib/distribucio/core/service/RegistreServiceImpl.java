@@ -34,6 +34,7 @@ import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -80,6 +81,7 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
@@ -99,6 +101,7 @@ import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
+import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
@@ -123,6 +126,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreRepository registreRepository;
 	@Autowired
 	private RegistreAnnexRepository registreAnnexRepository;
+	@Autowired
+	RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private BustiaRepository bustiaRepository;
 	@Autowired
@@ -955,7 +960,6 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 
-	@Transactional(readOnly = true)
 	@Override
 	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
 			Long entitatId,
@@ -998,69 +1002,35 @@ public class RegistreServiceImpl implements RegistreService {
 				registreId);
 		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			RegistreAnnexDto annex = conversioTipusHelper.convertir(
-					annexEntity,
-					RegistreAnnexDto.class);
-			if (annex.getFitxerArxiuUuid() != null && !annex.getFitxerArxiuUuid().isEmpty()) {
-				
-				final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
-				Timer.Context contexarxiuDocumentConsultar = timearxiuDocumentConsultar.time();
-				Document document = pluginHelper.arxiuDocumentConsultar(
-						annex.getFitxerArxiuUuid(),
-						null,
-						true);
-				contexarxiuDocumentConsultar.stop();
-				
-				DocumentMetadades metadades = document.getMetadades();
-				if (metadades != null) {
-					annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+
+			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
+				if (!annexEntity.isSignaturaDetallsDescarregat()) {
+					registreHelper.loadSignaturaDetallsToDB(annexEntity);
 				}
-				
-				if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-					List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(annexEntity, null);
-					Iterator<Firma> it = document.getFirmes().iterator();
 					
-					int firmaIndex = 0;
-					while (it.hasNext()) {
-						Firma arxiuFirma = it.next();
-						if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
-							ArxiuFirmaDto firma = firmes.get(firmaIndex);
-							if (pluginHelper.isValidaSignaturaPluginActiu()) {
-								byte[] documentContingut = document.getContingut().getContingut();
-								byte[] firmaContingut = arxiuFirma.getContingut();
-								if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
-										ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
-									firmaContingut = arxiuFirma.getContingut();
-								}
-								
-								final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
-								Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
-								firma.setDetalls(
-										pluginHelper.validaSignaturaObtenirDetalls(
-												documentContingut,
-												firmaContingut));
-								contevalidaSignaturaObtenirDetalls.stop();
-								
-								
-							}
-							firmaIndex++;
-						} else {
-							it.remove();
-						}
-					}
-					annex.setFirmes(firmes);
-					annex.setAmbFirma(true);
- 				}
+				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
+						annexEntity,
+						null);
+
+				RegistreAnnexDto annex = conversioTipusHelper.convertir(
+						annexEntity,
+						RegistreAnnexDto.class);
+				annex.setFirmes(firmes);
+				annex.setAmbFirma(true);
+				annexos.add(annex);
 				
 			}
-			annexos.add(annex);
 		}
-		
 		
 		contexgetgetAnnexosAmbArxiu.stop();
 		return annexos;
 	}
+	
+	
 
+
+	
+	
 	@Transactional(readOnly = true)
 	@Override
 	public RegistreAnnexDto getAnnexSenseFirmes(
@@ -1142,61 +1112,49 @@ public class RegistreServiceImpl implements RegistreService {
 					true);
 		}
 		
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
-		RegistreAnnexDto registreAnnexDto = conversioTipusHelper.convertir(
-				registreAnnexEntity,
-				RegistreAnnexDto.class);
+		RegistreAnnexEntity annexEntity = registreAnnexRepository.findOne(annexId);
+		RegistreAnnexDto registreAnnexDto;
 		
 		// if annex is already created in arxiu use document and firma content from arxiu
-		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-			Document document = pluginHelper.arxiuDocumentConsultar(
-					registreAnnexEntity.getFitxerArxiuUuid(),
-					null,
-					true);
-			if (document.getFirmes() != null && document.getFirmes().size() > 0) {
-				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(registreAnnexEntity, null);
-				Iterator<Firma> it = document.getFirmes().iterator();
-				int firmaIndex = 0;
-				while (it.hasNext()) {
-					Firma arxiuFirma = it.next();
-					if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
-						ArxiuFirmaDto firma = firmes.get(firmaIndex);
-						if (pluginHelper.isValidaSignaturaPluginActiu()) {
-							byte[] documentContingut = document.getContingut().getContingut();
-							byte[] firmaContingut = arxiuFirma.getContingut();
-							firma.setDetalls(
-									pluginHelper.validaSignaturaObtenirDetalls(
-											documentContingut,
-											firmaContingut));
-						}
-						firmaIndex++;
-					} else {
-						it.remove();
-					}
-				}
-				registreAnnexDto.setFirmes(firmes);
-				registreAnnexDto.setAmbFirma(true);
+		if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
+			if (!annexEntity.isSignaturaDetallsDescarregat()) {
+				registreHelper.loadSignaturaDetallsToDB(annexEntity);
 			}
-			// if annex is not yet created in arxiu use document and firma content from gestio documental
+				
+			List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
+					annexEntity,
+					null);
+
+			registreAnnexDto = conversioTipusHelper.convertir(
+					annexEntity,
+					RegistreAnnexDto.class);
+			registreAnnexDto.setFirmes(firmes);
+			registreAnnexDto.setAmbFirma(true);
+			
+
+		// if annex is not yet created in arxiu use document and firma content from gestio documental
 		} else {
+			registreAnnexDto = conversioTipusHelper.convertir(
+					annexEntity,
+					RegistreAnnexDto.class);
 
 			List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-					registreAnnexEntity,
+					annexEntity,
 					null);
 
 			for (int i = 0; i < firmes.size(); i++) {
 
 				ArxiuFirmaDto arxiuFirmaDto = firmes.get(i);
-				RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexEntity.getFirmes().get(i);
+				RegistreAnnexFirmaEntity registreAnnexFirmaEntity = annexEntity.getFirmes().get(i);
 
 				if (pluginHelper.isValidaSignaturaPluginActiu()) {
 					
 					byte[] documentContingut = null;
-					if (registreAnnexEntity.getGesdocDocumentId() != null && !registreAnnexEntity.getGesdocDocumentId().isEmpty()) {
+					if (annexEntity.getGesdocDocumentId() != null && !annexEntity.getGesdocDocumentId().isEmpty()) {
 						
 						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 						gestioDocumentalHelper.gestioDocumentalGet(
-								registreAnnexEntity.getGesdocDocumentId(),
+								annexEntity.getGesdocDocumentId(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 								streamAnnex);
 						documentContingut = streamAnnex.toByteArray();
