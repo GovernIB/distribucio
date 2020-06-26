@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -25,11 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -57,16 +60,21 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
+import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.service.RegistreServiceImpl;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentMetadades;
+import es.caib.plugins.arxiu.api.FirmaTipus;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -84,7 +92,8 @@ public class RegistreHelper {
 	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
 	@Autowired
 	private RegistreInteressatRepository registreInteressatRepository;
-
+	@Autowired
+	RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
@@ -372,6 +381,11 @@ public class RegistreHelper {
 				firma.setCsvRegulacio(annexFirma.getCsvRegulacio());
 				firma.setAutofirma(annexFirma.isAutofirma());
 				firma.setContingut(firmaContingut);
+				
+				firma.setDetalls(conversioTipusHelper.convertirList(
+						annexFirma.getDetalls(),
+						ArxiuFirmaDetallDto.class));
+				
 				firmes.add(firma);
 			}
 		}
@@ -550,6 +564,12 @@ public class RegistreHelper {
 									}
 								}
 							}
+							
+							if (!annex.isSignaturaDetallsDescarregat()) {
+								loadSignaturaDetallsToDB(annex);
+							}
+							
+							
 						}
 					
 					} catch (Exception ex) {
@@ -574,6 +594,70 @@ public class RegistreHelper {
 			return null;
 		}
 			
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
+		
+		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
+		
+		try {
+			final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
+			Timer.Context contexarxiuDocumentConsultar = timearxiuDocumentConsultar.time();
+			Document document = pluginHelper.arxiuDocumentConsultar(
+					annexEntity.getFitxerArxiuUuid(),
+					null,
+					true);
+			contexarxiuDocumentConsultar.stop();
+			
+			DocumentMetadades metadades = document.getMetadades();
+			if (metadades != null) {
+				annexEntity.updateFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+			}
+			
+			if (document.getFirmes() != null && document.getFirmes().size() > 0) {
+				List<RegistreAnnexFirmaEntity> firmes = annexEntity.getFirmes();
+				Iterator<es.caib.plugins.arxiu.api.Firma> it = document.getFirmes().iterator();
+				
+				int firmaIndex = 0;
+				while (it.hasNext()) {
+					es.caib.plugins.arxiu.api.Firma arxiuFirma = it.next();
+					if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
+						RegistreAnnexFirmaEntity firma = firmes.get(firmaIndex);
+						if (pluginHelper.isValidaSignaturaPluginActiu()) {
+							byte[] documentContingut = document.getContingut().getContingut();
+							byte[] firmaContingut = arxiuFirma.getContingut();
+							if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
+									ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
+								firmaContingut = arxiuFirma.getContingut();
+							}
+							
+							final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
+							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
+							List<ArxiuFirmaDetallDto> firmaDetalls = pluginHelper.validaSignaturaObtenirDetalls(
+									documentContingut,
+									firmaContingut);
+							contevalidaSignaturaObtenirDetalls.stop();
+							
+							for (ArxiuFirmaDetallDto arxiuFirmaDetallDto : firmaDetalls) {
+								RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
+										arxiuFirmaDetallDto,
+										firma).build();
+								registreFirmaDetallRepository.saveAndFlush(firmaDetallEntity);
+								firma.getDetalls().add(firmaDetallEntity);
+							}
+							
+						}
+						firmaIndex++;
+					} else {
+						it.remove();
+					}
+				}
+				}
+			annexEntity.updateSignaturaDetallsDescarregat(true);
+		} catch (Exception e) {
+			logger.error("Error al carregar singatura detalls a la base de dades", e);
+		}
 	}
 
 	@Transactional

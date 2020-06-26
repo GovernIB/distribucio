@@ -1,11 +1,16 @@
 package es.caib.distribucio.core.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
@@ -39,6 +44,22 @@ public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 	@ForeignKey(name = "dis_firma_annex_fk")
 	private RegistreAnnexEntity annex;
 	
+	@OneToMany(
+			mappedBy = "firma",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private List<RegistreFirmaDetallEntity> detalls = new ArrayList<RegistreFirmaDetallEntity>();
+	
+	
+	public List<RegistreFirmaDetallEntity> getDetalls() {
+		return detalls;
+	}
+
+	public void setDetalls(List<RegistreFirmaDetallEntity> detalls) {
+		this.detalls = detalls;
+	}
+
 	public String getTipus() {
 		return tipus;
 	}

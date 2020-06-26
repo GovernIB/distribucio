@@ -35,10 +35,17 @@ public class RegistreAnnexDto implements Serializable {
 	private boolean ambFirma;
 	private String firmaCsv;
 	private Long registreId;
+	private boolean signaturaDetallsDescarregat;
 	
 	private static final long serialVersionUID = -8656873728034274066L;
 
 	
+	public boolean isSignaturaDetallsDescarregat() {
+		return signaturaDetallsDescarregat;
+	}
+	public void setSignaturaDetallsDescarregat(boolean signaturaDetallsDescarregat) {
+		this.signaturaDetallsDescarregat = signaturaDetallsDescarregat;
+	}
 	public Long getRegistreId() {
 		return registreId;
 	}

@@ -90,6 +90,7 @@ public class ConversioTipusHelper {
 						target.setTimestamp(source.getTimestamp());
 						target.setValidacioOCSP(source.getValidacioOCSP());
 						target.setFitxerArxiuUuid(source.getFitxerArxiuUuid());
+						target.setFirmaCsv(source.getFirmaCsv());
 						if(source.getFirmes()!=null && !source.getFirmes().isEmpty()){
 							target.setAmbFirma(true);
 						} else {

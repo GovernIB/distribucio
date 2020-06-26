@@ -85,6 +85,11 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	@Column(name = "gesdoc_doc_id")
 	private String gesdocDocumentId;
 	
+	@Column(name = "sign_detalls_descarregat")
+	private boolean signaturaDetallsDescarregat;
+	@Column(name = "firma_csv", length = 256)
+	private String firmaCsv;
+	
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
@@ -99,6 +104,13 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	@Version
 	private long version = 0;
 
+	
+	public String getFirmaCsv() {
+		return firmaCsv;
+	}
+	public void updateFirmaCsv(String firmaCsv) {
+		this.firmaCsv = firmaCsv;
+	}
 	public String getTitol() {
 		return titol;
 	}
@@ -154,6 +166,12 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 		return firmes;
 	}
 
+	public boolean isSignaturaDetallsDescarregat() {
+		return signaturaDetallsDescarregat;
+	}
+	public void updateSignaturaDetallsDescarregat(boolean signaturaDetallsDescarregat) {
+		this.signaturaDetallsDescarregat = signaturaDetallsDescarregat;
+	}
 	public void updateFitxerArxiuUuid(String fitxerArxiuUuid) {
 		this.fitxerArxiuUuid = fitxerArxiuUuid;
 	}
