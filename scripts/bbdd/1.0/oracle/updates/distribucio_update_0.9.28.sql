@@ -12,8 +12,6 @@ alter table dis_contingut drop column temp_tipus;
 update dis_contingut set tipus = 'BUSTIA' where tipus = '0';  
 update dis_contingut set tipus = 'REGISTRE' where tipus = '1';  
 
-
-
 -- dis_cont_log.tipus
 alter table dis_cont_log add (temp_tipus varchar2(30));
 update dis_cont_log set temp_tipus = tipus;
@@ -66,8 +64,6 @@ update dis_cont_log set tipus = 'BACK_PROCESSADA' where tipus = '38';
 update dis_cont_log set tipus = 'BACK_REBUTJADA' where tipus = '39';
 update dis_cont_log set tipus = 'BACK_ERROR' where tipus = '40';
 
-
-
 -- dis_cont_log.objecte_log_tipus
 alter table dis_cont_log add (temp_tipus varchar2(30));
 update dis_cont_log set temp_tipus = objecte_log_tipus;
@@ -118,10 +114,6 @@ update dis_cont_log set objecte_log_tipus = 'BACK_PROCESSADA' where objecte_log_
 update dis_cont_log set objecte_log_tipus = 'BACK_REBUTJADA' where objecte_log_tipus = '39';
 update dis_cont_log set objecte_log_tipus = 'BACK_ERROR' where objecte_log_tipus = '40';
 
-
-
-
-
 -- dis_cont_log.objecte_tipus
 alter table dis_cont_log add (temp_tipus varchar2(12));
 update dis_cont_log set temp_tipus = objecte_tipus;
@@ -144,8 +136,6 @@ update dis_cont_log set objecte_tipus= 'NOTIFICACIO' where objecte_tipus = '10';
 update dis_cont_log set objecte_tipus= 'PUBLICACIO' where objecte_tipus = '11';
 update dis_cont_log set objecte_tipus= 'ALTRES' where objecte_tipus = '12';
 
-
-
 -- dis_unitat_organitzativa.tipus_transicio
 alter table dis_unitat_organitzativa add (temp_tipus varchar2(12));
 update dis_unitat_organitzativa set temp_tipus = tipus_transicio;
@@ -157,8 +147,6 @@ alter table dis_unitat_organitzativa drop column temp_tipus;
 update dis_unitat_organitzativa set tipus_transicio= 'DIVISIO' where tipus_transicio = '0';
 update dis_unitat_organitzativa set tipus_transicio= 'FUSIO' where tipus_transicio = '1';
 update dis_unitat_organitzativa set tipus_transicio= 'SUBSTITUCIO' where tipus_transicio = '2';
-
-
 
 
 
@@ -191,3 +179,29 @@ alter table dis_registre_annex modify fitxer_arxiu_uuid varchar2(256);
 alter table dis_registre_annex modify fitxer_nom varchar2(256);
 
 alter table dis_registre_annex_firma modify fitxer_nom varchar2(256);
+
+
+
+-- 151: Rendiment de l'enviament per email d'una anotació de registre
+
+ALTER TABLE DIS_REGISTRE_ANNEX
+ADD (
+    SIGN_DETALLS_DESCARREGAT NUMBER(1) DEFAULT 0
+);
+
+CREATE TABLE DIS_REGISTRE_FIRMA_DETALL
+(
+    DATA TIMESTAMP,
+    RESPONSABLE_NIF VARCHAR2(30),
+    RESPONSABLE_NOM VARCHAR2(256),
+    EMISSOR_CERTIFICAT VARCHAR2(2000),
+    FIRMA_ID NUMBER(19),
+    CREATEDBY_CODI       	VARCHAR2(64),
+    CREATEDDATE          	TIMESTAMP(6),
+    LASTMODIFIEDBY_CODI  	VARCHAR2(64),
+    LASTMODIFIEDDATE     	TIMESTAMP(6)
+);
+ALTER TABLE DIS_REGISTRE_FIRMA_DETALL ADD (CONSTRAINT DIS_REGISTRE_FIRMA_DETALL_PK PRIMARY KEY (ID)); 
+ALTER TABLE DIS_REGISTRE_FIRMA_DETALL ADD CONSTRAINT DIS_REGISTRE_DETALL_FIRMA_FK FOREIGN KEY (FIRMA_ID) REFERENCES DIS_REGISTRE_ANNEX_FIRMA;
+
+ALTER TABLE DIS_REGISTRE_ANNEX MODIFY FIRMA_CSV VARCHAR2(256);
