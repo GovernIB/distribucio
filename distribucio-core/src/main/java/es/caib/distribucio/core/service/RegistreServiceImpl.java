@@ -25,6 +25,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -645,9 +646,7 @@ public class RegistreServiceImpl implements RegistreService {
 				registreId);
 		RegistreAnnexDto justificant = getJustificantPerRegistre(
 					entitat, 
-					bustia, 
-					registre.getJustificantArxiuUuid(), 
-					true);
+					registre);
 		justificant.setRegistreId(registreId);
 		
 		contexgetRegistreJustificant.stop();
@@ -950,7 +949,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
 			if (documentContingut != null) {
-				arxiu.setNom(obtenirJustificantNom(document));
+				arxiu.setNom(registreHelper.obtenirJustificantNom(document));
 				arxiu.setContentType(documentContingut.getTipusMime());
 				arxiu.setContingut(documentContingut.getContingut());
 				arxiu.setTamany(documentContingut.getContingut().length);
@@ -1746,66 +1745,28 @@ public class RegistreServiceImpl implements RegistreService {
 		return exceptionProcessant;
 	}
 
+	
 	private RegistreAnnexDto getJustificantPerRegistre(
 			EntitatEntity entitat,
-			ContingutEntity registre,
-			String justificantUuid,
-			boolean ambContingut) throws NotFoundException {
+			RegistreEntity registre) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitat.getId() + ", "
 				+ "registreId=" + registre.getId() + ", "
-				+ "justificantUuid=" + justificantUuid + ")");
-		RegistreAnnexDto annex = new RegistreAnnexDto();
-		Document document = pluginHelper.arxiuDocumentConsultar(justificantUuid, null, ambContingut);
-		annex.setFitxerNom(obtenirJustificantNom(document));
-		annex.setFitxerTamany(document.getContingut().getContingut().length);
-		annex.setFitxerTipusMime(document.getContingut().getTipusMime());
-		annex.setTitol(document.getNom());
-		DocumentMetadades metadades = document.getMetadades();
-		if (metadades != null) {
-			annex.setDataCaptura(metadades.getDataCaptura());
-			annex.setOrigenCiutadaAdmin(metadades.getOrigen().name());
-			annex.setNtiElaboracioEstat(metadades.getEstatElaboracio().name());
-			annex.setNtiTipusDocument(metadades.getTipusDocumental().name());
-			annex.setFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
-		}
-		return annex;
-	}
-
-	private String obtenirJustificantNom(Document document) {
-		String fileName = "";
-		String fileExtension = "";
-		if (document.getContingut() != null) { 
-			if (document.getContingut().getTipusMime() != null) {
-				fileExtension = document.getContingut().getTipusMime();
-			}
-			if (document.getContingut().getArxiuNom() != null && !document.getContingut().getArxiuNom().isEmpty()) {
-				fileName = document.getContingut().getArxiuNom();
-				fileExtension = document.getContingut().getTipusMime();
-			} else {
-				fileName = document.getNom();
-			}
+				+ "justificantUuid=" + registre.getJustificantArxiuUuid() + ")");
+		
+		RegistreAnnexEntity justificant;
+		if (!registre.isJustificantDescarregat()) {
+			justificant = registreHelper.loadJustificantToDB(registre.getId());
 		} else {
-			fileName = document.getNom();
+			justificant = registreRepository.getOne(registre.getId()).getJustificant();
 		}
-		String fragment = "";
-    	if (fileName.length() > 4) {
-    		fragment = fileName.substring(fileName.length() -5);
-    	}
-    	if (fragment.contains(".")) {
-    		return fileName;
-    	}
-    	if (!fileExtension.isEmpty()) {
-    		if (fileExtension.contains("/")) {
-    			fileName += ("." + fileExtension.split("/")[1]);
-    		} else if (fileExtension.contains(".")) {
-    			fileName += fileExtension;
-    		} else {
-    			fileName += "." + fileExtension;
-    		}
-    	}
-		return fileName;
+		
+		return conversioTipusHelper.convertir(
+				justificant,
+				RegistreAnnexDto.class);
 	}
+	
+
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 

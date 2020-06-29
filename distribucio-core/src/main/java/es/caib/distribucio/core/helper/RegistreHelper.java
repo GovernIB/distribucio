@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.Firma;
@@ -492,6 +493,9 @@ public class RegistreHelper {
 					logger.debug("Creat el contenidor a l'Arxiu per l'anotació (" +
 							"anotacioNumero=" + registreEntity.getNumero() + ", " +
 							"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
+					
+					loadJustificantToDB(registreEntity.getId());
+					
 				} catch (Exception ex) {
 					return ex;
 				}
@@ -658,6 +662,73 @@ public class RegistreHelper {
 		} catch (Exception e) {
 			logger.error("Error al carregar singatura detalls a la base de dades", e);
 		}
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public RegistreAnnexEntity loadJustificantToDB(Long registreId) {
+		
+		RegistreAnnexEntity annex = new RegistreAnnexEntity();
+		try {
+			RegistreEntity registre = registreRepository.getOne(registreId);
+			Document document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true);
+			annex.updateFitxerNom(obtenirJustificantNom(document));
+			annex.updateFitxerTamany(document.getContingut().getContingut().length);
+			annex.updateFitxerTipusMime(document.getContingut().getTipusMime());
+			annex.updateTitol(document.getNom());
+			DocumentMetadades metadades = document.getMetadades();
+			if (metadades != null) {
+				annex.updateDataCaptura(metadades.getDataCaptura());
+				annex.updateOrigenCiutadaAdmin(metadades.getOrigen().toString());
+				annex.updateNtiElaboracioEstat(metadades.getEstatElaboracio().toString());
+				annex.updateNtiTipusDocument(metadades.getTipusDocumental().toString());
+				annex.updateFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+			}
+			annex.updateRegistre(registre);
+			
+			registreAnnexRepository.saveAndFlush(annex);
+			registre.updateJustificantDescarregat(true);
+			registre.updateJustificant(annex);
+		} catch (Exception e) {
+			logger.error("Error descarregant justificant", e);
+		}
+		return annex;
+	}
+	
+	
+
+	public String obtenirJustificantNom(Document document) {
+		String fileName = "";
+		String fileExtension = "";
+		if (document.getContingut() != null) { 
+			if (document.getContingut().getTipusMime() != null) {
+				fileExtension = document.getContingut().getTipusMime();
+			}
+			if (document.getContingut().getArxiuNom() != null && !document.getContingut().getArxiuNom().isEmpty()) {
+				fileName = document.getContingut().getArxiuNom();
+				fileExtension = document.getContingut().getTipusMime();
+			} else {
+				fileName = document.getNom();
+			}
+		} else {
+			fileName = document.getNom();
+		}
+		String fragment = "";
+    	if (fileName.length() > 4) {
+    		fragment = fileName.substring(fileName.length() -5);
+    	}
+    	if (fragment.contains(".")) {
+    		return fileName;
+    	}
+    	if (!fileExtension.isEmpty()) {
+    		if (fileExtension.contains("/")) {
+    			fileName += ("." + fileExtension.split("/")[1]);
+    		} else if (fileExtension.contains(".")) {
+    			fileName += fileExtension;
+    		} else {
+    			fileName += "." + fileExtension;
+    		}
+    	}
+		return fileName;
 	}
 
 	@Transactional

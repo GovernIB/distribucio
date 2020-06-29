@@ -37,17 +37,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_registre_annex",
-		uniqueConstraints = {
-				@UniqueConstraint(
-						name = "dis_reganx_mult_uk",
-						columnNames = {
-								"registre_id",
-								"titol",
-								"fitxer_arxiu_uuid",
-								"data_captura",
-								"origen_ciuadm",
-								"nti_tipus_doc"})})
+@Table(	name = "dis_registre_annex")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 
@@ -70,7 +60,7 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	private String origenCiutadaAdmin;
 	@Column(name = "nti_tipus_doc", length = 4, nullable = false)
 	private String ntiTipusDocument;
-	@Column(name = "sicres_tipus_doc", length = 2, nullable = false)
+	@Column(name = "sicres_tipus_doc", length = 2)
 	private String sicresTipusDocument;
 	@Column(name = "nti_elaboracio_estat", length = 4)
 	private String ntiElaboracioEstat;
@@ -162,10 +152,36 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	public RegistreEntity getRegistre() {
 		return registre;
 	}
+	public void updateRegistre(RegistreEntity registre) {
+		this.registre = registre;
+	}
 	public List<RegistreAnnexFirmaEntity> getFirmes() {
 		return firmes;
 	}
-
+	public void updateSicresTipusDocument(String sicresTipusDocument) {
+		this.sicresTipusDocument = sicresTipusDocument;
+	}
+	public void updateTitol(String titol) {
+		this.titol = titol;
+	}
+	public void updateFitxerNom(String fitxerNom) {
+		this.fitxerNom = fitxerNom;
+	}
+	public void updateFitxerTipusMime(String fitxerTipusMime) {
+		this.fitxerTipusMime = fitxerTipusMime;
+	}
+	public void updateNtiTipusDocument(String ntiTipusDocument) {
+		this.ntiTipusDocument = ntiTipusDocument;
+	}
+	public void updateNtiElaboracioEstat(String ntiElaboracioEstat) {
+		this.ntiElaboracioEstat = ntiElaboracioEstat;
+	}
+	public void updateDataCaptura(Date dataCaptura) {
+		this.dataCaptura = dataCaptura;
+	}
+	public void updateOrigenCiutadaAdmin(String origenCiutadaAdmin) {
+		this.origenCiutadaAdmin = origenCiutadaAdmin;
+	}
 	public boolean isSignaturaDetallsDescarregat() {
 		return signaturaDetallsDescarregat;
 	}

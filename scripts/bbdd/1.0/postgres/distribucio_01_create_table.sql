@@ -209,7 +209,9 @@ CREATE TABLE DIS_REGISTRE
   BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
   BACK_OBSERVACIONS 	character varying(4000),
   BACK_RETRY_ENVIAR_DATA  timestamp without time zone,
-  PRESENCIAL 			BOOLEAN
+  PRESENCIAL 			BOOLEAN,
+  JUSTIFICANT_DESCARREGAT BOOLEAN DEFAULT FALSE,
+  JUSTIFICANT_ID BIGINT
 );
 
 
@@ -225,7 +227,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
   LOCALITZACIO         character varying(80),
   ORIGEN_CIUADM        character varying(1)     NOT NULL,
   NTI_TIPUS_DOC        character varying(4)     NOT NULL,
-  SICRES_TIPUS_DOC     character varying(2)     NOT NULL,
+  SICRES_TIPUS_DOC     character varying(2),
   NTI_ELABORACIO_ESTAT character varying(4),
   OBSERVACIONS         character varying(50),
   FIRMA_MODE           integer,

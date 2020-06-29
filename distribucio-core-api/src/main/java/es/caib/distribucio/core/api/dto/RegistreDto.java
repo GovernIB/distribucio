@@ -80,6 +80,7 @@ public class RegistreDto extends ContingutDto {
 	private RegistreAnnexDto justificant;
 	
 	private String justificantArxiuUuid;
+	private boolean justificantDescarregat;
 	
 	private Boolean llegida;
 	private Boolean presencial;
@@ -527,6 +528,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setInteressatsNoms(String interessatsNoms) {
 		this.interessatsNoms = interessatsNoms;
+	}
+	public boolean isJustificantDescarregat() {
+		return justificantDescarregat;
+	}
+	public void setJustificantDescarregat(boolean justificantDescarregat) {
+		this.justificantDescarregat = justificantDescarregat;
 	}
 	
 }

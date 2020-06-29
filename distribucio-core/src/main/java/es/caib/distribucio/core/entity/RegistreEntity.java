@@ -186,6 +186,13 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "presencial")
 	private Boolean presencial;
 	
+	@Column(name = "justificant_descarregat")
+	private boolean justificantDescarregat;
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "justificant_id")
+	private RegistreAnnexEntity justificant;
+	
+	
 	@OneToMany(
 			mappedBy = "registre",
 			fetch = FetchType.LAZY,
@@ -217,6 +224,19 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "numero_copia")
 	private Integer numeroCopia;
 
+	
+	public RegistreAnnexEntity getJustificant() {
+		return justificant;
+	}
+	public void updateJustificant(RegistreAnnexEntity justificant) {
+		this.justificant = justificant;
+	}
+	public boolean isJustificantDescarregat() {
+		return justificantDescarregat;
+	}
+	public void updateJustificantDescarregat(boolean justificantDescarregat) {
+		this.justificantDescarregat = justificantDescarregat;
+	}
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
 	}
