@@ -207,6 +207,7 @@ ALTER TABLE DIS_REGISTRE_FIRMA_DETALL ADD CONSTRAINT DIS_FIRMA_REGISTRE_DETALL_F
 
 ALTER TABLE DIS_REGISTRE_ANNEX MODIFY FIRMA_CSV VARCHAR2(256);
 
+GRANT SELECT, UPDATE, INSERT, DELETE ON DIS_REGISTRE_FIRMA_DETALL TO WWW_DISTRIBUCIO;
 
 
 --------------------- 175: Guardar informació de firmes d'annexos per no haver-els de consultar cada vegada -------------------------------
