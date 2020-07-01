@@ -106,7 +106,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    ContingutEntity c " +
 			"where " +
 			"(c.pare in (:pares)) " +
-			"and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.REGLA_PENDENT)")
+			"and (c.pendent=true)")
 	public long countPendentsByPares(
 			@Param("pares") List<? extends ContingutEntity> pares);
 	
