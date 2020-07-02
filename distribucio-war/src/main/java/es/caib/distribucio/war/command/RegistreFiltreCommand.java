@@ -8,6 +8,7 @@ import java.util.Date;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
@@ -30,7 +31,15 @@ public class RegistreFiltreCommand {
 	private String numeroOrigen;
 	private String interessat;
 	
+	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 
+
+	public RegistreEnviatPerEmailEnumDto getRegistreEnviatPerEmailEnum() {
+		return registreEnviatPerEmailEnum;
+	}
+	public void setRegistreEnviatPerEmailEnum(RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum) {
+		this.registreEnviatPerEmailEnum = registreEnviatPerEmailEnum;
+	}
 	public String getInteressat() {
 		return interessat;
 	}

@@ -1030,6 +1030,8 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		
+		registreEntity.updateEnviatPerEmail(true);
+		
 		contextregistreAnotacioEnviarPerEmail.stop();
 	}
 

@@ -223,8 +223,16 @@ public class RegistreEntity extends ContingutEntity {
 	/** Com que es pot reenviar un registre a una altra bústia amb el mateix número de registre es posa el número de còpia per distingir-los. */
 	@Column(name = "numero_copia")
 	private Integer numeroCopia;
+	@Column(name = "enviat_per_email")
+	private boolean enviatPerEmail;
 
 	
+	public boolean isEnviatPerEmail() {
+		return enviatPerEmail;
+	}
+	public void updateEnviatPerEmail(boolean enviatPerEmail) {
+		this.enviatPerEmail = enviatPerEmail;
+	}
 	public RegistreAnnexEntity getJustificant() {
 		return justificant;
 	}

@@ -298,7 +298,7 @@ public class RegistreUserController extends BaseUserController {
 		return "redirect:registreUser";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.GET)
 	public String bustiaEnviarByEmailGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
@@ -311,7 +311,7 @@ public class RegistreUserController extends BaseUserController {
 		return "registreViaEmail";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/enviarByEmail/{contingutId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.POST)
 	public String bustiaEnviarByEmailPost(
 			HttpServletRequest request,
 			@Valid RegistreEnviarViaEmailCommand command,

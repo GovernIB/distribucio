@@ -27,7 +27,17 @@ public class RegistreFiltreDto implements Serializable {
 	private String numeroOrigen;
 	private String interessat;
 	
+	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 
+
+	public RegistreEnviatPerEmailEnumDto getRegistreEnviatPerEmailEnum() {
+		return registreEnviatPerEmailEnum;
+	}
+	public void setRegistreEnviatPerEmailEnum(RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum) {
+		this.registreEnviatPerEmailEnum = registreEnviatPerEmailEnum;
+	}
+
+	
 	public String getInteressat() {
 		return interessat;
 	}

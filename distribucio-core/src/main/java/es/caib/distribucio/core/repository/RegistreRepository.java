@@ -236,6 +236,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esNullDataFi = true or r.data < :dataFi) " +
 			"and (:esProcessat = false or r.pendent = false) " +
 			"and (:esPendent = false or r.pendent = true) " +
+			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
@@ -259,6 +260,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esPendent") boolean esPendent,
 			@Param("esNullInteressat") boolean esNullInteressat,
 			@Param("interessat") String interessat,
+			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
+			@Param("enviatPerEmail") Boolean enviatPerEmail,
 			Pageable pageable);
 
 }

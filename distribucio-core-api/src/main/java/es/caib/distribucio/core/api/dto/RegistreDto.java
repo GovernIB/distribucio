@@ -92,7 +92,15 @@ public class RegistreDto extends ContingutDto {
 	private boolean isBustiaActiva;
 	// == BustiaContingutDto
 	
+	private boolean enviatPerEmail;
+
 	
+	public boolean isEnviatPerEmail() {
+		return enviatPerEmail;
+	}
+	public void setEnviatPerEmail(boolean enviatPerEmail) {
+		this.enviatPerEmail = enviatPerEmail;
+	}
 	public Boolean getPresencial() {
 		return presencial;
 	}

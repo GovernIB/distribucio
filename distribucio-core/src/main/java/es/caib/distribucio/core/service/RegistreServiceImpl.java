@@ -50,6 +50,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -382,6 +383,15 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
 			boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
+			Boolean enviatPerEmail = null;
+			if (filtre.getRegistreEnviatPerEmailEnum() != null) {
+				if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+					enviatPerEmail = true;
+				} else {
+					enviatPerEmail = false;
+				}
+			}
+			
 			Date dataRecepcioFi = filtre.getDataRecepcioFi();
 			if (dataRecepcioFi != null) {
 				Calendar c = new GregorianCalendar();
@@ -422,6 +432,8 @@ public class RegistreServiceImpl implements RegistreService {
 						esPendent,
 						filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
 						filtre.getInteressat(),
+						enviatPerEmail == null,
+						enviatPerEmail,
 						paginacioHelper.toSpringDataPageable(paginacioParams,
 								mapeigOrdenacio));
 				contextTotalfindRegistreByPareAndFiltre.stop();
