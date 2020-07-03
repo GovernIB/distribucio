@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -39,6 +41,7 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -48,6 +51,7 @@ import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
+import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -63,6 +67,8 @@ public class ContingutHelper {
 
 	@Autowired
 	private ContingutRepository contingutRepository;
+	@Autowired
+	private ContingutLogRepository contingutLogRepository;
 	@Autowired
 	private ContingutMovimentRepository contenidorMovimentRepository;
 	@Autowired
@@ -175,6 +181,20 @@ public class ContingutHelper {
 			registreDto.setNumeroOrigen(registreEntity.getNumeroOrigen());
 			registreDto.setNumComentaris(contingutComentariRepository.countByContingut(registreEntity));
 			// toBustiaContingut //
+			
+			// Enviaments via email
+			if (registreEntity.isEnviatPerEmail()) {
+				List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(
+						contingut);
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				for(ContingutLogEntity log : logs ) {
+					if (LogTipusEnumDto.ENVIAMENT_EMAIL.equals(log.getTipus()) ) {
+						// Cadena tipus dd/MM/yyyy HH:mm:ss Destinataris: email@email.com
+						registreDto.getEnviamentsPerEmail().add(sdf.format(log.getCreatedDate().toDate()) + " " + log.getParam2());
+					}
+				}
+
+			}
 			
 			contingutDto = registreDto;
 		}

@@ -3,9 +3,9 @@
  */
 package es.caib.distribucio.core.api.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
@@ -93,6 +93,7 @@ public class RegistreDto extends ContingutDto {
 	// == BustiaContingutDto
 	
 	private boolean enviatPerEmail;
+	private List<String> enviamentsPerEmail = new ArrayList<String>();
 
 	
 	public boolean isEnviatPerEmail() {
@@ -100,6 +101,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setEnviatPerEmail(boolean enviatPerEmail) {
 		this.enviatPerEmail = enviatPerEmail;
+	}
+	public List<String> getEnviamentsPerEmail() {
+		return enviamentsPerEmail;
+	}
+	public void setEnviamentsPerEmail(List<String> enviamentsPerEmail) {
+		this.enviamentsPerEmail = enviamentsPerEmail;
 	}
 	public Boolean getPresencial() {
 		return presencial;

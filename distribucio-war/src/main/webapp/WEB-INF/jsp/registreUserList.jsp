@@ -210,6 +210,7 @@ $(document).ready(function() {
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
+				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="numero" width="15%" data-template="#contingutTemplate">
@@ -253,7 +254,9 @@ $(document).ready(function() {
 						{{/if}}
 
 						{{if enviatPerEmail}}
-							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>"></span>
+							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
+{{for enviamentsPerEmail}} {{>}} 
+{{/for}}"></span>
 						{{/if}}
 					</script>
 					
