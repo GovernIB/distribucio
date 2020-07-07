@@ -235,16 +235,25 @@ public class DatatablesHelper {
 			LOGGER.debug("Informació de la llista (tamany=" + llista.size() + ")");
 		else
 			LOGGER.debug("Informació de la llista (null)");
+		
+		DatatablesParams params = new DatatablesParams(request);
+		
+		List<T> llistaMod = new ArrayList<T>();
+		
 		PaginaDto<T> dto = new PaginaDto<T>();
-		dto.setNumero(0);
-		dto.setTamany((llista != null) ? llista.size() : 0);
+		dto.setNumero(params.getStart() != null? params.getStart() : 0);
+		dto.setTamany(params.getLength() != null? params.getLength() : ((llista != null) ? llista.size() : 0));
 		dto.setTotal(1);
 		dto.setElementsTotal((llista != null) ? llista.size() : 0);
 		dto.setAnteriors(false);
 		dto.setPrimera(true);
 		dto.setPosteriors(false);
 		dto.setDarrera(true);
-		dto.setContingut(llista);
+		
+		if(!llista.isEmpty())
+			llistaMod = llista.subList( dto.getNumero(), dto.getTamany() < (llista.size() - dto.getNumero())? dto.getTamany() : llista.size());
+		
+		dto.setContingut(llistaMod);
 		return getDatatableResponse(request, bindingResult, dto, atributId, null);
 	}
 
