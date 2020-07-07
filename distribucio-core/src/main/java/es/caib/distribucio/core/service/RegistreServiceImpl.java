@@ -282,9 +282,9 @@ public class RegistreServiceImpl implements RegistreService {
 		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
 				entitat, 
 				(filtre.getNom() == null || filtre.getNom().isEmpty()),
-				filtre.getNom(),
+				filtre.getNom() != null? filtre.getNom().trim() : filtre.getNom(),
 				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
-				filtre.getNumeroOrigen(),
+				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : filtre.getNumeroOrigen(),
 				(filtre.getUnitatOrganitzativa() == null),
 				filtre.getUnitatOrganitzativa(),
 				(filtre.getBustia() == null),
@@ -297,7 +297,7 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
 				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
-				filtre.getBackCodi(),
+				filtre.getBackCodi() != null? filtre.getBackCodi().trim() : filtre.getBackCodi(),
 				paginacioHelper.toSpringDataPageable(paginacioParams));
 		return paginacioHelper.toPaginaDto(
 				registres,
