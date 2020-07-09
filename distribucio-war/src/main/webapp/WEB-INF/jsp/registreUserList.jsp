@@ -201,7 +201,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="11"
+		data-default-order="12"
 		data-default-dir="desc">
 		<thead>
 			<tr>

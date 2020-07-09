@@ -1177,6 +1177,8 @@ public class RegistreServiceImpl implements RegistreService {
 					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
 							documentContingut,
 							firmaContingut));
+				} else {
+					logger.warn("ValidaSignaturaPlugin is not configured");
 				}
 			}
 

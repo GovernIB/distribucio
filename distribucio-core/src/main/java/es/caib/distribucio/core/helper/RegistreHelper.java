@@ -600,7 +600,7 @@ public class RegistreHelper {
 			
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
@@ -651,6 +651,8 @@ public class RegistreHelper {
 								firma.getDetalls().add(firmaDetallEntity);
 							}
 							
+						} else {
+							logger.warn("ValidaSignaturaPlugin is not configured");
 						}
 						firmaIndex++;
 					} else {
@@ -664,7 +666,6 @@ public class RegistreHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public RegistreAnnexEntity loadJustificantToDB(Long registreId) {
 		
 		RegistreAnnexEntity annex = new RegistreAnnexEntity();
