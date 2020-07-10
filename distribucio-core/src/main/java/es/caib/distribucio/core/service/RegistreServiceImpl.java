@@ -1081,7 +1081,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return annex;
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,

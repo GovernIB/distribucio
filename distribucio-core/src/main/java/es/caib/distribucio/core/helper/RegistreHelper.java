@@ -603,6 +603,8 @@ public class RegistreHelper {
 
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
+		logger.info("Loading Signatura detalls to DB");
+		
 		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
 		
 		try {

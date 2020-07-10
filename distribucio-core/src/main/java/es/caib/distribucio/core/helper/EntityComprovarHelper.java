@@ -160,7 +160,7 @@ public class EntityComprovarHelper {
 					bustiaId,
 					BustiaEntity.class);
 		}
-		if (!entitat.equals(bustia.getEntitat())) {
+		if (!entitat.getId().equals(bustia.getEntitat().getId())) {
 			throw new ValidationException(
 					bustiaId,
 					BustiaEntity.class,
