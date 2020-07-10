@@ -76,7 +76,7 @@
 				domPrefix = '<"row"<"col-md-' + colMd50p + '"i><"col-md-' + colMd50p + '"f>>';
 			else
 				domPrefix = '<"row"<"col-md-' + colMd50p + '"i><"col-md-' + colMd50p + '"<"botons">>>';
-			var language = window.navigator.userLanguage || window.navigator.language;
+			var language = window.localStorage.getItem('requestLocale') || window.navigator.userLanguage || window.navigator.language;
 			// Només acceptam es i ca com a llengues //
 			if (language.startsWith("es")) {
 				language = "es";

@@ -24,6 +24,11 @@
     <script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
 	<decorator:head />
 </head>
+<script type="text/javascript">
+	// Guarda l'idioma de la configuració de l'usuari a local storage
+	// necesari per les traduccions de literals del paginador del dataTables
+	localStorage.setItem('requestLocale', '${requestLocale}');
+</script>
 <body>
 	<div class="container-nocappeus">
 		<div id="contingut-missatges"><dis:missatges/></div>

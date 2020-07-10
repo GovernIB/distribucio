@@ -73,9 +73,14 @@ body {
 	padding-top: 120px;
 }
 </style>
+<script type="text/javascript">
+	// Guarda l'idioma de la configuració de l'usuari a local storage
+	// necesari per les traduccions de literals del paginador del dataTables
+	localStorage.setItem('requestLocale', '${requestLocale}');
+</script>
 </head>
 <body>
-
+	
 	<div class="navbar navbar-default navbar-fixed-top navbar-app" role="navigation">
 		<div class="container container-caib">
 			<div class="navbar-header">
