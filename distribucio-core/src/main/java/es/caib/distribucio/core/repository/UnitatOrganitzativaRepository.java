@@ -27,14 +27,24 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"where " +
 			"    uo.codiDir3Entitat = :codiDir3Entitat " +
 			"and (:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:codi||'%')) " +
-			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) ")
+			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) " + 
+			"and (:esNullCodiUnitatSuperior = true or lower(uo.codiUnitatSuperior) like lower('%'||:codiUnitatSuperior||'%')) " + 
+			"and (:esNullCodiUnitatArrel = true or lower(uo.codiUnitatArrel) like lower('%'||:codiUnitatArrel||'%')) " + 
+			"and (:esNullEstat = true or uo.estat = :estat) ")
 	Page<UnitatOrganitzativaEntity> findByCodiDir3AndUnitatDenominacioFiltrePaginat(
 			@Param("codiDir3Entitat") String codiDir3Entitat,
 			@Param("esNullFiltreCodi") boolean esNullFiltreCodi,
 			@Param("codi") String codi, 
 			@Param("esNullFiltreDenominacio") boolean esNullFiltreDenominacio,
-			@Param("denominacio") String denominacio,		
+			@Param("denominacio") String denominacio,	
+			@Param("esNullCodiUnitatSuperior") boolean esNullCodiUnitatSuperior,
+			@Param("codiUnitatSuperior") String codiUnitatSuperior,
+			@Param("esNullCodiUnitatArrel") boolean esNullCodiUnitatArrel,
+			@Param("codiUnitatArrel") String codiUnitatArrel,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") String estat,
 			Pageable pageable);
+
 	
 	@Query(	"from " +
 			"    UnitatOrganitzativaEntity uo " +

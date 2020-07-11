@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -126,6 +129,18 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				false,
 				true,
 				false);
+
+		String estat = null; 
+		if (filtre.getEstat() == UnitatOrganitzativaEstatEnumDto.VIGENTE) {
+			estat = "V";
+		} else if (filtre.getEstat() == UnitatOrganitzativaEstatEnumDto.EXTINGUIDO) {
+			estat = "E";
+		} else if (filtre.getEstat() == UnitatOrganitzativaEstatEnumDto.TRANSITORIO) {
+			estat = "T";
+		} else if (filtre.getEstat() == UnitatOrganitzativaEstatEnumDto.ANULADO) {
+			estat = "A";
+		}
+		
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				unitatOrganitzativaRepository.findByCodiDir3AndUnitatDenominacioFiltrePaginat(
@@ -134,6 +149,12 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 						filtre.getCodi(),
 						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
 						filtre.getDenominacio(),
+						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(), 
+						filtre.getCodiUnitatSuperior(),
+						filtre.getCodiUnitatArrel() == null || filtre.getCodiUnitatArrel().isEmpty(),
+						filtre.getCodiUnitatArrel(),
+						estat == null,
+						estat,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				UnitatOrganitzativaDto.class,
 				new Converter<UnitatOrganitzativaEntity, UnitatOrganitzativaDto>() {

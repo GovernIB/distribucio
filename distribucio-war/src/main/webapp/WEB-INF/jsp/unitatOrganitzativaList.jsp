@@ -30,6 +30,15 @@
 				<div class="col-md-4">
 					<dis:inputText name="denominacio" inline="true" placeholderKey="unitat.list.filtre.denominacio"/>
 				</div>
+				<div class="col-md-4">
+					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
+				</div>
+				<div class="col-md-4">
+					<dis:inputText name="codiUnitatArrel" inline="true" placeholderKey="unitat.list.filtre.codiUnitatArrel"/>
+				</div>
+				<div class="col-md-4">
+					<dis:inputSelect name="estat"  optionEnum="UnitatOrganitzativaEstatEnumDto" placeholderKey="unitat.list.filtre.estat" emptyOption="true" inline="true"/>
+				</div>				
 				<div class="col-md-4 pull-right">
 					<div class="pull-right">
 						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>

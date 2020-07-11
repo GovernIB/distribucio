@@ -18,6 +18,29 @@ public class UnitatOrganitzativaFiltreDto implements Serializable {
 	private String codi;
 	private String denominacio;
 	
+	private String codiUnitatSuperior;
+	private String codiUnitatArrel;
+	private UnitatOrganitzativaEstatEnumDto estat;
+	
+	
+	public String getCodiUnitatSuperior() {
+		return codiUnitatSuperior;
+	}
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
+		this.codiUnitatSuperior = codiUnitatSuperior;
+	}
+	public String getCodiUnitatArrel() {
+		return codiUnitatArrel;
+	}
+	public void setCodiUnitatArrel(String codiUnitatArrel) {
+		this.codiUnitatArrel = codiUnitatArrel;
+	}
+	public UnitatOrganitzativaEstatEnumDto getEstat() {
+		return estat;
+	}
+	public void setEstat(UnitatOrganitzativaEstatEnumDto estat) {
+		this.estat = estat;
+	}
 	public String getCodi() {
 		return codi;
 	}
