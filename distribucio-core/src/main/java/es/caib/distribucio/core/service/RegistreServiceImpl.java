@@ -1082,6 +1082,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	@Override
+	@Transactional
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
 			Long bustiaId,
