@@ -152,12 +152,15 @@ public class ContingutController extends BaseUserController {
 					fitxer.getContingut(),
 					response);
 		} catch (Exception ex) {
-			logger.error("Error descarregant el document", ex);
-			return getModalControllerReturnValueError(
-					request,
-					"/contingut/" + bustiaId + "/registre/" + registreId,
+			String errMsg = getMessage(
+					request, 
 					"contingut.controller.document.descarregar.error",
 					new Object[] {ex.getMessage()});
+			logger.error(errMsg, ex);
+			MissatgesHelper.error(
+					request, 
+					errMsg);
+			return "redirect:" + request.getHeader("referer");
 		}
 		return null;
 	}
@@ -168,11 +171,24 @@ public class ContingutController extends BaseUserController {
 			HttpServletResponse response,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId) throws IOException {
-		FitxerDto fitxer = registreService.getJustificant(registreId);
-		writeFileToResponse(
-				fitxer.getNom(),
-				fitxer.getContingut(),
-				response);
+		
+		try {
+			FitxerDto fitxer = registreService.getJustificant(registreId);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (Exception ex) {
+			String errMsg = getMessage(
+					request, 
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
+			logger.error(errMsg, ex);
+			MissatgesHelper.error(
+					request, 
+					errMsg);
+			return "redirect:" + request.getHeader("referer");
+		}
 		return null;
 	}
 

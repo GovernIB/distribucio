@@ -63,11 +63,11 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2019";
 	
 
-	private static final int N_ANOTACIONS = 10;
+	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 3;
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
-	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indca si adjuntar els documents tècnics de sistra2 com annexos
+	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indca si adjuntar els documents tècnics de sistra2 com annexos
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
 	 * @throws Exception */
@@ -220,7 +220,7 @@ public class BustiaV1Test {
 	        		"justificant",
 	        		"justificant.pdf",
 	        		"application/pdf",
-	        		"9f33c5c7-7d0f-4d70-9082-c541a42cc041",
+	        		"f1dc28d2-5641-4d26-b2d8-7f3417ae3831",
 	        		null, //getContingutJustificant(),
 	        		"1",
 	        		"EE01",

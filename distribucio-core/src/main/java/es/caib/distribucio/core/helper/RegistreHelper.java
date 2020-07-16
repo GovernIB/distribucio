@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -38,7 +37,6 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.Firma;
@@ -674,6 +672,7 @@ public class RegistreHelper {
 		try {
 			RegistreEntity registre = registreRepository.getOne(registreId);
 			Document document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true);
+			annex.updateFitxerArxiuUuid(registre.getJustificantArxiuUuid());
 			annex.updateFitxerNom(obtenirJustificantNom(document));
 			annex.updateFitxerTamany(document.getContingut().getContingut().length);
 			annex.updateFitxerTipusMime(document.getContingut().getTipusMime());
