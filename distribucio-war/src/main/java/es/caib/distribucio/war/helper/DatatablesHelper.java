@@ -250,7 +250,7 @@ public class DatatablesHelper {
 		dto.setPosteriors(false);
 		dto.setDarrera(true);
 		
-		if(!llista.isEmpty())
+		if( llista != null && !llista.isEmpty())
 			llistaMod = llista.subList( dto.getNumero(), (dto.getTamany() > 0 && dto.getTamany() < (llista.size() - dto.getNumero()))? dto.getTamany() : llista.size());
 		
 		dto.setContingut(llistaMod);
