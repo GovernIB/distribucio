@@ -232,7 +232,11 @@ $(document).ready(function() {
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
-
+						{{if enviatPerEmail}}
+							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
+							{{for enviamentsPerEmail}} {{>}} 
+							{{/for}}"></span>
+						{{/if}}
 						{{if procesEstat == 'ARXIU_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
 						{{else procesEstat == 'REGLA_PENDENT'}}
@@ -251,12 +255,6 @@ $(document).ready(function() {
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
 						{{else procesEstat == 'BACK_ERROR'}}
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
-						{{/if}}
-
-						{{if enviatPerEmail}}
-							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
-{{for enviamentsPerEmail}} {{>}} 
-{{/for}}"></span>
 						{{/if}}
 					</script>
 					
