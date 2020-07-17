@@ -191,7 +191,15 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre);
+		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre,
+				false,
+				false,
+				false,
+				false,
+				true,
+				false,
+				false,
+				true);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());		
 		return registreAnotacio;
 	}

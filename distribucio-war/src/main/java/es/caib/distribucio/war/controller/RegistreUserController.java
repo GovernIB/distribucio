@@ -148,7 +148,7 @@ public class RegistreUserController extends BaseUserController {
 						bustiaId,
 						registreId));
 		model.addAttribute("contingutId", bustiaId);
-		return "registreUserDetall";
+		return "registreDetall";//"registreUserDetall";
 	}	
 	
 	@RequestMapping(value = "/registreAnnex/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
