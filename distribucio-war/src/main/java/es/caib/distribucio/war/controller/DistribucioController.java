@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class DistribucioController {
 		} else {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 			if (entitat == null)
-				throw new SecurityException("No te cap entitat assignada");
+				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
 			if (RolHelper.isRolActualAdministrador(request)) {
 				return "redirect:bustiaAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
@@ -52,6 +53,16 @@ public class DistribucioController {
 				return "index";
 			}
 		}
+	}
+	
+	
+	@RequestMapping(value = "/unauthorized", method = RequestMethod.GET)
+	public String unauthorized(
+			HttpServletRequest request,
+			Model model) {
+		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
+		return "unauthorized";
+		
 	}
 
 	@RequestMapping(value = ModalHelper.ACCIO_MODAL_TANCAR, method = RequestMethod.GET)
