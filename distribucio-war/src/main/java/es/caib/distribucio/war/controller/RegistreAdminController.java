@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -153,6 +155,12 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 				bustiesFinals = bustiesFiltrades;
 			}
+		} else {
+			PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
+			paginacioParams.setPaginaTamany(Integer.MAX_VALUE);
+			BustiaFiltreDto filtre = new BustiaFiltreDto();
+			filtre.setNom(text);
+			bustiesFinals = bustiaService.findAmbFiltreAdmin(entitatActual.getId(), filtre, paginacioParams).getContingut();
 		}
 		return bustiesFinals;
 	}

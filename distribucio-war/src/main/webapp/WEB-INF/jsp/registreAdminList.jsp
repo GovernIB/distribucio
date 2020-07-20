@@ -31,11 +31,12 @@ $(document).ready(function() {
 		var darrerFragment = rutaFragmentada[rutaFragmentada.length - 1];
 		if (this.value == null || this.value.length == 0) {
 			$('#bustia').data('url-llistat', rutaBusties.replace(darrerFragment, 'null'));
-			$('#bustia').prop('disabled', true);
+			//$('#bustia').prop('disabled', true);
 			$('#bustia').val('').change();
 		} else {
 			$('#bustia').data('url-llistat', rutaBusties.replace(darrerFragment, this.value));
-			$('#bustia').prop('disabled', false);
+			$('#bustia').val('').change();
+			//$('#bustia').prop('disabled', false);
 		}
 	});
 	$('#netejarFiltre').click(function(e) {
