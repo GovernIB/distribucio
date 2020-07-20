@@ -24,7 +24,7 @@ public class UnitatOrganitzativaFiltreCommand {
 	
 	private String codiUnitatSuperior;
 	private String codiUnitatArrel;
-	private UnitatOrganitzativaEstatEnumDto estat;
+	private UnitatOrganitzativaEstatEnumDto estat = UnitatOrganitzativaEstatEnumDto.VIGENTE;
 	
 	
 	public String getCodiUnitatSuperior() {
