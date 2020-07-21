@@ -63,9 +63,11 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2019";
 	
 
+	private static final int N_ANOTACIONS = 1;
+	private static final int N_ANNEXOS = 3;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
-	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indca si adjuntar els documents tècnics de sistra2 com annexos
+	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indca si adjuntar els documents tècnics de sistra2 com annexos
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
 	 * @throws Exception */
@@ -96,7 +98,7 @@ public class BustiaV1Test {
 	@Test
 	public void test() throws DatatypeConfigurationException, IOException {
 		RegistreAnotacio anotacio; 
-		int nAnotacions = 1;
+		int nAnotacions = N_ANOTACIONS;
 		for (int i=1; i<=nAnotacions; i++) {
 			System.out.println("Enviant l'anotació " + i);
 			anotacio = new RegistreAnotacio(); 
@@ -132,7 +134,7 @@ public class BustiaV1Test {
 	        anotacio.setSolicita("Text sol·licita " + i);
 	        List<Firma> firmes = null;
 	        RegistreAnnex annex;
-	        int nAnnexos = 1;
+	        int nAnnexos = N_ANNEXOS;
 	        for (int j=1; j<=nAnnexos; j++) {
 		        if (TEST_ANNEX_FIRMAT) {
 		        	firmes = new ArrayList<Firma>();
@@ -218,7 +220,7 @@ public class BustiaV1Test {
 	        		"justificant",
 	        		"justificant.pdf",
 	        		"application/pdf",
-	        		"9f33c5c7-7d0f-4d70-9082-c541a42cc041",
+	        		"f1dc28d2-5641-4d26-b2d8-7f3417ae3831",
 	        		null, //getContingutJustificant(),
 	        		"1",
 	        		"EE01",

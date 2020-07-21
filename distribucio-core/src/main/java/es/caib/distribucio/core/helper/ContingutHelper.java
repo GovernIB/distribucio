@@ -597,6 +597,13 @@ public class ContingutHelper {
 		// Copia els annexos
 		if (registreOriginal.getAnnexos() != null) {
 			for (RegistreAnnexEntity registreAnnex: registreOriginal.getAnnexos()) {
+
+				if ((registreOriginal.getJustificant() != null && registreOriginal.getJustificant().getId().equals(registreAnnex.getId())
+						|| (registreOriginal.getJustificantArxiuUuid() != null && registreOriginal.getJustificantArxiuUuid().equals(registreAnnex.getFitxerArxiuUuid())))) {
+					// No copia l'annex justificant
+					continue;
+				}
+				
 				RegistreAnnexEntity nouAnnex = RegistreAnnexEntity.getBuilder(
 						registreAnnex.getTitol(), 
 						registreAnnex.getFitxerNom(), 

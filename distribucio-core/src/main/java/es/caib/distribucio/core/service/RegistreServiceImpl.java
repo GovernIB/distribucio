@@ -53,6 +53,7 @@ import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
@@ -200,7 +201,17 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false,
 				true);
-		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());		
+		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
+
+		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
+		for (RegistreAnnex annexDto : registreAnotacio.getAnnexos()) {
+			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
+					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
+				registreAnotacio.getAnnexos().remove(annexDto);
+				break;
+			}
+		}
+		
 		return registreAnotacio;
 	}
 
@@ -1016,7 +1027,12 @@ public class RegistreServiceImpl implements RegistreService {
 				registreId);
 		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
 		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-
+			
+			if ((registre.getJustificant() != null && registre.getJustificant().getId().equals(annexEntity.getId()))
+					|| (registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexEntity.getFitxerArxiuUuid()))){
+				// El justificant no es retorna com un annex				
+			}
+			else 
 			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
 				if (!annexEntity.isSignaturaDetallsDescarregat()) {
 					registreHelper.loadSignaturaDetallsToDB(annexEntity);
@@ -1089,8 +1105,8 @@ public class RegistreServiceImpl implements RegistreService {
 		return annex;
 	}
 
-	@Transactional(readOnly = true)
 	@Override
+	@Transactional
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
 			Long bustiaId,
@@ -1185,6 +1201,8 @@ public class RegistreServiceImpl implements RegistreService {
 					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
 							documentContingut,
 							firmaContingut));
+				} else {
+					logger.warn("ValidaSignaturaPlugin is not configured");
 				}
 			}
 
