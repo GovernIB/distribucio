@@ -461,7 +461,8 @@ public class UnitatOrganitzativaHelper {
 	public ArbreDto<UnitatOrganitzativaDto> findPerCodiDir3EntitatAmbCodisPermesos(
 			String codiDir3,
 			Set<String> unitatCodiPermesos) {
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(codiDir3).clone();
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(codiDir3);
+		arbre = (arbre != null)? arbre.clone() : new ArbreDto<UnitatOrganitzativaDto>(false);
 		if (unitatCodiPermesos != null) {
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
