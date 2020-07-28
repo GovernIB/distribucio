@@ -174,19 +174,19 @@ tr.clicable {
 						<c:if test="${! empty registre.procesError }">
 							<c:choose>
 								<c:when test="${registre.procesEstat ==  'ARXIU_PENDENT'} ">
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>:${registre.procesError}"></span>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
 								<c:when test="${registre.procesEstat ==  'REGLA_PENDENT'}">
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>:${registre.procesError}"></span>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
 								<c:when test="${registre.procesEstat ==  'BACK_PENDENT'}">
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>:${registre.procesError}"></span>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
 								<c:when test="${registre.procesEstat ==  'BACK_ERROR'}">
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>:${registre.procesError}"></span>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
 								<c:otherwise>
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>:${registre.procesError}"></span>
+									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:otherwise>
 							</c:choose>
 						</c:if>						
@@ -554,7 +554,7 @@ tr.clicable {
 						</c:if>
 					</div>
 				</c:if>
-				${isRolActualAdministrador}
+				
 				<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0)}">
 					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>
@@ -581,7 +581,7 @@ tr.clicable {
 				</dl>
 				
 				<c:if test="${not empty registre.procesError}">
-					<pre style="height:300px">${registre.procesError}</pre>
+					<pre style="height:300px"><c:out value="${registre.procesError}" escapeXml="true"/></pre>
 				</c:if>
 				
 			</div>
@@ -630,7 +630,7 @@ tr.clicable {
 				
 					<c:choose>
 					   <c:when test = "${not empty registre.procesError}">
-							<pre style="height:300px">${registre.procesError}</pre>
+							<pre style="height:300px"><c:out value="${registre.procesError}" escapeXml="true"/></pre>
 					   </c:when>
 					   <c:when test = "${registre.backObservacions != null}">
 							<pre style="height:300px">${registre.backObservacions}</pre>
