@@ -328,7 +328,7 @@ public class RegistreUserController extends BaseUserController {
 		for(String adr : adresses.split(",")) {
 			if(!adresesAr.contains(adr) && adr.matches("^\\S+@\\S+\\.\\S+$")) {
 				adresesAr.add(adr);
-				adressesParsed += adr + ",";
+				adressesParsed += (adressesParsed.isEmpty()? "" : ",") + adr ;
 			}
 		}
 
