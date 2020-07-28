@@ -1021,12 +1021,12 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		mailSender.send(missatge);
 		
-		String logTo = "Destinataris: " + adresses;
+		//String logTo = "Destinataris: " + adresses;
 		contingutLogHelper.log(
 				registreEntity,
 				LogTipusEnumDto.ENVIAMENT_EMAIL,
 				registreEntity.getNom(),
-				logTo,
+				adresses,
 				false,
 				false);
 		

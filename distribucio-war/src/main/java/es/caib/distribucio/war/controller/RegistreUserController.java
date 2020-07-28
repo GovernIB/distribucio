@@ -321,8 +321,17 @@ public class RegistreUserController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			return "registreUserList";
 		}
-		String adresses = command.getAddresses();
-		String adressesParsed = adresses.replaceAll("\\s*,\\s*|\\s+", ",");
+		
+		String adresses = ((command.getAddresses() != null)?command.getAddresses() : "").replaceAll("\\s*,\\s*|\\s+", ",");
+		String adressesParsed = "";
+		List<String> adresesAr = new ArrayList<String>();
+		for(String adr : adresses.split(",")) {
+			if(!adresesAr.contains(adr) && adr.matches("^\\S+@\\S+\\.\\S+$")) {
+				adresesAr.add(adr);
+				adressesParsed += adr + ",";
+			}
+		}
+
 		try {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
