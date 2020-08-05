@@ -101,7 +101,6 @@ public class ContingutHelper {
 				false,
 				false,
 				false,
-				false,
 				true);
 	}
 	public ContingutDto toContingutDto(
@@ -111,7 +110,7 @@ public class ContingutHelper {
 			boolean filtrarFillsSegonsPermisRead,
 			boolean ambDades,
 			boolean ambPath,
-			boolean pathNomesFinsExpedientArrel,
+	//		boolean pathNomesFinsExpedientArrel,
 			boolean ambVersions,
 			boolean ambUnitatOrganitzativa) {
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto"));
@@ -240,8 +239,7 @@ public class ContingutHelper {
 			if (ambPath) {
 				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
-						ambPermisos,
-						pathNomesFinsExpedientArrel);
+						ambPermisos);
 				contingutDto.setPath(path);
 			}
 			// FILLS
@@ -264,7 +262,6 @@ public class ContingutHelper {
 							false,
 							false,
 							false,
-							false,
 							true));
 				}
 				for (ContingutEntity fill: fills) {
@@ -272,7 +269,6 @@ public class ContingutHelper {
 						ContingutDto fillDto = toContingutDto(
 								fill,
 								ambPermisos,
-								false,
 								false,
 								false,
 								false,
@@ -757,8 +753,7 @@ public class ContingutHelper {
 
 	public List<ContingutDto> getPathContingutComDto(
 			ContingutEntity contingut,
-			boolean ambPermisos,
-			boolean nomesFinsExpedientArrel) {
+			boolean ambPermisos) {
 		final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto"));
 		Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
 		
@@ -766,9 +761,9 @@ public class ContingutHelper {
 		List<ContingutDto> pathDto = null;
 		if (path != null) {
 			pathDto = new ArrayList<ContingutDto>();
-//			boolean expedientArrelTrobat = !nomesFinsExpedientArrel;
+
 			for (ContingutEntity contingutPath: path) {
-//				if (expedientArrelTrobat) {
+
 				final Timer getPathContingutPathToContingutDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto.getPathContingutPathToContingutDto"));
 				Timer.Context getPathContingutComDtoContextPathToContingutDto = getPathContingutPathToContingutDto.time();
 					pathDto.add(
@@ -780,10 +775,9 @@ public class ContingutHelper {
 								false,
 								false,
 								false,
-								false,
 								false));
 					getPathContingutComDtoContextPathToContingutDto.stop();
-//				}
+
 			}
 			
 		}
