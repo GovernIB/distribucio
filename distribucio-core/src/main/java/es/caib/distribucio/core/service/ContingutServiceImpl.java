@@ -128,7 +128,6 @@ public class ContingutServiceImpl implements ContingutService {
 				ambFills,
 				true,
 				true,
-				false,
 				ambVersions,
 				true);
 		
@@ -172,7 +171,6 @@ public class ContingutServiceImpl implements ContingutService {
 				ambFills,
 				true,
 				true,
-				false,
 				true,
 				true);
 	}
@@ -419,7 +417,6 @@ public class ContingutServiceImpl implements ContingutService {
 								false,
 								false,
 								true,
-								false,
 								false,
 								true);
 					}

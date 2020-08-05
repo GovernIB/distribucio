@@ -205,7 +205,6 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true,
 					false,
-					false,
 					true);
 			contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 
@@ -262,7 +261,6 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					false,
 					true,
-					false,
 					false,
 					true));
 		}
@@ -339,7 +337,6 @@ public class RegistreServiceImpl implements RegistreService {
 								false,
 								false,
 								true,
-								false,
 								false,
 								true);
 					}
@@ -542,7 +539,6 @@ public class RegistreServiceImpl implements RegistreService {
 								false,
 								false,
 								true,
-								false,
 								false,
 								true);
 					}

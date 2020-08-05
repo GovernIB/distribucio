@@ -198,7 +198,6 @@ public class BustiaHelper {
 				false,
 				true,
 				false,
-				false,
 				ambUnitatOrganitzativa);
 	}
 	public List<BustiaDto> toBustiaDto(
