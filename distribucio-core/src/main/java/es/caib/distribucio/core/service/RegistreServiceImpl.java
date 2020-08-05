@@ -337,6 +337,63 @@ public class RegistreServiceImpl implements RegistreService {
 					}
 				});
 	}
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findRegistreAdminIdsAmbFiltre(
+			Long entitatId,
+			AnotacioRegistreFiltreDto filtre) {
+		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
+				"entitatId=" + entitatId + ", " +
+				"filtre=" + filtre  +  ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		Date dataInici = filtre.getDataCreacioInici();
+		if (dataInici != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataInici);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			dataInici = cal.getTime();
+		}
+		Date dataFi = filtre.getDataCreacioFi();
+		if (dataFi != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dataFi);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			dataFi = cal.getTime();
+		}
+		logger.debug(">>> Filtre: " + filtre);
+		List<Long> registres = registreRepository.findIdsByFiltre(
+				entitat, 
+				(filtre.getNom() == null || filtre.getNom().isEmpty()),
+				filtre.getNom() != null? filtre.getNom().trim() : filtre.getNom(),
+				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
+				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : filtre.getNumeroOrigen(),
+				(filtre.getUnitatOrganitzativa() == null),
+				filtre.getUnitatOrganitzativa(),
+				(filtre.getBustia() == null),
+				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
+				(dataInici == null),
+				dataInici,
+				(dataFi == null),
+				dataFi,
+				(filtre.getEstat() == null),
+				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
+				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
+				filtre.getBackCodi() != null? filtre.getBackCodi().trim() : filtre.getBackCodi());
+		return registres;
+	}
 
 	
 

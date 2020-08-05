@@ -655,7 +655,7 @@ public class RegistreUserController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/classificarMultiple", method = RequestMethod.GET)
-	public String bustiaClassificarMultipleGet(
+	public String classificarMultipleGet(
 			HttpServletRequest request,
 			Model model) {
 		@SuppressWarnings("unchecked")
@@ -689,7 +689,7 @@ public class RegistreUserController extends BaseUserController {
 
 	@RequestMapping(value = "/{bustiaId}/classificarMultiple/{registreId}", method = RequestMethod.POST)
 	@ResponseBody
-	public ClassificacioResultatDto bustiaClassificarMultiplePost(
+	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,

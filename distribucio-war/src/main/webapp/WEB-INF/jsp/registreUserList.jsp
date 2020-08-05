@@ -55,6 +55,7 @@ $(document).ready(function() {
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 	});
+	
 	$('#taulaDades').on( 'draw.dt', function () {
 		$.get( "registreUser/getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
@@ -89,6 +90,7 @@ $(document).ready(function() {
 				}
 		);
 	});
+	
 	$('#mostrarInactivesBtn').click(function() {
 		mostrarInactives = !$(this).hasClass('active');
 		// Modifica el formulari

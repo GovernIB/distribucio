@@ -23,6 +23,20 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
+
+<style>
+table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+	background-color: #fcf8e3;
+	color: #666666;
+}
+table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
+	cursor: pointer;
+}
+</style>
+	
 <script>
 $(document).ready(function() {
 	$('#unitatOrganitzativa').on('change', function (e) {
@@ -47,13 +61,43 @@ $(document).ready(function() {
 	});
 	$('#unitatOrganitzativa').trigger('change');
 
-
 	$('#nomesAmbErrorsBtn').click(function() {
 		nomesAmbErrors = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#nomesAmbErrors').val(nomesAmbErrors);
 	})
 
+	$('#taulaDades').on( 'draw.dt', function () {
+		$('#seleccioAll').on('click', function() {
+			$.get(
+					"registreAdmin/select",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+		$('#seleccioNone').on('click', function() {
+			$.get(
+					"registreAdmin/deselect",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('select-none');
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+	}).on('selectionchange.dataTable', function (e, accio, ids) {
+		$.get(
+				"registreAdmin/" + accio,
+				{ids: ids},
+				function(data) {
+					$("#seleccioCount").html(data);
+				}
+		);
+	});
 	
 });
 </script>
@@ -125,11 +169,26 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
+	<script id="botonsTemplate" type="text/x-jsrender">
+		<div class="text-right">
+			<div class="btn-group">
+				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
+				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
+				<div class="btn-group">
+					<a href="registreAdmin/reintentarProcessamentMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false">
+  						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="registre.detalls.accio.reintentar"/></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</script>	
 	<table
 		id="taulaDades"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreAdmin/datatable"/>"
 		data-filter="#anotacioRegistreFiltreCommand"
+		data-botons-template="#botonsTemplate"
+		data-selection-enabled="true"
 		data-default-order="5"
 		data-default-dir="desc"
 		class="table table-bordered table-striped">

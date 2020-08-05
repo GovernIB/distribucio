@@ -6,7 +6,9 @@ package es.caib.distribucio.war.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -26,14 +28,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.AnotacioRegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -47,6 +54,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 public class RegistreAdminController extends BaseAdminController {
 
 	private static final String SESSION_ATTRIBUTE_ANOTACIO_FILTRE = "ContingutAdminController.session.anotacio.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreAdminController.session.seleccio";
 
 	@Autowired
 	private RegistreService registreService;	
@@ -54,6 +62,9 @@ public class RegistreAdminController extends BaseAdminController {
 	private UnitatOrganitzativaService unitatOrganitzativaService;
 	@Autowired
 	private BustiaService bustiaService;
+	@Autowired
+	private ContingutService contingutService;
+	
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -103,7 +114,8 @@ public class RegistreAdminController extends BaseAdminController {
 						entitatActual.getId(),
 						AnotacioRegistreFiltreCommand.asDto(filtreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id");
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
 	}
 
 	@InitBinder
@@ -114,6 +126,137 @@ public class RegistreAdminController extends BaseAdminController {
 	    				new SimpleDateFormat("dd/MM/yyyy"),
 	    				true));
 	}
+	
+	
+	
+	
+	@RequestMapping(value = "/select", method = RequestMethod.GET)
+	@ResponseBody
+	public int select(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
+			List<BustiaDto> bustiesUsuari = null;
+			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
+				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
+			}
+			seleccio.addAll(
+					registreService.findRegistreAdminIdsAmbFiltre(
+							entitatActual.getId(),
+							AnotacioRegistreFiltreCommand.asDto(filtreCommand)));
+		}
+		return seleccio.size();
+	}
+
+	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselect(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
+	}		
+	
+	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
+	public String reintentarProcessamentMultiple(
+			HttpServletRequest request,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int countOk = 0;
+			int countNotOk = 0;
+			
+			for (Long registreId : seleccioList) {
+				ContingutDto contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+
+				RegistreDto registreDto = (RegistreDto) contingutDto;
+
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT || registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) {
+					boolean processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(),
+							registreDto.getPareId(), registreId);
+					if (processatOk) {
+						countOk++;
+					} else {
+						countNotOk++;
+					}
+
+				} else if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BACK_PENDENT) {
+					boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+							registreDto.getPareId(), registreId);
+					if (processatOk) {
+						countOk++;
+					} else {
+						countNotOk++;
+					}
+				}
+			}
+			
+			if (countNotOk == 0) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.massiva",
+								new Object[]{countOk, countNotOk}));
+			} else if (countOk == 0){
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.massiva",
+								new Object[]{countOk, countNotOk}));
+			} else {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.massiva",
+								new Object[]{countOk, countNotOk}));
+			}
+			
+		}
+		
+		return "redirect:/registreAdmin";
+	}
+	
+	
 
 	@RequestMapping(value = "/ajaxBustia/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody

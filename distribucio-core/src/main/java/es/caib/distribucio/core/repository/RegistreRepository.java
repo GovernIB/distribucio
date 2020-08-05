@@ -186,6 +186,43 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullBackCodi") boolean esNullBackCodi,
 			@Param("backCodi") String backCodi,
 			Pageable pageable);
+	
+	
+	@Query(	"select " +
+			"    r.id " +
+			"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"	and (:esNullNom = true or lower(r.nom) like lower('%'||:nom||'%')) " +
+			"	and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"	and (:esNullUnitatOrganitzativa = true or r.unitatAdministrativa = :unitatOrganitzativa) " +
+			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
+			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
+			"	and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
+			"	and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"	and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) ")
+	public List<Long> findIdsByFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullNom") boolean esNullNom,
+			@Param("nom") String nom,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") String unitatOrganitzativa,
+			@Param("esNullBustia") boolean esNullBustia,
+			@Param("bustia") Long bustia,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			@Param("nomesAmbErrors") boolean nomesAmbErrors, 			
+			@Param("esNullBackCodi") boolean esNullBackCodi,
+			@Param("backCodi") String backCodi);
+	
 
 	/** Consulta les anotacions de registre que tenen 
 	 * l'expedient a l'arxiu pendents de tancar i a les quals

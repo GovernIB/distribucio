@@ -263,4 +263,10 @@ public class RegistreServiceBean implements RegistreService {
 				bustiaId);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre) {
+		return delegate.findRegistreAdminIdsAmbFiltre(entitatId, filtre);
+	}
+
 }

@@ -349,4 +349,7 @@ public interface RegistreService {
 			Long entitatId,
 			Long bustiaId);
 
+	@PreAuthorize("hasRole('tothom')")
+	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre);
+
 }
