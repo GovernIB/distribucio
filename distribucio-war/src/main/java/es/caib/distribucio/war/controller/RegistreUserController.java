@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.AplicacioService;
@@ -362,15 +363,19 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		omplirModelPerReenviar(
-				entitatActual,
-				bustiaId,
-				registreId,
-				model);
-		ContingutReenviarCommand command = new ContingutReenviarCommand();
-		command.setOrigenId(bustiaId);
-		model.addAttribute(command);
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			omplirModelPerReenviar(entitatActual, bustiaId, registreId, model);
+			ContingutReenviarCommand command = new ContingutReenviarCommand();
+			command.setOrigenId(bustiaId);
+			model.addAttribute(command);
+		} catch (NotFoundException e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueError(
+					request,
+					"",
+					"registre.user.controller.errorReenviant.registreNoTrobat");
+		}
 		return "registreReenviarForm";
 	}
 
@@ -382,34 +387,43 @@ public class RegistreUserController extends BaseUserController {
 			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			omplirModelPerReenviar(
-					entitatActual,
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			if (bindingResult.hasErrors()) {
+				omplirModelPerReenviar(
+						entitatActual,
+						bustiaId,
+						registreId,
+						model);
+				return "registreReenviarForm";
+			}
+			if (command.getDestins() == null || command.getDestins().length <= 0) {
+				MissatgesHelper.error(
+						request,
+						getMessage(
+								request, 	
+								"bustia.pendent.accio.reenviar.no.desti"));			
+				return "registreReenviarForm";
+			}
+			bustiaService.registreReenviar(
+					entitatActual.getId(),
 					bustiaId,
+					command.getDestins(),
 					registreId,
-					model);
-			return "registreReenviarForm";
-		}
-		if (command.getDestins() == null || command.getDestins().length <= 0) {
-			MissatgesHelper.error(
+					command.isDeixarCopia(),
+					command.getComentariEnviar());
+			return getModalControllerReturnValueSuccess(
 					request,
-					getMessage(
-							request, 	
-							"bustia.pendent.accio.reenviar.no.desti"));			
-			return "registreReenviarForm";
+					"redirect:../../../pendent",
+					"bustia.controller.pendent.contingut.reenviat.ok");
+			
+		} catch (NotFoundException e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueError(
+					request,
+					"",
+					"registre.user.controller.errorReenviant.registreNoTrobat");
 		}
-		bustiaService.registreReenviar(
-				entitatActual.getId(),
-				bustiaId,
-				command.getDestins(),
-				registreId,
-				command.isDeixarCopia(),
-				command.getComentariEnviar());
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:../../../pendent",
-				"bustia.controller.pendent.contingut.reenviat.ok");
 	}
 
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)

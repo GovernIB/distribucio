@@ -189,30 +189,38 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true);
 		}
+		
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
-		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre,
-				false,
-				false,
-				false,
-				false,
-				true,
-				false,
-				false,
-				true);
-		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
-
-		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-		for (RegistreAnnex annexDto : registreAnotacio.getAnnexos()) {
-			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
-					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
-				registreAnotacio.getAnnexos().remove(annexDto);
-				break;
-			}
-		}
 		
-		return registreAnotacio;
+		if (registre == null) {
+			throw new NotFoundException(registreId, RegistreEntity.class);
+		} else {
+			
+			RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre,
+					false,
+					false,
+					false,
+					false,
+					true,
+					false,
+					false,
+					true);
+			contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
+
+			// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
+			for (RegistreAnnex annexDto : registreAnotacio.getAnnexos()) {
+				if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
+						|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
+					registreAnotacio.getAnnexos().remove(annexDto);
+					break;
+				}
+			}
+			
+			return registreAnotacio;
+		}
+
 	}
 
 
