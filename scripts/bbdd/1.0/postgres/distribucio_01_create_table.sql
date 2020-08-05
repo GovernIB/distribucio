@@ -182,9 +182,9 @@ CREATE TABLE DIS_REGISTRE
   DOCFIS_CODI          character varying(19),
   DOCFIS_DESC          character varying(100),
   OBSERVACIONS         character varying(50),
-  EXPOSA               character varying(4000),
-  SOLICITA             character varying(4000),
-  MOTIU_REBUIG         character varying(4000),
+  EXPOSA               text,
+  SOLICITA             text,
+  MOTIU_REBUIG         text,
   PROCES_DATA          timestamp without time zone,
   PROCES_ESTAT         character varying(64)    NOT NULL,
   PROCES_INTENTS       integer,
@@ -201,6 +201,9 @@ CREATE TABLE DIS_REGISTRE
   OFICINA_ORIG_CODI    character varying(21),
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(256),
+  DATA_TANCAMENT       timestamp without time zone,
+  ARXIU_TANCAT         BOOLEAN DEFAULT FALSE	NOT NULL,
+  ARXIU_TANCAT_ERROR   BOOLEAN DEFAULT FALSE	NOT NULL,  
   LLEGIDA              boolean,
   EXPEDIENT_ARXIU_UUID  character varying(100),
   NUMERO_COPIA		   integer default 0 NOT NULL,
@@ -212,7 +215,8 @@ CREATE TABLE DIS_REGISTRE
   PRESENCIAL 			BOOLEAN,
   JUSTIFICANT_DESCARREGAT BOOLEAN DEFAULT FALSE,
   JUSTIFICANT_ID BIGINT,
-  ENVIAT_PER_EMAIL BOOLEAN DEFAULT FALSE
+  ENVIAT_PER_EMAIL BOOLEAN DEFAULT FALSE,
+  PENDENT          BOOLEAN DEFAULT TRUE	NOT NULL
 );
 
 
@@ -269,7 +273,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX_FIRMA
 
 CREATE TABLE DIS_REGISTRE_FIRMA_DETALL
 (  	ID BIGSERIAL NOT NULL,
-    DATA TIMESTAMP WITHOUT TIMEZONE,
+    DATA TIMESTAMP WITHOUT TIME ZONE,
     RESPONSABLE_NIF CHARACTER VARYING(30),
     RESPONSABLE_NOM CHARACTER VARYING(256),
     EMISSOR_CERTIFICAT CHARACTER VARYING(2000),
@@ -423,7 +427,7 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
   CREATEDDATE          		TIMESTAMP WITHOUT TIME ZONE,
   CREATEDBY_CODI       		CHARACTER VARYING(256),
   LASTMODIFIEDDATE     		TIMESTAMP WITHOUT TIME ZONE,
-  LASTMODIFIEDBY_CODI  		CHARACTER VARYING(256)
+  LASTMODIFIEDBY_CODI  		CHARACTER VARYING(256),
   CODI_DIR3_ENTITAT		 	CHARACTER VARYING(9)
 );
 
@@ -438,8 +442,8 @@ CREATE TABLE DIS_AVIS
   ID                   BIGSERIAL               			 NOT NULL,
   ASSUMPTE             character varying(256)            NOT NULL,
   MISSATGE             character varying(2048)           NOT NULL,
-  DATA_INICI           timestamp without time zone(6)    NOT NULL,
-  DATA_FINAL           timestamp without time zone(6)    NOT NULL,
+  DATA_INICI           timestamp without time zone       NOT NULL,
+  DATA_FINAL           timestamp without time zone       NOT NULL,
   ACTIU                boolean                		     NOT NULL,
   AVIS_NIVELL          character varying(10)             NOT NULL,
   CREATEDBY_CODI       character varying(64),
