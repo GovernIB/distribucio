@@ -21,5 +21,8 @@
 	<cache name="municipisAmbNom" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
 	<cache name="nivellAdministracio" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
 	<cache name="tipusVia" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	<cache name="unitatsOrganitzativesArbreByPare" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false" />
+	
+	entitatsUsuari
 
 </ehcache>

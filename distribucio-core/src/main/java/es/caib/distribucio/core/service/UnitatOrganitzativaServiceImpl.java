@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.persistence.Column;
 
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
@@ -56,6 +58,8 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	private EntitatRepository entitatRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	@Resource
+	private CacheHelper cacheHelper;
 
 	@Override
 	@Transactional
@@ -113,6 +117,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		} else {
 			entitat.updateFechaActualizacion(timestamp);
 		}
+		cacheHelper.evictUnitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
 	}
 
 	@Override

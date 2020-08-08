@@ -335,8 +335,7 @@ public interface BustiaService {
 			Boolean unitatObsoleta);
 
 	@PreAuthorize("hasRole('tothom')")
-	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, String bustiaNomFiltre,
-			Long unitatIdFiltre, Boolean unitatObsoleta);
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, List<BustiaDto> busties);
 
 	@PreAuthorize("hasRole('tothom')")
 	public String getApplictionMetrics();
@@ -366,6 +365,6 @@ public interface BustiaService {
 	List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId);
 
 	List<BustiaDto> findAmbUnitatId(Long entitatId,
-			Long unitatId);	
+			Long unitatId);
 
 }

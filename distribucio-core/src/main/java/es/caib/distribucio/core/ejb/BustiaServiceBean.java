@@ -223,9 +223,8 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId,
-			String bustiaNomFiltre, Long unitatIdFiltre, Boolean unitatObsoleta) {
-		return delegate.findArbreUnitatsOrganitzativesAmbFiltre(entitatId, bustiaNomFiltre, unitatIdFiltre, unitatObsoleta);
+	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, List<BustiaDto> busties) {
+		return delegate.findArbreUnitatsOrganitzativesAmbFiltre(entitatId, busties);
 	}
 
 	@Override

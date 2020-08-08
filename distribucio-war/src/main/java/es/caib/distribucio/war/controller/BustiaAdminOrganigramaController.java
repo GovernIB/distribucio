@@ -60,7 +60,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			Model model,
 			Long bustiaId) {
 		
-		omplirModel(request, model, bustiaId);
+		omplirModel(request, model);
 		
 		return "bustiaAdminOrganigrama";
 	}
@@ -192,7 +192,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			if (bindingResult.hasErrors()) {
-				omplirModel(request, model, command.getId());
+				omplirModel(request, model);
 				List<String> errorMsgs = new ArrayList<>();
 				for(ObjectError objectError: bindingResult.getAllErrors()){
 					String field = "";
@@ -339,8 +339,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	
 	private void omplirModel(
 			HttpServletRequest request,
-			Model model,
-			Long bustiaId) {
+			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		
 		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
@@ -358,9 +357,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		
 		ArbreDto<UnitatOrganitzativaDto> arbreUnitatsOrganitzatives = bustiaService.findArbreUnitatsOrganitzativesAmbFiltre(
 				entitatActual.getId(),
-				bustiaFiltreOrganigramaCommand.getNomFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatObsoleta());
+				busties);
 		
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",

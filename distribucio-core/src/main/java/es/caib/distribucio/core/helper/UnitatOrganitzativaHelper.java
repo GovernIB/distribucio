@@ -15,7 +15,16 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
@@ -25,10 +34,14 @@ import es.caib.distribucio.core.api.dto.TipusTransicioEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.security.ExtendedPermission;
+import es.caib.distribucio.core.service.SegonPlaServiceImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
 
@@ -54,6 +67,10 @@ public class UnitatOrganitzativaHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Resource
 	private EntitatRepository entitatRepository;
+	
+	@Autowired
+	private MetricRegistry metricRegistry;
+	
 	
 	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entidadId) throws SistemaExternException{
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
@@ -462,7 +479,15 @@ public class UnitatOrganitzativaHelper {
 			String codiDir3,
 			Set<String> unitatCodiPermesos) {
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(codiDir3);
+		
+		final Timer timer = metricRegistry.timer(MetricRegistry.name(UnitatOrganitzativaHelper.class, "clone"));
+		Timer.Context context = timer.time();
+		
 		arbre = (arbre != null)? arbre.clone() : new ArbreDto<UnitatOrganitzativaDto>(false);
+		context.stop();
+		
+		final Timer timerleaveOnlySpecifiedUnitatsInArbre = metricRegistry.timer(MetricRegistry.name(UnitatOrganitzativaHelper.class, "leaveOnlySpecifiedUnitatsInArbre"));
+		Timer.Context contextleaveOnlySpecifiedUnitatsInArbre = timerleaveOnlySpecifiedUnitatsInArbre.time();
 		if (unitatCodiPermesos != null) {
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
@@ -489,6 +514,7 @@ public class UnitatOrganitzativaHelper {
 					
 			}
 		}
+		contextleaveOnlySpecifiedUnitatsInArbre.stop();
 		return arbre;
 	}
 
@@ -561,38 +587,11 @@ public class UnitatOrganitzativaHelper {
 		}
 	}
 
-	/**
-	 * Takes the list of unitats from database and converts it to the tree
-	 * 
-	 * @param pareCodi 
-	 * 				codiDir3
-	 * @return tree of unitats
-	 */
+
 	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(String pareCodi) {
-
-		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiDir3Entitat(pareCodi);
-		
-		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
-				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
-
-		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
-		// Cerca l'unitat organitzativa arrel
-		UnitatOrganitzativa unitatOrganitzativaArrel = null;
-		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
-			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
-				unitatOrganitzativaArrel = unitatOrganitzativa;
-				break;
-			}
-		}
-		if (unitatOrganitzativaArrel != null) {
-			// Omple l'arbre d'unitats organitzatives
-			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
-			return resposta;
-
-		}
-		return null;
+		return cacheHelper.unitatsOrganitzativesFindArbreByPare(pareCodi);
 	}
+	
 
 	public UnitatOrganitzativaDto toDto(UnitatOrganitzativaEntity entity) {
 		UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
@@ -791,7 +790,7 @@ public class UnitatOrganitzativaHelper {
 	 * @param pare - in first call it is null, later pare
 	 * @return
 	 */
-	private ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
+	public ArbreNodeDto<UnitatOrganitzativaDto> getNodeArbreUnitatsOrganitzatives(
 			UnitatOrganitzativa unitatOrganitzativa,
 			List<UnitatOrganitzativa> unitatsOrganitzatives,
 			ArbreNodeDto<UnitatOrganitzativaDto> pare) {

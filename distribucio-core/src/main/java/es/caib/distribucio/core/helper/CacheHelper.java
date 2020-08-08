@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.acls.model.Permission;
@@ -16,17 +17,25 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
+import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.MunicipiDto;
 import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
+import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 /**
@@ -58,8 +67,12 @@ public class CacheHelper {
 	private PluginHelper pluginHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
-
-
+	@Autowired
+	private MetricRegistry metricRegistry;
+	@Resource
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 	@Cacheable(value = "entitatsUsuari", key="#usuariCodi")
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi) {
@@ -89,6 +102,56 @@ public class CacheHelper {
 	@CacheEvict(value = "entitatsUsuari", key="#usuariCodi")
 	public void evictEntitatsAccessiblesUsuari(String usuariCodi) {
 	}
+	
+	
+	/**
+	 * Takes the list of unitats from database and converts it to the tree
+	 * 
+	 * @param pareCodi 
+	 * 				codiDir3
+	 * @return tree of unitats
+	 */
+	@Cacheable(value = "unitatsOrganitzativesArbreByPare", key="{#pareCodi}")
+	public ArbreDto<UnitatOrganitzativaDto> unitatsOrganitzativesFindArbreByPare(String pareCodi) {
+
+		final Timer timerunitatsOrganitzativesFindArbreByPare = metricRegistry.timer(MetricRegistry.name(UnitatOrganitzativaHelper.class, "unitatsOrganitzativesFindArbreByPare"));
+		Timer.Context contextunitatsOrganitzativesFindArbreByPare = timerunitatsOrganitzativesFindArbreByPare.time();
+		
+		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
+				.findByCodiDir3Entitat(pareCodi);
+		
+		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
+				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+
+		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(false);
+		// Cerca l'unitat organitzativa arrel
+		UnitatOrganitzativa unitatOrganitzativaArrel = null;
+		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
+			if (pareCodi.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+				unitatOrganitzativaArrel = unitatOrganitzativa;
+				break;
+			}
+		}
+		if (unitatOrganitzativaArrel != null) {
+			// Omple l'arbre d'unitats organitzatives
+			resposta.setArrel(unitatOrganitzativaHelper.getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
+			contextunitatsOrganitzativesFindArbreByPare.stop();
+			return resposta;
+
+		}
+		contextunitatsOrganitzativesFindArbreByPare.stop();
+		return null;
+		
+	}
+	
+	
+	@CacheEvict(value = "unitatsOrganitzativesArbreByPare", key="{#pareCodi}")
+	public void evictUnitatsOrganitzativesFindArbreByPare(
+			String pareCodi) {
+		System.out.println();
+	}	
+	
+	
 
 	@Cacheable(value = "usuariAmbCodi", key="#usuariCodi")
 	public DadesUsuari findUsuariAmbCodi(

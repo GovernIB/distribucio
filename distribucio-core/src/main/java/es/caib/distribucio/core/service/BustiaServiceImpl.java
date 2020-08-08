@@ -657,6 +657,10 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatOrganitzativaRepository.findOne(unitatIdFiltre): null;
+		
+		
+		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
+		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 				entitat,
 				unitatIdFiltre == null, 
@@ -664,11 +668,17 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
 				bustiaNomFiltre,
 				unitatObsoleta == null || unitatObsoleta == false);
-		return bustiaHelper.toBustiaDto(
+		contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.stop();
+		
+		final Timer timertoBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaDto"));
+		Timer.Context contexttoBustiaDto = timertoBustiaDto.time();
+		List<BustiaDto> bustiesDto = bustiaHelper.toBustiaDto(
 				busties,
 				false,
 				false,
 				true);
+		contexttoBustiaDto.stop();
+		return bustiesDto;
 	}
 
 	@Override
@@ -1199,13 +1209,9 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			Long entitatId,
-			String bustiaNomFiltre,
-			Long unitatIdFiltre,
-			Boolean unitatObsoleta) {
+			List<BustiaDto> busties) {
 		logger.debug("Consulta de l'arbre d'unitats organitzatives (" +
-				"entitatId=" + entitatId + ", " +
-				"bustiaNomFiltre=" + bustiaNomFiltre + ", " +
-				"unitatIdFiltre=" + unitatIdFiltre + ")");
+				"entitatId=" + entitatId +")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -1213,9 +1219,7 @@ public class BustiaServiceImpl implements BustiaService {
 				true);
 		return bustiaHelper.findArbreUnitatsOrganitzativesAmbFiltre(
 				entitat,
-				bustiaNomFiltre,
-				unitatIdFiltre,
-				unitatObsoleta);
+				busties);
 	}
 
 

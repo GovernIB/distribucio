@@ -163,18 +163,10 @@ public class BustiaHelper {
 
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			EntitatEntity entitat,
-			String bustiaNomFiltre,
-			Long unitatIdFiltre,
-			Boolean unitatObsoleta) {
-		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatRepository.findOne(unitatIdFiltre): null;
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(entitat,
-				unitatIdFiltre == null, 
-				unitat,
-				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
-				bustiaNomFiltre,
-				unitatObsoleta == null || unitatObsoleta == false);
+			List<BustiaDto> busties) {
+
 		Set<String> bustiaUnitatCodis = new HashSet<String>();
-		for (BustiaEntity bustia: busties) {
+		for (BustiaDto bustia: busties) {
 			bustiaUnitatCodis.add(bustia.getUnitatOrganitzativa().getCodi());
 		}
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
