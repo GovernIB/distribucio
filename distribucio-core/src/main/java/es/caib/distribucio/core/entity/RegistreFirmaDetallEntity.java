@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
@@ -44,6 +43,17 @@ public class RegistreFirmaDetallEntity extends DistribucioAuditable<Long> {
 				arxiuFirmaDetallDto.getResponsableNif(), 
 				arxiuFirmaDetallDto.getResponsableNom(), 
 				arxiuFirmaDetallDto.getEmissorCertificat(), 
+				firma);
+	}
+	
+	public static Builder getBuilder(
+			RegistreFirmaDetallEntity registreFirmaDetallEntity,
+			RegistreAnnexFirmaEntity firma) {
+		return new Builder(
+				registreFirmaDetallEntity.getData(), 
+				registreFirmaDetallEntity.getResponsableNif(), 
+				registreFirmaDetallEntity.getResponsableNom(), 
+				registreFirmaDetallEntity.getEmissorCertificat(), 
 				firma);
 	}
 	

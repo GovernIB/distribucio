@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
@@ -47,6 +48,7 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
@@ -54,6 +56,7 @@ import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -89,7 +92,8 @@ public class ContingutHelper {
 	private MetricRegistry metricRegistry;
 	@Resource
 	private CacheHelper cacheHelper;
-
+	@Autowired
+	RegistreFirmaDetallRepository registreFirmaDetallRepository;
 
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -630,8 +634,17 @@ public class ContingutHelper {
 							nouAnnex).
 							gesdocFirmaId(firma.getGesdocFirmaId()).
 							build();
+					for (RegistreFirmaDetallEntity arxiuFirmaDetallEntity : firma.getDetalls()) {
+						RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
+								arxiuFirmaDetallEntity,
+								novaFirma).build();
+						novaFirma.getDetalls().add(firmaDetallEntity);
+					}
+					
+					
 					nouAnnex.getFirmes().add(novaFirma);
 				}
+				nouAnnex.updateSignaturaDetallsDescarregat(true);
 				registreCopia.getAnnexos().add(nouAnnex);
 			}
 		}
