@@ -171,25 +171,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
-		
+
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
@@ -710,24 +697,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
+
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
@@ -756,24 +731,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
+
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
@@ -1065,24 +1028,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
+				true);
+
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
 				registreId);
@@ -1139,24 +1090,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
+
 		
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
 		
@@ -1184,25 +1123,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
-		
+
 		RegistreAnnexEntity annexEntity = registreAnnexRepository.findOne(annexId);
 		RegistreAnnexDto registreAnnexDto;
 		
@@ -1345,24 +1271,12 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity bustia = entityComprovarHelper.comprovarContingut(
-				entitat,
-				bustiaId,
-				null);
-		if (bustia instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					true);
-		} else {
-			// Comprova l'accés al path del contenidor pare
-			contingutHelper.comprovarPermisosPathContingut(
-					bustia,
-					true,
-					false,
-					false,
-					true);
-		}
+
 		RegistreEntity registre = registreRepository.findByPareAndId(
 					bustia,
 					registreId);
@@ -1456,26 +1370,15 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+		
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
-				null);
-		if (contingut instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
-		} else {
-			throw new ValidationException(
-					bustiaId,
-					ContingutEntity.class,
-					"El contingut especificat no és de tipus bústia");
-		}
+				true);
 		RegistreEntity registre = registreRepository.findByPareAndId(
-				contingut,
+				bustia,
 				registreId);
 		registre.updateProcedimentCodi(procedimentCodi);
-		BustiaEntity bustia = (BustiaEntity)contingut;
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				bustia.getUnitatOrganitzativa().getCodi(),
@@ -1522,22 +1425,10 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
-				null);
-		if (contingut instanceof BustiaEntity) {
-			entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
-		} else {
-			throw new ValidationException(
-					bustiaId,
-					ContingutEntity.class,
-					"El contingut especificat no és de tipus bústia");
-		}
-		BustiaEntity bustia = (BustiaEntity)contingut;
+				true);
 		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatCodi());
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (procediments != null) {

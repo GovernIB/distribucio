@@ -915,12 +915,12 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false,
 				false);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
-				null);
+				true);
 		RegistreEntity registreEntity = registreRepository.findByPareAndId(
-				contingut,
+				bustia,
 				registreId);
 		RegistreAnnexDto justificant = null;
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
