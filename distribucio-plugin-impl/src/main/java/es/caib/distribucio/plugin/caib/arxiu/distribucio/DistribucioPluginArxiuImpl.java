@@ -167,61 +167,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				arxiuFirmes = new ArrayList<ArxiuFirmaDto>();
 				for (Firma firma: arxiuDocument.getFirmes()) {
 					ArxiuFirmaDto arxiuFirma = new ArxiuFirmaDto();
-					switch (firma.getTipus()) {
-					case CSV:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.CSV);
-						break;
-					case XADES_DET:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.XADES_DET);
-						break;
-					case XADES_ENV:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.XADES_ENV);
-						break;
-					case CADES_DET:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.CADES_DET);
-						break;
-					case CADES_ATT:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.CADES_ATT);
-						break;
-					case PADES:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.PADES);
-						break;
-					case SMIME:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.SMIME);
-						break;
-					case ODT:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.ODT);
-						break;
-					case OOXML:
-						arxiuFirma.setTipus(ArxiuFirmaTipusEnumDto.OOXML);
-						break;
-					}
-					switch (firma.getPerfil()) {
-					case BES:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.BES);
-						break;
-					case EPES:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.EPES);
-						break;
-					case LTV:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.LTV);
-						break;
-					case T:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.T);
-						break;
-					case C:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.C);
-						break;
-					case X:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.X);
-						break;
-					case XL:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.XL);
-						break;
-					case A:
-						arxiuFirma.setPerfil(ArxiuFirmaPerfilEnumDto.A);
-						break;
-					}
+					
+					arxiuFirma.setTipus(firma.getTipus() != null ? ArxiuFirmaTipusEnumDto.valueOf(firma.getTipus().toString()) : null);
+					arxiuFirma.setPerfil(firma.getPerfil() != null ? ArxiuFirmaPerfilEnumDto.valueOf(firma.getPerfil().toString()) : null);
 					arxiuFirma.setFitxerNom(firma.getFitxerNom());
 					arxiuFirma.setContingut(firma.getContingut());
 					arxiuFirma.setTipusMime(firma.getTipusMime());
@@ -257,20 +205,16 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				String tipusMime = null;
 				String csvRegulacio = null;
 
+				tipusFirmaServidor = "CADES";
+				tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
+				perfil = FirmaPerfil.BES.toString();
+				fitxerNom = distribucioAnnex.getFitxerNom() + "_cades_det.csig";
 				if ("application/pdf".equalsIgnoreCase(distribucioAnnex.getFitxerTipusMime())) {
-					tipusFirmaServidor = "CADES";
-					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-					perfil = FirmaPerfil.BES.toString();
-					fitxerNom = distribucioAnnex.getFitxerNom() + "_cades_det.csig";
-
 					tipusMime = "application/pdf";
 				} else {
-					tipusFirmaServidor = "CADES";
-					tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-					perfil = FirmaPerfil.BES.toString();
-					fitxerNom = distribucioAnnex.getFitxerNom() + "_cades_det.csig";
 					tipusMime = "application/octet-stream";
 				}
+				
 				//sign annex and return firma content bytes
 				byte[] firmaDistribucioContingut = signaturaDistribucioSignar(
 						distribucioAnnex,
