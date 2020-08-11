@@ -138,7 +138,6 @@ CREATE TABLE DIS_CONT_LOG
 CREATE TABLE DIS_BUSTIA
 (
   ID           BIGSERIAL                           NOT NULL,
-  UNITAT_CODI  character varying(9)             NOT NULL,
   PER_DEFECTE  boolean,
   ACTIVA       boolean,
   UNITAT_ID    BIGINT
