@@ -102,7 +102,7 @@ public class EmailHelper {
 		}
 		if (!destinataris.isEmpty()) {
 			String unitatOrganitzativa = getUnitatOrganitzativaNom( bustia.getEntitat(),
-																	bustia.getUnitatCodi());			
+																	bustia.getUnitatOrganitzativa().getCodi());			
 			List<ContingutMovimentEmailEntity> movEmails = new ArrayList<ContingutMovimentEmailEntity>();
 			for (UsuariDto destinatari: destinataris) {
 				ContingutMovimentEmailEntity contingutMovimentEmail = ContingutMovimentEmailEntity.getBuilder(

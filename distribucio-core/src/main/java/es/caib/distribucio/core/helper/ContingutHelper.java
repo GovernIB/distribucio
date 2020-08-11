@@ -127,7 +127,7 @@ public class ContingutHelper {
 		if (deproxied instanceof BustiaEntity) {
 			BustiaEntity bustiaEntity = (BustiaEntity)deproxied;
 			BustiaDto bustiaDto = new BustiaDto();
-			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatCodi());
+			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
 			bustiaDto.setActiva(bustiaEntity.isActiva());
 			bustiaDto.setPerDefecte(bustiaEntity.isPerDefecte());
 
@@ -138,7 +138,7 @@ public class ContingutHelper {
 				
 				UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
 						bustiaEntity.getEntitat().getCodiDir3(),
-						bustiaEntity.getUnitatCodi());
+						bustiaEntity.getUnitatOrganitzativa().getCodi());
 				if (unitatConselleria != null) {
 					bustiaDto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
 				}

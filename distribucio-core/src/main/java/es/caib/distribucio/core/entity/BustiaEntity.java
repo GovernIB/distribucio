@@ -26,8 +26,7 @@ import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 @EntityListeners(AuditingEntityListener.class)
 public class BustiaEntity extends ContingutEntity {
 
-	@Column(name = "unitat_codi", length = 9, nullable = false)
-	protected String unitatCodi;
+
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
 	@ForeignKey(name = "dis_unitat_organitzativa_bustia_fk")
@@ -40,9 +39,7 @@ public class BustiaEntity extends ContingutEntity {
 	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
-	public String getUnitatCodi() {
-		return unitatCodi;
-	}
+
 	public boolean isPerDefecte() {
 		return perDefecte;
 	}
@@ -55,7 +52,6 @@ public class BustiaEntity extends ContingutEntity {
 			UnitatOrganitzativaEntity unitatOrganitzativa) {
 		this.nom = nom;
 		this.unitatOrganitzativa = unitatOrganitzativa;
-		this.unitatCodi = (unitatOrganitzativa != null) ? unitatOrganitzativa.getCodi()	: null;
 	}
 	public void updatePerDefecte(boolean perDefecte) {
 		this.perDefecte = perDefecte;
@@ -88,7 +84,6 @@ public class BustiaEntity extends ContingutEntity {
 			built = new BustiaEntity();
 			built.entitat = entitat;
 			built.nom = nom;
-			built.unitatCodi = unitatCodi;
 			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.pare = pare;
 			built.activa = true;

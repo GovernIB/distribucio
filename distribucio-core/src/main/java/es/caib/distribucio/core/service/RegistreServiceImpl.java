@@ -1429,7 +1429,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustiaId,
 				true);
-		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatCodi());
+		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (procediments != null) {
 			for (Procediment procediment: procediments) {

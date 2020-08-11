@@ -114,14 +114,14 @@ public class BustiaHelper {
 			Map<String, Long> acumulats = new HashMap<String, Long>();
 			for (int i = 0; i < busties.size(); i++) {
 				BustiaEntity bustia = busties.get(i);
-				Long acumulat = acumulats.get(bustia.getUnitatCodi());
+				Long acumulat = acumulats.get(bustia.getUnitatOrganitzativa().getCodi());
 				if (acumulat == null) {
 					acumulats.put(
-							bustia.getUnitatCodi(),
+							bustia.getUnitatOrganitzativa().getCodi(),
 							countContenidors[i]);
 				} else {
 					acumulats.put(
-							bustia.getUnitatCodi(),
+							bustia.getUnitatOrganitzativa().getCodi(),
 							acumulat + countContenidors[i]);
 				}
 			}
@@ -276,10 +276,12 @@ public class BustiaHelper {
 	 */
 	public BustiaEntity findBustiaPerDefecte(EntitatEntity entitat, String codiUnitat) {
 		
+		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatRepository.findByCodi(codiUnitat);
+		
 		BustiaEntity bustaPerDefecte = null;
-		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findByEntitatAndUnitatCodiAndPerDefecteTrue(
+		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
 				entitat,
-				codiUnitat);
+				unitatOrganitzativaEntity);
 		if (bustiesPerDefecte.size() == 1) {
 			bustaPerDefecte = bustiesPerDefecte.get(0);
 		} else if (bustiesPerDefecte.size() > 1) {
@@ -288,7 +290,7 @@ public class BustiaHelper {
 										.append(entitat.getId() + " \"" + entitat.getCodi())
 										.append("\" i codi d'unitat ").append(codiUnitat).append(": ");
 			for (BustiaEntity b : bustiesPerDefecte)
-				errMsg.append("[" + b.getId() + " " + b.getUnitatCodi() + " \"" + b.getNom() + "\"]");
+				errMsg.append("[" + b.getId() + " " + b.getUnitatOrganitzativa().getCodi() + " \"" + b.getNom() + "\"]");
 			
 			logger.error(errMsg.toString());
 			throw new RuntimeException(errMsg.toString());

@@ -245,7 +245,7 @@ public class BustiaServiceImpl implements BustiaService {
 				if (alternativaBustiaPerDefecteInPath == null) {
 					String missatgeError = "No es pot moure la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
 							"bustiaId=" + bustiaModifications.getId() + ", " +
-							"unitatOrganitzativaCodi=" + bustiaOriginal.getUnitatCodi() + ")";
+							"unitatOrganitzativaCodi=" + bustiaOriginal.getUnitatOrganitzativa().getCodi() + ")";
 					logger.error(missatgeError);
 					throw new ValidationException(
 							bustiaModifications.getId() ,
@@ -306,7 +306,7 @@ public class BustiaServiceImpl implements BustiaService {
 		BustiaEntity bustiaPerDefecteAlternativa = null;
 		List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
 				entitat.getCodiDir3(),
-				bustia.getUnitatCodi());
+				bustia.getUnitatOrganitzativa().getCodi());
 		if (path != null && !path.isEmpty()) {
 			BustiaEntity bustiaAux;
 			for (UnitatOrganitzativaDto unitat: path) {
@@ -379,7 +379,7 @@ public class BustiaServiceImpl implements BustiaService {
 			if (bustiaPerDefecteAlternativa == null) {
 				String missatgeError = "No es pot esborrar la bústia per defecte si no n'hi ha cap altra superior definida per defecte (" +
 						"bustiaId=" + id + ", " +
-						"unitatOrganitzativaCodi=" + bustia.getUnitatCodi() + ")";
+						"unitatOrganitzativaCodi=" + bustia.getUnitatOrganitzativa().getCodi() + ")";
 				logger.error(missatgeError);
 				throw new ValidationException(
 						id,

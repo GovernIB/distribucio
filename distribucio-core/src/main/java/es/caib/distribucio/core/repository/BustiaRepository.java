@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -52,9 +53,9 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			EntitatEntity entitat,
 			UnitatOrganitzativaEntity unitatOrganitzativa);
 
-	List<BustiaEntity> findByEntitatAndUnitatCodiAndPerDefecteTrue(
+	List<BustiaEntity> findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
 			EntitatEntity entitat,
-			String unitatCodi);
+			UnitatOrganitzativaEntity unitatOrganitzativa);
 	
 	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
 			EntitatEntity entitat);
@@ -91,21 +92,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("filtreNom") String filtreNom,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat);
 	
-	@Query(	"from " +
-			"    BustiaEntity b " +
-			"where " +
-			"    b.entitat = :entitat " +
-			"and (:esNullFiltreUnitat = true or b.unitatCodi = :unitatCodi) " +
-			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) "
-			+ "and (:esNullFiltreEstat = true or b.unitatOrganitzativa.estat = 'E' or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')")
-	Page<BustiaEntity> findByEntitatAndUnitatCodiAndBustiaNomFiltrePaginat(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
-			@Param("unitatCodi") String unitatCodi, 
-			@Param("esNullFiltreNom") boolean esNullFiltreNom,
-			@Param("filtreNom") String filtreNom,	
-			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
-			Pageable pageable);
+
 	
 	@Query(	"from " +
 			"    BustiaEntity b " +
