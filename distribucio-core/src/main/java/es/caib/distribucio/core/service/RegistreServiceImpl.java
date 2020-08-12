@@ -1010,64 +1010,27 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	@Override
-	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
+	@Transactional
+	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
 			Long bustiaId,
-			Long registreId) throws NotFoundException {
+			Long registreId,
+			Long annexId) throws NotFoundException {
 		
-		final Timer timegetgetAnnexosAmbArxiu = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu"));
-		Timer.Context contexgetgetAnnexosAmbArxiu = timegetgetAnnexosAmbArxiu.time();
-		
-		
-		logger.debug("Obtenint anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+		entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
 				true);
-
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
-		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
-		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			
-			if ((registre.getJustificant() != null && registre.getJustificant().getId().equals(annexEntity.getId()))
-					|| (registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexEntity.getFitxerArxiuUuid()))){
-				// El justificant no es retorna com un annex				
-			}
-			else 
-			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
-				if (!annexEntity.isSignaturaDetallsDescarregat()) {
-					registreHelper.loadSignaturaDetallsToDB(annexEntity);
-				}
-					
-				List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-						annexEntity,
-						null);
-
-				RegistreAnnexDto annex = conversioTipusHelper.convertir(
-						annexEntity,
-						RegistreAnnexDto.class);
-				annex.setFirmes(firmes);
-				annex.setAmbFirma(true);
-				annexos.add(annex);
-				
-			}
-		}
 		
-		contexgetgetAnnexosAmbArxiu.stop();
-		return annexos;
+		return registreHelper.getAnnexAmbFirmes(
+				annexId);
 	}
-	
+
 	
 
 
@@ -1105,100 +1068,7 @@ public class RegistreServiceImpl implements RegistreService {
 		return annex;
 	}
 
-	@Override
-	@Transactional
-	public RegistreAnnexDto getAnnexAmbFirmes(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId,
-			Long annexId
-			) throws NotFoundException {
-		logger.debug("Obtenint anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "registreId=" + registreId + ")");
-		
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
 
-		entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
-
-		RegistreAnnexEntity annexEntity = registreAnnexRepository.findOne(annexId);
-		RegistreAnnexDto registreAnnexDto;
-		
-		// if annex is already created in arxiu use document and firma content from arxiu
-		if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
-			if (!annexEntity.isSignaturaDetallsDescarregat()) {
-				registreHelper.loadSignaturaDetallsToDB(annexEntity);
-			}
-				
-			List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-					annexEntity,
-					null);
-
-			registreAnnexDto = conversioTipusHelper.convertir(
-					annexEntity,
-					RegistreAnnexDto.class);
-			registreAnnexDto.setFirmes(firmes);
-			registreAnnexDto.setAmbFirma(true);
-			
-
-		// if annex is not yet created in arxiu use document and firma content from gestio documental
-		} else {
-			registreAnnexDto = conversioTipusHelper.convertir(
-					annexEntity,
-					RegistreAnnexDto.class);
-
-			List<ArxiuFirmaDto> firmes = registreHelper.convertirFirmesAnnexToArxiuFirmaDto(
-					annexEntity,
-					null);
-
-			for (int i = 0; i < firmes.size(); i++) {
-
-				ArxiuFirmaDto arxiuFirmaDto = firmes.get(i);
-				RegistreAnnexFirmaEntity registreAnnexFirmaEntity = annexEntity.getFirmes().get(i);
-
-				if (pluginHelper.isValidaSignaturaPluginActiu()) {
-					
-					byte[] documentContingut = null;
-					if (annexEntity.getGesdocDocumentId() != null && !annexEntity.getGesdocDocumentId().isEmpty()) {
-						
-						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
-						gestioDocumentalHelper.gestioDocumentalGet(
-								annexEntity.getGesdocDocumentId(),
-								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
-								streamAnnex);
-						documentContingut = streamAnnex.toByteArray();
-					}
-					byte[] firmaContingut = null;
-					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
-						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-						gestioDocumentalHelper.gestioDocumentalGet(
-								registreAnnexFirmaEntity.getGesdocFirmaId(),
-								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
-								streamAnnexFirma);
-						firmaContingut = streamAnnexFirma.toByteArray();
-					}
-					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
-							documentContingut,
-							firmaContingut));
-				} else {
-					logger.warn("ValidaSignaturaPlugin is not configured");
-				}
-			}
-
-			registreAnnexDto.setFirmes(firmes);
-			registreAnnexDto.setAmbFirma(true);
-
-		}
-		return registreAnnexDto;
-	}
 
 	@Transactional(readOnly = true)
 	@Override
@@ -1450,59 +1320,67 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		List<Annex> annexosPerBackoffice = new ArrayList<Annex>(); 
 		for (RegistreAnnexEntity annexEntity : registre.getAnnexos()) {
-			Annex annexPerBackoffice = new Annex();
-			annexPerBackoffice.setTitol(annexEntity.getTitol());
-			annexPerBackoffice.setNom(annexEntity.getFitxerNom());
-			annexPerBackoffice.setUuid(annexEntity.getFitxerArxiuUuid());
-			annexPerBackoffice.setTamany(annexEntity.getFitxerTamany());
-			annexPerBackoffice.setTipusMime(annexEntity.getFitxerTipusMime());
-			annexPerBackoffice.setNtiTipoDocumental(toNtiTipoDocumento(annexEntity.getNtiTipusDocument()));
-			annexPerBackoffice.setNtiOrigen(toNtiOrigen(annexEntity.getOrigenCiutadaAdmin()));
-			annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
-			annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
-			annexPerBackoffice.setObservacions(annexEntity.getObservacions());
-			annexPerBackoffice.setNtiEstadoElaboracion(NtiEstadoElaboracion.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
-			boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
-					"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
-			// annex should be stored in arxiu
-			if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
-				Document document = pluginHelper.arxiuDocumentConsultar(
-						annexEntity.getFitxerArxiuUuid(),
-						null,
-						retornarAnnexIFirmaContingut);
-
-				if(retornarAnnexIFirmaContingut)
-					annexPerBackoffice.setContingut(document.getContingut().getContingut());
+			
+			if ((registre.getJustificant() != null && registre.getJustificant().getId().equals(annexEntity.getId()))
+					|| (registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexEntity.getFitxerArxiuUuid()))){
+				// El justificant no es retorna com un annex
 				
-				
-				
-				// if document is signed
-				if (document.getFirmes() != null && !document.getFirmes().isEmpty()) {
-					RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
-					for (Firma firma : document.getFirmes()) {
-						// we want to use first firma that is not CSV type
-						if (!FirmaTipus.CSV.equals(firma.getTipus())) {
-
-							boolean detached = FirmaTipus.XADES_DET.equals(firma.getTipus())
-									|| FirmaTipus.CADES_DET.equals(firma.getTipus());
-							if (detached && retornarAnnexIFirmaContingut) {
-									annexPerBackoffice.setFirmaContingut(firma.getContingut());
-									annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
-									annexPerBackoffice.setFirmaNom(registreAnneFirma.getFitxerNom());
-									annexPerBackoffice.setFirmaTipusMime(registreAnneFirma.getTipusMime());
+			} else {
+				Annex annexPerBackoffice = new Annex();
+				annexPerBackoffice.setTitol(annexEntity.getTitol());
+				annexPerBackoffice.setNom(annexEntity.getFitxerNom());
+				annexPerBackoffice.setUuid(annexEntity.getFitxerArxiuUuid());
+				annexPerBackoffice.setTamany(annexEntity.getFitxerTamany());
+				annexPerBackoffice.setTipusMime(annexEntity.getFitxerTipusMime());
+				annexPerBackoffice.setNtiTipoDocumental(toNtiTipoDocumento(annexEntity.getNtiTipusDocument()));
+				annexPerBackoffice.setNtiOrigen(toNtiOrigen(annexEntity.getOrigenCiutadaAdmin()));
+				annexPerBackoffice.setNtiFechaCaptura(annexEntity.getDataCaptura());
+				annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
+				annexPerBackoffice.setObservacions(annexEntity.getObservacions());
+				annexPerBackoffice.setNtiEstadoElaboracion(NtiEstadoElaboracion.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
+				boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
+						"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
+				// annex should be stored in arxiu
+				if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
+					Document document = pluginHelper.arxiuDocumentConsultar(
+							annexEntity.getFitxerArxiuUuid(),
+							null,
+							retornarAnnexIFirmaContingut);
+	
+					if(retornarAnnexIFirmaContingut)
+						annexPerBackoffice.setContingut(document.getContingut().getContingut());
+					
+					
+					
+					// if document is signed
+					if (document.getFirmes() != null && !document.getFirmes().isEmpty()) {
+						RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
+						for (Firma firma : document.getFirmes()) {
+							// we want to use first firma that is not CSV type
+							if (!FirmaTipus.CSV.equals(firma.getTipus())) {
+	
+								boolean detached = FirmaTipus.XADES_DET.equals(firma.getTipus())
+										|| FirmaTipus.CADES_DET.equals(firma.getTipus());
+								if (detached && retornarAnnexIFirmaContingut) {
+										annexPerBackoffice.setFirmaContingut(firma.getContingut());
+										annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
+										annexPerBackoffice.setFirmaNom(registreAnneFirma.getFitxerNom());
+										annexPerBackoffice.setFirmaTipusMime(registreAnneFirma.getTipusMime());
+								}
+								annexPerBackoffice.setFirmaTipus(
+										firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
+								annexPerBackoffice.setFirmaPerfil(
+										registreAnneFirma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
+								break;
 							}
-							annexPerBackoffice.setFirmaTipus(
-									firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
-							annexPerBackoffice.setFirmaPerfil(
-									registreAnneFirma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
-							break;
 						}
 					}
+				} else {
+					throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
 				}
-			} else {
-				throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
+				annexosPerBackoffice.add(annexPerBackoffice);
+				
 			}
-			annexosPerBackoffice.add(annexPerBackoffice);
 		}
 		return annexosPerBackoffice;
 	}

@@ -37,8 +37,10 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
@@ -109,7 +111,8 @@ public class RegistreHelper {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private ContingutLogHelper contingutLogHelper;
-	
+	@Autowired
+	private EntityComprovarHelper entityComprovarHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
 	
@@ -598,7 +601,131 @@ public class RegistreHelper {
 			
 	}
 	
+	
 
+	public RegistreAnnexDto getAnnexAmbFirmes(
+			Long annexId) throws NotFoundException {
+		
+		final Timer timegetgetAnnexosAmbArxiu = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu"));
+		Timer.Context contexgetgetAnnexosAmbArxiu = timegetgetAnnexosAmbArxiu.time();
+		
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		
+		RegistreAnnexDto registreAnnexDto;
+		
+		// if annex is already created in arxiu use document and firma content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+			
+			if (!registreAnnexEntity.isSignaturaDetallsDescarregat()) {
+				loadSignaturaDetallsToDB(registreAnnexEntity);
+			}
+				
+			List<ArxiuFirmaDto> firmes = convertirFirmesAnnexToArxiuFirmaDto(
+					registreAnnexEntity,
+					null);
+
+			registreAnnexDto = conversioTipusHelper.convertir(
+					registreAnnexEntity,
+					RegistreAnnexDto.class);
+			registreAnnexDto.setFirmes(firmes);
+			registreAnnexDto.setAmbFirma(true);
+			
+
+		// if annex is not yet created in arxiu use document and firma content from gestio documental
+		} else {
+			registreAnnexDto = conversioTipusHelper.convertir(
+					registreAnnexEntity,
+					RegistreAnnexDto.class);
+
+			List<ArxiuFirmaDto> firmes = convertirFirmesAnnexToArxiuFirmaDto(
+					registreAnnexEntity,
+					null);
+
+			for (int i = 0; i < firmes.size(); i++) {
+
+				ArxiuFirmaDto arxiuFirmaDto = firmes.get(i);
+				RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexEntity.getFirmes().get(i);
+
+				if (pluginHelper.isValidaSignaturaPluginActiu()) {
+					
+					byte[] documentContingut = null;
+					if (registreAnnexEntity.getGesdocDocumentId() != null && !registreAnnexEntity.getGesdocDocumentId().isEmpty()) {
+						
+						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								registreAnnexEntity.getGesdocDocumentId(),
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
+								streamAnnex);
+						documentContingut = streamAnnex.toByteArray();
+					}
+					byte[] firmaContingut = null;
+					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
+						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								registreAnnexFirmaEntity.getGesdocFirmaId(),
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+								streamAnnexFirma);
+						firmaContingut = streamAnnexFirma.toByteArray();
+					}
+					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
+							documentContingut,
+							firmaContingut));
+				} else {
+					logger.warn("ValidaSignaturaPlugin is not configured");
+				}
+			}
+
+			registreAnnexDto.setFirmes(firmes);
+			registreAnnexDto.setAmbFirma(true);
+
+		}
+		
+		contexgetgetAnnexosAmbArxiu.stop();
+		return registreAnnexDto;
+	}
+		
+	
+	public List<RegistreAnnexDto> getAnnexosAmbFirmes(
+			Long entitatId,
+			Long bustiaId,
+			Long registreId) throws NotFoundException {
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				true);
+
+		RegistreEntity registre = registreRepository.findByPareAndId(
+				bustia,
+				registreId);
+		
+		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
+		
+		for (RegistreAnnexEntity registeAnnexEntity: registre.getAnnexos()) {
+			
+			if ((registre.getJustificant() != null && registre.getJustificant().getId().equals(registeAnnexEntity.getId()))
+					|| (registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(registeAnnexEntity.getFitxerArxiuUuid()))){
+				// El justificant no es retorna com un annex
+				
+			} else {
+				RegistreAnnexDto registreAnnexDto = getAnnexAmbFirmes(
+						registeAnnexEntity.getId());
+				
+				annexos.add(registreAnnexDto);
+				
+			}
+		}
+		return annexos;
+	}
+	
+
+	
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		logger.info("Loading Signatura detalls to DB");

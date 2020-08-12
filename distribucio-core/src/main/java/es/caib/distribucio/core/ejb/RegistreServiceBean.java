@@ -124,19 +124,6 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<RegistreAnnexDto> getAnnexosAmbArxiu(
-			Long entitatId, 
-			Long contingutId, 
-			Long registreId)
-			throws NotFoundException {
-		return delegate.getAnnexosAmbArxiu(
-				entitatId, 
-				contingutId, 
-				registreId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public FitxerDto getAnnexFitxer(Long annexId) throws NotFoundException {
 		return delegate.getAnnexFitxer(annexId);
 	}

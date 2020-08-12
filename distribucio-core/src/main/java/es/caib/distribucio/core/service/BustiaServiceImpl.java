@@ -929,7 +929,7 @@ public class BustiaServiceImpl implements BustiaService {
 					bustiaId, 
 					registreId);
 		}
-		List<RegistreAnnexDto> anexos = registreService.getAnnexosAmbArxiu(
+		List<RegistreAnnexDto> anexos = registreHelper.getAnnexosAmbFirmes(
 				entitatId,
 				bustiaId,
 				registreId);

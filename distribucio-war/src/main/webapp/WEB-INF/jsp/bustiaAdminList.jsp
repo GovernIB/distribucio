@@ -72,7 +72,6 @@
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
-				<th data-col-name="unitatCodi" data-visible="false"></th>
 				<th data-col-name="entitat.codi" data-visible="false"></th>
 				<th data-col-name="nom" data-template="#nomTemplate">
 					<spring:message code="bustia.list.columna.nom"/>
