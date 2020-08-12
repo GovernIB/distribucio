@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1021,6 +1022,12 @@ public class BustiaServiceImpl implements BustiaService {
 		missatge.setHeader("Content-Type","text/html charset=UTF-8");
 		MimeMessageHelper helper;
 		helper = new MimeMessageHelper(missatge, true);
+		
+		adresses = 
+			       Normalizer
+			           .normalize(adresses, Normalizer.Form.NFD)
+			           .replaceAll("[^\\p{ASCII}]", "");
+		
 		missatge.addRecipients(RecipientType.TO,
 				InternetAddress.parse(adresses));
 		helper.setFrom(emailHelper.getRemitent());
