@@ -460,7 +460,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String nName = new String(arxiuNom.toLowerCase());
 			
 			// Checking if the file name exist in the expedient
-			while (nomsExistingInArxiu.indexOf(nName) >= 0) {
+			while (nomsExistingInArxiu.indexOf(nName.toLowerCase()) >= 0) {
 				// if it does 'ocurrences' increments
 				ocurrences++;
 				// and the number of ocurences is added to the file name
