@@ -37,6 +37,7 @@ import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
+import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -167,6 +168,15 @@ public class ContingutHelper {
 						RegistreDto.class);
 			registreDto.setLlegida(registreEntity.getLlegida() == null || registreEntity.getLlegida());
 			contextToContingutDtoconvertirToRegistreDto.stop();
+			
+			// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
+			for (RegistreAnnex annexDto : registreDto.getAnnexos()) {
+				if ((registreDto.getJustificant() != null && registreDto.getJustificant().getId().equals(annexDto.getId()))
+						|| registreDto.getJustificantArxiuUuid() != null && registreDto.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
+					registreDto.getAnnexos().remove(annexDto);
+					break;
+				}
+			}
 			
 			// toBustiaContingut 
 			if (registreEntity.getPare() != null) {
