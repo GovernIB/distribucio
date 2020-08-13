@@ -447,6 +447,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			});
 		}
 		
+		templateFunction = window[$(this).data('option-template-function')];
 		$(this).select2({
 		    placeholder: $(this).data('placeholder'),
 		    theme: "bootstrap",
@@ -463,7 +464,8 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 						var item = data[i];
 						results.push({
 							id: item[suggestValue],
-							text: item[suggestText]
+							text: item[suggestText],
+							data: item
 						});
 					}
 					
@@ -473,7 +475,9 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 						results: results
 					};
 				}
-		    }
+		    },
+		    templateResult: templateFunction,
+		    templateSelection: templateFunction
 		});
 		$(this).on('select2:open', function() {
 			webutilModalAdjustHeight();

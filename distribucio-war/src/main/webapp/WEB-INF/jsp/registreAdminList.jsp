@@ -38,7 +38,22 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 </style>
 	
 <script>
+
+
+
+function formatSelectUnitat(item) {
+	if (!item.id) {
+	    return item.text;
+	}
+	if (item.data && item.data.estat=="V"){
+		return item.text;
+	} else {
+		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+	}
+}
+
 $(document).ready(function() {
+
 	$('#unitatOrganitzativa').on('change', function (e) {
 		var rutaBusties = $('#bustia').data('url-llistat');
 		var rutaFragmentada = rutaBusties.split('/');
@@ -121,7 +136,8 @@ $(document).ready(function() {
 					inline="true" 
 					placeholderKey="contingut.admin.filtre.uo"
 					suggestValue="codi"
-					suggestText="nom" />
+					suggestText="nom" 
+					optionTemplateFunction="formatSelectUnitat" />
 			</div>
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/registreAdmin/ajaxBustia" var="urlConsultaInicial"/>
