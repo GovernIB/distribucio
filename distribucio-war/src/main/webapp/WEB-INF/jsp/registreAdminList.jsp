@@ -113,7 +113,15 @@ $(document).ready(function() {
 				}
 		);
 	});
-	
+
+
+	$(document).on("click", '.processarBtn', function () {
+
+		$(".datatable-dades-carregant").css("display", "block");
+	});
+		
+
+
 });
 </script>
 </head>
@@ -186,18 +194,23 @@ $(document).ready(function() {
 		</div>
 	</form:form>
 	<script id="botonsTemplate" type="text/x-jsrender">
+	
 		<div class="text-right">
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 				<div class="btn-group">
-					<a href="registreAdmin/reintentarProcessamentMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false">
+					<a href="registreAdmin/reintentarProcessamentMultiple" class="btn btn-default processarBtn" aria-haspopup="true" aria-expanded="false">
   						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="registre.detalls.accio.reintentar"/></span>
 					</a>
 				</div>
 			</div>
 		</div>
 	</script>	
+
+	
+
+	
 	<table
 		id="taulaDades"
 		data-toggle="datatable"

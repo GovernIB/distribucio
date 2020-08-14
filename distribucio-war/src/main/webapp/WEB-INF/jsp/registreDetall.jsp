@@ -90,7 +90,19 @@ tr.clicable {
 		        $(this).data("loaded", true);
 		    }
 		});		    
+
+    	$( ".processarBtn" ).on( "click", function() {
+
+	        $('.processamentInfo').css('display', 'none');
+	        $(".datatable-dades-carregant").css("display", "block");
+    	});
+				
 	});
+
+
+
+
+	
 </script>
 </head>
 <body>
@@ -546,44 +558,45 @@ tr.clicable {
 						<spring:message code="registre.detalls.info.errors"/> 
 						<c:if test="${isRolActualAdministrador}">
 							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT'}">
-								<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
+								<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
 							</c:if>
 							<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
-								<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+								<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 							</c:if>
 						</c:if>
 					</div>
 				</c:if>
-				
 				<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0)}">
-					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>
 
 				<!------ PROCESSAMENT INFO ------>
-				<dl class="dl-horizontal">
+				<div class="processamentInfo">
 				
-					<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
-					<dd>${registre.procesEstat}</dd>
+					<dl class="dl-horizontal">
 					
-					<c:if test="${not empty registre.procesData}">
-						<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
-						<dd><fmt:formatDate value="${registre.procesData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
-					</c:if>	
+						<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+						<dd>${registre.procesEstat}</dd>
+						
+						<c:if test="${not empty registre.procesData}">
+							<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
+							<dd><fmt:formatDate value="${registre.procesData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+						</c:if>	
+						
+						<c:if test="${registre.procesEstat == 'BACK_PENDENT' && not empty registre.backRetryEnviarData}">
+							<dt><spring:message code="registre.detalls.camp.proces.data.back.proxima.intent"/></dt>
+							<dd><fmt:formatDate value="${registre.backRetryEnviarData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
+						</c:if>						
+						
+						<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
+						<dd>${registre.procesIntents}</dd>
+						
+					</dl>
 					
-					<c:if test="${registre.procesEstat == 'BACK_PENDENT' && not empty registre.backRetryEnviarData}">
-						<dt><spring:message code="registre.detalls.camp.proces.data.back.proxima.intent"/></dt>
-						<dd><fmt:formatDate value="${registre.backRetryEnviarData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>				
-					</c:if>						
-					
-					<dt><spring:message code="registre.detalls.camp.proces.intents"/></dt>
-					<dd>${registre.procesIntents}</dd>
-					
-				</dl>
-				
-				<c:if test="${not empty registre.procesError}">
-					<pre style="height:300px"><c:out value="${registre.procesError}" escapeXml="true"/></pre>
-				</c:if>
-				
+					<c:if test="${not empty registre.procesError}">
+						<pre style="height:300px"><c:out value="${registre.procesError}" escapeXml="true"/></pre>
+					</c:if>
+				</div>
 			</div>
 		</c:if>
 		
@@ -595,39 +608,39 @@ tr.clicable {
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 				
 			    <c:if test="${isRolActualAdministrador == true && (registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR')}">
-					<a href="<c:url value="/registreUser/${registre.pareId}/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="<c:url value="/registreUser/${registre.pareId}/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
-	
-				<dl class="dl-horizontal">
-				
-					<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
-					<dd>${registre.procesEstat}</dd>
+				<div class="processamentInfo">
+					<dl class="dl-horizontal">
 					
-					<dt><spring:message code="registre.detalls.camp.proces.data.back.pendent"/></dt>
-					<dd><fmt:formatDate value="${registre.backPendentData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
+						<dd>${registre.procesEstat}</dd>
+						
+						<dt><spring:message code="registre.detalls.camp.proces.data.back.pendent"/></dt>
+						<dd><fmt:formatDate value="${registre.backPendentData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						
+						<dt><spring:message code="registre.detalls.camp.proces.data.back.rebuda"/></dt>
+						<dd><fmt:formatDate value="${registre.backRebudaData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						
+						<c:choose>
+						   <c:when test = "${registre.procesEstat == 'BACK_PROCESSADA'}">
+						      <dt><spring:message code="registre.detalls.camp.proces.data.back.processada"/></dt>
+						      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						   </c:when>
+						   
+						   <c:when test = "${registre.procesEstat == 'BACK_REBUTJADA'}">
+						      <dt><spring:message code="registre.detalls.camp.proces.data.back.rebutjada"/></dt>
+						      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						   </c:when>
+						   
+						   <c:when test = "${registre.procesEstat == 'BACK_ERROR'}">
+						      <dt><spring:message code="registre.detalls.camp.proces.data.back.error"/></dt>
+						      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
+						   </c:when>         
+						</c:choose>	
+									
+					</dl>
 					
-					<dt><spring:message code="registre.detalls.camp.proces.data.back.rebuda"/></dt>
-					<dd><fmt:formatDate value="${registre.backRebudaData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-					
-					<c:choose>
-					   <c:when test = "${registre.procesEstat == 'BACK_PROCESSADA'}">
-					      <dt><spring:message code="registre.detalls.camp.proces.data.back.processada"/></dt>
-					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-					   </c:when>
-					   
-					   <c:when test = "${registre.procesEstat == 'BACK_REBUTJADA'}">
-					      <dt><spring:message code="registre.detalls.camp.proces.data.back.rebutjada"/></dt>
-					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-					   </c:when>
-					   
-					   <c:when test = "${registre.procesEstat == 'BACK_ERROR'}">
-					      <dt><spring:message code="registre.detalls.camp.proces.data.back.error"/></dt>
-					      <dd><fmt:formatDate value="${registre.backProcesRebutjErrorData}" pattern="dd/MM/yyyy HH:mm:ss"/></dd>
-					   </c:when>         
-					</c:choose>	
-								
-				</dl>
-				
 					<c:choose>
 					   <c:when test = "${not empty registre.procesError}">
 							<pre style="height:300px"><c:out value="${registre.procesError}" escapeXml="true"/></pre>
@@ -636,8 +649,15 @@ tr.clicable {
 							<pre style="height:300px">${registre.backObservacions}</pre>
 					   </c:when>
 					</c:choose>			
+				</div>
 			</div>
 		</c:if>	
+		
+		<div class="col-md-12 datatable-dades-carregant" style="display: none; text-align: center; margin-top: 50px;">
+			<span class="fa fa-circle-o-notch fa-spin fa-3x"></span>
+		</div>
+		
+		
 		
 	</div>
 	
