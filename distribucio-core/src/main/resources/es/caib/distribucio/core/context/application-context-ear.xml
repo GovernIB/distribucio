@@ -9,7 +9,7 @@
 	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="${es.caib.distribucio.properties.path}" />
 		<property name="placeholderPrefix" value="${config:" />
-		<property name="ignoreResourceNotFound" value="false" />
+		<property name="ignoreResourceNotFound" value="true" />
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
 	</bean>
 
