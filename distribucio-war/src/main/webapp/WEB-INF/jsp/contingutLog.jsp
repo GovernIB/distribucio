@@ -29,19 +29,29 @@ $(document).ready(function() {
 						$row.after('<tr><td colspan="4"></td></tr>')
 						$newTd = $('td', $row.next());
 						$newTd.html($('#log-info-detall').html());
-						if (data.param1 !== null || data.param2 !== null) {
-							if (data.param1 !== null)
-								$('td.log-info-param1-valor', $newTd).text(data.param1);
-							if (data.param2 !== null)
-								$('td.log-info-param2-valor', $newTd).text(data.param2);
+						
+						if (data.params && data.params.length > 0) {
+							for (var i = 0; i < data.params.length; i++) {
+							    $('.table-params', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/> "+ (i + 1) +"</b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
+							}
 						} else {
 							$('div.log-info-params', $newTd).remove();
 						}
+						
 						if (data.pare != null) {
 							$('td.log-info-accio-data', $newTd).text(data.pare.createdDateAmbFormat);
 							$('td.log-info-accio-usuari', $newTd).text(data.pare.createdBy.nom);
 							$('td.log-info-accio-tipus', $newTd).text(logTipusEnumText[data.pare.tipus]);
 							$('td.log-info-accio-objecte', $newTd).text("[" + logObjecteTipusEnumText[data.objecteTipus] + "#" + data.objecteId + "] " + data.objecteNom);
+
+							if (data.params !== null) {
+								for (var i = 0; i < data.params.length; i++) {
+								    $('.table-accio', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/></b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
+								}
+							} else {
+								$('div.log-info-params', $newTd).remove();
+							}
+							
 							if (data.param1 !== null || data.param2 !== null) {
 								if (data.pare.param1 !== null)
 									$('td.log-info-accio-param1-valor', $newTd).text(data.pare.param1);
@@ -170,20 +180,15 @@ $(document).ready(function() {
 				</tbody>
 			</table>
 			<div id="log-info-detall" class="hidden">
-				<div class="panel panel-default log-info-params">
+				<div class="panel panel-default log-info-params" >
 					<div class="panel-heading"><strong><spring:message code="contingut.log.detall.params"/></strong></div>
-					<table class="table table-bordered">
-						<tr>
-							<td class="log-info-param1-titol" width="20%"><b><spring:message code="contingut.log.detall.param1"/></b></td>
-							<td class="log-info-param1-valor" width="30%"></td>
-							<td class="log-info-param2-titol" width="20%"><b><spring:message code="contingut.log.detall.param2"/></b></td>
-							<td class="log-info-param2-valor" width="30%"></td>
-						</tr>
+					<table class="table table-bordered table-params">
+
 					</table>
 				</div>
 				<div class="panel panel-default log-info-accio">
 					<div class="panel-heading"><strong><spring:message code="contingut.log.detall.accio"/></strong></div>
-					<table class="table table-bordered">
+					<table class="table table-bordered table-accio">
 						<tr>
 							<td width="20%"><b><spring:message code="contingut.log.detall.accio.accio"/></b></td>
 							<td class="log-info-accio-data"><spring:message code="contingut.log.detall.accio.data"/></td>
@@ -193,12 +198,6 @@ $(document).ready(function() {
 						<tr>
 							<td width="20%"><b><spring:message code="contingut.log.detall.accio.objecte"/></b></td>
 							<td class="log-info-accio-objecte" colspan="3"></td>
-						</tr>
-						<tr>
-							<td class="log-info-accio-param1-titol" width="20%"><b><spring:message code="contingut.log.detall.param1"/></b></td>
-							<td class="log-info-accio-param1-valor" width="30%"></td>
-							<td class="log-info-accio-param2-titol" width="20%"><b><spring:message code="contingut.log.detall.param2"/></b></td>
-							<td class="log-info-accio-param2-valor" width="30%"></td>
 						</tr>
 					</table>
 				</div>

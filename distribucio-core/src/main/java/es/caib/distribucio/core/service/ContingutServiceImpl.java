@@ -537,11 +537,13 @@ public class ContingutServiceImpl implements ContingutService {
 				}
 			}
 		}
+		List<String> params = new ArrayList<>();
+		params.add(registre.getNom());
+		params.add(null);
 		contingutLogHelper.log(
 				registre,
 				LogTipusEnumDto.MARCAMENT_PROCESSAT,
-				registre.getNom(),
-				null,
+				params,
 				false);
 		return publicarComentariPerContingut(
 				entitatId,

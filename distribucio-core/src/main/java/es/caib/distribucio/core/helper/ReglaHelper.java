@@ -6,6 +6,7 @@ package es.caib.distribucio.core.helper;
 import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -203,7 +204,7 @@ public class ReglaHelper {
 						registre,
 						regla.getBustia(),
 						null);
-				contingutLogHelper.log(
+				contingutLogHelper.logMoviment(
 						registre,
 						LogTipusEnumDto.MOVIMENT,
 						contingutMoviment,
@@ -239,11 +240,14 @@ public class ReglaHelper {
 				break;
 			}
 			
+			List<String> params = new ArrayList<>();
+			params.add(regla.getNom());
+			params.add(regla.getTipus().toString());
+			
 			contingutLogHelper.log(
 					registre,
 					LogTipusEnumDto.REGLA_APLICAR,
-					regla.getNom(),
-					regla.getTipus().toString(),
+					params,
 					false);
 			
 		} catch (Exception ex) {

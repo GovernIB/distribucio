@@ -467,7 +467,7 @@ public class ContingutController extends BaseUserController {
 		String usuari = log.getCreatedBy() != null ? log.getCreatedBy().getCodi() + " - " + log.getCreatedBy().getNom() : "-";
 		switch(log.getTipus()) {
 		case CREACIO:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParam1()}));
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParams().get(0)}));
 			break;
 		case MOVIMENT:
 		case REENVIAMENT:
@@ -486,7 +486,7 @@ public class ContingutController extends BaseUserController {
 		case ENVIAMENT_EMAIL:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.enviamentEmail", 
 								new Object[] {usuari,
-											 log.getParam2()}));
+										log.getParams().get(1)}));
 			break;
 		case MARCAMENT_PROCESSAT:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.marcamentProcessat", new Object[] {usuari}));
@@ -495,7 +495,7 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.distribucio"));
 			break;
 		case REGLA_APLICAR:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.reglaAplicar", new Object[] {log.getParam1(), log.getParam2()}));
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.reglaAplicar", new Object[] {log.getParams().get(0), log.getParams().get(1)}));
 			break;
 		case BACK_REBUDA:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));
@@ -513,10 +513,10 @@ public class ContingutController extends BaseUserController {
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");
-			if (log.getParam1() != null)
-				sb.append(" param1: \"").append(log.getParam1()).append("\"");
-			if (log.getParam2() != null)
-				sb.append(" param2: \"").append(log.getParam2()).append("\"");
+			if (log.getParams().get(0) != null)
+				sb.append(" param1: \"").append(log.getParams().get(0)).append("\"");
+			if (log.getParams().get(1) != null)
+				sb.append(" param2: \"").append(log.getParams().get(1)).append("\"");
 			break;
 		}
 		return sb.toString();

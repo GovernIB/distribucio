@@ -28,7 +28,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @Entity
 @Table(name = "dis_cont_log_param")
 @EntityListeners(AuditingEntityListener.class)
-public class ContingutLogParamEntity extends DistribucioAuditable<Long> {
+public class ContingutLogParamEntity extends DistribucioAuditable<Long> implements Comparable<ContingutLogParamEntity>{
 
 	/** Llargada màxima del paràmetre */
 	private static final int PARAM_MAX_LENGTH = 255;
@@ -79,7 +79,13 @@ public class ContingutLogParamEntity extends DistribucioAuditable<Long> {
 	    }
 	}
 
+    @Override
+    public int compareTo(ContingutLogParamEntity o) {
+    	
+        return new Long(this.numero).compareTo(o.numero);
+    }
 
 	private static final long serialVersionUID = -2299453443943600172L;
+
 
 }

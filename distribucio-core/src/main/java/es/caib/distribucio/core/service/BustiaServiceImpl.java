@@ -197,11 +197,15 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		if (bustiaPerDefecte == null) {
 			entity.updatePerDefecte(true);
+			
+			List<String> params = new ArrayList<>();
+			params.add("true");
+			params.add(null);
+			
 			contingutLogHelper.log(
 					entity,
 					LogTipusEnumDto.PER_DEFECTE,
-					"true",
-					null,
+					params,
 					false);
 		}
 		return bustiaHelper.toBustiaDto(
@@ -268,11 +272,13 @@ public class BustiaServiceImpl implements BustiaService {
 				unitatOrganitzativaDesti);
 		
 		// Registra al log la modificació de la bústia
+		List<String> params = new ArrayList<>();
+		params.add((!nomOriginalBustia.equals(bustiaOriginal.getNom())) ? bustiaOriginal.getNom() : null);
+		params.add(null);
 		contingutLogHelper.log(
 				bustiaOriginal,
 				LogTipusEnumDto.MODIFICACIO,
-				(!nomOriginalBustia.equals(bustiaOriginal.getNom())) ? bustiaOriginal.getNom() : null,
-				null,
+				params,
 				false);
 		return bustiaHelper.toBustiaDto(
 				bustiaOriginal,
@@ -341,7 +347,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		entity.updateActiva(activa);
 		// Registra al log la modificació de la bústia
-		contingutLogHelper.log(
+		
+
+		contingutLogHelper.logMoviment(
 				entity,
 				activa ? LogTipusEnumDto.ACTIVACIO : LogTipusEnumDto.DESACTIVACIO,
 				null,
@@ -439,21 +447,25 @@ public class BustiaServiceImpl implements BustiaService {
 		for (BustiaEntity bu: bustiesMateixaUnitat) {
 			if (bu.isPerDefecte()) {
 				// Registra al log la modificació de la bústia
+				List<String> params = new ArrayList<>();
+				params.add("false");
+				params.add(null);
 				contingutLogHelper.log(
 						bu,
 						LogTipusEnumDto.PER_DEFECTE,
-						"false",
-						null,
+						params,
 						false);
 			}
 			bu.updatePerDefecte(false);
 		}
 		// Registra al log la modificació de la bústia
+		List<String> params = new ArrayList<>();
+		params.add("true");
+		params.add(null);
 		contingutLogHelper.log(
 				bustia,
 				LogTipusEnumDto.PER_DEFECTE,
-				"true",
-				null,
+				params,
 				false);
 		bustia.updatePerDefecte(true);
 		return bustiaHelper.toBustiaDto(
@@ -1032,12 +1044,14 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		mailSender.send(missatge);
 		
+		List<String> params = new ArrayList<>();
+		params.add(registreEntity.getNom());
+		params.add(adresses);
 		//String logTo = "Destinataris: " + adresses;
 		contingutLogHelper.log(
 				registreEntity,
 				LogTipusEnumDto.ENVIAMENT_EMAIL,
-				registreEntity.getNom(),
-				adresses,
+				params,
 				false);
 		
 		registreEntity.updateEnviatPerEmail(true);
@@ -1150,13 +1164,13 @@ public class BustiaServiceImpl implements BustiaService {
 				}
 			}	
 			if (opcioDeixarCopiaSelectada) {
-				contingutLogHelper.log(
+				contingutLogHelper.logMoviment(
 						registreOriginal,
 						LogTipusEnumDto.REENVIAMENT,
 						contingutMoviment,
 						true);
 			}
-			contingutLogHelper.log(
+			contingutLogHelper.logMoviment(
 					registrePerReenviar,
 					LogTipusEnumDto.REENVIAMENT,
 					contingutMoviment,
@@ -1291,7 +1305,7 @@ public class BustiaServiceImpl implements BustiaService {
 					bustiaDesti,
 					comentari);
 			// Registra al log l'enviament del contingut
-			contingutLogHelper.log(
+			contingutLogHelper.logMoviment(
 					registre,
 					LogTipusEnumDto.MOVIMENT,
 					contingutMoviment,

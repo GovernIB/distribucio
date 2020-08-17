@@ -5,6 +5,7 @@ package es.caib.distribucio.core.helper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -62,6 +63,11 @@ public class ContingutLogHelper {
 	public ContingutLogEntity logCreacio(
 			ContingutEntity contingut,
 			boolean logContingutPare) {
+		
+		List<String> params = new ArrayList<>();
+		params.add(contingut.getNom());
+		params.add((contingut.getPare() != null) ? contingut.getPare().getId().toString() : null);
+		
 		return log(
 				contingut,
 				LogTipusEnumDto.CREACIO,
@@ -69,16 +75,14 @@ public class ContingutLogHelper {
 				contingut,
 				getLogObjecteTipusPerContingut(contingut),
 				null,
-				contingut.getNom(),
-				(contingut.getPare() != null) ? contingut.getPare().getId().toString() : null,
+				params,
 				logContingutPare);
 	}
 
 	public ContingutLogEntity log(
 			ContingutEntity contingut,
 			LogTipusEnumDto tipus,
-			String param1,
-			String param2,
+			List<String> params,
 			boolean logContingutPare) {
 		return log(
 				contingut,
@@ -87,8 +91,7 @@ public class ContingutLogHelper {
 				null,
 				null,
 				null,
-				param1,
-				param2,
+				params,
 				logContingutPare);
 	}
 //	public ContingutLogEntity log(
@@ -111,7 +114,7 @@ public class ContingutLogHelper {
 //				param2,
 //				logContingutPare);
 //	}
-	public ContingutLogEntity log(
+	public ContingutLogEntity logMoviment(
 			ContingutEntity contingut,
 			LogTipusEnumDto tipus,
 			ContingutMovimentEntity contingutMoviment,
@@ -120,7 +123,6 @@ public class ContingutLogHelper {
 				contingut,
 				tipus,
 				contingutMoviment,
-				null,
 				null,
 				null,
 				null,
@@ -201,6 +203,9 @@ public class ContingutLogHelper {
 				break;
 			}
 			detalls.setObjecteNom(objecteNom);
+		} 
+		if (detalls.getContenidorMoviment() != null) {
+			detalls.getContenidorMoviment().setContingut(null); //to avoid circular dependency in json
 		}
 		return detalls;
 	}
@@ -229,8 +234,7 @@ public class ContingutLogHelper {
 			Persistable<? extends Serializable> objecte,
 			LogObjecteTipusEnumDto objecteTipus,
 			LogTipusEnumDto objecteLogTipus,
-			String param1,
-			String param2,
+			List<String> params,
 			boolean logContingutPare) {
 		ContingutLogEntity logPare = logSave(
 				contingut,
@@ -240,8 +244,7 @@ public class ContingutLogHelper {
 				objecte,
 				objecteTipus,
 				objecteLogTipus,
-				param1,
-				param2);
+				params);
 		if (logContingutPare) {
 			if (contingutMoviment == null) {
 				if (contingut.getPare() != null) {
@@ -284,7 +287,6 @@ public class ContingutLogHelper {
 				contingut,
 				getLogObjecteTipusPerContingut(contingut),
 				tipus,
-				null,
 				null);
 	}
 
@@ -296,8 +298,9 @@ public class ContingutLogHelper {
 			Persistable<? extends Serializable> objecte,
 			LogObjecteTipusEnumDto objecteTipus,
 			LogTipusEnumDto objecteLogTipus,
-			String param1,
-			String param2) {
+			List<String> params) {
+		
+		
 		logger.debug("Guardant log per contenidor (" +
 				"contingutId=" + contingut.getId() + ", " +
 				"tipus=" + tipus + ", " +
@@ -305,13 +308,14 @@ public class ContingutLogHelper {
 				"contingutMovimentId=" + ((contingutMoviment != null) ? contingutMoviment.getId() : null) + ", " +
 				"objecte=" + ((objecte != null) ? objecte.getId() : "null") + ", " +
 				"objecteLogTipus=" + ((objecteLogTipus != null) ? objecteLogTipus.name() : "null") + ", " +
-				"param1=" + param1 + ", " +
-				"param2=" + param2 + ")");
+				"params=" + params +  ")");
+		
+		
 		Builder logBuilder = ContingutLogEntity.getBuilder(
 				tipus,
 				contingut).
-				param1(param1).
-				param2(param2).
+				param1(params != null ? params.get(0) : null).
+				param2(params != null ? params.get(1) : null).
 				pare(pare).
 				contingutMoviment(contingutMoviment);
 		
@@ -325,25 +329,19 @@ public class ContingutLogHelper {
 		ContingutLogEntity contingutLogEntity = contingutLogRepository.save(
 				logBuilder.build());
 		
-		if (param1 != null) {
-			ContingutLogParamEntity contingutLogParamEntity = ContingutLogParamEntity.getBuilder(
-					contingutLogEntity,
-					1,
-					param1).build();
-			contingutLogParamRepository.save(contingutLogParamEntity);
-			contingutLogEntity.addLogParam(contingutLogParamEntity);
+		if (params != null) {
+			for (int i = 0; i < params.size(); i++) {
+				if (params.get(i) != null) {
+					ContingutLogParamEntity contingutLogParamEntity = ContingutLogParamEntity.getBuilder(
+							contingutLogEntity,
+							i + 1,
+							params.get(i)).build();
+					contingutLogParamRepository.save(contingutLogParamEntity);
+					contingutLogEntity.addLogParam(contingutLogParamEntity);
+				}
+			}
 		}
-		
-		if (param2 != null) {
-			ContingutLogParamEntity contingutLogParamEntity = ContingutLogParamEntity.getBuilder(
-					contingutLogEntity,
-					2,
-					param2).build();
-			contingutLogParamRepository.save(contingutLogParamEntity);
-			contingutLogEntity.addLogParam(contingutLogParamEntity);
-		}
-		
-		
+
 		return contingutLogEntity;
 	}
 	
@@ -381,14 +379,16 @@ public class ContingutLogHelper {
 			}
 		}
 		
-		dto.setParam1(log.getParam1());
-		dto.setParam2(log.getParam2());
+//		dto.setParam1(log.getParam1());
+//		dto.setParam2(log.getParam2());
 		
-		String params = "";
+		List<String> params = new ArrayList<>();
+		
+		Collections.sort(log.getParams());
 		for (ContingutLogParamEntity contingutLogParamEntity : log.getParams()) {
-			params += contingutLogParamEntity.getValor() + ";";
+			params.add(contingutLogParamEntity.getValor());
 		}
-		
+		dto.setParams(params);
 		
 		logger.debug("Reading log (" +
 				"id=" + log.getId() + ", " +
@@ -397,9 +397,7 @@ public class ContingutLogHelper {
 				"contingutMovimentId=" + ((log.getContingutMoviment() != null) ? log.getContingutMoviment().getId() : null) + ", " +
 				"objecteId=" + log.getObjecteId()  + ", " +
 				"objecteLogTipus=" + ((log.getObjecteTipus() != null) ? log.getObjecteTipus().name() : "null") + ", " +
-				"params=" + params + ", " +
-				"param1=" + log.getParam1() + ", " +
-				"param2=" + log.getParam2() + ")");
+				"params=" + params + ")");
 		
 	}
 	

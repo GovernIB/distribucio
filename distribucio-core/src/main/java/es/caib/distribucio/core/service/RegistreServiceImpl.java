@@ -627,7 +627,6 @@ public class RegistreServiceImpl implements RegistreService {
 						registre,
 						LogTipusEnumDto.BACK_REBUDA,
 						null,
-						null,
 						false);
 				break;
 			case PROCESSADA:
@@ -640,7 +639,6 @@ public class RegistreServiceImpl implements RegistreService {
 						registre,
 						LogTipusEnumDto.BACK_PROCESSADA,
 						null,
-						null,
 						false);
 				break;
 			case REBUTJADA:
@@ -652,7 +650,6 @@ public class RegistreServiceImpl implements RegistreService {
 						registre,
 						LogTipusEnumDto.BACK_REBUTJADA,
 						null,
-						null,
 						false);				
 				break;
 			case ERROR:
@@ -663,7 +660,6 @@ public class RegistreServiceImpl implements RegistreService {
 				contingutLogHelper.log(
 						registre,
 						LogTipusEnumDto.BACK_ERROR,
-						null,
 						null,
 						false);
 				break;

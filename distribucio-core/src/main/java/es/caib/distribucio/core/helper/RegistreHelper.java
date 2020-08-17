@@ -279,11 +279,15 @@ public class RegistreHelper {
 								registreEntity));
 			}
 		}
+		
+		List<String> params = new ArrayList<>();
+		params.add(registreEntity.getNom());
+		params.add(null);
+		
 		contingutLogHelper.log(
 				registreEntity,
 				LogTipusEnumDto.CREACIO,
-				registreEntity.getNom(),
-				null,
+				params,
 				false);
 		contextsaveAnnexos.stop();
 		
@@ -588,11 +592,15 @@ public class RegistreHelper {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
 					"anotacioNumero=" + registreEntity.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+			
+			List<String> params = new ArrayList<>();
+			params.add(registreEntity.getNom());
+			params.add(null);
+			
 			contingutLogHelper.log(
 					registreEntity,
 					LogTipusEnumDto.DISTRIBUCIO,
-					registreEntity.getNom(),
-					null,
+					params,
 					false);
 			return null;
 		}
