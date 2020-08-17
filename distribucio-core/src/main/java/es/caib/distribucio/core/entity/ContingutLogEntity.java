@@ -4,6 +4,8 @@
 package es.caib.distribucio.core.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +15,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,9 +68,17 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 	@JoinColumn(name = "pare_id")
 	@ForeignKey(name = "dis_pare_contlog_fk")
 	protected ContingutLogEntity pare;
+	
+	
+	@OneToMany(
+			mappedBy = "contingutLog",
+			orphanRemoval = true)
+	private List<ContingutLogParamEntity> params = new ArrayList<ContingutLogParamEntity>();
 
 
-
+	public List<ContingutLogParamEntity> getParams() {
+		return params;
+	}
 	public LogTipusEnumDto getTipus() {
 		return tipus;
 	}
@@ -86,21 +98,39 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 		return objecteLogTipus;
 	}
 	public String getParam1() {
-		return param1;
+		return getParam(params, 1);
 	}
+	
 	public String getParam2() {
-		return param2;
+		return getParam(params, 2);
 	}
+	
+	public void addLogParam(ContingutLogParamEntity contingutLogParamEntity) {
+		params.add(contingutLogParamEntity);
+	}
+	
+	
+	public String getParam(
+			List<ContingutLogParamEntity> logParams,
+			long numero) {
+		for (ContingutLogParamEntity contingutLogParam : logParams) {
+			if (contingutLogParam.getNumero() == numero) {
+				return contingutLogParam.getValor();
+			}
+		}
+		return null;
+	}
+	
 	public ContingutLogEntity getPare() {
 		return pare;
 	}
 
-	public void updateParams(
-			String param1,
-			String param2) {
-		this.param1 = StringUtils.abbreviate(param1, PARAM_MAX_LENGTH);
-		this.param2 = StringUtils.abbreviate(param2, PARAM_MAX_LENGTH);
-	}
+//	public void updateParams(
+//			String param1,
+//			String param2) {
+//		this.param1 = StringUtils.abbreviate(param1, PARAM_MAX_LENGTH);
+//		this.param2 = StringUtils.abbreviate(param2, PARAM_MAX_LENGTH);
+//	}
 
 	public static Builder getBuilder(
 			LogTipusEnumDto tipus,

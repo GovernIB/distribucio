@@ -207,7 +207,6 @@ public class ReglaHelper {
 						registre,
 						LogTipusEnumDto.MOVIMENT,
 						contingutMoviment,
-						true,
 						true);
 				emailHelper.createEmailsPendingToSend(
 						regla.getBustia(),
@@ -245,7 +244,6 @@ public class ReglaHelper {
 					LogTipusEnumDto.REGLA_APLICAR,
 					regla.getNom(),
 					regla.getTipus().toString(),
-					false,
 					false);
 			
 		} catch (Exception ex) {

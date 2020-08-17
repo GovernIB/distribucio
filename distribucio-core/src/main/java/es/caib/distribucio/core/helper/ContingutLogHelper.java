@@ -26,10 +26,12 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity.Builder;
+import es.caib.distribucio.core.entity.ContingutLogParamEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEntity;
+import es.caib.distribucio.core.repository.ContingutLogParamRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
-import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 
 /**
  * Utilitat per a gestionar el registre d'accions dels contenidors.
@@ -44,6 +46,8 @@ public class ContingutLogHelper {
 	@Resource
 	private ContingutLogRepository contingutLogRepository;
 	@Resource
+	private ContingutLogParamRepository contingutLogParamRepository;
+	@Resource
 	private ContingutMovimentRepository contingutMovimentRepository;
 
 	@Resource
@@ -57,8 +61,7 @@ public class ContingutLogHelper {
 
 	public ContingutLogEntity logCreacio(
 			ContingutEntity contingut,
-			boolean logContingutPare,
-			boolean logExpedientSuperior) {
+			boolean logContingutPare) {
 		return log(
 				contingut,
 				LogTipusEnumDto.CREACIO,
@@ -68,8 +71,7 @@ public class ContingutLogHelper {
 				null,
 				contingut.getNom(),
 				(contingut.getPare() != null) ? contingut.getPare().getId().toString() : null,
-				logContingutPare,
-				logExpedientSuperior);
+				logContingutPare);
 	}
 
 	public ContingutLogEntity log(
@@ -77,8 +79,7 @@ public class ContingutLogHelper {
 			LogTipusEnumDto tipus,
 			String param1,
 			String param2,
-			boolean logContingutPare,
-			boolean logExpedientSuperior) {
+			boolean logContingutPare) {
 		return log(
 				contingut,
 				tipus,
@@ -88,37 +89,33 @@ public class ContingutLogHelper {
 				null,
 				param1,
 				param2,
-				logContingutPare,
-				logExpedientSuperior);
+				logContingutPare);
 	}
-	public ContingutLogEntity log(
-			ContingutEntity contingut,
-			LogTipusEnumDto tipus,
-			Persistable<? extends Serializable> objecte,
-			LogObjecteTipusEnumDto objecteTipus,
-			LogTipusEnumDto objecteLogTipus,
-			String param1,
-			String param2,
-			boolean logContingutPare,
-			boolean logExpedientSuperior) {
-		return log(
-				contingut,
-				tipus,
-				null,
-				objecte,
-				objecteTipus,
-				objecteLogTipus,
-				param1,
-				param2,
-				logContingutPare,
-				logExpedientSuperior);
-	}
+//	public ContingutLogEntity log(
+//			ContingutEntity contingut,
+//			LogTipusEnumDto tipus,
+//			Persistable<? extends Serializable> objecte,
+//			LogObjecteTipusEnumDto objecteTipus,
+//			LogTipusEnumDto objecteLogTipus,
+//			String param1,
+//			String param2,
+//			boolean logContingutPare) {
+//		return log(
+//				contingut,
+//				tipus,
+//				null,
+//				objecte,
+//				objecteTipus,
+//				objecteLogTipus,
+//				param1,
+//				param2,
+//				logContingutPare);
+//	}
 	public ContingutLogEntity log(
 			ContingutEntity contingut,
 			LogTipusEnumDto tipus,
 			ContingutMovimentEntity contingutMoviment,
-			boolean logContingutPare,
-			boolean logExpedientSuperior) {
+			boolean logContingutPare) {
 		return log(
 				contingut,
 				tipus,
@@ -128,8 +125,7 @@ public class ContingutLogHelper {
 				null,
 				null,
 				null,
-				logContingutPare,
-				logExpedientSuperior);
+				logContingutPare);
 	}
 
 	public List<ContingutLogDto> findLogsContingut(
@@ -235,8 +231,7 @@ public class ContingutLogHelper {
 			LogTipusEnumDto objecteLogTipus,
 			String param1,
 			String param2,
-			boolean logContingutPare,
-			boolean logExpedientSuperior) {
+			boolean logContingutPare) {
 		ContingutLogEntity logPare = logSave(
 				contingut,
 				tipus,
@@ -319,15 +314,41 @@ public class ContingutLogHelper {
 				param2(param2).
 				pare(pare).
 				contingutMoviment(contingutMoviment);
+		
 		if (objecte != null) {
 			logBuilder.
 			objecte(objecte).
 			objecteTipus(objecteTipus).
 			objecteLogTipus(objecteLogTipus);
 		}
-		return contingutLogRepository.save(
+		
+		ContingutLogEntity contingutLogEntity = contingutLogRepository.save(
 				logBuilder.build());
+		
+		if (param1 != null) {
+			ContingutLogParamEntity contingutLogParamEntity = ContingutLogParamEntity.getBuilder(
+					contingutLogEntity,
+					1,
+					param1).build();
+			contingutLogParamRepository.save(contingutLogParamEntity);
+			contingutLogEntity.addLogParam(contingutLogParamEntity);
+		}
+		
+		if (param2 != null) {
+			ContingutLogParamEntity contingutLogParamEntity = ContingutLogParamEntity.getBuilder(
+					contingutLogEntity,
+					2,
+					param2).build();
+			contingutLogParamRepository.save(contingutLogParamEntity);
+			contingutLogEntity.addLogParam(contingutLogParamEntity);
+		}
+		
+		
+		return contingutLogEntity;
 	}
+	
+	
+
 
 	private void emplenarLogDto(
 			ContingutLogEntity log,
@@ -359,9 +380,41 @@ public class ContingutLogHelper {
 								log.getObjecteLogTipus().name()));
 			}
 		}
+		
 		dto.setParam1(log.getParam1());
 		dto.setParam2(log.getParam2());
+		
+		String params = "";
+		for (ContingutLogParamEntity contingutLogParamEntity : log.getParams()) {
+			params += contingutLogParamEntity.getValor() + ";";
+		}
+		
+		
+		logger.debug("Reading log (" +
+				"id=" + log.getId() + ", " +
+				"tipus=" + log.getTipus() + ", " +
+				"logPareId=" + ((log.getPare() != null) ? log.getPare().getId() : null) + ", " +
+				"contingutMovimentId=" + ((log.getContingutMoviment() != null) ? log.getContingutMoviment().getId() : null) + ", " +
+				"objecteId=" + log.getObjecteId()  + ", " +
+				"objecteLogTipus=" + ((log.getObjecteTipus() != null) ? log.getObjecteTipus().name() : "null") + ", " +
+				"params=" + params + ", " +
+				"param1=" + log.getParam1() + ", " +
+				"param2=" + log.getParam2() + ")");
+		
 	}
+	
+	public String getParam(
+			List<ContingutLogParamEntity> logParams,
+			long numero) {
+		for (ContingutLogParamEntity contingutLogParam : logParams) {
+			if (contingutLogParam.getNumero() == numero) {
+				return contingutLogParam.getValor();
+			}
+		}
+		return null;
+	}
+	
+	
 
 	private ContingutMovimentDto toContingutMovimentDto(
 			ContingutMovimentEntity moviment,

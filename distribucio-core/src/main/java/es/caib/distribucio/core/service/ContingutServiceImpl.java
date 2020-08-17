@@ -542,7 +542,6 @@ public class ContingutServiceImpl implements ContingutService {
 				LogTipusEnumDto.MARCAMENT_PROCESSAT,
 				registre.getNom(),
 				null,
-				false,
 				false);
 		return publicarComentariPerContingut(
 				entitatId,

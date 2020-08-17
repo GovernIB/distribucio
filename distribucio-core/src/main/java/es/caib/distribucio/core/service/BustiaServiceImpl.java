@@ -190,7 +190,6 @@ public class BustiaServiceImpl implements BustiaService {
 		// Registra al log la creació de la bústia
 		contingutLogHelper.logCreacio(
 				entity,
-				false,
 				false);
 		// Si no hi ha cap bústia per defecte a dins l'unitat configura
 		// la bústia actual com a bústia per defecte
@@ -203,7 +202,6 @@ public class BustiaServiceImpl implements BustiaService {
 					LogTipusEnumDto.PER_DEFECTE,
 					"true",
 					null,
-					false,
 					false);
 		}
 		return bustiaHelper.toBustiaDto(
@@ -275,7 +273,6 @@ public class BustiaServiceImpl implements BustiaService {
 				LogTipusEnumDto.MODIFICACIO,
 				(!nomOriginalBustia.equals(bustiaOriginal.getNom())) ? bustiaOriginal.getNom() : null,
 				null,
-				false,
 				false);
 		return bustiaHelper.toBustiaDto(
 				bustiaOriginal,
@@ -348,7 +345,6 @@ public class BustiaServiceImpl implements BustiaService {
 				entity,
 				activa ? LogTipusEnumDto.ACTIVACIO : LogTipusEnumDto.DESACTIVACIO,
 				null,
-				false,
 				false);
 		return bustiaHelper.toBustiaDto(
 				entity,
@@ -448,7 +444,6 @@ public class BustiaServiceImpl implements BustiaService {
 						LogTipusEnumDto.PER_DEFECTE,
 						"false",
 						null,
-						false,
 						false);
 			}
 			bu.updatePerDefecte(false);
@@ -459,7 +454,6 @@ public class BustiaServiceImpl implements BustiaService {
 				LogTipusEnumDto.PER_DEFECTE,
 				"true",
 				null,
-				false,
 				false);
 		bustia.updatePerDefecte(true);
 		return bustiaHelper.toBustiaDto(
@@ -1044,7 +1038,6 @@ public class BustiaServiceImpl implements BustiaService {
 				LogTipusEnumDto.ENVIAMENT_EMAIL,
 				registreEntity.getNom(),
 				adresses,
-				false,
 				false);
 		
 		registreEntity.updateEnviatPerEmail(true);
@@ -1161,14 +1154,12 @@ public class BustiaServiceImpl implements BustiaService {
 						registreOriginal,
 						LogTipusEnumDto.REENVIAMENT,
 						contingutMoviment,
-						true,
 						true);
 			}
 			contingutLogHelper.log(
 					registrePerReenviar,
 					LogTipusEnumDto.REENVIAMENT,
 					contingutMoviment,
-					true,
 					true);
 			emailHelper.createEmailsPendingToSend(
 					bustia,
@@ -1304,7 +1295,6 @@ public class BustiaServiceImpl implements BustiaService {
 					registre,
 					LogTipusEnumDto.MOVIMENT,
 					contingutMoviment,
-					true,
 					true);
 			ret++;
 		}

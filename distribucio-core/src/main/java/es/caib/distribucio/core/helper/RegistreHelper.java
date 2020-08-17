@@ -284,7 +284,6 @@ public class RegistreHelper {
 				LogTipusEnumDto.CREACIO,
 				registreEntity.getNom(),
 				null,
-				false,
 				false);
 		contextsaveAnnexos.stop();
 		
@@ -594,7 +593,6 @@ public class RegistreHelper {
 					LogTipusEnumDto.DISTRIBUCIO,
 					registreEntity.getNom(),
 					null,
-					false,
 					false);
 			return null;
 		}
