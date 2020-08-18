@@ -3,8 +3,11 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +148,9 @@ public class AvisServiceImpl implements AvisService {
 	@Override
 	public List<AvisDto> findActive() {
 		logger.debug("Consulta els avisos actius");
-		return conversioTipusHelper.convertirList(avisRepository.findActive(), AvisDto.class);
+		return conversioTipusHelper.convertirList(
+				avisRepository.findActive(DateUtils.truncate(new Date(), Calendar.DATE)), 
+				AvisDto.class);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(AvisServiceImpl.class);

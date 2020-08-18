@@ -3,10 +3,12 @@
  */
 package es.caib.distribucio.core.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.entity.AvisEntity;
 
@@ -21,7 +23,7 @@ public interface AvisRepository extends JpaRepository<AvisEntity, Long> {
 			"    AvisEntity a " +
 			"where " +
 			"    a.actiu = true " +
-			"and a.dataInici<=CURRENT_DATE " +
-			"and a.dataFinal>=trunc(CURRENT_DATE)")
-	List<AvisEntity> findActive();	
+			"and a.dataInici <= :currentDate " +
+			"and a.dataFinal >= :currentDate")
+	List<AvisEntity> findActive(@Param("currentDate") Date currentDate);	
 }
