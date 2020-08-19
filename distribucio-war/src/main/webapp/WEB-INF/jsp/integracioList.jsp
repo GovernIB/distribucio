@@ -40,7 +40,7 @@
 						{{if estat == 'OK'}}
 							<span class="label label-success"><span class="fa fa-check"></span>&nbsp;{{:estat}}</span>
 						{{else}}
-							<span class="label label-danger" title="{{:excepcioMessage}}"><span class="fa fa-warning"></span>&nbsp;{{:estat}}</span>
+							<span class="label label-danger" title="{{html:excepcioMessage}}"><span class="fa fa-warning"></span>&nbsp;{{:estat}}</span>
 						{{/if}}
 					</script>
 				</th>
