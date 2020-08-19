@@ -14,20 +14,44 @@ public class BustiaFiltreOrganigramaDto implements Serializable {
 
 	private String unitatCodiFiltre;
 	private String nomFiltre;
-
-
+	private Long unitatIdFiltre;
+	private Boolean unitatObsoleta;
+	private Boolean perDefecte;
+	private Boolean activa;
+	
+	public Boolean getPerDefecte() {
+		return perDefecte;
+	}
+	public void setPerDefecte(Boolean perDefecte) {
+		this.perDefecte = perDefecte;
+	}
+	public Boolean getActiva() {
+		return activa;
+	}
+	public void setActiva(Boolean activa) {
+		this.activa = activa;
+	}
+	public Boolean getUnitatObsoleta() {
+		return unitatObsoleta;
+	}
+	public void setUnitatObsoleta(Boolean unitatObsoleta) {
+		this.unitatObsoleta = unitatObsoleta;
+	}
+	public Long getUnitatIdFiltre() {
+		return unitatIdFiltre;
+	}
+	public void setUnitatIdFiltre(Long unitatIdFiltre) {
+		this.unitatIdFiltre = unitatIdFiltre;
+	}
 	public String getUnitatCodiFiltre() {
 		return unitatCodiFiltre;
 	}
-
 	public void setUnitatCodiFiltre(String unitatCodiFiltre) {
 		this.unitatCodiFiltre = unitatCodiFiltre;
 	}
-
 	public String getNomFiltre() {
 		return nomFiltre;
 	}
-
 	public void setNomFiltre(String nomFiltre) {
 		this.nomFiltre = nomFiltre;
 	}

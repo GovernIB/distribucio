@@ -22,6 +22,18 @@
 	
 	<script type="text/javascript">
 
+	function formatSelectUnitat(item) {
+		if (!item.id) {
+		    return item.text;
+		}
+		if (item.data && item.data.estat=="V"){
+			return item.text;
+		} else {
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+		}
+	}
+		
+
 	$(document).ready(
 		function() {
 			$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
@@ -50,11 +62,18 @@
 					inline="true" 
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id"
-					suggestText="nom" />
+					suggestText="nom" 
+					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-2" style="padding-left: 30px;">
+			<div class="col-md-1" style="padding-left: 30px;">
 				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
 			</div>
+			<div class="col-md-1" style="padding-left: 30px;">
+				<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
+			</div>
+			<div class="col-md-1" style="padding-left: 30px;">
+				<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
+			</div>			
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

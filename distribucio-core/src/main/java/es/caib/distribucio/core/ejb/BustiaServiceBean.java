@@ -16,6 +16,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -217,8 +218,8 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNom, Long unitatIdFiltre, Boolean unitatObsoleta) {
-		return delegate.findAmbEntitatAndFiltre(entitatId, bustiaNom, unitatIdFiltre, unitatObsoleta);
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto) {
+		return delegate.findAmbEntitatAndFiltre(entitatId, null);
 	}
 
 	@Override

@@ -17,8 +17,21 @@ public class BustiaFiltreOrganigramaCommand {
 	private String nomFiltre;
 	private Long unitatIdFiltre;
 	private Boolean unitatObsoleta;
+	private Boolean perDefecte;
+	private Boolean activa;
 	
-	
+	public Boolean getPerDefecte() {
+		return perDefecte;
+	}
+	public void setPerDefecte(Boolean perDefecte) {
+		this.perDefecte = perDefecte;
+	}
+	public Boolean getActiva() {
+		return activa;
+	}
+	public void setActiva(Boolean activa) {
+		this.activa = activa;
+	}
 	public Boolean getUnitatObsoleta() {
 		return unitatObsoleta;
 	}

@@ -192,9 +192,7 @@ public class BustiaAdminController extends BaseAdminController {
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				bustiaFiltreCommand.getNom(),
-				bustiaFiltreCommand.getUnitatId(),
-				bustiaFiltreCommand.getUnitatObsoleta());
+				null);
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,

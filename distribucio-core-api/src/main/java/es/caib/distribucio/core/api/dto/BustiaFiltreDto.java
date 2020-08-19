@@ -21,14 +21,28 @@ public class BustiaFiltreDto implements Serializable {
 	private Boolean unitatObsoleta;
 	private Long unitatId;
 	private String numeroOrigen;
-
+	private Boolean perDefecte;
+	private Boolean activa;
+	
+	
+	public Boolean getPerDefecte() {
+		return perDefecte;
+	}
+	public void setPerDefecte(Boolean perDefecte) {
+		this.perDefecte = perDefecte;
+	}
+	public Boolean getActiva() {
+		return activa;
+	}
+	public void setActiva(Boolean activa) {
+		this.activa = activa;
+	}
 	public String getNumeroOrigen() {
 		return numeroOrigen;
 	}
 	public void setNumeroOrigen(String numeroOrigen) {
 		this.numeroOrigen = numeroOrigen;
 	}	
-	
 	public Long getUnitatId() {
 		return unitatId;
 	}

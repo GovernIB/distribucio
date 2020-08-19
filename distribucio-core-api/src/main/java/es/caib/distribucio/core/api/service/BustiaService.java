@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -331,8 +332,7 @@ public interface BustiaService {
 	public List<BustiaDto> findAmbEntitat(Long entitatId);
 
 	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, String bustiaNomFiltre, Long unitatIdFiltre,
-			Boolean unitatObsoleta);
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto);
 
 	@PreAuthorize("hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, List<BustiaDto> busties);

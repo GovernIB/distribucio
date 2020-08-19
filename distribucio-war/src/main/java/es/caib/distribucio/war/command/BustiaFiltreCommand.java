@@ -20,8 +20,21 @@ public class BustiaFiltreCommand {
 	private String nom;
 	private Boolean unitatObsoleta;
 	private Long unitatId;
+	private Boolean perDefecte;
+	private Boolean activa;
 	
-	
+	public Boolean getPerDefecte() {
+		return perDefecte;
+	}
+	public void setPerDefecte(Boolean perDefecte) {
+		this.perDefecte = perDefecte;
+	}
+	public Boolean getActiva() {
+		return activa;
+	}
+	public void setActiva(Boolean activa) {
+		this.activa = activa;
+	}
 	public Long getUnitatId() {
 		return unitatId;
 	}

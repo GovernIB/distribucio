@@ -25,123 +25,120 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<link href="<c:url value="/webjars/jstree/3.2.1/dist/themes/default/style.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/webjars/jstree/3.2.1/dist/jstree.min.js"/>"></script>
-<script>
-
-
-
-function changedCallback(e, data) {
-	$('#panellInfo').css('visibility', '');
-	$('#panellInfo').css('display', 'none');
-	$(".datatable-dades-carregant").css("display", "block");
-
-	var bustiaId = data.node.id;
 	
-	var permisUrl = "bustiaAdmin/" + bustiaId + "/permis";
-	$('#permis-boto-nou').attr('href', permisUrl + '/new');
-	$('#permisos').webutilDatatable('refresh-url', permisUrl  + '/datatable');
+	<script>
 
-	$('#permisos').off('draw.dt');
-	$('#permisos').on( 'draw.dt', function () {
-		
- 	$.each($('#permisos .dropdown-menu a'), function( key, permisionLink ) {
- 	 	
-	 		var link = $(permisionLink).attr('href');
-	 		var replaced = link.replace("bustiaIdString", bustiaId);
-	 		$(permisionLink).attr('href', replaced);
-	 	});
-		
-	});
-		
-
+	function formatSelectUnitat(item) {
+		if (!item.id) {
+		    return item.text;
+		}
+		if (item.data && item.data.estat=="V"){
+			return item.text;
+		} else {
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+		}
+	}
 	
 
 
-	var bustiaUrl = "bustiaAdminOrganigrama/" + bustiaId;
-
-	var bustiaNomSel = $('#nom', $('#panellInfo'));
-	var unitatSel = $('#unitatId', $('#panellInfo'));
- 
-	$.ajax({
-	    type: 'GET',
-	    url: bustiaUrl,
-	    success: function(bustiaDto) {
-
-	        // setting bustia id and pare id
-	        $('#id', $('#panellInfo')).val(bustiaDto.id);
-	        $('#pareId', $('#panellInfo')).val(bustiaDto.pare.id);
-
-	        // setting selected bustia name and unitat
-	        bustiaNomSel.val(bustiaDto.nom);
-	        var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
-	        unitatSel.append(newOption).trigger('change');
-
-	        // showing activate or desactivate button depending on whether bustia is active or not
-	        var isActiva = bustiaDto.activa;
-	        if (isActiva) {
-	            $('#activarBtn').hide();
-	            $('#desactivarBtn').show();
-	            if (bustiaDto.perDefecte) {
-	                $('#desactivarBtn').prop("disabled", true);
-	            } else {
-	            	$('#desactivarBtn').prop("disabled", false);
+	function changedCallback(e, data) {
+		$('#panellInfo').css('visibility', '');
+		$('#panellInfo').css('display', 'none');
+		$(".datatable-dades-carregant").css("display", "block");
+	
+		var bustiaId = data.node.id;
+		
+		var permisUrl = "bustiaAdmin/" + bustiaId + "/permis";
+		$('#permis-boto-nou').attr('href', permisUrl + '/new');
+		$('#permisos').webutilDatatable('refresh-url', permisUrl  + '/datatable');
+	
+		$('#permisos').off('draw.dt');
+		$('#permisos').on( 'draw.dt', function () {
+	 		$.each($('#permisos .dropdown-menu a'), function( key, permisionLink ) {
+		 		var link = $(permisionLink).attr('href');
+		 		var replaced = link.replace("bustiaIdString", bustiaId);
+		 		$(permisionLink).attr('href', replaced);
+		 	});
+		});
+			
+		var bustiaUrl = "bustiaAdminOrganigrama/" + bustiaId;
+		var bustiaNomSel = $('#nom', $('#panellInfo'));
+		var unitatSel = $('#unitatId', $('#panellInfo'));
+	 
+		$.ajax({
+		    type: 'GET',
+		    url: bustiaUrl,
+		    success: function(bustiaDto) {
+	
+		        // setting bustia id and pare id
+		        $('#id', $('#panellInfo')).val(bustiaDto.id);
+		        $('#pareId', $('#panellInfo')).val(bustiaDto.pare.id);
+	
+		        // setting selected bustia name and unitat
+		        bustiaNomSel.val(bustiaDto.nom);
+		        var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
+		        unitatSel.append(newOption).trigger('change');
+	
+		        // showing activate or desactivate button depending on whether bustia is active or not
+		        var isActiva = bustiaDto.activa;
+		        if (isActiva) {
+		            $('#activarBtn').hide();
+		            $('#desactivarBtn').show();
+		            if (bustiaDto.perDefecte) {
+		                $('#desactivarBtn').prop("disabled", true);
+		            } else {
+		            	$('#desactivarBtn').prop("disabled", false);
+			        }
+		        } else {
+		            $('#activarBtn').show();
+		            $('#desactivarBtn').hide();
 		        }
-	        } else {
-	            $('#activarBtn').show();
-	            $('#desactivarBtn').hide();
-	        }
-
-	        if (bustiaDto.perDefecte) {
-	            $('#marcarPerDefecteBtn').hide();
-	        } else {
-	            $('#marcarPerDefecteBtn').show();
-	        }
-	        
-	        // showing obsolete panel if unitat of this bustia is obsoleta
-	        if (bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
-	            $('#panelUnitatObsoleta').show();
-	        } else {
-	            $('#panelUnitatObsoleta').hide();
-	        }
-	        // setting last historico unitats
-	        $("#lastHistoricosUnitats").empty();
-			$.each( bustiaDto.unitatOrganitzativa.lastHistoricosUnitats, function( key, newUnitat ) {
-				$("#lastHistoricosUnitats").append('<li>'+newUnitat.denominacio+' ('+newUnitat.codi+')'+'</li>');
-	            });
-
-	    },
-	    complete: function() {
-	        $('#panellInfo').css('display', 'block');
-	        $(".datatable-dades-carregant").css("display", "none");
-	    }
-
-	});
-
-	var otherBustiesOfUnitatObsoletaUrl = "bustiaAdminOrganigrama/" + bustiaId +"/otherBustiesOfUnitatObsoleta";
+	
+		        if (bustiaDto.perDefecte) {
+		            $('#marcarPerDefecteBtn').hide();
+		        } else {
+		            $('#marcarPerDefecteBtn').show();
+		        }
+		        
+		        // showing obsolete panel if unitat of this bustia is obsoleta
+		        if (bustiaDto.unitatOrganitzativa.tipusTransicio != null) {
+		            $('#panelUnitatObsoleta').show();
+		        } else {
+		            $('#panelUnitatObsoleta').hide();
+		        }
+		        // setting last historico unitats
+		        $("#lastHistoricosUnitats").empty();
+				$.each( bustiaDto.unitatOrganitzativa.lastHistoricosUnitats, function( key, newUnitat ) {
+					$("#lastHistoricosUnitats").append('<li>'+newUnitat.denominacio+' ('+newUnitat.codi+')'+'</li>');
+		            });
+		    },
+		    complete: function() {
+		        $('#panellInfo').css('display', 'block');
+		        $(".datatable-dades-carregant").css("display", "none");
+		    }
+	
+		});
+		var otherBustiesOfUnitatObsoletaUrl = "bustiaAdminOrganigrama/" + bustiaId +"/otherBustiesOfUnitatObsoleta";
 		$.ajax({
 			type : 'GET',
 			url : otherBustiesOfUnitatObsoletaUrl,
 			success : function(otherBustiesOfUnitatObsoleta) {
-
 				// showing obsolete panel if unitat of this bustia is obsoleta
 				if (!$.isEmptyObject(otherBustiesOfUnitatObsoleta)) {
 					$('#otherBustiesOfUnitatObsoletaPanel').show();
 				} else {
 					$('#otherBustiesOfUnitatObsoletaPanel').hide();
 				}
-
 				$("#otherBustiesOfUnitatObsoleta").empty();
 			$.each( otherBustiesOfUnitatObsoleta, function( key, otherBustia ) {
 				$("#otherBustiesOfUnitatObsoleta").append('<li>'+otherBustia.nom+'</li>');
 						});
-
 			},
 			complete : function() {
 				$('#panellInfo').css('display', 'block');
 				$(".datatable-dades-carregant").css("display", "none");
 			}
-
 		});
-
 	};
 
 	function deleteBustia() {
@@ -161,7 +158,7 @@ function changedCallback(e, data) {
 
 		var enableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/enable";
 
-	$.ajax({
+		$.ajax({
 					type : 'GET',
 					url : enableUrl,
 					success : function() {
@@ -184,7 +181,7 @@ function changedCallback(e, data) {
 						$('#panellInfo').css('display', 'block');
 						$(".datatable-dades-carregant").css("display", "none");
 					}
-				});
+		});
 
 	}
 
@@ -194,9 +191,9 @@ function changedCallback(e, data) {
 		$('#panellInfo').css('display', 'none');
 		$(".datatable-dades-carregant").css("display", "block");
 
-	var disableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
+		var disableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
 
-	$.ajax({
+		$.ajax({
 					type : 'GET',
 					url : disableUrl,
 					success : function() {
@@ -223,24 +220,25 @@ function changedCallback(e, data) {
 
 	}
 
-$(document).ready(
-					function() {
-						if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
-							$('#arbreUnitatsOrganitzatives').jstree('open_all');
-						}
+	$(document).ready(
+		function() {
+			if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
+				$('#arbreUnitatsOrganitzatives').jstree('open_all');
+			}
 
 		$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
 
 		$("#canviVistaBusties").click(function(){
 			window.location.replace("/distribucio/bustiaAdmin");
-										});
-					});
-</script>
-<style>
-.fullesAtributCssClass {
-    opacity: 0.5;
-}
-</style>
+		});
+	});
+	</script>
+	
+	<style>
+	.fullesAtributCssClass {
+	    opacity: 0.5;
+	}
+	</style>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
@@ -255,12 +253,19 @@ $(document).ready(
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true"
 					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="id"
-					suggestText="nom"/>
+					suggestValue="id" 
+					suggestText="nom"
+					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-2" style="padding-left: 30px;">
+			<div class="col-md-1" style="padding-left: 30px;">
 				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
-			</div>			
+			</div>	
+			<div class="col-md-1" style="padding-left: 30px;">
+				<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
+			</div>
+			<div class="col-md-1" style="padding-left: 30px;">
+				<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
+			</div>					
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

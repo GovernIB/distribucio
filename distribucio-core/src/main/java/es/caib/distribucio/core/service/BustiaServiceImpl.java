@@ -40,6 +40,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -577,6 +578,8 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
+						filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
+						filtre.getActiva() == null || filtre.getActiva() == false,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				BustiaDto.class,
 				new Converter<BustiaEntity, BustiaDto>() {
@@ -651,9 +654,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public List<BustiaDto> findAmbEntitatAndFiltre(
 			Long entitatId, 
-			String bustiaNomFiltre,
-			Long unitatIdFiltre, 
-			Boolean unitatObsoleta) {
+			BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
@@ -663,18 +664,20 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		UnitatOrganitzativaEntity unitat = unitatIdFiltre != null ? unitatOrganitzativaRepository.findOne(unitatIdFiltre): null;
+		UnitatOrganitzativaEntity unitat = bustiaFiltreOrganigramaDto.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findOne(bustiaFiltreOrganigramaDto.getUnitatIdFiltre()): null;
 		
 		
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 				entitat,
-				unitatIdFiltre == null, 
+				bustiaFiltreOrganigramaDto.getUnitatIdFiltre() == null, 
 				unitat,
-				bustiaNomFiltre == null || bustiaNomFiltre.isEmpty(), 
-				bustiaNomFiltre,
-				unitatObsoleta == null || unitatObsoleta == false);
+				bustiaFiltreOrganigramaDto.getNomFiltre() == null || bustiaFiltreOrganigramaDto.getNomFiltre().isEmpty(), 
+				bustiaFiltreOrganigramaDto.getNomFiltre(),
+				bustiaFiltreOrganigramaDto.getUnitatObsoleta() == null || bustiaFiltreOrganigramaDto.getUnitatObsoleta() == false,
+				bustiaFiltreOrganigramaDto.getPerDefecte() == null || bustiaFiltreOrganigramaDto.getPerDefecte() == false,
+				bustiaFiltreOrganigramaDto.getActiva() == null || bustiaFiltreOrganigramaDto.getActiva() == false);
 		contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.stop();
 		
 		final Timer timertoBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaDto"));

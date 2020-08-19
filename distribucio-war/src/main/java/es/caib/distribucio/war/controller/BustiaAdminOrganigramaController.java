@@ -99,9 +99,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				bustiaFiltreCommand.getNomFiltre(),
-				bustiaFiltreCommand.getUnitatIdFiltre(),
-				bustiaFiltreCommand.getUnitatObsoleta());
+				null);
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,
@@ -347,9 +345,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				bustiaFiltreOrganigramaCommand.getNomFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatIdFiltre(),
-				bustiaFiltreOrganigramaCommand.getUnitatObsoleta());
+				BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
 		
 		model.addAttribute(
 				"busties",
