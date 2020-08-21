@@ -1,12 +1,13 @@
---------------------- 139: Eliminar camp unitatOrganicaCodi de la bústia -------------------------------
+-- #139 Eliminar camp unitatOrganicaCodi de la bústia 
+
 ALTER TABLE DIS_BUSTIA
 DROP (
     UNITAT_CODI
 );
 
-
----------------------  141: Revisar el sistema de logs -------------------------------
-
+-- #141 Revisar el sistema de logs
+-- Creació d'una nova taula de paràmetres dels logs i traspàs de dades cap a la nova taula.
+ 
 CREATE TABLE DIS_CONT_LOG_PARAM
 (
     ID NUMBER(19) NOT NULL,
