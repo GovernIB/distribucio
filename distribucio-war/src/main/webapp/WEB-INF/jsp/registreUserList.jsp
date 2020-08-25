@@ -172,7 +172,7 @@ $(document).ready(function() {
 				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>			
 			<div class="col-md-2">
-				<dis:inputSelect name="registreEnviatPerEmailEnum"  netejar="false" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">

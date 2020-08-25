@@ -303,6 +303,7 @@ public class BustiaAdminController extends BaseAdminController {
 					command.getDestiId(),
 					command.getComentari()); 
 		} catch(Exception e) {
+			logger.error(e.getMessage(), e);
 			MissatgesHelper.error(
 					request,
 					getMessage(

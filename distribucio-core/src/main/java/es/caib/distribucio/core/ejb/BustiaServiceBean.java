@@ -219,7 +219,7 @@ public class BustiaServiceBean implements BustiaService {
 	@Override
 	@RolesAllowed("tothom")
 	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto) {
-		return delegate.findAmbEntitatAndFiltre(entitatId, null);
+		return delegate.findAmbEntitatAndFiltre(entitatId, bustiaFiltreOrganigramaDto);
 	}
 
 	@Override

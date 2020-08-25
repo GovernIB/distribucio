@@ -200,7 +200,7 @@
 
 						var bustiaId = $('#id', $('#panellInfo')).val();
 
-			var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
+						var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
 
 						$(fullaSel).addClass("fullesAtributCssClass");
 
@@ -209,7 +209,7 @@
 						$('#activarBtn').show();
 
 						$('#contingut-missatges *').remove();
-			$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.desactivat.ok"/> </div>');
+						$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.desactivat.ok"/> </div>');
 
 					},
 					complete : function() {

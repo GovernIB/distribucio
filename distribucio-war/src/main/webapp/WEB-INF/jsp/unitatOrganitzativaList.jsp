@@ -19,6 +19,14 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	<script>
+		$(document).ready(function() {
+			$('#netejarFiltre').click(function(e) {
+				$('#estat').val('VIGENTE').change();
+			});
+		});
+	</script>
+	
 </head>
 <body>
 
@@ -37,12 +45,12 @@
 					<dis:inputText name="codiUnitatArrel" inline="true" placeholderKey="unitat.list.filtre.codiUnitatArrel"/>
 				</div>
 				<div class="col-md-4">
-					<dis:inputSelect name="estat"  optionEnum="UnitatOrganitzativaEstatEnumDto" placeholderKey="unitat.list.filtre.estat" emptyOption="true" inline="true"/>
+					<dis:inputSelect name="estat" netejar="false" optionEnum="UnitatOrganitzativaEstatEnumDto" placeholderKey="unitat.list.filtre.estat" emptyOption="true" inline="true"/>
 				</div>				
 				<div class="col-md-4 pull-right">
 					<div class="pull-right">
 						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
-						<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+						<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 						<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 					</div>
 				</div>

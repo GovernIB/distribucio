@@ -1296,11 +1296,16 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		// Recupera totes les anotacions de registre
 		for (RegistreEntity registre : registreRepository.findByPareId(bustiaId)) {
-			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat() || RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT == registre.getProcesEstat()) {
 				throw new ValidationException(
 						registre.getNumero(),
 						RegistreEntity.class,
-						"Aquest contingut pendent no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (" +
+						"Registre amb núm: " + registre.getNumero() + " no es pot reenviar perquè està pendent d'enviar al arxiu");
+			} else if ( RegistreProcesEstatEnum.REGLA_PENDENT == registre.getProcesEstat()) {
+				throw new ValidationException(
+						registre.getNumero(),
+						RegistreEntity.class,
+						"Registre amb núm: " + registre.getNumero() + " no es pot reenviar perquè te activat el processament automàtic mitjançant una regla (" +
 						"reglaId=" + registre.getRegla().getId() + ")");
 			}
 			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(

@@ -23,7 +23,7 @@
 		<portafib.version>1.1</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
-		<arxiu.api.version>2.0.2</arxiu.api.version>
+		<arxiu.api.version>2.0.5</arxiu.api.version>
 		<slf4j.version>1.5.11</slf4j.version>
 		<maven.test.skip>true</maven.test.skip>
 		<maven.compiler.source>1.7</maven.compiler.source>
@@ -32,7 +32,7 @@
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<version.revision>29</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2020.08.21 10:00h</version.date>
+		<version.date>2020.08.25 13:55h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-core</module>

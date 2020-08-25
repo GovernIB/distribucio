@@ -19,13 +19,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.command.UnitatOrganitzativaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -224,13 +228,22 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request,
 			@Valid UnitatOrganitzativaFiltreCommand filtreCommand,
 			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
-		if (!bindingResult.hasErrors()) {
-			RequestSessionHelper.actualitzarObjecteSessio(
+		
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_FILTRE,
-					filtreCommand);
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
 		}
+
 		return "redirect:unitatOrganitzativa";
 	}
 	
@@ -282,6 +295,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				SESSION_ATTRIBUTE_FILTRE);
 		if (unitatOrganitzativaFiltreCommand == null) {
 			unitatOrganitzativaFiltreCommand = new UnitatOrganitzativaFiltreCommand();
+			unitatOrganitzativaFiltreCommand.setEstat(UnitatOrganitzativaEstatEnumDto.VIGENTE);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
@@ -289,6 +303,8 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		}
 		return unitatOrganitzativaFiltreCommand;
 	}
+	
+
 
 
 }
