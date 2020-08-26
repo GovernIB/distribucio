@@ -39,6 +39,9 @@ public class EntitatHelper {
 		if (entitats == null && entitatService != null) {
 			entitats = entitatService.findAccessiblesUsuariActual();
 			request.setAttribute(REQUEST_ATTRIBUTE_ENTITATS, entitats);
+		} 
+		if (entitats == null && entitatService == null) {
+			LOGGER.error("No es pot acceder entitats per usuari: " + request.getUserPrincipal() + ", sessionId: " + request.getSession() + ", url: " + request.getRequestURI());
 		}
 		return entitats;
 	}
