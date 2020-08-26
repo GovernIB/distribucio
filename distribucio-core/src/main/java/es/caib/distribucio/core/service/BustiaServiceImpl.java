@@ -1134,6 +1134,14 @@ public class BustiaServiceImpl implements BustiaService {
 					false);
 			bustiesDesti.add(bustiaDesti);
 		}
+		
+		RegistreEntity reg = registreRepository.findByPareAndId(
+				bustiaOrigen,
+ 				registreId);
+		if (reg == null) {
+			throw new NotFoundException(registreId, RegistreEntity.class);
+		}
+		
 		ContingutEntity registreOriginal = entityComprovarHelper.comprovarContingut(
 				entitat,
 				registreId,

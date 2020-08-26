@@ -375,6 +375,12 @@ public class RegistreUserController extends BaseUserController {
 					request,
 					"",
 					"registre.user.controller.errorReenviant.registreNoTrobat");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"",
+					e.getMessage());
 		}
 		return "registreReenviarForm";
 	}
@@ -423,6 +429,12 @@ public class RegistreUserController extends BaseUserController {
 					request,
 					"",
 					"registre.user.controller.errorReenviant.registreNoTrobat");
+		} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return getModalControllerReturnValueErrorNoKey(
+						request,
+						"",
+						e.getMessage());
 		}
 	}
 
