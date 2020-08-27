@@ -10,6 +10,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.helper.PropertiesHelper;
 
 /**
  * Utilitat per a gestionar accions de context de sessió.
@@ -29,6 +30,9 @@ public class SessioHelper {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			AplicacioService aplicacioService) {
+		
+		String idioma_usuari = null;
+		
 		if (request.getUserPrincipal() != null) {
 			Boolean autenticacioProcessada = (Boolean)request.getSession().getAttribute(
 					SESSION_ATTRIBUTE_AUTH_PROCESSADA);
@@ -42,7 +46,10 @@ public class SessioHelper {
 						aplicacioService.getUsuariActual());
 				
 			}
-			String idioma_usuari = aplicacioService.getUsuariActual().getIdioma();
+			idioma_usuari = aplicacioService.getUsuariActual().getIdioma();
+		} else {
+			idioma_usuari = aplicacioService.propertyFindByNom("es.caib.distribucio.default.user.language");
+		}
 			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
 			
 			request.getSession().setAttribute(
@@ -55,7 +62,7 @@ public class SessioHelper {
 	        		StringUtils.parseLocaleString(
 	        				(String)request.getSession().getAttribute(SESSION_ATTRIBUTE_IDIOMA_USUARI))
 	        		);
-		}
+		
 	}
 	public static boolean isAutenticacioProcessada(HttpServletRequest request) {
 		return request.getSession().getAttribute(SESSION_ATTRIBUTE_AUTH_PROCESSADA) != null;
