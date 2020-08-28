@@ -8,7 +8,7 @@
 		<version>0.9</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
-	<version>0.9.28</version>
+	<version>0.9.29</version>
 	<dependencies>
 
 		<dependency>
@@ -75,6 +75,32 @@
 				<artifactId>jaxws-maven-plugin</artifactId>
 				<version>2.4.1</version>
 				<executions>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- Source -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- Javadoc -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

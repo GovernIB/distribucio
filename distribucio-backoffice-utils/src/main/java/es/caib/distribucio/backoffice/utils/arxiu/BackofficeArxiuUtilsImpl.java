@@ -270,11 +270,13 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 		boolean carpetaExistsInArxiu = false;
 		carpetaUuid = null;
 		if (expedientDetalls.getContinguts() != null) {
+			String carpetaAnnexosNomRevisat = this.revisarContingutNom(carpetaAnnexos);
 			for (ContingutArxiu contingutArxiu : expedientDetalls.getContinguts()) {
-				if (contingutArxiu.getTipus() == ContingutTipus.CARPETA && contingutArxiu.getNom().equals(carpetaAnnexos)) {
+				if (contingutArxiu.getTipus().equals(ContingutTipus.CARPETA) 
+						&& contingutArxiu.getNom().equals(carpetaAnnexosNomRevisat)) {
 					carpetaExistsInArxiu = true;
 					carpetaUuid = contingutArxiu.getIdentificador();
-					logger.debug("Carpeta amb nom: " + carpetaAnnexos + " ja existeix al arxiu");
+					logger.debug("La carpeta amb nom: " + carpetaAnnexos + " (" + carpetaAnnexosNomRevisat + ") ja existeix al arxiu");
 				}
 			}
 		}
@@ -307,6 +309,18 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 		return carpetaUuid;
 	}
 	
+	/** Mètode privat per revisar el nom del contingut de la mateixa manera que ho fa el 
+	 * plugin d'Arxiu abans de guardar el contingut.
+	 * @param nom Nomm del contingut
+	 * @return Retorna el nom substituïnt els caràcters no permesos o null si el nom és null.
+	 */
+	private String revisarContingutNom(String nom) {
+		if (nom == null) {
+			return null;
+		}
+		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+	}
+
 	private void addInteressats(
 			List<String> interessatsArxiu,
 			List<Interessat> interessatsRegistre,
