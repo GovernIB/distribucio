@@ -5,12 +5,13 @@ package es.caib.distribucio.war.helper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 
 /**
  * Utilitat per a gestionar accions de context de sessió.
