@@ -369,18 +369,19 @@ public class RegistreUserController extends BaseUserController {
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			command.setOrigenId(bustiaId);
 			model.addAttribute(command);
-		} catch (NotFoundException e) {
-			logger.error(e.getMessage(), e);
-			return getModalControllerReturnValueError(
-					request,
-					"",
-					"registre.user.controller.errorReenviant.registreNoTrobat");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return getModalControllerReturnValueErrorNoKey(
-					request,
-					"",
-					e.getMessage());
+			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
+				return getModalControllerReturnValueError(
+						request,
+						"",
+						"registre.user.controller.errorReenviant.registreNoTrobat");
+			} else {
+				return getModalControllerReturnValueErrorNoKey(
+						request,
+						"",
+						e.getMessage());
+			}
 		}
 		return "registreReenviarForm";
 	}
@@ -424,14 +425,13 @@ public class RegistreUserController extends BaseUserController {
 					"bustia.controller.pendent.contingut.reenviat.ok");
 
 		} catch (Exception e) {
-			if (e.getClass() == NotFoundException.class || e.getCause().getClass() == NotFoundException.class) {
-				logger.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
+			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
 				return getModalControllerReturnValueError(
 						request,
 						"",
 						"registre.user.controller.errorReenviant.registreNoTrobat");
 			} else {
-				logger.error(e.getMessage(), e);
 				return getModalControllerReturnValueErrorNoKey(
 						request,
 						"",
