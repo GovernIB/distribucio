@@ -219,7 +219,9 @@ public class IntegracioHelper {
 		String usuariNomCodi = "";
 		UsuariEntity usuari = usuariHelper.getUsuariAutenticat();
 		if (usuari != null) {
-			usuariNomCodi = usuari.getNom() + " (" + usuari.getCodi() + ")";
+			usuariNomCodi = usuari.getNom();
+			if (!usuari.getNom().equals(usuari.getCodi()))
+				usuariNomCodi = usuariNomCodi + " (" + usuari.getCodi() + ")";
 		} else {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			if (auth != null)

@@ -34,7 +34,6 @@ import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
@@ -76,7 +75,6 @@ import es.caib.distribucio.core.api.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.core.api.service.ws.backoffice.Representant;
 import es.caib.distribucio.core.api.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.core.entity.BustiaEntity;
-import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -782,7 +780,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long bustiaId,
@@ -792,12 +790,8 @@ public class RegistreServiceImpl implements RegistreService {
 				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ")");
 
-		RegistreEntity anotacio = registreRepository.findOne(registreId);
-
 		List<Long> pendentsIds = new ArrayList<>();
-		pendentsIds.add(anotacio.getId());
-		anotacio.updateProcesBackPendent();
-		anotacio.updateBackPendentData(new Date());
+		pendentsIds.add(registreId);
 		Throwable exceptionProcessant = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIds);
 		return exceptionProcessant == null;
 
