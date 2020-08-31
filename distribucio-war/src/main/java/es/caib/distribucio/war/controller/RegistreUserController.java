@@ -422,19 +422,21 @@ public class RegistreUserController extends BaseUserController {
 					request,
 					"redirect:../../../pendent",
 					"bustia.controller.pendent.contingut.reenviat.ok");
-			
-		} catch (NotFoundException e) {
-			logger.error(e.getMessage(), e);
-			return getModalControllerReturnValueError(
-					request,
-					"",
-					"registre.user.controller.errorReenviant.registreNoTrobat");
+
 		} catch (Exception e) {
+			if (e.getClass() == NotFoundException.class || e.getCause().getClass() == NotFoundException.class) {
+				logger.error(e.getMessage(), e);
+				return getModalControllerReturnValueError(
+						request,
+						"",
+						"registre.user.controller.errorReenviant.registreNoTrobat");
+			} else {
 				logger.error(e.getMessage(), e);
 				return getModalControllerReturnValueErrorNoKey(
 						request,
 						"",
 						e.getMessage());
+			}
 		}
 	}
 
