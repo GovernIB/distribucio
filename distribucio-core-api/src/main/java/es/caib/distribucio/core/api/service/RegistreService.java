@@ -271,24 +271,29 @@ public interface RegistreService {
 	 */
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
-	RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
+	@PreAuthorize("hasRole('tothom')")
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
 			throws NotFoundException;
 
-	RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId, Long annexId)
+	@PreAuthorize("hasRole('tothom')")
+	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId, Long annexId)
 			throws NotFoundException;
 
-	RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
+	@PreAuthorize("hasRole('tothom')")
+	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
 			Long annexId) throws NotFoundException;
 	
-	List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
+	@PreAuthorize("hasRole('tothom')")
+	public List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
 
-	AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
+	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
-	void canviEstat(AnotacioRegistreId id,
+	public void canviEstat(AnotacioRegistreId id,
 			Estat estat,
 			String observacions);
 
-	boolean reintentarEnviamentBackofficeAdmin(
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long bustiaId,
 			Long registreId);
@@ -331,7 +336,7 @@ public interface RegistreService {
 			Long entitatId,
 			Long bustiaId);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre);
 
 }

@@ -14,6 +14,7 @@ public class BustiaFiltreOrganigramaDto implements Serializable {
 
 	private String unitatCodiFiltre;
 	private String nomFiltre;
+	private String codiUnitatSuperior;
 	private Long unitatIdFiltre;
 	private Boolean unitatObsoleta;
 	private Boolean perDefecte;
@@ -56,6 +57,12 @@ public class BustiaFiltreOrganigramaDto implements Serializable {
 		this.nomFiltre = nomFiltre;
 	}
 
+	public String getCodiUnitatSuperior() {
+		return codiUnitatSuperior;
+	}
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
+		this.codiUnitatSuperior = codiUnitatSuperior;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

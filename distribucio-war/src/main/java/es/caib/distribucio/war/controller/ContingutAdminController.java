@@ -135,7 +135,7 @@ public class ContingutAdminController extends BaseAdminController {
 			
 			model.addAttribute("contingutId", 
 					contingutDto.getPare().getId());
-			return "registreDetall"; //"registreAdminDetall";
+			return "registreDetall";
 		}
 
 		return null;

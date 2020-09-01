@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.BustiaService;
@@ -188,11 +189,10 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				null);
+				new BustiaFiltreOrganigramaDto());
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,

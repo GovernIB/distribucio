@@ -577,6 +577,8 @@ public class BustiaServiceImpl implements BustiaService {
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
+						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(), 
+						filtre.getCodiUnitatSuperior(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
 						filtre.getActiva() == null || filtre.getActiva() == false,
@@ -675,6 +677,8 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat,
 				bustiaFiltreOrganigramaDto.getNomFiltre() == null || bustiaFiltreOrganigramaDto.getNomFiltre().isEmpty(), 
 				bustiaFiltreOrganigramaDto.getNomFiltre(),
+				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior() == null || bustiaFiltreOrganigramaDto.getCodiUnitatSuperior().isEmpty(), 
+				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior(),
 				bustiaFiltreOrganigramaDto.getUnitatObsoleta() == null || bustiaFiltreOrganigramaDto.getUnitatObsoleta() == false,
 				bustiaFiltreOrganigramaDto.getPerDefecte() == null || bustiaFiltreOrganigramaDto.getPerDefecte() == false,
 				bustiaFiltreOrganigramaDto.getActiva() == null || bustiaFiltreOrganigramaDto.getActiva() == false);

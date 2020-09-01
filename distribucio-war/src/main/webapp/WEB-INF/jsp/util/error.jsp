@@ -74,7 +74,7 @@ pre {
 				</strong>
 			</td>
 			<td>
-				<pre class="collapse" id="trasaCollapse""><code>${errorObject.fullStackTrace}</code></pre>
+				<pre class="collapse" id="trasaCollapse"><code>${errorObject.fullStackTrace}</code></pre>
 			</td>
 		</tr>
 	</tbody>

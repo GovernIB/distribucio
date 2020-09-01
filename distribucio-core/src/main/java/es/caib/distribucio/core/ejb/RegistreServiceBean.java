@@ -82,7 +82,7 @@ public class RegistreServiceBean implements RegistreService {
 				paginacioParams);
 	}
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed("DIS_ADMIN")
 	public PaginaDto<RegistreDto> findRegistreAdmin(Long entitatId, AnotacioRegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException {
 		return delegate.findRegistreAdmin(entitatId, filtre, paginacioParams);
@@ -220,6 +220,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
+	@RolesAllowed("DIS_ADMIN")
 	public boolean reintentarEnviamentBackofficeAdmin(Long entitatId,
 			Long bustiaId,
 			Long registreId) {
@@ -251,7 +252,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed("DIS_ADMIN")
 	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre) {
 		return delegate.findRegistreAdminIdsAmbFiltre(entitatId, filtre);
 	}

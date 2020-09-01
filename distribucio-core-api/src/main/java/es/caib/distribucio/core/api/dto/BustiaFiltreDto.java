@@ -17,6 +17,7 @@ public class BustiaFiltreDto implements Serializable {
 
 	private String unitatCodi;
 	private String nom;
+	private String codiUnitatSuperior;
 	// if the obsolete is true we look for the busties of extinguished or anulated unitats  
 	private Boolean unitatObsoleta;
 	private Long unitatId;
@@ -68,6 +69,12 @@ public class BustiaFiltreDto implements Serializable {
 		this.nom = nom;
 	}
 
+	public String getCodiUnitatSuperior() {
+		return codiUnitatSuperior;
+	}
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
+		this.codiUnitatSuperior = codiUnitatSuperior;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

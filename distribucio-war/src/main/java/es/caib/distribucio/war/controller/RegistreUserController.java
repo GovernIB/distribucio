@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,18 +320,10 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		if (bindingResult.hasErrors()) {
-			return "registreUserList";
-		}
 		
-		String adresses = ((command.getAddresses() != null)?command.getAddresses() : "").replaceAll("\\s*,\\s*|\\s+", ",");
-		String adressesParsed = "";
-		List<String> adresesAr = new ArrayList<String>();
-		for(String adr : adresses.split(",")) {
-			if(!adresesAr.contains(adr) && adr.matches("^\\S+@\\S+\\.\\S+$")) {
-				adresesAr.add(adr);
-				adressesParsed += (adressesParsed.isEmpty()? "" : ",") + adr ;
-			}
+		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "registreViaEmail";
 		}
 
 		try {
@@ -338,7 +331,7 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual.getId(),
 					command.getBustiaId(),
 					command.getContingutId(),
-					adressesParsed);
+					adreces);
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
@@ -355,6 +348,47 @@ public class RegistreUserController extends BaseUserController {
 			return "registreViaEmail";
 		}
 		
+	}
+
+	/** Realitza les següents accions:
+	 * - Revisa que no es repeteixin les adreces.
+	 * - Substitueix els espais en blanc per comes.
+	 * - Revisa que les adreces siguin correctes, en cas contrari afegeix un error.
+	 * - Revisa que com a mínim hi hagi una adreça.
+	 * @param request 
+	 * @param adreces
+	 * @param bindingResult
+	 * @return
+	 */
+	private String revisarAdreces(
+			HttpServletRequest request, 
+			String adreces, 
+			BindingResult bindingResult) {
+
+		Set<String> adrecesRevisades = new HashSet<>();
+		Set<String> adrecesErronies = new HashSet<>();
+		if (adreces != null && !adreces.isEmpty() ) {
+			// substitueix els espais per comes
+			adreces = adreces.replaceAll("\\s*,\\s*|\\s+", ",");
+			for(String adr : adreces.split(",")) {
+				if (!adrecesRevisades.contains(adr) && !adrecesErronies.contains(adr)) {
+					if (adr.matches("\\S+@\\S+[.\\S+]+")) {
+						adrecesRevisades.add(adr);
+					} else {
+						adrecesErronies.add(adr);
+					}
+				}
+			}
+			if (adrecesErronies.size() > 0) 
+				bindingResult.rejectValue(
+						"addresses", 
+						"bustia.controller.pendent.contingut.enviar.email.validacio.adreces", 
+						new Object[] {StringUtils.join(adrecesErronies.toArray(), ", ")}, 
+						getMessage(request, 
+								"bustia.controller.pendent.contingut.enviar.email.validacio.adreces", 
+								new Object[] {StringUtils.join(adrecesErronies.toArray(), ", ")}));
+			}
+		return StringUtils.join(adrecesRevisades,",");
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/reenviar", method = RequestMethod.GET)

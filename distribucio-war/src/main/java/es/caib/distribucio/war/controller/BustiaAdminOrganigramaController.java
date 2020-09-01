@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
-import es.caib.distribucio.war.command.BustiaFiltreCommand;
 import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreOrganigramaCommand;
 import es.caib.distribucio.war.helper.BustiaHelper;
@@ -95,11 +95,10 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		BustiaFiltreOrganigramaCommand bustiaFiltreCommand = getFiltreOrganigramaCommand(request);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				null);
+				new BustiaFiltreOrganigramaDto());
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,

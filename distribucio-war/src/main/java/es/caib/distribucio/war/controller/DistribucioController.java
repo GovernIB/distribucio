@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,7 @@ public class DistribucioController {
 	public String unauthorized(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
+		EntitatHelper.getEntitatActual(request);
 		return "unauthorized";
 		
 	}

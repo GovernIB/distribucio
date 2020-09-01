@@ -30,24 +30,6 @@
 				<spring:message code="bustia.list.unitatObsoleta"/> 
 			</div>
 			<div class="panel-body">
-<!-- 				<div class="row"> -->
-<%-- 					<label class="col-xs-4 text-right"><spring:message --%>
-<%-- 							code="bustia.form.tipusTransicio" /></label> --%>
-<!-- 					<div class="col-xs-8"> -->
-<%-- 						<c:if --%>
-<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'DIVISIO'}"> --%>
-<%-- 							<spring:message code="unitat.tipusTransicio.DIVISIO" /> --%>
-<%-- 						</c:if> --%>
-<%-- 						<c:if --%>
-<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
-<%-- 							<spring:message code="unitat.tipusTransicio.FUSIO" /> --%>
-<%-- 						</c:if> --%>
-<%-- 						<c:if --%>
-<%-- 							test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'SUBSTITUCIO'}"> --%>
-<%-- 							<spring:message code="unitat.tipusTransicio.SUBSTITUCIO" /> --%>
-<%-- 						</c:if> --%>
-<!-- 					</div> -->
-<!-- 				</div> -->
 				<div class="row">
 					<label class="col-xs-4 text-right"><spring:message
 							code="bustia.form.novesUnitats" /></label>
@@ -74,21 +56,6 @@
  						</div> 
  					</div> 
  				</c:if> 
-<%-- 				<c:if test="${bustiaDto.unitatOrganitzativa.tipusTransicio == 'FUSIO'}"> --%>
-<!-- 					<div class="row"> -->
-<%-- 						<label class="col-xs-4 text-right"><spring:message --%>
-<%-- 								code="unitat.transicioInfo.altresUnitatsFusionades" /></label> --%>
-<!-- 						<div class="col-xs-8"> -->
-<!-- 							<ul style="padding-left: 17px;"> -->
-<%-- 								<c:forEach --%>
-<%-- 									items="${bustiaDto.unitatOrganitzativa.altresUnitatsFusionades}" --%>
-<%-- 									var="unitatMap" varStatus="loop"> --%>
-<%-- 									<li>${unitatMap.value} (${unitatMap.key})</li> --%>
-<%-- 								</c:forEach> --%>
-<!-- 							</ul> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
-<%-- 				</c:if> --%>
 			</div>
 		</div>
 	</c:if>
@@ -136,7 +103,7 @@
 					<tr>
 						<td>${usuari.codi}</td>
 						<td>${usuari.nom}</td>
-						<td>
+						<td style="text-align:center">
 							<c:choose>
 								<c:when test="${usuari.hasUsuariPermission}">
 									<span class="fa fa-check-square-o"></span>

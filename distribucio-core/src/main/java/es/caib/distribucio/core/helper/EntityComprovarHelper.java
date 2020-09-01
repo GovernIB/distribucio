@@ -171,6 +171,7 @@ public class EntityComprovarHelper {
 			}
 			if (comprovarPermisRead) {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				/*cxxxx*/
 				boolean esPermisRead = permisosHelper.isGrantedAll(
 						bustiaId,
 						BustiaEntity.class,

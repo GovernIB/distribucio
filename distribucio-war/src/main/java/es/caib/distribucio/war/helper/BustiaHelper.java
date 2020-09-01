@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -26,10 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.EntitatService;
 
 @Component
 public class BustiaHelper {
@@ -61,7 +58,7 @@ public class BustiaHelper {
 		wb = new HSSFWorkbook();
 	
 		bold = wb.createFont();
-		bold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		bold.setBold(true);
 		bold.setColor(HSSFColor.WHITE.index);
 		
 		greyFont = wb.createFont();
@@ -149,7 +146,7 @@ public class BustiaHelper {
 			HSSFSheet sheet) {
 		HSSFFont bold;
 		bold = wb.createFont();
-		bold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		bold.setBold(true);
 		bold.setColor(HSSFColor.WHITE.index);
 		HSSFCellStyle headerStyle;
 		headerStyle = wb.createCellStyle();

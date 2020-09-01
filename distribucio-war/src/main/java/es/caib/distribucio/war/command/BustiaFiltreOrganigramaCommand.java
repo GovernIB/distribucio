@@ -15,6 +15,7 @@ public class BustiaFiltreOrganigramaCommand {
 
 	private String unitatCodiFiltre;
 	private String nomFiltre;
+	private String codiUnitatSuperior;
 	private Long unitatIdFiltre;
 	private Boolean unitatObsoleta;
 	private Boolean perDefecte;
@@ -57,6 +58,12 @@ public class BustiaFiltreOrganigramaCommand {
 		this.nomFiltre = nomFiltre;
 	}
 	
+	public String getCodiUnitatSuperior() {
+		return codiUnitatSuperior;
+	}
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
+		this.codiUnitatSuperior = codiUnitatSuperior;
+	}
 	public static BustiaFiltreOrganigramaCommand asCommand(BustiaFiltreOrganigramaDto dto) {
 		BustiaFiltreOrganigramaCommand command = ConversioTipusHelper.convertir(
 				dto,

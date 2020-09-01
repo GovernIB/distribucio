@@ -114,6 +114,20 @@ public class UsuariHelper {
 		}
 		return usuari;
 	}
+	
+	/** Mètode públic per consultar si l'usuari actual és administrador d'entitat DIS_ADMIN. */
+	public boolean isAdmin() {
+		boolean isAdmin = false;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			for (GrantedAuthority ga : auth.getAuthorities())
+				if (ga.getAuthority().equals("DIS_ADMIN")) {
+					isAdmin = true;
+					break;
+				}
+		}
+		return isAdmin;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(UsuariHelper.class);
 

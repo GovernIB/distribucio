@@ -425,7 +425,7 @@ public class ContingutController extends BaseUserController {
     		text = this.getLogText(request, log);
     		// posa la 1a lletra en minúscula
     		text = decapitalize(text);
-    		// Afegeix "A data XXX "
+    		// Afegeix "A data"
     		text = this.getMessage(
     				request, 
     				"contingut.log.informe.text", 

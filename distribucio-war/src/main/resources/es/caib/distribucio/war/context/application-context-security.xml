@@ -58,7 +58,9 @@
 							<set>
 								<value>DIS_SUPER</value>
 								<value>DIS_ADMIN</value>
+								<value>DIS_USER</value>
 								<value>DIS_BSTWS</value>
+								<value>DIS_BACKWS</value>
 								<value>tothom</value>
 							</set>
 						</property>

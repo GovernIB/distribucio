@@ -3,25 +3,16 @@
  */
 package es.caib.distribucio.core.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.ForeignKey;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
-import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 

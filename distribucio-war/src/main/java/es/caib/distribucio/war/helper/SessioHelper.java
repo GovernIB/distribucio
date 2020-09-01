@@ -6,10 +6,11 @@ package es.caib.distribucio.war.helper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
-
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 
@@ -31,9 +32,6 @@ public class SessioHelper {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			AplicacioService aplicacioService) {
-		
-		String idioma_usuari = null;
-		
 		if (request.getUserPrincipal() != null) {
 			Boolean autenticacioProcessada = (Boolean)request.getSession().getAttribute(
 					SESSION_ATTRIBUTE_AUTH_PROCESSADA);
@@ -47,23 +45,20 @@ public class SessioHelper {
 						aplicacioService.getUsuariActual());
 				
 			}
-			idioma_usuari = aplicacioService.getUsuariActual().getIdioma();
-		} else {
-			idioma_usuari = aplicacioService.propertyFindByNom("es.caib.distribucio.default.user.language");
+			try {
+				String idioma_usuari = aplicacioService.getUsuariActual().getIdioma();			
+				request.getSession().setAttribute(
+						SESSION_ATTRIBUTE_IDIOMA_USUARI, 
+						idioma_usuari);			
+				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+		        localeResolver.setLocale(
+		        		request, 
+		        		response, 
+		        		StringUtils.parseLocaleString(idioma_usuari));
+			} catch (Exception e) {
+				logger.error("Error establint l'idioma de l'usuari " + request.getUserPrincipal(), e);
+			}
 		}
-			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-			
-			request.getSession().setAttribute(
-					SESSION_ATTRIBUTE_IDIOMA_USUARI, 
-					idioma_usuari);
-			
-	        localeResolver.setLocale(
-	        		request, 
-	        		response, 
-	        		StringUtils.parseLocaleString(
-	        				(String)request.getSession().getAttribute(SESSION_ATTRIBUTE_IDIOMA_USUARI))
-	        		);
-		
 	}
 	public static boolean isAutenticacioProcessada(HttpServletRequest request) {
 		return request.getSession().getAttribute(SESSION_ATTRIBUTE_AUTH_PROCESSADA) != null;
@@ -98,4 +93,5 @@ public class SessioHelper {
 		return llegit != null && llegit;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(SessioHelper.class);
 }

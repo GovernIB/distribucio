@@ -18,6 +18,7 @@ public class BustiaFiltreCommand {
 
 	private String unitatCodi;
 	private String nom;
+	private String codiUnitatSuperior;
 	private Boolean unitatObsoleta;
 	private Long unitatId;
 	private Boolean perDefecte;
@@ -53,6 +54,12 @@ public class BustiaFiltreCommand {
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+	public String getCodiUnitatSuperior() {
+		return codiUnitatSuperior;
+	}
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
+		this.codiUnitatSuperior = codiUnitatSuperior;
 	}
 	public String getUnitatCodi() {
 		return unitatCodi;

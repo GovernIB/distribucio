@@ -63,9 +63,15 @@ $(document).ready(function() {
 			//$('#bustia').prop('disabled', true);
 			$('#bustia').val('').change();
 		} else {
-			$('#bustia').data('url-llistat', rutaBusties.replace(darrerFragment, this.value));
-			$('#bustia').val('').change();
-			//$('#bustia').prop('disabled', false);
+			try {
+				$('#bustia').prop('disabled', true);
+				$('#bustia').data('url-llistat', rutaBusties.replace(darrerFragment, this.value));
+			} catch(e) {
+				console.error('Error recuperant les bústies per la UO ' + $(this).val());
+			} finally {				
+				$('#bustia').prop('disabled', false);
+				$('#bustia').val('').change();
+			}
 		}
 	});
 	$('#netejarFiltre').click(function(e) {

@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.war.command;
 
-import javax.persistence.Column;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;

@@ -48,11 +48,13 @@
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreCommand">
 		<div class="row">
-			<div class="col-md-5">
+			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-2">
-<%-- 				<dis:inputText name="unitatCodi" inline="true" placeholderKey="bustia.list.filtre.unitat.codidir3"/> --%>
+			<div class="col-md-3">
+					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
+			</div>
+			<div class="col-md-6">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
@@ -65,15 +67,19 @@
 					suggestText="nom" 
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+		</div>
+		<div class="row">
+			<div class="row col-md-6">
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+				</div>
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
+				</div>
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
+				</div>			
 			</div>
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
-			</div>
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
-			</div>			
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

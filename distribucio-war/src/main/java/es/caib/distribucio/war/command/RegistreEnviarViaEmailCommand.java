@@ -1,9 +1,12 @@
 package es.caib.distribucio.war.command;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class RegistreEnviarViaEmailCommand {
 	
 	Long bustiaId;
 	Long contingutId;
+	@NotEmpty
 	String addresses;
 	
 	public Long getBustiaId() {

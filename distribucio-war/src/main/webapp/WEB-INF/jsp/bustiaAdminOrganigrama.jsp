@@ -243,8 +243,11 @@
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
 		<div class="row">
-			<div class="col-md-5">
+			<div class="col-md-3">
 				<dis:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
+			</div>
+			<div class="col-md-3">
+					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputSuggest
@@ -257,15 +260,19 @@
 					suggestText="nom"
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
-			</div>	
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
+		</div>
+		<div class="row">
+			<div class="col-md-6 row">
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
+				</div>	
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
+				</div>
+				<div class="col-md-4" style="padding-left: 30px;">
+					<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
+				</div>					
 			</div>
-			<div class="col-md-1" style="padding-left: 30px;">
-				<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
-			</div>					
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

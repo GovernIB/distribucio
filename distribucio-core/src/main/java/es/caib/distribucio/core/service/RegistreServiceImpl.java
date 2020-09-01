@@ -96,6 +96,7 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
@@ -151,8 +152,9 @@ public class RegistreServiceImpl implements RegistreService {
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Resource
-	private ContingutLogHelper contingutLogHelper;	
-
+	private ContingutLogHelper contingutLogHelper;
+	@Resource
+	private UsuariHelper usuariHelper;
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -688,10 +690,11 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
+		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
-					true);
+					comprovarPermisBustia);
 
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
@@ -722,10 +725,11 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
+		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
-					true);
+					comprovarPermisBustia);
 
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
@@ -1008,10 +1012,11 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
+		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
 		entityComprovarHelper.comprovarBustia(
 				entitat,
 				bustiaId,
-				true);
+				comprovarPermisBustia);
 		
 		return registreHelper.getAnnexAmbFirmes(
 				annexId);
@@ -1040,11 +1045,11 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
+		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
 		entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
-					true);
-
+					comprovarPermisBustia);
 		
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
 		

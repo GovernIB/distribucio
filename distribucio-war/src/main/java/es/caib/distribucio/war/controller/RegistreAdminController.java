@@ -13,6 +13,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -40,8 +43,8 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.AnotacioRegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
-import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -153,10 +156,6 @@ public class RegistreAdminController extends BaseAdminController {
 		} else {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
-			List<BustiaDto> bustiesUsuari = null;
-			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
-			}
 			seleccio.addAll(
 					registreService.findRegistreAdminIdsAmbFiltre(
 							entitatActual.getId(),
@@ -191,6 +190,19 @@ public class RegistreAdminController extends BaseAdminController {
 		return seleccio.size();
 	}		
 	
+	
+	/** Estats que permeten el reprocessament */
+	private static RegistreProcesEstatEnum[] estatsReprocessables = {
+			RegistreProcesEstatEnum.ARXIU_PENDENT,
+			RegistreProcesEstatEnum.REGLA_PENDENT,
+			RegistreProcesEstatEnum.BACK_PENDENT
+	};
+	/** Mèdode per reprocessar una selecció d'anotacions de registre des del llistat d'anotacions
+	 * de l'administrador.
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
 	public String reintentarProcessamentMultiple(
 			HttpServletRequest request,
@@ -206,53 +218,71 @@ public class RegistreAdminController extends BaseAdminController {
 			List<Long> seleccioList = new ArrayList<Long>();
 			seleccioList.addAll(seleccio);
 			
-			int countOk = 0;
-			int countNotOk = 0;
-			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			boolean processatOk;
+			// Reintenta el processament de les anotacions seleccionades
+			ContingutDto contingutDto;
 			for (Long registreId : seleccioList) {
-				ContingutDto contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-
-				RegistreDto registreDto = (RegistreDto) contingutDto;
-
-				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT || registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) {
-					boolean processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(),
-							registreDto.getPareId(), registreId);
-					if (processatOk) {
-						countOk++;
-					} else {
-						countNotOk++;
+				contingutDto = null;
+				try {
+					logger.debug("Reprocessar anotació amb id " + registreId);
+					contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+					RegistreDto registreDto = (RegistreDto) contingutDto;
+					if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+						if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
+							|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
+						{
+							// Pendent de processament d'arxiu o regla
+							processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
+									registreDto.getPareId(), 
+									registreId);
+							
+						} else {
+							// Pendent d'envioar a backoffice
+							processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
+									registreDto.getPareId(), 
+									registreId);
+						}
+						if (processatOk)
+							correctes++;
+						else
+							errors++;
+						logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha processat " + (processatOk ? "correctament" : "amb error"));
+					} 
+					else {
+						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.");
+						estatErroni++;
 					}
-
-				} else if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BACK_PENDENT) {
-					boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-							registreDto.getPareId(), registreId);
-					if (processatOk) {
-						countOk++;
-					} else {
-						countNotOk++;
-					}
+				} catch(Exception e) {
+					logger.error("Error incontrolat reprocessant l'anotació amb id " + registreId + ": " + e.getMessage() , e);
+					String errMsg = getMessage(request, 
+												"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
+												new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+					MissatgesHelper.error(request, errMsg);
+					errors++;
 				}
 			}
 			
-			if (countNotOk == 0) {
+			if (correctes > 0){
 				MissatgesHelper.success(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.massiva",
-								new Object[]{countOk, countNotOk}));
-			} else if (countOk == 0){
+						getMessage(request, "contingut.admin.controller.registre.reintentat.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
 				MissatgesHelper.error(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.massiva",
-								new Object[]{countOk, countNotOk}));
-			} else {
+						getMessage(request, "contingut.admin.controller.registre.reintentat.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
 				MissatgesHelper.warning(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.massiva",
-								new Object[]{countOk, countNotOk}));
+								"contingut.admin.controller.registre.reintentat.massiva.estatErroni", new Object[]{estatErroni}));
 			}
-			
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"contingut.admin.controller.registre.reintentat.massiva.cap"));
 		}
-		
 		return "redirect:/registreAdmin";
 	}
 	
@@ -323,4 +353,5 @@ public class RegistreAdminController extends BaseAdminController {
 		return filtreCommand;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
 }
