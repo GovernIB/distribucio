@@ -367,4 +367,13 @@ public interface BustiaService {
 	List<BustiaDto> findAmbUnitatId(Long entitatId,
 			Long unitatId);
 
+	/** Consulta les unitats organitzatives que són superiors per unitats amb bústies.
+	 * @param entitatId
+	 * @param filtre
+	 * @param paginacioParams
+	 * @return La pàgina d'unitats organitzatives que compleixen el filtre.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre);
+
 }

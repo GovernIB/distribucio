@@ -8,6 +8,8 @@
 	
 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+<c:url value="/unitatajax/unitatSuperior" var="urlConsultaInicialUnitatSuperior"/>
+<c:url value="/unitatajax/unitatsSuperiors" var="urlConsultaLlistatUnitatsSuperiors"/>
 
 <html>
 <head>
@@ -243,13 +245,23 @@
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
 		<div class="row">
-			<div class="col-md-3">
+			<div class="col-md-4">
 				<dis:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-3">
-					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
+						
+			<div class="col-md-4">			
+				<dis:inputSuggest
+					name="codiUnitatSuperior" 
+					urlConsultaInicial="${urlConsultaInicialUnitatSuperior}" 
+					urlConsultaLlistat="${urlConsultaLlistatUnitatsSuperiors}" 
+					inline="true"
+					placeholderKey="unitat.list.filtre.codiUnitatSuperior"
+					suggestValue="codi"
+					suggestText="nom"
+					minimumInputLength="0"
+					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-4">
 				<dis:inputSuggest
 					name="unitatIdFiltre" 
 					urlConsultaInicial="${urlConsultaInicial}" 

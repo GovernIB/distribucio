@@ -5,6 +5,10 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <dis:blocIconaContingutNoms/>
+<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+<c:url value="/unitatajax/unitatSuperior" var="urlConsultaInicialUnitatSuperior"/>
+<c:url value="/unitatajax/unitatsSuperiors" var="urlConsultaLlistatUnitatsSuperiors"/>
 <html>
 <head>
 	<title><spring:message code="bustia.list.titol"/></title>
@@ -48,13 +52,22 @@
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreCommand">
 		<div class="row">
-			<div class="col-md-3">
+			<div class="col-md-4">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-3">
-					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
+			<div class="col-md-4">
+				<dis:inputSuggest
+					name="codiUnitatSuperior" 
+					urlConsultaInicial="${urlConsultaInicialUnitatSuperior}" 
+					urlConsultaLlistat="${urlConsultaLlistatUnitatsSuperiors}" 
+					inline="true"
+					placeholderKey="unitat.list.filtre.codiUnitatSuperior"
+					suggestValue="codi"
+					suggestText="nom"
+					minimumInputLength="0"
+					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 

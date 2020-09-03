@@ -311,7 +311,6 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				localitat, 
 				arrel);
 	}
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaServiceImpl.class);
-
 }

@@ -14,10 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 
 /**
@@ -31,6 +33,8 @@ public class AjaxUnitatsController extends BaseAdminController {
 	
 	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
+	@Autowired
+	private BustiaService bustiaService;
 	
 	@RequestMapping(value = "/unitat/{unitatId}", method = RequestMethod.GET)
 	@ResponseBody
@@ -58,6 +62,41 @@ public class AjaxUnitatsController extends BaseAdminController {
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8);
 		
+		return unitatsEntitat;
+	}
+	
+	@RequestMapping(value = "/unitatSuperior/{unitatSuperiorCodi}", method = RequestMethod.GET)
+	@ResponseBody
+	public UnitatOrganitzativaDto getUnitatSuperior(
+			HttpServletRequest request,
+			@PathVariable String unitatSuperiorCodi,
+			Model model) {
+
+		return unitatOrganitzativaService.findByCodi(unitatSuperiorCodi);
+	}
+
+	/** Obté una llista de les unitats orgàniques que són unitats superiros d'alguna bústia. 
+	 * 
+	 * @return Retorna la llista filtrada de les unitats orgàniques que són superiors de les bústies.
+	 */
+	@RequestMapping(value = "/unitatsSuperiors/{text}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UnitatOrganitzativaDto> getUnitatsSuperiors(
+			HttpServletRequest request,
+			@PathVariable String text,
+			@RequestParam(value = "q", required = false) String query,
+			Model model) {
+		String decodedToUTF8 = null;
+		try {
+			if (query != null)
+				decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		List<UnitatOrganitzativaDto> unitatsEntitat = bustiaService.findUnitatsSuperiors(entitatActual.getId(), decodedToUTF8);
+				
 		return unitatsEntitat;
 	}
 }

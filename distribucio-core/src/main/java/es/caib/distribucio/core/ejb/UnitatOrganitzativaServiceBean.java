@@ -136,7 +136,6 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 		return delegate.getNewFromWS(entitatId);
 	}	
 	
-	
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;
 

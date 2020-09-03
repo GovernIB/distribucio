@@ -87,7 +87,8 @@ public interface UnitatOrganitzativaService {
 	 * @param paginacioParams
 	 * @return La pàgina d'unitats organitzatives que compleixen el filtre.
 	 */
-	PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<UnitatOrganitzativaDto> findAmbFiltre(Long entitatId, UnitatOrganitzativaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams);
 
 	UnitatOrganitzativaDto findById(Long id);
@@ -108,5 +109,5 @@ public interface UnitatOrganitzativaService {
 
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
 
-	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);
+	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);	
 }

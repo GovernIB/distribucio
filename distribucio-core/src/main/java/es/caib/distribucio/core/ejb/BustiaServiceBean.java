@@ -271,4 +271,9 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.findAmbUnitatId(entitatId, unitatId);
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
+		return delegate.findUnitatsSuperiors(entitatId, filtre);
+	}
 }

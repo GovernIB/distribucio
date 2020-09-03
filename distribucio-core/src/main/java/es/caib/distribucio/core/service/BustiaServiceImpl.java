@@ -71,6 +71,7 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
+import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
@@ -136,6 +137,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private MessageHelper messageHelper;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 
 	@Autowired
 	private RegistreService registreService;
@@ -2402,6 +2405,21 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return lastIteration;
 	}
 	
-	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
+		
+		// Recupera les unitats organitzatives superiors a partir de l'entitat i del filtre
+		List<UnitatOrganitzativaEntity> unitatsSuperiors = 
+				unitatOrganitzativaRepository.findUnitatsSuperiors(
+						entitatId,
+						filtre == null || filtre.isEmpty(),
+						filtre);
 
+		return conversioTipusHelper.convertirList(
+				unitatsSuperiors,
+				UnitatOrganitzativaDto.class);
+	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 }
