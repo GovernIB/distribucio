@@ -362,7 +362,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		command.setEntitatId(entitatActual.getId());
 		model.addAttribute("bustiaCommand", command);
 		
-		model.addAttribute("bustiaFiltreOrganigramaCommand", bustiaFiltreOrganigramaCommand);
+		model.addAttribute("bustiaFiltreOrganigramaCommand", bustiaFiltreOrganigramaCommand);		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BustiaAdminOrganigramaController.class);

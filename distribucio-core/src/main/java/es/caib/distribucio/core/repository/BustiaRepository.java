@@ -82,7 +82,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"and b.pare != null " +
 			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
 			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " +
-			"and (:esNullCodiUnitatSuperior = true or lower(b.unitatOrganitzativa.codiUnitatSuperior) like lower('%'||:codiUnitatSuperior||'%')) " + 
+			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " + 
 			"and (:esNullFiltreEstat = true or b.unitatOrganitzativa.estat = 'E' or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')" + 
 			"and (:esNullPerDefecte = true or b.perDefecte = true)" + 
 			"and (:esNullActiva = true or b.activa = true)")
@@ -92,8 +92,8 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
 			@Param("esNullFiltreNom") boolean esNullFiltreNom,
 			@Param("filtreNom") String filtreNom,
-			@Param("esNullCodiUnitatSuperior") boolean esNullCodiUnitatSuperior,
-			@Param("codiUnitatSuperior") String codiUnitatSuperior,
+			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
+			@Param("codisUnitatsSuperiors") List<String> codisUnitatsSuperiors,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			@Param("esNullPerDefecte") boolean esNullPerDefecte,
 			@Param("esNullActiva") boolean esNullActiva);
@@ -120,11 +120,11 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"    BustiaEntity b " +
 			"where " +
 			"    b.entitat = :entitat " +
-			"and b.pare != null "+
+			"and b.pare != null " +
 			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
 			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " + 
-			"and (:esNullCodiUnitatSuperior = true or lower(b.unitatOrganitzativa.codiUnitatSuperior) like lower('%'||:codiUnitatSuperior||'%')) " + 
-			"and (:esNullFiltreEstat = true or b.unitatOrganitzativa.estat = 'E' or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')" + 
+			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " + 
+			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat like 'E') or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')" + 
 			"and (:esNullPerDefecte = true or b.perDefecte = true)" + 
 			"and (:esNullActiva = true or b.activa = true)")
 	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
@@ -133,8 +133,8 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
 			@Param("esNullFiltreNom") boolean esNullFiltreNom,
 			@Param("filtreNom") String filtreNom,
-			@Param("esNullCodiUnitatSuperior") boolean esNullCodiUnitatSuperior,
-			@Param("codiUnitatSuperior") String codiUnitatSuperior,
+			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
+			@Param("codisUnitatsSuperiors") List<String> codisUnitatsSuperiors,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			@Param("esNullPerDefecte") boolean esNullPerDefecte,
 			@Param("esNullActiva") boolean esNullActiva,

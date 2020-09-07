@@ -5,7 +5,6 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <dis:blocIconaContingutNoms/>
-	
 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 <c:url value="/unitatajax/unitatSuperior" var="urlConsultaInicialUnitatSuperior"/>
@@ -28,17 +27,39 @@
 	<link href="<c:url value="/webjars/jstree/3.2.1/dist/themes/default/style.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/webjars/jstree/3.2.1/dist/jstree.min.js"/>"></script>
 	
-	<script>
+	<script type="text/javascript">
 
-	function formatSelectUnitat(item) {
+	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
 		    return item.text;
 		}
-		if (item.data && item.data.estat=="V"){
-			return item.text;
+		valida = true;
+		if (item.data) {
+			valida = item.data.estat =="V";
 		} else {
-			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+			if ($(select).val() == item.id) {
+				// Consulta si no és vàlida per afegir la icona de incorrecta.
+				$.ajax({
+					url: $(select).data('urlInicial') +'/' + item.id,
+					async: false,
+					success: function(resposta) {
+						valida = resposta.estat == "V";
+					}
+				});	
+			}			
 		}
+		if (valida)
+			return item.text;
+		else
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+	}
+	
+	function formatSelectUnitatSuperior(item) {
+		return formatSelectUnitatItem($('#codiUnitatSuperior'), item);
+	}
+
+	function formatSelectUnitat(item) {
+		return formatSelectUnitatItem($('#unitatIdFiltre'), item);
 	}
 	
 
@@ -259,7 +280,7 @@
 					suggestValue="codi"
 					suggestText="nom"
 					minimumInputLength="0"
-					optionTemplateFunction="formatSelectUnitat"/>
+					optionTemplateFunction="formatSelectUnitatSuperior"/>
 			</div>
 			<div class="col-md-4">
 				<dis:inputSuggest

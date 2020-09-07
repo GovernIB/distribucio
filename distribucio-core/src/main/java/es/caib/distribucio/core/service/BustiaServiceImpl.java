@@ -7,9 +7,11 @@ import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -35,6 +37,7 @@ import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
+import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -71,7 +74,6 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
-import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
@@ -137,8 +139,6 @@ public class BustiaServiceImpl implements BustiaService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private MessageHelper messageHelper;
-	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
 
 	@Autowired
 	private RegistreService registreService;
@@ -573,6 +573,10 @@ public class BustiaServiceImpl implements BustiaService {
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
+		
+		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
+		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
+
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 						entitat,
@@ -580,8 +584,8 @@ public class BustiaServiceImpl implements BustiaService {
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom(),
-						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(), 
-						filtre.getCodiUnitatSuperior(),
+						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
+						codisUnitatsSuperiors,
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
 						filtre.getActiva() == null || filtre.getActiva() == false,
@@ -599,6 +603,29 @@ public class BustiaServiceImpl implements BustiaService {
 				});
 		omplirPermisosPerBusties(resultPagina.getContingut(), true);
 		return resultPagina;
+	}
+
+	private List<String> getCodisUnitatsSuperiors(EntitatEntity entitat, String codiUnitatSuperior) {
+		List<String> codisUnitatsSuperiors = new ArrayList<String>();
+		if (codiUnitatSuperior != null) {
+			// Consulta l'arbre
+			ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
+			// Busca el node amb el codi seleccionat
+			for (ArbreNodeDto<UnitatOrganitzativaDto> node : arbre.toList()) {
+				if (node.getDades().getCodi().equals(codiUnitatSuperior)) {
+					ArbreDto<UnitatOrganitzativaDto> arbreAux = new ArbreDto<UnitatOrganitzativaDto>(false);
+					arbreAux.setArrel(node);
+					// Agafa tots els identificadors
+					for (UnitatOrganitzativaDto uo : arbreAux.toDadesList()) {
+						codisUnitatsSuperiors.add(uo.getCodi());
+					}
+					break;
+				}
+			}
+		}
+		if (codisUnitatsSuperiors.isEmpty())
+			codisUnitatsSuperiors.add("-");
+		return codisUnitatsSuperiors;
 	}
 
 	@Override
@@ -671,7 +698,9 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		UnitatOrganitzativaEntity unitat = bustiaFiltreOrganigramaDto.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findOne(bustiaFiltreOrganigramaDto.getUnitatIdFiltre()): null;
 		
-		
+		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
+		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, bustiaFiltreOrganigramaDto.getCodiUnitatSuperior()); 
+				
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
@@ -680,8 +709,8 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat,
 				bustiaFiltreOrganigramaDto.getNomFiltre() == null || bustiaFiltreOrganigramaDto.getNomFiltre().isEmpty(), 
 				bustiaFiltreOrganigramaDto.getNomFiltre(),
-				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior() == null || bustiaFiltreOrganigramaDto.getCodiUnitatSuperior().isEmpty(), 
-				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior(),
+				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior() == null || bustiaFiltreOrganigramaDto.getCodiUnitatSuperior().isEmpty(),
+				codisUnitatsSuperiors,
 				bustiaFiltreOrganigramaDto.getUnitatObsoleta() == null || bustiaFiltreOrganigramaDto.getUnitatObsoleta() == false,
 				bustiaFiltreOrganigramaDto.getPerDefecte() == null || bustiaFiltreOrganigramaDto.getPerDefecte() == false,
 				bustiaFiltreOrganigramaDto.getActiva() == null || bustiaFiltreOrganigramaDto.getActiva() == false);
@@ -2409,16 +2438,25 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	@Transactional(readOnly = true)
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
 		
+		EntitatEntity entitat = entitatRepository.findOne(entitatId);
+		
 		// Recupera les unitats organitzatives superiors a partir de l'entitat i del filtre
 		List<UnitatOrganitzativaEntity> unitatsSuperiors = 
 				unitatOrganitzativaRepository.findUnitatsSuperiors(
 						entitatId,
 						filtre == null || filtre.isEmpty(),
 						filtre);
+		// Crea una llista de codis d'UO amb bústia
+		Set<String> bustiaUnitatCodis = new HashSet<String>();
+		for (UnitatOrganitzativaEntity us : unitatsSuperiors) {
+			bustiaUnitatCodis.add(us.getCodi());
+		}
 
-		return conversioTipusHelper.convertirList(
-				unitatsSuperiors,
-				UnitatOrganitzativaDto.class);
+		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
+				entitat.getCodiDir3(),
+				bustiaUnitatCodis);
+		
+		return arbre.toDadesList();
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

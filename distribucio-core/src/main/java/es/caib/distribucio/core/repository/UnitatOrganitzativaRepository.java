@@ -84,7 +84,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	UnitatOrganitzativaEntity findByCodiDir3EntitatAndCodi(String codiDir3Entitat, String codi);
 
 
-	/** Retonra les unitats orgàniques que són superiors d'una 
+	/** Retorna les unitats orgàniques que són superiors d'una 
 	 * unitat orgànica amb bústia filtrat o no per codi o denominació.
 	 * 
 	 * @param entitatId per filtar per entitat.
@@ -92,20 +92,17 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	 * @return Llistat ordenat de les unitats orgàniques que són la superior de
 	 * 		les unitats orgàniques de les bústies de l'entitat.
 	 */
-	@Query(	"from " +
-			"    UnitatOrganitzativaEntity uo " +
-			"where " +
-			"    uo.codi in " +
-			"			(select distinct b.unitatOrganitzativa.codiUnitatSuperior " + 
-			"			from   BustiaEntity b " + 
-			"			where b.entitat.id = :entitatId) " +
-			"and (:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%') " +
-			"		or lower(uo.denominacio) like lower('%'||:filtre||'%')) " +
-			"order by uo.denominacio asc ")
+	@Query(	"select distinct b.unitatOrganitzativa " + 
+			"from   BustiaEntity b " + 
+			"where b.entitat.id = :entitatId " +
+			"	and (:esNullFiltre = true or lower(b.unitatOrganitzativa.codi) like lower('%'||:filtre||'%') " +
+			"		or lower(b.unitatOrganitzativa.denominacio) like lower('%'||:filtre||'%')) ")
 	List<UnitatOrganitzativaEntity> findUnitatsSuperiors(
 			@Param("entitatId") Long entitatId,
 			@Param("esNullFiltre") boolean esNullFiltre, 
 			@Param("filtre") String filtre);
+			
+
 	
 	
 }

@@ -17,7 +17,7 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.full.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
@@ -26,15 +26,37 @@
 	
 	<script type="text/javascript">
 
-	function formatSelectUnitat(item) {
+	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
 		    return item.text;
 		}
-		if (item.data && item.data.estat=="V"){
-			return item.text;
+		valida = true;
+		if (item.data) {
+			valida = item.data.estat =="V";
 		} else {
-			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+			if ($(select).val() == item.id) {
+				// Consulta si no és vàlida per afegir la icona de incorrecta.
+				$.ajax({
+					url: $(select).data('urlInicial') +'/' + item.id,
+					async: false,
+					success: function(resposta) {
+						valida = resposta.estat == "V";
+					}
+				});	
+			}			
 		}
+		if (valida)
+			return item.text;
+		else
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+	}
+	
+	function formatSelectUnitatSuperior(item) {
+		return formatSelectUnitatItem($('#codiUnitatSuperior'), item);
+	}
+
+	function formatSelectUnitat(item) {
+		return formatSelectUnitatItem($('#unitatId'), item);
 	}
 		
 
@@ -65,11 +87,9 @@
 					suggestValue="codi"
 					suggestText="nom"
 					minimumInputLength="0"
-					optionTemplateFunction="formatSelectUnitat"/>
+					optionTemplateFunction="formatSelectUnitatSuperior"/>
 			</div>
 			<div class="col-md-4">
-				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="unitatId" 
 					urlConsultaInicial="${urlConsultaInicial}" 
