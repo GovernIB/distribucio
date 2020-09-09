@@ -576,6 +576,8 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
 		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
+		if (codisUnitatsSuperiors.isEmpty())
+			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 
 		PaginaDto<BustiaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
@@ -605,26 +607,23 @@ public class BustiaServiceImpl implements BustiaService {
 		return resultPagina;
 	}
 
+	/** Mètode per obtenir els codis d'unitats orgàniques de l'arbre que penja a partir de l'unitat
+	 * orgànica superior per filtrar per unitat orgànica superior. 
+	 * 
+	 * @param entitat
+	 * @param codiUnitatSuperior
+	 * @return Els codis de les UO de l'arbe a partir del node amb codi igual a codiUnitatSuperior.
+	 */
 	private List<String> getCodisUnitatsSuperiors(EntitatEntity entitat, String codiUnitatSuperior) {
 		List<String> codisUnitatsSuperiors = new ArrayList<String>();
 		if (codiUnitatSuperior != null) {
-			// Consulta l'arbre
-			ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
-			// Busca el node amb el codi seleccionat
-			for (ArbreNodeDto<UnitatOrganitzativaDto> node : arbre.toList()) {
-				if (node.getDades().getCodi().equals(codiUnitatSuperior)) {
-					ArbreDto<UnitatOrganitzativaDto> arbreAux = new ArbreDto<UnitatOrganitzativaDto>(false);
-					arbreAux.setArrel(node);
-					// Agafa tots els identificadors
-					for (UnitatOrganitzativaDto uo : arbreAux.toDadesList()) {
-						codisUnitatsSuperiors.add(uo.getCodi());
-					}
-					break;
-				}
-			}
+			
+			ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreUnitatsSuperiors(entitat, null, codiUnitatSuperior);
+			// Agafa tots els identificadors
+			for (UnitatOrganitzativaDto uo : arbre.toDadesList()) {
+				codisUnitatsSuperiors.add(uo.getCodi());
+			}			
 		}
-		if (codisUnitatsSuperiors.isEmpty())
-			codisUnitatsSuperiors.add("-");
 		return codisUnitatsSuperiors;
 	}
 
@@ -700,6 +699,8 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
 		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, bustiaFiltreOrganigramaDto.getCodiUnitatSuperior()); 
+		if (codisUnitatsSuperiors.isEmpty())
+			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 				
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
@@ -2440,24 +2441,53 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		
-		// Recupera les unitats organitzatives superiors a partir de l'entitat i del filtre
+		ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreUnitatsSuperiors(entitat, filtre, null);
+				
+		return arbre.toDadesList();
+	}
+	
+	/** Mètode privat per retornnar un arbre amb les unitats organitzatives superiors
+	 * a les bústies de l'entitat. D'aquesta forma s'obté només l'arbre amb bústies.
+	 * 
+	 * @param entitat Entitat amb les bústies per buscar les unititats orgàniques.
+	 * @param filtre Filtre per codi o nom de les unitats orgàniques superiors de les bústies.
+	 * @param codiUnitatOrganitzativa Codi del node superior. Només es retornarà l'arbre a partir
+	 * del node que coincideixi amb aquest codi.
+	 * @return
+	 */
+	private ArbreDto<UnitatOrganitzativaDto> getArbreUnitatsSuperiors(
+			EntitatEntity entitat, 
+			String filtre,
+			String codiUnitatOrganitzativa) {
+		// Recupera les diferents unitats organitzatives de les bústies de l'entorn
 		List<UnitatOrganitzativaEntity> unitatsSuperiors = 
 				unitatOrganitzativaRepository.findUnitatsSuperiors(
-						entitatId,
+						entitat.getId(),
 						filtre == null || filtre.isEmpty(),
 						filtre);
+		
 		// Crea una llista de codis d'UO amb bústia
 		Set<String> bustiaUnitatCodis = new HashSet<String>();
 		for (UnitatOrganitzativaEntity us : unitatsSuperiors) {
 			bustiaUnitatCodis.add(us.getCodi());
 		}
-
+		// Consulta tot l'arbre de l'entitat filtrant per codis permesos
 		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
 				entitat.getCodiDir3(),
 				bustiaUnitatCodis);
-		
-		return arbre.toDadesList();
+		// Si s'ha passat un codi d'unitat orgànica superior llavors retorna l'arbre a partir del node amb codi igual
+		if (codiUnitatOrganitzativa != null && !codiUnitatOrganitzativa.isEmpty()) {
+			// Busca el node amb el codi seleccionat
+			for (ArbreNodeDto<UnitatOrganitzativaDto> node : arbre.toList()) {
+				if (node.getDades().getCodi().equals(codiUnitatOrganitzativa)) {
+					arbre = new ArbreDto<UnitatOrganitzativaDto>(false);
+					arbre.setArrel(node);
+					break;
+				}
+			}
+		}
+		return arbre;
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 }
