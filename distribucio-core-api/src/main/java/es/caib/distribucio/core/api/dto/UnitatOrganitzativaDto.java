@@ -46,9 +46,17 @@ public class UnitatOrganitzativaDto implements Serializable {
 	
 	private List<UnitatOrganitzativaDto> noves;
 	private Map<String, String> altresUnitatsFusionades;
-	
 
 	private List<UnitatOrganitzativaDto> lastHistoricosUnitats;
+	
+	
+	public boolean isObsoleta() {
+		if (estat.equals("E") || estat.equals("A") || estat.equals("T")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public List<UnitatOrganitzativaDto> getLastHistoricosUnitats() {
 		return lastHistoricosUnitats;

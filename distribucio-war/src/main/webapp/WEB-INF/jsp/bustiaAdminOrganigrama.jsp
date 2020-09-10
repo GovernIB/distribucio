@@ -264,6 +264,7 @@
 	</style>
 </head>
 <body>
+	<!------------------------- FILTER ------------------------>
 	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
 		<div class="row">
 			<div class="col-md-4">
@@ -318,10 +319,12 @@
 			</div>
 		</div>
 	</form:form>
+	
 	<div class="row">
+		<!------------------------- TREE ------------------------>
 		<div class="col-md-5">
  			<c:set var="fullesAtributInfoText"><spring:message code="contingut.enviar.info.bustia.defecte"/></c:set> 
- 			<c:set var="fullesAtributInfo2Text"><span style="padding-top: 4.5px; padding-left: 2px;" class="fa fa-warning text-danger pull-right" title="<spring:message code="bustia.list.unitatObsoleta"/>"></span></c:set> 
+ 			<c:set var="fillsAtributInfoText"><span style="padding-top: 4.5px; padding-left: 2px;" class="fa fa-warning text-danger pull-right" title="<spring:message code="unitat.arbre.unitatObsoleta"/>"></span></c:set> 
  			
  			
 			<div style="padding-bottom: 10px;">
@@ -331,10 +334,14 @@
 			</div>
  			
 
-			<dis:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="denominacio" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
+			<dis:arbre id="arbreUnitatsOrganitzatives" atributId="codi" atributNom="nom" arbre="${arbreUnitatsOrganitzatives}" fulles="${busties}" fullesAtributId="id" fullesAtributNom="nom" 
 				fullesAtributPare="unitatCodi" fullesAtributInfo="perDefecte" fullesAtributInfoText="${fullesAtributInfoText}"  fullesIcona="fa fa-inbox fa-lg" 
-				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClassCondition="inactiva" fullesAtributInfo2Condition="unitatObsoleta" fullesAtributInfo2Text="${fullesAtributInfo2Text}"/>
+				changedCallback="changedCallback" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" fullesAtributCssClassCondition="inactiva" 
+				fillsAtributInfoCondition="obsoleta" fillsAtributInfoText="${fillsAtributInfoText}"
+				/>
+				
 		</div>
+		<!------------------------- FORM ------------------------>
 		<div class="col-md-7" id="panellInfo"<c:if test="${empty unitatCodi}"> style="visibility:hidden"</c:if>>
 			<div class="panel panel-default">
 				<div class="panel-heading">
