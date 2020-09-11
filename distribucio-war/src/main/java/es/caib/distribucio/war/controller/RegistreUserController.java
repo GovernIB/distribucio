@@ -287,6 +287,16 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return null;
 	}
+	
+	@RequestMapping(value = "/metriquesView", method = RequestMethod.GET)
+	public String metriquesView(
+			HttpServletRequest request,
+			Model model) throws IOException {
+		model.addAttribute("metriques", bustiaService.getApplictionMetrics());
+
+		return "metrics";
+	}
+	
 
 	@RequestMapping(value = "/netejar", method = RequestMethod.GET)
 	public String expedientNetejar(
