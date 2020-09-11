@@ -140,11 +140,11 @@ public class BustiaAdminController extends BaseAdminController {
 						"bustia.controller.creat.ok");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return getModalControllerReturnValueErrorNoKey(
-					request,
-					"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
-					e.getMessage());
+			logger.error("Error no controlat creant o actualitzant una bústia: " + e.getMessage(), e);
+			MissatgesHelper.error(
+					request, 
+					"Error : " + e.getClass() + " " + e.getMessage());
+			return "bustiaAdminForm";
 		}
 	}
 	

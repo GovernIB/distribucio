@@ -585,12 +585,12 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getUnitatId() == null, 
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
-						filtre.getNom(),
+						filtre.getNom() != null ? filtre.getNom().trim() : "",
 						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
 						codisUnitatsSuperiors,
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
-						filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
-						filtre.getActiva() == null || filtre.getActiva() == false,
+						filtre.getPerDefecte() != null && filtre.getPerDefecte(),
+						filtre.getActiva() != null && filtre.getActiva(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				BustiaDto.class,
 				new Converter<BustiaEntity, BustiaDto>() {
@@ -685,7 +685,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional
 	public List<BustiaDto> findAmbEntitatAndFiltre(
 			Long entitatId, 
-			BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto) {
+			BustiaFiltreOrganigramaDto filtre) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
@@ -695,10 +695,10 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		UnitatOrganitzativaEntity unitat = bustiaFiltreOrganigramaDto.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findOne(bustiaFiltreOrganigramaDto.getUnitatIdFiltre()): null;
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findOne(filtre.getUnitatIdFiltre()): null;
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
-		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, bustiaFiltreOrganigramaDto.getCodiUnitatSuperior()); 
+		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
 		if (codisUnitatsSuperiors.isEmpty())
 			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 				
@@ -706,15 +706,15 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 				entitat,
-				bustiaFiltreOrganigramaDto.getUnitatIdFiltre() == null, 
+				filtre.getUnitatIdFiltre() == null, 
 				unitat,
-				bustiaFiltreOrganigramaDto.getNomFiltre() == null || bustiaFiltreOrganigramaDto.getNomFiltre().isEmpty(), 
-				bustiaFiltreOrganigramaDto.getNomFiltre(),
-				bustiaFiltreOrganigramaDto.getCodiUnitatSuperior() == null || bustiaFiltreOrganigramaDto.getCodiUnitatSuperior().isEmpty(),
+				filtre.getNomFiltre() == null || filtre.getNomFiltre().isEmpty(), 
+				filtre.getNomFiltre() != null ? filtre.getNomFiltre().trim() : "",
+				filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
 				codisUnitatsSuperiors,
-				bustiaFiltreOrganigramaDto.getUnitatObsoleta() == null || bustiaFiltreOrganigramaDto.getUnitatObsoleta() == false,
-				bustiaFiltreOrganigramaDto.getPerDefecte() == null || bustiaFiltreOrganigramaDto.getPerDefecte() == false,
-				bustiaFiltreOrganigramaDto.getActiva() == null || bustiaFiltreOrganigramaDto.getActiva() == false);
+				filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
+				filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
+				filtre.getActiva() == null || filtre.getActiva() == false);
 		contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.stop();
 		
 		final Timer timertoBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaDto"));
@@ -1433,11 +1433,11 @@ public class BustiaServiceImpl implements BustiaService {
 					bustia,
 					busties,
 					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
-					filtre.getContingutDescripcio(),
+					filtre.getContingutDescripcio() != null ? filtre.getContingutDescripcio() : "",
 					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
-					filtre.getNumeroOrigen(),
+					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
 					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
-					filtre.getRemitent(),
+					filtre.getRemitent() != null ? filtre.getRemitent() : "",
 					(filtre.getDataRecepcioInici() == null),
 					filtre.getDataRecepcioInici(),
 					(filtre.getDataRecepcioFi() == null),
@@ -2464,7 +2464,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 				unitatOrganitzativaRepository.findUnitatsSuperiors(
 						entitat.getId(),
 						filtre == null || filtre.isEmpty(),
-						filtre);
+						filtre != null ? filtre : "");
 		
 		// Crea una llista de codis d'UO amb bústia
 		Set<String> bustiaUnitatCodis = new HashSet<String>();

@@ -35,7 +35,6 @@ import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
-import es.caib.distribucio.core.repository.RegistreRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -51,8 +50,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
 	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Autowired
-	private RegistreRepository registreRepository;
 	@Autowired
 	private RegistreHelper registreHelper;
 
@@ -77,7 +74,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			List<RegistreEntity> pendents;
 			// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
 			synchronized (SemaphoreDto.getSemaphore()) {
-				pendents = registreRepository.findGuardarAnnexPendents(maxReintents);
+				pendents = registreHelper.findGuardarAnnexPendents(maxReintents);
 			}
 			if (pendents != null && !pendents.isEmpty()) {
 				logger.debug(
@@ -121,7 +118,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
-		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentEnviarBackoffice(new Date());
+		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date());
 		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
 		if (pendents != null && !pendents.isEmpty()) {
 
@@ -159,7 +156,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		logger.debug("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
-		List<RegistreEntity> pendents = registreRepository.findAmbReglaPendentAplicar(maxReintents);
+		List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(maxReintents);
 		logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
 		
 		if (pendents != null && !pendents.isEmpty()) {
@@ -212,7 +209,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 		
 		logger.debug("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
-		List<RegistreEntity> pendents = registreRepository.findPendentsTancarArxiu(new Date());
+		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date());
 		if (pendents != null && !pendents.isEmpty()) {
 			logger.debug("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {

@@ -398,7 +398,7 @@ public class ContingutServiceImpl implements ContingutService {
 						tipusBustia,
 						tipusRegistre,
 						(filtre.getNom() == null),
-						filtre.getNom(),
+						filtre.getNom() != null ? filtre.getNom() : "",
 						(dataInici == null),
 						dataInici,
 						(dataFi == null),

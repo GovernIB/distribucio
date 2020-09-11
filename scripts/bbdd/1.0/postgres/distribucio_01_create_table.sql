@@ -16,10 +16,10 @@ CREATE TABLE DIS_USUARI
 (
   CODI          		character varying(64)       NOT NULL,
   INICIALITZAT  		boolean,
-  NIF           		character varying(9)        NOT NULL,
+  NIF           		character varying(9),
   NOM           		character varying(200),
   EMAIL         		character varying(200),
-  IDIOMA 				character varying(2) 	 	NOT NULL,
+  IDIOMA 				character varying(2)  DEFAULT 'CA' NOT NULL,
   REBRE_EMAILS  		boolean,
   EMAILS_AGRUPATS		boolean,
   VERSION       		bigint                      NOT NULL
@@ -43,27 +43,6 @@ CREATE TABLE DIS_ENTITAT
   FECHA_ACTUALIZACION  TIMESTAMP WITHOUT TIME ZONE,
   FECHA_SINCRONIZACION TIMESTAMP WITHOUT TIME ZONE
 );
-
-/*
-CREATE TABLE DIS_METADOCUMENT
-(
-  ID                      BIGSERIAL               NOT NULL,
-  GLOBAL_EXPEDIENT        boolean,
-  GLOBAL_MULTIPLICITAT    character varying(256),
-  GLOBAL_READONLY         boolean,
-  FIRMA_PFIRMA            boolean,
-  PORTAFIRMES_DOCTIP      character varying(64),
-  PORTAFIRMES_FLUXID      character varying(64),
-  PORTAFIRMES_RESPONS     character varying(512),
-  PORTAFIRMES_FLUXTIP     character varying(256),
-  PORTAFIRMES_CUSTIP      character varying(64),
-  FIRMA_PASSARELA         boolean,
-  PASSARELA_CUSTIP        character varying(64),
-  PLANTILLA_NOM           character varying(256),
-  PLANTILLA_CONTENT_TYPE  character varying(256),
-  PLANTILLA_CONTINGUT     oid
-);
-*/
 
 CREATE TABLE DIS_CONTINGUT
 (
@@ -200,11 +179,11 @@ CREATE TABLE DIS_REGISTRE
   OFICINA_ORIG_CODI    character varying(21),
   OFICINA_ORIG_DESC    character varying(100),
   JUSTIFICANT_ARXIU_UUID character varying(256),
+  LLEGIDA              boolean,
+  EXPEDIENT_ARXIU_UUID  character varying(100),
   DATA_TANCAMENT       timestamp without time zone,
   ARXIU_TANCAT         BOOLEAN DEFAULT FALSE	NOT NULL,
   ARXIU_TANCAT_ERROR   BOOLEAN DEFAULT FALSE	NOT NULL,  
-  LLEGIDA              boolean,
-  EXPEDIENT_ARXIU_UUID  character varying(100),
   NUMERO_COPIA		   integer default 0 NOT NULL,
   BACK_PENDENT_DATA    timestamp without time zone,
   BACK_REBUDA_DATA    timestamp without time zone,
@@ -226,7 +205,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
   FITXER_NOM           character varying(256)    NOT NULL,
   FITXER_TAMANY        integer                  NOT NULL,
   FITXER_MIME          character varying(100),
-  FITXER_ARXIU_UUID     character varying(256)   NOT NULL,
+  FITXER_ARXIU_UUID     character varying(256),
   DATA_CAPTURA         timestamp without time zone NOT NULL,
   LOCALITZACIO         character varying(80),
   ORIGEN_CIUADM        character varying(1)     NOT NULL,
@@ -410,7 +389,7 @@ CREATE TABLE DIS_UNITAT_ORGANITZATIVA (
   DATA_SUPRESSIO_OFICIAL 	TIMESTAMP WITHOUT TIME ZONE,
   DATA_EXTINCIO_FUNCIONAL 	TIMESTAMP WITHOUT TIME ZONE,
   DATA_ANULACIO 	 		TIMESTAMP WITHOUT TIME ZONE,
-  ESTAT 					BOOLEAN,
+  ESTAT 					CHARACTER VARYING(1),
   CODI_PAIS 				CHARACTER VARYING(3),
   CODI_COMUNITAT 			CHARACTER VARYING(2),
   CODI_PROVINCIA 			CHARACTER VARYING(2),

@@ -1,9 +1,7 @@
 -- #139 Eliminar camp unitatOrganicaCodi de la bústia 
 
 ALTER TABLE DIS_BUSTIA
-DROP (
-    UNITAT_CODI
-);
+DROP COLUMN IF EXISTS UNITAT_CODI;
 
 -- #141 Revisar el sistema de logs
 -- Creació d'una nova taula de paràmetres dels logs i traspàs de dades cap a la nova taula.
@@ -44,3 +42,15 @@ insert into DIS_CONT_LOG_PARAM (ID, CONT_LOG_ID, NUMERO, VALOR)
 	FROM DIS_CONT_LOG l
     WHERE l.PARAM2 IS NOT NULL
 );
+
+-- #226 Errors diversos de Distribucio amb BBDD Postgres 
+
+-- Canvia la columna DIS_UNITAT_ORGANITZATIVA.ESTAT de boolean a character varying(1)
+ALTER TABLE DIS_UNITAT_ORGANITZATIVA ALTER COLUMN ESTAT TYPE CHARACTER VARYING(1);
+
+-- Treu restriccions not null
+ALTER TABLE DIS_USUARI ALTER COLUMN NIF DROP NOT NULL;
+ALTER TABLE DIS_REGISTRE_ANNEX ALTER COLUMN FITXER_ARXIU_UUID DROP NOT NULL;
+
+-- Valors per defecte
+ALTER TABLE DIS_USUARI ALTER COLUMN IDIOMA SET DEFAULT 'CA';

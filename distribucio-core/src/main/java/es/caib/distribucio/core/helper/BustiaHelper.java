@@ -279,7 +279,7 @@ public class BustiaHelper {
 		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatRepository.findByCodi(codiUnitat);
 		
 		BustiaEntity bustaPerDefecte = null;
-		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
+		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findPerDefecte(
 				entitat,
 				unitatOrganitzativaEntity);
 		if (bustiesPerDefecte.size() == 1) {
