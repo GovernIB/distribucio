@@ -41,7 +41,6 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	EntitatEntity entitat,
 	UnitatOrganitzativaEntity unitatOrganitzativa);
 
-
 	/**
 	 * Finds root bustia of unitat
 	 * @param entitat
@@ -52,28 +51,26 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			EntitatEntity entitat,
 			UnitatOrganitzativaEntity unitatOrganitzativa);
 
-	List<BustiaEntity> findByEntitatAndUnitatOrganitzativaAndPerDefecteTrue(
-			EntitatEntity entitat,
-			UnitatOrganitzativaEntity unitatOrganitzativa);
-	
-	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
-			EntitatEntity entitat);
-
-	
-	@Query(	"from " +
+	/** Busca bústies per defecte per una entitat i una unitat organitzativa
+	 * 
+	 * @param entitat
+	 * @param unitatOrganitzativa
+	 * @return
+	 */
+	@Query("from " +
 			"    BustiaEntity b " +
 			"where " +
 			"    b.entitat = :entitat " +
 			"and b.pare != null " +
-			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
-			"and (:esNullFiltreNom = true or lower(b.nom) like lower('% '||:filtreNom||' %')) ")
-	List<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltre(
+			"and b.unitatOrganitzativa = :unitatOrganitzativa " +
+			"and b.perDefecte = true ")
+	List<BustiaEntity> findPerDefecte(
 			@Param("entitat") EntitatEntity entitat,
-			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
-			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
-			@Param("esNullFiltreNom") boolean esNullFiltreNom,
-			@Param("filtreNom") String filtreNom);
+			@Param("unitatOrganitzativa")  UnitatOrganitzativaEntity unitatOrganitzativa);
+
 	
+	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
+			EntitatEntity entitat);
 	
 	@Query(	"from " +
 			"    BustiaEntity b " +
@@ -83,9 +80,10 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
 			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " +
 			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " + 
-			"and (:esNullFiltreEstat = true or b.unitatOrganitzativa.estat = 'E' or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')" + 
+			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat = 'E') or (b.unitatOrganitzativa.estat = 'A') or (b.unitatOrganitzativa.estat = 'T'))" +
 			"and (:esNullPerDefecte = true or b.perDefecte = true)" + 
-			"and (:esNullActiva = true or b.activa = true)")
+			"and (:esNullActiva = true or b.activa = true)"
+			)
 	List<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
@@ -98,35 +96,17 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("esNullPerDefecte") boolean esNullPerDefecte,
 			@Param("esNullActiva") boolean esNullActiva);
 	
-
-	
-	@Query(	"from " +
-			"    BustiaEntity b " +
-			"where " +
-			"    b.entitat = :entitat " +
-			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
-			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) "
-			+ "and (:esNullFiltreEstat = true or b.unitatOrganitzativa.estat = 'E' or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')")
-	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomFiltrePaginat(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
-			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
-			@Param("esNullFiltreNom") boolean esNullFiltreNom,
-			@Param("filtreNom") String filtreNom,	
-			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
-			Pageable pageable);
-	
 	@Query(	"from " +
 			"    BustiaEntity b " +
 			"where " +
 			"    b.entitat = :entitat " +
 			"and b.pare != null " +
 			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
-			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " + 
-			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " + 
-			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat like 'E') or b.unitatOrganitzativa.estat = 'A' or b.unitatOrganitzativa.estat = 'T')" + 
-			"and (:esNullPerDefecte = true or b.perDefecte = true)" + 
-			"and (:esNullActiva = true or b.activa = true)")
+			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " +
+			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " +
+			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat like 'E') or (b.unitatOrganitzativa.estat = 'A') or (b.unitatOrganitzativa.estat = 'T'))" +
+			"and (:perDefecte = false or b.perDefecte = true) " +
+			"and (:activa = false or b.activa = true)")
 	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
@@ -136,7 +116,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
 			@Param("codisUnitatsSuperiors") List<String> codisUnitatsSuperiors,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
-			@Param("esNullPerDefecte") boolean esNullPerDefecte,
-			@Param("esNullActiva") boolean esNullActiva,
+			@Param("perDefecte") boolean perDefecte,
+			@Param("activa") boolean activa,
 			Pageable pageable);
 }

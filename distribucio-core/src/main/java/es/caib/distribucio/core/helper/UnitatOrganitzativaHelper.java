@@ -481,8 +481,6 @@ public class UnitatOrganitzativaHelper {
 		Timer.Context contextleaveOnlySpecifiedUnitatsInArbre = timerleaveOnlySpecifiedUnitatsInArbre.time();
 		if (unitatCodiPermesos != null) {
 			
-			//this.netejaArbre(arbre.getArrel(), unitatCodiPermesos);
-
 			// Calcula els nodes a "salvar" afegint els nodes permesos
 			// i tots els seus pares.
 			List<ArbreNodeDto<UnitatOrganitzativaDto>> nodes = arbre.toList();
@@ -511,33 +509,6 @@ public class UnitatOrganitzativaHelper {
 		contextleaveOnlySpecifiedUnitatsInArbre.stop();
 		return arbre;
 	}
-
-	/** Funció recursiva per netejar l'arbre de braques que vagin a unitats organitzatives que no estiguin
-	 * a la llista de codis permesos.
-	 * @param arbre
-	 * @param unitatCodiPermesos
-	 */
-	/*
-	private boolean netejaArbre(ArbreNodeDto<UnitatOrganitzativaDto> node, Set<String> unitatCodiPermesos) {
-		boolean esborrar = false;
-		if (node != null ) {
-			if (node.fills != null) {
-				List<ArbreNodeDto<UnitatOrganitzativaDto>> esborrarFills = new ArrayList<ArbreNodeDto<UnitatOrganitzativaDto>>();
-				for (ArbreNodeDto<UnitatOrganitzativaDto> fill : node.getFills()) {
-					if (netejaArbre(fill, unitatCodiPermesos))
-						esborrarFills.add(fill);
-				}
-				if (!esborrarFills.isEmpty())
-					node.fills.removeAll(esborrarFills);
-			}
-			if (node.pare != null 
-					&& (node.fills == null || node.fills.isEmpty()) 
-					&& !unitatCodiPermesos.contains(node.dades.getCodi()))
-				esborrar = true;
-		}
-		return esborrar;
-	}
-	*/
 
 	/**
 	 * Returns unitat pare (of unitat: @param unitatOrganitzativaCodi) that is first child of the root unitat (given by: @param unitatPare) 

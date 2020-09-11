@@ -95,6 +95,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	@Query(	"select distinct b.unitatOrganitzativa " + 
 			"from   BustiaEntity b " + 
 			"where b.entitat.id = :entitatId " +
+			"	and b.pare != null " +
 			"	and (:esNullFiltre = true or lower(b.unitatOrganitzativa.codi) like lower('%'||:filtre||'%') " +
 			"		or lower(b.unitatOrganitzativa.denominacio) like lower('%'||:filtre||'%')) ")
 	List<UnitatOrganitzativaEntity> findUnitatsSuperiors(

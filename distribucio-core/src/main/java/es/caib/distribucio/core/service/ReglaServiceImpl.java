@@ -314,7 +314,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaRepository.findByEntitatAndFiltrePaginat(
 						entitat,
 						paginacioParams.getFiltre() == null,
-						paginacioParams.getFiltre(),
+						paginacioParams.getFiltre() != null ? paginacioParams.getFiltre() : "",
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				ReglaDto.class);
 	}
@@ -348,12 +348,12 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getUnitatId() == null, 
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
-						filtre.getNom(),
+						filtre.getNom() != null ? filtre.getNom() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						filtre.getBackofficeCodi() == null || filtre.getBackofficeCodi().trim().isEmpty(),
-						filtre.getBackofficeCodi(),
+						filtre.getBackofficeCodi() != null ? filtre.getBackofficeCodi() : "",
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				ReglaDto.class);
 		

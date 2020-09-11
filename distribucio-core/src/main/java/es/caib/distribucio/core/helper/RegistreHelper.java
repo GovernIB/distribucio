@@ -1193,4 +1193,28 @@ public class RegistreHelper {
 										registre.getData());
 		return numeroCopia != null ? numeroCopia : 0;
 	}
+
+	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. */
+	@Transactional
+	public List<RegistreEntity> findGuardarAnnexPendents(int maxReintents) {
+		return 	registreRepository.findGuardarAnnexPendents(maxReintents);
+	}
+
+	/** Consulta els registres pendents d'enviar al backoffice. */
+	@Transactional
+	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date) {
+		return registreRepository.findAmbEstatPendentEnviarBackoffice(date);
+	}
+
+	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
+	@Transactional
+	public List<RegistreEntity> findAmbReglaPendentAplicar(int maxReintents) {
+		return registreRepository.findAmbReglaPendentAplicar(maxReintents);
+	}
+
+	/** Consulta les anotacions pendents de tancar a l'arxiu. */
+	@Transactional
+	public List<RegistreEntity> findPendentsTancarArxiu(Date date) {
+		return registreRepository.findPendentsTancarArxiu(date);
+	}
 }

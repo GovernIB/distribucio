@@ -161,7 +161,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		logger.debug("Consultant usuaris amb text (text=" + text + ")");
 		return conversioTipusHelper.convertirList(
-				usuariRepository.findByText(text),
+				usuariRepository.findByText(text != null? text : ""),
 				UsuariDto.class);
 	}
 

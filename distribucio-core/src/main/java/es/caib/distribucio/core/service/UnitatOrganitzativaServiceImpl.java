@@ -150,13 +150,13 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				unitatOrganitzativaRepository.findByCodiDir3AndUnitatDenominacioFiltrePaginat(
 						entitat.getCodiDir3(),
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
-						filtre.getCodi(),
+						filtre.getCodi() != null ? filtre.getCodi() : "",
 						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
-						filtre.getDenominacio(),
+						filtre.getDenominacio() != null ? filtre.getDenominacio() : "",
 						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(), 
-						filtre.getCodiUnitatSuperior(),
+						filtre.getCodiUnitatSuperior() != null ? filtre.getCodiUnitatSuperior() : "",
 						filtre.getCodiUnitatArrel() == null || filtre.getCodiUnitatArrel().isEmpty(),
-						filtre.getCodiUnitatArrel(),
+						filtre.getCodiUnitatArrel() != null ? filtre.getCodiUnitatArrel() : "",
 						estat == null,
 						estat,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
@@ -199,7 +199,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
 						entitat.getCodiDir3(),
 						filtre == null || filtre.isEmpty(), 
-						filtre),
+						filtre != null ? filtre : ""),
 				UnitatOrganitzativaDto.class);
 	}
 
