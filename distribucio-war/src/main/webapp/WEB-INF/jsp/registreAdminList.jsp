@@ -35,6 +35,10 @@ table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
 table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
 	cursor: pointer;
 }
+table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
+    color: #333;
+}
+	
 </style>
 	
 <script>
