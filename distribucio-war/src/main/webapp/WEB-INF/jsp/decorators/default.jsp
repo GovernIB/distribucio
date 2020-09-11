@@ -167,49 +167,53 @@ body {
 						</li>
 					</ul>
 					<div class="clearfix"></div>
-					<div class="btn-group navbar-btn navbar-right">
-						<c:choose>
-							<c:when test="${isRolActualSuperusuari}">
-								<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
-								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzar"/>&nbsp;<span class="caret caret-white"></span></button>
-									<ul class="dropdown-menu">
-										<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
-										<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
-										<li><a href="<c:url value="/registreUser/metriquesView"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.metriques"/></a></li>										
-									</ul>
-								</div>
-								<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
-							</c:when>
-							<c:when test="${isRolActualAdministrador}">
-								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.configurar"/>&nbsp;<span class="caret caret-white"></span></button>
-									<ul class="dropdown-menu">
-										<li><a href="<c:url value="/bustiaAdminOrganigrama"/>"><spring:message code="decorator.menu.busties"/></a></li>
-										<li><a href="<c:url value="/unitatOrganitzativa"/>"><spring:message code="decorator.menu.unitats"/></a></li>
-										<li class="divider"></li>
-										<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
-										<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
-									</ul>
-								</div>
-								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
-									<ul class="dropdown-menu">
-										<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
-										<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
-									</ul>
-								</div>
-							</c:when>
-							<c:when test="${isRolActualUsuari}">
-								<c:if test="${teAccesExpedients}">
-									<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
-								</c:if>
-								<a href="<c:url value="/registreUser"/>" class="btn btn-primary">
-									<spring:message code="decorator.menu.busties"/>
-									<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
-								</a>
-							</c:when>
-						</c:choose>
+				
+					<div class="navbar-btn navbar-right">
+						<div class="btn-group">
+							<c:choose>
+								<c:when test="${isRolActualSuperusuari}">
+									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzar"/>&nbsp;<span class="caret caret-white"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
+											<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
+											<li><a href="<c:url value="/registreUser/metriquesView"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.metriques"/></a></li>										
+										</ul>
+									</div>
+									<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
+								</c:when>
+								<c:when test="${isRolActualAdministrador}">
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.configurar"/>&nbsp;<span class="caret caret-white"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="<c:url value="/bustiaAdminOrganigrama"/>"><spring:message code="decorator.menu.busties"/></a></li>
+											<li><a href="<c:url value="/unitatOrganitzativa"/>"><spring:message code="decorator.menu.unitats"/></a></li>
+											<li class="divider"></li>
+											<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
+											<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
+										</ul>
+									</div>
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
+										</ul>
+									</div>
+								</c:when>
+								<c:when test="${isRolActualUsuari}">
+									<c:if test="${teAccesExpedients}">
+										<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
+									</c:if>
+									<a href="<c:url value="/registreUser"/>" class="btn btn-primary">
+										<spring:message code="decorator.menu.busties"/>
+										<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
+									</a>
+								</c:when>
+							</c:choose>
+						</div>
+						<a class="btn btn-success" href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank"><span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari"/></a>
 						<%--c:if test="${isRolActualUsuari or isRolActualAdministrador}">
 							<div class="btn-group">
 								<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="execucions.massives.boto.user"/>&nbsp;<span class="caret caret-white"></span></button>
