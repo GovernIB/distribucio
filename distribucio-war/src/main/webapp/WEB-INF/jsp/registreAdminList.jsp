@@ -218,9 +218,7 @@ $(document).ready(function() {
 		</div>
 	</script>	
 
-	
-
-	
+	<script id="rowhrefTemplate" type="text/x-jsrender">./contingutAdmin/{{:id}}/detall</script>
 	<table
 		id="taulaDades"
 		data-toggle="datatable"
@@ -230,7 +228,10 @@ $(document).ready(function() {
 		data-selection-enabled="true"
 		data-default-order="5"
 		data-default-dir="desc"
-		class="table table-bordered table-striped">
+		class="table table-bordered table-striped"
+		data-rowhref-template="#rowhrefTemplate" 
+		data-rowhref-toggle="modal"
+		data-rowhref-maximized="true">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>

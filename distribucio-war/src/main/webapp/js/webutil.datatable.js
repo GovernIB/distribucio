@@ -150,6 +150,9 @@
 						$(row).attr(
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
+						if (plugin.settings.rowhrefMaximized)
+							$(row).attr('data-maximized', plugin.settings.rowhrefMaximized);
+						
 					}
 					if (data['DT_RowSelected']) {
 						$taula.dataTable().api().row(row).select();

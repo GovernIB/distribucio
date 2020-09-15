@@ -195,6 +195,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</script>
+	<script id="rowhrefTemplate" type="text/x-jsrender">./registreUser/bustia/{{:pareId}}/registre/{{:id}}</script>
 	<table 
 		id="taulaDades" 
 		class="table table-bordered table-striped" style="width:100%"
@@ -204,7 +205,10 @@ $(document).ready(function() {
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
 		data-default-order="12"
-		data-default-dir="desc">
+		data-default-dir="desc"
+		data-rowhref-template="#rowhrefTemplate" 
+		data-rowhref-toggle="modal"
+		data-rowhref-maximized="true">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
