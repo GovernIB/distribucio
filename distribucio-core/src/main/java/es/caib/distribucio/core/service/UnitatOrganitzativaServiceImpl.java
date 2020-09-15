@@ -145,18 +145,23 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			estat = "A";
 		}
 		
+		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
+		List<String> codisUnitatsDescendants = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, filtre.getCodiUnitatSuperior()); 
+		if (codisUnitatsDescendants.isEmpty())
+			codisUnitatsDescendants.add("-"); // per evitar error per llista buida
+		
+		
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
+		mapeigPropietatsOrdenacio.put("codiIDenominacioUnitatSuperior", new String[]{"codiUnitatSuperior"});
 		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				unitatOrganitzativaRepository.findByCodiDir3AndUnitatDenominacioFiltrePaginat(
+				unitatOrganitzativaRepository.findByFiltrePaginat(
 						entitat.getCodiDir3(),
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi() != null ? filtre.getCodi() : "",
 						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
 						filtre.getDenominacio() != null ? filtre.getDenominacio() : "",
-						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(), 
-						filtre.getCodiUnitatSuperior() != null ? filtre.getCodiUnitatSuperior() : "",
-						filtre.getCodiUnitatArrel() == null || filtre.getCodiUnitatArrel().isEmpty(),
-						filtre.getCodiUnitatArrel() != null ? filtre.getCodiUnitatArrel() : "",
+						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
+						codisUnitatsDescendants,
 						estat == null,
 						estat,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
@@ -170,6 +175,27 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 						return unitatDto;
 					}
 				});
+		
+		
+		for (UnitatOrganitzativaDto unitatOrganitzativaDto : resultPagina.getContingut()) {
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodi(unitatOrganitzativaDto.getCodiUnitatSuperior());
+			if (unitatOrganitzativaEntity != null) {
+				unitatOrganitzativaDto.setDenominacioUnitatSuperior(unitatOrganitzativaEntity.getDenominacio());
+			}
+			List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+					entitat.getCodiDir3(),
+					unitatOrganitzativaDto.getCodi());
+			int childArrelIndex;
+			if (path.size() != 0) {
+				if (path.size() > 1) {
+					childArrelIndex = path.size() - 2;
+				} else {
+					childArrelIndex = 0;
+				}
+				unitatOrganitzativaDto.setCodiUnitatArrel(path.get(childArrelIndex).getCodi() + " - " + path.get(childArrelIndex).getDenominacio());
+			}
+		}
+		
 		return resultPagina;
 	}
 
@@ -193,15 +219,19 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	@Override
 	@Transactional(readOnly = true)
 	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(
-			String entitatCodi, String filtre) { 
+			String entitatCodi, 
+			String filtre, 
+			boolean ambArrel) {
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		return conversioTipusHelper.convertirList(
 				unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
 						entitat.getCodiDir3(),
 						filtre == null || filtre.isEmpty(), 
-						filtre != null ? filtre : ""),
+						filtre != null ? filtre : "",
+						ambArrel),
 				UnitatOrganitzativaDto.class);
 	}
+	
 
 	@Override
 	@Transactional(readOnly = true)

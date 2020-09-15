@@ -63,6 +63,55 @@ public class UnitatOrganitzativaHelper {
 	private MetricRegistry metricRegistry;
 	
 	
+
+
+	public List<String> getCodisOfUnitatsDescendants(EntitatEntity entitat, String codi) {
+		List<String> codisOfUnitatsDescendants = new ArrayList<String>();
+		if (codi != null) {
+			
+			ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreOfUnitatsDescendants(entitat, codi);
+			// Agafa tots els identificadors
+			for (UnitatOrganitzativaDto uo : arbre.toDadesList()) {
+				codisOfUnitatsDescendants.add(uo.getCodi());
+			}			
+		}
+		return codisOfUnitatsDescendants;
+	}
+	
+	
+
+	public ArbreDto<UnitatOrganitzativaDto> getArbreOfUnitatsDescendants(
+			EntitatEntity entitat, 
+			String codiUnitatOrganitzativa) {
+		
+		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
+				.findByCodiDir3Entitat(entitat.getCodiDir3());
+		
+		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
+				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
+
+		ArbreDto<UnitatOrganitzativaDto> resposta = new ArbreDto<UnitatOrganitzativaDto>(true);
+		// Cerca l'unitat organitzativa amb el codi donat
+		UnitatOrganitzativa unitatOrganitzativaArrel = null;
+		for (UnitatOrganitzativa unitatOrganitzativa : unitatsOrganitzatives) {
+			if (codiUnitatOrganitzativa.equalsIgnoreCase(unitatOrganitzativa.getCodi())) {
+				unitatOrganitzativaArrel = unitatOrganitzativa;
+				break;
+			}
+		}
+		if (unitatOrganitzativaArrel != null) {
+			// Omple l'arbre d'unitats organitzatives
+			resposta.setArrel(getNodeArbreUnitatsOrganitzatives(unitatOrganitzativaArrel, unitatsOrganitzatives, null));
+			return resposta;
+
+		}
+		
+		return null;
+		
+	}
+	
+	
+	
 	public List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entidadId) throws SistemaExternException{
 		EntitatEntity entitat = entitatRepository.getOne(entidadId);
 		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),

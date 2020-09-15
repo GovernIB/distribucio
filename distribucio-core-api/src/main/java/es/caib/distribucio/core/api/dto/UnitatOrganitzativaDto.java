@@ -49,6 +49,8 @@ public class UnitatOrganitzativaDto implements Serializable {
 
 	private List<UnitatOrganitzativaDto> lastHistoricosUnitats;
 	
+	private String denominacioUnitatSuperior;
+	
 	
 	public boolean isObsoleta() {
 		if (estat.equals("E") || estat.equals("A") || estat.equals("T")) {
@@ -57,7 +59,16 @@ public class UnitatOrganitzativaDto implements Serializable {
 			return false;
 		}
 	}
-	
+	public String getCodiIDenominacioUnitatSuperior() {
+		return codiUnitatSuperior  + (denominacioUnitatSuperior != null ? " - " + denominacioUnitatSuperior : "");
+	}
+
+	public String getDenominacioUnitatSuperior() {
+		return denominacioUnitatSuperior;
+	}
+	public void setDenominacioUnitatSuperior(String denominacioUnitatSuperior) {
+		this.denominacioUnitatSuperior = denominacioUnitatSuperior;
+	}
 	public List<UnitatOrganitzativaDto> getLastHistoricosUnitats() {
 		return lastHistoricosUnitats;
 	}

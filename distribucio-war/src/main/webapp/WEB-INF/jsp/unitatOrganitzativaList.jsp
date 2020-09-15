@@ -5,6 +5,8 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <dis:blocIconaContingutNoms/>
+<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+<c:url value="/unitatajax/unitatsWithoutArrel" var="urlConsultaLlistat"/>
 <html>
 <head>
 	<title><spring:message code="unitat.list.titol"/></title>
@@ -20,6 +22,37 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<script>
+
+		function formatSelectUnitatItem(select, item) {
+			if (!item.id) {
+			    return item.text;
+			}
+			valida = true;
+			if (item.data) {
+				valida = item.data.estat =="V";
+			} else {
+				if ($(select).val() == item.id) {
+					// Consulta si no és vàlida per afegir la icona de incorrecta.
+					$.ajax({
+						url: $(select).data('urlInicial') +'/' + item.id,
+						async: false,
+						success: function(resposta) {
+							valida = resposta.estat == "V";
+						}
+					});	
+				}			
+			}
+			if (valida)
+				return item.text;
+			else
+				return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+		}
+	
+		function formatSelectUnitat(item) {
+			return formatSelectUnitatItem($('#codiUnitatSuperior'), item);
+		}
+
+	
 		$(document).ready(function() {
 			$('#netejarFiltre').click(function(e) {
 				$('#estat').val('VIGENTE').change();
@@ -39,14 +72,21 @@
 					<dis:inputText name="denominacio" inline="true" placeholderKey="unitat.list.filtre.denominacio"/>
 				</div>
 				<div class="col-md-4">
-					<dis:inputText name="codiUnitatSuperior" inline="true" placeholderKey="unitat.list.filtre.codiUnitatSuperior"/>
+					<dis:inputSuggest
+						name="codiUnitatSuperior" 
+						urlConsultaInicial="${urlConsultaInicial}" 
+						urlConsultaLlistat="${urlConsultaLlistat}" 
+						inline="true"
+						placeholderKey="unitat.list.filtre.unitatSuperior"
+						suggestValue="codi"
+						suggestText="nom"
+						optionTemplateFunction="formatSelectUnitat"/>
 				</div>
-				<div class="col-md-4">
-					<dis:inputText name="codiUnitatArrel" inline="true" placeholderKey="unitat.list.filtre.codiUnitatArrel"/>
-				</div>
+			</div>
+			<div class="row">
 				<div class="col-md-4">
 					<dis:inputSelect name="estat" netejar="false" optionEnum="UnitatOrganitzativaEstatEnumDto" placeholderKey="unitat.list.filtre.estat" emptyOption="true" inline="true"/>
-				</div>				
+				</div>		
 				<div class="col-md-4 pull-right">
 					<div class="pull-right">
 						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
@@ -54,7 +94,8 @@
 						<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 					</div>
 				</div>
-			</div>
+			</div>			
+
 		</form:form>
 
 		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-bordered table-striped">
@@ -86,9 +127,9 @@
 				</th>					
 				<th data-col-name="denominacio"><spring:message code="unitat.list.columna.denominacio"/></th>
 				
-				<th data-col-name="codiUnitatSuperior"><spring:message code="unitat.list.columna.codiUnitatSuperior"/></th>
+				<th data-col-name="codiIDenominacioUnitatSuperior"><spring:message code="unitat.list.columna.unitatPare"/></th>
 				
-				<th data-col-name="codiUnitatArrel"><spring:message code="unitat.list.columna.codiUnitatArrel"/></th>
+				<th data-col-name="codiUnitatArrel" data-orderable="false"><spring:message code="unitat.list.columna.unitatArrel"/></th>
 				
 				<th data-col-name="estat" data-template="#estatTemplate">
 					<spring:message code="unitat.list.columna.estat"/>

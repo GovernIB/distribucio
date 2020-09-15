@@ -60,7 +60,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true);
 		
 		return unitatsEntitat;
 	}
@@ -97,6 +97,25 @@ public class AjaxUnitatsController extends BaseAdminController {
 		
 		List<UnitatOrganitzativaDto> unitatsEntitat = bustiaService.findUnitatsSuperiors(entitatActual.getId(), decodedToUTF8);
 				
+		return unitatsEntitat;
+	}
+	
+	@RequestMapping(value = "/unitatsWithoutArrel/{text}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UnitatOrganitzativaDto> getUnitatsWithoutArrel(
+			HttpServletRequest request,
+			@PathVariable String text,
+			Model model) {
+		String decodedToUTF8 = null;
+		try {
+			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false);
+		
 		return unitatsEntitat;
 	}
 }
