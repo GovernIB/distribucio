@@ -26,6 +26,9 @@ public class DistribucioRegistreAnnex {
 	private String fitxerTipusMime;
 	private String fitxerArxiuUuid;
 	private List<DistribucioRegistreFirma> firmes;
+	private String metaDades;
+	
+	
 	
 	public String getId() {
 		return id;
@@ -105,5 +108,11 @@ public class DistribucioRegistreAnnex {
 	}
 	public void setNtiElaboracioEstat(String ntiElaboracioEstat) {
 		this.ntiElaboracioEstat = ntiElaboracioEstat;
+	}
+	public String getMetaDades() {
+		return metaDades;
+	}
+	public void setMetaDades(String metaDades) {
+		this.metaDades = metaDades;
 	}
 }

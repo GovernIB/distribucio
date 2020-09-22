@@ -6,6 +6,7 @@ package es.caib.distribucio.core.api.dto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classe que representa una anotació de registre amb id.
@@ -37,9 +38,17 @@ public class RegistreAnnexDto implements Serializable {
 	private Long registreId;
 	private boolean signaturaDetallsDescarregat;
 	
+	private Map<String, String> metaDadesMap;
+	
 	private static final long serialVersionUID = -8656873728034274066L;
 
 	
+	public Map<String, String> getMetaDadesMap() {
+		return metaDadesMap;
+	}
+	public void setMetaDadesMap(Map<String, String> metaDadesMap) {
+		this.metaDadesMap = metaDadesMap;
+	}
 	public boolean isSignaturaDetallsDescarregat() {
 		return signaturaDetallsDescarregat;
 	}

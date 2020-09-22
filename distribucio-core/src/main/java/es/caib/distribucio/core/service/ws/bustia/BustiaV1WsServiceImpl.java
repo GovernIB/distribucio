@@ -65,8 +65,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
 		Timer.Context context = timer.time();
-
 		
+
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
 		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;
 		int numAnnexos = (registreEntrada != null && registreEntrada.getAnnexos() != null) ? registreEntrada.getAnnexos().size() : 0;

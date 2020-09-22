@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.helper;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,6 +77,9 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.FirmaTipus;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -1125,6 +1129,17 @@ public class RegistreHelper {
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 					registreAnnex.getFitxerContingut());
 		}
+		
+		String metaDades = null;
+		if (registreAnnex.getMetaDades() != null) {
+			try {
+				metaDades = new ObjectMapper().writeValueAsString(registreAnnex.getMetaDades());
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
 				registreAnnex.getTitol(),
 				registreAnnex.getFitxerNom(),
@@ -1139,6 +1154,7 @@ public class RegistreHelper {
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
 				observacions(registreAnnex.getObservacions()).
+				metaDades(metaDades).
 				build();
 		annexEntity.updateGesdocDocumentId(gestioDocumentalId);
 		registreAnnexRepository.saveAndFlush(annexEntity);

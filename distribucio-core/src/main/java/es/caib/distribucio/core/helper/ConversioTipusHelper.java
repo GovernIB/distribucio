@@ -5,10 +5,13 @@ package es.caib.distribucio.core.helper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
@@ -96,6 +99,19 @@ public class ConversioTipusHelper {
 						} else {
 							target.setAmbFirma(false);
 						}
+						
+						if (source.getMetaDades() != null) {
+							try {
+								target.setMetaDadesMap(new ObjectMapper().readValue(source.getMetaDades(), Map.class));
+							} catch (Exception e) {
+								throw new RuntimeException(e);
+							}
+						}
+
+
+		
+						
+						
 						return target;
 					}
 				});

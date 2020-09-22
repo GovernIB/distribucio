@@ -196,7 +196,7 @@ public class RegistreServiceImpl implements RegistreService {
 			contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 
 			// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-			for (RegistreAnnex annexDto : registreAnotacio.getAnnexos()) {
+			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
 				if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
 						|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
 					registreAnotacio.getAnnexos().remove(annexDto);
