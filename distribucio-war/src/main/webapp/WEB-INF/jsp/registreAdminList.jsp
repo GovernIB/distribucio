@@ -271,7 +271,7 @@ $(document).ready(function() {
 						{{/if}}
 
 						{{if procesError != null}}
-							<span class="fa fa-warning text-danger" title="{{:procesError}}"></span>
+							<span class="fa fa-warning text-danger" title="{{html:procesError}}"></span>
 						{{/if}}
 					</script>
 				</th>
