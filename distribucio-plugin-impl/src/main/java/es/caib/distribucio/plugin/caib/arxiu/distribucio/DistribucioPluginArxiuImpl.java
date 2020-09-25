@@ -55,6 +55,8 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.plugins.arxiu.caib.ArxiuPluginCaib;
+import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
 
 /**
  * Implementació del plugin de distribució que utilitza
@@ -607,7 +609,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			boolean generarVersioImprimible = false;
 			
 			for (Firma firma : documentDetalls.getFirmes()) {
-				if (documentDetalls.getContingut().getTipusMime().equals("application/pdf") && (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET)) {
+				if (documentDetalls.getContingut().getTipusMime().equals("application/pdf") && (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET)
+						&& (!(getArxiuPlugin() instanceof ArxiuPluginFilesystem))) {
 					generarVersioImprimible = true;
 				}
 			}

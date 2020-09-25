@@ -24,6 +24,7 @@
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
 		<arxiu.api.version>2.0.5</arxiu.api.version>
+		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
 		<slf4j.version>1.5.11</slf4j.version>
 		<maven.test.skip>true</maven.test.skip>
 		<maven.compiler.source>1.7</maven.compiler.source>
