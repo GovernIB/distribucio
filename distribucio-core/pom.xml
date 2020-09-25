@@ -313,6 +313,7 @@
 				<configuration>
 					<ejbVersion>3.0</ejbVersion>
 				</configuration>
+				<version>2.3</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

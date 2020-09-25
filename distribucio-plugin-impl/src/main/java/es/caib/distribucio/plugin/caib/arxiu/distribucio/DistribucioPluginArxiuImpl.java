@@ -4,6 +4,7 @@
 package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -58,6 +58,7 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * Implementació del plugin de distribució que utilitza
@@ -1060,7 +1061,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		if (metaDades != null && !metaDades.isEmpty()) {
 			Map<String, String> metaDadesMap;
 			try {
-				metaDadesMap = new ObjectMapper().readValue(metaDades, Map.class);
+				metaDadesMap = new ObjectMapper().readValue(metaDades, new TypeReference<Map<String, String>>(){});
 
 				for (String key : metaDadesMap.keySet()) {
 					metaDadesAddicionals.put(key,

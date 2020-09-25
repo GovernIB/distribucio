@@ -32,7 +32,7 @@ import es.caib.distribucio.war.command.UnitatOrganitzativaFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-
+import org.apache.commons.collections.map.MultiValueMap;
 /**
  * Controlador per al manteniment de unitats organitzatives.
  * 
@@ -40,7 +40,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
  */
 @Controller
 @RequestMapping("/unitatOrganitzativa")
-@SuppressWarnings({ "deprecation", "unchecked" })
+@SuppressWarnings({"unchecked" })
 public class UnitatOrganitzativaController extends BaseAdminController{
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "UnitatOrganitzativaController.session.filtre";
@@ -70,10 +70,10 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		
 		
-		MultiMap splitMap = new MultiHashMap();
-		MultiMap mergeOrSubstMap = new MultiHashMap();
-		MultiMap mergeMap = new MultiHashMap();
-		MultiMap substMap = new MultiHashMap();
+		MultiMap splitMap = new MultiValueMap();
+		MultiMap mergeOrSubstMap = new MultiValueMap();
+		MultiMap mergeMap = new MultiValueMap();
+		MultiMap substMap = new MultiValueMap();
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsNew = new ArrayList<>();

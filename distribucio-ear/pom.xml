@@ -78,6 +78,7 @@
 					</modules>
 					<defaultJavaBundleDir>lib/</defaultJavaBundleDir>
 				</configuration>
+				<version>2.8</version>
 			</plugin>
 		</plugins>
 		<finalName>distribucio</finalName>
