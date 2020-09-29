@@ -159,6 +159,10 @@ body {
 									</a>
 								</li>
 								<li>
+									<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank">
+										<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari" />
+									</a>
+								<li>
 									<a href="<c:url value="/usuari/logout"/>">
 										<i class="fa fa-power-off"></i> <spring:message code="decorator.menu.accions.desconectar"/>
 									</a>
@@ -213,7 +217,7 @@ body {
 								</c:when>
 							</c:choose>
 						</div>
-						<a class="btn btn-success" href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank"><span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari"/></a>
+
 						<%--c:if test="${isRolActualUsuari or isRolActualAdministrador}">
 							<div class="btn-group">
 								<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="execucions.massives.boto.user"/>&nbsp;<span class="caret caret-white"></span></button>
