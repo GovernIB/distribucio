@@ -85,7 +85,7 @@
 					inline="true"
 					placeholderKey="unitat.list.filtre.codiUnitatSuperior"
 					suggestValue="codi"
-					suggestText="nom"
+					suggestText="codiAndNom"
 					minimumInputLength="0"
 					optionTemplateFunction="formatSelectUnitatSuperior"/>
 			</div>
@@ -97,7 +97,7 @@
 					inline="true" 
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id"
-					suggestText="nom" 
+					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
 		</div>

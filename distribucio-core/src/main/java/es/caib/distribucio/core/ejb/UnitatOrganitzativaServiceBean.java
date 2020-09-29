@@ -120,8 +120,8 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	
 	@Override
 	@RolesAllowed("tothom")
-	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel) {
-		return delegate.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel);
+	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties) {
+		return delegate.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel, nomesAmbBusties);
 	}
 	
 	@Override

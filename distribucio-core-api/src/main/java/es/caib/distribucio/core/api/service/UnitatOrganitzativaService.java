@@ -105,7 +105,7 @@ public interface UnitatOrganitzativaService {
 
 	List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entitatId);
 
-	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel);
+	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties);
 
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
 

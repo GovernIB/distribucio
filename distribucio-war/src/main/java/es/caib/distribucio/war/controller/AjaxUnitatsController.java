@@ -23,12 +23,12 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 
 /**
- * Controlador per a les consultes ajax dels usuaris normals.
+ * Controlador per a les consultes ajax dels unitats.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/unitatajax") // No podem posar "/ajaxuser" per mor del AjaxInterceptor
+@RequestMapping("/unitatajax") 
 public class AjaxUnitatsController extends BaseAdminController {
 	
 	@Autowired
@@ -60,10 +60,31 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, false);
 		
 		return unitatsEntitat;
 	}
+	
+	@RequestMapping(value = "/nomesUnitatsAmbBusties/{text}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UnitatOrganitzativaDto> getOnlyUnitatsWithBustiesDefined(
+			HttpServletRequest request,
+			@PathVariable String text,
+			Model model) {
+		String decodedToUTF8 = null;
+		try {
+			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, true);
+		
+		return unitatsEntitat;
+	}
+	
+	
 	
 	@RequestMapping(value = "/unitatSuperior/{unitatSuperiorCodi}", method = RequestMethod.GET)
 	@ResponseBody
@@ -114,7 +135,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false, false);
 		
 		return unitatsEntitat;
 	}

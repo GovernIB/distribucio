@@ -146,7 +146,7 @@ $(document).ready(function() {
 			</div>				
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="unitatOrganitzativa" 
 					urlConsultaInicial="${urlConsultaInicial}" 

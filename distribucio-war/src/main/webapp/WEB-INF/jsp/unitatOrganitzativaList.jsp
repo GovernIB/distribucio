@@ -79,7 +79,7 @@
 						inline="true"
 						placeholderKey="unitat.list.filtre.unitatSuperior"
 						suggestValue="codi"
-						suggestText="nom"
+						suggestText="codiAndNom"
 						optionTemplateFunction="formatSelectUnitat"/>
 				</div>
 			</div>

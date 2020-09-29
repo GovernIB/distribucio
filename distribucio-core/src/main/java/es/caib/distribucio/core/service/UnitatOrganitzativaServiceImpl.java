@@ -221,14 +221,32 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(
 			String entitatCodi, 
 			String filtre, 
-			boolean ambArrel) {
+			boolean ambArrel, 
+			boolean nomesAmbBusties) {
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		
+		List<UnitatOrganitzativaEntity> unitats = null;
+		
+		if (nomesAmbBusties) {
+			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBusties(
+					entitat.getCodiDir3(),
+					filtre == null || filtre.isEmpty(), 
+					filtre != null ? filtre : "",
+					ambArrel);
+			
+		} else {
+			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
+					entitat.getCodiDir3(),
+					filtre == null || filtre.isEmpty(), 
+					filtre != null ? filtre : "",
+					ambArrel);
+		}
+
+		
+		
+		
 		return conversioTipusHelper.convertirList(
-				unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
-						entitat.getCodiDir3(),
-						filtre == null || filtre.isEmpty(), 
-						filtre != null ? filtre : "",
-						ambArrel),
+				unitats,
 				UnitatOrganitzativaDto.class);
 	}
 	
