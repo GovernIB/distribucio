@@ -154,7 +154,7 @@ $(document).ready(function() {
 					inline="true" 
 					placeholderKey="contingut.admin.filtre.uo"
 					suggestValue="codi"
-					suggestText="nom" 
+					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" />
 			</div>
 			<div class="col-md-3" style="margin-bottom: 15px">
