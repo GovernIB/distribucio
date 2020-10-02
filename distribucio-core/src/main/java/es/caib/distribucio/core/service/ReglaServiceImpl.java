@@ -80,7 +80,9 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getAssumpteCodi(),
 				regla.getProcedimentCodi(),
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
-				ordre).build();
+				ordre).
+				descripcio(regla.getDescripcio()).
+				build();
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
 			entity.updatePerTipusBackoffice(

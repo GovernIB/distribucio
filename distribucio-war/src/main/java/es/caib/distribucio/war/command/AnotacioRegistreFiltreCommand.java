@@ -19,7 +19,7 @@ import es.caib.distribucio.war.helper.ConversioTipusHelper;
  */
 public class AnotacioRegistreFiltreCommand {
 
-	private String unitatOrganitzativa;
+	private Long unitatId;
 	private String bustia;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
@@ -29,6 +29,8 @@ public class AnotacioRegistreFiltreCommand {
 	private boolean nomesAmbErrors;
 	private String backCodi;
 
+	
+	
 
 	public String getNumeroOrigen() {
 		return numeroOrigen;
@@ -42,11 +44,11 @@ public class AnotacioRegistreFiltreCommand {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public String getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
+	public Long getUnitatId() {
+		return unitatId;
 	}
-	public void setUnitatOrganitzativa(String unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
 	}
 	public String getBustia() {
 		return bustia;

@@ -18,7 +18,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
  */
 public class AnotacioRegistreFiltreDto implements Serializable {
 
-	private String unitatOrganitzativa;
+	private Long unitatId;
 	private String bustia;
 	private Date dataCreacioInici;
 	private Date dataCreacioFi;
@@ -49,15 +49,12 @@ public class AnotacioRegistreFiltreDto implements Serializable {
 		this.nom = nom;
 	}
 
-
-	public String getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
+	public Long getUnitatId() {
+		return unitatId;
 	}
-
-	public void setUnitatOrganitzativa(String unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
 	}
-
 	public String getBustia() {
 		return bustia;
 	}

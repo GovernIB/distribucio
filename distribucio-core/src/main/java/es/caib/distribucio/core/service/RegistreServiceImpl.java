@@ -52,7 +52,6 @@ import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
-import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
@@ -81,6 +80,7 @@ import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -101,6 +101,7 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -151,6 +152,10 @@ public class RegistreServiceImpl implements RegistreService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;	
+	
+	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
@@ -290,6 +295,9 @@ public class RegistreServiceImpl implements RegistreService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
 		logger.debug(">>> Filtre: " + filtre);
 		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
 				entitat, 
@@ -297,8 +305,8 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getNom() != null ? filtre.getNom().trim() : "",
 				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
 				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : "",
-				(filtre.getUnitatOrganitzativa() == null),
-				filtre.getUnitatOrganitzativa() != null ? filtre.getUnitatOrganitzativa() : "",
+				(unitat == null),
+				unitat,
 				(filtre.getBustia() == null),
 				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
 				(dataInici == null),
@@ -364,6 +372,9 @@ public class RegistreServiceImpl implements RegistreService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+		
 		logger.debug(">>> Filtre: " + filtre);
 		List<Long> registres = registreRepository.findIdsByFiltre(
 				entitat, 
@@ -371,8 +382,8 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getNom() != null? filtre.getNom().trim() : "",
 				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
 				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : "",
-				(filtre.getUnitatOrganitzativa() == null),
-				filtre.getUnitatOrganitzativa(),
+				(unitat == null),
+				unitat,
 				(filtre.getBustia() == null),
 				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
 				(dataInici == null),

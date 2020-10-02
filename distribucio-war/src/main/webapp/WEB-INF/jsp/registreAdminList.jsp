@@ -148,12 +148,12 @@ $(document).ready(function() {
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
-					name="unitatOrganitzativa" 
+					name="unitatId"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
 					placeholderKey="contingut.admin.filtre.uo"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" />
 			</div>

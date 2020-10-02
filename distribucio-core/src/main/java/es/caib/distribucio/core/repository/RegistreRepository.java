@@ -18,6 +18,7 @@ import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -159,7 +160,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    r.entitat = :entitat " +
 			"	and (:esNullNom = true or lower(r.nom) like lower('%'||:nom||'%')) " +
 			"	and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"	and (:esNullUnitatOrganitzativa = true or r.unitatAdministrativa = :unitatOrganitzativa) " +
+			"	and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
 			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
 			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
 			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
@@ -173,7 +174,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNumeroOrigen") boolean esNumeroOrigen,
 			@Param("numeroOrigen") String numeroOrigen,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-			@Param("unitatOrganitzativa") String unitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("esNullBustia") boolean esNullBustia,
 			@Param("bustia") Long bustia,
 			@Param("esNullDataInici") boolean esNullDataInici,
@@ -196,7 +197,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    r.entitat = :entitat " +
 			"	and (:esNullNom = true or lower(r.nom) like lower('%'||:nom||'%')) " +
 			"	and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"	and (:esNullUnitatOrganitzativa = true or r.unitatAdministrativa = :unitatOrganitzativa) " +
+			"	and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
 			"   and (:esNullBustia = true or r.pare.id = :bustia) " +
 			"	and (:esNullDataInici = true or r.data >= :dataInici) " +
 			"	and (:esNullDataFi = true or r.data <= :dataFi) " +
@@ -210,7 +211,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNumeroOrigen") boolean esNumeroOrigen,
 			@Param("numeroOrigen") String numeroOrigen,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-			@Param("unitatOrganitzativa") String unitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("esNullBustia") boolean esNullBustia,
 			@Param("bustia") Long bustia,
 			@Param("esNullDataInici") boolean esNullDataInici,
