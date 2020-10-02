@@ -5,10 +5,14 @@ package es.caib.distribucio.core.helper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
@@ -22,7 +26,6 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
-
 /**
  * Helper per a convertir entre diferents formats de documents.
  * 
@@ -96,6 +99,20 @@ public class ConversioTipusHelper {
 						} else {
 							target.setAmbFirma(false);
 						}
+						
+						if (source.getMetaDades() != null) {
+							try {
+								Map<String, String> metaDadesMap = new ObjectMapper().readValue(source.getMetaDades(), new TypeReference<Map<String, String>>(){});
+								target.setMetaDadesMap(metaDadesMap);
+							} catch (Exception e) {
+								throw new RuntimeException(e);
+							}
+						}
+
+
+		
+						
+						
 						return target;
 					}
 				});

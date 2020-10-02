@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -125,7 +126,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 		tramitBte.setFirmadaDigitalmente(false);
 		
 		// Informació continguda en els annexos
-		for (RegistreAnnex annex : registre.getAnnexos()) {
+		for (RegistreAnnexDto annex : registre.getAnnexos()) {
 			if ("Asiento.xml".equals(annex.getFitxerNom())
 					|| "DatosPropios.xml".equals(annex.getFitxerNom()))
 				this.extreureDadesAnnex(registre, tramitBte, annex);
@@ -146,7 +147,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 	 * 			Objexte annex del registre amb la informació per accedir al fitxer físic
 	 * @throws Exception
 	 */
-	private void extreureDadesAnnex(RegistreDto registre, TramiteBTE tramitBte, RegistreAnnex annex) throws Exception {
+	private void extreureDadesAnnex(RegistreDto registre, TramiteBTE tramitBte, RegistreAnnexDto annex) throws Exception {
 
 		try {
 			ObjectFactory bantelObjectFactory = new ObjectFactory();
@@ -297,7 +298,7 @@ public class BantelBackofficeWsImpl implements BantelBackofficeWs {
 		// Recorre tots els annexos i afegeix al tràmit BTE aquels que estiguin llistat a l' "Asiento.xml"
 		DocumentosBTE documentsBte = new DocumentosBTE(); 
 		DocumentoBTE documentBte;
-		for (RegistreAnnex annex : registre.getAnnexos()) {
+		for (RegistreAnnexDto annex : registre.getAnnexos()) {
 			nomFitxer = annex.getFitxerNom();
 			if (documentsMap.containsKey(nomFitxer)) {
 				documentBte = new DocumentoBTE();

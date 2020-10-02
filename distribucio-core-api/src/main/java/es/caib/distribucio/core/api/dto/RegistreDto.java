@@ -76,7 +76,7 @@ public class RegistreDto extends ContingutDto {
 	private String solicita;
 	private List<RegistreInteressat> interessats;
 	private String interessatsNoms;
-	private List<RegistreAnnex> annexos;
+	private List<RegistreAnnexDto> annexos;
 	private RegistreAnnexDto justificant;
 	
 	private String justificantArxiuUuid;
@@ -482,10 +482,10 @@ public class RegistreDto extends ContingutDto {
 	public void setInteressats(List<RegistreInteressat> interessats) {
 		this.interessats = interessats;
 	}
-	public List<RegistreAnnex> getAnnexos() {
+	public List<RegistreAnnexDto> getAnnexos() {
 		return annexos;
 	}
-	public void setAnnexos(List<RegistreAnnex> annexos) {
+	public void setAnnexos(List<RegistreAnnexDto> annexos) {
 		this.annexos = annexos;
 	}
 

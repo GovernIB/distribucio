@@ -35,6 +35,10 @@ table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
 table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
 	cursor: pointer;
 }
+table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
+    color: #333;
+}
+	
 </style>
 	
 <script>
@@ -142,15 +146,15 @@ $(document).ready(function() {
 			</div>				
 			<div class="col-md-3" style="margin-bottom: 15px">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
-					name="unitatOrganitzativa" 
+					name="unitatId"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
 					placeholderKey="contingut.admin.filtre.uo"
-					suggestValue="codi"
-					suggestText="nom" 
+					suggestValue="id"
+					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" />
 			</div>
 			<div class="col-md-3" style="margin-bottom: 15px">
@@ -214,9 +218,7 @@ $(document).ready(function() {
 		</div>
 	</script>	
 
-	
-
-	
+	<script id="rowhrefTemplate" type="text/x-jsrender">./contingutAdmin/{{:id}}/detall</script>
 	<table
 		id="taulaDades"
 		data-toggle="datatable"
@@ -226,7 +228,10 @@ $(document).ready(function() {
 		data-selection-enabled="true"
 		data-default-order="5"
 		data-default-dir="desc"
-		class="table table-bordered table-striped">
+		class="table table-bordered table-striped"
+		data-rowhref-template="#rowhrefTemplate" 
+		data-rowhref-toggle="modal"
+		data-rowhref-maximized="true">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
@@ -266,7 +271,7 @@ $(document).ready(function() {
 						{{/if}}
 
 						{{if procesError != null}}
-							<span class="fa fa-warning text-danger" title="{{:procesError}}"></span>
+							<span class="fa fa-warning text-danger" title="{{html:procesError}}"></span>
 						{{/if}}
 					</script>
 				</th>

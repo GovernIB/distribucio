@@ -1130,9 +1130,9 @@ public class BustiaServiceImpl implements BustiaService {
 				+ "entitatId=" + entitatId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
-				true,
 				false,
-				false);
+				false,
+				true);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		return cacheHelper.countElementsPendentsBustiesUsuari(
 				entitat,

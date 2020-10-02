@@ -473,6 +473,7 @@
 						</webResource>
 					</webResources>
 				</configuration>
+				<version>2.2</version>
 			</plugin>
 		</plugins>
 		<finalName>distribucio</finalName>

@@ -25,7 +25,9 @@
 					elementPerEvaluar = $(event.target.tagName);
 				}
 				var obrirNovaFinestra = false;
-				if ((elementPerEvaluar.attr('href') || elementPerEvaluar.data('href')) && elementPerEvaluar.data('toggle') == 'modal') {
+				var selectionEnabled = $(event.currentTarget.closest('table')).attr("data-selection-enabled")=='true';
+				if ((elementPerEvaluar.attr('href') || elementPerEvaluar.data('href')) && elementPerEvaluar.data('toggle') == 'modal' 
+					&& (!selectionEnabled || (selectionEnabled && $(event.target).closest('td').index()!=0))) {
 					obrirNovaFinestra = true;
 				}
 				if (obrirNovaFinestra) {

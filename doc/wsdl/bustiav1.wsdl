@@ -83,6 +83,20 @@
 <xs:element minOccurs="0" name="fitxerTipusMime" type="xs:string" />
 <xs:element minOccurs="0" name="id" type="xs:long" />
 <xs:element minOccurs="0" name="localitzacio" type="xs:string" />
+<xs:element name="metaDades">
+<xs:complexType>
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" name="key" type="xs:string" />
+<xs:element minOccurs="0" name="value" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
 <xs:element minOccurs="0" name="observacions" type="xs:string" />
 <xs:element minOccurs="0" name="sicresTipusDocument" type="xs:string" />
 <xs:element minOccurs="0" name="timestamp" type="xs:string" />

@@ -31,12 +31,12 @@ import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
-import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -169,7 +169,7 @@ public class ContingutHelper {
 			contextToContingutDtoconvertirToRegistreDto.stop();
 			
 			// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-			for (RegistreAnnex annexDto : registreDto.getAnnexos()) {
+			for (RegistreAnnexDto annexDto : registreDto.getAnnexos()) {
 				if ((registreDto.getJustificant() != null && registreDto.getJustificant().getId().equals(annexDto.getId()))
 						|| registreDto.getJustificantArxiuUuid() != null && registreDto.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
 					registreDto.getAnnexos().remove(annexDto);

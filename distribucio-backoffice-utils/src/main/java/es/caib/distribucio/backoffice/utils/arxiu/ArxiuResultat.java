@@ -92,7 +92,7 @@ public class ArxiuResultat {
 	/** Obté el resultat per a l'identificador d'arxiu abans de moure l'annex. 
 	 * 
 	 * @param uuid Identificador de l'annex a l'arxiu abans de moure'l.
-	 * @return
+	 * @return ArxiuResultatAnnex
 	 */
 	public ArxiuResultatAnnex getResultatAnnex(String uuid) {
 		ArxiuResultatAnnex resultatAnnex = null;

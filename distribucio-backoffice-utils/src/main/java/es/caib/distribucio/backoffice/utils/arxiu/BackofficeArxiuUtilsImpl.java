@@ -449,7 +449,7 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 	}
 	
 
-	/** Constructor on es fixa la referència a l' {@IArxiuPlugin}
+	/** Constructor on es fixa la referència a l' IArxiuPlugin
 	 * 
 	 * @param iArxiuPlugin
 	 */

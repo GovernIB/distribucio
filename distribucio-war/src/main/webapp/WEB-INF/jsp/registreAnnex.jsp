@@ -78,6 +78,32 @@
 			</c:if>
 		</td>
 	</tr>
+	
+	
+	<c:forEach var="metaDada" items="${annex.metaDadesMap}">
+		<tr>
+			<td><strong>
+				<c:choose>
+					<c:when test="${metaDada.key=='eni:resolucion'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.resolucion"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:profundidad_color'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.profundidad_color"/>
+					</c:when>
+					<c:otherwise>
+						${fn:toUpperCase(metaDada.key)}
+					</c:otherwise>
+				</c:choose>
+			</strong></td>
+			<td>
+				${metaDada.value}
+			</td>
+		</tr>
+	</c:forEach>
+	
+	
+	
+	
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>

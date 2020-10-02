@@ -4,6 +4,7 @@
 package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
@@ -55,7 +58,7 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
-import es.caib.plugins.arxiu.caib.ArxiuPluginCaib;
+import com.fasterxml.jackson.core.type.TypeReference;
 import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
 
 /**
@@ -417,7 +420,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
 							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
 							estatDocument,
-							documentEniRegistrableDto),
+							documentEniRegistrableDto,
+							annex.getMetaDades()),
 					identificadorPare);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
@@ -737,7 +741,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			DocumentNtiEstadoElaboracionEnumDto ntiEstatElaboracio,
 			DocumentNtiTipoDocumentalEnumDto ntiTipusDocumental,
 			DocumentEstat estat,
-			DocumentEniRegistrableDto documentEniRegistrableDto) {
+			DocumentEniRegistrableDto documentEniRegistrableDto,
+			String metaDades) {
 		Document document = new Document();
 		document.setNom(nom);
 		document.setIdentificador(identificador);
@@ -1052,6 +1057,27 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		metaDadesAddicionals.put("eni:codigo_oficina_registro", documentEniRegistrableDto.getOficinaCodi());
 		metaDadesAddicionals.put("eni:tipo_asiento_registral", new Integer("0"));
+		
+		
+		
+		if (metaDades != null && !metaDades.isEmpty()) {
+			Map<String, String> metaDadesMap;
+			try {
+				metaDadesMap = new ObjectMapper().readValue(metaDades, new TypeReference<Map<String, String>>(){});
+
+				for (String key : metaDadesMap.keySet()) {
+					metaDadesAddicionals.put(key,
+							metaDadesMap.get(key));
+				}
+
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+
+
+
 		
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	

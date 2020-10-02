@@ -58,8 +58,12 @@
 		return formatSelectUnitatItem($('#codiUnitatSuperior'), item);
 	}
 
-	function formatSelectUnitat(item) {
+	function formatSelectUnitatFiltre(item) {
 		return formatSelectUnitatItem($('#unitatIdFiltre'), item);
+	}
+
+	function formatSelectUnitat(item) {
+		return formatSelectUnitatItem($('#unitatId'), item);
 	}
 	
 
@@ -99,7 +103,7 @@
 	
 		        // setting selected bustia name and unitat
 		        bustiaNomSel.val(bustiaDto.nom);
-		        var newOption = new Option(bustiaDto.unitatOrganitzativa.nom, bustiaDto.unitatOrganitzativa.id, false, true);
+		        var newOption = new Option(bustiaDto.unitatOrganitzativa.codiAndNom, bustiaDto.unitatOrganitzativa.id, false, true);
 		        unitatSel.append(newOption).trigger('change');
 	
 		        // showing activate or desactivate button depending on whether bustia is active or not
@@ -279,7 +283,7 @@
 					inline="true"
 					placeholderKey="unitat.list.filtre.codiUnitatSuperior"
 					suggestValue="codi"
-					suggestText="nom"
+					suggestText="codiAndNom"
 					minimumInputLength="0"
 					optionTemplateFunction="formatSelectUnitatSuperior"/>
 			</div>
@@ -291,8 +295,8 @@
 					inline="true"
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id" 
-					suggestText="nom"
-					optionTemplateFunction="formatSelectUnitat"/>
+					suggestText="codiAndNom"
+					optionTemplateFunction="formatSelectUnitatFiltre"/>
 			</div>
 		</div>
 		<div class="row">
@@ -385,9 +389,10 @@
 							inline="false"
 							placeholderKey="bustia.form.camp.unitat"
 							suggestValue="id"
-							suggestText="nom"
+							suggestText="codiAndNom"
 							textKey="bustia.form.camp.unitat"
-							required="true" />
+							required="true" 
+							optionTemplateFunction="formatSelectUnitat"/>
 						<br/>
 						<br/>
 						<dis:inputText name="nom" textKey="bustia.form.camp.nom" required="true"/>

@@ -28,19 +28,16 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    uo.codiDir3Entitat = :codiDir3Entitat " +
 			"and (:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:codi||'%')) " +
 			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) " + 
-			"and (:esNullCodiUnitatSuperior = true or lower(uo.codiUnitatSuperior) like lower('%'||:codiUnitatSuperior||'%')) " + 
-			"and (:esNullCodiUnitatArrel = true or lower(uo.codiUnitatArrel) like lower('%'||:codiUnitatArrel||'%')) " + 
+			"and (:esFiltreUnitatSuperiorBuit = true or uo.codi in (:codisUnitatsDecendants)) " + 
 			"and (:esNullEstat = true or uo.estat = :estat) ")
-	Page<UnitatOrganitzativaEntity> findByCodiDir3AndUnitatDenominacioFiltrePaginat(
+	Page<UnitatOrganitzativaEntity> findByFiltrePaginat(
 			@Param("codiDir3Entitat") String codiDir3Entitat,
 			@Param("esNullFiltreCodi") boolean esNullFiltreCodi,
 			@Param("codi") String codi, 
 			@Param("esNullFiltreDenominacio") boolean esNullFiltreDenominacio,
 			@Param("denominacio") String denominacio,	
-			@Param("esNullCodiUnitatSuperior") boolean esNullCodiUnitatSuperior,
-			@Param("codiUnitatSuperior") String codiUnitatSuperior,
-			@Param("esNullCodiUnitatArrel") boolean esNullCodiUnitatArrel,
-			@Param("codiUnitatArrel") String codiUnitatArrel,
+			@Param("esFiltreUnitatSuperiorBuit") boolean esFiltreUnitatSuperiorBuit,
+			@Param("codisUnitatsDecendants") List<String> codisUnitatsDecendants,
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") String estat,
 			Pageable pageable);
@@ -50,12 +47,30 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    UnitatOrganitzativaEntity uo " +
 			"where " +
 			"    uo.codiDir3Entitat = :codiDir3Entitat " +
+			"and (:ambArrel = true or uo.codi != :codiDir3Entitat) " +
 			"and ((:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
 			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) ")
 	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
 			@Param("codiDir3Entitat") String codiDir3Entitat,
 			@Param("esNullFiltre") boolean esNullFiltreCodi,
-			@Param("filtre") String filtre);
+			@Param("filtre") String filtre,
+			@Param("ambArrel") boolean ambArrel);
+	
+	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiDir3Entitat = :codiDir3Entitat " +
+			"and (:ambArrel = true or uo.codi != :codiDir3Entitat) " +
+			"and ((:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
+			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) " +
+			 "and uo.id in (select distinct b.unitatOrganitzativa.id from BustiaEntity b)")
+	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBusties(
+			@Param("codiDir3Entitat") String codiDir3Entitat,
+			@Param("esNullFiltre") boolean esNullFiltreCodi,
+			@Param("filtre") String filtre,
+			@Param("ambArrel") boolean ambArrel);
+	
 	
 	
 	UnitatOrganitzativaEntity findByCodi(String codi);

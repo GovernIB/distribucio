@@ -5,6 +5,7 @@ package es.caib.distribucio.core.api.registre;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -31,9 +32,20 @@ public class RegistreAnnex {
 	private List<Firma> firmes;
 	private String timestamp;//is not set
 	private String validacioOCSP;//255
+	
+	private Map<String, String> metaDades;
+	
+
+	
 
 	public Long getId() {
 		return id;
+	}
+	public Map<String, String> getMetaDades() {
+		return metaDades;
+	}
+	public void setMetaDades(Map<String, String> metaDades) {
+		this.metaDades = metaDades;
 	}
 	public void setId(Long id) {
 		this.id = id;

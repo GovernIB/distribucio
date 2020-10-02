@@ -80,6 +80,11 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	private String firmaCsv;
 	
 	
+	@Column(name = "meta_dades", length = 4000)
+	private String metaDades;
+	
+
+
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "registre_id")
 	@ForeignKey(name = "dis_annex_registre_fk")
@@ -150,6 +155,9 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	}
 	public RegistreEntity getRegistre() {
 		return registre;
+	}
+	public String getMetaDades() {
+		return metaDades;
 	}
 	public void updateRegistre(RegistreEntity registre) {
 		this.registre = registre;
@@ -276,6 +284,10 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 		}
 		public Builder gesdocDocumentId(String gesdocDocumentId) {
 			built.gesdocDocumentId = gesdocDocumentId;
+			return this;
+		}
+		public Builder metaDades(String metaDades) {
+			built.metaDades = metaDades;
 			return this;
 		}
 		public RegistreAnnexEntity build() {

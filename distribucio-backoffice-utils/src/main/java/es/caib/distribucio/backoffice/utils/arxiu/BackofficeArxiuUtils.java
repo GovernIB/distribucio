@@ -54,8 +54,6 @@ public interface BackofficeArxiuUtils {
 	public void setArxiuPlugin(IArxiuPlugin iArxiuPlugin);
 
 	/** Consulta la referència al plugin d'Arxiu amb què es realitzaran les crides i comprovacions
-	 * .
-	 * @return
 	 */
 	public IArxiuPlugin getArxiuPlugin();
 
@@ -67,7 +65,7 @@ public interface BackofficeArxiuUtils {
 	
 	/** Consulta el nom de la carpeta on es mouran els annexos. Si no es fixa la propietat llavors els annexos es mouran a la carpeta arrel de l'expedient.
 	 * 
-	 * @return
+	 * @return nom de la carpeta on es mouran els annexos
 	 */
 	public String getCarpeta();
 	

@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -29,6 +31,8 @@ import org.junit.Test;
 import es.caib.distribucio.ws.v1.bustia.BustiaV1;
 import es.caib.distribucio.ws.v1.bustia.Firma;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnnex;
+import es.caib.distribucio.ws.v1.bustia.RegistreAnnex.MetaDades;
+import es.caib.distribucio.ws.v1.bustia.RegistreAnnex.MetaDades.Entry;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnotacio;
 import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 /**
@@ -64,10 +68,17 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 3;
+	private static final int N_ANNEXOS = 1;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indca si adjuntar els documents tècnics de sistra2 com annexos
+	
+	
+	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
+	    put("eni:resolucion", "12");
+	    put("eni:profundidad_color", "6400");
+	}};
+
 	
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
 	 * @throws Exception */
@@ -126,6 +137,8 @@ public class BustiaV1Test {
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(true);
+	        anotacio.setObservacions("aaaaaaaaaa");
+	        
 	        int nCaracters = 5000;
 	        StringBuilder textGran = new StringBuilder("Text gran " + i + ": ");
 	        while (textGran.length() < nCaracters)
@@ -231,7 +244,7 @@ public class BustiaV1Test {
 	        
 	        
 	        
-	        afegirInteressats(anotacio);
+//	        afegirInteressats(anotacio);
 	        
 	        try {
 	    		getBustiaServicePort().enviarAnotacioRegistreEntrada(
@@ -276,6 +289,18 @@ public class BustiaV1Test {
         if (firmes != null) {
         	annex.getFirmes().addAll(firmes);
         }
+        
+		MetaDades metaDades = new MetaDades();
+		for (String key : metaDadesMap.keySet()) {
+
+			Entry entry = new Entry();
+			entry.setKey(key);
+			entry.setValue(metaDadesMap.get(key));
+			metaDades.getEntry().add(entry);
+		}
+        annex.setMetaDades(metaDades);
+        
+        
         return annex;
 	}
 
