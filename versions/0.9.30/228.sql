@@ -1,13 +1,3 @@
--- #155: Actualitzar interficie d'integració amb registre per tractar metadades de digitalització 
-
-ALTER TABLE DIS_REGISTRE_ANNEX
-ADD (
-    META_DADES VARCHAR2(4000)
-);
-
-
--- #228: Error en altes d'anotacions amb observacions de més de 50 caràcters
-
 ALTER TABLE DIS_ALERTA MODIFY 
 (
   TEXT                 	VARCHAR2(256 CHAR),
