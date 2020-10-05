@@ -386,7 +386,7 @@
 									var itemId = item.id.substring("row_".length);
 									$taula.trigger(
 											'dragupdate.dataTable',
-											[itemId, $(item).index()]);
+											[itemId, $(item).index()-1]);
 									$taula.dataTable().fnDraw();
 						    }
 						});

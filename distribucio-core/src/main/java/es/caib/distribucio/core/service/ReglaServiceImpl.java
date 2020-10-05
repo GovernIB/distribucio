@@ -193,6 +193,12 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaId);
 		
 		
+		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(regla.getEntitat());
+		regles.remove(regla);
+		int i = 0;
+		for (ReglaEntity r : regles) {
+			r.updateOrdre(i++);
+		}
 		
 		
 		// cannot remove busties containing any anotacions
@@ -382,28 +388,21 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 
 
-
 	private void canviPosicio(
 			ReglaEntity regla,
 			int posicio) {
 		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(
 				regla.getEntitat());
-		if (posicio >= 0 && posicio < regles.size()) {
-			if (posicio < regla.getOrdre()) {
-				for (ReglaEntity reg: regles) {
-					if (reg.getOrdre() >= posicio && reg.getOrdre() < regla.getOrdre()) {
-						reg.updateOrdre(reg.getOrdre() + 1);
-					}
-				}
-			} else if (posicio > regla.getOrdre()) {
-				for (ReglaEntity reg: regles) {
-					if (reg.getOrdre() > regla.getOrdre() && reg.getOrdre() <= posicio) {
-						reg.updateOrdre(reg.getOrdre() - 1);
-					}
-				}
+		
+		if (posicio != regles.indexOf(regla)) {
+			regles.remove(regla);
+			regles.add(posicio, regla);
+			int i = 0;
+			for (ReglaEntity r : regles) {
+				r.updateOrdre(i++);
 			}
-			regla.updateOrdre(posicio);
 		}
+
 	}
 
 	private ReglaDto toReglaDto(ReglaEntity regla) {
