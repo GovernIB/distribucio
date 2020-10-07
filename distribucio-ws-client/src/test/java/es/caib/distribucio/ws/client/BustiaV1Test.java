@@ -298,7 +298,7 @@ public class BustiaV1Test {
 			entry.setValue(metaDadesMap.get(key));
 			metaDades.getEntry().add(entry);
 		}
-        annex.setMetaDades(metaDades);
+        //annex.setMetaDades(metaDades);
         
         
         return annex;

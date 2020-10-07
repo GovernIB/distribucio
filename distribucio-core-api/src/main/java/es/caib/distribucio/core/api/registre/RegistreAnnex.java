@@ -33,10 +33,7 @@ public class RegistreAnnex {
 	private String timestamp;//is not set
 	private String validacioOCSP;//255
 	
-	private Map<String, String> metaDades;
-	
-
-	
+	private Map<String, String> metaDades;	
 
 	public Long getId() {
 		return id;
