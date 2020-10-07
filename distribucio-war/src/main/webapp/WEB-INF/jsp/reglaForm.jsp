@@ -18,6 +18,42 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script type="text/javascript">
+
+
+
+
+function formatSelectUnitatItem(select, item) {
+	if (!item.id) {
+	    return item.text;
+	}
+	valida = true;
+	if (item.data) {
+		valida = item.data.estat =="V";
+	} else {
+		if ($(select).val() == item.id) {
+			// Consulta si no és vàlida per afegir la icona de incorrecta.
+			$.ajax({
+				url: $(select).data('urlInicial') +'/' + item.id,
+				async: false,
+				success: function(resposta) {
+					valida = resposta.estat == "V";
+				}
+			});	
+		}			
+	}
+	if (valida)
+		return item.text;
+	else
+		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+}
+
+
+function formatSelectUnitat(item) {
+	return formatSelectUnitatItem($('#unitatId'), item);
+}
+
+
+
 $(document).ready(function() {
 	$('#tipus').on('change', function () {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
@@ -105,8 +141,9 @@ $(document).ready(function() {
 					inline="false" 
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id"
-					suggestText="nom"
-					required="true" />
+					suggestText="codiAndNom"
+					required="true" 
+					optionTemplateFunction="formatSelectUnitat"/>
 				<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="false"/>
 				<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" required="false" comment="regla.form.camp.procediment.codi.info"/>
 			</div>
