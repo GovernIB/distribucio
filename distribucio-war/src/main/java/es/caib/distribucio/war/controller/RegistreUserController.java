@@ -195,6 +195,9 @@ public class RegistreUserController extends BaseUserController {
 							registreId,
 							annexId));
 			model.addAttribute("registreId", registreId);
+			
+			model.addAttribute("isUsuariActualAdministration", entitatActual.isUsuariActualAdministration());
+			
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de firma", ex);
 			model.addAttribute("missatgeError", ex.getMessage());

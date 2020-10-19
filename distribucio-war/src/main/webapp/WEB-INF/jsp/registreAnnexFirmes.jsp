@@ -7,74 +7,80 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 
-<c:forEach var="firma" items="${annex.firmes}" varStatus="status">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<spring:message code="registre.annex.detalls.camp.firma"/> ${status.index + 1}
-				<c:if test="${firma.autofirma}">
-					(<spring:message code="registre.annex.detalls.camp.firma.autoFirma"/> 
-						<span class="fa fa-info-circle" title="<spring:message code="registre.annex.detalls.camp.firma.autoFirma.info" />"></span>)
-				</c:if>
-			</h3>
-		</div>
-		<table class="table table-bordered">
-		<tbody>
+
+<table class="table teble-striped table-bordered">
+<thead>
+	<tr>
+		<th><spring:message code="registre.annex.detalls.camp.firma"/></th>
+		
+		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/></th>
+		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/></th>
+		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/></th>
+		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
+		<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
+			<th><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></th>
+		</c:if>
+		<c:if test="${not empty firma.csvRegulacio}">
+			<th><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></th>
+		</c:if>	
+		<c:if test="${isUsuariActualAdministration}">
+			<th><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></th>
+		</c:if>	
+		<c:if test="${isUsuariActualAdministration}">
+			<th><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></th>
+		</c:if>			
+		
+	</tr>
+<tbody>
+
+	<c:set var="index">0</c:set>
+	<c:forEach var="firma" items="${annex.firmes}" varStatus="statusFirma">
+		<c:forEach var="detall" items="${firma.detalls}" varStatus="statusDetall">	
+			<c:set var="index">${index + 1}</c:set>
 			<tr>
-				<td><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></td>
-				<td><spring:message code="document.nti.tipfir.enum.${firma.tipus}"/></td>
-			</tr>
-			<tr>
-				<td><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></td>
-				<td>${firma.perfil}</td>
-			</tr>
-			<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
-				<tr>
-					<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
+				<td>
+					<spring:message code="registre.annex.detalls.camp.firma"/> ${index}
+					<c:if test="${firma.autofirma}">
+						(<spring:message code="registre.annex.detalls.camp.firma.autoFirma"/> <span class="fa fa-info-circle" title="<spring:message code="registre.annex.detalls.camp.firma.autoFirma.info" />"></span>)
+					</c:if>
+				</td>
+				<td>${detall.responsableNom}</td>
+				<td>${detall.responsableNif}</td>
+				<td>
+					<c:if test="${not empty detall.data}"><fmt:formatDate value="${detall.data}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if>
+					<c:if test="${empty detall.data}"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data.nd"/></c:if>
+				</td>				
+				<td>${detall.emissorCertificat}</td>
+				
+				<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
 					<td>
 						${firma.fitxerNom}
-						<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/firma/${status.index}"/>" class="btn btn-default btn-sm pull-right">
+						<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/firma/${statusFirma.index}"/>" class="btn btn-default btn-sm pull-right">
 							<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 						</a>
 					</td>
-				</tr>
-			</c:if>
-			<c:if test="${not empty firma.csvRegulacio}">
-				<tr>
-					<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></td>
+				</c:if>	
+				
+				<c:if test="${not empty firma.csvRegulacio}">
 					<td>${firma.csvRegulacio}</td>
-				</tr>
-			</c:if>
-			<c:if test="${not empty firma.detalls}">
-				<tr>
-					<td><strong><spring:message code="registre.annex.detalls.camp.firmaDetalls"/></strong></td>
-					<td>
-						<table class="table teble-striped table-bordered">
-						<thead>
-							<tr>
-								<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/></th>
-								<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/></th>
-								<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/></th>
-								<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
-							</tr>
-						<tbody>
-						<c:forEach var="detall" items="${firma.detalls}">	
-							<tr>
-								<td>
-									<c:if test="${not empty detall.data}"><fmt:formatDate value="${detall.data}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if>
-									<c:if test="${empty detall.data}"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data.nd"/></c:if>
-								</td>
-								<td>${detall.responsableNif}</td>
-								<td>${detall.responsableNom}</td>
-								<td>${detall.emissorCertificat}</td>
-							</tr>
-						</c:forEach>
-						</tbody>
-						</table>
-					</td>
-				</tr>
-			</c:if>
-		</tbody>
-		</table>
-	</div>
-</c:forEach>
+				</c:if>			
+										
+				<c:if test="${isUsuariActualAdministration}">
+					<td><spring:message code="document.nti.tipfir.enum.${firma.tipus}"/></td>
+				</c:if>			
+				<c:if test="${isUsuariActualAdministration}">
+					<td>${firma.perfil}</td>
+				</c:if>							
+			</tr>
+		</c:forEach>
+	</c:forEach>
+
+	
+</tbody>
+</table>
+
+
+
+
+
+
