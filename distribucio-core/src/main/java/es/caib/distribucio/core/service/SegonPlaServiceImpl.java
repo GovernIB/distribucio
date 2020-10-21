@@ -26,6 +26,8 @@ import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -68,7 +70,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
-			logger.debug("Execució de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu");
+			logger.trace("Execució de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu");
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
 			
 			List<RegistreEntity> pendents;
@@ -77,35 +79,33 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				pendents = registreHelper.findGuardarAnnexPendents(maxReintents);
 			}
 			if (pendents != null && !pendents.isEmpty()) {
-				logger.debug(
-						"Processant annexos pendents de guardar a l'arxiu de " + pendents.size() + " anotacions de registre");
 				Exception excepcio = null;
 				for (RegistreEntity pendent : pendents) {
 
-					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class,
-							"guardarAnotacionsPendentsEnArxiu"));
+					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "guardarAnotacionsPendentsEnArxiu"));
 					Timer.Context context = timer.time();
 					try {
-						logger.debug(
-								"Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + ")");
+						logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + ")");
 						excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
+					} catch (NotFoundException e) {
+						if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
+							excepcio = null;
+						}
 					} catch (Exception e) {
 						excepcio = e;
 					} finally {
 						if (excepcio != null)
-							logger.error(
-									"Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(),
-									excepcio);
+							logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
 					}
 					context.stop();
 
 				}
 			} else {
-				logger.debug("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
+				logger.trace("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
 			}
 			
 			long stopTime = new Date().getTime();
-			logger.debug("Fi de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu " + (stopTime - startTime) + "ms");
+			logger.trace("Fi de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu " + (stopTime - startTime) + "ms");
 
 		}
 	}
@@ -154,12 +154,15 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		
-		logger.debug("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
+		logger.trace("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
 		List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(maxReintents);
-		logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
+		
 		
 		if (pendents != null && !pendents.isEmpty()) {
+			
+			logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
+		
 			Calendar properProcessamentCal = Calendar.getInstance();
 			for (RegistreEntity pendent : pendents) {
 				
@@ -191,12 +194,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				context.stop();
 			}
 		} else {
-			logger.debug("No hi ha anotacions de registre amb regles pendents de processar");
+			logger.trace("No hi ha anotacions de registre amb regles pendents de processar");
 		}
 		
 		
 		long stopTime = new Date().getTime();
-		logger.debug("Fi de de tasca programada (" + startTime + "): aplicar regles pendents " + (stopTime - startTime) + "ms");
+		logger.trace("Fi de de tasca programada (" + startTime + "): aplicar regles pendents " + (stopTime - startTime) + "ms");
 		
 		
 	}
@@ -208,7 +211,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		
-		logger.debug("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
+		logger.trace("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
 		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date());
 		if (pendents != null && !pendents.isEmpty()) {
 			logger.debug("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
@@ -219,11 +222,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				context.stop();
 			}
 		} else {
-			logger.debug("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
+			logger.trace("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
 		}
 		
 		long stopTime = new Date().getTime();
-		logger.debug("Fi de tasca programada (" + startTime + "): tancar contenidors arxiu pendents " + (stopTime - startTime) + "ms");
+		logger.trace("Fi de tasca programada (" + startTime + "): tancar contenidors arxiu pendents " + (stopTime - startTime) + "ms");
 		
 		
 	}
@@ -241,7 +244,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
-		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + ")");
+		logger.trace("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + ")");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
 		for (ContingutMovimentEmailEntity moviment : moviments) {
 			
@@ -272,7 +275,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			context.stop();
 		}
 		long stopTime = new Date().getTime();
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + "). Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
+		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + "). Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
 		
 
 	}
@@ -290,7 +293,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
-		logger.debug("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + ")");
+		logger.trace("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + ")");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
 		// Agrupa per destinataris Map<email, continguts> 
 		Map<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
@@ -335,7 +338,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		
 		long stopTime = new Date().getTime();
-		logger.debug("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + "). Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
+		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + "). Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
 		
 	}
 	
