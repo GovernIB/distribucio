@@ -195,6 +195,7 @@ body {
 											<li><a href="<c:url value="/unitatOrganitzativa"/>"><spring:message code="decorator.menu.unitats"/></a></li>
 											<li class="divider"></li>
 											<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
+											<li><a href="<c:url value="/backoffice"/>"><spring:message code="decorator.menu.backoffices"/></a></li>
 											<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
 										</ul>
 									</div>
