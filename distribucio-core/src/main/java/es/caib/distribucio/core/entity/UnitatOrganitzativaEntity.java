@@ -42,7 +42,7 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	private static final long serialVersionUID = 1L;
 	@Column(name = "codi", length = 9, nullable = false)
 	private String codi;
-	@Column(name = "denominacio", length = 500, nullable = false)
+	@Column(name = "denominacio", length = 300, nullable = false)
 	private String denominacio;
 	@Column(name = "nif_cif", length = 9)
 	private String nifCif;

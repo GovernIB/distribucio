@@ -128,7 +128,7 @@ CREATE TABLE DIS_REGISTRE
   ID                   BIGSERIAL                   NOT NULL,
   TIPUS                character varying(1)     NOT NULL,
   UNITAT_ADM           character varying(21)    NOT NULL,
-  UNITAT_ADM_DESC      character varying(100),
+  UNITAT_ADM_DESC      character varying(300),
   NUMERO               character varying(255)   NOT NULL,
   DATA                 timestamp without time zone NOT NULL,
   IDENTIFICADOR        character varying(100)   NOT NULL,

@@ -129,7 +129,7 @@ CREATE TABLE DIS_REGISTRE
   ID                     NUMBER(19)               NOT NULL,
   TIPUS                  VARCHAR2(1 CHAR)              NOT NULL,
   UNITAT_ADM             VARCHAR2(21 CHAR)             NOT NULL,
-  UNITAT_ADM_DESC        VARCHAR2(100 CHAR),
+  UNITAT_ADM_DESC        VARCHAR2(300 CHAR),
   NUMERO                 VARCHAR2(255 CHAR)            NOT NULL,
   DATA                   TIMESTAMP(6)             NOT NULL,
   IDENTIFICADOR          VARCHAR2(100 CHAR)            NOT NULL,

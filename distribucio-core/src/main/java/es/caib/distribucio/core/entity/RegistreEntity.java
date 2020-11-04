@@ -62,7 +62,7 @@ public class RegistreEntity extends ContingutEntity {
 	private String registreTipus;
 	@Column(name = "unitat_adm", length = 21, nullable = false)
 	private String unitatAdministrativa;
-	@Column(name = "unitat_adm_desc", length = 100)
+	@Column(name = "unitat_adm_desc", length = 300)
 	private String unitatAdministrativaDescripcio;
 	@Column(name = "numero", length = 255, nullable = false)
 	private String numero;
