@@ -134,7 +134,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	 * @param procesEstatSistra */
 	@Query("select r.identificador " +
 			"from RegistreEntity r " +
-			"where r.regla.backofficeTipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
+			"where r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
 			"	and r.identificadorProcedimentSistra = :identificadorProcediment " +
 			"	and r.identificadorTramitSistra = :identificadorTramit " +
 			"	and (:esNullProcesEstatSistra = true or r.procesEstatSistra = :estatSistra) " +

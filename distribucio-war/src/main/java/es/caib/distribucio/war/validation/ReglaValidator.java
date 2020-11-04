@@ -37,35 +37,19 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		boolean valid = true;
 		
 		// Comprova que el codi d'assumpte o el codi de procediement estiguin informats
-		if ((command.getAssumpteCodi() == null || command.getAssumpteCodi().trim().isEmpty())
-				&& (command.getProcedimentCodi() == null || command.getProcedimentCodi().trim().isEmpty())) {
-			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
-					.addNode("assumpteCodi")
-					.addConstraintViolation();	
-			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
-					.addNode("procedimentCodi")
-					.addConstraintViolation();	
-			valid = false;
-		}
-		// Comprova que si és de tipus backoffice llavors estigui informat el codi del backoffice i la url
-		if(command.getTipus().equals(ReglaTipusEnumDto.BACKOFFICE)) {
-			if (command.getBackofficeCodi() == null || command.getBackofficeCodi().trim().isEmpty()) {
-				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage(codiMissatge + ".codi.backoffice.buit", null, new RequestContext(request).getLocale()))
-						.addNode("backofficeCodi")
-						.addConstraintViolation();	
-				valid = false;
-			}
-			if (command.getBackofficeUrl() == null || command.getBackofficeUrl().trim().isEmpty()) {
-				context.buildConstraintViolationWithTemplate(
-						MessageHelper.getInstance().getMessage("NotEmpty", null, new RequestContext(request).getLocale()))
-						.addNode("backofficeUrl")
-						.addConstraintViolation();	
-				valid = false;
-			}
-		}
+//		if ((command.getAssumpteCodi() == null || command.getAssumpteCodi().trim().isEmpty())
+//				&& (command.getProcedimentCodi() == null || command.getProcedimentCodi().trim().isEmpty())) {
+//			context.buildConstraintViolationWithTemplate(
+//					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+//					.addNode("assumpteCodi")
+//					.addConstraintViolation();	
+//			context.buildConstraintViolationWithTemplate(
+//					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+//					.addNode("procedimentCodi")
+//					.addConstraintViolation();	
+//			valid = false;
+//		}
+
 		if (!valid)
 			context.disableDefaultConstraintViolation();
 		

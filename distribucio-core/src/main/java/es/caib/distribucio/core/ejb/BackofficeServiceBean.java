@@ -3,6 +3,8 @@ package es.caib.distribucio.core.ejb;
 
 
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -66,7 +68,7 @@ public class BackofficeServiceBean implements BackofficeService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed("IPA_ADMIN")
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams)
@@ -74,6 +76,12 @@ public class BackofficeServiceBean implements BackofficeService {
 		return delegate.findByEntitatPaginat(
 				entitatId, 
 				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("IPA_ADMIN")
+	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException {
+		return delegate.findByEntitat(entitatId);
 	}
 
 

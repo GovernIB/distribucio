@@ -1,5 +1,7 @@
 package es.caib.distribucio.core.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +164,29 @@ public class BackofficeServiceImpl implements BackofficeService {
 		return pageDto;
 	}
 	
+	
+	
+	
+	@Transactional
+	@Override
+	public List<BackofficeDto> findByEntitat(
+			Long entitatId) throws NotFoundException {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				false);
+
+		List<BackofficeEntity> list = backofficeRepository.findByEntitat(
+				entitat);
+		
+		
+		List<BackofficeDto> listDto = conversioTipusHelper.convertirList(
+				list,
+				BackofficeDto.class);
+
+		return listDto;
+	}
 	
 
 	

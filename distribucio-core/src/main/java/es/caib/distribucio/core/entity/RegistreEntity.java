@@ -729,10 +729,9 @@ public class RegistreEntity extends ContingutEntity {
 		public Builder regla(ReglaEntity regla) {
 			built.regla = regla;
 			built.procesIntents = new Integer(0);
+			
 			// Per backoffices tipus Sistra posa l'estat en pendent
-			if (regla != null
-					&& regla.getBackofficeTipus() != null
-					&& BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) {
+			if (regla != null && regla.getBackofficeDesti() != null && regla.getBackofficeDesti().getTipus() == BackofficeTipusEnumDto.SISTRA) {
 				built.procesEstatSistra = RegistreProcesEstatSistraEnum.PENDENT;
 			}
 			return this;

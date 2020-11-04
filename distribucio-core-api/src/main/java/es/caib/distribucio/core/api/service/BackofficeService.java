@@ -1,5 +1,7 @@
 package es.caib.distribucio.core.api.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.BackofficeDto;
@@ -88,10 +90,14 @@ public interface BackofficeService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
+	
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;
 
 
 	

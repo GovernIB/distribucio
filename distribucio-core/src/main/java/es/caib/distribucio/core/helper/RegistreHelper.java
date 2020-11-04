@@ -917,12 +917,12 @@ public class RegistreHelper {
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 					getClass().getResource(
 							"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-					regla.getBackofficeUrl(),
+					regla.getBackofficeDesti().getUrl(),
 					new QName(
 							"http://www.caib.es/distribucio/ws/backoffice",
 							"BackofficeService"),
-					regla.getBackofficeUsuari(),
-					regla.getBackofficeContrasenya(),
+					regla.getBackofficeDesti().getUsuari(),
+					regla.getBackofficeDesti().getContrasenya(),
 					null,
 					BackofficeWsService.class);
 			

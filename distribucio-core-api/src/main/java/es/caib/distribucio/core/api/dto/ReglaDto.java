@@ -13,26 +13,40 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class ReglaDto extends AuditoriaDto {
 
 	private Long id;
+	
 	private String nom;
 	private String descripcio;
-	private ReglaTipusEnumDto tipus;
+	
+	
+	// ------------- FILRE ----------------------
 	private String assumpteCodi;
 	private String procedimentCodi;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
+	private Long bustiaFiltreId;
 
-	private Long metaExpedientId;
+	// ------------- ACCIO  ----------------------
+	private ReglaTipusEnumDto tipus;
 	private Long bustiaId;
-	private BackofficeTipusEnumDto backofficeTipus;
-	private String backofficeCodi;
-	private String backofficeUrl;
-	private String backofficeUsuari;
-	private String backofficeContrasenya;
-	private Integer backofficeIntents;
-	private Integer backofficeTempsEntreIntents;
+	private Long backofficeDestiId;
+	private String backofficeDestiNom;
+	
+	
 	private int ordre;
 	private boolean activa;
 
 
+	public Long getBustiaFiltreId() {
+		return bustiaFiltreId;
+	}
+	public void setBustiaFiltreId(Long bustiaFiltreId) {
+		this.bustiaFiltreId = bustiaFiltreId;
+	}
+	public Long getBackofficeDestiId() {
+		return backofficeDestiId;
+	}
+	public void setBackofficeDestiId(Long backofficeDestiId) {
+		this.backofficeDestiId = backofficeDestiId;
+	}
 	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
@@ -75,59 +89,11 @@ public class ReglaDto extends AuditoriaDto {
 	public void setAssumpteCodi(String assumpteCodi) {
 		this.assumpteCodi = assumpteCodi;
 	}
-	public Long getMetaExpedientId() {
-		return metaExpedientId;
-	}
-	public void setMetaExpedientId(Long metaExpedientId) {
-		this.metaExpedientId = metaExpedientId;
-	}
 	public Long getBustiaId() {
 		return bustiaId;
 	}
 	public void setBustiaId(Long bustiaId) {
 		this.bustiaId = bustiaId;
-	}
-	public BackofficeTipusEnumDto getBackofficeTipus() {
-		return backofficeTipus;
-	}
-	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
-		this.backofficeTipus = backofficeTipus;
-	}
-	public String getBackofficeCodi() {
-		return backofficeCodi;
-	}
-	public void setBackofficeCodi(String backofficeCodi) {
-		this.backofficeCodi = backofficeCodi;
-	}
-	public String getBackofficeUrl() {
-		return backofficeUrl;
-	}
-	public void setBackofficeUrl(String backofficeUrl) {
-		this.backofficeUrl = backofficeUrl;
-	}
-	public String getBackofficeUsuari() {
-		return backofficeUsuari;
-	}
-	public void setBackofficeUsuari(String backofficeUsuari) {
-		this.backofficeUsuari = backofficeUsuari;
-	}
-	public String getBackofficeContrasenya() {
-		return backofficeContrasenya;
-	}
-	public void setBackofficeContrasenya(String backofficeContrasenya) {
-		this.backofficeContrasenya = backofficeContrasenya;
-	}
-	public Integer getBackofficeIntents() {
-		return backofficeIntents;
-	}
-	public void setBackofficeIntents(Integer backofficeIntents) {
-		this.backofficeIntents = backofficeIntents;
-	}
-	public Integer getBackofficeTempsEntreIntents() {
-		return backofficeTempsEntreIntents;
-	}
-	public void setBackofficeTempsEntreIntents(Integer backofficeTempsEntreIntents) {
-		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
 	}
 	public int getOrdre() {
 		return ordre;
@@ -141,7 +107,12 @@ public class ReglaDto extends AuditoriaDto {
 	public void setActiva(boolean activa) {
 		this.activa = activa;
 	}
-
+	public String getBackofficeDestiNom() {
+		return backofficeDestiNom;
+	}
+	public void setBackofficeDestiNom(String backofficeDestiNom) {
+		this.backofficeDestiNom = backofficeDestiNom;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

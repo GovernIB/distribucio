@@ -1,5 +1,7 @@
 package es.caib.distribucio.core.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,6 +25,10 @@ public interface BackofficeRepository extends JpaRepository<BackofficeEntity, Lo
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,	
 			Pageable pageable);
+	
+
+	List<BackofficeEntity> findByEntitat(
+			@Param("entitat") EntitatEntity entitat);
 	
 	
 }

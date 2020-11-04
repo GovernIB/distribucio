@@ -17,14 +17,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.entity.AlertaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import ma.glasnost.orika.metadata.ClassMapBuilder;
 import ma.glasnost.orika.metadata.Type;
 /**
  * Helper per a convertir entre diferents formats de documents.
@@ -56,6 +59,11 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
+		
+		mapperFactory.registerClassMap(
+				ClassMapBuilder.map(ReglaEntity.class, ReglaDto.class)
+				.field("backofficeDesti.nom", "backofficeDestiNom").byDefault().toClassMap());
+		
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<ContingutComentariEntity, ContingutComentariDto>() {
 					public ContingutComentariDto convert(ContingutComentariEntity source, Type<? extends ContingutComentariDto> destinationClass) {

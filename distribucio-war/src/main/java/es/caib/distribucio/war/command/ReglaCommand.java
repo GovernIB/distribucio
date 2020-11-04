@@ -26,33 +26,30 @@ import es.caib.distribucio.war.validation.Regla;
 public class ReglaCommand {
 
 	private Long id;
+	
 	@NotEmpty(groups = {CreateUpdate.class})
 	@Size(max = 256, groups = {CreateUpdate.class})
 	private String nom;
 	@Size(max = 1024, groups = {CreateUpdate.class})
 	private String descripcio;
-	private ReglaTipusEnumDto tipus;
+	
+	// ------------- FILRE ----------------------
 	@Size(max = 16, groups = {CreateUpdate.class})
 	private String assumpteCodi;
 	@Size(max = 64, groups = {CreateUpdate.class})
 	private String procedimentCodi;
 	@NotNull(groups = {CreateUpdate.class})
 	private Long unitatId;
+	private Long bustiaFiltreId;
+
+	// ------------- ACCIO  ----------------------
+	private ReglaTipusEnumDto tipus;
 	private Long bustiaId;
-	private BackofficeTipusEnumDto backofficeTipus;
-	@Size(max = 20, groups = {CreateUpdate.class})
-	private String backofficeCodi;
-	@Size(max = 256, groups = {CreateUpdate.class})
-	private String backofficeUrl;
-	@Size(max = 64, groups = {CreateUpdate.class})
-	private String backofficeUsuari;
-	@Size(max = 64, groups = {CreateUpdate.class})
-	private String backofficeContrasenya;
-	private Integer backofficeIntents;
-	private Integer backofficeTempsEntreIntents;
-
-
-
+	@NotNull(groups = {CreateUpdate.class})
+	private Long backofficeDestiId;
+	
+	
+	
 	public Long getUnitatId() {
 		return unitatId;
 	}
@@ -95,55 +92,26 @@ public class ReglaCommand {
 	public void setBustiaId(Long bustiaId) {
 		this.bustiaId = bustiaId;
 	}
-	public BackofficeTipusEnumDto getBackofficeTipus() {
-		return backofficeTipus;
-	}
-	public void setBackofficeTipus(BackofficeTipusEnumDto backofficeTipus) {
-		this.backofficeTipus = backofficeTipus;
-	}
-	public String getBackofficeCodi() {
-		return backofficeCodi;
-	}
-	public void setBackofficeCodi(String backofficeCodi) {
-		this.backofficeCodi = backofficeCodi;
-	}
-	public String getBackofficeUrl() {
-		return backofficeUrl;
-	}
-	public void setBackofficeUrl(String backofficeUrl) {
-		this.backofficeUrl = backofficeUrl;
-	}
-	public String getBackofficeUsuari() {
-		return backofficeUsuari;
-	}
-	public void setBackofficeUsuari(String backofficeUsuari) {
-		this.backofficeUsuari = backofficeUsuari;
-	}
-	public String getBackofficeContrasenya() {
-		return backofficeContrasenya;
-	}
-	public void setBackofficeContrasenya(String backofficeContrasenya) {
-		this.backofficeContrasenya = backofficeContrasenya;
-	}
 	public String getProcedimentCodi() {
 		return procedimentCodi;
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
 	}
-	public Integer getBackofficeIntents() {
-		return backofficeIntents;
+
+	public Long getBustiaFiltreId() {
+		return bustiaFiltreId;
 	}
-	public void setBackofficeIntents(Integer backofficeIntents) {
-		this.backofficeIntents = backofficeIntents;
+	public void setBustiaFiltreId(Long bustiaFiltreId) {
+		this.bustiaFiltreId = bustiaFiltreId;
+	}
+	public Long getBackofficeDestiId() {
+		return backofficeDestiId;
+	}
+	public void setBackofficeDestiId(Long backofficeDestiId) {
+		this.backofficeDestiId = backofficeDestiId;
 	}
 
-	public Integer getBackofficeTempsEntreIntents() {
-		return backofficeTempsEntreIntents;
-	}
-	public void setBackofficeTempsEntreIntents(Integer backofficeTempsEntreIntents) {
-		this.backofficeTempsEntreIntents = backofficeTempsEntreIntents;
-	}
 	public static ReglaCommand asCommand(ReglaDto dto) {
 		ReglaCommand command = ConversioTipusHelper.convertir(
 				dto,

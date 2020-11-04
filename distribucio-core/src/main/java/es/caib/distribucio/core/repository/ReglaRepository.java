@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
@@ -53,8 +54,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " + 			
 			"and (:esNullFiltreEstat = true or r.unitatOrganitzativa.estat = 'E' or r.unitatOrganitzativa.estat = 'A' or r.unitatOrganitzativa.estat = 'T') " + 
-			"and (:esNullBackofficeCodi = true or lower(r.backofficeCodi) like lower('%'||:backofficeCodi||'%'))")
-	Page<BustiaEntity> findByFiltrePaginat(
+			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice)")
+	Page<ReglaEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
@@ -63,8 +64,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,			
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
-			@Param("esNullBackofficeCodi") boolean esNullBackofficeCodi,
-			@Param("backofficeCodi") String backofficeCodi,
+			@Param("esNullBackoffice") boolean esNullBackoffice,
+			@Param("backoffice") BackofficeEntity backoffice,
 			Pageable pageable);
 	
 	
@@ -85,14 +86,15 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"where " +
 			"    r.entitat = :entitat " +
 			"and r.activa = true " + 
-			"and r.unitatOrganitzativa.codi = :unitatOrganitzativaCodi " + 
-			"and (r.procedimentCodi is null "
-			+ "or (r.procedimentCodi like ('% '||:procedimentCodi||' %') or r.procedimentCodi = :procedimentCodi or r.procedimentCodi like (:procedimentCodi||' %') or r.procedimentCodi like ('% '||:procedimentCodi))) " +
+			"and r.unitatOrganitzativa is null or r.unitatOrganitzativa.codi = :unitatOrganitzativaCodi " + 
+			"and r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId " + 
+			"and (r.procedimentCodi is null or (r.procedimentCodi like ('% '||:procedimentCodi||' %') or r.procedimentCodi = :procedimentCodi or r.procedimentCodi like (:procedimentCodi||' %') or r.procedimentCodi like ('% '||:procedimentCodi))) " +
 			"and (r.assumpteCodi is null or r.assumpteCodi = :assumpteCodi) " + 
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
 			@Param("entitat") EntitatEntity entitat, 
 			@Param("unitatOrganitzativaCodi") String unitatOrganitzativaCodi, 
+			@Param("bustiaId") Long bustiaId,
 			@Param("procedimentCodi") String procedimentCodi, 
 			@Param("assumpteCodi") String assumpteCodi);
 

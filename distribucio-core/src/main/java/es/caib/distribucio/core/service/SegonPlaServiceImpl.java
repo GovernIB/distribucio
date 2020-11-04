@@ -170,11 +170,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				Timer.Context context = timer.time();
 				
 				// ######################## BACKOFFICE SISTRA ############################
-				if (pendent.getRegla().getBackofficeTipus() == BackofficeTipusEnumDto.SISTRA) { 
+				if (pendent.getRegla().getBackofficeDesti().getTipus() == BackofficeTipusEnumDto.SISTRA) { 
 					// comprova si ha passat el temps entre reintents o ha d'esperar
 					boolean esperar = false;
 					Date darrerProcessament = pendent.getProcesData();
-					Integer minutsEntreReintents = pendent.getRegla().getBackofficeTempsEntreIntents();
+					Integer minutsEntreReintents = pendent.getRegla().getBackofficeDesti().getTempsEntreIntents();
 					if (darrerProcessament != null && minutsEntreReintents != null) {
 						// Calcula el temps pel proper intent
 						properProcessamentCal.setTime(darrerProcessament);

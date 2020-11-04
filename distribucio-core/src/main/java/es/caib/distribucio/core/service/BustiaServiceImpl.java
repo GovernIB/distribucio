@@ -643,7 +643,7 @@ public class BustiaServiceImpl implements BustiaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				false,
+				false, 
 				false);
 		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
 		
@@ -868,6 +868,7 @@ public class BustiaServiceImpl implements BustiaService {
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
+				null,
 				registreAnotacio.getProcedimentCodi(),
 				registreAnotacio.getAssumpteCodi());
 		RegistreProcesEstatEnum estat;

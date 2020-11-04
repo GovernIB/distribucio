@@ -35,6 +35,7 @@ import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsCli
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -78,13 +79,16 @@ public class ReglaHelper {
 	public ReglaEntity findAplicable(
 			EntitatEntity entitat,
 			String unitatAdministrativa,
+			ContingutEntity bustiaEntity,
 			String procedimentCodi,
-			String assumpteCodi) {
+			String assumpteCodi
+			) {
 		ReglaEntity reglaAplicable = null;
 		
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
-					unitatAdministrativa,
+					unitatAdministrativa!= null ? unitatAdministrativa : "",
+					bustiaEntity != null ? bustiaEntity.getId() : null,
 					procedimentCodi != null ? procedimentCodi : "",
 					assumpteCodi != null ? assumpteCodi : "");
 		if (regles.size() > 0) {
@@ -105,20 +109,12 @@ public class ReglaHelper {
 	public Exception aplicarControlantException(
 			RegistreEntity registre) {
 		
-//TODO: remove this state		
-//		contingutLogHelper.log(
-//				registre,
-//				LogTipusEnumDto.PROCESSAMENT,
-//				null,
-//				null,
-//				false,
-//				false);
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
 				"registreNumero=" + registre.getNumero() + ", " +
 				"reglaId=" + registre.getRegla().getId() + ", " +
 				"reglaTipus=" + registre.getRegla().getTipus().name() + ", " +
-				(registre.getRegla().getBackofficeTipus() != null ? "reglaBackofficeTipus=" + registre.getRegla().getBackofficeTipus().name() + ", "  : "") +
+				(registre.getRegla().getBackofficeDesti() != null ? "reglaBackoffice=" + registre.getRegla().getBackofficeDesti().getNom() + ", "  : "") +
 				"bustia=" + registre.getRegla().getBustia() + ")");
 		try {
 			boolean throwException = false;
@@ -164,21 +160,25 @@ public class ReglaHelper {
 		try {
 			switch (regla.getTipus()) {
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
+				if (regla.getBackofficeDesti() == null) {
+					throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
+				}
 				// Informa del codi del backoffice que processarà l'anotació
-				registre.updateBackCodi(regla.getBackofficeCodi());
-				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeTipus())) { // ############################### BACKOFFICE SISTRA ###############################
+				registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+				
+				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeDesti().getTipus())) { // ############################### BACKOFFICE SISTRA ###############################
 					for (RegistreAnnexEntity annex: registre.getAnnexos()) {
 							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
 								processarAnnexSistra(registre, annex);
 					}
 					BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
 							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
-							regla.getBackofficeUrl(),
+							regla.getBackofficeDesti().getUrl(),
 							new QName(
 									"urn:es:caib:bantel:ws:v2:services",
 									"BantelFacadeService"),
-							regla.getBackofficeUsuari(),
-							regla.getBackofficeContrasenya(),
+							regla.getBackofficeDesti().getUsuari(),
+							regla.getBackofficeDesti().getContrasenya(),
 							null,
 							BantelFacadeWsClient.class);
 					// Crea la llista de referències d'entrada
@@ -193,7 +193,7 @@ public class ReglaHelper {
 					} catch (BantelFacadeException bfe) {
 						error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
 					}
-				} else if (BackofficeTipusEnumDto.DISTRIBUCIO.equals(regla.getBackofficeTipus())){ // ############################### BACKOFFICE DISTRIBUCIO ###############################
+				} else if (BackofficeTipusEnumDto.DISTRIBUCIO.equals(regla.getBackofficeDesti().getTipus())){ // ############################### BACKOFFICE DISTRIBUCIO ###############################
 					registre.updateProcesBackPendent();
 					registre.updateBackPendentData(new Date());
 					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice 

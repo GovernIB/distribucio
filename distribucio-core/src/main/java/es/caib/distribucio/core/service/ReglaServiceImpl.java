@@ -23,6 +23,7 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
@@ -31,6 +32,7 @@ import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.repository.BackofficeRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
@@ -58,6 +60,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Resource
+	private BackofficeRepository backofficeRepository;
 
 	@Override
 	@Transactional
@@ -85,14 +89,9 @@ public class ReglaServiceImpl implements ReglaService {
 				build();
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
+			BackofficeEntity backofficeEntity = backofficeRepository.findOne(regla.getBackofficeDestiId());
 			entity.updatePerTipusBackoffice(
-					regla.getBackofficeTipus(),
-					regla.getBackofficeCodi(),
-					regla.getBackofficeUrl(),
-					regla.getBackofficeUsuari(),
-					regla.getBackofficeContrasenya(),
-					regla.getBackofficeIntents(),
-					regla.getBackofficeTempsEntreIntents());
+					backofficeEntity);
 			break;
 		case BUSTIA:
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
@@ -132,14 +131,9 @@ public class ReglaServiceImpl implements ReglaService {
 				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
 		switch(regla.getTipus()) {
 		case BACKOFFICE:
+			BackofficeEntity backofficeEntity = backofficeRepository.findOne(regla.getBackofficeDestiId());
 			entity.updatePerTipusBackoffice(
-					regla.getBackofficeTipus(),
-					regla.getBackofficeCodi(),
-					regla.getBackofficeUrl(),
-					regla.getBackofficeUsuari(),
-					regla.getBackofficeContrasenya(),
-					regla.getBackofficeIntents(),
-					regla.getBackofficeTempsEntreIntents());
+					backofficeEntity);
 			break;
 		case BUSTIA:
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
@@ -345,10 +339,10 @@ public class ReglaServiceImpl implements ReglaService {
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
 		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
 
-		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
+		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findOne(filtre.getBackofficeId());
 		
-
 		
 		PaginaDto<ReglaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				reglaRepository.findByFiltrePaginat(
@@ -360,8 +354,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
-						filtre.getBackofficeCodi() == null || filtre.getBackofficeCodi().trim().isEmpty(),
-						filtre.getBackofficeCodi() != null ? filtre.getBackofficeCodi() : "",
+						backoffice == null ,
+						backoffice,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				ReglaDto.class);
 		

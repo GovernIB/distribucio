@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
@@ -50,6 +50,8 @@ public class ReglaController  extends BaseAdminController {
 	private BustiaService bustiaService;
 	@Autowired
 	private UnitatOrganitzativaService unitatService;
+	@Autowired
+	private BackofficeService backofficeService;
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 
@@ -57,6 +59,9 @@ public class ReglaController  extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
 		model.addAttribute(
 				"reglaTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(
@@ -66,7 +71,11 @@ public class ReglaController  extends BaseAdminController {
 		
 		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
 		
-
+		model.addAttribute(
+				"backoffices",
+				backofficeService.findByEntitat(
+						entitatActual.getId()));
+		
 		return "reglaList";
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -319,11 +328,11 @@ public class ReglaController  extends BaseAdminController {
 				"busties",
 			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
+		
 		model.addAttribute(
-				"backofficeTipusEnumOptions",
-				EnumHelper.getOptionsForEnum(
-						BackofficeTipusEnumDto.class,
-						"backoffice.tipus.enum."));
+				"backoffices",
+				backofficeService.findByEntitat(
+						entitatActual.getId()));
 	}
 
 }

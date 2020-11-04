@@ -96,7 +96,7 @@
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputText name="backofficeCodi" inline="true" placeholderKey="bustia.list.filtre.backofficeCodi"/>
+				<dis:inputSelect name="backofficeId" placeholderKey="bustia.list.filtre.backoffice" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="id" optionTextAttribute="nom" inline="true"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
@@ -136,7 +136,7 @@
 				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="procedimentCodi" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="unitatOrganitzativa.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
-				<th data-col-name="backofficeCodi" data-orderable="false"><spring:message code="regla.list.columna.codi.backoffice"/></th>
+				<th data-col-name="backofficeDestiNom" data-orderable="false"><spring:message code="regla.list.columna.backoffice"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.activa"/>
 					<script id="cellActivaTemplate" type="text/x-jsrender">

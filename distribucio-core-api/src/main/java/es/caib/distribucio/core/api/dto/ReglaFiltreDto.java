@@ -21,7 +21,7 @@ public class ReglaFiltreDto implements Serializable {
 	private Boolean unitatObsoleta;
 	private Long unitatId;
 	private ReglaTipusEnumDto tipus;
-	private String backofficeCodi;
+	private Long backofficeId;
 
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -54,13 +54,12 @@ public class ReglaFiltreDto implements Serializable {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	public String getBackofficeCodi() {
-		return backofficeCodi;
+	public Long getBackofficeId() {
+		return backofficeId;
 	}
-	public void setBackofficeCodi(String backofficeCodi) {
-		this.backofficeCodi = backofficeCodi;
+	public void setBackofficeId(Long backofficeId) {
+		this.backofficeId = backofficeId;
 	}
-
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
