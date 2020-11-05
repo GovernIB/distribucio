@@ -38,16 +38,14 @@ public class ReglaCommand {
 	private String assumpteCodi;
 	@Size(max = 64, groups = {CreateUpdate.class})
 	private String procedimentCodi;
-	@NotNull(groups = {CreateUpdate.class})
 	private Long unitatId;
 	private Long bustiaFiltreId;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
 	private Long bustiaId;
-	@NotNull(groups = {CreateUpdate.class})
 	private Long backofficeDestiId;
-	
+	private Long unitatDestiId;
 	
 	
 	public Long getUnitatId() {
@@ -137,6 +135,13 @@ public class ReglaCommand {
 		return ToStringBuilder.reflectionToString(this);
 	}
 	
+	public Long getUnitatDestiId() {
+		return unitatDestiId;
+	}
+	public void setUnitatDestiId(Long unitatDestiId) {
+		this.unitatDestiId = unitatDestiId;
+	}
+
 	public interface CreateUpdate {}
 
 }

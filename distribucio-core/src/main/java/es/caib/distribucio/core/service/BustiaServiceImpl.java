@@ -865,10 +865,15 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		final Timer timerfindAplicable = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findAplicable"));
 		Timer.Context contextfindAplicable = timerfindAplicable.time();
+		
+		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
+				entitat,
+				unitatOrganitzativa);
+		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				unitatOrganitzativa,
-				null,
+				bustia,
 				registreAnotacio.getProcedimentCodi(),
 				registreAnotacio.getAssumpteCodi());
 		RegistreProcesEstatEnum estat;
@@ -880,7 +885,7 @@ public class BustiaServiceImpl implements BustiaService {
 			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 		}
 		contextfindAplicable.stop();
-
+		
 		
 		final Timer timercrearRegistreEntity = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.crearRegistreEntity"));
 		Timer.Context contextcrearRegistreEntity = timercrearRegistreEntity.time();
@@ -901,12 +906,18 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitatOrganitzativa,
 				anotacioEntity);
-		//if regla is of type bustia we apply it immediately
+		contextmoveAnotacioToBustiaPerDefecte.stop();
+		
+		
+		final Timer timerprocessarAnotacioPendentRegla = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.processarAnotacioPendentRegla"));
+		Timer.Context contextprocessarAnotacioPendentRegla = timerprocessarAnotacioPendentRegla.time();
+		
+		//apply rules of type bustia or unitat
 		Exception exceptionProcessant = null;
-		if (reglaAplicable != null && reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA) {
+		if (reglaAplicable != null && (reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA || reglaAplicable.getTipus() == ReglaTipusEnumDto.UNITAT)) {
 			exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 		}
-		contextmoveAnotacioToBustiaPerDefecte.stop();
+		contextprocessarAnotacioPendentRegla.stop();
 		
 		
 		final Timer timerprocess = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.process"));

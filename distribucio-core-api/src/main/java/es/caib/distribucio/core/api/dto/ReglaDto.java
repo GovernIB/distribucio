@@ -29,12 +29,14 @@ public class ReglaDto extends AuditoriaDto {
 	private Long bustiaId;
 	private Long backofficeDestiId;
 	private String backofficeDestiNom;
+	private Long unitatDestiId;
 	
 	
 	private int ordre;
 	private boolean activa;
 
 
+	
 	public Long getBustiaFiltreId() {
 		return bustiaFiltreId;
 	}
@@ -116,6 +118,12 @@ public class ReglaDto extends AuditoriaDto {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	public Long getUnitatDestiId() {
+		return unitatDestiId;
+	}
+	public void setUnitatDestiId(Long unitatDestiId) {
+		this.unitatDestiId = unitatDestiId;
 	}
 
 }

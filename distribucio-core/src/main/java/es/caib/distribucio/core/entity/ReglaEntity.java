@@ -74,17 +74,27 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	protected ReglaTipusEnumDto tipus;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "backoffice_desti_id")
+	protected BackofficeEntity backofficeDesti;
+	
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bustia_id")
 	@ForeignKey(name = "dis_bustia_regla_fk")
 	protected BustiaEntity bustia;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "backoffice_desti_id")
-	protected BackofficeEntity backofficeDesti;
-	
-	
+	@JoinColumn(name = "unitat_desti_id")
+	protected UnitatOrganitzativaEntity unitatDesti;
 	
 
+	
+	
+	
+	
+	
+	
+	
+	
 	@Column(name = "ordre", nullable = false)
 	protected int ordre;
 	

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -154,55 +155,48 @@ public class ReglaHelper {
 		}
 	}
 
+	
+	
 	private void aplicar(RegistreEntity registre) {
 		ReglaEntity regla = registre.getRegla();
 		String error = null;
 		try {
 			switch (regla.getTipus()) {
+			
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
 				if (regla.getBackofficeDesti() == null) {
 					throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
 				}
-				// Informa del codi del backoffice que processarà l'anotació
-				registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
-				
-				if (BackofficeTipusEnumDto.SISTRA.equals(regla.getBackofficeDesti().getTipus())) { // ############################### BACKOFFICE SISTRA ###############################
-					for (RegistreAnnexEntity annex: registre.getAnnexos()) {
-							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
-								processarAnnexSistra(registre, annex);
-					}
-					BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
-							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
-							regla.getBackofficeDesti().getUrl(),
-							new QName(
-									"urn:es:caib:bantel:ws:v2:services",
-									"BantelFacadeService"),
-							regla.getBackofficeDesti().getUsuari(),
-							regla.getBackofficeDesti().getContrasenya(),
-							null,
-							BantelFacadeWsClient.class);
-					// Crea la llista de referències d'entrada
-					ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
-					ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-					referenciaEntrada.setNumeroEntrada(registre.getNumero());
-					referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(registre.getNumero()));	
-					referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
-					// Invoca el backoffice sistra
-					try {
-						backofficeSistraClient.avisoEntradas(referenciesEntrades);
-					} catch (BantelFacadeException bfe) {
-						error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
-					}
-				} else if (BackofficeTipusEnumDto.DISTRIBUCIO.equals(regla.getBackofficeDesti().getTipus())){ // ############################### BACKOFFICE DISTRIBUCIO ###############################
+
+				if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.SISTRA)) { 
+					registre.updateProcesBackPendent();
+				} else if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.DISTRIBUCIO)){ 
 					registre.updateProcesBackPendent();
 					registre.updateBackPendentData(new Date());
-					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice 
+					// Informa del codi del backoffice que processarà l'anotació
+					registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
 				}
 				break;
-			case BUSTIA: // ############################### BUSTIA ###############################
+				
+			case BUSTIA:
+			case UNITAT: // ############################### BUSTIA / UNITAT ###############################
+				
+				BustiaEntity bustiaDesti = null;
+				if (regla.getTipus() == ReglaTipusEnumDto.UNITAT) {
+					
+					bustiaDesti = bustiaHelper.findBustiaDesti(
+							registre.getEntitat(),
+							regla.getUnitatOrganitzativa().getCodi());
+					
+				} else if (regla.getTipus() == ReglaTipusEnumDto.BUSTIA) {
+					
+					bustiaDesti = regla.getBustia();
+				}
+				
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 						registre,
-						regla.getBustia(),
+						bustiaDesti,
 						null);
 				contingutLogHelper.logMoviment(
 						registre,
@@ -215,8 +209,6 @@ public class ReglaHelper {
 						contingutMoviment);
 				
 				RegistreProcesEstatEnum estat;
-				
-				
 				boolean alreadySavedInArxiu = true;
 				if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
 					for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
@@ -285,7 +277,7 @@ public class ReglaHelper {
 	 * @param annex
 	 * 			Document annex amb el contingut per a llegir.
 	 */
-	private void processarAnnexSistra(
+	public void processarAnnexSistra(
 			RegistreEntity anotacio,
 			RegistreAnnexEntity annex) {
 		try {

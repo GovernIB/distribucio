@@ -58,6 +58,7 @@ $(document).ready(function() {
 	$('#tipus').on('change', function () {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
 		$('div#camps_tipus_BACKOFFICE').css('display', 'none');
+		$('div#camps_tipus_UNITAT').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
 	});
 	$('#tipus').trigger('change');	
@@ -149,7 +150,18 @@ $(document).ready(function() {
 		<div id="camps_tipus_BACKOFFICE">
 			<dis:inputSelect name="backofficeDestiId" textKey="regla.form.camp.backoffice" optionItems="${backoffices}" optionValueAttribute="id" optionTextAttribute="nom" required="true" emptyOption="true"/>
 		</div>
-
+		<div id="camps_tipus_UNITAT">
+			<dis:inputSuggest 
+				name="unitatDestiId" 
+				textKey="bustia.form.camp.unitat"
+				urlConsultaInicial="${urlConsultaInicial}" 
+				urlConsultaLlistat="${urlConsultaLlistat}" 
+				inline="false" 
+				placeholderKey="bustia.form.camp.unitat"
+				suggestValue="id"
+				suggestText="codiAndNom"
+				optionTemplateFunction="formatSelectUnitat"/>
+		</div>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/regla"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

@@ -459,7 +459,7 @@ public class RegistreHelper {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
 		Exception exceptionAplicantRegla = null;
 		
-		if (anotacio.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT && anotacio.getRegla() != null) {
+		if (anotacio.getRegla() != null) {
 			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio);
 		}
 		return exceptionAplicantRegla;

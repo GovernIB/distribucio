@@ -11,5 +11,6 @@ package es.caib.distribucio.core.api.dto;
  */
 public enum ReglaTipusEnumDto {
 	BUSTIA,
-	BACKOFFICE
+	BACKOFFICE,
+	UNITAT
 }

@@ -333,6 +333,7 @@ public class ReglaController  extends BaseAdminController {
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
+		
 	}
 
 }

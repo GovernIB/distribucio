@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +30,25 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
+import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
+import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
+import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
+import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
+import es.caib.distribucio.core.helper.ReglaHelper;
+import es.caib.distribucio.core.helper.WsClientHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
+import es.caib.distribucio.core.repository.RegistreRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -54,11 +66,15 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private BustiaHelper bustiaHelper;
 	@Autowired
 	private RegistreHelper registreHelper;
-
-	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
+	@Autowired
+	private ReglaHelper reglaHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
+	@Autowired
+	private RegistreRepository registreRepository;
 	
+	
+	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
 	 * Mètode per guardar anotacions de registre amb estat pendent de guardar a l'arxiu. Es consulten les anotacions amb un màxim
 	 * de reintents.
@@ -148,29 +164,60 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
 	}
 	
+	
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
-	public void aplicarReglesPendents() {
+	public void aplicarReglesPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();
-		
 		logger.trace("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
+		
+		
 		int maxReintents = getAplicarReglesMaxReintentsProperty();
 		List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(maxReintents);
-		
 		
 		if (pendents != null && !pendents.isEmpty()) {
 			
 			logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
-		
-			Calendar properProcessamentCal = Calendar.getInstance();
+
 			for (RegistreEntity pendent : pendents) {
 				
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "aplicarReglesPendents"));
 				Timer.Context context = timer.time();
 				
-				// ######################## BACKOFFICE SISTRA ############################
-				if (pendent.getRegla().getBackofficeDesti().getTipus() == BackofficeTipusEnumDto.SISTRA) { 
+				registreHelper.processarAnotacioPendentRegla(pendent.getId());
+				
+				context.stop();
+			}
+		} else {
+			logger.trace("No hi ha anotacions de registre amb regles pendents de processar");
+		}
+		
+		
+		long stopTime = new Date().getTime();
+		logger.trace("Fi de de tasca programada (" + stopTime + "): aplicar regles pendents " + (stopTime - startTime) + "ms");
+		
+	}
+	
+	
+	
+	
+	@Override
+	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
+	public void backofficeSistra() {
+
+		String error = null;
+
+		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentBackofficeSistra();
+
+		if (pendents != null && !pendents.isEmpty()) {
+
+			try {
+				Calendar properProcessamentCal = Calendar.getInstance();
+				for (RegistreEntity pendent : pendents) {
+
+					ReglaEntity regla = pendent.getRegla();
+
 					// comprova si ha passat el temps entre reintents o ha d'esperar
 					boolean esperar = false;
 					Date darrerProcessament = pendent.getProcesData();
@@ -183,26 +230,52 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						esperar = new Date().before(properProcessamentCal.getTime());
 					}
 					if (!esperar) {
-						registreHelper.processarAnotacioPendentRegla(pendent.getId());
+						for (RegistreAnnexEntity annex : pendent.getAnnexos()) {
+							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
+								reglaHelper.processarAnnexSistra(pendent,
+										annex);
+						}
+						BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
+							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
+							regla.getBackofficeDesti().getUrl(),
+							new QName(
+									"urn:es:caib:bantel:ws:v2:services",
+									"BantelFacadeService"),
+							regla.getBackofficeDesti().getUsuari(),
+							regla.getBackofficeDesti().getContrasenya(),
+							null,
+							BantelFacadeWsClient.class);
+						// Crea la llista de referències d'entrada
+						ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
+						ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
+						referenciaEntrada.setNumeroEntrada(pendent.getNumero());
+						referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));
+						referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
+						// Invoca el backoffice sistra
+						try {
+							backofficeSistraClient.avisoEntradas(referenciesEntrades);
+						} catch (BantelFacadeException bfe) {
+							error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
+						}
 					}
-					
-				// ######################## BACKOFFICE DISTRIBUCIO #######################
-				} else {
-					registreHelper.processarAnotacioPendentRegla(pendent.getId());
 				}
-				
-				context.stop();
+			} catch (Exception ex) {
+				Throwable t = ExceptionUtils.getRootCause(ex);
+				if (t == null)
+					t = ex.getCause();
+				if (t == null)
+					t = ex;
+				error = ExceptionUtils.getStackTrace(t);
 			}
-		} else {
-			logger.trace("No hi ha anotacions de registre amb regles pendents de processar");
+			if (error != null) {
+				throw new AplicarReglaException(error);
+			}
 		}
-		
-		
-		long stopTime = new Date().getTime();
-		logger.trace("Fi de de tasca programada (" + startTime + "): aplicar regles pendents " + (stopTime - startTime) + "ms");
-		
-		
+
 	}
+	
+	
+	
 
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio}")
