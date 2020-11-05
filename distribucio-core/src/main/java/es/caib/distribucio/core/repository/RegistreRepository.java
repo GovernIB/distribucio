@@ -77,7 +77,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.regla is not null and r.regla.activa = true and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dtoBackofficeTipusEnumDto.DISTRIBUCIO " +
+			"    r.regla is not null and r.regla.activa = true and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.DISTRIBUCIO " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 		    "order by " +
@@ -93,7 +93,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.regla is not null and r.regla.activa = true " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dtoBackofficeTipusEnumDto.SISTRA " +
+			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
 		    "order by " +
 		    "    r.data desc "
 		    + "group by r.regla.id")
