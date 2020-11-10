@@ -21,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.RegistreSimulatCommand;
 import es.caib.distribucio.war.command.ReglaCommand;
 import es.caib.distribucio.war.command.ReglaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.ReglaFiltreCommand;
@@ -52,6 +55,8 @@ public class ReglaController  extends BaseAdminController {
 	private UnitatOrganitzativaService unitatService;
 	@Autowired
 	private BackofficeService backofficeService;
+	@Autowired
+	private ContingutService contingutService;
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 
@@ -154,15 +159,15 @@ public class ReglaController  extends BaseAdminController {
 					entitatActual.getId(),
 					reglaId);
 			
-			if (regla.getUnitatOrganitzativa().getTipusTransicio() != null) {
+			if (regla.getUnitatOrganitzativaFiltre() != null && regla.getUnitatOrganitzativaFiltre().getTipusTransicio() != null) {
 				// setting last historicos to the unitat of this regla
-				regla.setUnitatOrganitzativa(unitatService.getLastHistoricos(regla.getUnitatOrganitzativa()));
+				regla.setUnitatOrganitzativaFiltre(unitatService.getLastHistoricos(regla.getUnitatOrganitzativaFiltre()));
 			
 				// getting all the regles connected with old unitat excluding the
 				// one you are currently in
 				List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatCodi(
 						entitatActual.getId(),
-						regla.getUnitatOrganitzativa().getCodi());
+						regla.getUnitatOrganitzativaFiltre().getCodi());
 				List<ReglaDto> reglesOfOldUnitatWithoutCurrent = new ArrayList<ReglaDto>();
 				for (ReglaDto reglaI : reglesOfOldUnitat) {
 					if (!reglaI.getId().equals(regla.getId())) {
@@ -218,6 +223,43 @@ public class ReglaController  extends BaseAdminController {
 					"regla.controller.creada.ok");
 		}
 	}
+	
+	
+	
+	
+	@RequestMapping(value = "/simular", method = RequestMethod.GET)
+	public String simular(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		
+		RegistreSimulatCommand command = new RegistreSimulatCommand();
+		model.addAttribute(command);
+
+		return "reglaSimuladorForm";
+	}
+	
+	
+	@RequestMapping(value = "/simular", method = RequestMethod.POST)
+	public String simular(
+			HttpServletRequest request,
+			@Validated RegistreSimulatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			return "reglaSimuladorForm";
+		}
+		
+		List<RegistreSimulatAccionDto> simulatAccions = reglaService.simularReglaAplicacio(RegistreSimulatCommand.asDto(command));
+		model.addAttribute("simulatAccions", simulatAccions);
+		
+		
+		return "reglaSimuladorForm";
+
+	}
+	
+	
 
 	@RequestMapping(value = "/{reglaId}/enable", method = RequestMethod.GET)
 	public String enable(
@@ -312,7 +354,7 @@ public class ReglaController  extends BaseAdminController {
 					new Object[] {ve.getMessage()});			
 		}
 	}
-
+	
 
 
 	private void emplenarModelFormulari(

@@ -17,8 +17,6 @@ public class ReglaFiltreDto implements Serializable {
 
 	private String unitatCodi;
 	private String nom;
-	// if the obsolete is true we look for the busties of extinguished or anulated unitats  
-	private Boolean unitatObsoleta;
 	private Long unitatId;
 	private ReglaTipusEnumDto tipus;
 	private Long backofficeId;
@@ -35,12 +33,6 @@ public class ReglaFiltreDto implements Serializable {
 	}
 	public void setUnitatId(Long unitatId) {
 		this.unitatId = unitatId;
-	}
-	public Boolean getUnitatObsoleta() {
-		return unitatObsoleta;
-	}
-	public void setUnitatObsoleta(Boolean unitatObsoleta) {
-		this.unitatObsoleta = unitatObsoleta;
 	}
 	public String getUnitatCodi() {
 		return unitatCodi;

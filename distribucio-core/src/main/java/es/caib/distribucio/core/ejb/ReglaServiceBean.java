@@ -14,6 +14,8 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -151,6 +153,13 @@ public class ReglaServiceBean implements ReglaService {
 				paginacioParams);
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
+			RegistreSimulatDto registreSimulatDto) {
+		return delegate.simularReglaAplicacio(
+				registreSimulatDto);
+	}
 	
 
 }

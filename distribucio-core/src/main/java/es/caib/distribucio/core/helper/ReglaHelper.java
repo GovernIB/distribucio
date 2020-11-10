@@ -16,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.namespace.QName;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -27,16 +26,14 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.entity.BustiaEntity;
-import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -79,8 +76,8 @@ public class ReglaHelper {
 
 	public ReglaEntity findAplicable(
 			EntitatEntity entitat,
-			String unitatAdministrativa,
-			ContingutEntity bustiaEntity,
+			Long unitatId,
+			Long bustiaId,
 			String procedimentCodi,
 			String assumpteCodi
 			) {
@@ -88,8 +85,8 @@ public class ReglaHelper {
 		
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
-					unitatAdministrativa!= null ? unitatAdministrativa : "",
-					bustiaEntity != null ? bustiaEntity.getId() : null,
+					unitatId,
+					bustiaId,
 					procedimentCodi != null ? procedimentCodi : "",
 					assumpteCodi != null ? assumpteCodi : "");
 		if (regles.size() > 0) {
@@ -106,6 +103,13 @@ public class ReglaHelper {
 		crypted = cipher.doFinal(input.getBytes());
 		return new String(Base64.encode(crypted));
 	}
+	
+	
+	
+
+
+	
+	
 
 	public Exception aplicarControlantException(
 			RegistreEntity registre) {
@@ -116,14 +120,16 @@ public class ReglaHelper {
 				"reglaId=" + registre.getRegla().getId() + ", " +
 				"reglaTipus=" + registre.getRegla().getTipus().name() + ", " +
 				(registre.getRegla().getBackofficeDesti() != null ? "reglaBackoffice=" + registre.getRegla().getBackofficeDesti().getNom() + ", "  : "") +
-				"bustia=" + registre.getRegla().getBustia() + ")");
+				"bustia=" + registre.getRegla().getBustiaDesti() + ")");
 		try {
 			boolean throwException = false;
 			if (throwException) {
 				throw new RuntimeException("Exception when aplying rule!!!!!!");
 			}
-			
-			aplicar(registre);
+
+			aplicar(
+					registre,
+					new ArrayList<ReglaEntity>());
 			
 			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
 			alertaHelper.crearAlerta(
@@ -154,10 +160,92 @@ public class ReglaHelper {
 			return ex;
 		}
 	}
+	
+	
+	public void aplicarSimulation(
+			EntitatEntity entitatEntity,
+			RegistreSimulatDto registreSimulatDto,
+			ReglaEntity reglaToApply,
+			List<ReglaEntity> reglasApplied,
+			List<RegistreSimulatAccionDto> simulatAccions) {
+
+			switch (reglaToApply.getTipus()) {
+			
+			case BACKOFFICE: // ############################### BACKOFFICE ###############################
+				simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BACKOFFICE, reglaToApply.getBackofficeDesti().getNom(), reglaToApply.getNom()));
+				break;
+				
+			case BUSTIA:
+			case UNITAT: // ############################### BUSTIA / UNITAT ###############################
+				
+				if (reglaToApply.getTipus() == ReglaTipusEnumDto.UNITAT) {
+					
+					BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
+							reglaToApply.getEntitat(),
+							reglaToApply.getUnitatDesti().getCodi());
+					
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, reglaToApply.getUnitatOrganitzativaFiltre().getCodi() + " - "+ reglaToApply.getUnitatOrganitzativaFiltre().getDenominacio(), reglaToApply.getNom()));
+					registreSimulatDto.setUnitatId(reglaToApply.getUnitatDesti().getId());
+					
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+					registreSimulatDto.setBustiaId(bustiaDesti.getId());
+				} else if (reglaToApply.getTipus() == ReglaTipusEnumDto.BUSTIA) {
+					
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA, reglaToApply.getBustiaDesti().getNom(), reglaToApply.getNom()));
+					registreSimulatDto.setBustiaId(reglaToApply.getBustiaDesti().getId());
+					registreSimulatDto.setUnitatId(reglaToApply.getBustiaDesti().getUnitatOrganitzativa().getId());
+				}
+				break;
+
+			}
+			
+			
+			reglasApplied.add(reglaToApply);
+			
+			
+			
+			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
+			ReglaEntity nextReglaToApply = findAplicable(
+					entitatEntity,
+					registreSimulatDto.getUnitatId(),
+					registreSimulatDto.getBustiaId(),
+					registreSimulatDto.getProcedimentCodi(),
+					registreSimulatDto.getAssumpteCodi());
+			
+			if (nextReglaToApply != null) {
+				boolean alreadyApplied = false;
+				for (ReglaEntity reglaE : reglasApplied) {
+					if (nextReglaToApply.getId().equals(reglaE.getId())) {
+						alreadyApplied = true;
+					}
+				}
+				if (!alreadyApplied) {
+					aplicarSimulation(
+							entitatEntity,
+							registreSimulatDto,
+							nextReglaToApply,
+							reglasApplied,
+							simulatAccions);
+				}
+			}
+			
+			
+			
+
+		
+	}
 
 	
 	
-	private void aplicar(RegistreEntity registre) {
+	public void aplicar(
+			RegistreEntity registre,
+			List<ReglaEntity> reglasApplied) {
+		
+		boolean throwException = false;
+		if (throwException) {
+			throw new RuntimeException("Exception when aplying rule!!!!!!");
+		}
+		
 		ReglaEntity regla = registre.getRegla();
 		String error = null;
 		try {
@@ -187,11 +275,11 @@ public class ReglaHelper {
 					
 					bustiaDesti = bustiaHelper.findBustiaDesti(
 							registre.getEntitat(),
-							regla.getUnitatOrganitzativa().getCodi());
+							regla.getUnitatDesti().getCodi());
 					
 				} else if (regla.getTipus() == ReglaTipusEnumDto.BUSTIA) {
 					
-					bustiaDesti = regla.getBustia();
+					bustiaDesti = regla.getBustiaDesti();
 				}
 				
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
@@ -204,10 +292,12 @@ public class ReglaHelper {
 						contingutMoviment,
 						true);
 				emailHelper.createEmailsPendingToSend(
-						regla.getBustia(),
+						regla.getBustiaDesti(),
 						registre,
 						contingutMoviment);
 				
+				
+				// ------- change anotacio to next state -------- 
 				RegistreProcesEstatEnum estat;
 				boolean alreadySavedInArxiu = true;
 				if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
@@ -227,21 +317,61 @@ public class ReglaHelper {
 						null);
 				
 				break;
-			default:
-				error = "Tipus de regla desconegut (" + regla.getTipus() + ")";
-				break;
+
 			}
 			
+			// ------ log and evict -----------
 			List<String> params = new ArrayList<>();
 			params.add(regla.getNom());
 			params.add(regla.getTipus().toString());
-			
 			contingutLogHelper.log(
 					registre,
 					LogTipusEnumDto.REGLA_APLICAR,
 					params,
 					false);
+
+			BustiaEntity pendentBustia = null;
+			if (registre.getPare() instanceof BustiaEntity) {
+				pendentBustia = (BustiaEntity) registre.getPare();
+				if (pendentBustia != null) {
+					bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+							regla.getEntitat(),
+							pendentBustia);
+				}
+			}
 			
+			
+			reglasApplied.add(regla);
+			
+			
+			
+			
+			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
+			BustiaEntity bustia = (BustiaEntity)registre.getPare();
+			ReglaEntity nextReglaToApply = findAplicable(
+					registre.getEntitat(),
+					bustia.getUnitatOrganitzativa().getId(),
+					bustia.getId(),
+					registre.getProcedimentCodi(),
+					registre.getAssumpteCodi());
+			
+			if (nextReglaToApply != null) {
+				boolean alreadyApplied = false;
+				for (ReglaEntity reglaE : reglasApplied) {
+					if (nextReglaToApply.getId().equals(reglaE.getId())) {
+						alreadyApplied = true;
+					}
+				}
+				if (!alreadyApplied) {
+					aplicar(
+							registre,
+							reglasApplied);
+				}
+			}
+			
+			
+			
+
 		} catch (Exception ex) {
 			Throwable t = ExceptionUtils.getRootCause(ex);
 			if (t == null)
@@ -249,20 +379,9 @@ public class ReglaHelper {
 			if (t == null)
 				t = ex;
 			error = ExceptionUtils.getStackTrace(t);
-		}
-		if (error != null) {
 			throw new AplicarReglaException(error);
-		} else {
-			BustiaEntity pendentBustia = null;
-			if (registre.getPare() instanceof BustiaEntity) {
-				pendentBustia = (BustiaEntity)registre.getPare();
-				if (pendentBustia != null) {
-					bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-							regla.getEntitat(),
-							pendentBustia);
-				}				
-			}
 		}
+		
 	}
 
 	/*

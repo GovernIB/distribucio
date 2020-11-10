@@ -37,18 +37,28 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		boolean valid = true;
 		
 		// Comprova que el codi d'assumpte o el codi de procediement estiguin informats
-//		if ((command.getAssumpteCodi() == null || command.getAssumpteCodi().trim().isEmpty())
-//				&& (command.getProcedimentCodi() == null || command.getProcedimentCodi().trim().isEmpty())) {
-//			context.buildConstraintViolationWithTemplate(
-//					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
-//					.addNode("assumpteCodi")
-//					.addConstraintViolation();	
-//			context.buildConstraintViolationWithTemplate(
-//					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
-//					.addNode("procedimentCodi")
-//					.addConstraintViolation();	
-//			valid = false;
-//		}
+		if ((command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
+			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
+			 command.getUnitatFiltreId() == null &&
+			 command.getBustiaFiltreId() == null) {
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+					.addNode("assumpteCodiFiltre")
+					.addConstraintViolation();	
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+					.addNode("procedimentCodiFiltre")
+					.addConstraintViolation();	
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+					.addNode("unitatFiltreId")
+					.addConstraintViolation();	
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+					.addNode("bustiaFiltreId")
+					.addConstraintViolation();	
+			valid = false;
+		}
 
 		if (!valid)
 			context.disableDefaultConstraintViolation();

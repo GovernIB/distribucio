@@ -184,7 +184,7 @@ public class RegistreHelper {
 	public RegistreEntity crearRegistreEntity(
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
-			String unitatAdministrativa,
+			String unitatOrganitzativaCodi,
 			RegistreAnotacio registreAnotacio,
 			ReglaEntity regla,
 			RegistreProcesEstatEnum estat) {
@@ -193,7 +193,7 @@ public class RegistreHelper {
 		Timer.Context contextfindPerEntitatAndCodi = timerfindPerEntitatAndCodi.time();
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
 				entitat.getCodi(),
-				unitatAdministrativa);
+				unitatOrganitzativaCodi);
 		contextfindPerEntitatAndCodi.stop();
 		
 		final Timer timersaveRegistre = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveRegistre"));
@@ -206,7 +206,7 @@ public class RegistreHelper {
 		RegistreEntity registreEntity = RegistreEntity.getBuilder(
 				entitat,
 				tipus,
-				unitatAdministrativa,
+				unitatOrganitzativaCodi,
 				unitat != null ? unitat.getDenominacio() : null,
 				registreAnotacio.getNumero(),
 				registreAnotacio.getData(),

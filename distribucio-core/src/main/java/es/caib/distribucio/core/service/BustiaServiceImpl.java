@@ -410,7 +410,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		
 		// cannot remove busties with regles
-		if (reglaRepository.findByBustia(bustia) != null && !reglaRepository.findByBustia(bustia).isEmpty()) {
+		if ((reglaRepository.findByBustiaDesti(bustia) != null && !reglaRepository.findByBustiaDesti(bustia).isEmpty()) || (reglaRepository.findByBustiaFiltre(bustia) != null && !reglaRepository.findByBustiaFiltre(bustia).isEmpty())) {
 			String missatgeError = messageHelper.getMessage("bustia.service.esborrat.error.regles", new Object[] {id});
 			logger.error(missatgeError);
 			throw new ValidationException(
@@ -846,7 +846,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
-			String unitatOrganitzativa,
+			String unitatOrganitzativaCodi,
 			RegistreAnotacio registreAnotacio) {
 		
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar"));
@@ -855,7 +855,7 @@ public class BustiaServiceImpl implements BustiaService {
 		logger.debug("Creant anotació provinent del servei d'enviament a bústia ("
 				+ "entitatCodi=" + entitatCodi + ", "
 				+ "tipus=" + tipus + ", "
-				+ "unitatOrganitzativa=" + unitatOrganitzativa + ","
+				+ "unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ","
 				+ "anotacio=" + registreAnotacio.getNumero() + ")");
 		
 		final Timer timervalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre"));
@@ -868,12 +868,17 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
-				unitatOrganitzativa);
+				unitatOrganitzativaCodi);
+		
+		
+		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+				entitat.getCodi(),
+				unitatOrganitzativaCodi);
 		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
-				unitatOrganitzativa,
-				bustia,
+				unitat.getId(),
+				bustia.getId(),
 				registreAnotacio.getProcedimentCodi(),
 				registreAnotacio.getAssumpteCodi());
 		RegistreProcesEstatEnum estat;
@@ -894,7 +899,7 @@ public class BustiaServiceImpl implements BustiaService {
 		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
 				entitat,
 				tipus,
-				unitatOrganitzativa,
+				unitatOrganitzativaCodi,
 				registreAnotacio,
 				reglaAplicable,
 				estat);
@@ -904,7 +909,7 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextmoveAnotacioToBustiaPerDefecte = timermoveAnotacioToBustiaPerDefecte.time();
 		moveAnotacioToBustiaPerDefecte(
 				entitat,
-				unitatOrganitzativa,
+				unitatOrganitzativaCodi,
 				anotacioEntity);
 		contextmoveAnotacioToBustiaPerDefecte.stop();
 		
@@ -927,7 +932,7 @@ public class BustiaServiceImpl implements BustiaService {
 			logger.debug("L'anotació es processarà inmediatament (" +
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
-					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
+					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
 					"anotacio=" + registreAnotacio.getNumero() + ")");
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getId());
 			if (exceptionProcessant == null) {
@@ -938,7 +943,7 @@ public class BustiaServiceImpl implements BustiaService {
 			logger.debug("L'anotació es processarà de forma asíncrona (" +
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
-					"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
+					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
 					"anotacio=" + registreAnotacio.getNumero() + ")");
 		}
 		contextprocess.stop();

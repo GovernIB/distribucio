@@ -111,7 +111,10 @@
 
 
 	<script id="botonsTemplate" type="text/x-jsrender">
-		<p style="text-align:right"><a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a></p>
+		<p style="text-align:right">
+			<a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
+			<a class="btn btn-primary" href="regla/simular" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-cog"></span>&nbsp;<spring:message code="regla.list.boto.simular"/></a>
+		</p>
 	</script>
 	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="true"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
 	data-botons-template="#botonsTemplate">
@@ -133,9 +136,9 @@
 				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
 					<spring:message code="regla.list.columna.tipus"/>
 				</th>
-				<th data-col-name="assumpteCodi" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
-				<th data-col-name="procedimentCodi" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
-				<th data-col-name="unitatOrganitzativa.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
+				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
+				<th data-col-name="procedimentCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
+				<th data-col-name="unitatOrganitzativaFiltre.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
 				<th data-col-name="backofficeDestiNom" data-orderable="false"><spring:message code="regla.list.columna.backoffice"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.activa"/>

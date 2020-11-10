@@ -35,25 +35,19 @@ public class ReglaCommand {
 	
 	// ------------- FILRE ----------------------
 	@Size(max = 16, groups = {CreateUpdate.class})
-	private String assumpteCodi;
+	private String assumpteCodiFiltre;
 	@Size(max = 64, groups = {CreateUpdate.class})
-	private String procedimentCodi;
-	private Long unitatId;
+	private String procedimentCodiFiltre;
+	private Long unitatFiltreId;
 	private Long bustiaFiltreId;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
-	private Long bustiaId;
+	private Long bustiaDestiId;
 	private Long backofficeDestiId;
 	private Long unitatDestiId;
 	
 	
-	public Long getUnitatId() {
-		return unitatId;
-	}
-	public void setUnitatId(Long unitatId) {
-		this.unitatId = unitatId;
-	}
 	public Long getId() {
 		return id;
 	}
@@ -78,25 +72,30 @@ public class ReglaCommand {
 	public void setTipus(ReglaTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public String getAssumpteCodi() {
-		return assumpteCodi;
+	public Long getBustiaDestiId() {
+		return bustiaDestiId;
 	}
-	public void setAssumpteCodi(String assumpteCodi) {
-		this.assumpteCodi = assumpteCodi;
+	public void setBustiaDestiId(Long bustiaDestiId) {
+		this.bustiaDestiId = bustiaDestiId;
 	}
-	public Long getBustiaId() {
-		return bustiaId;
+	public String getAssumpteCodiFiltre() {
+		return assumpteCodiFiltre;
 	}
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
+	public void setAssumpteCodiFiltre(String assumpteCodiFiltre) {
+		this.assumpteCodiFiltre = assumpteCodiFiltre;
 	}
-	public String getProcedimentCodi() {
-		return procedimentCodi;
+	public String getProcedimentCodiFiltre() {
+		return procedimentCodiFiltre;
 	}
-	public void setProcedimentCodi(String procedimentCodi) {
-		this.procedimentCodi = procedimentCodi;
+	public void setProcedimentCodiFiltre(String procedimentCodiFiltre) {
+		this.procedimentCodiFiltre = procedimentCodiFiltre;
 	}
-
+	public Long getUnitatFiltreId() {
+		return unitatFiltreId;
+	}
+	public void setUnitatFiltreId(Long unitatFiltreId) {
+		this.unitatFiltreId = unitatFiltreId;
+	}
 	public Long getBustiaFiltreId() {
 		return bustiaFiltreId;
 	}
@@ -115,18 +114,22 @@ public class ReglaCommand {
 				dto,
 				ReglaCommand.class);
 		 
-		if (dto.getUnitatOrganitzativa() != null)
-			command.setUnitatId(
-					dto.getUnitatOrganitzativa().getId());
+		if (dto.getUnitatOrganitzativaFiltre() != null)
+			command.setUnitatFiltreId(
+					dto.getUnitatOrganitzativaFiltre().getId());
 		return command;
 	}
 	public static ReglaDto asDto(ReglaCommand command) {
 		ReglaDto reglaDto = ConversioTipusHelper.convertir(
 				command,
 				ReglaDto.class);
-		UnitatOrganitzativaDto unitatOrganitzativaDto = new UnitatOrganitzativaDto();
-		unitatOrganitzativaDto.setId(command.getUnitatId());
-		reglaDto.setUnitatOrganitzativa(unitatOrganitzativaDto);
+		
+		if (command.getUnitatFiltreId() != null) {
+			UnitatOrganitzativaDto unitatOrganitzativaDto = new UnitatOrganitzativaDto();
+			unitatOrganitzativaDto.setId(command.getUnitatFiltreId());
+			reglaDto.setUnitatOrganitzativaFiltre(unitatOrganitzativaDto);
+		}
+
 		return reglaDto;
 	}
 

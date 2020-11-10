@@ -9,9 +9,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+
 
 /**
  * Declaració dels mètodes per a la gestió de regles.
@@ -167,6 +170,10 @@ public interface ReglaService {
 	List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi);
 
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
+
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
+			RegistreSimulatDto registreSimulatDto);
 
 
 }

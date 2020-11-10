@@ -19,14 +19,14 @@ public class ReglaDto extends AuditoriaDto {
 	
 	
 	// ------------- FILRE ----------------------
-	private String assumpteCodi;
-	private String procedimentCodi;
-	private UnitatOrganitzativaDto unitatOrganitzativa;
+	private String assumpteCodiFiltre;
+	private String procedimentCodiFiltre;
+	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private Long bustiaFiltreId;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
-	private Long bustiaId;
+	private Long bustiaDestiId;
 	private Long backofficeDestiId;
 	private String backofficeDestiNom;
 	private Long unitatDestiId;
@@ -49,12 +49,6 @@ public class ReglaDto extends AuditoriaDto {
 	public void setBackofficeDestiId(Long backofficeDestiId) {
 		this.backofficeDestiId = backofficeDestiId;
 	}
-	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
-	}
-	public void setUnitatOrganitzativa(UnitatOrganitzativaDto unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
-	}
 	public Long getId() {
 		return id;
 	}
@@ -73,29 +67,35 @@ public class ReglaDto extends AuditoriaDto {
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
 	}
-	public String getProcedimentCodi() {
-		return procedimentCodi;
-	}
-	public void setProcedimentCodi(String procedimentCodi) {
-		this.procedimentCodi = procedimentCodi;
-	}
 	public ReglaTipusEnumDto getTipus() {
 		return tipus;
 	}
 	public void setTipus(ReglaTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
-	public String getAssumpteCodi() {
-		return assumpteCodi;
+	public String getAssumpteCodiFiltre() {
+		return assumpteCodiFiltre;
 	}
-	public void setAssumpteCodi(String assumpteCodi) {
-		this.assumpteCodi = assumpteCodi;
+	public void setAssumpteCodiFiltre(String assumpteCodiFiltre) {
+		this.assumpteCodiFiltre = assumpteCodiFiltre;
 	}
-	public Long getBustiaId() {
-		return bustiaId;
+	public String getProcedimentCodiFiltre() {
+		return procedimentCodiFiltre;
 	}
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
+	public void setProcedimentCodiFiltre(String procedimentCodiFiltre) {
+		this.procedimentCodiFiltre = procedimentCodiFiltre;
+	}
+	public UnitatOrganitzativaDto getUnitatOrganitzativaFiltre() {
+		return unitatOrganitzativaFiltre;
+	}
+	public void setUnitatOrganitzativaFiltre(UnitatOrganitzativaDto unitatOrganitzativaFiltre) {
+		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
+	}
+	public Long getBustiaDestiId() {
+		return bustiaDestiId;
+	}
+	public void setBustiaDestiId(Long bustiaDestiId) {
+		this.bustiaDestiId = bustiaDestiId;
 	}
 	public int getOrdre() {
 		return ordre;

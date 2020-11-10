@@ -28,6 +28,7 @@ import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -93,7 +94,11 @@ public class ContingutHelper {
 	@Resource
 	private CacheHelper cacheHelper;
 	@Autowired
-	RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	private ContingutLogHelper contingutLogHelper;
+	@Autowired
+	private EntityComprovarHelper entityComprovarHelper;
 
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -464,6 +469,47 @@ public class ContingutHelper {
 		}
 		return usuaris;
 	}
+	
+	
+	
+
+	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(
+			Long entitatId,
+			Long contingutId) {
+		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		
+		List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(
+				contingut);
+		List<ContingutLogDetallsDto> dtos = new ArrayList<ContingutLogDetallsDto>();
+		
+		for (ContingutLogEntity log : logs) {
+			ContingutLogDetallsDto dto = contingutLogHelper.findLogDetalls(
+					contingut,
+					log.getId());
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	
 
 
 	public ContingutMovimentEntity ferIEnregistrarMoviment(

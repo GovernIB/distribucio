@@ -62,7 +62,9 @@ public class ConversioTipusHelper {
 		
 		mapperFactory.registerClassMap(
 				ClassMapBuilder.map(ReglaEntity.class, ReglaDto.class)
-				.field("backofficeDesti.nom", "backofficeDestiNom").byDefault().toClassMap());
+				.field("backofficeDesti.nom", "backofficeDestiNom")
+				.field("backofficeDesti.id", "backofficeDestiId")
+				.byDefault().toClassMap());
 		
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<ContingutComentariEntity, ContingutComentariDto>() {

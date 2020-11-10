@@ -64,4 +64,8 @@
 			id="avisService"
 			jndi-name="distribucio/AvisServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.AvisService"/>
+	<jee:local-slsb
+			id="backofficeService"
+			jndi-name="distribucio/BackofficeServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.BackofficeService"/>
 </beans>

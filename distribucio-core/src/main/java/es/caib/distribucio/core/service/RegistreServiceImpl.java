@@ -1253,8 +1253,8 @@ public class RegistreServiceImpl implements RegistreService {
 		registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
-				bustia.getUnitatOrganitzativa().getCodi(),
-				registre.getPare(),
+				bustia.getUnitatOrganitzativa().getId(),
+				registre.getPare().getId(),
 				registre.getProcedimentCodi(),
 				registre.getAssumpteCodi());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();

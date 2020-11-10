@@ -4,9 +4,7 @@
 package es.caib.distribucio.core.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -17,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -28,11 +29,14 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
+import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BackofficeRepository;
+import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
@@ -62,89 +66,108 @@ public class ReglaServiceImpl implements ReglaService {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Resource
 	private BackofficeRepository backofficeRepository;
+	@Resource
+	private ReglaHelper reglaHelper;
+	@Resource
+	private BustiaHelper bustiaHelper;
+	@Resource
+	private BustiaRepository bustiaRepository;
 
 	@Override
 	@Transactional
 	public ReglaDto create(
 			Long entitatId,
-			ReglaDto regla) {
+			ReglaDto reglaDto) {
 		logger.debug("Creant una nova regla ("
 				+ "entitatId=" + entitatId + ", "
-				+ "regla=" + regla + ")");
+				+ "regla=" + reglaDto + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
 		int ordre = reglaRepository.countByEntitat(entitat);
-		ReglaEntity entity = ReglaEntity.getBuilder(
+		ReglaEntity reglaEntity = ReglaEntity.getBuilder(
 				entitat,
-				regla.getNom(),
-				regla.getTipus(),
-				regla.getAssumpteCodi(),
-				regla.getProcedimentCodi(),
-				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId()),
+				reglaDto.getNom(),
+				reglaDto.getTipus(),
+				reglaDto.getAssumpteCodiFiltre(),
+				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findOne(reglaDto.getUnitatOrganitzativaFiltre().getId()) : null,
+				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findOne(reglaDto.getBustiaFiltreId()) : null,
 				ordre).
-				descripcio(regla.getDescripcio()).
+				descripcio(reglaDto.getDescripcio()).
 				build();
-		switch(regla.getTipus()) {
+		switch(reglaDto.getTipus()) {
 		case BACKOFFICE:
-			BackofficeEntity backofficeEntity = backofficeRepository.findOne(regla.getBackofficeDestiId());
-			entity.updatePerTipusBackoffice(
+			BackofficeEntity backofficeEntity = backofficeRepository.findOne(reglaDto.getBackofficeDestiId());
+			reglaEntity.updatePerTipusBackoffice(
 					backofficeEntity);
 			break;
 		case BUSTIA:
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
-					regla.getBustiaId(),
+					reglaDto.getBustiaDestiId(),
 					false);
-			entity.updatePerTipusBustia(
+			reglaEntity.updatePerTipusBustia(
 					bustia);
+			break;
+		case UNITAT:
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findOne(reglaDto.getUnitatDestiId());
+			reglaEntity.updatePerTipusUnitat(
+					unitatOrganitzativaEntity);
 			break;
 		}
 
-		return toReglaDto(reglaRepository.save(entity));
+		return toReglaDto(reglaRepository.save(reglaEntity));
 	}
 
 	@Override
 	@Transactional
 	public ReglaDto update(
 			Long entitatId,
-			ReglaDto regla) throws NotFoundException {
+			ReglaDto reglaDto) throws NotFoundException {
 		logger.debug("Modificant la regla ("
 				+ "entitatId=" + entitatId + ", "
-				+ "regla=" + regla + ")");
+				+ "regla=" + reglaDto + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		ReglaEntity entity = entityComprovarHelper.comprovarRegla(
+		ReglaEntity reglaEntity = entityComprovarHelper.comprovarRegla(
 				entitat,
-				regla.getId());
-		entity.update(
-				regla.getNom(),
-				regla.getDescripcio(),
-				regla.getTipus(),
-				regla.getAssumpteCodi(),
-				regla.getProcedimentCodi(),
-				unitatOrganitzativaRepository.findOne(regla.getUnitatOrganitzativa().getId())); 
-		switch(regla.getTipus()) {
+				reglaDto.getId());
+
+		reglaEntity.update(
+				reglaDto.getNom(),
+				reglaDto.getDescripcio(),
+				reglaDto.getTipus(),
+				reglaDto.getAssumpteCodiFiltre(),
+				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findOne(reglaDto.getUnitatOrganitzativaFiltre().getId()) : null,
+				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findOne(reglaDto.getBustiaFiltreId()) : null);
+		switch(reglaDto.getTipus()) {
 		case BACKOFFICE:
-			BackofficeEntity backofficeEntity = backofficeRepository.findOne(regla.getBackofficeDestiId());
-			entity.updatePerTipusBackoffice(
+			BackofficeEntity backofficeEntity = backofficeRepository.findOne(reglaDto.getBackofficeDestiId());
+			reglaEntity.updatePerTipusBackoffice(
 					backofficeEntity);
 			break;
 		case BUSTIA:
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
-					regla.getBustiaId(),
+					reglaDto.getBustiaDestiId(),
 					false);
-			entity.updatePerTipusBustia(
+			reglaEntity.updatePerTipusBustia(
 					bustia);
 			break;
+		case UNITAT:
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findOne(reglaDto.getUnitatDestiId());
+			reglaEntity.updatePerTipusUnitat(
+					unitatOrganitzativaEntity);
+			break;
 		}
-		return toReglaDto(reglaRepository.save(entity));
+		return toReglaDto(reglaRepository.save(reglaEntity));
 	}
 
 	@Override
@@ -336,8 +359,6 @@ public class ReglaServiceImpl implements ReglaService {
 				true,
 				false);
 		
-		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
-		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
 
@@ -353,10 +374,9 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getNom() != null ? filtre.getNom() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
-						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						backoffice == null ,
 						backoffice,
-						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
+						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				ReglaDto.class);
 		
 		return resultPagina;
@@ -373,13 +393,69 @@ public class ReglaServiceImpl implements ReglaService {
 				+ ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
 
-		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatOrganitzativaCodi(entitat, unitatCodi);
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatOrganitzativaFiltreCodi(entitat, unitatCodi);
 		List<ReglaDto> resposta = new ArrayList<ReglaDto>();
 		for (ReglaEntity regla : regles) {
 			resposta.add(toReglaDto(regla));
 		}
 		return resposta;
 	}
+
+
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
+			RegistreSimulatDto registreSimulatDto) {
+
+		logger.debug("Simulant regla aplicacio ("
+				+ "unitatId=" + registreSimulatDto.getUnitatId() + ", "
+				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
+				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
+		
+		
+		List<RegistreSimulatAccionDto> simulatAccions = new ArrayList<>();
+		
+		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findOne(
+				registreSimulatDto.getUnitatId());
+		
+		EntitatEntity entitatEntity = entitatRepository.findByCodiDir3(unitatOrganitzativaEntity.getCodiDir3Entitat());
+		
+		BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
+				entitatEntity,
+				unitatOrganitzativaEntity.getCodi());
+		
+		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
+				entitatEntity,
+				unitatOrganitzativaEntity.getId(),
+				bustiaDesti.getId(),
+				registreSimulatDto.getProcedimentCodi(),
+				registreSimulatDto.getAssumpteCodi());
+		
+		simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+		registreSimulatDto.setBustiaId(bustiaDesti.getId());
+		
+		
+		if (reglaAplicable != null) {
+			reglaHelper.aplicarSimulation(
+					entitatEntity,
+					registreSimulatDto,
+					reglaAplicable,
+					new ArrayList<ReglaEntity>(),
+					simulatAccions);
+		}
+
+		
+		
+
+		
+		
+		return simulatAccions;
+
+	}
+	
+	
+	
 
 
 	private void canviPosicio(
@@ -403,15 +479,28 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaDto dto = conversioTipusHelper.convertir(
 				regla,
 				ReglaDto.class);
-		if (regla.getBustia() != null)
-			dto.setBustiaId(regla.getBustia().getId());
+		if (regla.getBustiaDesti() != null)
+			dto.setBustiaDestiId(regla.getBustiaDesti().getId());
 		
-		UnitatOrganitzativaEntity unitatEntity = regla.getUnitatOrganitzativa();
-		UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(
-				unitatEntity,
-				UnitatOrganitzativaDto.class);
-		unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity, unitatDto);
-		dto.setUnitatOrganitzativa(unitatDto);
+		UnitatOrganitzativaEntity unitatFiltreEntity = regla.getUnitatOrganitzativaFiltre();
+		if (unitatFiltreEntity != null) {
+			UnitatOrganitzativaDto unitatFiltreDto = conversioTipusHelper.convertir(
+					unitatFiltreEntity,
+					UnitatOrganitzativaDto.class);
+			unitatFiltreDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatFiltreEntity, unitatFiltreDto);
+			dto.setUnitatOrganitzativaFiltre(unitatFiltreDto);
+		}
+		
+		UnitatOrganitzativaEntity unitatDesti = regla.getUnitatDesti();
+		if (unitatDesti != null) {
+			dto.setUnitatDestiId(unitatDesti.getId());
+		}
+		
+		BustiaEntity busitaFiltre = regla.getBustiaFiltre();
+		if (busitaFiltre != null) {
+			dto.setBustiaFiltreId(busitaFiltre.getId());
+		}
+	
 		
 		return dto;
 	}

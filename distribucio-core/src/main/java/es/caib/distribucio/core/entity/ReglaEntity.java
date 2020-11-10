@@ -53,15 +53,15 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	
 	// ------------- FILRE ----------------------
 	@Column(name = "assumpte_codi", length = 16)
-	protected String assumpteCodi;
+	protected String assumpteCodiFiltre;
 	
 	@Column(name = "procediment_codi", length = 64, nullable = false)
-	private String procedimentCodi;
+	private String procedimentCodiFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
 	@ForeignKey(name = "dis_unitat_regla_fk")
-	protected UnitatOrganitzativaEntity unitatOrganitzativa;
+	protected UnitatOrganitzativaEntity unitatOrganitzativaFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bustia_filtre_id")
@@ -80,7 +80,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bustia_id")
 	@ForeignKey(name = "dis_bustia_regla_fk")
-	protected BustiaEntity bustia;
+	protected BustiaEntity bustiaDesti;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_desti_id")
@@ -89,10 +89,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 
 	
 	
-	
-	
-	
-	
+
 	
 	
 	@Column(name = "ordre", nullable = false)
@@ -109,10 +106,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Version
 	private long version = 0;
 
-	
-
-	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
+	public UnitatOrganitzativaEntity getUnitatOrganitzativaFiltre() {
+		return unitatOrganitzativaFiltre;
 	}
 	public String getNom() {
 		return nom;
@@ -123,14 +118,14 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public ReglaTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public String getAssumpteCodi() {
-		return assumpteCodi;
+	public String getAssumpteCodiFiltre() {
+		return assumpteCodiFiltre;
 	}
-	public String getProcedimentCodi() {
-		return procedimentCodi;
+	public String getProcedimentCodiFiltre() {
+		return procedimentCodiFiltre;
 	}
-	public BustiaEntity getBustia() {
-		return bustia;
+	public BustiaEntity getBustiaDesti() {
+		return bustiaDesti;
 	}
 	public int getOrdre() {
 		return ordre;
@@ -147,28 +142,37 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public BackofficeEntity getBackofficeDesti() {
 		return backofficeDesti;
 	}
-
+	
+	public UnitatOrganitzativaEntity getUnitatDesti() {
+		return unitatDesti;
+	}
 	public void update(
 			String nom,
 			String descripcio,
 			ReglaTipusEnumDto tipus,
-			String assumpteCodi,
-			String procedimentCodi,
-			UnitatOrganitzativaEntity unitatOrganitzativa) {
+			String assumpteCodiFiltre,
+			String procedimentCodiFiltre,
+			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
+			BustiaEntity bustiaFiltre) {
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
-		this.assumpteCodi = assumpteCodi;
-		this.procedimentCodi = procedimentCodi;
-		this.unitatOrganitzativa = unitatOrganitzativa;
+		this.assumpteCodiFiltre = assumpteCodiFiltre;
+		this.procedimentCodiFiltre = procedimentCodiFiltre;
+		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
+		this.bustiaFiltre = bustiaFiltre;
 	}
 	public void updatePerTipusBustia(
-			BustiaEntity bustia) {
-		this.bustia = bustia;
+			BustiaEntity bustiaDesti) {
+		this.bustiaDesti = bustiaDesti;
 	}
 	public void updatePerTipusBackoffice(
 			BackofficeEntity backofficeEntity) {
 		this.backofficeDesti = backofficeEntity;
+	}
+	public void updatePerTipusUnitat(
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity) {
+		this.unitatDesti = unitatOrganitzativaEntity;
 	}
 	public void updateOrdre(
 			int ordre) {
@@ -183,17 +187,19 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			EntitatEntity entitat,
 			String nom,
 			ReglaTipusEnumDto tipus,
-			String assumpteCodi,
-			String procedimentCodi,
-			UnitatOrganitzativaEntity unitatOrganitzativa,
+			String assumpteCodiFiltre,
+			String procedimentCodiFiltre,
+			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
+			BustiaEntity bustiaFiltre,
 			int ordre) {
 		return new Builder(
 				entitat,
 				nom,
 				tipus,
-				assumpteCodi,
-				procedimentCodi,
-				unitatOrganitzativa,
+				assumpteCodiFiltre,
+				procedimentCodiFiltre,
+				unitatOrganitzativaFiltre,
+				bustiaFiltre,
 				ordre);
 	}
 	public static class Builder {
@@ -202,17 +208,19 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				EntitatEntity entitat,
 				String nom,
 				ReglaTipusEnumDto tipus,
-				String assumpteCodi,
-				String procedimentCodi,
-				UnitatOrganitzativaEntity unitatOrganitzativa,
+				String assumpteCodiFiltre,
+				String procedimentCodiFiltre,
+				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
+				BustiaEntity bustiaFiltre,
 				int ordre) {
 			built = new ReglaEntity();
 			built.entitat = entitat;
 			built.nom = nom;
 			built.tipus = tipus;
-			built.assumpteCodi = assumpteCodi;
-			built.procedimentCodi = procedimentCodi;
-			built.unitatOrganitzativa = unitatOrganitzativa;
+			built.assumpteCodiFiltre = assumpteCodiFiltre;
+			built.procedimentCodiFiltre = procedimentCodiFiltre;
+			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
+			built.bustiaFiltre = bustiaFiltre;
 			built.ordre = ordre;
 			built.activa = true;
 		}
@@ -229,7 +237,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((assumpteCodi == null) ? 0 : assumpteCodi.hashCode());
+		result = prime * result + ((assumpteCodiFiltre == null) ? 0 : assumpteCodiFiltre.hashCode());
 		result = prime * result + ((entitat == null) ? 0 : entitat.hashCode());
 		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
@@ -244,15 +252,15 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		if (getClass() != obj.getClass())
 			return false;
 		ReglaEntity other = (ReglaEntity) obj;
-		if (assumpteCodi == null) {
-			if (other.assumpteCodi != null)
+		if (assumpteCodiFiltre == null) {
+			if (other.assumpteCodiFiltre != null)
 				return false;
-		} else if (!assumpteCodi.equals(other.assumpteCodi))
+		} else if (!assumpteCodiFiltre.equals(other.assumpteCodiFiltre))
 			return false;
-		if (procedimentCodi == null) {
-			if (other.procedimentCodi != null)
+		if (procedimentCodiFiltre == null) {
+			if (other.procedimentCodiFiltre != null)
 				return false;
-		} else if (!procedimentCodi.equals(other.procedimentCodi))
+		} else if (!procedimentCodiFiltre.equals(other.procedimentCodiFiltre))
 			return false;
 		if (entitat == null) {
 			if (other.entitat != null)

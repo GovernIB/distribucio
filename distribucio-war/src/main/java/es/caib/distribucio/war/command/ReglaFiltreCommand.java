@@ -19,7 +19,6 @@ public class ReglaFiltreCommand {
 
 	private String unitatCodi;
 	private String nom;
-	private Boolean unitatObsoleta;
 	private Long unitatId;
 	private ReglaTipusEnumDto tipus;
 	private Long backofficeId;
@@ -37,13 +36,6 @@ public class ReglaFiltreCommand {
 	public void setUnitatId(Long unitatId) {
 		this.unitatId = unitatId;
 	}
-	public Boolean getUnitatObsoleta() {
-		return unitatObsoleta;
-	}
-	public void setUnitatObsoleta(Boolean unitatObsoleta) {
-		this.unitatObsoleta = unitatObsoleta;
-	}
-
 	public String getNom() {
 		return nom;
 	}

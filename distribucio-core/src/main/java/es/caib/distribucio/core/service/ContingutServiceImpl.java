@@ -230,37 +230,10 @@ public class ContingutServiceImpl implements ContingutService {
 	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(
 			Long entitatId,
 			Long contingutId) {
-		logger.debug("Obtenint registre d'accions pel contingut usuari normal ("
-				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contingutId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+
+		return contingutHelper.findLogsDetallsPerContingutUser(
 				entitatId,
-				false,
-				false,
-				true);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
-				contingutId,
-				null);
-		// Comprova que l'usuari tengui accés al contingut
-		contingutHelper.comprovarPermisosPathContingut(
-				contingut,
-				false,
-				false,
-				false,
-				true);
-		
-		List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(
-				contingut);
-		List<ContingutLogDetallsDto> dtos = new ArrayList<ContingutLogDetallsDto>();
-		
-		for (ContingutLogEntity log : logs) {
-			ContingutLogDetallsDto dto = contingutLogHelper.findLogDetalls(
-					contingut,
-					log.getId());
-			dtos.add(dto);
-		}
-		return dtos;
+				contingutId);
 	}
 	
 	

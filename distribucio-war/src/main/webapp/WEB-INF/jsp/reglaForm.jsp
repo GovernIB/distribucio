@@ -49,7 +49,7 @@ function formatSelectUnitatItem(select, item) {
 
 
 function formatSelectUnitat(item) {
-	return formatSelectUnitatItem($('#unitatId'), item);
+	return formatSelectUnitatItem($('#unitatFiltreId'), item);
 }
 
 
@@ -74,7 +74,7 @@ $(document).ready(function() {
 <body>
 
 
-	<c:if test="${reglaDto.unitatOrganitzativa.tipusTransicio != null}">
+	<c:if test="${reglaDto.unitatOrganitzativaFiltre.tipusTransicio != null}">
 
 		<div class="panel panel-danger">
 			<div class="panel-heading">
@@ -87,7 +87,7 @@ $(document).ready(function() {
 							code="regla.form.novesUnitats" /></label>
 					<div class="col-xs-8">
 						<ul style="padding-left: 17px;">
-							<c:forEach items="${reglaDto.unitatOrganitzativa.lastHistoricosUnitats}"
+							<c:forEach items="${reglaDto.unitatOrganitzativaFiltre.lastHistoricosUnitats}"
 								var="newUnitat" varStatus="loop">
 								<li>${newUnitat.denominacio} (${newUnitat.codi})</li>
 							</c:forEach>
@@ -128,7 +128,7 @@ $(document).ready(function() {
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 		<dis:inputSuggest 
-			name="unitatId" 
+			name="unitatFiltreId" 
 			textKey="bustia.form.camp.unitat"
 			urlConsultaInicial="${urlConsultaInicial}" 
 			urlConsultaLlistat="${urlConsultaLlistat}" 
@@ -137,15 +137,15 @@ $(document).ready(function() {
 			suggestValue="id"
 			suggestText="codiAndNom"
 			optionTemplateFunction="formatSelectUnitat"/>
-		<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true"/>
-		<dis:inputText name="procedimentCodi" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
-		<dis:inputText name="assumpteCodi" textKey="regla.form.camp.assumpte.codi" required="false"/>
+		<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
+		<dis:inputText name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
+		<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 		
 
 		<legend><spring:message code="regla.form.legend.accio"/></legend>
 		<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 		<div id="camps_tipus_BUSTIA">
-			<dis:inputSelect name="bustiaId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true"/>
+			<dis:inputSelect name="bustiaDestiId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true" optionMinimumResultsForSearch="0"/>
 		</div>
 		<div id="camps_tipus_BACKOFFICE">
 			<dis:inputSelect name="backofficeDestiId" textKey="regla.form.camp.backoffice" optionItems="${backoffices}" optionValueAttribute="id" optionTextAttribute="nom" required="true" emptyOption="true"/>
