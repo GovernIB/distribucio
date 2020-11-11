@@ -37,7 +37,8 @@ public class ClassificacioResultatDto {
 		SENSE_CANVIS,
 		REGLA_BUSTIA,
 		REGLA_BACKOFFICE,
-		REGLA_ERROR
+		REGLA_ERROR,
+		REGLA_UNITAT
 	}
 
 }

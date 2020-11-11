@@ -65,7 +65,7 @@ var actualitzarEstatRegistre = function(index, success, response) {
 	if (success) {
 		if (response.resultat == 'SENSE_CANVIS') {
 			$registreIcon.addClass('fa-check text-muted');
-		} else if (response.resultat == 'REGLA_BUSTIA') {
+		} else if (response.resultat == 'REGLA_BUSTIA' || response.resultat == 'REGLA_UNITAT') {
 			$registreIcon.addClass('fa-check text-success');
 			$reglaBustia = $('#registres-list h3.panel-title').children('span.regla-bustia').eq(index);
 			$reglaBustia.append(' ' + response.bustiaUnitatOrganitzativa.denominacio + ' / ' + response.bustiaNom);

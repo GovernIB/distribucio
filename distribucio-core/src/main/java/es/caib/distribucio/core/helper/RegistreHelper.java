@@ -459,7 +459,7 @@ public class RegistreHelper {
 		Exception exceptionAplicantRegla = null;
 		
 		if (anotacio.getRegla() != null) {
-			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio);
+			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio, new ArrayList<ReglaEntity>());
 		}
 		return exceptionAplicantRegla;
 

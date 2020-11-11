@@ -696,6 +696,7 @@ public class RegistreUserController extends BaseUserController {
 		case SENSE_CANVIS:
 			break;
 		case REGLA_BUSTIA:
+		case REGLA_UNITAT:
 			MissatgesHelper.info(
 					request, 
 					getMessage(

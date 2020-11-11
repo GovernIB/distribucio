@@ -101,6 +101,7 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
@@ -153,7 +154,9 @@ public class RegistreServiceImpl implements RegistreService {
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Autowired
-	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;	
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Autowired
+	private ReglaRepository reglaRepository;	
 	
 	
 	@Resource
@@ -1263,18 +1266,26 @@ public class RegistreServiceImpl implements RegistreService {
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 					entitat,
 					bustia);
-			Exception ex = reglaHelper.aplicarControlantException(registre);
+			List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
+			Exception ex = reglaHelper.aplicarControlantException(registre, reglesApplied);
+
 			if (ex == null) {
-				if (ReglaTipusEnumDto.BUSTIA.equals(reglaAplicable.getTipus())) {
+				ReglaEntity lastReglaApplied = reglesApplied.get(reglesApplied.size() - 1);
+				if (ReglaTipusEnumDto.BUSTIA.equals(lastReglaApplied.getTipus())) {
 					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BUSTIA);
 					BustiaEntity novaBustia = (BustiaEntity)(registreRepository.getOne(registreId).getPare());
 					classificacioResultat.setBustiaNom(novaBustia.getNom());
 					classificacioResultat.setBustiaUnitatOrganitzativa(
 							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));
-				} else if (ReglaTipusEnumDto.BACKOFFICE.equals(reglaAplicable.getTipus())) {
+				} else if (ReglaTipusEnumDto.UNITAT.equals(lastReglaApplied.getTipus())){
+					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_UNITAT);
+					BustiaEntity novaBustia = (BustiaEntity)(registreRepository.getOne(registreId).getPare());
+					classificacioResultat.setBustiaNom(novaBustia.getNom());
+					classificacioResultat.setBustiaUnitatOrganitzativa(
+							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));
+					
+				} else if (ReglaTipusEnumDto.BACKOFFICE.equals(lastReglaApplied.getTipus())) {
 					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BACKOFFICE);
-				} else {
-					classificacioResultat.setResultat(ClassificacioResultatEnumDto.SENSE_CANVIS);
 				}
 			} else {
 				classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_ERROR);

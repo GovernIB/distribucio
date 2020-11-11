@@ -712,6 +712,7 @@ public class PluginHelper {
 		accioParams.put("codiDir3", codiDir3);
 		long t0 = System.currentTimeMillis();
 		try {
+			//codiDir3 = "A04003003";
 			List<Procediment> procediments = getProcedimentPlugin().findAmbCodiDir3(codiDir3);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,

@@ -112,7 +112,8 @@ public class ReglaHelper {
 	
 
 	public Exception aplicarControlantException(
-			RegistreEntity registre) {
+			RegistreEntity registre,
+			List<ReglaEntity> reglesApplied) {
 		
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
@@ -129,7 +130,7 @@ public class ReglaHelper {
 
 			aplicar(
 					registre,
-					new ArrayList<ReglaEntity>());
+					reglesApplied);
 			
 			emailHelper.createEmailsPendingToSend(
 					(BustiaEntity) registre.getPare(),
@@ -247,7 +248,7 @@ public class ReglaHelper {
 	
 	public void aplicar(
 			RegistreEntity registre,
-			List<ReglaEntity> reglasApplied) {
+			List<ReglaEntity> reglesApplied) {
 		
 
 		ReglaEntity regla = registre.getRegla();
@@ -354,7 +355,7 @@ public class ReglaHelper {
 
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
-			reglasApplied.add(regla);
+			reglesApplied.add(regla);
 			BustiaEntity bustia = (BustiaEntity)registre.getPare();
 			ReglaEntity nextReglaToApply = findAplicable(
 					registre.getEntitat(),
@@ -365,7 +366,7 @@ public class ReglaHelper {
 			
 			if (nextReglaToApply != null) {
 				boolean alreadyApplied = false;
-				for (ReglaEntity reglaE : reglasApplied) {
+				for (ReglaEntity reglaE : reglesApplied) {
 					if (nextReglaToApply.getId().equals(reglaE.getId())) {
 						alreadyApplied = true;
 					}
@@ -374,7 +375,7 @@ public class ReglaHelper {
 					registre.updateRegla(nextReglaToApply);
 					aplicar(
 							registre,
-							reglasApplied);
+							reglesApplied);
 				}
 			}
 			
