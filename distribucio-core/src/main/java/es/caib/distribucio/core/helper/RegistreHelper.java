@@ -4,7 +4,6 @@
 package es.caib.distribucio.core.helper;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -57,6 +58,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
+import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -77,9 +79,6 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.FirmaTipus;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -912,17 +911,17 @@ public class RegistreHelper {
 				ids.add(anotacioRegistreId);
 
 			}
-			ReglaEntity regla = pendentsByRegla.get(0).getRegla();
+			BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
 			logger.debug(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 					getClass().getResource(
 							"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-					regla.getBackofficeDesti().getUrl(),
+					backofficeDesti.getUrl(),
 					new QName(
 							"http://www.caib.es/distribucio/ws/backoffice",
 							"BackofficeService"),
-					regla.getBackofficeDesti().getUsuari(),
-					regla.getBackofficeDesti().getContrasenya(),
+					backofficeDesti.getUsuari(),
+					backofficeDesti.getContrasenya(),
 					null,
 					BackofficeWsService.class);
 			

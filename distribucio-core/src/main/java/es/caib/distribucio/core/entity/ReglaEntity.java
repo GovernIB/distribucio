@@ -73,7 +73,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	protected ReglaTipusEnumDto tipus;
 	
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "backoffice_desti_id")
 	protected BackofficeEntity backofficeDesti;
 	

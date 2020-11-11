@@ -131,6 +131,11 @@ public class ReglaHelper {
 					registre,
 					new ArrayList<ReglaEntity>());
 			
+			emailHelper.createEmailsPendingToSend(
+					(BustiaEntity) registre.getPare(),
+					registre,
+					registre.getDarrerMoviment());
+			
 			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(
@@ -168,6 +173,9 @@ public class ReglaHelper {
 			ReglaEntity reglaToApply,
 			List<ReglaEntity> reglasApplied,
 			List<RegistreSimulatAccionDto> simulatAccions) {
+		
+		
+			logger.debug("Simular aplicació regla=" + reglaToApply.getNom() + ", tipus=" + reglaToApply.getTipus());
 
 			switch (reglaToApply.getTipus()) {
 			
@@ -184,7 +192,7 @@ public class ReglaHelper {
 							reglaToApply.getEntitat(),
 							reglaToApply.getUnitatDesti().getCodi());
 					
-					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, reglaToApply.getUnitatOrganitzativaFiltre().getCodi() + " - "+ reglaToApply.getUnitatOrganitzativaFiltre().getDenominacio(), reglaToApply.getNom()));
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
 					registreSimulatDto.setUnitatId(reglaToApply.getUnitatDesti().getId());
 					
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
@@ -199,12 +207,12 @@ public class ReglaHelper {
 
 			}
 			
-			
-			reglasApplied.add(reglaToApply);
+	
 			
 			
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
+			reglasApplied.add(reglaToApply);
 			ReglaEntity nextReglaToApply = findAplicable(
 					entitatEntity,
 					registreSimulatDto.getUnitatId(),
@@ -241,30 +249,45 @@ public class ReglaHelper {
 			RegistreEntity registre,
 			List<ReglaEntity> reglasApplied) {
 		
-		boolean throwException = false;
-		if (throwException) {
-			throw new RuntimeException("Exception when aplying rule!!!!!!");
+
+		ReglaEntity regla = registre.getRegla();
+		logger.debug("Aplicant regla=" + regla.getNom() + ", tipus=" + regla.getTipus());
+		
+		// ------- check if anotacio already saved in the arxiu -------- 
+		boolean alreadySavedInArxiu = true;
+		if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
+			for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
+				if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+					alreadySavedInArxiu = false;
+				}
+			}
 		}
 		
-		ReglaEntity regla = registre.getRegla();
 		String error = null;
 		try {
 			switch (regla.getTipus()) {
 			
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
-				if (regla.getBackofficeDesti() == null) {
-					throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
+				
+				if (alreadySavedInArxiu) {
+					if (regla.getBackofficeDesti() == null) {
+						throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
+					}
+					if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.SISTRA)) { 
+						registre.updateProcesBackPendent();
+					} else if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.DISTRIBUCIO)){ 
+						registre.updateProcesBackPendent();
+						registre.updateBackPendentData(new Date());
+						// Informa del codi del backoffice que processarà l'anotació
+						registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+						// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
+					}
+				} else {
+					registre.updateProces(
+							RegistreProcesEstatEnum.ARXIU_PENDENT,
+							null);
 				}
-
-				if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.SISTRA)) { 
-					registre.updateProcesBackPendent();
-				} else if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.DISTRIBUCIO)){ 
-					registre.updateProcesBackPendent();
-					registre.updateBackPendentData(new Date());
-					// Informa del codi del backoffice que processarà l'anotació
-					registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
-					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
-				}
+				
 				break;
 				
 			case BUSTIA:
@@ -291,22 +314,10 @@ public class ReglaHelper {
 						LogTipusEnumDto.MOVIMENT,
 						contingutMoviment,
 						true);
-				emailHelper.createEmailsPendingToSend(
-						regla.getBustiaDesti(),
-						registre,
-						contingutMoviment);
 				
 				
 				// ------- change anotacio to next state -------- 
 				RegistreProcesEstatEnum estat;
-				boolean alreadySavedInArxiu = true;
-				if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
-					for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
-						if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-							alreadySavedInArxiu = false;
-						}
-					}
-				}
 				if (!alreadySavedInArxiu) {
 					estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
 				} else {
@@ -340,13 +351,10 @@ public class ReglaHelper {
 				}
 			}
 			
-			
-			reglasApplied.add(regla);
-			
-			
-			
+
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
+			reglasApplied.add(regla);
 			BustiaEntity bustia = (BustiaEntity)registre.getPare();
 			ReglaEntity nextReglaToApply = findAplicable(
 					registre.getEntitat(),
@@ -363,6 +371,7 @@ public class ReglaHelper {
 					}
 				}
 				if (!alreadyApplied) {
+					registre.updateRegla(nextReglaToApply);
 					aplicar(
 							registre,
 							reglasApplied);
@@ -371,7 +380,6 @@ public class ReglaHelper {
 			
 			
 			
-
 		} catch (Exception ex) {
 			Throwable t = ExceptionUtils.getRootCause(ex);
 			if (t == null)
