@@ -26,7 +26,6 @@ import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.RegistreSimulatCommand;
@@ -55,8 +54,6 @@ public class ReglaController  extends BaseAdminController {
 	private UnitatOrganitzativaService unitatService;
 	@Autowired
 	private BackofficeService backofficeService;
-	@Autowired
-	private ContingutService contingutService;
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 

@@ -244,7 +244,7 @@ public class BustiaV1Test {
 	        
 	        
 	        
-//	        afegirInteressats(anotacio);
+	        afegirInteressats(anotacio);
 	        
 	        try {
 	    		getBustiaServicePort().enviarAnotacioRegistreEntrada(

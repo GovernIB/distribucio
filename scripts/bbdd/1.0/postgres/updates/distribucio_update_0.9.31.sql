@@ -23,6 +23,66 @@ ALTER TABLE DIS_BACKOFFICE ADD CONSTRAINT DIS_BACKOFFICE_PK PRIMARY KEY (ID);
 ALTER TABLE DIS_BACKOFFICE ADD CONSTRAINT DIS_ENTITAT_BACKOFFICE_FK FOREIGN KEY (ENTITAT_ID) REFERENCES DIS_ENTITAT(ID);
 
 
+-- 1 Afegeix els nous backoffices a la taula de backoffices
+INSERT INTO DIS_BACKOFFICE
+(
+    ID,
+    TIPUS,
+    CODI,
+    NOM,
+    URL,
+    USUARI,
+    CONTRASENYA,
+    INTENTS,
+    TEMPS_ENTRE_INTENTS,
+    ENTITAT_ID,
+    CREATEDBY_CODI,
+    CREATEDDATE
+)
+(
+	SELECT
+		nextval('DIS_HIBERNATE_SEQ'),
+	    TIPUS,
+	    CODI,
+	    NOM,
+	    URL,
+	    USUARI,
+	    CONTRASENYA,
+	    INTENTS,
+	    TEMPS_ENTRE_INTENTS,
+	    ENTITAT_ID,
+	    CREATEDBY_CODI,
+	    CREATEDDATE
+	FROM (
+		SELECT
+		    COALESCE (r.TIPUS_BACKOFFICE, 'DISTRIBUCIO') AS TIPUS ,
+		    COALESCE (r.BACKOFFICE_CODI, NOM) AS CODI,
+		    NOM,
+		    COALESCE (URL, 'http://camp.obligatori') AS URL,
+		    USUARI,
+		    CONTRASENYA,
+		    INTENTS,
+		    TEMPS_ENTRE_INTENTS,
+		    ENTITAT_ID,
+		    CREATEDBY_CODI,
+		    CREATEDDATE
+		FROM DIS_REGLA r
+		WHERE r.TIPUS = 'BACKOFFICE'
+	)
+);
+
+-- 2 Actualitza la referència de les regles tipus bakcoffice amb el registre que li toqui
+UPDATE DIS_REGLA r SET BACKOFFICE_DESTI_ID = 
+( 
+	SELECT ID 
+	FROM DIS_BACKOFFICE b
+	WHERE ROWNUM = 1
+	 	AND r.TIPUS_BACKOFFICE = b.TIPUS 
+	 	AND (r.BACKOFFICE_CODI = b.CODI OR (r.BACKOFFICE_CODI IS NULL AND r.NOM = b.NOM ))
+	 	AND r.NOM = b.NOM 
+	 	AND r.URL = b.URL 
+);
+
 
 -- #237: Millora de regles. Modificar definició de la regla
 
