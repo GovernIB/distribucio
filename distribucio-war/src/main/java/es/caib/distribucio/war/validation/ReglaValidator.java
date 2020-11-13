@@ -36,7 +36,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 	public boolean isValid(final ReglaCommand command, final ConstraintValidatorContext context) {
 		boolean valid = true;
 		
-		// Comprova que el codi d'assumpte o el codi de procediement estiguin informats
+		// Comprova que almenys un camp del firtre esta informat
 		if ((command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
 			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
 			 command.getUnitatFiltreId() == null &&
@@ -59,6 +59,30 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 					.addConstraintViolation();	
 			valid = false;
 		}
+		
+
+		if (command.getTipus() == ReglaTipusEnumDto.UNITAT && command.getUnitatDestiId() == null) {
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+					.addNode("unitatDestiId")
+					.addConstraintViolation();	
+			valid = false;
+		} else if (command.getTipus() == ReglaTipusEnumDto.BUSTIA && command.getBustiaDestiId() == null) {
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+					.addNode("bustiaDestiId")
+					.addConstraintViolation();	
+			valid = false;
+		} else if (command.getTipus() == ReglaTipusEnumDto.BACKOFFICE && command.getBackofficeDestiId() == null) {
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+					.addNode("backofficeDestiId")
+					.addConstraintViolation();	
+			valid = false;
+		}
+		
+		
+		
 
 		if (!valid)
 			context.disableDefaultConstraintViolation();

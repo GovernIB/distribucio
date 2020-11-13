@@ -283,6 +283,28 @@ public class ReglaHelper {
 						registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
 						// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
 					}
+					
+					
+					// ------ log and evict -----------
+					List<String> params = new ArrayList<>();
+					params.add(regla.getNom());
+					params.add(regla.getTipus().toString());
+					contingutLogHelper.log(
+							registre,
+							LogTipusEnumDto.REGLA_APLICAR,
+							params,
+							false);
+
+					BustiaEntity pendentBustia = null;
+					if (registre.getPare() instanceof BustiaEntity) {
+						pendentBustia = (BustiaEntity) registre.getPare();
+						if (pendentBustia != null) {
+							bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+									regla.getEntitat(),
+									pendentBustia);
+						}
+					}
+					
 				} else {
 					registre.updateProces(
 							RegistreProcesEstatEnum.ARXIU_PENDENT,
@@ -328,29 +350,37 @@ public class ReglaHelper {
 						estat,
 						null);
 				
+				
+				
+				
+				// ------ log and evict -----------
+				List<String> params = new ArrayList<>();
+				params.add(regla.getNom());
+				params.add(regla.getTipus().toString());
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.REGLA_APLICAR,
+						params,
+						false);
+
+				BustiaEntity pendentBustia = null;
+				if (registre.getPare() instanceof BustiaEntity) {
+					pendentBustia = (BustiaEntity) registre.getPare();
+					if (pendentBustia != null) {
+						bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+								regla.getEntitat(),
+								pendentBustia);
+					}
+				}
+				
+				
+				
+				
 				break;
 
 			}
 			
-			// ------ log and evict -----------
-			List<String> params = new ArrayList<>();
-			params.add(regla.getNom());
-			params.add(regla.getTipus().toString());
-			contingutLogHelper.log(
-					registre,
-					LogTipusEnumDto.REGLA_APLICAR,
-					params,
-					false);
 
-			BustiaEntity pendentBustia = null;
-			if (registre.getPare() instanceof BustiaEntity) {
-				pendentBustia = (BustiaEntity) registre.getPare();
-				if (pendentBustia != null) {
-					bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-							regla.getEntitat(),
-							pendentBustia);
-				}
-			}
 			
 
 			

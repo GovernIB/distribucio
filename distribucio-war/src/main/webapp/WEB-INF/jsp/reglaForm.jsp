@@ -145,10 +145,25 @@ $(document).ready(function() {
 		<legend><spring:message code="regla.form.legend.accio"/></legend>
 		<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 		<div id="camps_tipus_BUSTIA">
-			<dis:inputSelect name="bustiaDestiId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" required="true" optionMinimumResultsForSearch="0"/>
+			<dis:inputSelect 
+				name="bustiaDestiId"
+				textKey="regla.form.camp.bustia" 
+				optionItems="${busties}"
+				optionValueAttribute="id" 
+				optionTextAttribute="nom" 
+				required="true"
+				optionMinimumResultsForSearch="0" 
+				emptyOption="true" />
 		</div>
 		<div id="camps_tipus_BACKOFFICE">
-			<dis:inputSelect name="backofficeDestiId" textKey="regla.form.camp.backoffice" optionItems="${backoffices}" optionValueAttribute="id" optionTextAttribute="nom" required="true" emptyOption="true"/>
+			<dis:inputSelect 
+				name="backofficeDestiId"
+				textKey="regla.form.camp.backoffice" 
+				optionItems="${backoffices}"
+				optionValueAttribute="id" 
+				optionTextAttribute="nom" 
+				required="true"
+				emptyOption="true" />
 		</div>
 		<div id="camps_tipus_UNITAT">
 			<dis:inputSuggest 
