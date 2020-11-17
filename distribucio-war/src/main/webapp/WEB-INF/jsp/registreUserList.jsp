@@ -135,9 +135,14 @@ $(document).ready(function() {
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 	
 		<div class="row">
-			<div class="col-md-4">
-				<dis:inputText name="contingutDescripcio" inline="true" placeholderKey="bustia.list.filtre.numero"/>
+			
+			<div class="col-md-2">
+				<dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
 			</div>
+			<div class="col-md-2">
+				<dis:inputText name="titol" inline="true" placeholderKey="bustia.list.filtre.titol"/>
+			</div>
+			
 			<div class="col-md-3">
 				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
 			</div>

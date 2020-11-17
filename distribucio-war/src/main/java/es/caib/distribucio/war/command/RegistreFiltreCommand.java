@@ -23,7 +23,8 @@ public class RegistreFiltreCommand {
 	private String bustia;
 	/** Per mostrar el contingut de les bústies innactives */
 	private boolean mostrarInactives;
-	private String contingutDescripcio;
+	private String numero;
+	private String titol;
 	private String remitent;
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
@@ -71,11 +72,17 @@ public class RegistreFiltreCommand {
 	public void setBustia(String bustia) {
 		this.bustia = bustia;
 	}
-	public String getContingutDescripcio() {
-		return contingutDescripcio;
+	public String getNumero() {
+		return numero;
 	}
-	public void setContingutDescripcio(String contingutDescripcio) {
-		this.contingutDescripcio = contingutDescripcio;
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
+	public String getTitol() {
+		return titol;
+	}
+	public void setTitol(String titol) {
+		this.titol = titol;
 	}
 	public String getRemitent() {
 		return remitent;

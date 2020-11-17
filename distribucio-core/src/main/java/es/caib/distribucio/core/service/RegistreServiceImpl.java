@@ -476,7 +476,8 @@ public class RegistreServiceImpl implements RegistreService {
 			logger.info("Consultant el contingut de l'usuari ("
 					+ "entitatId=" + entitatId + ", "
 					+ "bustiaId=" + filtre.getBustia() + ", "
-					+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+					+ "numero=" + filtre.getNumero() + ", "
+					+ "titol=" + filtre.getTitol() + ", "
 					+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
 					+ "remitent=" + filtre.getRemitent() + ", "
 					+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
@@ -492,8 +493,10 @@ public class RegistreServiceImpl implements RegistreService {
 			try {
 				pagina = registreRepository.findRegistreByPareAndFiltre(
 						busties,
-						StringUtils.isEmpty(filtre.getContingutDescripcio()),
-						filtre.getContingutDescripcio() != null ? filtre.getContingutDescripcio() : "",
+						StringUtils.isEmpty(filtre.getNumero()),
+						filtre.getNumero() != null ? filtre.getNumero() : "",
+						StringUtils.isEmpty(filtre.getTitol()),
+						filtre.getTitol() != null ? filtre.getTitol() : "",
 						filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
 						filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
 						filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),

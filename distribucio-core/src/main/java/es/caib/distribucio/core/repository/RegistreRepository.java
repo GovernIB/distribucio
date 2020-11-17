@@ -273,14 +273,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			List<? extends ContingutEntity> pares,
 			List<Long> ids);
 	
-	/** Consulta pel datatable del registreuser */
+	/** Consulta pel datatable del registre user */
 	@Query(	"select r " +
 			"from " +
 			"    RegistreEntity r " +
 			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
 			"	 (r.pare.id in (:bustiesIds)) " +
-			"and (:esNullContingutDescripcio = true or lower(r.nom) like lower('%'||:contingutDescripcio||'%')) " +
+			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
+			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
 			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
 			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
 			"and (:esNullDataInici = true or r.data >= :dataInici) " +
@@ -297,8 +298,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"			) > 0 )")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("bustiesIds") List<Long> bustiesIds,
-			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
-			@Param("contingutDescripcio") String contingutDescripcio,
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullExtracte") boolean esNullExtracte,
+			@Param("extracte") String extracte,
 			@Param("esNumeroOrigen") boolean esNumeroOrigen,
 			@Param("numeroOrigen") String numeroOrigen,
 			@Param("esNullRemitent") boolean esNullRemitent,
@@ -314,5 +317,50 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
 			@Param("enviatPerEmail") Boolean enviatPerEmail,
 			Pageable pageable);
+	
+	/** Consulta dels identificadors de registre per a la selecció en registre user */
+	@Query(	"select r.id " +
+			"from " +
+			"    RegistreEntity r " +
+			"		left outer join r.darrerMoviment.remitent as remitent "	+
+			"where " +
+			"	 (r.pare.id in (:bustiesIds)) " +
+			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
+			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
+			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"and (:esNullDataFi = true or r.data < :dataFi) " +
+			"and (:esProcessat = false or r.pendent = false) " +
+			"and (:esPendent = false or r.pendent = true) " +
+			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
+			"and (:esNullInteressat = true " +
+			"		or (select count(interessat) " +
+			"			from r.interessats as interessat" +
+			"			where " +
+			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
+			"			) > 0 )")
+	public List<Long> findRegistreIdsByPareAndFiltre(
+			@Param("bustiesIds") List<Long> bustiesIds,
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullExtracte") boolean esNullExtracte,
+			@Param("extracte") String extracte,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esProcessat") boolean esProcessat,
+			@Param("esPendent") boolean esPendent,
+			@Param("esNullInteressat") boolean esNullInteressat,
+			@Param("interessat") String interessat,
+			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
+			@Param("enviatPerEmail") Boolean enviatPerEmail);
+
 
 }

@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 
@@ -68,37 +67,6 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			@Param("mostrarEsborrats") boolean mostrarEsborrats,
 			@Param("mostrarNoEsborrats") boolean mostrarNoEsborrats,
 			Pageable pageable);
-	
-	@Query(	"select " +
-			"    c.id " +
-			"from " +
-			"    ContingutEntity c " +
-			"where " +
-			"    (:esPareNull = true or c.pare = :pare) " +
-			"and (:esPareNull = false or c.pare in (:pares)) " +
-			"and (:esNullContingutDescripcio = true or lower(c.nom) like lower('%'||:contingutDescripcio||'%')) " +
-			"and (:esNumeroOrigen = true or lower(c.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"and (:esNullRemitent = true or lower(c.darrerMoviment.remitent.nom) like lower('%'||:remitent||'%')) " +
-			"and (:esNullDataInici = true or c.createdDate >= :dataInici) " +
-			"and (:esNullDataFi = true or c.createdDate < :dataFi) " +
-			"and ((:esNullEstat = true and (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT or c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PROCESSADA)) or (c.procesEstat = :estat))")
-	public List<Long> findRegistreIdsByPareAndFiltre(
-			@Param("esPareNull") boolean esPareNull,
-			@Param("pare") ContingutEntity pare,
-			@Param("pares") List<? extends ContingutEntity> pares,
-			@Param("esNullContingutDescripcio") boolean esNullContingutDescripcio,
-			@Param("contingutDescripcio") String contingutDescripcio,
-			@Param("esNumeroOrigen") boolean esNumeroOrigen,
-			@Param("numeroOrigen") String numeroOrigen,
-			@Param("esNullRemitent") boolean esNullRemitent,
-			@Param("remitent") String remitent,
-			@Param("esNullDataInici") boolean esNullDataInici,
-			@Param("dataInici") Date dataInici,
-			@Param("esNullDataFi") boolean esNullDataFi,
-			@Param("dataFi") Date dataFi,
-			@Param("esNullEstat") boolean esNullEstat,
-			@Param("estat") RegistreProcesEstatEnum estat);
-	
 	
 	@Query(	"select " +
 			"    count(c) " +

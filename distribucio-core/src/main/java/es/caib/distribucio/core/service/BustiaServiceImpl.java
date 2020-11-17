@@ -6,6 +6,9 @@ package es.caib.distribucio.core.service;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +22,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
-import org.joda.time.DateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -1398,7 +1402,8 @@ public class BustiaServiceImpl implements BustiaService {
 		logger.debug("Consultant els identificadors del contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
-				+ "contingutDescripcio=" + filtre.getContingutDescripcio() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
 				+ "remitent=" + filtre.getRemitent() + ", "
 				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
@@ -1421,46 +1426,63 @@ public class BustiaServiceImpl implements BustiaService {
 					entitat,
 					new Long(filtre.getBustia()),
 					true);
-		List<ContingutEntity> busties = new ArrayList<ContingutEntity>();
+		List<Long> busties = new ArrayList<Long>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
 			for (BustiaDto bustiaUsuari: bustiesUsuari) {
-				busties.add(
-						entityComprovarHelper.comprovarBustia(
+				entityComprovarHelper.comprovarBustia(
 						entitat,
 						new Long(bustiaUsuari.getId()),
-						true));
+						true);
+				busties.add(bustiaUsuari.getId());
 			}
 		} else if (bustia != null) {
-			busties.add(bustia);
+			busties.add(bustia.getId());
 		}
-		
 		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
 		if (bustia == null && busties.isEmpty()) {
 			ids = new ArrayList<Long>();
 		} else {
-			RegistreProcesEstatEnum registreEstat = null;
 
-			if (filtre.getProcesEstatSimple()==RegistreProcesEstatSimpleEnumDto.PENDENT){
-				registreEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-			} else if (filtre.getProcesEstatSimple()==RegistreProcesEstatSimpleEnumDto.PROCESSAT ) { 
-				registreEstat = RegistreProcesEstatEnum.BUSTIA_PROCESSADA;
+			boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+			boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+			Boolean enviatPerEmail = null;
+			if (filtre.getRegistreEnviatPerEmailEnum() != null) {
+				if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+					enviatPerEmail = true;
+				} else {
+					enviatPerEmail = false;
+				}
 			}					
-			ids = contingutRepository.findRegistreIdsByPareAndFiltre(
-					(bustia == null),
-					bustia,
+
+			Date dataRecepcioFi = filtre.getDataRecepcioFi();
+			if (dataRecepcioFi != null) {
+				Calendar c = new GregorianCalendar();
+				c.setTime(dataRecepcioFi);
+				c.add(Calendar.HOUR, 24);
+				dataRecepcioFi = c.getTime();
+			}
+
+			ids = registreRepository.findRegistreIdsByPareAndFiltre(
 					busties,
-					filtre.getContingutDescripcio() == null || filtre.getContingutDescripcio().isEmpty(),
-					filtre.getContingutDescripcio() != null ? filtre.getContingutDescripcio() : "",
+					StringUtils.isEmpty(filtre.getNumero()),
+					filtre.getNumero() != null ? filtre.getNumero() : "",
+					StringUtils.isEmpty(filtre.getTitol()),
+					filtre.getTitol() != null ? filtre.getTitol() : "",
 					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
 					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
 					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
 					filtre.getRemitent() != null ? filtre.getRemitent() : "",
 					(filtre.getDataRecepcioInici() == null),
 					filtre.getDataRecepcioInici(),
-					(filtre.getDataRecepcioFi() == null),
-					new DateTime(filtre.getDataRecepcioFi()).plusDays(1).toDate(), 
-					registreEstat == null,
-					registreEstat);
+					(dataRecepcioFi == null),
+					dataRecepcioFi,
+					esProcessat,
+					esPendent,
+					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+					filtre.getInteressat() != null ? filtre.getInteressat() : "",
+					enviatPerEmail == null,
+					enviatPerEmail);
 		}
 
 		contextTotal.stop();

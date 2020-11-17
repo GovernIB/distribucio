@@ -104,6 +104,12 @@ public class RegistreUserController extends BaseUserController {
 					SESSION_ATTRIBUTE_FILTRE);
 		} else {
 			if (!bindingResult.hasErrors()) {
+				// Elimina els espais en blanc del títol i el número
+				if (!StringUtils.isEmpty(filtreCommand.getNumero()))
+					filtreCommand.setNumero(filtreCommand.getNumero().trim());
+				if (!StringUtils.isEmpty(filtreCommand.getTitol()))
+					filtreCommand.setTitol(filtreCommand.getTitol().trim());
+				// Guarda el filtre en sessió
 				RequestSessionHelper.actualitzarObjecteSessio(
 						request,
 						SESSION_ATTRIBUTE_FILTRE,
@@ -150,7 +156,7 @@ public class RegistreUserController extends BaseUserController {
 						bustiaId,
 						registreId));
 		model.addAttribute("contingutId", bustiaId);
-		return "registreDetall";//"registreUserDetall";
+		return "registreDetall";
 	}	
 	
 	@RequestMapping(value = "/registreAnnex/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
@@ -208,7 +214,12 @@ public class RegistreUserController extends BaseUserController {
 	}
 	
 	
-
+	/** Mètode Ajax per seleccionar tots els registres a partir del mateix filtre del datatable.
+	 * 
+	 * @param request
+	 * @param ids
+	 * @return Retorna el número d'elements seleccionats
+	 */
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
 	@ResponseBody
 	public int select(
