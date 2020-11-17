@@ -44,7 +44,7 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
-//Funció per donar format als itemps de la select d'agrupacions depenent de la herència
+//Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
@@ -158,7 +158,16 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">
-						<dis:inputSelect name="bustia" optionItems="${bustiesUsuari}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" placeholderKey="bustia.list.filtre.bustia" inline="true" optionTemplateFunction="formatSelectBustia" />
+						<dis:inputSelect 
+							name="bustia" 
+							optionItems="${bustiesUsuari}" 
+							optionValueAttribute="id" 
+							optionTextAttribute="nom" 
+							emptyOption="true" 
+							placeholderKey="bustia.list.filtre.bustia" 
+							inline="true"
+							optionMinimumResultsForSearch="0" 
+							optionTemplateFunction="formatSelectBustia" />
 					</div>
 					<div class="col-md-2">
 						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">

@@ -57,7 +57,6 @@ import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
-import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -93,8 +92,6 @@ public class ContingutHelper {
 	private MetricRegistry metricRegistry;
 	@Resource
 	private CacheHelper cacheHelper;
-	@Autowired
-	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private ContingutLogHelper contingutLogHelper;
 	@Autowired

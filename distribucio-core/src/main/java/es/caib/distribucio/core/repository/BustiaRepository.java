@@ -23,9 +23,9 @@ import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
  */
 public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 
-	List<BustiaEntity> findByEntitatAndPareNotNull(EntitatEntity entitat);
+	List<BustiaEntity> findByEntitatAndPareNotNullOrderByNomAsc(EntitatEntity entitat);
 		
-	List<BustiaEntity> findByEntitatAndActivaTrueAndPareNotNull(EntitatEntity entitat);
+	List<BustiaEntity> findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(EntitatEntity entitat);
 	
 	/**
 	 * Finds all the busties of given unitat except root bustia
@@ -37,10 +37,6 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	EntitatEntity entitat,
 	UnitatOrganitzativaEntity unitatOrganitzativa);
 	
-	List<BustiaEntity> findByEntitatAndUnitatOrganitzativa(
-	EntitatEntity entitat,
-	UnitatOrganitzativaEntity unitatOrganitzativa);
-
 	/**
 	 * Finds root bustia of unitat
 	 * @param entitat
@@ -68,10 +64,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativa")  UnitatOrganitzativaEntity unitatOrganitzativa);
 
-	
-	List<BustiaEntity> findByEntitatAndPerDefecteTrue(
-			EntitatEntity entitat);
-	
+		
 	@Query(	"from " +
 			"    BustiaEntity b " +
 			"where " +

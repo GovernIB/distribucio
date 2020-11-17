@@ -69,7 +69,7 @@ public class BustiaHelper {
 		
 		final Timer timerbustiesPermeses = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.bustiesPermeses"));
 		Timer.Context contextbustiesPermeses = timerbustiesPermeses.time();
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
 		Set<String> bustiaUnitatCodis = null;
 		if (nomesAmbBusties) {
 			bustiaUnitatCodis = new HashSet<String>();

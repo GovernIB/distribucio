@@ -645,7 +645,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false, 
 				false);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
 		
 		final Timer timerfindActivesAmbEntitattoBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findActivesAmbEntitat.toBustiaDto"));
 		Timer.Context contextfindActivesAmbEntitattoBustiaDto = timerfindActivesAmbEntitattoBustiaDto.time();
@@ -673,7 +673,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
 		return bustiaHelper.toBustiaDto(
 				busties,
 				false,
@@ -746,9 +746,9 @@ public class BustiaServiceImpl implements BustiaService {
 		// Obté la llista d'id's amb permisos per a l'usuari
 		List<BustiaEntity> busties;		
 		if (mostrarInactives) {
-			busties = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
 		} else {
-			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNull(entitat);
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
 		}
 		
 		final Timer findPermesesPerUsuariTimerfilterGrantedAll = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari.filterGrantedAll"));

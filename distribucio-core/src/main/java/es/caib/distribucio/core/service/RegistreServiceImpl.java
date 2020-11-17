@@ -101,7 +101,6 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
-import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
@@ -155,8 +154,6 @@ public class RegistreServiceImpl implements RegistreService {
 	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-	@Autowired
-	private ReglaRepository reglaRepository;	
 	
 	
 	@Resource
@@ -231,7 +228,7 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		List<BustiaEntity> bustiesPermeses = bustiaRepository.findByEntitatAndPareNotNull(entitat);
+		List<BustiaEntity> bustiesPermeses = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		permisosHelper.filterGrantedAll(
 				bustiesPermeses,

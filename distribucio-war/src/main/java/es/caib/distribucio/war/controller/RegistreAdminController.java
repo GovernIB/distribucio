@@ -34,6 +34,7 @@ import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -331,6 +332,7 @@ public class RegistreAdminController extends BaseAdminController {
 		} else {
 			PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
 			paginacioParams.setPaginaTamany(Integer.MAX_VALUE);
+			paginacioParams.afegirOrdre("nom", OrdreDireccioDto.ASCENDENT);
 			BustiaFiltreDto filtre = new BustiaFiltreDto();
 			filtre.setNom(text);
 			bustiesFinals = bustiaService.findAmbFiltreAdmin(entitatActual.getId(), filtre, paginacioParams).getContingut();
