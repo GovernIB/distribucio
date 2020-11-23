@@ -194,7 +194,7 @@ public class ReglaHelper {
 							reglaToApply.getUnitatDesti().getCodi());
 					
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
-					registreSimulatDto.setUnitatId(reglaToApply.getUnitatDesti().getId());
+					registreSimulatDto.setUnitatId(bustiaDesti.getUnitatOrganitzativa().getId());
 					
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
 					registreSimulatDto.setBustiaId(bustiaDesti.getId());
