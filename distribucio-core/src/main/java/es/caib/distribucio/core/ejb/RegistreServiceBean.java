@@ -134,6 +134,13 @@ public class RegistreServiceBean implements RegistreService {
 			int indexFirma) throws NotFoundException {
 		return delegate.getAnnexFirmaFitxer(annexId, indexFirma);
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public FitxerDto getZipDocumentacio(Long registreId) throws Exception{
+		return delegate.getZipDocumentacio(registreId);
+	}
+
 
 	@Override
 	@RolesAllowed("tothom")
@@ -256,5 +263,4 @@ public class RegistreServiceBean implements RegistreService {
 	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre) {
 		return delegate.findRegistreAdminIdsAmbFiltre(entitatId, filtre);
 	}
-
 }

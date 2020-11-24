@@ -178,7 +178,15 @@ public interface RegistreService {
 			Long annexId,
 			int indexFirma) throws NotFoundException;
 	
-	
+
+	/** Retorna un fitxer amb el justificant i annexos comprimits en un .zip o 
+	 * llença error en cas de no poder recuperar el contingut.
+	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
+	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public FitxerDto getZipDocumentacio(
+			Long registreId) throws Exception;
 	/**
 	 * Retorna un justificant amb contingut o sense
 	 * 

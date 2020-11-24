@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 
@@ -996,7 +998,64 @@ public class RegistreServiceImpl implements RegistreService {
 		return fitxerDto;
 	}
 	
-	
+	@Transactional(readOnly = true)
+	public FitxerDto getZipDocumentacio(Long registreId) throws Exception {
+
+		FitxerDto zip = new FitxerDto();
+				
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ZipOutputStream zos = new ZipOutputStream(baos);
+		try {
+			// Comprova l'accés a la bústia
+			entityComprovarHelper.comprovarBustia(
+						registre.getEntitat(),
+						registre.getPare().getId(),
+						true);
+			// Justificant
+			FitxerDto fitxer;
+			// Annexos
+			String nom;
+			for (RegistreAnnexEntity annex : registre.getAnnexos()) {
+				fitxer = this.getAnnexFitxer(annex.getId());
+				try {
+					if (registre.getJustificant() == null 
+							|| annex.getId() != registre.getJustificant().getId()) 
+						nom = annex.getTitol() + " - " + fitxer.getNom();
+					else
+						nom = fitxer.getNom();
+					ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
+					entry.setSize(fitxer.getContingut().length);
+					zos.putNextEntry(entry);
+					zos.write(fitxer.getContingut());
+					zos.closeEntry();
+				} catch (Exception e) {
+					String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+					logger.error(errMsg, e);
+					throw new Exception(errMsg, e);
+				}
+			}
+			zos.close();
+			
+			zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
+			zip.setContingut(baos.toByteArray());
+			zip.setContentType("application/zip");
+
+		} catch (Exception ex) {
+			String errMsg = "Error generant el .zip de documentació pel registre " + registre.getNumero() + " amb ID " + registreId + " : " + ex.getMessage();
+			logger.error(errMsg, ex);
+			throw new Exception(errMsg, ex);
+		}
+		return zip;
+	}
+
+	private static String revisarContingutNom(String nom) {
+		if (nom == null) {
+			return null;
+		}
+		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+	}
+
 	
 
 	@Transactional(readOnly = true)
@@ -1651,7 +1710,5 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 
-
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
-
 }

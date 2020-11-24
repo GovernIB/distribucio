@@ -515,6 +515,12 @@ tr.clicable {
  							</div> 
 						</div>
 					</c:forEach>
+					<div class="row col-md-12">
+						<a href="<c:url value="/contingut/${registre.pareId}/registre/${registre.id}/descarregarZip"/>" 
+								title="<spring:message code="registre.annex.descarregar.zip"/>" 
+								class="btn btn-primary pull-right"><span class="fa fa-download"></span> .ZIP
+						</a>
+					</div>
 				</c:when>
 				<c:otherwise>
 					<c:choose>

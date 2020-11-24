@@ -208,6 +208,35 @@ public class ContingutController extends BaseUserController {
 				response);
 		return null;
 	}
+	
+	/** Recupera el contingut de tots els annexos i crea un ZIP per descarregar */
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/descarregarZip", method = RequestMethod.GET)
+	public String descarregarZipDocumentacio(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId) throws IOException {
+		try {
+			getEntitatActualComprovantPermisos(request);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (Exception ex) {
+			String errMsg = getMessage(
+					request, 
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
+			logger.error(errMsg, ex);
+			MissatgesHelper.error(
+					request, 
+					errMsg);
+			return "redirect:" + request.getHeader("referer");
+		}
+		return null;
+	}
+
 
 	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
