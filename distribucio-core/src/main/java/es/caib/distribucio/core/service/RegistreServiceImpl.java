@@ -187,10 +187,17 @@ public class RegistreServiceImpl implements RegistreService {
 				registreId);
 		
 		if (registre == null) {
-			throw new NotFoundException(registreId, RegistreEntity.class);
+			registre = registreRepository.findOne(registreId);
+			if (registre == null) {
+				throw new NotFoundException(registreId, RegistreEntity.class);
+			} else {
+				throw new NotFoundException(registreId, RegistreEntity.class, registre.getPare().getNom());
+			}
+			
 		} else {
 			
-			RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(registre,
+			RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
+					registre,
 					false,
 					false,
 					false,

@@ -44,7 +44,7 @@ public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04019281";
-	private static final String UNITAT_ADM_CODI = "A04018961";
+	private static final String UNITAT_ADM_CODI = "A04032340";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = "BACK_HELIUM";
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació des de JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta anotació des de JUnit " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = "A04019281";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";

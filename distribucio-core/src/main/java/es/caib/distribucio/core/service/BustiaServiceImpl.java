@@ -915,12 +915,17 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitatOrganitzativaCodi,
 				anotacioEntity);
+		if (reglaAplicable == null) {
+			emailHelper.createEmailsPendingToSend(
+					(BustiaEntity) anotacioEntity.getPare(),
+					anotacioEntity,
+					anotacioEntity.getDarrerMoviment());
+		}
 		contextmoveAnotacioToBustiaPerDefecte.stop();
 		
 		
 		final Timer timerprocessarAnotacioPendentRegla = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.processarAnotacioPendentRegla"));
 		Timer.Context contextprocessarAnotacioPendentRegla = timerprocessarAnotacioPendentRegla.time();
-		
 		//apply rules of type bustia or unitat
 		Exception exceptionProcessant = null;
 		if (reglaAplicable != null && (reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA || reglaAplicable.getTipus() == ReglaTipusEnumDto.UNITAT)) {

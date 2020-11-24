@@ -127,15 +127,20 @@ public class ReglaHelper {
 			if (throwException) {
 				throw new RuntimeException("Exception when aplying rule!!!!!!");
 			}
+			
 
 			aplicar(
 					registre,
 					reglesApplied);
 			
-			emailHelper.createEmailsPendingToSend(
-					(BustiaEntity) registre.getPare(),
-					registre,
-					registre.getDarrerMoviment());
+			ReglaEntity lastRegla = reglesApplied.get(reglesApplied.size() - 1);
+			if (lastRegla.getTipus() != ReglaTipusEnumDto.BACKOFFICE || (lastRegla.getTipus() == ReglaTipusEnumDto.BACKOFFICE && isAnotacioAlreadySavedInArxiu(registre))) {
+				emailHelper.createEmailsPendingToSend(
+						(BustiaEntity) registre.getPare(),
+						registre,
+						registre.getDarrerMoviment());
+			}
+			
 			
 			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
 			alertaHelper.crearAlerta(
@@ -165,6 +170,21 @@ public class ReglaHelper {
 					registre.getId());
 			return ex;
 		}
+	}
+	
+	public boolean isAnotacioAlreadySavedInArxiu(RegistreEntity registre) {
+		
+		boolean alreadySavedInArxiu = true;
+		if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
+			for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
+				if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+					alreadySavedInArxiu = false;
+				}
+			}
+		}
+		
+		return alreadySavedInArxiu;
+		
 	}
 	
 	
@@ -254,15 +274,8 @@ public class ReglaHelper {
 		ReglaEntity regla = registre.getRegla();
 		logger.debug("Aplicant regla=" + regla.getNom() + ", tipus=" + regla.getTipus());
 		
-		// ------- check if anotacio already saved in the arxiu -------- 
-		boolean alreadySavedInArxiu = true;
-		if (registre.getAnnexos() != null && !registre.getAnnexos().isEmpty()) {
-			for (RegistreAnnexEntity registreAnnexEntity : registre.getAnnexos()) {
-				if (registreAnnexEntity.getFitxerArxiuUuid() == null || registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-					alreadySavedInArxiu = false;
-				}
-			}
-		}
+
+		boolean alreadySavedInArxiu = isAnotacioAlreadySavedInArxiu(registre);
 		
 		String error = null;
 		try {

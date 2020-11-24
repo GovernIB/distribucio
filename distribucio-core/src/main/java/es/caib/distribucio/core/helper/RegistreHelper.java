@@ -404,14 +404,11 @@ public class RegistreHelper {
 	@Transactional
 	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
-		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
-				anotacio.getEntitat(),
-				anotacio.getUnitatAdministrativa());
 		
 		// PROCESSAR ARXIU
 		Exception exceptionGuardantAnnexos = createRegistreAndAnnexosInArxiu(
 				anotacio,
-				bustia.getEntitat().getCodiDir3(),
+				anotacio.getEntitat().getCodiDir3(),
 				true);
 		if (exceptionGuardantAnnexos == null) {
 			
@@ -435,11 +432,7 @@ public class RegistreHelper {
 			if (anotacio.getRegla() != null && anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE) {
 				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 			} else {
-				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-				emailHelper.createEmailsPendingToSend(
-						bustia, 
-						anotacio, 
-						anotacio.getDarrerMoviment());	
+				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;	
 			}
 			anotacio.updateProces(
 					nouEstat, 

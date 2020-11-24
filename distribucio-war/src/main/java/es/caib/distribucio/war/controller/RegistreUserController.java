@@ -55,6 +55,7 @@ import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
+import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -149,13 +150,28 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		model.addAttribute(
-				"registre",
-				registreService.findOne(
-						entitatActual.getId(),
-						bustiaId,
-						registreId));
-		model.addAttribute("contingutId", bustiaId);
+		try {
+			model.addAttribute(
+					"registre",
+					registreService.findOne(
+							entitatActual.getId(),
+							bustiaId,
+							registreId));
+			model.addAttribute("contingutId", bustiaId);
+		} catch (Exception e) {
+			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
+			if (thr != null) {
+				NotFoundException exc = (NotFoundException) thr;
+				if (exc.getObjectClass().getName().equals("es.caib.distribucio.core.entity.RegistreEntity")) {
+					model.addAttribute("currentContainingBustia", exc.getParam());
+					return "errorRegistreNotFound";
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
+		}
 		return "registreDetall";
 	}	
 	
