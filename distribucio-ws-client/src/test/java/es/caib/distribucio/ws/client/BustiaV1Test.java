@@ -44,7 +44,7 @@ public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04019281";
-	private static final String UNITAT_ADM_CODI = "A04032340";
+	private static final String UNITAT_ADM_CODI = "A04031605";
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -68,7 +68,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indca si adjuntar els documents tècnics de sistra2 com annexos
@@ -137,7 +137,7 @@ public class BustiaV1Test {
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(true);
-	        anotacio.setObservacions("aaaaaaaaaa");
+	        anotacio.setObservacions("Anotacio Observacions....");
 	        
 	        int nCaracters = 5000;
 	        StringBuilder textGran = new StringBuilder("Text gran " + i + ": ");
@@ -289,6 +289,7 @@ public class BustiaV1Test {
         if (firmes != null) {
         	annex.getFirmes().addAll(firmes);
         }
+        annex.setObservacions("Annex observacions...");
         
 		MetaDades metaDades = new MetaDades();
 		for (String key : metaDadesMap.keySet()) {
@@ -298,7 +299,7 @@ public class BustiaV1Test {
 			entry.setValue(metaDadesMap.get(key));
 			metaDades.getEntry().add(entry);
 		}
-        //annex.setMetaDades(metaDades);
+        annex.setMetaDades(metaDades);
         
         
         return annex;
