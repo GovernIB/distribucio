@@ -13,6 +13,9 @@
 
 <html>
 <head>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
+	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<!------------------------------------------- Contant interessats sense incloure representants --------------------------------------------->
 	<c:set var="countInteressats" value="0"/>
 	<c:if test="${not empty registre.interessats}">
@@ -64,6 +67,13 @@ tr.clicable {
     margin-left: 280px;
 }
 
+#dropAccions ul.dropdown-menu {
+	left: auto;
+    right: 0;
+    margin-right: -10px;
+}
+
+
 </style>
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -104,6 +114,17 @@ tr.clicable {
 	        $('.processamentInfo').css('display', 'none');
 	        $(".datatable-dades-carregant").css("display", "block");
     	});
+
+    	$( "a#accioReenviar" ).on( "click", function() {
+    		location.href = "<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>";
+    	});
+    	$( "a#accioClassificar" ).on( "click", function() {
+    		location.href = "<c:url value="/modal/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+    	});    	
+    	$( "a#accioMarcarProcessat" ).on( "click", function() {
+    		location.href = "<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+    	});   
+
 				
 	});
 
@@ -115,6 +136,37 @@ tr.clicable {
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${registre}"/>
+	
+	
+	<c:if test="${!isRolActualAdministrador}">
+		<div class="dropdown" style="float: right;" id="dropAccions">
+			<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<ul class="dropdown-menu">
+				<c:choose>
+					<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
+						<li><a id="accioClassificar"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+					</c:when>
+					<c:otherwise>
+						<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+					</c:otherwise>
+				</c:choose>
+				<li><a id="accioReenviar"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+				<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
+					<c:choose>
+						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || registre.procesEstat == 'ARXIU_PENDENT'}">
+							<li><a id="accioMarcarProcessat"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+						</c:otherwise>
+					</c:choose>			
+				</c:if>
+			</ul>
+		</div>	
+	</c:if>
+
+
+	
 	
 	<!--------------------------------------------------- TABLIST ------------------------------------------------------>
 	<ul class="nav nav-tabs" role="tablist">

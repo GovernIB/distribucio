@@ -157,7 +157,7 @@ public class RegistreUserController extends BaseUserController {
 							entitatActual.getId(),
 							bustiaId,
 							registreId));
-			model.addAttribute("contingutId", bustiaId);
+			model.addAttribute("bustiaId", bustiaId);
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
 			if (thr != null) {
