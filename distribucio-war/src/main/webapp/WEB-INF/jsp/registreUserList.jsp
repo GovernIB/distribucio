@@ -194,7 +194,7 @@ $(document).ready(function() {
 		</div>
 		<div class="row">			
 			<div class="col-md-2">
-				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.docFisica" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
 			</div>			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
@@ -229,7 +229,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="12"
+		data-default-order="13"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -256,7 +256,20 @@ $(document).ready(function() {
 				</th>
 				<th data-col-name="extracte" width="15%">
 					<spring:message code="bustia.pendent.columna.titol"/>
-				</th>					
+				</th>			
+				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
+				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
+					<script id="docFisTemplate" type="text/x-jsrender">
+						{{if documentacioFisicaCodi == '1'}}
+							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
+						{{else documentacioFisicaCodi == '2'}}
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+						{{else documentacioFisicaCodi == '3'}}
+							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
+						{{/if}}
+					</script>
+				</th>						
 				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
