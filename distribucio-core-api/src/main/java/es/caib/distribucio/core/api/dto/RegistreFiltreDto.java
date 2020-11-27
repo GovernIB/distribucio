@@ -27,7 +27,7 @@ public class RegistreFiltreDto implements Serializable {
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private String numeroOrigen;
 	private String interessat;
-	
+	private RegistreTipusDocFisicaEnumDto tipusDocFisica;
 	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 
 
@@ -37,8 +37,12 @@ public class RegistreFiltreDto implements Serializable {
 	public void setRegistreEnviatPerEmailEnum(RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum) {
 		this.registreEnviatPerEmailEnum = registreEnviatPerEmailEnum;
 	}
-
-	
+	public RegistreTipusDocFisicaEnumDto getTipusDocFisica() {
+		return tipusDocFisica;
+	}
+	public void setTipusDocFisica(RegistreTipusDocFisicaEnumDto tipusDocFisica) {
+		this.tipusDocFisica = tipusDocFisica;
+	}
 	public String getInteressat() {
 		return interessat;
 	}
@@ -51,22 +55,12 @@ public class RegistreFiltreDto implements Serializable {
 	public void setNumeroOrigen(String numeroOrigen) {
 		this.numeroOrigen = numeroOrigen;
 	}
-	
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
-	private static final long serialVersionUID = -139254994389509932L;
-
 	public String getBustia() {
 		return bustia;
 	}
-
 	public void setBustia(String bustia) {
 		this.bustia = bustia;
 	}
-	
 	public String getNumero() {
 		return numero;
 	}
@@ -82,23 +76,18 @@ public class RegistreFiltreDto implements Serializable {
 	public String getRemitent() {
 		return remitent;
 	}
-
 	public void setRemitent(String remitent) {
 		this.remitent = remitent;
 	}
-
 	public Date getDataRecepcioInici() {
 		return dataRecepcioInici;
 	}
-
 	public void setDataRecepcioInici(Date dataRecepcioInici) {
 		this.dataRecepcioInici = dataRecepcioInici;
 	}
-
 	public Date getDataRecepcioFi() {
 		return dataRecepcioFi;
 	}
-
 	public void setDataRecepcioFi(Date dataRecepcioFi) {
 		this.dataRecepcioFi = dataRecepcioFi;
 	}
@@ -114,4 +103,11 @@ public class RegistreFiltreDto implements Serializable {
 	public void setMostrarInactives(boolean mostrarInactives) {
 		this.mostrarInnactives = mostrarInactives;
 	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+	
+	private static final long serialVersionUID = -139254994389509932L;
 }

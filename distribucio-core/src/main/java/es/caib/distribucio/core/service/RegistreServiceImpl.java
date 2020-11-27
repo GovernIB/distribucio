@@ -475,6 +475,12 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 			
+			String tipusFisicaCodi = null;
+			if (filtre.getTipusDocFisica() != null) {
+				tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+			}
+			
+			
 			Date dataRecepcioFi = filtre.getDataRecepcioFi();
 			if (dataRecepcioFi != null) {
 				Calendar c = new GregorianCalendar();
@@ -520,6 +526,8 @@ public class RegistreServiceImpl implements RegistreService {
 						filtre.getInteressat() != null ? filtre.getInteressat() : "",
 						enviatPerEmail == null,
 						enviatPerEmail,
+						tipusFisicaCodi == null,
+						tipusFisicaCodi,
 						paginacioHelper.toSpringDataPageable(paginacioParams,
 								mapeigOrdenacio));
 				contextTotalfindRegistreByPareAndFiltre.stop();

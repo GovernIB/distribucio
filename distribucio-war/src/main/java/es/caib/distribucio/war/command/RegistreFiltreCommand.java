@@ -7,9 +7,10 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**
@@ -31,6 +32,7 @@ public class RegistreFiltreCommand {
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private String numeroOrigen;
 	private String interessat;
+	private RegistreTipusDocFisicaEnumDto tipusDocFisica;
 	
 	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 
@@ -65,6 +67,12 @@ public class RegistreFiltreCommand {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	public RegistreTipusDocFisicaEnumDto getTipusDocFisica() {
+		return tipusDocFisica;
+	}
+	public void setTipusDocFisica(RegistreTipusDocFisicaEnumDto tipusDocFisica) {
+		this.tipusDocFisica = tipusDocFisica;
 	}
 	public String getBustia() {
 		return bustia;

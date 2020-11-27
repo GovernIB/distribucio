@@ -57,6 +57,7 @@ $(document).ready(function() {
 		$('#procesEstatSimple').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
+		$('#tipusDocFisica').val('').change();
 	});
 	
 	$('#taulaDades').on( 'draw.dt', function () {
@@ -130,12 +131,11 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
 
+
+	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
-	
 		<div class="row">
-			
 			<div class="col-md-2">
 				<dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
 			</div>
@@ -191,6 +191,11 @@ $(document).ready(function() {
 			<div class="col-md-2">
 				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
+		</div>
+		<div class="row">			
+			<div class="col-md-2">
+				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.docFisica" emptyOption="true" inline="true"/>
+			</div>			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -199,6 +204,9 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</form:form>
+	
+	
+	
 	<script id="botonsTemplate" type="text/x-jsrender">
 		<div class="text-right">
 			<div class="btn-group">

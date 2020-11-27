@@ -860,12 +860,10 @@ public class RegistreUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new RegistreFiltreCommand();
-			filtreCommand.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
-			filtreCommand.setMostrarInactives(false);
 		}
 		return filtreCommand;
 	}
