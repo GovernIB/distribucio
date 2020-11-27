@@ -36,7 +36,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -148,6 +152,10 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
+			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
+			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		try {
@@ -158,6 +166,10 @@ public class RegistreUserController extends BaseUserController {
 							bustiaId,
 							registreId));
 			model.addAttribute("bustiaId", bustiaId);
+			model.addAttribute("registreNumero", registreNumero);
+			model.addAttribute("registreTotal", registreTotal);
+			model.addAttribute("ordreColumn", ordreColumn);
+			model.addAttribute("ordreDir", ordreDir);
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
 			if (thr != null) {
@@ -175,6 +187,65 @@ public class RegistreUserController extends BaseUserController {
 		return "registreDetall";
 	}	
 	
+	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des
+	 * dels botons "Anterior" i "Següent" de la pàgina del detall.
+	 * @param request
+	 * @param registreNumero
+	 * @param ordreColumn
+	 * @param ordreDir
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/navega/{registreNumero}", method = RequestMethod.GET)
+	public String registreNavegacio(
+			HttpServletRequest request,
+			@PathVariable int registreNumero,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			Model model) {
+		
+		ContingutDto registre = null;
+		String ret = null;
+		// Recupera el registre a partir del número de regitre
+		try {
+			// Prepara la pàgina per consultar
+			int paginaTamany = 1;
+			int paginaNum = registreNumero - 1;
+			PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
+			paginacioParams.setPaginaTamany(paginaTamany);
+			paginacioParams.setPaginaNum(paginaNum);
+			paginacioParams.afegirOrdre(
+					ordreColumn,
+					"asc".equals(ordreDir) ? OrdreDireccioDto.ASCENDENT : OrdreDireccioDto.DESCENDENT);
+			// Consulta la pàgina amb el registre anterior, actual i final
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
+			List<BustiaDto> bustiesPermesesPerUsuari = null;
+			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
+				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+			}
+			PaginaDto<ContingutDto> pagina = 
+				registreService.findRegistreUser(
+						entitatActual.getId(),
+						bustiesPermesesPerUsuari,
+						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						paginacioParams);
+			// Posa les dades dels registres al model segons la consulta
+			if (!pagina.getContingut().isEmpty()) {
+				registre = pagina.getContingut().get(0);
+				ret = "redirect:/modal/registreUser/bustia/" + registre.getPare().getId() + "/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+			}
+		} catch (Exception e) {
+			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
+			logger.error(errMsg, e);
+			MissatgesHelper.error(request, errMsg);
+		}
+		if (ret == null) {
+			ret = "redirect:" + request.getHeader("referer");
+		}
+		return ret;
+	}
+
 	@RequestMapping(value = "/registreAnnex/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
 	public String registreAnnex(
 			HttpServletRequest request,
@@ -860,10 +931,12 @@ public class RegistreUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new RegistreFiltreCommand();
+			filtreCommand.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
+			filtreCommand.setMostrarInactives(false);
 		}
 		return filtreCommand;
 	}

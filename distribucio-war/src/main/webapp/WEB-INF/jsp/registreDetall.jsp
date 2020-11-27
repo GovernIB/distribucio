@@ -76,6 +76,8 @@ tr.clicable {
 
 </style>
 <script type="text/javascript">
+	// <![CDATA[
+
 	$(document).ready(function() {
 		$(".desplegable").click(function(){
 			$(this).find("span").toggleClass("fa-caret-up");
@@ -126,13 +128,32 @@ tr.clicable {
     	});   
 
 				
+    	
+    	$('[name=btnAnterior],[name=btnSeguent]').click(function(){
+    		try {
+    			var registreNumero = $(this).data('registreNumero');
+    			var registreTotal = ${registreTotal};
+
+				// Afegeix els paràmetres a l'enllaç dels detalls
+				var url = new URL(window.location);
+				var params = url.searchParams;
+				params.set("registreTotal", registreTotal);
+				params.set("ordreColumn", '${ordreColumn}');
+				params.set("ordreDir", '${ordreDir}');
+    			// Navega al registre
+    			location.href = '<c:url value="/registreUser/navega/"/>' + registreNumero  +'?' + params.toString();
+    		} catch(e) {
+    			console.error("Error en la navegació de registre: " + e);
+    		}
+    		return false;
+    	});
 	});
 
 
 
-
-	
+	// ]]>
 </script>
+
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${registre}"/>
@@ -1078,6 +1099,17 @@ tr.clicable {
 	</div>
 	
 	<div id="modal-botons" class="well">
+		<c:if test="${registreNumero != null && registreTotal != null}">
+			<button name="btnAnterior" class="btn btn-default pull-left" 
+							data-registre-numero="${registreNumero - 1}"
+							${registreNumero <= 1 ? "disabled='disabled'" : "" }>
+						&lt;&lt; <spring:message code="comuns.boto.previous"/></button>
+			<button name="btnNavegacio" class="btn btn-default pull-left" disabled="disabled"> ${registreNumero} / ${registreTotal}</button>
+			<button name="btnSeguent" class="btn btn-default pull-left" 
+							data-registre-numero="${registreNumero + 1}"
+							${registreNumero >= registreTotal ? "disabled='disabled'" : "" }>
+						<spring:message code="comuns.boto.next"/> &gt;&gt;</button>
+		</c:if>
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>

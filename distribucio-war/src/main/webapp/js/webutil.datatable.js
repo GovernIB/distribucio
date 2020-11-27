@@ -119,7 +119,7 @@
 						}
 					}
 				},
-				rowCallback: function(row, data) {
+				rowCallback: function(row, data, index) {
 					if (plugin.settings.selectionEnabled) {
 						$(row).addClass('selectable');
 						var $cell = $('td:first', row);
@@ -150,9 +150,13 @@
 						$(row).attr(
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
+						var info = $(this).DataTable().page.info();
+						$(row).data().DT_RowNum = info.start + index + 1;
+						$(row).attr(
+								'data-row-index',
+								info.start + index + 1 );					     
 						if (plugin.settings.rowhrefMaximized)
 							$(row).attr('data-maximized', plugin.settings.rowhrefMaximized);
-						
 					}
 					if (data['DT_RowSelected']) {
 						$taula.dataTable().api().row(row).select();
