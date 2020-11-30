@@ -271,12 +271,13 @@ public class RegistreUserController extends BaseUserController {
 		return "registreAnnex";
 	}
 	
-	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}/{isResum}", method = RequestMethod.GET)
 	public String registreAnnexFirmes(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
+			@PathVariable boolean isResum,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -290,6 +291,8 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("registreId", registreId);
 			
 			model.addAttribute("isUsuariActualAdministration", entitatActual.isUsuariActualAdministration());
+			
+			model.addAttribute("isResum", isResum);
 			
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de firma", ex);

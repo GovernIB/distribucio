@@ -236,8 +236,8 @@ tr.clicable {
 			<table class="table table-bordered">
 			<tbody>
 				<tr>
-					<td style="width:20%"><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
-					<td>
+					<td><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
+					<td colspan="3">
 						<c:choose>
 							<c:when test="${isRolActualAdministrador}">
 								${registre.identificador}
@@ -251,42 +251,35 @@ tr.clicable {
 							<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 						</a>						
 					</td>
+					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
+					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>					
 				</tr>
 				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
-					<td><fmt:formatDate value="${registre.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+					<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
+					<td colspan="3">${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>				
+					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
+					<td class="${registre.presencial}"><spring:message code="boolean.${registre.presencial}"/></td>			
+							
 				</tr>		
 				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.proces.presencial"/></strong></td>
-					<td class="${registre.presencial}"><spring:message code="boolean.${registre.presencial}"/></td>
-				</tr>	
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.oficina"/></strong></td>
-					<td>${registre.oficinaDescripcio} (${registre.oficinaCodi})</td>
-				</tr>				
-				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.extracte"/></strong></td>
-					<td>${registre.extracte}</td>
+					<td colspan="5">${registre.extracte}</td>
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td>${registre.procedimentCodi}</td>
+					<td colspan="5">${registre.procedimentCodi}</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
-					<td>${registre.observacions}</td>
+					<td colspan="5">${registre.observacions}</td>
 				</tr>						
 				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
-					<td>${registre.numeroOrigen}</td>
-				</tr>
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.origen.data"/></strong></td>
-					<td><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
-				</tr>
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
-					<td>${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
+					<td style="width:16%;"><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
+					<td style="width:16%;">${registre.numeroOrigen}</td>
+					<td style="width:16%;"><strong><spring:message code="registre.detalls.camp.origen.data"/></strong></td>
+					<td style="width:16%;"><fmt:formatDate value="${registre.dataOrigen}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
+					<td style="width:16%;"><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
+					<td style="width:17%;">${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
 				</tr>				
 
 			</tbody>
@@ -453,7 +446,8 @@ tr.clicable {
 								<th style="width: 180px;"><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></th>
 								<th style="width: 450px;"><spring:message code="registre.annex.detalls.camp.observacions"/></th>
 								<th><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></th>
-								<th style="width: 320px;"><spring:message code="registre.annex.detalls.camp.arxiu.uuid"/></th>
+								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.origen"/></th>
+								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></th>
 								<th style="width: 50px;"><spring:message code="registre.annex.detalls.camp.fitxer"/></th>
 								<th style="width: 50px;"></th>
 							</tr>
@@ -465,12 +459,9 @@ tr.clicable {
 									<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
 									<td>${annex.observacions}</td>
 									<td><c:if test="${not empty annex.dataCaptura}"><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
-									<td>
-										${annex.fitxerArxiuUuid}
-										<c:if test="${annex.fitxerArxiuUuid == null }">
-											<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
-										</c:if>
-									</td>	
+
+									<td><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></td>
+									<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
 									<td>
 										<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 											<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
@@ -483,37 +474,7 @@ tr.clicable {
 									</td>	
 								</tr>	
 								<tr class="collapse detall" id="detalls_resum_annexos_${status.index}">
-									<td colspan="7">
-										<div class="row">
-											<div class="col-xs-6">
-												<dl class="dl-horizontal">
-													<dt><spring:message code="registre.annex.detalls.camp.eni.origen"/></dt><dd><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></dd>
-													<dt><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></dt><dd><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></dd>											
-													<dt><spring:message code="registre.annex.detalls.camp.sicres.tipus.document"/></dt><dd><c:if test="${not empty annex.sicresTipusDocument}"><spring:message code="registre.annex.detalls.camp.sicresTipusDocument.${annex.sicresTipusDocument}"/></c:if></dd>
-													<c:if test="${not empty annex.localitzacio}">
-														<dt><spring:message code="registre.annex.detalls.camp.localitzacio"/></dt><dd>${annex.localitzacio}</dd>
-													</c:if>
-													<c:forEach var="metaDada" items="${annex.metaDadesMap}">
-															<dt><strong>
-																<c:choose>
-																	<c:when test="${metaDada.key=='eni:resolucion'}">
-																		<spring:message code="registre.annex.detalls.camp.metaData.resolucion"/>
-																	</c:when>
-																	<c:when test="${metaDada.key=='eni:profundidad_color'}">
-																		<spring:message code="registre.annex.detalls.camp.metaData.profundidad_color"/>
-																	</c:when>
-																	<c:otherwise>
-																		${fn:toUpperCase(metaDada.key)}
-																	</c:otherwise>
-																</c:choose>
-															</strong></dt>
-															<dd>
-																${metaDada.value}
-															</dd>
-													</c:forEach>													
-												</dl>
-											</div>
-										</div>		
+									<td colspan="8">		
 										<c:if test="${annex.ambFirma}">
 											<div class="panel panel-default">
 												<div class="panel-heading">
@@ -529,7 +490,7 @@ tr.clicable {
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id});
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
 															        $(this).data("loaded", true);
 															    }
 														    });

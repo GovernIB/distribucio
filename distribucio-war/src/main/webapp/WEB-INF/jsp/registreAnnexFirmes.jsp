@@ -16,17 +16,19 @@
 		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/></th>
 		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/></th>
 		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/></th>
-		<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
+		<c:if test="${!isResum}">
+			<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
+		</c:if>
 		<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></th>
 		</c:if>
 		<c:if test="${not empty firma.csvRegulacio}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></th>
 		</c:if>	
-		<c:if test="${isUsuariActualAdministration}">
+		<c:if test="${isUsuariActualAdministration && !isResum}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></th>
 		</c:if>	
-		<c:if test="${isUsuariActualAdministration}">
+		<c:if test="${isUsuariActualAdministration && !isResum}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></th>
 		</c:if>			
 		
@@ -50,8 +52,9 @@
 					<c:if test="${not empty detall.data}"><fmt:formatDate value="${detall.data}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if>
 					<c:if test="${empty detall.data}"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data.nd"/></c:if>
 				</td>				
-				<td>${detall.emissorCertificat}</td>
-				
+				<c:if test="${!isResum}">
+					<td>${detall.emissorCertificat}</td>
+				</c:if>
 				<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
 					<td>
 						${firma.fitxerNom}
@@ -65,10 +68,10 @@
 					<td>${firma.csvRegulacio}</td>
 				</c:if>			
 										
-				<c:if test="${isUsuariActualAdministration}">
+				<c:if test="${isUsuariActualAdministration && !isResum}">
 					<td><spring:message code="document.nti.tipfir.enum.${firma.tipus}"/></td>
 				</c:if>			
-				<c:if test="${isUsuariActualAdministration}">
+				<c:if test="${isUsuariActualAdministration && !isResum}">
 					<td>${firma.perfil}</td>
 				</c:if>							
 			</tr>
