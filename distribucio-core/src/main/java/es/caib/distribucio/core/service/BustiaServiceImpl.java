@@ -1458,7 +1458,12 @@ public class BustiaServiceImpl implements BustiaService {
 				} else {
 					enviatPerEmail = false;
 				}
-			}					
+			}
+			
+			String tipusFisicaCodi = null;
+			if (filtre.getTipusDocFisica() != null) {
+				tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+			}
 
 			Date dataRecepcioFi = filtre.getDataRecepcioFi();
 			if (dataRecepcioFi != null) {
@@ -1487,7 +1492,9 @@ public class BustiaServiceImpl implements BustiaService {
 					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
 					filtre.getInteressat() != null ? filtre.getInteressat() : "",
 					enviatPerEmail == null,
-					enviatPerEmail);
+					enviatPerEmail,
+					tipusFisicaCodi == null,
+					tipusFisicaCodi);
 		}
 
 		contextTotal.stop();
