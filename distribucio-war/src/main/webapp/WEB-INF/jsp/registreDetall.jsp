@@ -128,25 +128,28 @@ tr.clicable {
     	});   
 
 				
-    	
-    	$('[name=btnAnterior],[name=btnSeguent]').click(function(){
-    		try {
-    			var registreNumero = $(this).data('registreNumero');
-    			var registreTotal = ${registreTotal};
 
-				// Afegeix els paràmetres a l'enllaç dels detalls
-				var url = new URL(window.location);
-				var params = url.searchParams;
-				params.set("registreTotal", registreTotal);
-				params.set("ordreColumn", '${ordreColumn}');
-				params.set("ordreDir", '${ordreDir}');
-    			// Navega al registre
-    			location.href = '<c:url value="/registreUser/navega/"/>' + registreNumero  +'?' + params.toString();
-    		} catch(e) {
-    			console.error("Error en la navegació de registre: " + e);
-    		}
-    		return false;
-    	});
+    	<c:if test="${registreTotal!=null}">
+	    	$('[name=btnAnterior],[name=btnSeguent]').click(function(){
+	    		try {
+	    			var registreNumero = $(this).data('registreNumero');
+	    			var registreTotal = ${registreTotal};
+	
+					// Afegeix els paràmetres a l'enllaç dels detalls
+					var url = new URL(window.location);
+					var params = url.searchParams;
+					params.set("registreTotal", registreTotal);
+					params.set("ordreColumn", '${ordreColumn}');
+					params.set("ordreDir", '${ordreDir}');
+	    			// Navega al registre
+	    			location.href = '<c:url value="/registreUser/navega/"/>' + registreNumero  +'?' + params.toString();
+	    		} catch(e) {
+	    			console.error("Error en la navegació de registre: " + e);
+	    		}
+	    		return false;
+	    	});
+    	</c:if>
+    	    	
 	});
 
 
@@ -420,10 +423,8 @@ tr.clicable {
 						</table>
 					</c:when>
 					<c:otherwise>
-						<div class="row col-xs-12">
-							<div class="well">
-								<spring:message code="registre.interessat.buit"/>
-							</div>
+						<div class="panel-body">
+							<spring:message code="registre.interessat.buit"/>
 						</div>
 					</c:otherwise>
 				</c:choose>
@@ -494,9 +495,6 @@ tr.clicable {
 															        $(this).data("loaded", true);
 															    }
 														    });
-														    $('.arxiu-download').click(function(event) {
-														    	webutilDownloadAndRefresh($(this).attr('href'), event);
-														    });
 														});
 													</script>													
 												</div> 
@@ -514,17 +512,15 @@ tr.clicable {
 					<c:otherwise>
 						<c:choose>
 							<c:when test="${not empty annexosErrorMsg}">
-								<div class="row col-xs-12">
+								<div class="panel-body">
 									<div class="alert alert-danger">
 										${annexosErrorMsg}
 									</div>
 								</div>						
 							</c:when>
 							<c:otherwise>
-								<div class="row col-xs-12">
-									<div class="well">
-										<spring:message code="registre.annex.buit"/>
-									</div>
+								<div class="panel-body">
+									<spring:message code="registre.annex.buit"/>
 								</div>
 							</c:otherwise>
 						</c:choose>				

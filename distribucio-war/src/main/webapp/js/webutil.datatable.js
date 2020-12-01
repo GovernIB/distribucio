@@ -151,12 +151,12 @@
 								'data-href',
 								$(plugin.settings.rowhrefTemplate).render(data));
 						var info = $(this).DataTable().page.info();
+						if (plugin.settings.rowhrefMaximized)
+							$(row).attr('data-maximized', plugin.settings.rowhrefMaximized);
 						$(row).data().DT_RowNum = info.start + index + 1;
 						$(row).attr(
 								'data-row-index',
 								info.start + index + 1 );					     
-						if (plugin.settings.rowhrefMaximized)
-							$(row).attr('data-maximized', plugin.settings.rowhrefMaximized);
 					}
 					if (data['DT_RowSelected']) {
 						$taula.dataTable().api().row(row).select();

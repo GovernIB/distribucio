@@ -152,11 +152,18 @@ public class ReglaHelper {
 			return null;
 			
 		} catch (Exception ex) {
+			
 			String procesError;
 			if (ex instanceof ScheduledTaskException) {
 				procesError = ex.getMessage();
 			} else {
-				procesError = ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex));
+				Throwable rootExc = ExceptionUtils.getRootCause(ex);
+				if (rootExc != null) {
+					procesError = ExceptionUtils.getStackTrace(rootExc);
+				} else {
+					procesError = ExceptionUtils.getStackTrace(ex);
+				}
+				
 			}
 			logger.debug("Processament anotació ERROR (" +
 					"id=" + registre.getId() + ", " +

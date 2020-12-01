@@ -215,7 +215,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 		<div class="row">			
-			<div class="col-md-2">
+			<div class="col-md-4">
 				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
 			</div>			
 			<div class="col-md-2 pull-right">

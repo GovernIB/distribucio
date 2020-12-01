@@ -139,12 +139,12 @@ public class BustiaV1Test {
 	        anotacio.setPresencial(true);
 	        anotacio.setObservacions("Anotacio Observacions....");
 	        
-	        anotacio.setDocumentacioFisicaCodi("1");
-	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta en suport PAPER (o altres suports)");
+//	        anotacio.setDocumentacioFisicaCodi("1");
+//	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta en suport PAPER (o altres suports)");
 //	        anotacio.setDocumentacioFisicaCodi("2");
 //	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta digitalitzada i complementàriament en paper");
-//	        anotacio.setDocumentacioFisicaCodi("3");
-//	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta digitalitzada");
+	        anotacio.setDocumentacioFisicaCodi("3");
+	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta digitalitzada");
 	        
 	        
 	        int nCaracters = 5000;
