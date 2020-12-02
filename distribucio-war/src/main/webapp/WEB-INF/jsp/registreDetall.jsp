@@ -257,6 +257,7 @@ tr.clicable {
 						
 						<a href="<c:url value="/modal/contingut/${registre.pare.id}/registre/${registre.id}/justificant"/>" class="btn btn-default btn-sm pull-right">
 							<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+							<spring:message code="registre.annex.detalls.camp.justificant"/>
 						</a>						
 					</td>
 					<td><strong><spring:message code="registre.detalls.camp.data"/></strong></td>
@@ -480,6 +481,15 @@ tr.clicable {
 									</td>	
 								</tr>	
 								<tr class="collapse detall" id="detalls_resum_annexos_${status.index}">
+								
+									<script type="text/javascript">
+										$(document).ready(function() {
+											$("#detalls_resum_annexos_${status.index}").on('show.bs.collapse', function(event){
+												$("#collapse-resum-firmes-<c:out value='${annex.id}'/>").collapse("show");
+											});
+										});
+									</script>	
+									
 									<td colspan="8">		
 										<c:if test="${annex.ambFirma}">
 											<div class="panel panel-default">
@@ -487,18 +497,19 @@ tr.clicable {
 													<h3 class="panel-title">
 														<span class="fa fa-certificate"></span>
 														<spring:message code="registre.annex.detalls.camp.firmes"/>
-														<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
+														<button id="collapse-resum-btn-firmes-${annex.id}" class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
 													</h3>
 												</div>
 												<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
 													<script type="text/javascript">
 														$(document).ready(function() {
-														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
+														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
 															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
 															        $(this).data("loaded", true);
 															    }
+															    event.stopPropagation();
 														    });
 														});
 													</script>													
