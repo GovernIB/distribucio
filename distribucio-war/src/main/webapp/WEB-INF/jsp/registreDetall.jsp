@@ -129,7 +129,7 @@ tr.clicable {
 
 				
 
-    	<c:if test="${registreTotal!=null}">
+    	//<c:if test="${registreTotal!=null}">
 	    	$('[name=btnAnterior],[name=btnSeguent]').click(function(){
 	    		try {
 	    			var registreNumero = $(this).data('registreNumero');
@@ -148,7 +148,7 @@ tr.clicable {
 	    		}
 	    		return false;
 	    	});
-    	</c:if>
+    	//</c:if>
     	    	
 	});
 
@@ -183,8 +183,13 @@ tr.clicable {
 						<c:otherwise>
 							<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 						</c:otherwise>
-					</c:choose>			
+					</c:choose>	
 				</c:if>
+				<li>
+					<a href="<c:url value="/contingut/${registre.pareId}/registre/${registre.id}/descarregarZip"/>">
+						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+					</a>
+				</li>
 			</ul>
 		</div>	
 	</c:if>
@@ -903,12 +908,6 @@ tr.clicable {
  							</div> 
 						</div>
 					</c:forEach>
-					<div class="row col-md-12">
-						<a href="<c:url value="/contingut/${registre.pareId}/registre/${registre.id}/descarregarZip"/>" 
-								title="<spring:message code="registre.annex.descarregar.zip"/>" 
-								class="btn btn-primary pull-right"><span class="fa fa-download"></span> .ZIP
-						</a>
-					</div>
 				</c:when>
 				<c:otherwise>
 					<c:choose>
