@@ -266,7 +266,7 @@ $(document).ready(function() {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
-				<th data-col-name="numero" width="15%" data-template="#contingutTemplate">
+				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
 						<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>
@@ -276,12 +276,13 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="extracte" width="15%">
+				<th data-col-name="extracte" width="25%">
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>			
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
 				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
 					<script id="docFisTemplate" type="text/x-jsrender">
+						<center>
 						{{if documentacioFisicaCodi == '1'}}
 							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
 						{{else documentacioFisicaCodi == '2'}}
@@ -290,9 +291,10 @@ $(document).ready(function() {
 						{{else documentacioFisicaCodi == '3'}}
 							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
 						{{/if}}
+						</center>
 					</script>
 				</th>						
-				<th data-col-name="numeroOrigen" width="10%"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
