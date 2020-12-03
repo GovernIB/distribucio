@@ -141,20 +141,7 @@ public class UnitatOrganitzativaHelper {
 		// getting list of last changes from webservices
 		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
-		logger.debug("Consulta d'unitats a WS [tot camps](" +
-				"codiDir3=" + entitat.getCodiDir3() + ", " +
-				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
-				"fechaSincronizacion=" + entitat.getFechaSincronizacion() + ")");
-		for(UnitatOrganitzativa un: unitatsWS){
-			logger.debug(ToStringBuilder.reflectionToString(un));
-		}
-		logger.debug("Consulta d'unitats a WS (" +
-				"codiDir3=" + entitat.getCodiDir3() + ", " +
-				"fechaActualizacion=" + entitat.getFechaActualizacion() + ", " +
-				"fechaSincronizacion=" + entitat.getFechaSincronizacion() + ")");
-		for(UnitatOrganitzativa un: unitatsWS){
-			logger.debug(un.getCodi()+" "+un.getEstat()+" "+un.getHistoricosUO());
-		}
+
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
@@ -216,8 +203,8 @@ public class UnitatOrganitzativaHelper {
 		List<UnitatOrganitzativa> unitatsVigentsWithChangedAttributes = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
-				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatV.getEstat().equals("V")
-						&& unitatWS.getHistoricosUO() == null
+				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatWS.getEstat().equals("V")
+						&& (unitatWS.getHistoricosUO() == null || unitatWS.getHistoricosUO().isEmpty())
 						&& !unitatV.getCodi().equals(entitat.getCodiDir3())) {
 					unitatsVigentsWithChangedAttributes.add(unitatWS);
 				}

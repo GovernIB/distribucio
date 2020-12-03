@@ -65,7 +65,7 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 		unitats.add(new UnitatOrganitzativa("A99999906", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 		//PROPS CHANGED
-		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_PROPS_CHANGED, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_PROPS_CHANGED, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", new ArrayList<String>()));
 		
 		//NEW
 		unitats.add(new UnitatOrganitzativa("A99999907", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));

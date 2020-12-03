@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.fundaciobit.plugins.validatesignature.api.CertificateInfo;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
@@ -19,6 +20,8 @@ import org.fundaciobit.plugins.validatesignature.api.SignatureRequestedInformati
 import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -328,27 +331,39 @@ public class PluginHelper {
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
-			if (arbol != null) {
+			
+			if (arbol != null && !arbol.isEmpty()) {
+				
+				logger.info("Consulta d'unitats a WS [tot camps](" +
+						"codiDir3=" + pareCodi + ", " +
+						"fechaActualizacion=" + fechaActualizacion + ", " +
+						"fechaSincronizacion=" + fechaSincronizacion + ")");
+				for (UnitatOrganitzativa un : arbol) {
+					logger.info(ToStringBuilder.reflectionToString(un));
+				}
+				
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
-				return arbol;
+				
 			} else {
-				String errorMissatge = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
-				integracioHelper.addAccioError(
+				logger.info("No s'han trobat cap unitats per consulta a WS (" +
+						"codiDir3=" + pareCodi + ", " +
+						"fechaActualizacion=" + fechaActualizacion + ", " +
+						"fechaSincronizacion=" + fechaSincronizacion + ")");
+				
+				accioDescripcio = "No s'ha trobat la unitat organitzativa llistat (codi=" + pareCodi + ")";
+				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0,
-						errorMissatge);
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_UNITATS,
-						errorMissatge);
+						System.currentTimeMillis() - t0);
 			}
+			return arbol;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'unitats organitzatives";
 			integracioHelper.addAccioError(
@@ -981,6 +996,9 @@ public class PluginHelper {
 			return pluginClass;
 		}
 	}
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
 
 
 }
