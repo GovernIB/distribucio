@@ -36,12 +36,12 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 		final String CODI_UNITAT_ARREL = "A04019281";
 		final String CODI_UNITAT_SUPERIOR = "A04019281";
 		
-		final String CODI_UNITAT_TO_SPLIT = "A04017955";
-		final String CODI_UNITAT_TO_MERGE1 = "A04017960";
-		final String CODI_UNITAT_TO_MERGE2 = "A04017956";
-		final String CODI_UNITAT_TO_SUBSTITUTE = "A04017957";
-		final String CODI_UNITAT_TO_CUMULATIVE_CHANGES = "A04017958";
-		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04017959";
+		final String CODI_UNITAT_TO_SPLIT = "A04032338";
+		final String CODI_UNITAT_TO_MERGE1 = "A04032340";
+		final String CODI_UNITAT_TO_MERGE2 = "A04031575";
+		final String CODI_UNITAT_TO_SUBSTITUTE = "A04031579";
+		final String CODI_UNITAT_TO_CUMULATIVE_CHANGES = "A04046344";
+		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04031605";
 		
 		
 		
