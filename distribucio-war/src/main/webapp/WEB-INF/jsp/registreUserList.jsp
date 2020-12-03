@@ -245,7 +245,7 @@ $(document).ready(function() {
 	<script id="rowhrefTemplate" type="text/x-jsrender">registreUser/bustia/{{:pareId}}/registre/{{:id}}</script>
 	<table 
 		id="taulaDades" 
-		class="table table-bordered table-striped" style="width:100%"
+		class="table table-bordered table-striped"style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreUser/datatable"/>"
 		data-filter="#registreFiltreCommand"
@@ -276,7 +276,7 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="extracte" width="25%">
+				<th data-col-name="extracte" width="25%" style="min-width:150px;">
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>			
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
