@@ -22,9 +22,7 @@
 		    }
 	    });
 	    
-	    $('.arxiu-download').click(function(event) {
-	    	webutilDownloadAndRefresh($(this).attr('href'), event);
-	    });
+
 	    
 	});
 
