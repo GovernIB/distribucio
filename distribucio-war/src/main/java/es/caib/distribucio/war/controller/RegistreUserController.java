@@ -510,12 +510,18 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
+			@RequestParam(value="registreNumero", required = false) String registreNumero,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			@RequestParam(value="avanzarPagina", required = false) String avanzarPagina,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			omplirModelPerReenviar(entitatActual, bustiaId, registreId, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			command.setOrigenId(bustiaId);
+			if (registreNumero != null)
+				command.setParams(new String [] {registreNumero, ordreColumn, ordreDir, avanzarPagina});
 			model.addAttribute(command);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -567,10 +573,25 @@ public class RegistreUserController extends BaseUserController {
 					registreId,
 					command.isDeixarCopia(),
 					command.getComentariEnviar());
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../../../pendent",
-					"bustia.controller.pendent.contingut.reenviat.ok");
+			if (command.getParams().length == 0) {
+				return getModalControllerReturnValueSuccess(
+						request,
+						"redirect:../../../pendent",
+						"bustia.controller.pendent.contingut.reenviat.ok");
+			} else {
+				//avançar a la següent pàgina al reenviar
+				boolean avanzar = Boolean.parseBoolean(command.getParams()[3]);
+				if (avanzar) {
+					int numeroPagina = Integer.parseInt(command.getParams()[0]);
+					command.getParams()[0] = String.valueOf(++numeroPagina);
+				}
+				MissatgesHelper.success(
+						request, 
+						getMessage(
+								request,
+								"bustia.controller.pendent.contingut.reenviat.ok"));
+				return "redirect:/registreUser/navega/" + command.getParams()[0] + "?ordreColumn=" + command.getParams()[1] + "&ordreDir=" + command.getParams()[2];
+			}
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

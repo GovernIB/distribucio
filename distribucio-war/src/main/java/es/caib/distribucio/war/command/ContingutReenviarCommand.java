@@ -24,8 +24,9 @@ public class ContingutReenviarCommand {
 	protected Long[] destins;
 	@NotNull
 	protected boolean deixarCopia;
-
-	public Long getOrigenId() {
+	protected String[] params;
+	
+ 	public Long getOrigenId() {
 		return origenId;
 	}
 	public void setOrigenId(Long origenId) {
@@ -49,6 +50,12 @@ public class ContingutReenviarCommand {
 	}
 	public void setDeixarCopia(boolean deixarCopia) {
 		this.deixarCopia = deixarCopia;
+	}
+	public String[] getParams() {
+		return params;
+	}
+	public void setParams(String[] params) {
+		this.params = params;
 	}
 	@Override
 	public String toString() {

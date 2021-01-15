@@ -255,7 +255,8 @@ $(document).ready(function() {
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
-		data-rowhref-maximized="true">
+		data-rowhref-maximized="true"
+		data-refresh-tancar="true">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
@@ -376,7 +377,7 @@ $(document).ready(function() {
 								<li>
 									<a id="detall-button"
 										href="registreUser/bustia/{{:pareId}}/registre/{{:id}}"
-											data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+											data-toggle="modal" data-maximized="true" data-refresh-tancar="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
 									<li><a href="./registreUser/{{:pareId}}/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>

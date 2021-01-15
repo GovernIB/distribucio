@@ -153,6 +153,9 @@
 						var info = $(this).DataTable().page.info();
 						if (plugin.settings.rowhrefMaximized)
 							$(row).attr('data-maximized', plugin.settings.rowhrefMaximized);
+						if (plugin.settings.refreshTancar)
+							$(row).attr('data-refresh-tancar', plugin.settings.refreshTancar);
+						
 						$(row).data().DT_RowNum = info.start + index + 1;
 						$(row).attr(
 								'data-row-index',

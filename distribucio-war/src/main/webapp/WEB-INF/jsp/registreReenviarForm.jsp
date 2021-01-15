@@ -16,6 +16,7 @@
 <body>
 	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand">
 		<form:hidden path="origenId"/>
+		<form:hidden path="params"/>
 		<div class="form-group">
 			<div class="col-xs-offset-4 col-xs-8">
 			    <span class="fa fa-exclamation-triangle text-success" title=""></span>
