@@ -377,7 +377,8 @@ $(document).ready(function() {
 								<li>
 									<a id="detall-button"
 										href="registreUser/bustia/{{:pareId}}/registre/{{:id}}"
-											data-toggle="modal" data-maximized="true" data-refresh-tancar="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a></li>
+											data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a>
+								</li>
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
 									<li><a href="./registreUser/{{:pareId}}/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
@@ -385,11 +386,16 @@ $(document).ready(function() {
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
-								<li><a href="./registreUser/{{:pareId}}/enviarViaEmail/{{:id}}" data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li {{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								<li><a href="./registreUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
-									<li {{if procesEstat != 'BUSTIA_PENDENT' && procesEstat != 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || procesEstat == 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
-								{{/if}}			
+									<li {{if procesEstat != 'BUSTIA_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT'}} href="./registreUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								{{/if}}		
+								<li>
+									<a href="<c:url value="/contingut/{{:pareId}}/registre/{{:id}}/descarregarZip"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+									</a>
+								</li>
 							</ul>
 						</div>
 					</script>
