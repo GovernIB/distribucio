@@ -6,6 +6,7 @@
 <%@ attribute name="atributNom" required="true"%>
 <%@ attribute name="seleccionatId"%>
 <%@ attribute name="changedCallback"%>
+<%@ attribute name="readyCallback"%>
 <%@ attribute name="deselectAllCallback"%>
 <%@ attribute name="fillsAtributInfoCondition"%>
 <%@ attribute name="fillsAtributInfoText"%>
@@ -80,8 +81,17 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover"]
-	})
+		"plugins": ["conditionalselect", "conditionalhover", "search", "sort"],
+		"core": {
+			"check_callback": true
+		},
+		"search" : {
+			"case_insensitive": false
+		}
+	})<c:if test="${not empty readyCallback}">
+	.on('ready.jstree', function (e, data) {
+		return ${readyCallback}(e, data);
+	})</c:if>
 	.on('after_open.jstree', function (e, data) {
 		// var iframe = $('.modal-body iframe', window.parent.document);
 		// var height = $('html').height();

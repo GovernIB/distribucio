@@ -523,6 +523,7 @@ public class RegistreUserController extends BaseUserController {
 			if (registreNumero != null)
 				command.setParams(new String [] {registreNumero, ordreColumn, ordreDir, avanzarPagina});
 			model.addAttribute(command);
+			model.addAttribute("maxLevel", getMaxLevelArbre());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -563,7 +564,8 @@ public class RegistreUserController extends BaseUserController {
 						request,
 						getMessage(
 								request, 	
-								"bustia.pendent.accio.reenviar.no.desti"));			
+								"bustia.pendent.accio.reenviar.no.desti"));
+				model.addAttribute("maxLevel", getMaxLevelArbre());
 				return "registreReenviarForm";
 			}
 			bustiaService.registreReenviar(
@@ -934,7 +936,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute(
 				"disableDeixarCopia",
 				disableDeixarCopia);
-		
+		model.addAttribute("maxLevel", getMaxLevelArbre());
 		model.addAttribute(
 				"busties",
 				busties);
@@ -946,6 +948,12 @@ public class RegistreUserController extends BaseUserController {
 						true,
 						false,
 						true));
+	}
+
+	private int getMaxLevelArbre() {
+		String maxLevelStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.arbre.nivell");
+		int maxLevel = maxLevelStr != null ? Integer.parseInt(maxLevelStr) : 1;
+		return maxLevel;
 	}
 
 	private RegistreFiltreCommand getFiltreCommand(
