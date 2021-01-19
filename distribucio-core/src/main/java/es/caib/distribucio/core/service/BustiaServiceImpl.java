@@ -96,6 +96,7 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
+import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 
 
@@ -1049,6 +1050,12 @@ public class BustiaServiceImpl implements BustiaService {
 		if (!registre.getInteressats().isEmpty()) {
 			htmlInteressatsTable = getHtmlInteressatsTable(registre);
 		}
+		// ### Usuari que reenvia l'anotació ###
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		DadesUsuari dadesUsuariActual = null;
+		if (auth != null)
+			dadesUsuariActual = cacheHelper.findUsuariAmbCodi(auth.getName());
+		
 		String html = getHtml(registre,
 				registreData,
 				message18nRegistreTipus,
@@ -1056,7 +1063,8 @@ public class BustiaServiceImpl implements BustiaService {
 				registreCreatedDate,
 				htmlJustificant,
 				htmlAnnexosTable,
-				htmlInteressatsTable);
+				htmlInteressatsTable,
+				dadesUsuariActual);
 		
 		
 		// ################## PLAIN TEXT ###################
@@ -1871,7 +1879,7 @@ public class BustiaServiceImpl implements BustiaService {
 		return htmlInteressatsTable;
 	}	
 
-	private  String getHtml(RegistreDto registre, Object registreData, String message18nRegistreTipus, Object registreDataOrigen, Object registreCreatedDate, String htmlJustificant, String htmlAnnexosTable, String htmlInteressatsTable) {
+	private  String getHtml(RegistreDto registre, Object registreData, String message18nRegistreTipus, Object registreDataOrigen, Object registreCreatedDate, String htmlJustificant, String htmlAnnexosTable, String htmlInteressatsTable, DadesUsuari usuariActual) {
 		
 		String html = 
 				"<!DOCTYPE html>"+
@@ -1952,7 +1960,26 @@ public class BustiaServiceImpl implements BustiaService {
 				"	<div class=\"header\">"+
 				"	<span class=\"headerText\">"+ messageHelper.getMessage("registre.titol").toUpperCase()+"</span> "+
 				"	</div>"+
-				"	<div class=\"content\">"+
+				"	<div class=\"content\">" +
+				(usuariActual == null ? "" :
+				"		<table>"+
+				"			<tr>"+
+				"				<th class=\"tableHeader\" colspan=\"2\">"+messageHelper.getMessage("registre.remitent.titol")+"</th>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>" + messageHelper.getMessage("registre.remitent.id") + "</th>"+
+				"				<td>" + usuariActual.getCodi() + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.remitent.nom") +"</th>"+
+				"				<td>"+ usuariActual.getNom() + (usuariActual.getLlinatges() != null ? usuariActual.getLlinatges() : "") + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.remitent.email") + "</th>"+
+				"				<td>" + usuariActual.getEmail() + "</td>"+
+				"			</tr>"+
+				"		</table>"
+				) +
 				"		<table>"+
 				"			<tr>"+
 				"				<th class=\"tableHeader\" colspan=\"2\">"+messageHelper.getMessage("registre.titol")+"</th>"+
