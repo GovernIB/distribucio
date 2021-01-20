@@ -24,6 +24,10 @@
 			font-style: normal;
 		}
 		
+		.jstree-default .jstree-clicked {
+			background-color: #BEEBFF !important;
+		}
+		
 		#jstree-search {
 			float: right;
 			border: 1px solid #ccc;
