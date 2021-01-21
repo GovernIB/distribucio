@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -978,6 +979,10 @@ public class BustiaServiceImpl implements BustiaService {
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
 		
+		if (true) {
+			throw new RuntimeException("refgseg");
+		}
+		
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreDto registre = registreService.findOne(
@@ -1182,6 +1187,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long registreId,
 			boolean opcioDeixarCopiaSelectada,
 			String comentari) throws NotFoundException {
+		
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaOrigenId=" + bustiaOrigenId + ", "

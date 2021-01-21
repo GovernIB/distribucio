@@ -40,6 +40,7 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
     color: #333;
 }
+
 </style>
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
@@ -112,7 +113,7 @@ $(document).ready(function() {
 				"registreUser/" + accio,
 				{ids: ids},
 				function(data) {
-					$("#seleccioCount").html(data);
+					$(".seleccioCount").html(data);
 				}
 		);
 	});
@@ -230,13 +231,22 @@ $(document).ready(function() {
 	
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
-		<div class="text-right">
+		<div class="text-right" style="width: 120%;margin-left:-20%;">
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 				<div class="btn-group">
 					<a href="registreUser/classificarMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
-  						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.classificar"/></span>
+  						<span class="badge seleccioCount">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.classificar"/></span>
+					</a>
+					<a href="registreUser/registreReenviarMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+  						<span class="badge seleccioCount">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.reenviar"/></span>
+					</a>
+					<a href="registreUser/marcarProcessatMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+  						<span class="badge seleccioCount">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.marcar.processat"/></span>
+					</a>
+					<a href="registreUser/enviarViaEmailMultiple" class="btn btn-default" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+  						<span class="badge seleccioCount">${fn:length(seleccio)}</span> <spring:message code="bustia.pendent.accio.enviarViaEmail"/></span>
 					</a>
 				</div>
 			</div>
