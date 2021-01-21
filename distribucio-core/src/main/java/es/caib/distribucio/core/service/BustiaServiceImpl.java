@@ -979,11 +979,6 @@ public class BustiaServiceImpl implements BustiaService {
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
 		
-		if (true) {
-			throw new RuntimeException("refgseg");
-		}
-		
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreDto registre = registreService.findOne(
 				entitatId,
