@@ -446,7 +446,8 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual.getId(),
 					command.getBustiaId(),
 					command.getContingutId(),
-					adreces);
+					adreces, 
+					command.getMotiu());
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
@@ -514,7 +515,8 @@ public class RegistreUserController extends BaseUserController {
 								entitatActual.getId(),
 								registreDto.getPare().getId(),
 								registreDto.getId(),
-								adreces);
+								adreces, 
+								command.getMotiu());
 						
 					} catch (Exception e) {
 						MissatgesHelper.error(

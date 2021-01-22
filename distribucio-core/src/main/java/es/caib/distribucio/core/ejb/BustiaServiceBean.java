@@ -140,12 +140,14 @@ public class BustiaServiceBean implements BustiaService {
 			Long entitatId, 
 			Long contingutId, 
 			Long registreId, 
-			String adresses) throws MessagingException {
+			String adresses, 
+			String motiu) throws MessagingException {
 		delegate.registreAnotacioEnviarPerEmail(
 				entitatId, 
 				contingutId, 
 				registreId, 
-				adresses);
+				adresses, 
+				motiu);
 	}
 
 

@@ -974,7 +974,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long bustiaId,
 			Long registreId, 
-			String adresses) throws MessagingException {
+			String adresses, 
+			String motiu) throws MessagingException {
 		
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
@@ -1056,7 +1057,8 @@ public class BustiaServiceImpl implements BustiaService {
 		if (auth != null)
 			dadesUsuariActual = cacheHelper.findUsuariAmbCodi(auth.getName());
 		
-		String html = getHtml(registre,
+		String html = getHtml(
+				registre,
 				registreData,
 				message18nRegistreTipus,
 				registreDataOrigen,
@@ -1064,7 +1066,7 @@ public class BustiaServiceImpl implements BustiaService {
 				htmlJustificant,
 				htmlAnnexosTable,
 				htmlInteressatsTable,
-				dadesUsuariActual);
+				dadesUsuariActual, motiu);
 		
 		
 		// ################## PLAIN TEXT ###################
@@ -1880,7 +1882,17 @@ public class BustiaServiceImpl implements BustiaService {
 		return htmlInteressatsTable;
 	}	
 
-	private  String getHtml(RegistreDto registre, Object registreData, String message18nRegistreTipus, Object registreDataOrigen, Object registreCreatedDate, String htmlJustificant, String htmlAnnexosTable, String htmlInteressatsTable, DadesUsuari usuariActual) {
+	private  String getHtml(
+			RegistreDto registre, 
+			Object registreData, 
+			String message18nRegistreTipus, 
+			Object registreDataOrigen, 
+			Object registreCreatedDate, 
+			String htmlJustificant, 
+			String htmlAnnexosTable, 
+			String htmlInteressatsTable, 
+			DadesUsuari usuariActual, 
+			String motiu) {
 		
 		String html = 
 				"<!DOCTYPE html>"+
@@ -1978,7 +1990,15 @@ public class BustiaServiceImpl implements BustiaService {
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.remitent.email") + "</th>"+
 				"				<td>" + usuariActual.getEmail() + "</td>"+
-				"			</tr>"+
+				"			</tr>"+				
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.bustia") + "</th>"+
+				"				<td>" + registre.getPare().getNom() + "</td>"+
+				"			</tr>"+				
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.motiu") + "</th>"+
+				"				<td>" + motiu + "</td>"+
+				"			</tr>"+						
 				"		</table>"
 				) +
 				"		<table>"+
