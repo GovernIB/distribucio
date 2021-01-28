@@ -118,16 +118,19 @@ tr.clicable {
     	});
 
     	$( "a#accioReenviar" ).on( "click", function() {
+			var url = new URL(window.location);
+			var params = url.searchParams;
+    		//<c:if test="${registreTotal!=null}">
 			var registreTotal = ${registreTotal};
 			var avanzar = $('.avanzar').is(':checked');
     		// Afegeix els paràmetres a l'enllaç dels detalls
-			var url = new URL(window.location);
-			var params = url.searchParams;
-			params.set("registreTotal", registreTotal);
-			params.set("ordreColumn", '${ordreColumn}');
-			params.set("ordreDir", '${ordreDir}');
-			params.set("avanzarPagina", avanzar);
-			
+			if (${registreNumero} < registreTotal) {
+				params.set("registreTotal", registreTotal);
+				params.set("ordreColumn", '${ordreColumn}');
+				params.set("ordreDir", '${ordreDir}');
+				params.set("avanzarPagina", avanzar);
+			}
+			//</c:if>
     		location.href = '<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
     	});
     	$( "a#accioClassificar" ).on( "click", function() {
@@ -159,7 +162,6 @@ tr.clicable {
 	    		return false;
 	    	});
     	//</c:if>
-    	    	
 	});
 
 
@@ -175,7 +177,7 @@ tr.clicable {
 	<c:if test="${!isRolActualAdministrador}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
 			<span for="avanzarPagina"><spring:message code="bustia.pendent.accio.avansar"/></span>&nbsp;
-			<input value="" class="avanzar" for="avanzarPagina" type="checkbox" style="margin-right: 35px;" checked/>&nbsp;
+			<input value="" class="avanzar" for="avanzarPagina" type="checkbox" style="margin-right: 35px;" ${registreNumero >= registreTotal ? "disabled='disabled'" : "checked" }/>&nbsp;
 			<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<c:choose>
