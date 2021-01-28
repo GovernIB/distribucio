@@ -16,6 +16,7 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	<script src="<c:url value="/webjars/pdf-js/2.5.207/build/pdf.js"/>"></script>
 	<!------------------------------------------- Contant interessats sense incloure representants --------------------------------------------->
 	<c:set var="countInteressats" value="0"/>
 	<c:if test="${not empty registre.interessats}">
@@ -27,7 +28,6 @@
 	</c:if>
 	<title><spring:message code="contingut.admin.info.titol"/></title>
 	<dis:modalHead/>
-	
 	<style>
 body {
 	min-height: 400px;
@@ -72,7 +72,58 @@ tr.clicable {
     right: 0;
     margin-right: -10px;
 }
+#resum-annexos-container {
+	display: flex;
+}
 
+#resum-viewer {
+	padding: 1% 1% 0% 1%;
+	display: none;
+	margin-left: 1%;
+	width: 100%;
+}
+
+.invalid-format td {
+	cursor: auto !important;
+	opacity: 0.4;
+}
+
+.invalid-format td:nth-child(7), .invalid-format td:nth-child(8) {
+	opacity: 1;
+}
+
+#resum-annexos > table > tbody td {
+	cursor: pointer;
+}
+
+.viewer-content {
+	width: 100%;
+}
+.line {
+	width: 90px;
+	height: 3px;
+	background-color: black;
+	margin-top: -6px;
+}
+.viewer-firmes-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.viewer-firma-container {
+	width: 45%;
+	margin: 1%;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 5px 10px 0px 6px;
+}
+.rmodal_loading {
+    background: rgba( 255, 255, 255, .8 ) 
+                url('<c:url value="/img/loading.gif"/>') 
+                50% 50% 
+                no-repeat;
+}
 
 </style>
 <script type="text/javascript">
@@ -163,17 +214,116 @@ tr.clicable {
 	    	});
     	//</c:if>
 	});
-
-
-
+	
+	function showViewer(event, annexId, observacions, dataCaptura, origen) {
+		if (event.target.cellIndex === undefined || event.target.cellIndex === 6 || event.target.cellIndex === 7) return;
+        // Mostrar visor
+        $('#resum-viewer').show();
+        
+        // Mostrar contingut capçalera visor
+        $('.viewer-content').remove();
+        var viewerContent = '<div class="viewer-content">\
+        						<span class="fa fa-close" style="float: right; cursor: pointer;" onClick="closeViewer()"></span>\
+        						<dl class="dl-horizontal">\
+		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.eni.data.captura"/>: </dt><dd>' + dataCaptura + '</dd>\
+		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.eni.origen"/>: </dt><dd>' + origen + '</dd>\
+		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.observacions"/>: </dt><dd>' + observacions + '</dd>\
+	        					</dl>\
+        					 </div>';
+        $('#resum-viewer').prepend(viewerContent);
+        
+        // Recupera i mostrar contingut firmes
+        $.get(
+				"<c:url value="/registreUser/registreAnnexFirmes/${bustiaId}/${registreId}/"/>" + annexId,
+				function(data) {
+					if (data.firmes) {
+						$('.viewer-firmes').remove();
+						var viewerContent = '<div class="viewer-firmes">\
+					    						<h4><span class="fa fa-certificate"></span><spring:message code="registre.annex.detalls.camp.firmes"/></h4>\
+					    						<div class="line"></div>\
+					    						<div class="viewer-firmes-container">';
+    					var idx = 0;
+    					var idxFirma = 1;
+						data.firmes.forEach(function(firma) {
+							viewerContent += '<div class="viewer-firma-container">\
+							        				<dl class="dl-horizontal">\
+									        			<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firma"/>: </dt><dd> Firma ' + idxFirma + '</dd>';
+									        			if (firma.detalls[0].responsableNom != null)
+									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/>: </dt><dd>' + firma.detalls[0].responsableNom + '</dd>';
+									        			if (firma.detalls[0].responsableNif != null)	
+									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/>: </dt><dd>' + firma.detalls[0].responsableNif + '</dd>';
+									        			if (firma.detalls[0].data != null)	
+									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/>: </dt><dd>' + formatDate(new Date(firma.detalls[0].data)) + '</dd>';
+										        		if (firma.tipus != 'PADES' && firma.tipus != 'CADES_ATT' && firma.tipus != 'XADES_ENV') {
+										        			viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.fitxer"/>: </dt>\
+										        			<dd>' + 
+										        				firma.fitxerNom + '<a href="/distribucio/modal/contingut/${bustiaId}/registre/${registreId}/annex/' + annexId + '/firma/' + idx + '" class="btn btn-default btn-sm pull-right">\
+																						<span class="fa fa-download" title="Descarregar fitxer"></span>\
+																					</a>\
+										        			</dd>';
+										        		}
+									        		viewerContent += '</dl>\
+						        				</div>';
+							idx++;
+							idxFirma++;
+						});
+						viewerContent +='</div></div>';
+   						$(viewerContent).insertAfter('.viewer-content');
+					}
+				}
+		);
+	    
+	    // Amagar columnes taula
+	    var tableAnnexos = $('#resum-annexos').find('table');
+	    tableAnnexos.find('tr').each(function() {
+	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").hide();
+	    });
+	    
+	    // Recuperar i mostrar document al visor
+		var urlDescarrega = "<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/"/>" + annexId + "/arxiu/content/DOCUMENT";
+		$('#container').attr('src', '');
+		$('#container').addClass('rmodal_loading');
+		showDocument(urlDescarrega);
+	}
+	
+	function showDocument(arxiuUrl) {
+		// Fa la petició a la url de l'arxiu
+		$.ajax({
+			type: 'GET',
+			url: arxiuUrl,
+			responseType: 'arraybuffer',
+			success: function(response) {
+	            var blob = base64toBlob(response.contingut, response.contentType);
+	            var file = new File([blob], response.contentType, {type: response.contentType});
+	            link = URL.createObjectURL(file);
+	            
+	            var viewerUrl = "<c:url value="/webjars/pdf-js/2.5.207/web/viewer.html"/>" + '?file=' + encodeURIComponent(link);
+			    $('#container').removeClass('rmodal_loading');
+			    $('#container').attr('src', viewerUrl);
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				$('#container').removeClass('rmodal_loading');
+				console.log(thrownError);
+			}
+		});
+	}
+	
+	function closeViewer() {
+		// Amagar visor
+		$('#resum-viewer').hide();
+		
+		// Mostrar columnes taula
+		var tableAnnexos = $('#resum-annexos').find('table');
+	    tableAnnexos.find('tr').each(function() {
+	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").show();
+	    });
+	}
 	// ]]>
 </script>
 
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${registre}"/>
-	
-	
 	<c:if test="${!isRolActualAdministrador}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
 			<span for="avanzarPagina"><spring:message code="bustia.pendent.accio.avansar"/></span>&nbsp;
@@ -452,115 +602,117 @@ tr.clicable {
 			
 			
 			<!------------------- ANNEXOS ------------------->
-			<div class="panel panel-default" id="resum-annexos">
-				<div class="panel-heading">
-					<h3 class="panel-title"><spring:message code="registre.detalls.pipella.annexos"/></h3>
-				</div>
-				<c:choose>
-					<c:when test="${not empty registre.annexos}">
-
-				
-						<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th style="width: 300px;"><spring:message code="registre.annex.detalls.camp.titol"/></th>
-								<th style="width: 180px;"><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></th>
-								<th style="width: 450px;"><spring:message code="registre.annex.detalls.camp.observacions"/></th>
-								<th><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></th>
-								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.origen"/></th>
-								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></th>
-								<th style="width: 50px;"><spring:message code="registre.annex.detalls.camp.fitxer"/></th>
-								<th style="width: 50px;"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
+			<div id="resum-annexos-container">
+				<div class="panel panel-default" id="resum-annexos">
+					<div class="panel-heading">
+						<h3 class="panel-title"><spring:message code="registre.detalls.pipella.annexos"/></h3>
+					</div>
+					<c:choose>
+						<c:when test="${not empty registre.annexos}">
+	
+					
+							<table class="table table-bordered">
+							<thead>
 								<tr>
-									<td>${annex.titol}</td>
-									<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
-									<td>${annex.observacions}</td>
-									<td><c:if test="${not empty annex.dataCaptura}"><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
-
-									<td><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></td>
-									<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
-									<td>
-										<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
-											<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
-										</a>
-									</td>												
-									<td>
-										<button type="button" class="btn btn-default desplegable" href="#detalls_resum_annexos_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_annexos_${status.index}">
-											<span class="fa fa-caret-down"></span>
-										</button>
-									</td>	
-								</tr>	
-								<tr class="collapse detall" id="detalls_resum_annexos_${status.index}">
-								
-									<script type="text/javascript">
-										$(document).ready(function() {
-											$("#detalls_resum_annexos_${status.index}").on('show.bs.collapse', function(event){
-												$("#collapse-resum-firmes-<c:out value='${annex.id}'/>").collapse("show");
-											});
-										});
-									</script>	
+									<th style="width: 300px;"><spring:message code="registre.annex.detalls.camp.titol"/></th>
+									<th style="width: 180px;"><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></th>
+									<th style="width: 450px;"><spring:message code="registre.annex.detalls.camp.observacions"/></th>
+									<th><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></th>
+									<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.origen"/></th>
+									<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></th>
+									<th style="width: 50px;"><spring:message code="registre.annex.detalls.camp.fitxer"/></th>
+									<th style="width: 50px;"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
 									
-									<td colspan="8">		
-										<c:if test="${annex.ambFirma}">
-											<div class="panel panel-default">
-												<div class="panel-heading">
-													<h3 class="panel-title">
-														<span class="fa fa-certificate"></span>
-														<spring:message code="registre.annex.detalls.camp.firmes"/>
-														<button id="collapse-resum-btn-firmes-${annex.id}" class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
-													</h3>
+									<tr <c:choose><c:when test="${annex.fitxerTipusMime == 'application/pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
+										<td>${annex.titol}</td>
+										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
+										<td>${annex.observacions}</td>
+										<td><c:if test="${not empty annex.dataCaptura}"><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
+	
+										<td><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></td>
+										<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
+										<td>
+											<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
+												<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+											</a>
+										</td>												
+										<td>
+											<button type="button" class="btn btn-default desplegable" href="#detalls_resum_annexos_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_annexos_${status.index}">
+												<span class="fa fa-caret-down"></span>
+											</button>
+										</td>	
+									</tr>	
+									<tr class="collapse detall" id="detalls_resum_annexos_${status.index}">
+									
+										<script type="text/javascript">
+											$(document).ready(function() {
+												$("#detalls_resum_annexos_${status.index}").on('show.bs.collapse', function(event){
+													$("#collapse-resum-firmes-<c:out value='${annex.id}'/>").collapse("show");
+												});
+											});
+										</script>	
+										
+										<td colspan="8">		
+											<c:if test="${annex.ambFirma}">
+												<div class="panel panel-default">
+													<div class="panel-heading">
+														<h3 class="panel-title">
+															<span class="fa fa-certificate"></span>
+															<spring:message code="registre.annex.detalls.camp.firmes"/>
+															<button id="collapse-resum-btn-firmes-${annex.id}" class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
+														</h3>
+													</div>
+													<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
+														<script type="text/javascript">
+															$(document).ready(function() {
+															    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
+																    if (!$(this).data("loaded")) {
+																        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
+																        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
+																        $(this).data("loaded", true);
+																    }
+																    event.stopPropagation();
+															    });
+															});
+														</script>													
+													</div> 
 												</div>
-												<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
-													<script type="text/javascript">
-														$(document).ready(function() {
-														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
-															    if (!$(this).data("loaded")) {
-															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
-															        $(this).data("loaded", true);
-															    }
-															    event.stopPropagation();
-														    });
-														});
-													</script>													
-												</div> 
-											</div>
-										</c:if>											
-									</td>
-								</tr>									
-								
-							</c:forEach>
-						</tbody>
-						</table>
-						
-
-					</c:when>
-					<c:otherwise>
-						<c:choose>
-							<c:when test="${not empty annexosErrorMsg}">
-								<div class="panel-body">
-									<div class="alert alert-danger">
-										${annexosErrorMsg}
+											</c:if>											
+										</td>
+									</tr>									
+									
+								</c:forEach>
+							</tbody>
+							</table>
+							
+	
+						</c:when>
+						<c:otherwise>
+							<c:choose>
+								<c:when test="${not empty annexosErrorMsg}">
+									<div class="panel-body">
+										<div class="alert alert-danger">
+											${annexosErrorMsg}
+										</div>
+									</div>						
+								</c:when>
+								<c:otherwise>
+									<div class="panel-body">
+										<spring:message code="registre.annex.buit"/>
 									</div>
-								</div>						
-							</c:when>
-							<c:otherwise>
-								<div class="panel-body">
-									<spring:message code="registre.annex.buit"/>
-								</div>
-							</c:otherwise>
-						</c:choose>				
-					</c:otherwise>
-				</c:choose>				
+								</c:otherwise>
+							</c:choose>				
+						</c:otherwise>
+					</c:choose>
+				</div> 
+				<div class="panel panel-default" id="resum-viewer">
+					<iframe id="container" width="100%" height="540" frameBorder="0"></iframe>
+				</div>     
 			</div>	
-			
-			
-		
-		
 		</div>
 	
 		<!------------------------------------------- TABPANEL INFORMACIO --------------------------------------------->

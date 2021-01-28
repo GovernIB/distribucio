@@ -12,6 +12,36 @@ function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
 
+//dd/MM/yyyy HH:mm:ss
+function formatDate(date) {
+	var dateFormatted =
+			("00" + date.getDate()).slice(-2) + "/" +
+			("00" + (date.getMonth() + 1)).slice(-2) + "/" +
+			date.getFullYear() + " " +
+		  	("00" + date.getHours()).slice(-2) + ":" +
+		  	("00" + date.getMinutes()).slice(-2) + ":" +
+		  	("00" + date.getSeconds()).slice(-2);
+	return dateFormatted;
+}
+
+function base64toBlob(b64Data, contentType) {
+	var contentType = contentType || '';
+	var sliceSize = 512;
+	var byteCharacters = atob(b64Data);
+	var byteArrays = [];
+	for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+		var slice = byteCharacters.slice(offset, offset + sliceSize);
+	    var byteNumbers = new Array(slice.length);
+	    for (var i=0; i<slice.length; i++) {
+	    	byteNumbers[i] = slice.charCodeAt(i);
+		}
+	    var byteArray = new Uint8Array(byteNumbers);
+	    byteArrays.push(byteArray);
+	}
+	var blob = new Blob(byteArrays, {type: contentType});
+	return blob;
+}
+
 /** Funció per descarregar un arxiu i refrescar missatges */
 function webutilDownloadAndRefresh(arxiuUrl, event) {
 

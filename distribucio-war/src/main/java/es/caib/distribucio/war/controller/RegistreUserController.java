@@ -41,6 +41,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -301,6 +302,30 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		return "registreAnnexFirmes";
+	}
+	
+	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
+	@ResponseBody
+	public RegistreAnnexDto registreAnnexFirmes(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			Model model) {
+		RegistreAnnexDto annexFirmes = new RegistreAnnexDto();
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			annexFirmes = registreService.getAnnexAmbFirmes(
+							entitatActual.getId(),
+							bustiaId,
+							registreId,
+							annexId);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació de firma", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+		}
+
+		return annexFirmes;
 	}
 	
 	

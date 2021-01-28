@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +137,24 @@ public class ContingutController extends BaseUserController {
 				request,
 				"redirect:../../",
 				"contingut.registre.missatge.anotacio.marcada");
+	}
+	
+	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/arxiu/content/{tipus}", method = RequestMethod.GET)
+	@ResponseBody
+	public FitxerDto descarregarBase64(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			@PathVariable String tipus) throws Exception {
+		FitxerDto fitxer = null;
+		try {
+			fitxer = registreService.getAnnexFitxer(annexId);
+		} catch (Exception ex) {
+			throw new Exception(ex.getMessage());
+		}
+		return fitxer;
 	}
 
 	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
