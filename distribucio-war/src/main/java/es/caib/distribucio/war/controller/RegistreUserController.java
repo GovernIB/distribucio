@@ -41,6 +41,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -303,6 +304,30 @@ public class RegistreUserController extends BaseUserController {
 		return "registreAnnexFirmes";
 	}
 	
+	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
+	@ResponseBody
+	public RegistreAnnexDto registreAnnexFirmes(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			Model model) {
+		RegistreAnnexDto annexFirmes = new RegistreAnnexDto();
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			annexFirmes = registreService.getAnnexAmbFirmes(
+							entitatActual.getId(),
+							bustiaId,
+							registreId,
+							annexId);
+		} catch(Exception ex) {
+			logger.error("Error recuperant informació de firma", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
+		}
+
+		return annexFirmes;
+	}
+	
 	
 	/** Mètode Ajax per seleccionar tots els registres a partir del mateix filtre del datatable.
 	 * 
@@ -510,7 +535,8 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
-			@RequestParam(value="registreNumero", required = false) String registreNumero,
+			@RequestParam(value="registreNumero", required = false) Integer registreNumero,
+			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			@RequestParam(value="avanzarPagina", required = false) String avanzarPagina,
@@ -520,8 +546,13 @@ public class RegistreUserController extends BaseUserController {
 			omplirModelPerReenviar(entitatActual, bustiaId, registreId, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			command.setOrigenId(bustiaId);
-			if (registreNumero != null)
-				command.setParams(new String [] {registreNumero, ordreColumn, ordreDir, avanzarPagina});
+			RegistreFiltreCommand filtre = getFiltreCommand(request);
+			boolean senseFiltreAndAvanzar = filtre.getBustia() == null && Boolean.parseBoolean(avanzarPagina);
+			boolean ambFiltre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)); // si està filtrat i és la penúltima pàgina
+			
+			if (registreNumero != null && ((senseFiltreAndAvanzar) || (ambFiltre))) {
+				command.setParams(new String [] {String.valueOf(registreNumero), ordreColumn, ordreDir, avanzarPagina});
+			}
 			model.addAttribute(command);
 			model.addAttribute("maxLevel", getMaxLevelArbre());
 		} catch (Exception e) {
@@ -585,7 +616,8 @@ public class RegistreUserController extends BaseUserController {
 				boolean avanzar = Boolean.parseBoolean(command.getParams()[3]);
 				if (avanzar) {
 					int numeroPagina = Integer.parseInt(command.getParams()[0]);
-					command.getParams()[0] = String.valueOf(++numeroPagina);
+					numeroPagina += 1;
+					command.getParams()[0] = String.valueOf(numeroPagina);
 				}
 				MissatgesHelper.success(
 						request, 
