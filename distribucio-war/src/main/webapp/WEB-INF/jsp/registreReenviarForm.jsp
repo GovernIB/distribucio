@@ -75,8 +75,10 @@
 		<form:hidden path="params"/>
 		<div class="form-group">
 			<div class="col-xs-offset-4 col-xs-8">
-			    <span class="fa fa-exclamation-triangle text-success" title=""></span>
-			    <spring:message code="contingut.enviar.info.seleccio.multiple"/>
+			  	<c:if test="${selectMultiple}"> 
+				    <span class="fa fa-exclamation-triangle text-success" title=""></span>
+				  	<spring:message code="contingut.enviar.info.seleccio.multiple"/>
+			  	</c:if>
 			    <input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 			</div>
 	    </div>
@@ -84,9 +86,9 @@
 		fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 		fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
 		readyCallback="readyCallback"/>
-
+		
+		
 		<dis:inputCheckbox name="deixarCopia" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/>
-	
 		<dis:inputTextarea name="comentariEnviar" textKey="contingut.enviar.camp.comentari"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>

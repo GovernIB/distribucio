@@ -440,7 +440,7 @@ public class RegistreUserController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.GET)
-	public String bustiaEnviarByEmailGet(
+	public String enviarViaEmailGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
@@ -453,7 +453,7 @@ public class RegistreUserController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.POST)
-	public String bustiaEnviarByEmailPost(
+	public String enviarViaEmailPost(
 			HttpServletRequest request,
 			@Valid RegistreEnviarViaEmailCommand command,
 			BindingResult bindingResult,
@@ -470,7 +470,8 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual.getId(),
 					command.getBustiaId(),
 					command.getContingutId(),
-					adreces);
+					adreces, 
+					command.getMotiu());
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
@@ -488,6 +489,96 @@ public class RegistreUserController extends BaseUserController {
 		}
 		
 	}
+	
+	
+	
+	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.GET)
+	public String enviarViaEmailMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
+		model.addAttribute(command);
+		return "registreViaEmail";
+	}
+
+	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.POST)
+	public String enviarViaEmailMultiplePost(
+			HttpServletRequest request,
+			@Valid RegistreEnviarViaEmailCommand command,
+			BindingResult bindingResult,
+			Model model)  {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "registreViaEmail";
+		}
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			
+			ContingutDto contingutDto;
+			for (Long registreId : seleccioList) {
+				contingutDto = null;
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				RegistreDto registreDto = (RegistreDto) contingutDto;
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+					
+					boolean processatOk = true;
+					try {
+						bustiaService.registreAnotacioEnviarPerEmail(
+								entitatActual.getId(),
+								registreDto.getPare().getId(),
+								registreDto.getId(),
+								adreces, 
+								command.getMotiu());
+						
+					} catch (Exception e) {
+						MissatgesHelper.error(
+								request,
+								getMessage(
+										request, 
+										"registre.user.controller.enviar.email.massiva.error",
+										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+						processatOk = false;
+					}
+					
+					if (processatOk)
+						correctes++;
+					else
+						errors++;
+				} 
+				else {
+					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
+					estatErroni++;
+				}
+			}
+			if (correctes > 0){
+				MissatgesHelper.success(request, getMessage(request, "registre.user.controller.enviar.email.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request, getMessage(request, "registre.user.controller.enviar.email.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
+				MissatgesHelper.warning(request, getMessage(request, "registre.user.controller.enviar.email.massiva.estatErroni", new Object[]{estatErroni}));
+			}
+		} else {
+			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
+		}
+		return modalUrlTancar();
+		
+	}
+	
+	
 
 	/** Realitza les següents accions:
 	 * - Revisa que no es repeteixin les adreces.
@@ -548,7 +639,7 @@ public class RegistreUserController extends BaseUserController {
 			command.setOrigenId(bustiaId);
 			RegistreFiltreCommand filtre = getFiltreCommand(request);
 			boolean senseFiltreAndAvanzar = filtre.getBustia() == null && Boolean.parseBoolean(avanzarPagina);
-			boolean ambFiltre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)); // si està filtrat i és la penúltima pàgina
+			boolean ambFiltre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)) && Boolean.parseBoolean(avanzarPagina); // si està filtrat i és la penúltima pàgina
 			
 			if (registreNumero != null && ((senseFiltreAndAvanzar) || (ambFiltre))) {
 				command.setParams(new String [] {String.valueOf(registreNumero), ordreColumn, ordreDir, avanzarPagina});
@@ -561,7 +652,7 @@ public class RegistreUserController extends BaseUserController {
 				return getModalControllerReturnValueError(
 						request,
 						"",
-						"registre.user.controller.errorReenviant.registreNoTrobat");
+						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
@@ -633,7 +724,7 @@ public class RegistreUserController extends BaseUserController {
 				return getModalControllerReturnValueError(
 						request,
 						"",
-						"registre.user.controller.errorReenviant.registreNoTrobat");
+						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
@@ -642,6 +733,132 @@ public class RegistreUserController extends BaseUserController {
 			}
 		}
 	}
+	
+	
+	
+	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.GET)
+	public String registreReenviarMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			omplirModelPerReenviarMultiple(entitatActual, model);
+			ContingutReenviarCommand command = new ContingutReenviarCommand();
+
+			model.addAttribute(command);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
+				return getModalControllerReturnValueError(
+						request,
+						"",
+						"registre.user.controller.reenviar.error.registreNoTrobat");
+			} else {
+				return getModalControllerReturnValueErrorNoKey(
+						request,
+						"",
+						e.getMessage());
+			}
+		}
+		return "registreReenviarForm";
+		
+
+	}
+	
+	
+	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.POST)
+	public String registreReenviarMultiplePost(
+			HttpServletRequest request,
+			@Valid ContingutReenviarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			if (bindingResult.hasErrors()) {
+				omplirModelPerReenviarMultiple(entitatActual, model);
+				return "registreReenviarForm";
+			}
+			if (command.getDestins() == null || command.getDestins().length <= 0) {
+				MissatgesHelper.error(
+						request,
+						getMessage(
+								request, 	
+								"registre.user.controller.massiva.no.desti"));			
+				return "registreReenviarForm";
+			}
+			
+			@SuppressWarnings("unchecked")
+			Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO);
+			if (seleccio != null && !seleccio.isEmpty()) {
+				List<Long> seleccioList = new ArrayList<Long>();
+				seleccioList.addAll(seleccio);
+				
+				int errors = 0;
+				int correctes = 0;
+
+				for (Long registreId : seleccioList) {
+					ContingutDto contingutDto = null;
+		
+						contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+						RegistreDto registreDto = (RegistreDto) contingutDto;
+						
+							boolean processatOk = true;
+							
+							try {
+								bustiaService.registreReenviar(
+										entitatActual.getId(),
+										registreDto.getPareId(),
+										command.getDestins(),
+										registreDto.getId(),
+										command.isDeixarCopia(),
+										command.getComentariEnviar());
+								logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat correctament");
+
+							} catch (Exception e) {
+								processatOk = false;
+								String errMsg;
+								if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
+									errMsg = getMessage(
+											request, 
+											"registre.user.controller.reenviar.error.registreNoTrobat");
+								} else {
+									errMsg = getMessage(
+											request, 
+											"registre.user.controller.reenviar.massiva.error",
+											new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+								}
+								MissatgesHelper.error(request, errMsg);
+								logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat amb error", e);
+							}
+
+							if (processatOk)
+								correctes++;
+							else
+								errors++;
+				}
+				
+				if (correctes > 0){
+					MissatgesHelper.success(request,
+							getMessage(request, "registre.user.controller.reenviar.massiva.correctes", new Object[]{correctes}));
+				} 
+				if (errors > 0) {
+					MissatgesHelper.error(request,
+							getMessage(request, "registre.user.controller.reenviar.massiva.errors", new Object[]{errors}));
+				} 
+
+			} else {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"registre.user.controller.massiva.cap"));
+			}
+			return modalUrlTancar();
+	}
+	
+	
+	
 
 	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
@@ -740,6 +957,107 @@ public class RegistreUserController extends BaseUserController {
 							new Object[] {re.getMessage()}));			
 			return "registreUserMarcarProcessat";
 		}
+	}
+	
+	
+	@RequestMapping(value = "/marcarProcessatMultiple", method = RequestMethod.GET)
+	public String marcarProcessatMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		MarcarProcessatCommand command = new MarcarProcessatCommand();
+		model.addAttribute(command);
+		return "registreUserMarcarProcessat";
+	}
+
+	@RequestMapping(value = "/marcarProcessatMultiple", method = RequestMethod.POST)
+	public String marcarProcessatMultiplePost(
+			HttpServletRequest request,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		if (bindingResult.hasErrors()) {
+			return "registreUserMarcarProcessat";
+		}
+		
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			
+
+			ContingutDto contingutDto;
+			for (Long registreId : seleccioList) {
+				contingutDto = null;
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				RegistreDto registreDto = (RegistreDto) contingutDto;
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+					
+					boolean processatOk = true;
+					
+					try {
+						contingutService.marcarProcessat(
+								entitatActual.getId(), 
+								registreId,
+								"<span class='label label-default'>" + 
+								getMessage(
+										request, 
+										"bustia.pendent.accio.marcat.processat") + 
+								"</span> " + command.getMotiu());
+						
+
+					} catch (Exception e) {
+						MissatgesHelper.error(
+								request,
+								getMessage(
+										request, 
+										"registre.user.controller.marcar.processat.massiva.error",
+										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+						
+						processatOk = false;
+						logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+					}
+					
+					if (processatOk)
+						correctes++;
+					else
+						errors++;
+				} 
+				else {
+					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
+					estatErroni++;
+				}
+			}
+			
+			if (correctes > 0){
+				MissatgesHelper.success(request,
+						getMessage(request, "registre.user.controller.marcar.processat.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request,
+						getMessage(request, "registre.user.controller.marcar.processat.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"registre.user.controller.marcar.processat.massiva.estatErroni", new Object[]{estatErroni}));
+			}
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
 	}
 
 	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes", method = RequestMethod.GET)
@@ -968,7 +1286,47 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute(
 				"disableDeixarCopia",
 				disableDeixarCopia);
+
 		model.addAttribute("maxLevel", getMaxLevelArbre());
+		
+		model.addAttribute(
+				"selectMultiple",
+				true);
+		
+		model.addAttribute(
+				"busties",
+				busties);
+
+		model.addAttribute(
+				"arbreUnitatsOrganitzatives",
+				bustiaService.findArbreUnitatsOrganitzatives(
+						entitatActual.getId(),
+						true,
+						false,
+						true));
+	}
+	
+	
+	private void omplirModelPerReenviarMultiple(
+			EntitatDto entitatActual,
+			Model model) {
+
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
+				entitatActual.getId());
+		
+		boolean disableDeixarCopia = true;
+
+		
+		model.addAttribute(
+				"selectMultiple",
+				false);
+		
+		model.addAttribute(
+				"disableDeixarCopia",
+				disableDeixarCopia);
+		
+		model.addAttribute("maxLevel", getMaxLevelArbre());
+		
 		model.addAttribute(
 				"busties",
 				busties);

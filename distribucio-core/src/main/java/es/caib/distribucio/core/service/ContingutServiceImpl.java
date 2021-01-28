@@ -466,6 +466,7 @@ public class ContingutServiceImpl implements ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String text) {
+		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,

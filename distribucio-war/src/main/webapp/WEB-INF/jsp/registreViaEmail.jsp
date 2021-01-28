@@ -25,16 +25,18 @@
 		<form:hidden path="contingutId"/>
 		
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>
-		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.enviar"/></button>
-			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
 		<div class="form-group">
 			<div class="col-xs-offset-4 col-xs-8">
 			    <span class="fa fa-exclamation-triangle text-success" title=""></span>
 			    <spring:message code="bustia.pendent.accio.enviarViaEmail.info"/>
 			</div>
-  		</div>
+  		</div>		
+		<dis:inputTextarea name="motiu" textKey="bustia.pendent.contingut.enviarViaEmail.motiu"/>
+		<div id="modal-botons" class="well">
+			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.enviar"/></button>
+			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+		</div>
+
 	</form:form>
 </body>
 </html>

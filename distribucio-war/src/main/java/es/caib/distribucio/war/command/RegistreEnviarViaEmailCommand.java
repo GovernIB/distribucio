@@ -8,6 +8,7 @@ public class RegistreEnviarViaEmailCommand {
 	Long contingutId;
 	@NotEmpty
 	String addresses;
+	String motiu;
 	
 	public Long getBustiaId() {
 		return bustiaId;
@@ -26,6 +27,12 @@ public class RegistreEnviarViaEmailCommand {
 	}
 	public void setAddresses(String addresses) {
 		this.addresses = addresses;
+	}
+	public String getMotiu() {
+		return motiu;
+	}
+	public void setMotiu(String motiu) {
+		this.motiu = motiu;
 	}
 	
 	

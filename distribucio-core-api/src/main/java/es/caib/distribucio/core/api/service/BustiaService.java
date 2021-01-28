@@ -341,7 +341,7 @@ public interface BustiaService {
 	public String getApplictionMetrics();
 
 	@PreAuthorize("hasRole('tothom')")
-	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses)
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses, String motiu)
 			throws MessagingException;
 
 	/**

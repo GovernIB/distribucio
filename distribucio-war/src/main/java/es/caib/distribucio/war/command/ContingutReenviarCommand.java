@@ -16,7 +16,6 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class ContingutReenviarCommand {
 
-	@NotNull
 	protected Long origenId;
 	@Size(max=256)
 	protected String comentariEnviar;
