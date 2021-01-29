@@ -1673,10 +1673,8 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	private Exception processarAnotacioPendent(RegistreEntity anotacio) {
-		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(
-				anotacio.getProcesEstat());
-		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(
-				anotacio.getProcesEstat());
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
 		Exception exceptionProcessant = null;
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {

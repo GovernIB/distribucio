@@ -545,12 +545,16 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		accioParams.put("tipusFirma", tipusFirma);
 		long t0 = System.currentTimeMillis();
 		try {
+			
+			String tipusDocumental = annex.getNtiTipusDocument() != null ? RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor() : null;
+			
 			byte[] firmaContingut = getSignaturaPlugin().signar(
 					annex.getId().toString(),
 					annex.getFitxerNom(),
 					motiu,
 					tipusFirma,
-					annexContingut);
+					annexContingut, 
+					tipusDocumental);
 			integracioAddAccioOk(
 					integracioSignaturaCodi,
 					accioDescripcio,

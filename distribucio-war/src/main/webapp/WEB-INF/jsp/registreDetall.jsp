@@ -28,6 +28,7 @@
 	</c:if>
 	<title><spring:message code="contingut.admin.info.titol"/></title>
 	<dis:modalHead/>
+	
 	<style>
 body {
 	min-height: 400px;
@@ -180,10 +181,10 @@ tr.clicable {
 			var avanzar = $('#avanzarPagina').hasClass('active');
     		// Afegeix els paràmetres a l'enllaç dels detalls
 			if (${registreNumero} < registreTotal) {
-				params.set("registreTotal", registreTotal);
-				params.set("ordreColumn", '${ordreColumn}');
-				params.set("ordreDir", '${ordreDir}');
-				params.set("avanzarPagina", avanzar);
+			params.set("registreTotal", registreTotal);
+			params.set("ordreColumn", '${ordreColumn}');
+			params.set("ordreDir", '${ordreDir}');
+			params.set("avanzarPagina", avanzar);
 			}
 			//</c:if>
     		location.href = '<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
@@ -236,7 +237,7 @@ tr.clicable {
 		resetBackground();
 		event.srcElement.parentElement.style = "background: #f9f9f9";
 		previousAnnex = annexId;
-        
+		
         // Mostrar contingut capçalera visor
         resumViewer.find('*').not('#container').remove();
         var viewerContent = '<div class="panel-heading"><spring:message code="registre.detalls.pipella.previsualitzacio"/> \
@@ -284,26 +285,26 @@ tr.clicable {
 						        				</div>';
 							idx++;
 							idxFirma++;
-						});
+	});
 						viewerContent +='</div></div>';
    						$(viewerContent).insertAfter('.viewer-content');
 					}
 				}
 		);
-	    
+
 	    // Amagar columnes taula
 	    var tableAnnexos = $('#resum-annexos').find('table');
 	    tableAnnexos.find('tr').each(function() {
 	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").hide();
 	    });
-	    
+
 	    // Recuperar i mostrar document al visor
 		var urlDescarrega = "<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/"/>" + annexId + "/arxiu/content/DOCUMENT";
 		$('#container').attr('src', '');
 		$('#container').addClass('rmodal_loading');
 		showDocument(urlDescarrega);
 	}
-	
+
 	function showDocument(arxiuUrl) {
 		// Fa la petició a la url de l'arxiu
 		$.ajax({
@@ -349,6 +350,8 @@ tr.clicable {
 </head>
 <body>
 	<dis:blocContenidorPath contingut="${registre}"/>
+	
+	
 	<c:if test="${!isRolActualAdministrador}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
@@ -411,7 +414,7 @@ tr.clicable {
 		
 		
 		
-		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT'}">
+		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
 			<li role="presentation">
 				<a href="#processamentAutomatic"  role="tab" data-toggle="tab">
 					<spring:message code="registre.detalls.pipella.proces"/>
@@ -631,30 +634,29 @@ tr.clicable {
 			
 			<!------------------- ANNEXOS ------------------->
 			<div id="resum-annexos-container">
-				<div class="panel panel-default" id="resum-annexos">
-					<div class="panel-heading">
-						<h3 class="panel-title"><spring:message code="registre.detalls.pipella.annexos"/></h3>
-					</div>
-					<c:choose>
-						<c:when test="${not empty registre.annexos}">
-	
-					
-							<table class="table table-bordered">
-							<thead>
-								<tr>
-									<th style="width: 300px;"><spring:message code="registre.annex.detalls.camp.titol"/></th>
-									<th style="width: 180px;"><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></th>
-									<th style="width: 450px;"><spring:message code="registre.annex.detalls.camp.observacions"/></th>
-									<th><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></th>
-									<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.origen"/></th>
-									<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></th>
-									<th style="width: 50px;"><spring:message code="registre.annex.detalls.camp.fitxer"/></th>
-									<th style="width: 50px;"></th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
-									
+			<div class="panel panel-default" id="resum-annexos">
+				<div class="panel-heading">
+					<h3 class="panel-title"><spring:message code="registre.detalls.pipella.annexos"/></h3>
+				</div>
+				<c:choose>
+					<c:when test="${not empty registre.annexos}">
+
+				
+						<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th style="width: 300px;"><spring:message code="registre.annex.detalls.camp.titol"/></th>
+								<th style="width: 180px;"><spring:message code="registre.annex.detalls.camp.eni.tipus.documental"/></th>
+								<th style="width: 450px;"><spring:message code="registre.annex.detalls.camp.observacions"/></th>
+								<th><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></th>
+								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.origen"/></th>
+								<th style="width: 250px;"><spring:message code="registre.annex.detalls.camp.eni.estat.elaboracio"/></th>
+								<th style="width: 50px;"><spring:message code="registre.annex.detalls.camp.fitxer"/></th>
+								<th style="width: 50px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
 									<tr title="<spring:message code="registre.annex.detalls.previsualitzar"/>" <c:choose><c:when test="${annex.fitxerTipusMime == 'application/pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
 										<td>${annex.titol}</td>
 										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
@@ -682,61 +684,62 @@ tr.clicable {
 													$("#collapse-resum-firmes-<c:out value='${annex.id}'/>").collapse("show");
 												});
 											});
-										</script>	
-										
-										<td colspan="8">		
-											<c:if test="${annex.ambFirma}">
-												<div class="panel panel-default">
-													<div class="panel-heading">
-														<h3 class="panel-title">
-															<span class="fa fa-certificate"></span>
-															<spring:message code="registre.annex.detalls.camp.firmes"/>
-															<button id="collapse-resum-btn-firmes-${annex.id}" class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
-														</h3>
-													</div>
-													<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
-														<script type="text/javascript">
-															$(document).ready(function() {
-															    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
-																    if (!$(this).data("loaded")) {
-																        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-																        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
-																        $(this).data("loaded", true);
-																    }
-																    event.stopPropagation();
-															    });
-															});
-														</script>													
-													</div> 
-												</div>
-											</c:if>											
-										</td>
-									</tr>									
+										});
+									</script>	
 									
-								</c:forEach>
-							</tbody>
-							</table>
-							
-	
-						</c:when>
-						<c:otherwise>
-							<c:choose>
-								<c:when test="${not empty annexosErrorMsg}">
-									<div class="panel-body">
-										<div class="alert alert-danger">
-											${annexosErrorMsg}
-										</div>
-									</div>						
-								</c:when>
-								<c:otherwise>
-									<div class="panel-body">
-										<spring:message code="registre.annex.buit"/>
+									<td colspan="8">		
+										<c:if test="${annex.ambFirma}">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<h3 class="panel-title">
+														<span class="fa fa-certificate"></span>
+														<spring:message code="registre.annex.detalls.camp.firmes"/>
+														<button id="collapse-resum-btn-firmes-${annex.id}" class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-resum-firmes-${annex.id}"><span class="fa fa-chevron-down"></span></button>
+													</h3>
+												</div>
+												<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
+													<script type="text/javascript">
+														$(document).ready(function() {
+														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
+															    if (!$(this).data("loaded")) {
+															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
+															        $(this).data("loaded", true);
+															    }
+															    event.stopPropagation();
+														    });
+														});
+													</script>													
+												</div> 
+											</div>
+										</c:if>											
+									</td>
+								</tr>									
+								
+							</c:forEach>
+						</tbody>
+						</table>
+						
+
+					</c:when>
+					<c:otherwise>
+						<c:choose>
+							<c:when test="${not empty annexosErrorMsg}">
+								<div class="panel-body">
+									<div class="alert alert-danger">
+										${annexosErrorMsg}
 									</div>
-								</c:otherwise>
-							</c:choose>				
-						</c:otherwise>
-					</c:choose>
-				</div> 
+								</div>						
+							</c:when>
+							<c:otherwise>
+								<div class="panel-body">
+									<spring:message code="registre.annex.buit"/>
+								</div>
+							</c:otherwise>
+						</c:choose>				
+					</c:otherwise>
+				</c:choose>				
+			</div>	
 				<div class="panel panel-default" id="resum-viewer">
 					<iframe id="container" class="viewer-padding" width="100%" height="540" frameBorder="0"></iframe>
 				</div>     
@@ -1143,7 +1146,7 @@ tr.clicable {
 			</div>
 		</c:if>
 	
-		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT'}">
+		<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || registre.procesEstat == 'BACK_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
 	
 			<!------------------------------ TABPANEL PROCESSAMENT_AUTOMATIC ------------------------------------->
 			<div class="tab-pane" id="processamentAutomatic" role="tabpanel">
@@ -1155,7 +1158,7 @@ tr.clicable {
 						<span class="fa fa-exclamation-triangle"></span>
 						<spring:message code="registre.detalls.info.errors"/> 
 						<c:if test="${isRolActualAdministrador}">
-							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT'}">
+							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
 								<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
 							</c:if>
 							<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						

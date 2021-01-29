@@ -129,9 +129,9 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			
-			boolean throwException = false;
+			boolean throwException = false; // throwException = true
 			if(throwException){
-				throw new RuntimeException("Exception when saving annex in arxiu");
+				throw new RuntimeException("Mock exception when saving annex in arxiu");
 			}
 			
 			String documentUuid = getDistribucioPlugin().saveAnnexAsDocumentInArxiu(
