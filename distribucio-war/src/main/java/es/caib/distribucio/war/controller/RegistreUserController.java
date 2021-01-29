@@ -638,10 +638,14 @@ public class RegistreUserController extends BaseUserController {
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			command.setOrigenId(bustiaId);
 			RegistreFiltreCommand filtre = getFiltreCommand(request);
-			boolean senseFiltreAndAvanzar = filtre.getBustia() == null && Boolean.parseBoolean(avanzarPagina);
-			boolean ambFiltre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)) && Boolean.parseBoolean(avanzarPagina); // si està filtrat i és la penúltima pàgina
+			//boolean isAvanzarNullAndLastRegistre = avanzarPagina == null && (registreNumero == registreTotal);
+			boolean isNotAvanzarAndNotLastRegistre = !Boolean.parseBoolean(avanzarPagina) && (registreTotal != null && registreNumero < registreTotal);
+			boolean isNotAvanzarAndLastRegistre = Boolean.parseBoolean(avanzarPagina) && (registreTotal != null && registreNumero == registreTotal);
+			boolean isAvanzarAndWithoutFilter = filtre.getBustia() == null && Boolean.parseBoolean(avanzarPagina);
+			boolean isAvanzarWithFilterAndNotLastRegistre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)) && Boolean.parseBoolean(avanzarPagina); // si està filtrat i és la penúltima pàgina
 			
-			if (registreNumero != null && ((senseFiltreAndAvanzar) || (ambFiltre))) {
+			if (registreNumero != null && (isAvanzarAndWithoutFilter || isAvanzarWithFilterAndNotLastRegistre) || isNotAvanzarAndLastRegistre || isNotAvanzarAndNotLastRegistre) {
+				// si params is empty tanca la modal
 				command.setParams(new String [] {String.valueOf(registreNumero), ordreColumn, ordreDir, avanzarPagina});
 			}
 			model.addAttribute(command);
@@ -700,7 +704,7 @@ public class RegistreUserController extends BaseUserController {
 			if (command.getParams().length == 0) {
 				return getModalControllerReturnValueSuccess(
 						request,
-						"redirect:../../../pendent",
+						"redirect:/registreUser",
 						"bustia.controller.pendent.contingut.reenviat.ok");
 			} else {
 				//avançar a la següent pàgina al reenviar

@@ -124,6 +124,13 @@ tr.clicable {
                 50% 50% 
                 no-repeat;
 }
+#avanzarPagina:focus {
+	outline:0;
+}
+
+#avanzarPagina:focus[aria-pressed="false"] {
+	background-color: #fff;
+}
 
 </style>
 <script type="text/javascript">
@@ -173,7 +180,7 @@ tr.clicable {
 			var params = url.searchParams;
     		//<c:if test="${registreTotal!=null}">
 			var registreTotal = ${registreTotal};
-			var avanzar = $('.avanzar').is(':checked');
+			var avanzar = $('#avanzarPagina').hasClass('active');
     		// Afegeix els paràmetres a l'enllaç dels detalls
 			if (${registreNumero} < registreTotal) {
 				params.set("registreTotal", registreTotal);
@@ -326,8 +333,11 @@ tr.clicable {
 	<dis:blocContenidorPath contingut="${registre}"/>
 	<c:if test="${!isRolActualAdministrador}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
-			<span for="avanzarPagina"><spring:message code="bustia.pendent.accio.avansar"/></span>&nbsp;
-			<input value="" class="avanzar" for="avanzarPagina" type="checkbox" style="margin-right: 35px;" ${registreNumero >= registreTotal ? "disabled='disabled'" : "checked" }/>&nbsp;
+			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
+				<span class="fa-stack" aria-hidden="true">
+					<i class="fa fa-forward"></i>
+		    	</span>
+			</button>&nbsp;
 			<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<c:choose>
