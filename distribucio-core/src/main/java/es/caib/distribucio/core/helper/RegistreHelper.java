@@ -428,15 +428,22 @@ public class RegistreHelper {
 			if (allRegistresWithSameNumeroSavedInArxiu)
 				gestioDocumentalHelper.esborrarDocsTemporals(anotacio);
 			
-			RegistreProcesEstatEnum nouEstat;
-			if (anotacio.getRegla() != null && anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE) {
-				nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+			if (anotacio.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
+				RegistreProcesEstatEnum nouEstat;
+				if (anotacio.getRegla() != null && anotacio.getRegla().getTipus() == ReglaTipusEnumDto.BACKOFFICE) {
+					nouEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
+				} else {
+					nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;	
+				}
+				anotacio.updateProces(
+						nouEstat, 
+						null);
 			} else {
-				nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;	
+				anotacio.updateProces(
+						null, 
+						null);
 			}
-			anotacio.updateProces(
-					nouEstat, 
-					null);
+
 			return null;
 		} else {
 			anotacio.updateProces(
