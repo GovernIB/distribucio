@@ -77,7 +77,6 @@ tr.clicable {
 }
 
 #resum-viewer {
-	padding: 1% 1% 0% 1%;
 	display: none;
 	margin-left: 1%;
 	width: 100%;
@@ -99,20 +98,18 @@ tr.clicable {
 .viewer-content {
 	width: 100%;
 }
+
+.viewer-padding {
+	padding: 1% 2% 0% 2%;
+}
+
 .line {
 	width: 90px;
 	height: 3px;
 	background-color: black;
 	margin-top: -6px;
 }
-.viewer-firmes-container {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-}
-
 .viewer-firma-container {
-	width: 45%;
 	margin: 1%;
 	border: 1px solid #ddd;
 	border-radius: 3px;
@@ -221,31 +218,45 @@ tr.clicable {
 	    	});
     	//</c:if>
 	});
-	
+    // ]]>
+	var previousAnnex;
 	function showViewer(event, annexId, observacions, dataCaptura, origen) {
 		if (event.target.cellIndex === undefined || event.target.cellIndex === 6 || event.target.cellIndex === 7) return;
-        // Mostrar visor
-        $('#resum-viewer').show();
+        var resumViewer = $('#resum-viewer');
+        
+		// Mostrar/amagar visor
+		if (!resumViewer.is(':visible')) {
+			resumViewer.toggle();
+		} else if (previousAnnex == undefined || previousAnnex == annexId) {
+			closeViewer();
+			event.srcElement.parentElement.style = "background: #fffff";
+    		previousAnnex = annexId;
+			return;
+		}
+		resetBackground();
+		event.srcElement.parentElement.style = "background: #f9f9f9";
+		previousAnnex = annexId;
         
         // Mostrar contingut capçalera visor
-        $('.viewer-content').remove();
-        var viewerContent = '<div class="viewer-content">\
-        						<span class="fa fa-close" style="float: right; cursor: pointer;" onClick="closeViewer()"></span>\
+        resumViewer.find('*').not('#container').remove();
+        var viewerContent = '<div class="panel-heading"><spring:message code="registre.detalls.pipella.previsualitzacio"/> \
+        					 <span class="fa fa-close" style="float: right; cursor: pointer;" onClick="closeViewer()"></span>\
+        					 </div>\
+        					 <div class="viewer-content viewer-padding">\
         						<dl class="dl-horizontal">\
 		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.eni.data.captura"/>: </dt><dd>' + dataCaptura + '</dd>\
 		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.eni.origen"/>: </dt><dd>' + origen + '</dd>\
 		        					<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.observacions"/>: </dt><dd>' + observacions + '</dd>\
 	        					</dl>\
         					 </div>';
-        $('#resum-viewer').prepend(viewerContent);
+        resumViewer.prepend(viewerContent);
         
         // Recupera i mostrar contingut firmes
         $.get(
 				"<c:url value="/registreUser/registreAnnexFirmes/${bustiaId}/${registreId}/"/>" + annexId,
 				function(data) {
 					if (data.firmes) {
-						$('.viewer-firmes').remove();
-						var viewerContent = '<div class="viewer-firmes">\
+						var viewerContent = '<div class="viewer-firmes viewer-padding">\
 					    						<h4><span class="fa fa-certificate"></span><spring:message code="registre.annex.detalls.camp.firmes"/></h4>\
 					    						<div class="line"></div>\
 					    						<div class="viewer-firmes-container">';
@@ -310,22 +321,29 @@ tr.clicable {
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				$('#container').removeClass('rmodal_loading');
-				console.log(thrownError);
+				alert(thrownError);
 			}
 		});
 	}
-	
+
+	// Amagar visor
 	function closeViewer() {
-		// Amagar visor
-		$('#resum-viewer').hide();
+		$('#resum-viewer').toggle();
 		
 		// Mostrar columnes taula
 		var tableAnnexos = $('#resum-annexos').find('table');
 	    tableAnnexos.find('tr').each(function() {
 	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").show();
+	    	$(this).removeAttr('style');
 	    });
 	}
-	// ]]>
+	
+	function resetBackground() {
+		var tableAnnexos = $('#resum-annexos').find('table');
+		tableAnnexos.find('tr').each(function() {
+	    	$(this).removeAttr('style');
+	    });
+	}
 </script>
 
 </head>
@@ -637,7 +655,7 @@ tr.clicable {
 							<tbody>
 								<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
 									
-									<tr <c:choose><c:when test="${annex.fitxerTipusMime == 'application/pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
+									<tr title="<spring:message code="registre.annex.detalls.previsualitzar"/>" <c:choose><c:when test="${annex.fitxerTipusMime == 'application/pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
 										<td>${annex.titol}</td>
 										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
 										<td>${annex.observacions}</td>
@@ -720,7 +738,7 @@ tr.clicable {
 					</c:choose>
 				</div> 
 				<div class="panel panel-default" id="resum-viewer">
-					<iframe id="container" width="100%" height="540" frameBorder="0"></iframe>
+					<iframe id="container" class="viewer-padding" width="100%" height="540" frameBorder="0"></iframe>
 				</div>     
 			</div>	
 		</div>
