@@ -72,7 +72,7 @@
 			<groupId>org.fundaciobit.plugins</groupId>
 			<artifactId>plugin-signatureserver-portafib</artifactId>
 			<version>2.0.0</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -80,6 +80,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- Fi signatura en el servidor amb PortaFib -->
+		
+		<dependency>
+			<artifactId>apifirmasimple-api</artifactId>
+			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<artifactId>apifirmasimple-jersey</artifactId>
+			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
+			<version>1.0.1</version>
+		</dependency>		
+		
 		<dependency>
 			<groupId>es.caib.regweb3</groupId>
 			<artifactId>regweb3-ws-api</artifactId>
@@ -201,7 +213,7 @@
 		<repository>
 			<id>github-governib-maven-repos</id>
 			<name>GitHub GovernIB Maven Repository</name>
-			<url>http://GovernIB.github.io/maven/maven/</url>
+			<url>http://governib.github.io/maven/maven/</url>
 		</repository>
 		<repository>
 			<name>Local Maven repository</name>
