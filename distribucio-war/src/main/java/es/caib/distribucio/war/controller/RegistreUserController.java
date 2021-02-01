@@ -531,7 +531,7 @@ public class RegistreUserController extends BaseUserController {
 				contingutDto = null;
 				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 				RegistreDto registreDto = (RegistreDto) contingutDto;
-				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+				if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
 					
 					boolean processatOk = true;
 					try {
