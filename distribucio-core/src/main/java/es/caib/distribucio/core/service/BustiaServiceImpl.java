@@ -1301,6 +1301,21 @@ public class BustiaServiceImpl implements BustiaService {
 				nomesBustiesPermeses,
 				comptarElementsPendents);
 	}
+	
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public boolean isBustiaReadPermitted(
+			Long bustiaId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return permisosHelper.isGrantedAll(
+				bustiaId,
+				BustiaEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+	}
+	
 
 	@Override
 	@Transactional

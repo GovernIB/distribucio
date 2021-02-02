@@ -375,5 +375,8 @@ public interface BustiaService {
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public boolean isBustiaReadPermitted(Long bustiaId);
 
 }

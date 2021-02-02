@@ -187,13 +187,32 @@ tr.clicable {
 			params.set("avanzarPagina", avanzar);
 			}
 			//</c:if>
-    		location.href = '<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
+				
+         	// if is in modal window
+            if ( self !== top ) {
+            	location.href = '<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            } else {
+            	location.href = '<c:url value="/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
+	        }
+    		
     	});
     	$( "a#accioClassificar" ).on( "click", function() {
-    		location.href = "<c:url value="/modal/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+
+         	// if is in modal window
+            if ( self !== top ) {
+            	location.href = "<c:url value="/modal/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+            } else {
+            	location.href = "<c:url value="/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+	        }
     	});    	
     	$( "a#accioMarcarProcessat" ).on( "click", function() {
-    		location.href = "<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+
+         	// if is in modal window
+            if ( self !== top ) {
+            	location.href = "<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+            } else {
+            	location.href = "<c:url value="/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+	        }
     	});   
 
 				
@@ -684,7 +703,6 @@ tr.clicable {
 													$("#collapse-resum-firmes-<c:out value='${annex.id}'/>").collapse("show");
 												});
 											});
-										});
 									</script>	
 									
 									<td colspan="8">		

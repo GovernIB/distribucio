@@ -655,12 +655,12 @@ public class RegistreUserController extends BaseUserController {
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
 				return getModalControllerReturnValueError(
 						request,
-						"",
+						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
-						"",
+						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 						e.getMessage());
 			}
 		}
@@ -702,10 +702,19 @@ public class RegistreUserController extends BaseUserController {
 					command.isDeixarCopia(),
 					command.getComentariEnviar());
 			if (command.getParams().length == 0) {
-				return getModalControllerReturnValueSuccess(
-						request,
-						"redirect:/registreUser",
-						"bustia.controller.pendent.contingut.reenviat.ok");
+				
+				if (command.isDeixarCopia() == false && bustiaService.isBustiaReadPermitted(command.getDestins()[0])) {
+					return getModalControllerReturnValueSuccess(
+							request,
+							"redirect:/registreUser/bustia/" + command.getDestins()[0] + "/registre/" + registreId,
+							"bustia.controller.pendent.contingut.reenviat.ok");
+				} else {
+					return getModalControllerReturnValueSuccess(
+							request,
+							"redirect:/registreUser",
+							"bustia.controller.pendent.contingut.reenviat.ok");
+				}
+
 			} else {
 				//avançar a la següent pàgina al reenviar
 				boolean avanzar = Boolean.parseBoolean(command.getParams()[3]);
@@ -727,12 +736,12 @@ public class RegistreUserController extends BaseUserController {
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
 				return getModalControllerReturnValueError(
 						request,
-						"",
+						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
-						"",
+						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 						e.getMessage());
 			}
 		}
@@ -927,11 +936,11 @@ public class RegistreUserController extends BaseUserController {
 		return "registreUserMarcarProcessat";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/marcarProcessat", method = RequestMethod.POST)
 	public String bustiaMarcarProcessatPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
-			@PathVariable Long contingutId,
+			@PathVariable Long registreId,
 			@Valid MarcarProcessatCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -942,7 +951,7 @@ public class RegistreUserController extends BaseUserController {
 		try {
 			contingutService.marcarProcessat(
 					entitatActual.getId(), 
-					contingutId,
+					registreId,
 					"<span class='label label-default'>" + 
 					getMessage(
 							request, 
@@ -950,7 +959,7 @@ public class RegistreUserController extends BaseUserController {
 					"</span> " + command.getMotiu());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:/registreUser",
+					"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 					"bustia.controller.pendent.contingut.marcat.processat.ok");
 		} catch (RuntimeException re) {
 			MissatgesHelper.error(
@@ -1142,7 +1151,7 @@ public class RegistreUserController extends BaseUserController {
 			logger.error(e.getMessage(), e);
 			return getModalControllerReturnValueErrorNoKey(
 					request,
-					"",
+					"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 					e.getMessage());
 		}
 		return "registreClassificar";
@@ -1204,7 +1213,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:../../../pendent",
+				"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
 				"bustia.controller.pendent.contingut.classificat.ok");
 	}
 

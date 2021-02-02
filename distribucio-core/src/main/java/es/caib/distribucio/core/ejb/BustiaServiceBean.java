@@ -278,4 +278,10 @@ public class BustiaServiceBean implements BustiaService {
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
 		return delegate.findUnitatsSuperiors(entitatId, filtre);
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean isBustiaReadPermitted(Long bustiaId) {
+		return isBustiaReadPermitted(bustiaId);
+	}
 }
