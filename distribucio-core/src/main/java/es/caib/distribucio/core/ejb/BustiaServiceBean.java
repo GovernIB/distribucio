@@ -282,6 +282,6 @@ public class BustiaServiceBean implements BustiaService {
 	@Override
 	@RolesAllowed("tothom")
 	public boolean isBustiaReadPermitted(Long bustiaId) {
-		return isBustiaReadPermitted(bustiaId);
+		return delegate.isBustiaReadPermitted(bustiaId);
 	}
 }
