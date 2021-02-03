@@ -22,6 +22,8 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
+    <link href="<c:url value="/css/bootstrap-colorpicker.min.css"/>" rel="stylesheet">
+	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
 	<decorator:head />
 </head>
 <script type="text/javascript">

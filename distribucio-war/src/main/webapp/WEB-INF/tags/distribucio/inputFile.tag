@@ -10,12 +10,14 @@
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
+<%@ attribute name="inputSize" required="false" rtexprvalue="true"%>
+<%@ attribute name="fileEntitat" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
 <c:set var="campPlaceholder"><c:choose><c:when test="${not empty placeholderKey}"><spring:message code="${placeholderKey}"/></c:when><c:otherwise>${placeholder}</c:otherwise></c:choose></c:set>
 <c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
-<c:set var="campInputSize">${12 - campLabelSize}</c:set>
+<c:set var="campInputSize"><c:choose><c:when test="${not empty inputSize}">${inputSize}</c:when><c:otherwise>${12 - campLabelSize}</c:otherwise></c:choose></c:set>
 <c:choose>
 	<c:when test="${not inline}">
 		<div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
@@ -28,6 +30,19 @@
 				</div>
 				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 			</div>
+			
+			<c:if test="${fileEntitat}">
+				<label class="control-label col-xs-${campLabelSize}" for="${campPath}"></label>
+				<div class="col-xs-8 img-exists">
+					<div class="col-xs-4 icon">
+						<a href="<c:url value="/entitat/logo"/>"><spring:message code="entitat.form.camp.logocapactual"/></a>
+					</div>
+					<div class="col-xs-4">
+						<form:checkbox path="eliminarLogoCap"/>
+						<spring:message code="entitat.form.camp.logo.eliminar" />
+					</div>
+				</div>
+			</c:if>
 		</div>
 	</c:when>
 	<c:otherwise>

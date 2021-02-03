@@ -71,7 +71,10 @@ public class EntitatServiceImpl implements EntitatService {
 				entitat.getNom(),
 				entitat.getDescripcio(),
 				entitat.getCif(),
-				entitat.getCodiDir3()).build();
+				entitat.getCodiDir3(),
+				entitat.getLogoCapBytes(),
+				entitat.getColorFons(),
+				entitat.getColorLletra()).build();
 		return conversioTipusHelper.convertir(
 				entitatRepository.save(entity),
 				EntitatDto.class);
@@ -83,19 +86,32 @@ public class EntitatServiceImpl implements EntitatService {
 			EntitatDto entitat) {
 		logger.debug("Actualitzant entitat existent (" +
 				"entitat=" + entitat + ")");
-		EntitatEntity entity = entityComprovarHelper.comprovarEntitat(
+		EntitatEntity entitatEntity = entityComprovarHelper.comprovarEntitat(
 				entitat.getId(),
 				false,
 				false,
 				false);
-		entity.update(
+		byte[] logoCapActual = null;
+		
+		if (!entitat.isEliminarLogoCap()) {
+			if (entitat.getLogoCapBytes() != null && entitat.getLogoCapBytes().length != 0) {
+				logoCapActual = entitat.getLogoCapBytes();
+			} else {
+				logoCapActual = entitatEntity.getLogoCapBytes();
+			}
+		}
+		
+		entitatEntity.update(
 				entitat.getCodi(),
 				entitat.getNom(),
 				entitat.getDescripcio(),
 				entitat.getCif(),
-				entitat.getCodiDir3());
+				entitat.getCodiDir3(),
+				logoCapActual,
+				entitat.getColorFons(),
+				entitat.getColorLletra());
 		return conversioTipusHelper.convertir(
-				entity,
+				entitatEntity,
 				EntitatDto.class);
 	}
 
