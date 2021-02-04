@@ -44,7 +44,7 @@ public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04019281";
-	private static final String UNITAT_ADM_CODI = "A04018961";
+	private static final String UNITAT_ADM_CODI = "A04018961";//A04031605
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -68,8 +68,9 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 2;
+	private static final int N_ANNEXOS = 1;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_FIRMA_DETACHED = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indca si adjuntar els documents tècnics de sistra2 com annexos
 	
@@ -157,28 +158,57 @@ public class BustiaV1Test {
 	        RegistreAnnex annex;
 	        int nAnnexos = N_ANNEXOS;
 	        for (int j=1; j<=nAnnexos; j++) {
-		        if (TEST_ANNEX_FIRMAT) {
-		        	firmes = new ArrayList<Firma>();
-		            Firma firma = new Firma();
-		            firma.setFitxerNom("annex_firmat.pdf");
-		            firma.setTipusMime("application/pdf");
-		            firma.setContingut(
-		            		IOUtils.toByteArray(getContingutAnnexFirmat()));
-		            firma.setTipus("TF06");
-		            firma.setPerfil("EPES");
-		            firmes.add(firma);
-		            annex = crearAnnex(
-			        		"Annex222" + j,
-			        		//"annex.pdf",
-			        		"C23 Renovació autorització 121193 & 121194_s.pdf",
-			        		"application/pdf",
-			        		null,
-			        		null,
-			        		"0",
-			        		"EE01",
-			        		"TD01",
-			        		"01",
-			        		firmes);
+		        if (TEST_ANNEX_FIRMAT ) {
+		        	
+		        	if (!TEST_ANNEX_FIRMA_DETACHED) {
+			        	firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setFitxerNom("annex_firmat.pdf");
+			            firma.setTipusMime("application/pdf");
+			            firma.setContingut(
+			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+			            firma.setTipus("TF06");
+			            firma.setPerfil("EPES");
+			            firmes.add(firma);
+			            annex = crearAnnex(
+				        		"Annex222" + j,
+				        		//"annex.pdf",
+				        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+				        		"application/pdf",
+				        		null,
+				        		null,
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+					} else {
+						
+			        	firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setFitxerNom("firma_cades_detached.csig");
+			            firma.setTipusMime("application/csig");
+			            firma.setContingut(
+			            		IOUtils.toByteArray(getContingutFirmaCadesDetached()));
+			            firma.setTipus("TF04");
+			            firma.setPerfil("BES");
+			            firmes.add(firma);
+						
+				        annex = crearAnnex(
+				        		"Annex" + j,
+				        		"annex.pdf",
+				        		"application/pdf",
+				        		null,
+				        		getContingutAnnexSenseFirmaPdf(),
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+						
+					}
+		        	
+
 		        } else {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
@@ -400,6 +430,13 @@ public class BustiaV1Test {
         		"/annex_sense_firma.pdf");
 		return is;
 	}
+	
+	private InputStream getContingutFirmaCadesDetached() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/firma_cades_detached.csig");
+		return is;
+	}
+	
 	private InputStream getContingutAnnexSenseFirmaDocx() {
 		InputStream is = getClass().getResourceAsStream(
         		"/annex_sense_firma.docx");

@@ -909,25 +909,24 @@ public class RegistreServiceImpl implements RegistreService {
 		// if annex is not yet created in arxiu take content from gestio documental
 		} else {
 			
-			// if annex has signature attached, contingut of document is located in firma
-			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty()) {
+			// if annex has firma attached, contingut of document is located in firma
+			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
+					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
+				
 				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
-				if (firmaEntity.getTipus() != "TF02" && firmaEntity.getTipus() != "TF04") {
+	
+				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+				gestioDocumentalHelper.gestioDocumentalGet(
+						firmaEntity.getGesdocFirmaId(), 
+						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+						streamAnnexFirma);
+				byte[] firmaContingut = streamAnnexFirma.toByteArray();
+				
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firmaContingut);
+				fitxerDto.setTamany(firmaContingut.length);
 
-					if (firmaEntity.getGesdocFirmaId() != null) {
-						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-						gestioDocumentalHelper.gestioDocumentalGet(
-								firmaEntity.getGesdocFirmaId(), 
-								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-								streamAnnexFirma);
-						byte[] firmaContingut = streamAnnexFirma.toByteArray();
-						
-						fitxerDto.setNom(firmaEntity.getFitxerNom());
-						fitxerDto.setContentType(firmaEntity.getTipusMime());
-						fitxerDto.setContingut(firmaContingut);
-						fitxerDto.setTamany(firmaContingut.length);
-					}
-				}
 			} else {
 				
 				if (registreAnnexEntity.getGesdocDocumentId() != null) {
