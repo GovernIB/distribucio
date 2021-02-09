@@ -6,8 +6,6 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-
-
 <table class="table teble-striped table-bordered">
 <thead>
 	<tr>
@@ -19,10 +17,10 @@
 		<c:if test="${!isResum}">
 			<th><spring:message code="registre.annex.detalls.camp.firmaDetalls.emissor"/></th>
 		</c:if>
-		<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
+		<c:if test="${annex.firmes[0].tipus != 'PADES' and annex.firmes[0].tipus != 'CADES_ATT' and annex.firmes[0].tipus != 'XADES_ENV'}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></th>
 		</c:if>
-		<c:if test="${not empty firma.csvRegulacio}">
+		<c:if test="${not empty annex.firmes[0].csvRegulacio}">
 			<th><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></th>
 		</c:if>	
 		<c:if test="${isUsuariActualAdministration && !isResum}">

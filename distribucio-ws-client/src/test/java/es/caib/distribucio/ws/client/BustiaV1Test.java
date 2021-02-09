@@ -173,7 +173,7 @@ public class BustiaV1Test {
 			            annex = crearAnnex(
 				        		"Annex222" + j,
 				        		//"annex.pdf",
-				        		"C23 Renovació autorització 121193 & 121194_s.pdf",
+				        		"annex_firmat_pades.pdf",
 				        		"application/pdf",
 				        		null,
 				        		null,

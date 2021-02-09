@@ -197,6 +197,11 @@ public class BaseController implements MessageSourceAware {
 		response.setHeader("Content-Disposition","attachment; filename=\"" + fileName + "\"");
 		if (fileName != null && !fileName.isEmpty())
 			response.setContentType(new MimetypesFileTypeMap().getContentType(fileName));
+		
+		if (fileContent == null) {
+			throw new RuntimeException("El contingut que voleu descarregar és nul");
+		}
+		
 		response.getOutputStream().write(fileContent);
 	}
 

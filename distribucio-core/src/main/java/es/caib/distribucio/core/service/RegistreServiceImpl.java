@@ -909,24 +909,42 @@ public class RegistreServiceImpl implements RegistreService {
 		// if annex is not yet created in arxiu take content from gestio documental
 		} else {
 			
-			// if annex has firma attached, contingut of document is located in firma
+			// if annex is signed with firma attached, contingut is located either in firma or in annex
 			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
 					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
 				
 				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
-	
-				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-				gestioDocumentalHelper.gestioDocumentalGet(
-						firmaEntity.getGesdocFirmaId(), 
-						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-						streamAnnexFirma);
-				byte[] firmaContingut = streamAnnexFirma.toByteArray();
 				
-				fitxerDto.setNom(firmaEntity.getFitxerNom());
-				fitxerDto.setContentType(firmaEntity.getTipusMime());
-				fitxerDto.setContingut(firmaContingut);
-				fitxerDto.setTamany(firmaContingut.length);
+				if (firmaEntity.getGesdocFirmaId() != null) {
+					ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							firmaEntity.getGesdocFirmaId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+							streamAnnexFirma);
+					byte[] firmaContingut = streamAnnexFirma.toByteArray();
+					
+					fitxerDto.setNom(firmaEntity.getFitxerNom());
+					fitxerDto.setContentType(firmaEntity.getTipusMime());
+					fitxerDto.setContingut(firmaContingut);
+					fitxerDto.setTamany(firmaContingut.length);
+				}
+				
+				if (registreAnnexEntity.getGesdocDocumentId() != null) {
+					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							registreAnnexEntity.getGesdocDocumentId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							streamAnnex);
+					byte[] annexContingut = streamAnnex.toByteArray();
+					
+					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+					fitxerDto.setContingut(annexContingut);
+					fitxerDto.setTamany(annexContingut.length);
+				} 
 
+				
+			// if annex not signed or is signed with firma detached contingut is in annex	
 			} else {
 				
 				if (registreAnnexEntity.getGesdocDocumentId() != null) {

@@ -114,6 +114,8 @@ public class IntegracioHelper {
 		addAccio(
 				integracioCodi,
 				accio);
+		
+		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
 	}
 	public void addAccioError(
 			String integracioCodi,
@@ -260,6 +262,6 @@ public class IntegracioHelper {
 		return integracio;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(IntegracioHelper.class);
 
 }
