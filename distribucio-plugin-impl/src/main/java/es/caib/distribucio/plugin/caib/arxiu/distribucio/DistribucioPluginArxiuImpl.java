@@ -1048,8 +1048,10 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		metadades.setOrgans(ntiOrgans);
 		
-		
-
+		String serieDocumental = getPropertyPluginRegistreExpedientSerieDocumental();
+		if (serieDocumental != null && !serieDocumental.isEmpty()) {
+			metadades.setSerieDocumental(serieDocumental);
+		}
 		
 		Map<String, Object> metaDadesAddicionals = new HashMap<String, Object>();
 		metaDadesAddicionals.put("eni:numero_asiento_registral", documentEniRegistrableDto.getNumero());
