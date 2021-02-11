@@ -391,7 +391,7 @@ tr.clicable {
 				<li><a id="accioReenviar"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 				<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
 					<c:choose>
-						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || registre.procesEstat == 'ARXIU_PENDENT'}">
+						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT'}">
 							<li><a id="accioMarcarProcessat"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 						</c:when>
 						<c:otherwise>
