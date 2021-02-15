@@ -124,6 +124,43 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return "redirect:registreUser";
 	}
+	
+	@RequestMapping(value = "/moviments", method = RequestMethod.GET)
+	public String registreUserMovimentsGet(
+			HttpServletRequest request,
+			Model model) {
+		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		model.addAttribute(filtreCommand);
+		return "registreUserMovimentsList";
+	}
+	
+	@RequestMapping(value = "/moviments", method = RequestMethod.POST)
+	public String registreUserMoviementsPost(
+			HttpServletRequest request,
+			@Valid RegistreFiltreCommand filtreCommand,
+			BindingResult bindingResult,
+			@RequestParam(value = "accio", required = false) String accio,
+			Model model) {
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				// Elimina els espais en blanc del títol i el número
+				if (!StringUtils.isEmpty(filtreCommand.getNumero()))
+					filtreCommand.setNumero(filtreCommand.getNumero().trim());
+				if (!StringUtils.isEmpty(filtreCommand.getTitol()))
+					filtreCommand.setTitol(filtreCommand.getTitol().trim());
+				// Guarda el filtre en sessió
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_FILTRE,
+						filtreCommand);
+			}
+		}
+		return "redirect:registreUser/moviments";
+	}
 
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -141,12 +178,33 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						false,
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id",
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
 	
-	
+	@RequestMapping(value = "/moviments/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse registreUserMovimentsDatatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
+		List<BustiaDto> bustiesPermesesPerUsuari = null;
+		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
+			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+		}
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				registreService.findRegistreUser(
+						entitatActual.getId(),
+						bustiesPermesesPerUsuari,
+						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						true,
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
+	}
 	
 	@RequestMapping(value = "/bustia/{bustiaId}/registre/{registreId}", method = RequestMethod.GET)
 	public String registreUserDetall(
@@ -230,6 +288,7 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						false,
 						paginacioParams);
 			// Posa les dades dels registres al model segons la consulta
 			if (!pagina.getContingut().isEmpty()) {

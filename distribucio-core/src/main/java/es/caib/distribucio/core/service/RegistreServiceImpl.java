@@ -415,6 +415,7 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams) {
 		
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser"));
@@ -528,6 +529,7 @@ public class RegistreServiceImpl implements RegistreService {
 						enviatPerEmail,
 						tipusFisicaCodi == null,
 						tipusFisicaCodi,
+						onlyAmbMoviments,
 						paginacioHelper.toSpringDataPageable(paginacioParams,
 								mapeigOrdenacio));
 				contextTotalfindRegistreByPareAndFiltre.stop();
