@@ -106,6 +106,7 @@ public interface RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 	
 	/**

@@ -96,6 +96,8 @@ public class ContingutHelper {
 	private ContingutLogHelper contingutLogHelper;
 	@Autowired
 	private EntityComprovarHelper entityComprovarHelper;
+	@Autowired
+	private ContingutMovimentRepository contingutMovimentRepository;
 
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -251,11 +253,33 @@ public class ContingutHelper {
 			contextToContingutDtoEntitatMoviemntAudtioria.stop();
 			
 			// PATH
-			if (ambPath) {
+			if (ambPath) {				
 				List<ContingutDto> path = getPathContingutComDto(
 						contingut,
-						ambPermisos);
+						ambPermisos,
+						false);
 				contingutDto.setPath(path);
+				
+				if (contingut instanceof RegistreEntity) {
+					//directe des de registre
+					ContingutMovimentEntity firstMoviment = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
+					
+					//des de una altre anotació (còpia)
+					if (firstMoviment == null) {
+						List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
+						firstMoviment = !moviments.isEmpty() ? moviments.get(0) : null;
+					}
+					if (firstMoviment != null) {
+						ContingutEntity contingutDesti = firstMoviment.getDesti();
+						if (HibernateHelper.isProxy(firstMoviment.getDesti()))
+							contingutDesti = HibernateHelper.deproxy(contingutDesti);
+						List<ContingutDto> pathIncial = getPathContingutComDto(
+								contingutDesti,
+								ambPermisos,
+								true);
+						contingutDto.setPathInicial(pathIncial);
+					}
+				}
 			}
 			// FILLS
 			if (ambFills) {
@@ -335,7 +359,7 @@ public class ContingutHelper {
 			boolean comprovarPermisWrite,
 			boolean comprovarPermisDelete,
 			boolean incloureActual) {
-		List<ContingutEntity> path = getPathContingut(contingut);
+		List<ContingutEntity> path = getPathContingut(contingut, false);
 		if (path != null) {
 			// Dels contenidors del path només comprova el permis read
 			for (ContingutEntity contingutPath: path) {
@@ -364,7 +388,7 @@ public class ContingutHelper {
 			boolean comprovarPermisWrite,
 			boolean comprovarPermisDelete,
 			boolean incloureActual) {
-		List<ContingutEntity> path = getPathContingut(contingut);
+		List<ContingutEntity> path = getPathContingut(contingut, false);
 		if (incloureActual || path != null) {
 			if (incloureActual) {
 				if (path == null)
@@ -794,17 +818,25 @@ public class ContingutHelper {
 	}
 
 	private List<ContingutEntity> getPathContingut(
-			ContingutEntity contingut) {
+			ContingutEntity contingut,
+			boolean incloureActual) {
 		
 		final Timer getPathContingutComDtoTimergetPathContingut = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingut"));
 		Timer.Context getPathContingutComDtoContextgetPathContingut = getPathContingutComDtoTimergetPathContingut.time();
-		
+		boolean firstAdded = false;
 		List<ContingutEntity> path = null;
 		ContingutEntity contingutActual = contingut;
+		
 		while (contingutActual != null && contingutActual.getPare() != null) {
 			if (path == null)
 				path = new ArrayList<ContingutEntity>();
-			ContingutEntity c = contingutRepository.findOne(contingutActual.getPare().getId());
+			ContingutEntity c;
+			if (incloureActual && !firstAdded) {
+				c = contingutRepository.findOne(contingutActual.getId());
+				firstAdded = true;
+			} else {
+				c = contingutRepository.findOne(contingutActual.getPare().getId());
+			}
 			path.add(c);
 			contingutActual = c;
 		}
@@ -818,11 +850,12 @@ public class ContingutHelper {
 
 	public List<ContingutDto> getPathContingutComDto(
 			ContingutEntity contingut,
-			boolean ambPermisos) {
+			boolean ambPermisos,
+			boolean incloureActual) {
 		final Timer getPathContingutComDtoTimer = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "getPathContingutComDto"));
 		Timer.Context getPathContingutComDtoContext = getPathContingutComDtoTimer.time();
 		
-		List<ContingutEntity> path = getPathContingut(contingut);
+		List<ContingutEntity> path = getPathContingut(contingut, incloureActual);
 		List<ContingutDto> pathDto = null;
 		if (path != null) {
 			pathDto = new ArrayList<ContingutDto>();

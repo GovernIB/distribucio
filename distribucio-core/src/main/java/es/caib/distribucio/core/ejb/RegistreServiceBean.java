@@ -74,11 +74,13 @@ public class RegistreServiceBean implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams) {
 		return delegate.findRegistreUser(
 				entitatId,
 				bustiesUsuari,
 				filtre,
+				onlyAmbMoviments,
 				paginacioParams);
 	}
 	@Override

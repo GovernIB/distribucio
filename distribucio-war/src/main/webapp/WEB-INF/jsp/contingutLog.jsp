@@ -21,6 +21,10 @@ var logObjecteTipusEnumText = [];
 logObjecteTipusEnumText["${logObjecteTipus.value}"] = "<spring:message code="${logObjecteTipus.text}"/>";
 </c:forEach>
 $(document).ready(function() {
+	var hash = window.location.hash;
+    if (hash) {
+        $('[data-toggle="tab"][href="' + hash + '"]').trigger('click');
+    }
 	$('button.log-detalls').click(function() {
 		if ($('span', this).hasClass('fa-chevron-down')) {
 			var $row = $(this).closest('tr');

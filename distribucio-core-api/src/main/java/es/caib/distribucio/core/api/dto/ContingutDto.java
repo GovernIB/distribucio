@@ -33,6 +33,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 	
 	private boolean alerta;
 	
+	protected List<ContingutDto> pathInicial;
 	
 	public Long getId() {
 		return id;
@@ -102,6 +103,12 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public boolean isPerConvertirJson() {
 		return perConvertirJson;
+	}
+	public List<ContingutDto> getPathInicial() {
+		return pathInicial;
+	}
+	public void setPathInicial(List<ContingutDto> pathInicial) {
+		this.pathInicial = pathInicial;
 	}
 	public void setPerConvertirJson(boolean perConvertirJson) {
 		this.perConvertirJson = perConvertirJson;
