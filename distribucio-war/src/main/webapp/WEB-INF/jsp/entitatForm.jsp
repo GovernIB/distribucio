@@ -12,16 +12,31 @@
 <html>
 <head>
 	<title>${titol}</title>
+	<link href="<c:url value="/css/jasny-bootstrap.min.css"/>" rel="stylesheet">
+    <script src="<c:url value="/js/jasny-bootstrap.min.js"/>"></script>
+    <link href="<c:url value="/css/-bootstrap.min.css"/>" rel="stylesheet">
+    <script src="<c:url value="/js/jasny-bootstrap.min.js"/>"></script>
+    <script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#colorFons, #colorLletra').colorpicker();
+		});
+	</script>
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/entitat"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="entitatCommand" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="entitatCommand" role="form"  enctype="multipart/form-data">
 		<form:hidden path="id"/>
 		<dis:inputText name="codi" textKey="entitat.form.camp.codi" required="true"/>
 		<dis:inputText name="nom" textKey="entitat.form.camp.nom" required="true"/>
 		<dis:inputText name="cif" textKey="entitat.form.camp.cif" required="true"/>
 		<dis:inputText name="codiDir3" textKey="entitat.form.camp.unitat.codi" required="true"/>
+		
+		<dis:inputFile name="logoCap" textKey="entitat.form.camp.logocap" fileEntitat="true"/>
+		<dis:inputText name="colorFons" textKey="entitat.form.camp.fons" picker="true"/>
+		<dis:inputText name="colorLletra" textKey="entitat.form.camp.lletra" picker="true"/>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/entitat"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

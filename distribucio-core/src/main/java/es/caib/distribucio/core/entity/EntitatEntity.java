@@ -40,6 +40,13 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	@Column(name = "fecha_sincronizacion")
 	Timestamp fechaSincronizacion;
 	
+	@Column(name = "logo_cap")
+	private byte[] logoCapBytes;
+	@Column(name = "color_fons", length = 32)
+	private String colorFons;
+	@Column(name = "color_lletra", length = 32)
+	private String colorLletra;
+	
 	@Column(name = "activa")
 	private boolean activa = true;
 	@Version
@@ -75,18 +82,32 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	public boolean isActiva() {
 		return activa;
 	}
-
+	public byte[] getLogoCapBytes() {
+		return logoCapBytes;
+	}
+	public String getColorFons() {
+		return colorFons;
+	}
+	public String getColorLletra() {
+		return colorLletra;
+	}
 	public void update(
 			String codi,
 			String nom,
 			String descripcio,
 			String cif,
-			String codiDir3) {
+			String codiDir3,
+			byte[] logoCapBytes,
+			String colorFons,
+			String colorLletra) {
 		this.codi = codi;
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.cif = cif;
 		this.codiDir3 = codiDir3;
+		this.logoCapBytes = logoCapBytes;
+		this.colorFons = colorFons;
+		this.colorLletra = colorLletra;
 	}
 
 	public void updateActiva(
@@ -114,13 +135,19 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 			String nom,
 			String descripcio,
 			String cif,
-			String codiDir3) {
+			String codiDir3,
+			byte[] logoCapBytes,
+			String colorFons,
+			String colorLletra) {
 		return new Builder(
 				codi,
 				nom,
 				descripcio,
 				cif,
-				codiDir3);
+				codiDir3,
+				logoCapBytes,
+				colorFons,
+				colorLletra);
 	}
 
 	/**
@@ -135,13 +162,19 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 				String nom,
 				String descripcio,
 				String cif,
-				String codiDir3) {
+				String codiDir3,
+				byte[] logoCapBytes,
+				String colorFons,
+				String colorLletra) {
 			built = new EntitatEntity();
 			built.codi = codi;
 			built.nom = nom;
 			built.descripcio = descripcio;
 			built.cif = cif;
 			built.codiDir3 = codiDir3;
+			built.logoCapBytes = logoCapBytes;
+			built.colorFons = colorFons;
+			built.colorLletra = colorLletra;
 		}
 		public EntitatEntity build() {
 			return built;

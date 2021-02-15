@@ -26,6 +26,11 @@ public class EntitatDto extends AuditoriaDto {
 	private boolean usuariActualRead;
 	private boolean usuariActualAdministration;
 
+	private byte[] logoCapBytes;
+	private boolean eliminarLogoCap;
+	private String colorFons;
+	private String colorLletra;
+	
 	public Long getId() {
 		return id;
 	}
@@ -86,7 +91,30 @@ public class EntitatDto extends AuditoriaDto {
 	public void setUsuariActualAdministration(boolean usuariActualAdministration) {
 		this.usuariActualAdministration = usuariActualAdministration;
 	}
-
+	public byte[] getLogoCapBytes() {
+		return logoCapBytes;
+	}
+	public void setLogoCapBytes(byte[] logoCapBytes) {
+		this.logoCapBytes = logoCapBytes;
+	}
+	public boolean isEliminarLogoCap() {
+		return eliminarLogoCap;
+	}
+	public void setEliminarLogoCap(boolean eliminarLogoCap) {
+		this.eliminarLogoCap = eliminarLogoCap;
+	}
+	public String getColorFons() {
+		return colorFons;
+	}
+	public void setColorFons(String colorFons) {
+		this.colorFons = colorFons;
+	}
+	public String getColorLletra() {
+		return colorLletra;
+	}
+	public void setColorLletra(String colorLletra) {
+		this.colorLletra = colorLletra;
+	}
 	public int getPermisosCount() {
 		if  (permisos == null)
 			return 0;

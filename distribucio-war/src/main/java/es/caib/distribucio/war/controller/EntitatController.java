@@ -3,9 +3,17 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +28,7 @@ import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.war.command.EntitatCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EntitatHelper;
 
 /**
  * Controlador per al manteniment d'entitats.
@@ -32,6 +41,8 @@ public class EntitatController extends BaseController {
 
 	@Autowired
 	private EntitatService entitatService;
+	@Autowired
+	private ServletContext servletContext; 
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get() {
@@ -69,13 +80,13 @@ public class EntitatController extends BaseController {
 	public String save(
 			HttpServletRequest request,
 			@Valid EntitatCommand command,
-			BindingResult bindingResult) {
+			BindingResult bindingResult) throws IOException {
 		if (bindingResult.hasErrors()) {
 			return "entitatForm";
 		}
 		if (command.getId() != null) {
 			entitatService.update(EntitatCommand.asDto(command));
-			return getModalControllerReturnValueSuccess(
+ 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:entitat",
 					"entitat.controller.modificada.ok");
@@ -119,5 +130,33 @@ public class EntitatController extends BaseController {
 				"redirect:../../entitat",
 				"entitat.controller.esborrada.ok");
 	}
+	
+	@RequestMapping(value = "/logo", method = RequestMethod.GET)
+	public String getEntitatLogoCap(
+			HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
+		
+		if (entitatActual != null) {
+			if (entitatActual.getLogoCapBytes() != null) {
+				writeFileToResponse(
+						"Logo_cap.png",
+						entitatActual.getLogoCapBytes(),
+						response);
+			} else {
+				try {
+					File path = new File(servletContext.getRealPath("/") + "/img/govern-logo.png");
+					writeFileToResponse(
+							"Logo_cap.png", 
+							Files.readAllBytes(path.toPath()), 
+							response);
+				} catch (Exception ex) {
+					logger.debug("Error al obtenir el logo de la capçalera", ex);
+				}
+			}
+		}
+		return null;
+	}
 
+	private static final Logger logger = LoggerFactory.getLogger(EntitatController.class);
 }

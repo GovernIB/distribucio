@@ -65,6 +65,8 @@
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
+	<link href="<c:url value="/css/bootstrap-colorpicker.min.css"/>" rel="stylesheet">
+	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
 	<decorator:head />
 <style>
 body {
@@ -72,6 +74,15 @@ body {
 	color:#666666;
 	padding-top: 120px;
 }
+
+<c:if test="${sessionScope['EntitatHelper.entitatActual'].colorFons != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorFons}">
+	.navbar-app {
+		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
+	}
+	.navbar-app .list-inline li.dropdown>a {
+		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
+	}
+</c:if>
 </style>
 <script type="text/javascript">
 	// Guarda l'idioma de la configuració de l'usuari a local storage
@@ -86,7 +97,7 @@ body {
 			<div class="navbar-header">
 				<div class="navbar-brand">
 					<div id="govern-logo" class="pull-left">
-						<img src="<c:url value="/img/govern-logo.png"/>"  height="65" alt="Govern de les Illes Balears" />
+						<img src="<c:url value="/entitat/logo"/>"  height="65" alt="Govern de les Illes Balears" />
 					</div>
 					<div id="app-logo" class="pull-left">
 						<a href="<c:url value="/"/>">

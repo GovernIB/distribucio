@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.war.command;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
@@ -35,6 +37,11 @@ public class EntitatCommand {
 	@NotEmpty @Size(max=9)
 	private String codiDir3;
 
+	private MultipartFile logoCap;
+	private boolean eliminarLogoCap;
+	private String colorFons;
+	private String colorLletra;
+	
 	public Long getId() {
 		return id;
 	}
@@ -65,7 +72,31 @@ public class EntitatCommand {
 	public void setCodiDir3(String codiDir3) {
 		this.codiDir3 = codiDir3;
 	}
-
+	public MultipartFile getLogoCap() {
+		return logoCap;
+	}
+	public void setLogoCap(MultipartFile logoCap) {
+		this.logoCap = logoCap;
+	}
+	public boolean isEliminarLogoCap() {
+		return eliminarLogoCap;
+	}
+	public void setEliminarLogoCap(boolean eliminarLogoCap) {
+		this.eliminarLogoCap = eliminarLogoCap;
+	}
+	public String getColorFons() {
+		return colorFons;
+	}
+	public void setColorFons(String colorFons) {
+		this.colorFons = colorFons;
+	}
+	public String getColorLletra() {
+		return colorLletra;
+	}
+	public void setColorLletra(String colorLletra) {
+		this.colorLletra = colorLletra;
+	}
+	
 	public static List<EntitatCommand> toEntitatCommands(
 			List<EntitatDto> dtos) {
 		List<EntitatCommand> commands = new ArrayList<EntitatCommand>();
@@ -83,10 +114,12 @@ public class EntitatCommand {
 				dto,
 				EntitatCommand.class);
 	}
-	public static EntitatDto asDto(EntitatCommand command) {
-		return ConversioTipusHelper.convertir(
+	public static EntitatDto asDto(EntitatCommand command) throws IOException {
+		EntitatDto entitat = ConversioTipusHelper.convertir(
 				command,
 				EntitatDto.class);
+		entitat.setLogoCapBytes(command.getLogoCap().getBytes());
+		return entitat;
 	}
 
 	@Override
