@@ -280,31 +280,33 @@ tr.clicable {
 					    						<h4><span class="fa fa-certificate"></span><spring:message code="registre.annex.detalls.camp.firmes"/></h4>\
 					    						<div class="line"></div>\
 					    						<div class="viewer-firmes-container">';
-    					var idx = 0;
-    					var idxFirma = 1;
-						data.firmes.forEach(function(firma) {
-							viewerContent += '<div class="viewer-firma-container">\
-							        				<dl class="dl-horizontal">\
-									        			<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firma"/>: </dt><dd> Firma ' + idxFirma + '</dd>';
-									        			if (firma.detalls[0].responsableNom != null)
-									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/>: </dt><dd>' + firma.detalls[0].responsableNom + '</dd>';
-									        			if (firma.detalls[0].responsableNif != null)	
-									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/>: </dt><dd>' + firma.detalls[0].responsableNif + '</dd>';
-									        			if (firma.detalls[0].data != null)	
-									        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/>: </dt><dd>' + formatDate(new Date(firma.detalls[0].data)) + '</dd>';
-										        		if (firma.tipus != 'PADES' && firma.tipus != 'CADES_ATT' && firma.tipus != 'XADES_ENV') {
-										        			viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.fitxer"/>: </dt>\
-										        			<dd>' + 
-										        				firma.fitxerNom + '<a href="/distribucio/modal/contingut/${bustiaId}/registre/${registreId}/annex/' + annexId + '/firma/' + idx + '" class="btn btn-default btn-sm pull-right">\
-																						<span class="fa fa-download" title="Descarregar fitxer"></span>\
-																					</a>\
-										        			</dd>';
-										        		}
-									        		viewerContent += '</dl>\
-						        				</div>';
-							idx++;
-							idxFirma++;
-	});
+					    data.firmes.forEach(function(firma) {
+	    					var idx = 0;
+	    					var idxFirma = 1;
+	    					firma.detalls.forEach(function(firmaDetall) {
+								viewerContent += '<div class="viewer-firma-container">\
+								        				<dl class="dl-horizontal">\
+										        			<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firma"/>: </dt><dd> Firma ' + idxFirma + '</dd>';
+										        			if (firmaDetall.responsableNom != null)
+										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/>: </dt><dd>' + firmaDetall.responsableNom + '</dd>';
+										        			if (firmaDetall.responsableNif != null)	
+										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/>: </dt><dd>' + firmaDetall.responsableNif + '</dd>';
+										        			if (firmaDetall.data != null)	
+										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/>: </dt><dd>' + formatDate(new Date(firmaDetall.data)) + '</dd>';
+											        		if (firma.tipus != 'PADES' && firma.tipus != 'CADES_ATT' && firma.tipus != 'XADES_ENV') {
+											        			viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.fitxer"/>: </dt>\
+											        			<dd>' + 
+											        				firma.fitxerNom + '<a href="/distribucio/modal/contingut/${bustiaId}/registre/${registreId}/annex/' + annexId + '/firma/' + idx + '" class="btn btn-default btn-sm pull-right">\
+																							<span class="fa fa-download" title="Descarregar fitxer"></span>\
+																						</a>\
+											        			</dd>';
+											        		}
+										        		viewerContent += '</dl>\
+							        				</div>';
+								idx++;
+								idxFirma++;
+							});
+					    });
 						viewerContent +='</div></div>';
    						$(viewerContent).insertAfter('.viewer-content');
 					}
