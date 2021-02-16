@@ -92,16 +92,30 @@ tr.clicable {
 	opacity: 1;
 }
 
+#container {
+	padding-top: 1%;
+}
+
 #resum-annexos > table > tbody td {
 	cursor: pointer;
 }
 
 .viewer-content {
 	width: 100%;
+	padding-top: 1% !important;
+}
+
+.viewer-content > .dl-horizontal, .viewer-firmes-container > .dl-horizontal {
+	margin-bottom: 0;
+}
+
+.viewer-firmes hr {
+	margin-top: 5px !important;
+	margin-bottom: 5px !important;
 }
 
 .viewer-padding {
-	padding: 1% 2% 0% 2%;
+	padding: 0% 2% 0% 2%;
 }
 
 .line {
@@ -110,12 +124,7 @@ tr.clicable {
 	background-color: black;
 	margin-top: -6px;
 }
-.viewer-firma-container {
-	margin: 1%;
-	border: 1px solid #ddd;
-	border-radius: 3px;
-	padding: 5px 10px 0px 6px;
-}
+
 .rmodal_loading {
     background: rgba( 255, 255, 255, .8 ) 
                 url('<c:url value="/img/loading.gif"/>') 
@@ -243,10 +252,11 @@ tr.clicable {
 	function showViewer(event, annexId, observacions, dataCaptura, origen) {
 		if (event.target.cellIndex === undefined || event.target.cellIndex === 6 || event.target.cellIndex === 7) return;
         var resumViewer = $('#resum-viewer');
-        
+        var resumAnnexos = $('#resum-annexos');
 		// Mostrar/amagar visor
 		if (!resumViewer.is(':visible')) {
-			resumViewer.toggle();
+			resumViewer.slideDown(500);
+			resumAnnexos.removeAttr("style");
 		} else if (previousAnnex == undefined || previousAnnex == annexId) {
 			closeViewer();
 			event.srcElement.parentElement.style = "background: #fffff";
@@ -275,46 +285,37 @@ tr.clicable {
         $.get(
 				"<c:url value="/registreUser/registreAnnexFirmes/${bustiaId}/${registreId}/"/>" + annexId,
 				function(data) {
-					if (data.firmes) {
+					if (data.firmes && data.firmes.length > 0) {
+						var nieList = "", nomList = "";
 						var viewerContent = '<div class="viewer-firmes viewer-padding">\
-					    						<h4><span class="fa fa-certificate"></span><spring:message code="registre.annex.detalls.camp.firmes"/></h4>\
-					    						<div class="line"></div>\
+												<hr>\
 					    						<div class="viewer-firmes-container">';
 					    data.firmes.forEach(function(firma) {
-	    					var idx = 0;
-	    					var idxFirma = 1;
-	    					firma.detalls.forEach(function(firmaDetall) {
-								viewerContent += '<div class="viewer-firma-container">\
-								        				<dl class="dl-horizontal">\
-										        			<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firma"/>: </dt><dd> Firma ' + idxFirma + '</dd>';
-										        			if (firmaDetall.responsableNom != null)
-										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nom"/>: </dt><dd>' + firmaDetall.responsableNom + '</dd>';
-										        			if (firmaDetall.responsableNif != null)	
-										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.nif"/>: </dt><dd>' + firmaDetall.responsableNif + '</dd>';
-										        			if (firmaDetall.data != null)	
-										        				viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmaDetalls.data"/>: </dt><dd>' + formatDate(new Date(firmaDetall.data)) + '</dd>';
-											        		if (firma.tipus != 'PADES' && firma.tipus != 'CADES_ATT' && firma.tipus != 'XADES_ENV') {
-											        			viewerContent += '<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.fitxer"/>: </dt>\
-											        			<dd>' + 
-											        				firma.fitxerNom + '<a href="/distribucio/modal/contingut/${bustiaId}/registre/${registreId}/annex/' + annexId + '/firma/' + idx + '" class="btn btn-default btn-sm pull-right">\
-																							<span class="fa fa-download" title="Descarregar fitxer"></span>\
-																						</a>\
-											        			</dd>';
-											        		}
-										        		viewerContent += '</dl>\
-							        				</div>';
-								idx++;
-								idxFirma++;
+	    					nieList += '[';
+	    					firma.detalls.forEach(function(firmaDetall, index) {
+								if (firmaDetall.responsableNif != undefined && firmaDetall.responsableNif != null)	
+									nieList += firmaDetall.responsableNif + (index !== (firma.detalls.length -1) ? ', ' : '');
+								if (firmaDetall.responsableNom != undefined && firmaDetall.responsableNom != null)
+									nomList += firmaDetall.responsableNom + (index !== (firma.detalls.length -1) ? ', ' : '');
+								if (firmaDetall.responsableNif == null && firma.autofirma != null)
+									nieList += '<spring:message code="registre.annex.detalls.camp.firma.autoFirma"/> <span class="fa fa-info-circle" title="<spring:message code="registre.annex.detalls.camp.firma.autoFirma.info" />"></span>';
+								
 							});
+	    					nieList += ']';
 					    });
-						viewerContent +='</div></div>';
+
+    					viewerContent += '<dl class="dl-horizontal">\
+							   				<dt style="text-align: left;"><spring:message code="registre.annex.detalls.camp.firmants"/>:</dt>\
+							   				<dd>' + nieList + (nomList != "" ? ' - ' +  nomList : '') + '</dd>\
+							   			  </dl>\
+							   			  </div><hr></div>';
    						$(viewerContent).insertAfter('.viewer-content');
 					}
 				}
 		);
 
 	    // Amagar columnes taula
-	    var tableAnnexos = $('#resum-annexos').find('table');
+	    var tableAnnexos = resumAnnexos.find('table');
 	    tableAnnexos.find('tr').each(function() {
 	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").hide();
 	    });
@@ -350,14 +351,17 @@ tr.clicable {
 
 	// Amagar visor
 	function closeViewer() {
-		$('#resum-viewer').toggle();
+		var resumAnnexos = $('#resum-annexos');
+		$('#resum-viewer').slideUp(500, function(){
+			resumAnnexos.css('width', '100%');
 		
-		// Mostrar columnes taula
-		var tableAnnexos = $('#resum-annexos').find('table');
-	    tableAnnexos.find('tr').each(function() {
-	    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").show();
-	    	$(this).removeAttr('style');
-	    });
+			// Mostrar columnes taula
+			var tableAnnexos = resumAnnexos.find('table');
+		    tableAnnexos.find('tr').each(function() {
+		    	$(this).children("th:eq(2), th:eq(3), th:eq(4), td:eq(2), td:eq(3), td:eq(4)").show();
+		    	$(this).removeAttr('style');
+		    });
+		});
 	}
 	
 	function resetBackground() {
@@ -655,7 +659,7 @@ tr.clicable {
 			
 			<!------------------- ANNEXOS ------------------->
 			<div id="resum-annexos-container">
-			<div class="panel panel-default" id="resum-annexos">
+			<div class="panel panel-default" id="resum-annexos" style="width: 100%">
 				<div class="panel-heading">
 					<h3 class="panel-title"><spring:message code="registre.detalls.pipella.annexos"/></h3>
 				</div>
