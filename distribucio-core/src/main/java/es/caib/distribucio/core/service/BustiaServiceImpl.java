@@ -2000,7 +2000,7 @@ public class BustiaServiceImpl implements BustiaService {
 				"			</tr>"+
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.remitent.nom") +"</th>"+
-				"				<td>"+ usuariActual.getNom() + (usuariActual.getLlinatges() != null ? usuariActual.getLlinatges() : "") + "</td>"+
+				"				<td>"+ usuariActual.getNom() + " " + (usuariActual.getLlinatges() != null ? usuariActual.getLlinatges() : "") + "</td>"+
 				"			</tr>"+
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.remitent.email") + "</th>"+
