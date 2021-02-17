@@ -341,7 +341,9 @@ $(document).ready(function() {
 				<th data-col-name="id" data-orderable="false" data-template="#cellMovimentsContingutTemplate" width="5%">
 					<spring:message code="bustia.pendent.columna.moviments"/>
 					<script id="cellMovimentsContingutTemplate" type="text/x-jsrender">
-						<a href="../contingut/{{:id}}/log#moviments"  class="btn btn-success" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span></a>
+					<center>
+						<a href="../contingut/{{:id}}/log#moviments"  class="btn btn-success center" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span></a>
+					</center>
 					</script>
 				</th>
 				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
