@@ -28,7 +28,6 @@ import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.entity.UsuariEntity;
-import es.caib.distribucio.core.service.RegistreServiceImpl;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -56,6 +55,13 @@ public class IntegracioHelper {
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
+	
+	private Long idAccio = 0L;
+	
+	private Long generateIdAccio() {
+		idAccio++;
+		return idAccio;
+	}
 
 	public List<IntegracioDto> findAll() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
@@ -178,15 +184,7 @@ public class IntegracioHelper {
 				accionsIntegracio.put(
 						integracioCodi,
 						accions);
-			} else {
-				int index = 0;
-				
-				Iterator<IntegracioAccioDto> iterator = accions.iterator();
-				while (iterator.hasNext()) {
-					IntegracioAccioDto accio = iterator.next();
-					accio.setIndex(new Long(index++));
-				}
-			}
+			} 
 			return accions;
 		}
 	}
@@ -211,6 +209,8 @@ public class IntegracioHelper {
 		while (accions.size() >= max) {
 			accions.remove(accions.size() - 1);
 		}
+		accio.setId(generateIdAccio());
+		
 		accions.add(
 				0,
 				accio);

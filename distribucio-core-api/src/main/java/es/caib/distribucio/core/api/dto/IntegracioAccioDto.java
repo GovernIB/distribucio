@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class IntegracioAccioDto implements Serializable {
 
-	private Long index;
+
 	private Date data;
 	private String descripcio;
 	private Map<String, String> parametres;
@@ -27,14 +27,14 @@ public class IntegracioAccioDto implements Serializable {
 	private String errorDescripcio;
 	private String excepcioMessage;
 	private String excepcioStacktrace;
+	private Long id;
 
-
-
-	public Long getIndex() {
-		return index;
+	
+	public Long getId() {
+		return id;
 	}
-	public void setIndex(Long index) {
-		this.index = index;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public Date getData() {
 		return data;

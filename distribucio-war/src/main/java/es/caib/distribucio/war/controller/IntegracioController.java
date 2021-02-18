@@ -104,20 +104,35 @@ public class IntegracioController extends BaseUserController {
 		return dtr;
 	}
 
-	@RequestMapping(value = "/{codi}/{index}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{codi}/{id}", method = RequestMethod.GET)
 	public String detall(
 			HttpServletRequest request,
 			@PathVariable String codi,
-			@PathVariable int index,
+			@PathVariable Long id,
 			Model model) {
 		List<IntegracioAccioDto> accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
-		if (index < accions.size()) {
+		
+		IntegracioAccioDto integracio = null;
+		for (IntegracioAccioDto integracioAccioDto : accions) {
+			if (integracioAccioDto.getId().equals(id)) {
+				integracio = integracioAccioDto;
+			}
+		}
+		if (integracio != null) {
 			model.addAttribute(
 					"integracio",
-					accions.get(index));
+					integracio);
+			model.addAttribute(
+					"codiActual", 
+					codi);
+			return "integracioDetall";
+			
+		} else {
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:../../integracio",
+					"integracio.list.no.existeix");
 		}
-		model.addAttribute("codiActual", codi);
-		return "integracioDetall";
 	}
 
 }
