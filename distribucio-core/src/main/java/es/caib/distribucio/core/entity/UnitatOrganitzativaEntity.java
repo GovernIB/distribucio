@@ -205,6 +205,10 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 		return numVia;
 	}
 	
+	public String getCodiAndNom() {
+		return this.codi + " - " + this.denominacio + "";
+	}
+	
 	public void update(
 			String codi,
 			String denominacio,

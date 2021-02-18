@@ -20,9 +20,27 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<style>
+		.icon {
+			cursor: auto;
+		}
+		.icon-bustia:hover {
+			background-color: #5bc0de;
+	    	border-color: #46b8da;
+		}
+		.icon-backoffice:hover {
+			background-color: #d9534f;
+		    border-color: #d43f3a;
+		}
+		.icon-unitat:hover {
+		    background-color: #5cb85c;
+		    border-color: #4cae4c;
+		}
+	
+	</style>
+	
 	<script type="text/javascript">
-	
-	
 	
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
@@ -122,7 +140,7 @@
 		<thead>
 			<tr>
 				<th data-col-name="ordre" data-visible="false"></th>
-				<th data-col-name="nom" data-orderable="false"data-template="#nomTemplate">
+				<th data-col-name="nom" data-orderable="false" data-template="#nomTemplate">
 					<spring:message code="regla.list.columna.nom"/>
 					<script id="nomTemplate" type="text/x-jsrender">
 						{{:nom}}
@@ -133,13 +151,36 @@
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="tipus" data-orderable="false" data-renderer="enum(ReglaTipusEnumDto)">
-					<spring:message code="regla.list.columna.tipus"/>
-				</th>
 				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="procedimentCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="unitatOrganitzativaFiltre.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
-				<th data-col-name="backofficeDestiNom" data-orderable="false"><spring:message code="regla.list.columna.backoffice"/></th>
+				<th data-col-name="bustiaFiltreNom" data-orderable="false"><spring:message code="regla.list.columna.bustia.nom"/></th>
+				
+				
+				<th data-col-name="tipus" data-orderable="false" data-template="#tipusTemplate">
+					<spring:message code="regla.list.columna.destinacio"/>
+					<script id="tipusTemplate" type="text/x-jsrender">
+						{{if tipus == 'BUSTIA'}}
+							{{:bustiaDestiNom}}
+							<button class="btn btn-info btn-xs pull-right icon icon-bustia"><spring:message code="regla.list.columna.icona.bustia"/></button>
+						
+						{{else tipus == 'BACKOFFICE'}}
+							{{:backofficeDestiNom}}
+							<button class="btn btn-danger btn-xs pull-right icon icon-backoffice"><spring:message code="regla.list.columna.icona.backoffice"/></button>					
+							
+						{{else tipus == 'UNITAT'}}
+							{{:unitatDestiNom}}
+							<button class="btn btn-success btn-xs pull-right icon icon-unitat"><spring:message code="regla.list.columna.icona.unitat"/></button>					
+						{{/if}}
+						
+					
+					</script>
+				</th>
+
+				<th data-col-name="backofficeDestiNom" data-visible="false"></th>
+				<th data-col-name="bustiaDestiNom" data-visible="false"></th>
+				<th data-col-name="unitatDestiNom" data-visible="false"></th>
+				
 				<th data-col-name="activa" data-template="#cellActivaTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.activa"/>
 					<script id="cellActivaTemplate" type="text/x-jsrender">

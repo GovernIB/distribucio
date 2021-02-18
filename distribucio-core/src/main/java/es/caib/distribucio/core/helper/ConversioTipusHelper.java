@@ -64,6 +64,9 @@ public class ConversioTipusHelper {
 				ClassMapBuilder.map(ReglaEntity.class, ReglaDto.class)
 				.field("backofficeDesti.nom", "backofficeDestiNom")
 				.field("backofficeDesti.id", "backofficeDestiId")
+				.field("bustiaDesti.nom", "bustiaDestiNom")
+				.field("unitatDesti.codiAndNom", "unitatDestiNom")
+				.field("bustiaFiltre.nom", "bustiaFiltreNom")
 				.byDefault().toClassMap());
 		
 		mapperFactory.getConverterFactory().registerConverter(

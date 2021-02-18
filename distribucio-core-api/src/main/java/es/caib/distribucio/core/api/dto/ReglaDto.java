@@ -5,6 +5,7 @@ package es.caib.distribucio.core.api.dto;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+
 /**
  * Informació d'una regla per a gestionar anotacions de registre.
  * 
@@ -23,14 +24,16 @@ public class ReglaDto extends AuditoriaDto {
 	private String procedimentCodiFiltre;
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private Long bustiaFiltreId;
+	private String bustiaFiltreNom;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
 	private Long bustiaDestiId;
+	private String bustiaDestiNom;
 	private Long backofficeDestiId;
 	private String backofficeDestiNom;
 	private Long unitatDestiId;
-	
+	private String unitatDestiNom;
 	
 	private int ordre;
 	private boolean activa;
@@ -125,5 +128,23 @@ public class ReglaDto extends AuditoriaDto {
 	public void setUnitatDestiId(Long unitatDestiId) {
 		this.unitatDestiId = unitatDestiId;
 	}
-
+	public String getBustiaFiltreNom() {
+		return bustiaFiltreNom;
+	}
+	public void setBustiaFiltreNom(String bustiaFiltreNom) {
+		this.bustiaFiltreNom = bustiaFiltreNom;
+	}
+	public String getBustiaDestiNom() {
+		return bustiaDestiNom;
+	}
+	public void setBustiaDestiNom(String bustiaDestiNom) {
+		this.bustiaDestiNom = bustiaDestiNom;
+	}
+	public String getUnitatDestiNom() {
+		return unitatDestiNom;
+	}
+	public void setUnitatDestiNom(String unitatDestiNom) {
+		this.unitatDestiNom = unitatDestiNom;
+	}
+	
 }
