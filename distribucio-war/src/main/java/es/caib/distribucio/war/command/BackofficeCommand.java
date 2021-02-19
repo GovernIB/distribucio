@@ -9,7 +9,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
+import es.caib.distribucio.war.validation.CodiBackofficeNoRepetit;
 
+@CodiBackofficeNoRepetit()
 public class BackofficeCommand {
 
     private Long id;

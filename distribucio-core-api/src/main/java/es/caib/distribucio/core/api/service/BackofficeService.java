@@ -99,6 +99,11 @@ public interface BackofficeService {
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;
 
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public BackofficeDto findByCodi(
+			Long entitatId,
+			String backofficeCodi) throws NotFoundException;
+
 
 	
 }

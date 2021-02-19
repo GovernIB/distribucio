@@ -138,6 +138,28 @@ public class BackofficeServiceImpl implements BackofficeService {
 				BackofficeDto.class);
 		return dto;
 	}
+	
+	
+	@Transactional
+	@Override
+	public BackofficeDto findByCodi(Long entitatId, String backofficeCodi) throws NotFoundException {
+		logger.debug("Consultant el backoffice per backoffice codi (" +
+				"entitatId=" + entitatId +
+				"backofficeCodi=" + backofficeCodi + ")");
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		BackofficeEntity entity = backofficeRepository.findByEntitatAndCodi(entitat, backofficeCodi);
+
+		BackofficeDto dto = conversioTipusHelper.convertir(
+				entity,
+				BackofficeDto.class);
+		return dto;
+	}
 
 	@Transactional
 	@Override

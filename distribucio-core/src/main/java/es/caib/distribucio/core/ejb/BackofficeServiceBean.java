@@ -84,6 +84,14 @@ public class BackofficeServiceBean implements BackofficeService {
 		return delegate.findByEntitat(entitatId);
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public BackofficeDto findByCodi(
+			Long entitatId,
+			String backofficeCodi) throws NotFoundException {
+		return delegate.findByCodi(entitatId, backofficeCodi);
+	}
+
 
     
     

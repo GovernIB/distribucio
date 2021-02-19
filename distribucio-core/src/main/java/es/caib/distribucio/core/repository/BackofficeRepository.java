@@ -30,5 +30,10 @@ public interface BackofficeRepository extends JpaRepository<BackofficeEntity, Lo
 	List<BackofficeEntity> findByEntitat(
 			@Param("entitat") EntitatEntity entitat);
 	
+	BackofficeEntity findByEntitatAndCodi(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("codi") String codi);
+	
+	
 	
 }
