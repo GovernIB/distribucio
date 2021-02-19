@@ -136,6 +136,10 @@ public class ContingutAdminController extends BaseAdminController {
 			model.addAttribute(
 					"bustiaId",
 					contingutDto.getPare().getId());
+			
+			model.addAttribute(
+					"isContingutAdmin",
+					true);
 
 			return "registreDetall";
 		}

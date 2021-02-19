@@ -35,6 +35,7 @@ import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -44,6 +45,7 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.AnotacioRegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -131,6 +133,47 @@ public class RegistreAdminController extends BaseAdminController {
 	    				true));
 	}
 	
+	@RequestMapping(value = "/{registreId}/detall", method = RequestMethod.GET)
+	public String registreUserDetall(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
+			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		try {
+			
+			ContingutDto registreDto = contingutService.findAmbIdAdmin(
+					entitatActual.getId(),
+					registreId,
+					true);
+			
+			model.addAttribute(
+					"registre",
+					registreDto);
+			model.addAttribute("bustiaId", registreDto.getPare().getId());
+			model.addAttribute("registreNumero", registreNumero);
+			model.addAttribute("registreTotal", registreTotal);
+			model.addAttribute("ordreColumn", ordreColumn);
+			model.addAttribute("ordreDir", ordreDir);
+		} catch (Exception e) {
+			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
+			if (thr != null) {
+				NotFoundException exc = (NotFoundException) thr;
+				if (exc.getObjectClass().getName().equals("es.caib.distribucio.core.entity.RegistreEntity")) {
+					model.addAttribute("currentContainingBustia", exc.getParam());
+					return "errorRegistreNotFound";
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
+		}
+		return "registreDetall";
+	}	
 	
 	
 	

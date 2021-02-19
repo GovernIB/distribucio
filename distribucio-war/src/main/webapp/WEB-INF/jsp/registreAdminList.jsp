@@ -114,6 +114,29 @@ $(document).ready(function() {
 			);
 			return false;
 		});
+		$("tr", this).each(function(){
+			if ($(this).find("#detall-button").length > 0) {
+				var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
+				var registreTotal = pageInfo.recordsTotal;
+				var registreNumero = $(this).data('rowIndex');
+				// Afegeix els paràmetres a l'enllaç dels detalls
+				var url = new URL(window.location);
+				var params = url.searchParams;
+				params.set("registreNumero", registreNumero);
+				params.set("registreTotal", registreTotal);
+				var sort = $('#taulaDades').dataTable().fnSettings().aaSorting
+				if (sort.length > 0) {
+					params.set("ordreColumn", $($('#taulaDades').dataTable().api().column(sort[0][0]).header()).data('colName'))
+					params.set("ordreDir", sort[0][1]);						
+				}			
+				var $a = $($(this).find("#detall-button"));
+				$a.attr('href', $a.attr('href') + '?' + params.toString());
+				// Afegeix els paràmetres a l'enllaç de la fila
+				$(this).data('href', $(this).data('href') + '?' + params.toString());
+			}
+		});
+
+		
 	}).on('selectionchange.dataTable', function (e, accio, ids) {
 		$.get(
 				"registreAdmin/" + accio,
@@ -218,7 +241,8 @@ $(document).ready(function() {
 		</div>
 	</script>	
 
-	<script id="rowhrefTemplate" type="text/x-jsrender">./contingutAdmin/{{:id}}/detall</script>
+
+	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
 	<table
 		id="taulaDades"
 		data-toggle="datatable"
@@ -295,7 +319,7 @@ $(document).ready(function() {
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
-								<li><a href="contingutAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
+								<li><a id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								<li role="separator" class="divider"></li>

@@ -376,8 +376,8 @@ tr.clicable {
 <body>
 	<dis:blocContenidorPath contingut="${registre}"/>
 	
-	
-	<c:if test="${!isRolActualAdministrador}">
+	<c:if test="${isContingutAdmin == null}">
+
 		<div class="dropdown" style="float: right;" id="dropAccions">
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
 				<span class="fa-stack" aria-hidden="true">
@@ -412,8 +412,8 @@ tr.clicable {
 				</li>
 			</ul>
 		</div>	
-	</c:if>
 
+	</c:if>
 
 	
 	
