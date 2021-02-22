@@ -741,6 +741,8 @@ public class RegistreHelper {
 	
 
 	
+	
+	
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		logger.info("Loading Signatura detalls to DB");
@@ -805,6 +807,7 @@ public class RegistreHelper {
 			annexEntity.updateSignaturaDetallsDescarregat(true);
 		} catch (Exception e) {
 			logger.error("Error al carregar singatura detalls a la base de dades", e);
+			throw new RuntimeException("Error al carregar singatura detalls a la base de dades", e);
 		}
 	}
 	
