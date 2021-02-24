@@ -733,6 +733,39 @@ public class BustiaServiceImpl implements BustiaService {
 		contexttoBustiaDto.stop();
 		return bustiesDto;
 	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDto> findBusties(
+			Long entitatId,
+			boolean mostrarInactives) {
+		
+		logger.debug("Consulta de busties(" + "entitatId=" + entitatId +  ", mostrarInactives=" + mostrarInactives + ")");
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		List<BustiaEntity> busties;		
+		if (mostrarInactives) {
+			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+		} else {
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+		}
+		
+		List<BustiaDto> bustiesRetorn = bustiaHelper.toBustiaDto(
+				busties,
+				false,
+				true,
+				false);
+		
+		return bustiesRetorn;
+	}
+	
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -1424,108 +1457,6 @@ public class BustiaServiceImpl implements BustiaService {
 		return ret;
 	}
 
-	@Transactional(readOnly = true)
-	@Override
-	public List<Long> findIdsAmbFiltre(
-			Long entitatId,
-			List<BustiaDto> bustiesUsuari,
-			RegistreFiltreDto filtre) {
-		logger.debug("Consultant els identificadors del contingut de l'usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + filtre.getBustia() + ", "
-				+ "numero=" + filtre.getNumero() + ", "
-				+ "titol=" + filtre.getTitol() + ", "
-				+ "remitent=" + filtre.getRemitent() + ", "
-				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
-				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
-				+ "estatContingut=" + filtre.getProcesEstatSimple() + ")");
-		List<Long> ids;
-		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
-		Timer.Context contextTotal = timerTotal.time();
-
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-
-		
-		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null;
-		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
-			bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					new Long(filtre.getBustia()),
-					true);
-		List<Long> busties = new ArrayList<Long>();
-		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
-			for (BustiaDto bustiaUsuari: bustiesUsuari) {
-				entityComprovarHelper.comprovarBustia(
-						entitat,
-						new Long(bustiaUsuari.getId()),
-						true);
-				busties.add(bustiaUsuari.getId());
-			}
-		} else if (bustia != null) {
-			busties.add(bustia.getId());
-		}
-		// Hibernate doesn't support empty collection as parameter so if pares is empty we dont make query but just create a new empty page 
-		if (bustia == null && busties.isEmpty()) {
-			ids = new ArrayList<Long>();
-		} else {
-
-			boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
-			boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
-
-			Boolean enviatPerEmail = null;
-			if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-				if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
-					enviatPerEmail = true;
-				} else {
-					enviatPerEmail = false;
-				}
-			}
-			
-			String tipusFisicaCodi = null;
-			if (filtre.getTipusDocFisica() != null) {
-				tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
-			}
-
-			Date dataRecepcioFi = filtre.getDataRecepcioFi();
-			if (dataRecepcioFi != null) {
-				Calendar c = new GregorianCalendar();
-				c.setTime(dataRecepcioFi);
-				c.add(Calendar.HOUR, 24);
-				dataRecepcioFi = c.getTime();
-			}
-
-			ids = registreRepository.findRegistreIdsByPareAndFiltre(
-					busties,
-					StringUtils.isEmpty(filtre.getNumero()),
-					filtre.getNumero() != null ? filtre.getNumero() : "",
-					StringUtils.isEmpty(filtre.getTitol()),
-					filtre.getTitol() != null ? filtre.getTitol() : "",
-					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
-					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
-					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
-					filtre.getRemitent() != null ? filtre.getRemitent() : "",
-					(filtre.getDataRecepcioInici() == null),
-					filtre.getDataRecepcioInici(),
-					(dataRecepcioFi == null),
-					dataRecepcioFi,
-					esProcessat,
-					esPendent,
-					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
-					filtre.getInteressat() != null ? filtre.getInteressat() : "",
-					enviatPerEmail == null,
-					enviatPerEmail,
-					tipusFisicaCodi == null,
-					tipusFisicaCodi);
-		}
-
-		contextTotal.stop();
-		return ids;
-	}
 
 
 

@@ -194,7 +194,7 @@ $(document).ready(function() {
 					<div class="col-md-10">
 						<dis:inputSelect 
 							name="bustia" 
-							optionItems="${bustiesUsuari}" 
+							optionItems="${replacedByJquery}" 
 							optionValueAttribute="id" 
 							optionTextAttribute="nom" 
 							emptyOption="true" 

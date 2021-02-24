@@ -73,8 +73,8 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 @RequestMapping("/registreUser")
 public class RegistreUserController extends BaseUserController {
 
-	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaUserController.session.filtre";
-	private static final String SESSION_ATTRIBUTE_SELECCIO = "BustiaUserController.session.seleccio";
+	private static final String SESSION_ATTRIBUTE_FILTRE = "RegistreUserController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreUserController.session.seleccio";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -125,6 +125,31 @@ public class RegistreUserController extends BaseUserController {
 		return "redirect:registreUser";
 	}
 	
+	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse registreUserDatatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
+		List<BustiaDto> bustiesPermesesPerUsuari = null;
+		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
+			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+		}
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				registreService.findRegistre(
+						entitatActual.getId(),
+						bustiesPermesesPerUsuari,
+						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						false,
+						DatatablesHelper.getPaginacioDtoFromRequest(request), 
+						false),
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
+	}
+	
+	
+	
 	@RequestMapping(value = "/moviments", method = RequestMethod.GET)
 	public String registreUserMovimentsGet(
 			HttpServletRequest request,
@@ -162,27 +187,7 @@ public class RegistreUserController extends BaseUserController {
 		return "redirect:registreUser/moviments";
 	}
 
-	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
-	@ResponseBody
-	public DatatablesResponse registreUserDatatable(
-			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
-		List<BustiaDto> bustiesPermesesPerUsuari = null;
-		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
-		}
-		return DatatablesHelper.getDatatableResponse(
-				request,
-				registreService.findRegistreUser(
-						entitatActual.getId(),
-						bustiesPermesesPerUsuari,
-						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						false,
-						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id",
-				SESSION_ATTRIBUTE_SELECCIO);
-	}
+
 	
 	@RequestMapping(value = "/moviments/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -196,12 +201,12 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				registreService.findRegistreUser(
+				registreService.findRegistre(
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
 						true,
-						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+						DatatablesHelper.getPaginacioDtoFromRequest(request), false),
 				"id",
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
@@ -284,12 +289,12 @@ public class RegistreUserController extends BaseUserController {
 				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 			}
 			PaginaDto<ContingutDto> pagina = 
-				registreService.findRegistreUser(
+				registreService.findRegistre(
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
 						false,
-						paginacioParams);
+						paginacioParams, false);
 			// Posa les dades dels registres al model segons la consulta
 			if (!pagina.getContingut().isEmpty()) {
 				registre = pagina.getContingut().get(0);
@@ -422,10 +427,11 @@ public class RegistreUserController extends BaseUserController {
 				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
 			}
 			seleccio.addAll(
-					bustiaService.findIdsAmbFiltre(
+					registreService.findRegistreIds(
 							entitatActual.getId(),
 							bustiesUsuari,
-							RegistreFiltreCommand.asDto(filtreCommand)));
+							RegistreFiltreCommand.asDto(filtreCommand),
+							false));
 		}
 		return seleccio.size();
 	}

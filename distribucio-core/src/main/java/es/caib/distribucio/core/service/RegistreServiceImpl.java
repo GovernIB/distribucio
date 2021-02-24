@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutDto;
 import es.caib.distribucio.core.api.dto.ArxiuContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
@@ -82,7 +80,6 @@ import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
-import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -103,7 +100,6 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
-import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -154,8 +150,6 @@ public class RegistreServiceImpl implements RegistreService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
-	@Autowired
-	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	
 	
 	@Resource
@@ -269,158 +263,18 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 
-	@Transactional(readOnly = true)
-	@Override
-	public PaginaDto<RegistreDto> findRegistreAdmin(
-			Long entitatId,
-			AnotacioRegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) {
-		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
-				"entitatId=" + entitatId + ", " +
-				"filtre=" + filtre + ", " +
-				"paginacioParams=" + paginacioParams + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		Date dataInici = filtre.getDataCreacioInici();
-		if (dataInici != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataInici);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			cal.set(Calendar.MILLISECOND, 0);
-			dataInici = cal.getTime();
-		}
-		Date dataFi = filtre.getDataCreacioFi();
-		if (dataFi != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataFi);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			cal.set(Calendar.SECOND, 59);
-			cal.set(Calendar.MILLISECOND, 999);
-			dataFi = cal.getTime();
-		}
-		
-		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
-
-		logger.debug(">>> Filtre: " + filtre);
-		Page<RegistreEntity> registres = registreRepository.findByFiltrePaginat(
-				entitat, 
-				(filtre.getNom() == null || filtre.getNom().isEmpty()),
-				filtre.getNom() != null ? filtre.getNom().trim() : "",
-				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
-				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : "",
-				(unitat == null),
-				unitat,
-				(filtre.getBustia() == null),
-				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
-				(dataInici == null),
-				dataInici,
-				(dataFi == null),
-				dataFi,
-				(filtre.getEstat() == null),
-				filtre.getEstat(),
-				filtre.isNomesAmbErrors(),
-				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
-				filtre.getBackCodi() != null? filtre.getBackCodi().trim() : "",
-				paginacioHelper.toSpringDataPageable(paginacioParams));
-		return paginacioHelper.toPaginaDto(
-				registres,
-				RegistreDto.class,
-				new Converter<RegistreEntity, RegistreDto>() {
-					@Override
-					public RegistreDto convert(RegistreEntity source) {
-						return (RegistreDto)contingutHelper.toContingutDto(
-								source,
-								false,
-								false,
-								false,
-								false,
-								true,
-								false,
-								true);
-					}
-				});
-	}
-	
-	
-	@Transactional(readOnly = true)
-	@Override
-	public List<Long> findRegistreAdminIdsAmbFiltre(
-			Long entitatId,
-			AnotacioRegistreFiltreDto filtre) {
-		logger.debug("Consulta d'anotacions de registre per usuari admin (" +
-				"entitatId=" + entitatId + ", " +
-				"filtre=" + filtre  +  ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		Date dataInici = filtre.getDataCreacioInici();
-		if (dataInici != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataInici);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			cal.set(Calendar.MILLISECOND, 0);
-			dataInici = cal.getTime();
-		}
-		Date dataFi = filtre.getDataCreacioFi();
-		if (dataFi != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dataFi);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			cal.set(Calendar.SECOND, 59);
-			cal.set(Calendar.MILLISECOND, 999);
-			dataFi = cal.getTime();
-		}
-		
-		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
-		
-		logger.debug(">>> Filtre: " + filtre);
-		List<Long> registres = registreRepository.findIdsByFiltre(
-				entitat, 
-				(filtre.getNom() == null || filtre.getNom().isEmpty()),
-				filtre.getNom() != null? filtre.getNom().trim() : "",
-				(filtre.getNumeroOrigen() == null) || filtre.getNumeroOrigen().isEmpty(),
-				filtre.getNumeroOrigen() != null? filtre.getNumeroOrigen().trim() : "",
-				(unitat == null),
-				unitat,
-				(filtre.getBustia() == null),
-				(filtre.getBustia() != null ? Long.parseLong(filtre.getBustia()) : null),
-				(dataInici == null),
-				dataInici,
-				(dataFi == null),
-				dataFi,
-				(filtre.getEstat() == null),
-				filtre.getEstat(),
-				filtre.isNomesAmbErrors(),
-				(filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty()),
-				filtre.getBackCodi() != null? filtre.getBackCodi().trim() : "");
-		return registres;
-	}
-
-	
 
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<ContingutDto> findRegistreUser(
+	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
 			boolean onlyAmbMoviments,
-			PaginacioParamsDto paginacioParams) {
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) {
 		
-		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser"));
-		Timer.Context contextTotal = timerTotal.time();
-
+		Timer.Context contextTotal  = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistre")).time();
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -432,7 +286,7 @@ public class RegistreServiceImpl implements RegistreService {
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
-					true);
+					!isAdmin);
 		}
 		String bustiesIds="";
 			
@@ -444,8 +298,9 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		} else if (bustia != null) {	
 			busties.add(bustia.getId());
+		} else {
+			busties = null;
 		}
-		
 
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
@@ -459,92 +314,87 @@ public class RegistreServiceImpl implements RegistreService {
 				new String[] {"darrerMoviment.comentari"});
 		Page<RegistreEntity> pagina;
 		
-		// Hibernate doesn't support empty collection as parameter in database query so if busties is empty we dont execute query but just create a new empty pagina 
-		if (bustia == null && busties.isEmpty()) {
-			pagina = new PageImpl<RegistreEntity>(new ArrayList<RegistreEntity>());
-		} else {
 			
-			boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
-			boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
-			Boolean enviatPerEmail = null;
-			if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-				if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
-					enviatPerEmail = true;
-				} else {
-					enviatPerEmail = false;
-				}
-			}
-			
-			String tipusFisicaCodi = null;
-			if (filtre.getTipusDocFisica() != null) {
-				tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
-			}
-			
-			
-			Date dataRecepcioFi = filtre.getDataRecepcioFi();
-			if (dataRecepcioFi != null) {
-				Calendar c = new GregorianCalendar();
-				c.setTime(dataRecepcioFi);
-				c.add(Calendar.HOUR, 24);
-				dataRecepcioFi = c.getTime();
-			}
-			logger.info("Consultant el contingut de l'usuari ("
-					+ "entitatId=" + entitatId + ", "
-					+ "bustiaId=" + filtre.getBustia() + ", "
-					+ "numero=" + filtre.getNumero() + ", "
-					+ "titol=" + filtre.getTitol() + ", "
-					+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
-					+ "remitent=" + filtre.getRemitent() + ", "
-					+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
-					+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
-					+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
-					+ "interessat=" + filtre.getInteressat() + ", " 
-					+ "bustiesIds= " + bustiesIds + ", " 
-					+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
-
-			final Timer timerTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre"));
-			Timer.Context contextTotalfindRegistreByPareAndFiltre = timerTotalfindRegistreByPareAndFiltre.time();
-			long beginTime = new Date().getTime();
-			try {
-				pagina = registreRepository.findRegistreByPareAndFiltre(
-						busties,
-						StringUtils.isEmpty(filtre.getNumero()),
-						filtre.getNumero() != null ? filtre.getNumero() : "",
-						StringUtils.isEmpty(filtre.getTitol()),
-						filtre.getTitol() != null ? filtre.getTitol() : "",
-						filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
-						filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
-						filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
-						filtre.getRemitent() != null ? filtre.getRemitent() : "",
-						(filtre.getDataRecepcioInici() == null),
-						filtre.getDataRecepcioInici(),
-						(dataRecepcioFi == null),
-						dataRecepcioFi,
-						esProcessat,
-						esPendent,
-						filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
-						filtre.getInteressat() != null ? filtre.getInteressat() : "",
-						enviatPerEmail == null,
-						enviatPerEmail,
-						tipusFisicaCodi == null,
-						tipusFisicaCodi,
-						onlyAmbMoviments,
-						paginacioHelper.toSpringDataPageable(paginacioParams,
-								mapeigOrdenacio));
-				contextTotalfindRegistreByPareAndFiltre.stop();
-				long endTime = new Date().getTime();
-				logger.info("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
-			} catch (Exception e) {
-				long endTime = new Date().getTime();
-				logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
-				contextTotalfindRegistreByPareAndFiltre.stop();
-				throw new RuntimeException(e);
+		Boolean enviatPerEmail = null;
+		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
+			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+				enviatPerEmail = true;
+			} else {
+				enviatPerEmail = false;
 			}
 		}
 		
-		final Timer timerTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.toPaginaDto"));
-		Timer.Context contextTotaltoPaginaDto = timerTotaltoPaginaDto.time();
+		String tipusFisicaCodi = null;
+		if (filtre.getTipusDocFisica() != null) {
+			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+		}
+		
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+		logger.info("Consultant el contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + bustiesIds + ", " 
+				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
+
+		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
+		long beginTime = new Date().getTime();
+		try {
+			pagina = registreRepository.findRegistreByPareAndFiltre(
+					busties,
+					StringUtils.isEmpty(filtre.getNumero()),
+					filtre.getNumero() != null ? filtre.getNumero().trim() : "",
+					StringUtils.isEmpty(filtre.getTitol()),
+					filtre.getTitol() != null ? filtre.getTitol().trim() : "",
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen().trim() : "",
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent() != null ? filtre.getRemitent().trim() : "",
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(dataRecepcioFi == null),
+					dataRecepcioFi,
+					esProcessat,
+					esPendent,
+					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+					filtre.getInteressat() != null ? filtre.getInteressat().trim() : "",
+					enviatPerEmail == null,
+					enviatPerEmail,
+					tipusFisicaCodi == null,
+					tipusFisicaCodi,
+					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					onlyAmbMoviments,
+					paginacioHelper.toSpringDataPageable(paginacioParams,
+							mapeigOrdenacio));
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			long endTime = new Date().getTime();
+			logger.info("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+		} catch (Exception e) {
+			long endTime = new Date().getTime();
+			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			throw new RuntimeException(e);
+		}
+		
+		
+		Timer.Context contextTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.toPaginaDto")).time();
 
 		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
 				pagina,
@@ -568,6 +418,111 @@ public class RegistreServiceImpl implements RegistreService {
 		contextTotal.stop();
 		return pag;
 	}
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findRegistreIds(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			boolean isAdmin) {
+		logger.debug("Consultant els identificadors del contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ")");
+		List<Long> ids;
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
+		Timer.Context contextTotal = timerTotal.time();
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					!isAdmin);
+		List<Long> busties = new ArrayList<Long>();
+		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
+			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+				entityComprovarHelper.comprovarBustia(
+						entitat,
+						new Long(bustiaUsuari.getId()),
+						!isAdmin);
+				busties.add(bustiaUsuari.getId());
+			}
+		} else if (bustia != null) {
+			busties.add(bustia.getId());
+		} else {
+			busties = null;
+		}
+
+		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+		Boolean enviatPerEmail = null;
+		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
+			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+				enviatPerEmail = true;
+			} else {
+				enviatPerEmail = false;
+			}
+		}
+		
+		String tipusFisicaCodi = null;
+		if (filtre.getTipusDocFisica() != null) {
+			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+		}
+
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+
+		ids = registreRepository.findRegistreIdsByPareAndFiltre(
+				busties,
+				StringUtils.isEmpty(filtre.getNumero()),
+				filtre.getNumero() != null ? filtre.getNumero() : "",
+				StringUtils.isEmpty(filtre.getTitol()),
+				filtre.getTitol() != null ? filtre.getTitol() : "",
+				filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+				filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
+				filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+				filtre.getRemitent() != null ? filtre.getRemitent() : "",
+				(filtre.getDataRecepcioInici() == null),
+				filtre.getDataRecepcioInici(),
+				(dataRecepcioFi == null),
+				dataRecepcioFi,
+				esProcessat,
+				esPendent,
+				filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+				filtre.getInteressat() != null ? filtre.getInteressat() : "",
+				enviatPerEmail == null,
+				enviatPerEmail,
+				tipusFisicaCodi == null,
+				tipusFisicaCodi);
+	
+
+		contextTotal.stop();
+		return ids;
+	}
+
+	
+	
 
 
 	@Transactional(readOnly = true)

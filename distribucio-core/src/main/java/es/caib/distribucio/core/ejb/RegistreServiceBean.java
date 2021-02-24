@@ -13,7 +13,6 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
@@ -70,26 +69,38 @@ public class RegistreServiceBean implements RegistreService {
 	
 	@Override
 	@RolesAllowed("tothom")
-	public PaginaDto<ContingutDto> findRegistreUser(
+	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			boolean onlyAmbMoviments,
-			PaginacioParamsDto paginacioParams) {
-		return delegate.findRegistreUser(
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) {
+		return delegate.findRegistre(
 				entitatId,
 				bustiesUsuari,
 				filtre,
 				onlyAmbMoviments,
-				paginacioParams);
+				paginacioParams, 
+				isAdmin);
 	}
-	@Override
-	@RolesAllowed("DIS_ADMIN")
-	public PaginaDto<RegistreDto> findRegistreAdmin(Long entitatId, AnotacioRegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		return delegate.findRegistreAdmin(entitatId, filtre, paginacioParams);
-	}	
 
+	
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<Long> findRegistreIds(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			boolean isAdmin) {
+		return delegate.findRegistreIds(
+				entitatId,
+				bustiesUsuari,
+				filtre,
+				isAdmin);
+	}
+	
 	@Override
 	@RolesAllowed("tothom")
 	public void rebutjar(
@@ -260,9 +271,5 @@ public class RegistreServiceBean implements RegistreService {
 				bustiaId);
 	}
 
-	@Override
-	@RolesAllowed("DIS_ADMIN")
-	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre) {
-		return delegate.findRegistreAdminIdsAmbFiltre(entitatId, filtre);
-	}
+
 }

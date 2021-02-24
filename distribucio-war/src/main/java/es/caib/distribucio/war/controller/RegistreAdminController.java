@@ -35,18 +35,19 @@ import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.war.command.AnotacioRegistreFiltreCommand;
+import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
-import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -59,7 +60,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 @RequestMapping("/registreAdmin")
 public class RegistreAdminController extends BaseAdminController {
 
-	private static final String SESSION_ATTRIBUTE_ANOTACIO_FILTRE = "ContingutAdminController.session.anotacio.filtre";
+	private static final String SESSION_ATTRIBUTE_FILTRE = "RegistreAdminController.session.filtre";
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreAdminController.session.seleccio";
 
 	@Autowired
@@ -77,32 +78,29 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
-		AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
-		model.addAttribute(
-				filtreCommand);
-		model.addAttribute(
-				"nomesAmbErrors",
-				filtreCommand.isNomesAmbErrors());
+		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		model.addAttribute(filtreCommand);
+
 		return "registreAdminList";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String registreAdminPost(
 			HttpServletRequest request,
-			@Valid AnotacioRegistreFiltreCommand filtreCommand,
+			@Valid RegistreFiltreCommand registreFiltreCommand,
 			BindingResult bindingResult,
 			@RequestParam(value = "accio", required = false) String accio,
 			Model model) {
 		if ("netejar".equals(accio)) {
 			RequestSessionHelper.esborrarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_ANOTACIO_FILTRE);
+					SESSION_ATTRIBUTE_FILTRE);
 		} else {
 			if (!bindingResult.hasErrors()) {
 				RequestSessionHelper.actualitzarObjecteSessio(
 						request,
-						SESSION_ATTRIBUTE_ANOTACIO_FILTRE,
-						filtreCommand);
+						SESSION_ATTRIBUTE_FILTRE,
+						registreFiltreCommand);
 			}
 		}
 		return "redirect:registreAdmin";
@@ -113,13 +111,22 @@ public class RegistreAdminController extends BaseAdminController {
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
+		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		
+		List<BustiaDto> busties = null;
+		if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
+			busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
+		}
+		
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				registreService.findRegistreAdmin(
+				registreService.findRegistre(
 						entitatActual.getId(),
-						AnotacioRegistreFiltreCommand.asDto(filtreCommand),
-						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+						busties,
+						RegistreFiltreCommand.asDto(filtreCommand),
+						false,
+						DatatablesHelper.getPaginacioDtoFromRequest(request), 
+						true),
 				"id",
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
@@ -199,11 +206,18 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		} else {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			AnotacioRegistreFiltreCommand filtreCommand = getAnotacioRegistreFiltreCommand(request);
+			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+			List<BustiaDto> busties = null;
+			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
+				busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
+			}
+			
 			seleccio.addAll(
-					registreService.findRegistreAdminIdsAmbFiltre(
+					registreService.findRegistreIds(
 							entitatActual.getId(),
-							AnotacioRegistreFiltreCommand.asDto(filtreCommand)));
+							busties,
+							RegistreFiltreCommand.asDto(filtreCommand),
+							true));
 		}
 		return seleccio.size();
 	}
@@ -233,6 +247,18 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return seleccio.size();
 	}		
+	
+	
+	@RequestMapping(value = "/busties", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> busties(
+			HttpServletRequest request,
+			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return bustiaService.findBusties(entitatActual.getId(), mostrarInactives);
+	}
+	
 	
 	
 	/** Estats que permeten el reprocessament */
@@ -383,17 +409,21 @@ public class RegistreAdminController extends BaseAdminController {
 		return bustiesFinals;
 	}
 
-	private AnotacioRegistreFiltreCommand getAnotacioRegistreFiltreCommand(
+
+	
+	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
-		AnotacioRegistreFiltreCommand filtreCommand = (AnotacioRegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+		RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
 				request,
-				SESSION_ATTRIBUTE_ANOTACIO_FILTRE);
+				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
-			filtreCommand = new AnotacioRegistreFiltreCommand();
+			filtreCommand = new RegistreFiltreCommand();
+			filtreCommand.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
-					SESSION_ATTRIBUTE_ANOTACIO_FILTRE,
+					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
+			filtreCommand.setMostrarInactives(false);
 		}
 		return filtreCommand;
 	}

@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.distribucio.core.api.dto.AnotacioRegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
@@ -92,42 +91,34 @@ public interface RegistreService {
 			String motiu) throws NotFoundException;
 	
 	/**
-	 * Consulta el contingut pendent a dins múltiples bústies.
+	 * Consulta el registre
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
 	 * @param filtre del datatable
+	 * @param isAdmin 
 	 * @return El contingut pendent.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public PaginaDto<ContingutDto> findRegistreUser(
+	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			boolean onlyAmbMoviments,
-			PaginacioParamsDto paginacioParams) throws NotFoundException;
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) throws NotFoundException;
 	
-	/**
-	 * Obté una llista d'anotacions de registre donades d'alta dins DISTRIBUCIO
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param filtre
-	 *            El filtre de la consulta.
-	 * @param paginacioParams
-	 *            Paràmetres per a dur a terme la paginació del resultats.
-	 * @return Una pàgina amb els continguts trobats.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
-	public PaginaDto<RegistreDto> findRegistreAdmin(
+
+	@PreAuthorize("hasRole('tothom')")
+	List<Long> findRegistreIds(
 			Long entitatId,
-			AnotacioRegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException;	
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			boolean isAdmin);
 	
+
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
 	 * 
@@ -345,7 +336,5 @@ public interface RegistreService {
 			Long entitatId,
 			Long bustiaId);
 
-	@PreAuthorize("hasRole('DIS_ADMIN')")
-	public List<Long> findRegistreAdminIdsAmbFiltre(Long entitatId, AnotacioRegistreFiltreDto filtre);
 
 }

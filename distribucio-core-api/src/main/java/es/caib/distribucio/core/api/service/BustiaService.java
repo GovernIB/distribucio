@@ -211,23 +211,6 @@ public interface BustiaService {
 
 
 
-	/**
-	 * Consulta els identificadors del contingut pendent d'una bústia per filtre. Serveix per obtenir els ID's quan
-	 * se seleccionin tots els elements.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param filtre del datatable
-	 * @param paginacioParamsDto 
-	 * 
-	 * @return Els identificadors del contingut pendent.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public List<Long> findIdsAmbFiltre(
-			Long entitatId,
-			List<BustiaDto> bustiesUsuari,
-			RegistreFiltreDto filtre);
-
 
 
 	/**
@@ -378,5 +361,10 @@ public interface BustiaService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public boolean isBustiaReadPermitted(Long bustiaId);
+	
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	List<BustiaDto> findBusties(
+			Long entitatId,
+			boolean mostrarInactives);
 
 }

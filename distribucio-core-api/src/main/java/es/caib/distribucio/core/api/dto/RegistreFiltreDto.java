@@ -30,7 +30,15 @@ public class RegistreFiltreDto implements Serializable {
 	private RegistreTipusDocFisicaEnumDto tipusDocFisica;
 	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 
+	private String backCodi;
 
+	
+	public String getBackCodi() {
+		return backCodi;
+	}
+	public void setBackCodi(String backCodi) {
+		this.backCodi = backCodi;
+	}
 	public RegistreEnviatPerEmailEnumDto getRegistreEnviatPerEmailEnum() {
 		return registreEnviatPerEmailEnum;
 	}
