@@ -1183,10 +1183,10 @@ tr.clicable {
 						<spring:message code="registre.detalls.info.errors"/> 
 						<c:if test="${isRolActualAdministrador}">
 							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
-								<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
+								<a href="../../registreAdmin/${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
 							</c:if>
 							<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
-								<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+								<a href="../../registreAdmin/${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 							</c:if>
 						</c:if>
 					</div>

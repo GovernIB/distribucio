@@ -267,6 +267,66 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreProcesEstatEnum.REGLA_PENDENT,
 			RegistreProcesEstatEnum.BACK_PENDENT
 	};
+	
+	
+	
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	public String reintentar(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		boolean processatOk = registreService.reintentarProcessamentAdmin(
+				entitatActual.getId(),
+				bustiaId,
+				registreId);
+		if (processatOk) {
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.reintentat.ok",
+							null));
+		} else {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.reintentat.error",
+							null));
+		}
+		return "redirect:../../../" + registreId + "/detall";
+	}
+	
+	
+	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+					bustiaId,
+					registreId);
+			if (processatOk) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.ok",
+								null));
+			} else {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.registre.reintentat.error",
+								null));
+			}
+
+
+
+		return "redirect:../../../" + registreId + "/detall";
+	}
+	
+	
 	/** Mèdode per reprocessar una selecció d'anotacions de registre des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request
