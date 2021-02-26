@@ -283,15 +283,6 @@ public class RegistreHelper {
 			}
 		}
 		
-		List<String> params = new ArrayList<>();
-		params.add(registreEntity.getNom());
-		params.add(null);
-		
-		contingutLogHelper.log(
-				registreEntity,
-				LogTipusEnumDto.CREACIO,
-				params,
-				false);
 		contextsaveAnnexos.stop();
 		
 		

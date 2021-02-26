@@ -41,6 +41,7 @@ import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -516,6 +517,13 @@ public class ContingutController extends BaseUserController {
 		switch(log.getTipus()) {
 		case CREACIO:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParams().get(0)}));
+			
+			if (log.getContingutMoviment() != null) {
+				if (log.getContingutMoviment().getDesti() != null) {
+					sb.append(" " + this.getMessage(request, "contingut.log.resum.msg.iEsPosaALaBustia", new Object[] {log.getContenidorMoviment().getDesti().getNom()}));
+				}
+			}
+			
 			break;
 		case MOVIMENT:
 		case REENVIAMENT:
@@ -543,7 +551,34 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.distribucio"));
 			break;
 		case REGLA_APLICAR:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.reglaAplicar", new Object[] {log.getParams().get(0), log.getParams().get(1)}));
+			
+			String reglaTipus = null;
+			if (log.getParams().get(1).equals(ReglaTipusEnumDto.BUSTIA.toString())) {
+				reglaTipus = getMessage(request, "regla.tipus.enum.BUSTIA");
+			} else if (log.getParams().get(1).equals(ReglaTipusEnumDto.UNITAT.toString())) {
+				reglaTipus = getMessage(request, "regla.tipus.enum.UNITAT");
+			} else if (log.getParams().get(1).equals(ReglaTipusEnumDto.BACKOFFICE.toString())) {
+				reglaTipus = getMessage(request, "regla.tipus.enum.BACKOFFICE");
+			}
+			
+			sb.append(getMessage(request, "contingut.log.resum.msg.reglaAplicar", new Object[] {log.getParams().get(0), reglaTipus}));
+
+			if (log.getContingutMoviment() != null) {
+				
+				String msg = getMessage(request, "contingut.log.resum.msg.reenviar");
+				msg = msg.substring(0, 1).toLowerCase() + msg.substring(1);
+				sb.append(": " + msg);
+//				if (log.getContingutMoviment().getOrigen() != null) {
+//					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
+//					sb.append(log.getContenidorMoviment().getOrigen().getNom()).append("\"");
+//				}
+				if (log.getContingutMoviment().getDesti() != null) {
+					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
+					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+				}
+			}
+			
+			
 			break;
 		case BACK_REBUDA:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));

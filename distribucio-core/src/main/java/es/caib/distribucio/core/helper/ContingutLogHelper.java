@@ -129,6 +129,25 @@ public class ContingutLogHelper {
 				null,
 				logContingutPare);
 	}
+	
+	
+	public ContingutLogEntity logAccioWithMovimentAndParams(
+			ContingutEntity contingut,
+			LogTipusEnumDto tipus,
+			ContingutMovimentEntity contingutMoviment,
+			boolean logContingutPare,
+			List<String> params) {
+		return log(
+				contingut,
+				tipus,
+				contingutMoviment,
+				null,
+				null,
+				null,
+				params,
+				logContingutPare);
+	}
+	
 
 	public List<ContingutLogDto> findLogsContingut(
 			ContingutEntity contingut) {
@@ -142,12 +161,6 @@ public class ContingutLogHelper {
 		}
 		return dtos;
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 

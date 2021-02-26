@@ -68,7 +68,9 @@ $(document).ready(function() {
 							$('div.log-info-accio', $newTd).remove();
 						}
 						if (data.contingutMoviment != null) {
-							$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origen.id + "] " + data.contingutMoviment.origen.nom);
+							if (data.contingutMoviment.origen != null) {
+								$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origen.id + "] " + data.contingutMoviment.origen.nom);
+							}
 							$('td.log-info-moviment-desti', $newTd).text("[#" + data.contingutMoviment.desti.id + "] " + data.contingutMoviment.desti.nom);
 						} else {
 							$('div.log-info-moviment', $newTd).remove();

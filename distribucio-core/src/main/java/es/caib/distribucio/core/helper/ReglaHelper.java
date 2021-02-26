@@ -348,15 +348,21 @@ public class ReglaHelper {
 					bustiaDesti = regla.getBustiaDesti();
 				}
 				
+				// ------ log -----------
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 						registre,
 						bustiaDesti,
 						null);
-				contingutLogHelper.logMoviment(
+				List<String> params = new ArrayList<>();
+				params.add(regla.getNom());
+				params.add(regla.getTipus().toString());
+				contingutLogHelper.logAccioWithMovimentAndParams(
 						registre,
-						LogTipusEnumDto.MOVIMENT,
+						LogTipusEnumDto.REGLA_APLICAR,
 						contingutMoviment,
-						true);
+						true,
+						params);
+				
 				
 				
 				// ------- change anotacio to next state -------- 
@@ -372,17 +378,7 @@ public class ReglaHelper {
 				
 				
 				
-				
-				// ------ log and evict -----------
-				List<String> params = new ArrayList<>();
-				params.add(regla.getNom());
-				params.add(regla.getTipus().toString());
-				contingutLogHelper.log(
-						registre,
-						LogTipusEnumDto.REGLA_APLICAR,
-						params,
-						false);
-
+				// ------ evict -----------
 				BustiaEntity pendentBustia = null;
 				if (registre.getPare() instanceof BustiaEntity) {
 					pendentBustia = (BustiaEntity) registre.getPare();
