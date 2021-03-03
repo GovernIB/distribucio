@@ -14,6 +14,7 @@ import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
@@ -335,6 +336,12 @@ public interface RegistreService {
 	public List<ProcedimentDto> classificarFindProcediments(
 			Long entitatId,
 			Long bustiaId);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public List<HistogramPendentsEntryDto> getHistogram();
+
+	@PreAuthorize("hasRole('tothom')")
+	public int getNumberThreads();
 
 
 }

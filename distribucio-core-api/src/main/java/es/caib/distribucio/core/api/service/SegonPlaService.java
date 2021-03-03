@@ -44,5 +44,7 @@ public interface SegonPlaService {
 
 	void backofficeSistra();
 
+	void addNewEntryToHistogram();
+
 	
 }

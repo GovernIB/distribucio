@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.namespace.QName;
 
@@ -27,10 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
-import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
 import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
@@ -42,9 +43,11 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
+import es.caib.distribucio.core.helper.HistogramPendentsHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
+import es.caib.distribucio.core.helper.WorkerThread;
 import es.caib.distribucio.core.helper.WsClientHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -71,6 +74,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private MetricRegistry metricRegistry;
 	@Autowired
 	private RegistreRepository registreRepository;
+	@Autowired
+	private HistogramPendentsHelper historicsPendentHelper;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -82,11 +87,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio}")
 	public void guardarAnotacionsPendentsEnArxiu() {
 
-		long startTime = new Date().getTime();
-
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
-			logger.trace("Execució de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu");
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
+			int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
 			
 			List<RegistreEntity> pendents;
 			// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
@@ -94,36 +97,37 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				pendents = registreHelper.findGuardarAnnexPendents(maxReintents);
 			}
 			if (pendents != null && !pendents.isEmpty()) {
-				Exception excepcio = null;
+				
+				long startTime = new Date().getTime();
+				ExecutorService executor = Executors.newFixedThreadPool(maxThreadsParallel);
 				for (RegistreEntity pendent : pendents) {
 
-					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "guardarAnotacionsPendentsEnArxiu"));
-					Timer.Context context = timer.time();
-					try {
-						logger.debug("Processant anotacio pendent de guardar a l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + ")");
-						excepcio = registreHelper.processarAnotacioPendentArxiu(pendent.getId());
-					} catch (NotFoundException e) {
-						if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
-							excepcio = null;
-						}
-					} catch (Exception e) {
-						excepcio = e;
-					} finally {
-						if (excepcio != null)
-							logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + pendent.getId() + ", pendentNom=" + pendent.getNom() + "): " + excepcio.getMessage(), excepcio);
-					}
-					context.stop();
-
+					Runnable worker = new WorkerThread(pendent.getId(), registreHelper);
+					executor.execute(worker);
 				}
-			} else {
-				logger.trace("No hi ha anotacions amb annexos pendents de guardar a l'arxiu");
+				
+		        executor.shutdown();
+		        while (!executor.isTerminated()) {
+		        }
+		        long stopTime = new Date().getTime();
+				logger.info("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");
+				
 			}
-			
-			long stopTime = new Date().getTime();
-			logger.trace("Fi de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu " + (stopTime - startTime) + "ms");
 
 		}
 	}
+	
+	@Override
+	@Scheduled(fixedDelayString = "60000")
+	public void addNewEntryToHistogram() {
+
+		int maxReintents = getGuardarAnnexosMaxReintentsProperty();
+		int pendentsArxiu = registreHelper.findGuardarAnnexPendents(maxReintents).size();
+		
+		historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
+
+	}
+	
 
 	@Override
 	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio}")
@@ -445,6 +449,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			return 0;
 		}
 	}
+	
+
 
 	private int getAplicarReglesMaxReintentsProperty() {
 		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.aplicar.regles.max.reintents");

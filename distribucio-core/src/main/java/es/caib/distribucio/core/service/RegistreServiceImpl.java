@@ -40,6 +40,7 @@ import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioRe
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -86,6 +87,7 @@ import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
+import es.caib.distribucio.core.helper.HistogramPendentsHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
@@ -150,12 +152,20 @@ public class RegistreServiceImpl implements RegistreService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
-	
-	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
+	@Autowired
+	private HistogramPendentsHelper historicsPendentHelper;
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<HistogramPendentsEntryDto> getHistogram() {
+		return historicsPendentHelper.getAll();
+	}
+	
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -1120,8 +1130,14 @@ public class RegistreServiceImpl implements RegistreService {
 				RegistreAnnexDto.class);
 		return annex;
 	}
+	
 
-
+	@Transactional(readOnly = true)
+	@Override
+	public int getNumberThreads() {
+		return registreHelper.getMaxThreadsParallelProperty();
+	}
+	
 
 	@Transactional(readOnly = true)
 	@Override

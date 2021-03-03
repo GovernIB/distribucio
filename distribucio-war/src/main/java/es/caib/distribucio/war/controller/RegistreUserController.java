@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
@@ -94,6 +95,13 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
+		
+//		List<HistogramEntryDto> histogram = registreService.getHistogram();
+//		for (HistogramEntryDto histogramEntryDto : histogram) {
+//			logger.info(histogramEntryDto.toString());
+//		}
+		
+		
 		return "registreUserList";
 	}
 
@@ -490,6 +498,32 @@ public class RegistreUserController extends BaseUserController {
 
 		return "metrics";
 	}
+	
+	
+	
+	@RequestMapping(value = "/anotacionsPendentArxiu", method = RequestMethod.GET)
+	public String anotacionsPendentArxiu(
+			HttpServletRequest request,
+			Model model) throws IOException {
+		
+		model.addAttribute("numberThreads", registreService.getNumberThreads());
+
+		return "histogramPendents";
+	}
+	
+	
+	@RequestMapping(value = "/getHistogramPendents", method = RequestMethod.GET)
+	@ResponseBody
+	public List<HistogramPendentsEntryDto> expedientsEntitatChartData(HttpServletRequest request) {
+		
+		List<HistogramPendentsEntryDto> histogram = registreService.getHistogram();
+//		for (HistogramEntryDto histogramEntryDto : histogram) {
+//			logger.info(histogramEntryDto.toString());
+//		}
+
+		return histogram;
+	}
+	
 	
 
 	@RequestMapping(value = "/netejar", method = RequestMethod.GET)

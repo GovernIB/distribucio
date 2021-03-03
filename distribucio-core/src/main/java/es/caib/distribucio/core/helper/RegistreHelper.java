@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -118,7 +119,9 @@ public class RegistreHelper {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
-	
+	@Autowired
+	private HistogramPendentsHelper historicsPendentHelper;
+
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -390,6 +393,49 @@ public class RegistreHelper {
 		}
 		return firmes;
 	}
+	
+	
+	@Transactional
+	public void processarAnotacioPendentArxiuInThreadExecuto(Long registreId) {
+		
+//    	logger.info(Thread.currentThread().getName() + " START = " + registreId);
+    	
+		Timer.Context context = metricRegistry.timer(MetricRegistry.name(WorkerThread.class, "processarAnotacioPendentArxiu")).time();
+		logger.info("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
+		
+		long startTime = new Date().getTime();
+    	
+    	Exception excepcio = null;
+        try {
+			excepcio = processarAnotacioPendentArxiu(registreId);
+//        	Thread.sleep(10000);	
+		} catch (NotFoundException e) {
+			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
+				excepcio = null;
+			}
+		} catch (Exception e) {
+			excepcio = e;
+		} finally {
+			
+			long stopTime = new Date().getTime();
+			
+			if (excepcio == null){
+				historicsPendentHelper.addHistogramProcessat(stopTime - startTime);
+				
+			} else {
+				historicsPendentHelper.addHistogramError();
+				logger.error("Error processant l'anotacio pendent de l'arxiu (pendentId=" + registreId +  "): " + excepcio.getMessage(), excepcio);
+			}
+				
+		}
+		context.stop();
+    	
+//        logger.info(Thread.currentThread().getName() + " END = " + registreId);
+		
+
+	}
+	
+	
 
 
 	@Transactional
@@ -485,6 +531,7 @@ public class RegistreHelper {
 			// check if registre is not already created in arxiu
 			if (registreEntity.getExpedientArxiuUuid() == null) {
 				logger.debug("Creant contenidor pels annexos de l'anotació (" +
+						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 				try {
@@ -495,6 +542,7 @@ public class RegistreHelper {
 							unitatOrganitzativaCodi);
 					registreEntity.updateExpedientArxiuUuid(uuidExpedient);
 					logger.debug("Creat el contenidor a l'Arxiu per l'anotació (" +
+							"anotacioId=" + registreEntity.getId() + ", " +
 							"anotacioNumero=" + registreEntity.getNumero() + ", " +
 							"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
 					
@@ -507,12 +555,14 @@ public class RegistreHelper {
 			} else {
 				uuidExpedient = registreEntity.getExpedientArxiuUuid();
 				logger.debug("L'anotació (" +
+						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") ja estava a l'Arxiu amb uuid " + uuidExpedient);
 			}
 			
 			if (uuidExpedient != null) {
 				logger.debug("Guardant " + registreEntity.getAnnexos().size() + " annexos de l'anotació (" +
+						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
 				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
@@ -522,6 +572,7 @@ public class RegistreHelper {
 						// Només crea l'annex a dins el contenidor si encara no s'ha creat
 						if (annex.getFitxerArxiuUuid() == null) {
 							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
+									"anotacioId=" + registreEntity.getId() + ", " +
 									"anotacioNumero=" + registreEntity.getNumero() + ", " +
 									"annexTitol=" + annex.getTitol() + ", " +
 									"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
@@ -590,6 +641,7 @@ public class RegistreHelper {
 			return exception;
 		} else {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
+					"anotacioId=" + registreEntity.getId() + ", " +
 					"anotacioNumero=" + registreEntity.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 			
@@ -937,6 +989,15 @@ public class RegistreHelper {
 	}
 	
 	
+	public int getMaxThreadsParallelProperty() {
+		String maxThreadsParallel = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.threads.parallel");
+		if (maxThreadsParallel != null) {
+			return Integer.parseInt(maxThreadsParallel);
+		} else {
+			return 5;
+		}
+	}
+	
 
 	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 
@@ -1232,4 +1293,6 @@ public class RegistreHelper {
 	public List<RegistreEntity> findPendentsTancarArxiu(Date date) {
 		return registreRepository.findPendentsTancarArxiu(date);
 	}
+	
+	
 }
