@@ -268,7 +268,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,

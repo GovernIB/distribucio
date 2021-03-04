@@ -4,7 +4,7 @@
 	$.webutilDatatable = function(element, options) {
 		var defaults = {
 			pageLength: 10,
-			lengthMenu: [10, 20, 50],
+			lengthMenu: [10, 20, 50, 100],
 			infoEnabled: true,
 			infoType: 'botons', // 'botons', 'search'
 			searchEnabled: true,
@@ -198,6 +198,7 @@
 					}
 				},
 				drawCallback: function(settings_) {
+					
 					if ($.fn.webutilModalEval)
 						$(this).closest('.dataTables_wrapper').webutilModalEval();
 					if ($.fn.webutilConfirmEval)
@@ -298,6 +299,8 @@
 							return false;
 						});
 					}
+
+					
 				}
 			}
 			// Configuració de les columnes
@@ -399,6 +402,23 @@
 						});
 				});
 			}
+			// this is for the case when user is on last page of table and his action cause that all elements disappear from this last page, 
+			// because in some of the actions pagination state is kept, it will leave user on empty page, so we have to redirect to the last page 
+			// that has any records
+			$taula.on('draw.dt', function () {
+				
+				var info = $taula.dataTable().api().page.info();
+				var oTable = $taula.dataTable();
+				if(info.start != 0 && info.start == info.recordsTotal){
+					  setTimeout(function() {
+						  	 oTable.fnPageChange(info.pages-1);
+						  	// $taula.dataTable().fnDraw();
+						  	// location.reload();
+					  }, 2000);
+				}
+			});
+			
+			
 			// Configuració de la paginació
 			if (plugin.settings.pagingEnabled) {
 				if (plugin.settings.pagingStyle == 'page') {
@@ -643,7 +663,8 @@
 			if (serverParams) {
 				plugin.serverParams = serverParams;
 			}
-			$taula.dataTable().fnDraw();
+			$taula.dataTable().fnDraw(false);
+			
 		};
 		plugin.refreshUrl = function(url) {
 			$taula.dataTable().api().ajax.url(url).load();
