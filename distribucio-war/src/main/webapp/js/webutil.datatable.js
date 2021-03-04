@@ -409,7 +409,7 @@
 				
 				var info = $taula.dataTable().api().page.info();
 				var oTable = $taula.dataTable();
-				if(info.start != 0 && info.start == info.recordsTotal){
+				if(info.start != 0 && info.start >= info.recordsTotal){
 					  setTimeout(function() {
 						  	 oTable.fnPageChange(info.pages-1);
 						  	// $taula.dataTable().fnDraw();
