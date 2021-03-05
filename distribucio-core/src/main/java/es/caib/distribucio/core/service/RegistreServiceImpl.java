@@ -1535,6 +1535,65 @@ public class RegistreServiceImpl implements RegistreService {
 				break;	
 			case ALTRES:
 				ntiTipoDocumento = NtiTipoDocumento.ALTRES;
+				break;
+			case COMPAREIXENSA:
+				ntiTipoDocumento = NtiTipoDocumento.COMPAREIXENSA;
+				break;
+			case CONVOCATORIA:
+				ntiTipoDocumento = NtiTipoDocumento.CONVOCATORIA;
+				break;
+			case DICTAMEN_COMISSIO:
+				ntiTipoDocumento = NtiTipoDocumento.DICTAMEN_COMISSIO;
+				break;
+			case ESCRIT:
+				ntiTipoDocumento = NtiTipoDocumento.ESCRIT;
+				break;
+			case ESQUEMA:
+				ntiTipoDocumento = NtiTipoDocumento.ESMENA;
+				break;
+			case INFORME_PONENCIA:
+				ntiTipoDocumento = NtiTipoDocumento.INFORME_PONENCIA;
+				break;
+			case INICIATIVA_LEGISLATIVA:
+				ntiTipoDocumento = NtiTipoDocumento.INICIATIVA_LEGISLATIVA;
+				break;
+			case INICIATIVA__LEGISLATIVA:
+				ntiTipoDocumento = NtiTipoDocumento.INICIATIVA__LEGISLATIVA;
+				break;
+			case INSTRUCCIO:
+				ntiTipoDocumento = NtiTipoDocumento.INSTRUCCIO;
+				break;
+			case INTERPELACIO:
+				ntiTipoDocumento = NtiTipoDocumento.INTERPELACIO;
+				break;
+			case LLEI:
+				ntiTipoDocumento = NtiTipoDocumento.LLEI;
+				break;
+			case MOCIO:
+				ntiTipoDocumento = NtiTipoDocumento.MOCIO;
+				break;
+			case ORDRE_DIA:
+				ntiTipoDocumento = NtiTipoDocumento.ORDRE_DIA;
+				break;
+			case PETICIO:
+				ntiTipoDocumento = NtiTipoDocumento.PETICIO;
+				break;
+			case PREGUNTA:
+				ntiTipoDocumento = NtiTipoDocumento.PREGUNTA;
+				break;
+			case PROPOSICIO_NO_LLEI:
+				ntiTipoDocumento = NtiTipoDocumento.PROPOSICIO_NO_LLEI;
+				break;
+			case PROPOSTA_RESOLUCIO:
+				ntiTipoDocumento = NtiTipoDocumento.PROPOSTA_RESOLUCIO;
+				break;
+			case RESPOSTA:
+				ntiTipoDocumento = NtiTipoDocumento.RESPOSTA;
+				break;
+			case SOLICITUD_INFORMACIO:
+				ntiTipoDocumento = NtiTipoDocumento.SOLICITUD_INFORMACIO;
+				break;
+			default:
 				break;	
 			}
 		}	

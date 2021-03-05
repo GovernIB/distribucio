@@ -30,5 +30,24 @@ public enum DocumentNtiTipoDocumentalEnumDto {
 	TD18, // Comunicació ciutadà
 	TD19, // Factura
 	TD20, // Altres incautats
-	TD99  // Altres
+	TD99, // Altres
+	TD51, // Llei
+	TD52, // Moció
+	TD53, // Instrucció
+	TD54, // Convocatòria
+	TD55, // Ordre del dia
+	TD56, // Informe ponència
+	TD57, // Dictamen de comissió
+	TD58, // Inciativa legilativa
+	TD59, // Pregunta
+	TD60, // Interpel·lació
+	TD61, // Resposta
+	TD62, // Proposició de no llei
+	TD63, // Esmena
+	TD64, // Proposta resolució
+	TD65, // Compareixença
+	TD66, // Sol·licitud informació
+	TD67, // Escrit
+	TD68, // Iniciativa legislativa (repetit)
+	TD69  // Petició
 }
