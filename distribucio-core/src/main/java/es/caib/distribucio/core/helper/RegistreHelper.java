@@ -943,6 +943,16 @@ public class RegistreHelper {
 	}
 	
 	
+	public int getGuardarAnnexosMaxReintentsProperty() {
+		//String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
+		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
+	
 
 	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 

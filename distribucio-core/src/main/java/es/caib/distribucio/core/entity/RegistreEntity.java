@@ -448,6 +448,16 @@ public class RegistreEntity extends ContingutEntity {
 		}
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
+	
+	public void setNewProcesEstat(
+			RegistreProcesEstatEnum procesEstat) {
+		this.procesData = new Date();
+		this.procesEstat = procesEstat;
+		this.procesIntents = 0;
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
+		this.procesError = null;
+	}
+	
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
 			Throwable exception) {

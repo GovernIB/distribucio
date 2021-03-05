@@ -94,7 +94,21 @@ public class RegistreDto extends ContingutDto {
 	private boolean enviatPerEmail;
 	private List<String> enviamentsPerEmail = new ArrayList<String>();
 
+	private boolean reintentsEsgotat;
+	private int maxReintents;
 	
+	public int getMaxReintents() {
+		return maxReintents;
+	}
+	public void setMaxReintents(int maxReintents) {
+		this.maxReintents = maxReintents;
+	}
+	public boolean isReintentsEsgotat() {
+		return reintentsEsgotat;
+	}
+	public void setReintentsEsgotat(boolean reintentsEsgotat) {
+		this.reintentsEsgotat = reintentsEsgotat;
+	}
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
 	}

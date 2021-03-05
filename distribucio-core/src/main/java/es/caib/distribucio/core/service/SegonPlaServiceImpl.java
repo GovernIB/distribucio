@@ -86,7 +86,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			logger.trace("Execució de tasca programada (" + startTime + "): guardar annexos pendents a l'arxiu");
-			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
+
+			int maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
 			
 			List<RegistreEntity> pendents;
 			// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
@@ -434,16 +435,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		// Esborra els moviments pendents de notificar
 		contingutMovimentEmailRepository.delete(moviments);
-	}
-
-	private int getGuardarAnnexosMaxReintentsProperty() {
-		//String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
-		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
-		if (maxReintents != null) {
-			return Integer.parseInt(maxReintents);
-		} else {
-			return 0;
-		}
 	}
 
 	private int getAplicarReglesMaxReintentsProperty() {

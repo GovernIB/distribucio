@@ -210,6 +210,13 @@ public class ContingutHelper {
 
 			}
 			
+			int maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
+			if (registreEntity.getProcesIntents() >= maxReintents) {
+				registreDto.setReintentsEsgotat(true);
+			}
+			registreDto.setProcesIntents(registreEntity.getProcesIntents());
+			registreDto.setMaxReintents(maxReintents);
+			
 			contingutDto = registreDto;
 		}
 		
