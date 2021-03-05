@@ -900,6 +900,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					case A:
 						firma.setPerfil(FirmaPerfil.A);
 						break;
+					case BASIC:
+						firma.setPerfil(FirmaPerfil.BASIC);
+						break;
 					}
 				}
 				if (firmaDto.getTipus() != null) {

@@ -13,5 +13,6 @@ public enum FirmaPerfil {
 	C,
 	X,
 	XL,
-	A
+	A,
+	BASIC
 }
