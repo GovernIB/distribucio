@@ -153,6 +153,12 @@
 <xs:enumeration value="X" />
 <xs:enumeration value="XL" />
 <xs:enumeration value="BASIC" />
+<xs:enumeration value="BASELINE_B_LEVEL" />
+<xs:enumeration value="BASELINE_T_LEVEL" />
+<xs:enumeration value="BASELINE_LT_LEVEL" />
+<xs:enumeration value="BASELINE_LTA_LEVEL" />
+<xs:enumeration value="BASELINE_T" />
+<xs:enumeration value="LTA" />
 </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="firmaTipus">

@@ -903,6 +903,26 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					case BASIC:
 						firma.setPerfil(FirmaPerfil.BASIC);
 						break;
+					case BASELINE_B_LEVEL:
+						firma.setPerfil(FirmaPerfil.BASELINE_B_LEVEL);
+						break;
+					case BASELINE_T_LEVEL:
+						firma.setPerfil(FirmaPerfil.BASELINE_T_LEVEL);
+						break;
+					case BASELINE_LT_LEVEL:
+						firma.setPerfil(FirmaPerfil.BASELINE_LT_LEVEL);
+						break;
+					case BASELINE_LTA_LEVEL:
+						firma.setPerfil(FirmaPerfil.BASELINE_LTA_LEVEL);
+						break;
+					case BASELINE_T:
+						firma.setPerfil(FirmaPerfil.BASELINE_T);
+						break;
+					case LTA:
+						firma.setPerfil(FirmaPerfil.LTA);
+						break;
+					default:
+						break;
 					}
 				}
 				if (firmaDto.getTipus() != null) {
