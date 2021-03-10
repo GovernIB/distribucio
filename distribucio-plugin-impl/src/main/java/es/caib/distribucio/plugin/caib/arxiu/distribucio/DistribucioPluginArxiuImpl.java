@@ -4,7 +4,6 @@
 package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -35,7 +35,6 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
@@ -58,7 +57,6 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
-import com.fasterxml.jackson.core.type.TypeReference;
 import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
 
 /**
@@ -274,38 +272,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				ambContingut,
 				ambVersioImprimible);
 	}
-
-	@Override
-	public void contenidorMarcarProcessat(
-			DistribucioRegistreAnotacio anotacio) throws SistemaExternException {
-		String accioDescripcio = "Tancant expedient";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("identificador", anotacio.getExpedientArxiuUuid());
-		long t0 = System.currentTimeMillis();
-		try {
-			getArxiuPlugin().expedientTancar(
-					anotacio.getExpedientArxiuUuid());
-			integracioAddAccioOk(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0);
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al tancar rexpedient";
-			integracioAddAccioError(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					integracioArxiuCodi,
-					errorDescripcio,
-					ex);
-		}
-	}
-
+	
 	@Override
 	public void contenidorEliminar(
 			String idContingut) throws SistemaExternException {

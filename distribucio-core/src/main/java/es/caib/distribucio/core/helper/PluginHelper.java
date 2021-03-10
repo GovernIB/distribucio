@@ -39,7 +39,6 @@ import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManager;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
@@ -148,45 +147,6 @@ public class PluginHelper {
 			return documentUuid;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al crear el document annex a dins el contenidor";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
-					errorDescripcio,
-					ex);
-		}
-	}
-
-	public void distribucioContenidorMarcarProcessat(
-			RegistreEntity registre) {
-		String accioDescripcio = "Marcant com a processat el contenidor relacionat amb anotació de registre";
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
-		accioParams.put("expedientNumero", registre.getExpedientNumero());
-		accioParams.put("registreNom", registre.getNom());
-		accioParams.put("registreNumero", registre.getNumero());
-		accioParams.put("registreEntitat", registre.getEntitatCodi());
-		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
-		long t0 = System.currentTimeMillis();
-		try {
-			DistribucioRegistreAnotacio anotacio = conversioTipusHelper.convertir(
-					registre,
-					DistribucioRegistreAnotacio.class);
-			getDistribucioPlugin().contenidorMarcarProcessat(anotacio);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
-					accioDescripcio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al marcar el contenidor com a processat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
@@ -455,6 +415,43 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	public void arxiuExpedientTancar(
+			RegistreEntity registre) {
+		String accioDescripcio = "Tancar l'expedient a l'Arxiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
+		accioParams.put("expedientNumero", registre.getExpedientNumero());
+		accioParams.put("registreNom", registre.getNom());
+		accioParams.put("registreNumero", registre.getNumero());
+		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
+		long t0 = System.currentTimeMillis();
+		try {			
+			getArxiuPlugin().expedientTancar(
+					registre.getExpedientArxiuUuid());
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al marcar el contenidor com a processat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,

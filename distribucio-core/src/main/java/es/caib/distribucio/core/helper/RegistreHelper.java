@@ -923,7 +923,9 @@ public class RegistreHelper {
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		Exception exception = null;
 		try {
-			pluginHelper.distribucioContenidorMarcarProcessat(registre);
+			if (registre.getExpedientArxiuUuid() != null) {
+				pluginHelper.arxiuExpedientTancar(registre);				
+			}
 		} catch (Exception ex) {
 			exception = ex;
 		}

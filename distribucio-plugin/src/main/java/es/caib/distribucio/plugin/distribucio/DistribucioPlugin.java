@@ -71,18 +71,6 @@ public interface DistribucioPlugin {
 			boolean ambVersioImprimible) throws SistemaExternException;
 
 	/**
-	 * Implementa la lògica de marcar com a processada per l'usuari 
-	 * un assentametn registral i el subsegüent tracte que els seus annexos tendran. 
-	 * 
-	 * @param anotacio
-	 *            assentament registral que es marca com a processat
-	 * @throws SistemaExternException
-	 *            Si hi ha hagut algun problema per dur a terme l'acció.
-	 */
-	public void contenidorMarcarProcessat(
-			DistribucioRegistreAnotacio anotacio) throws SistemaExternException;
-
-	/**
 	 * Elimina un contenidor creat prèviament a partir del seu UUID
 	 * 
 	 * @param uuid
