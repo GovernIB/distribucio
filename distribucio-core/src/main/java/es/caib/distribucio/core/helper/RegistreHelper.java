@@ -38,7 +38,6 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
-import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -101,8 +100,6 @@ public class RegistreHelper {
 	RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Autowired
-	private BustiaHelper bustiaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
 	@Autowired
@@ -988,6 +985,14 @@ public class RegistreHelper {
 		}
 	}
 	
+	public int getGuardarAnnexosMaxReintentsProperty() {
+		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
 	
 	public int getMaxThreadsParallelProperty() {
 		String maxThreadsParallel = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.threads.parallel");

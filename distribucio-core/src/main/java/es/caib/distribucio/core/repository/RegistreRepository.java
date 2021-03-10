@@ -15,10 +15,8 @@ import org.springframework.data.repository.query.Param;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
-import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
-import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -52,7 +50,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
-			"and r.procesIntents <= :maxReintents " +
+			"and r.procesIntents < :maxReintents " +
 		    "order by " +
 		    "    r.data asc")
 	List<RegistreEntity> findGuardarAnnexPendents(

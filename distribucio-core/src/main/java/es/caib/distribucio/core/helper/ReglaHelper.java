@@ -326,9 +326,7 @@ public class ReglaHelper {
 					}
 					
 				} else {
-					registre.updateProces(
-							RegistreProcesEstatEnum.ARXIU_PENDENT,
-							null);
+					registre.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 				}
 				
 				break;
@@ -372,11 +370,7 @@ public class ReglaHelper {
 				} else {
 					estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 				}
-				registre.updateProces(
-						estat,
-						null);
-				
-				
+				registre.setNewProcesEstat(estat);
 				
 				// ------ evict -----------
 				BustiaEntity pendentBustia = null;

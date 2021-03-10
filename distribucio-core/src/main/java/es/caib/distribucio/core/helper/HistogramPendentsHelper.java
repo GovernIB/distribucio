@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
@@ -132,10 +130,5 @@ public class HistogramPendentsHelper {
 			histogram.remove(0);
 		histogram.add(entry);
 	}
-
-	
-
-
-	private static final Logger logger = LoggerFactory.getLogger(HistogramPendentsHelper.class);
 
 }

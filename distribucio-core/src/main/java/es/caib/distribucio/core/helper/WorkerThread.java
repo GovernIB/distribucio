@@ -1,8 +1,5 @@
 package es.caib.distribucio.core.helper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class WorkerThread implements Runnable {
 	  
 
@@ -31,6 +28,5 @@ public class WorkerThread implements Runnable {
     public String toString(){
 		return this.registreId.toString();
     }
-    
-	private static final Logger logger = LoggerFactory.getLogger(WorkerThread.class);
+
 }

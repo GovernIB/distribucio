@@ -26,12 +26,10 @@ import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ContingutService;
-import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.ContingutFiltreCommand;
 import es.caib.distribucio.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -47,9 +45,6 @@ public class ContingutAdminController extends BaseAdminController {
 
 	@Autowired
 	private ContingutService contingutService;
-	@Autowired
-	private RegistreService registreService;
-
 
 
 	@RequestMapping(method = RequestMethod.GET)

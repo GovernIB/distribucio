@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
@@ -441,7 +440,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	}
 
 	private int getGuardarAnnexosMaxReintentsProperty() {
-		//String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.pendent.max.reintents");
 		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
