@@ -924,7 +924,12 @@ public class RegistreHelper {
 		Exception exception = null;
 		try {
 			if (registre.getExpedientArxiuUuid() != null) {
-				pluginHelper.arxiuExpedientTancar(registre);				
+				if (registre.getAnnexos() != null && ! registre.getAnnexos().isEmpty()) {
+					pluginHelper.arxiuExpedientTancar(registre);
+				} else {
+					// Si no té annexos esborra l'espedient, el tancament fallaria
+					pluginHelper.arxiuExpedientEliminar(registre.getExpedientArxiuUuid());
+				}
 			}
 		} catch (Exception ex) {
 			exception = ex;

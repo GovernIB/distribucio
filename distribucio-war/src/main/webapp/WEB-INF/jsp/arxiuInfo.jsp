@@ -83,7 +83,30 @@
 			<c:if test="${not empty arxiuDetall.eniEstat}">
 				<tr>
 					<td><strong><spring:message code="arxiu.metadades.nti.camp.eni.estat"/></strong></td>
-					<td><spring:message code="expedient.estat.enum.${arxiuDetall.eniEstat}"/></td>
+					<td>
+						<spring:message code="expedient.estat.enum.${arxiuDetall.eniEstat}"/>
+						<c:if test="${arxiuDetall.eniEstat == 'OBERT'}">
+							<c:choose>
+								<c:when test="${registre.arxiuTancatError}">
+									<span class="fa fa-times text text-danger" title="<spring:message code="registre.arxiuTancatError"></spring:message>"></span>
+								</c:when>
+								<c:when test="${registre.arxiuTancat}">
+									<span class="fa fa-times text text-success" title="<spring:message code="registre.arxiuTancat"></spring:message>"></span>
+								</c:when>
+							</c:choose>
+							<c:if test="${registre.dataTancament != null }">
+								<c:if test="${!registre.arxiuTancatError && ! registre.arxiuTancat}">
+									<span class="text text-muted" title="<spring:message code="registre.dataTancament.pendent"></spring:message>">
+										<i class="fa fa-times"></i>
+										<i class="fa fa-clock-o"></i>
+									</span>
+								</c:if>
+								<span class="text text-muted" title="<spring:message code='registre.dataTancament'></spring:message>">
+									<fmt:formatDate value="${registre.dataTancament}" pattern="dd/MM/yyyy HH:mm:ss"/>
+								</span>
+							</c:if>
+						</c:if>
+					</td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty arxiuDetall.eniDataCaptura}">

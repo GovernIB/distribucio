@@ -107,7 +107,11 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		try {
-			getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			RegistreDto registre = registreService.findOne(entitatActual.getId(), bustiaId, registreId);
+			model.addAttribute(
+					"registre", 
+					registre);
 			ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registreId);
 			model.addAttribute(
 					"arxiuDetall",

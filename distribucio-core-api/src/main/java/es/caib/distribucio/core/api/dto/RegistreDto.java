@@ -35,6 +35,9 @@ public class RegistreDto extends ContingutDto {
 	private Date backRetryEnviarData;
 	private boolean error;
 	private boolean alerta;
+	private boolean arxiuTancat;
+	private boolean arxiuTancatError;
+	private Date dataTancament;
 	// Copiat de es.caib.distribucio.core.api.registre.RegistreAnotacio
 	private String expedientArxiuUuid;
 	private String numero;
@@ -204,6 +207,24 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setError(boolean error) {
 		this.error = error;
+	}
+	public boolean isArxiuTancat() {
+		return arxiuTancat;
+	}
+	public void setArxiuTancat(boolean arxiuTancat) {
+		this.arxiuTancat = arxiuTancat;
+	}
+	public boolean isArxiuTancatError() {
+		return arxiuTancatError;
+	}
+	public void setArxiuTancatError(boolean arxiuTancatError) {
+		this.arxiuTancatError = arxiuTancatError;
+	}
+	public Date getDataTancament() {
+		return dataTancament;
+	}
+	public void setDataTancament(Date dataTancament) {
+		this.dataTancament = dataTancament;
 	}
 	public boolean isAlerta() {
 		return alerta;

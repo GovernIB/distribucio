@@ -423,6 +423,16 @@ public class RegistreEntity extends ContingutEntity {
 	public String getBackObservacions() {
 		return backObservacions;
 	}
+	// Informació sobre el tancament del registre
+	public Date getDataTancament() {
+		return this.dataTancament;
+	}
+	public boolean getArxiuTancat() {
+		return this.arxiuTancat != null ? this.arxiuTancat.booleanValue() : false;
+	}
+	public boolean getArxiuTancatError() {
+		return this.arxiuTancatError != null ? this.arxiuTancatError.booleanValue() : false;
+	}
 
 	public void updateMotiuRebuig(
 			String motiuRebuig) {
