@@ -212,6 +212,25 @@
 <xs:enumeration value="FACTURA" />
 <xs:enumeration value="ALTRES_INCAUTATS" />
 <xs:enumeration value="ALTRES" />
+<xs:enumeration value="LLEI" />
+<xs:enumeration value="MOCIO" />
+<xs:enumeration value="INSTRUCCIO" />
+<xs:enumeration value="CONVOCATORIA" />
+<xs:enumeration value="ORDRE_DIA" />
+<xs:enumeration value="INFORME_PONENCIA" />
+<xs:enumeration value="DICTAMEN_COMISSIO" />
+<xs:enumeration value="INICIATIVA_LEGISLATIVA" />
+<xs:enumeration value="PREGUNTA" />
+<xs:enumeration value="INTERPELACIO" />
+<xs:enumeration value="RESPOSTA" />
+<xs:enumeration value="PROPOSICIO_NO_LLEI" />
+<xs:enumeration value="ESMENA" />
+<xs:enumeration value="PROPOSTA_RESOLUCIO" />
+<xs:enumeration value="COMPAREIXENSA" />
+<xs:enumeration value="SOLICITUD_INFORMACIO" />
+<xs:enumeration value="ESCRIT" />
+<xs:enumeration value="ALTRES" />
+<xs:enumeration value="PETICIO" />
 </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="sicresTipoDocumento">
