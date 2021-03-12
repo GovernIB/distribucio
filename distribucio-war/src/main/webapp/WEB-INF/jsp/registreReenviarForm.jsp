@@ -34,13 +34,43 @@
 			border-radius: 4px;
 			width: 20%;
 		}
+		
+		#arbreUnitats_destins .jstree-open > .jstree-anchor > .fa-square-o, 
+		#arbreUnitats_destins .jstree-closed > .jstree-anchor > .fa-square-o {
+			display:none;
+		}
+		
+		i.fa.fa-check-square-o, i.fa.fa-square-o {
+			font-size: 18px;
+			margin-left: 2px;
+			height: 24px;
+			line-height: 24px;
+		}
+
 	</style>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('#jstree-search').on('input', function() {
 				$("#arbreUnitats_destins").jstree("search", $(this).val());
 			});
+			
+			$("#arbreUnitats_destins").on("deselect_node.jstree select_node.jstree", function (e, data) {
+				var currentNodeId = '#' + data.node.a_attr.id;
+				var currentCheckbox = $(currentNodeId).find('i.fa-square-o').length != 0 ? $(currentNodeId).find('i.fa-square-o') : $(currentNodeId).find('i.fa-check-square-o');
+	            toggleCheckClasses(currentCheckbox, currentCheckbox.hasClass('fa-square-o'));
+				console.log("node_id: " + data.node.id);
+			});
 		});
+		
+		function toggleCheckClasses(element, show) {
+	        if (show) {
+	            element.removeClass('fa-square-o');
+	            element.addClass('fa-check-square-o');
+	        } else {
+	            element.removeClass('fa-check-square-o');
+	            element.addClass('fa-square-o');
+	        }
+	    }
 		
 		function readyCallback(e,data) {
 			if (e.currentTarget.childNodes != undefined) {
@@ -85,7 +115,7 @@
 		<dis:inputArbre name="destins" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 		fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 		fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
-		readyCallback="readyCallback"/>
+		readyCallback="readyCallback" isCheckBoxEnabled="${true}"/>
 		
 		
 		<dis:inputCheckbox name="deixarCopia" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/>

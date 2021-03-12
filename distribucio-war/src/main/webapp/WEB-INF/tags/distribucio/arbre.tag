@@ -25,9 +25,11 @@
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
 <%@ attribute name="isError" type="java.lang.Boolean"%>
 <%@ attribute name="height" required="false" rtexprvalue="true"%>
+<%@ attribute name="isCheckBoxEnabled" type="java.lang.Boolean"%>
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
+<c:if test="${empty isCheckBoxEnabled}"><c:set var="isCheckBoxEnabled" value="${false}"/></c:if>
 <div id="${id}" class="well" style="width: 100%; overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
@@ -52,6 +54,7 @@
 				if (this.settings.conditionalselect.call(this, this.get_node(obj))) {
 					parent.select_node.call(this, obj, supress_event, prevent_open);
 				} else {
+					changeCheckbox(true);
 					parent.deselect_all.call(this, obj, supress_event, prevent_open);
 				}
 			};
@@ -81,12 +84,17 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", "sort"],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : ""],
 		"core": {
 			"check_callback": true
 		},
 		"search" : {
 			"case_insensitive": false
+		},
+		"checkbox": {
+		    "three_state": false, //Indicating if checkboxes should cascade down and have an undetermined state
+		    "two_state" : true,
+			"cascade": "down"
 		}
 	})<c:if test="${not empty readyCallback}">
 	.on('ready.jstree', function (e, data) {
@@ -96,6 +104,7 @@
 		// var iframe = $('.modal-body iframe', window.parent.document);
 		// var height = $('html').height();
 		// iframe.height(height + 'px');
+		changeCheckbox(false);
 	})
 	.on('after_close.jstree', function (e, data) {
 		// var iframe = $('.modal-body iframe', window.parent.document);
@@ -109,5 +118,23 @@
 	.on('deselect_all.jstree', function (e, data) {
 		//console.log('>>> deselect_all.jstree');
 		//return ${changedCallback}(e, data);
-	})</c:if>;	
+	})</c:if>
+	.on('ready.jstree click', function (e, data) {
+		changeCheckbox(false);
+	});
+	
+	function changeCheckbox(removeAllSelected) {
+		if (${isCheckBoxEnabled}) {
+			$('.jstree-anchor')
+			.find('i.jstree-checkbox')
+			.removeClass('jstree-icon jstree-checkbox')
+			.addClass('fa fa-square-o'); // adding the fa non-checked checkbox class
+			if (removeAllSelected) {
+				$('.jstree-anchor')
+				.find('i.fa-check-square-o')
+				.removeClass('i.fa-check-square-o')
+				.addClass('fa fa-square-o');
+			}
+		}
+    }
 </script>

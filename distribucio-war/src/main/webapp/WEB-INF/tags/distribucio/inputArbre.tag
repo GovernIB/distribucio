@@ -20,6 +20,7 @@
 <%@ attribute name="isSeleccioMultiple" type="java.lang.Boolean"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <%@ attribute name="readyCallback"%>
+<%@ attribute name="isCheckBoxEnabled" type="java.lang.Boolean"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
@@ -33,7 +34,7 @@
 		<div class="input-group" style="width:100%">
 			<spring:bind path="${campPath}">
 				<input type="hidden" id="${campPath}" name="${campPath}"/>
-				<dis:arbre id="arbreUnitats_${campPath}" readyCallback="${readyCallback}" seleccionatId="${status.value}" arbre="${arbre}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback_${campPath}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" isArbreSeleccionable="${isArbreSeleccionable}" isFullesSeleccionable="${isFullesSeleccionable}" isOcultarCounts="${isOcultarCounts}" isError="${not empty campErrors}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}"/>
+				<dis:arbre id="arbreUnitats_${campPath}" readyCallback="${readyCallback}" seleccionatId="${status.value}" arbre="${arbre}" atributId="codi" atributNom="denominacio" changedCallback="changedCallback_${campPath}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" isArbreSeleccionable="${isArbreSeleccionable}" isFullesSeleccionable="${isFullesSeleccionable}" isOcultarCounts="${isOcultarCounts}" isError="${not empty campErrors}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isCheckBoxEnabled="${isCheckBoxEnabled}"/>
 			</spring:bind>
 			<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 		</div>
