@@ -9,12 +9,12 @@
 <html>
 <head>
 <title><spring:message code="histogram.pendents.title"/></title>
-<dis:modalHead/>
 
-<script src="<c:url value="/webjars/chartjs/2.9.3/Chart.min.js"/>"></script>
+<script src="<c:url value="/webjars/chartjs/2.9.4/Chart.min.js"/>"></script>
 <script src="<c:url value="/js/webutil.common.js"/>"></script>
 <script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 <script src="<c:url value="/js/webutil.modal.js"/>"></script>
+
 
 <style>
 .dl-horizontal dt {
@@ -85,7 +85,7 @@ function buildChartEntitat(chart) {
     $(document).ready(function() {
 
         $('#btnRefresh').click(function() {
-            location.reload();
+        	window.location = '/distribucio/registreUser/anotacionsPendentArxiu';
         });
 
 		var ctx = 'chartEntitat';
@@ -131,9 +131,7 @@ function buildChartEntitat(chart) {
 	
 	<canvas id="chartEntitat" width="400" height="100"></canvas>
 
-	<div id="modal-botons" class="well">
-		<button id="btnRefresh" type="button" class="btn btn-info"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
-		<button type="button" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></button>
-	</div>
+	<button id="btnRefresh" type="button" class="btn btn-info pull-right" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
+
 </body>
 </html>

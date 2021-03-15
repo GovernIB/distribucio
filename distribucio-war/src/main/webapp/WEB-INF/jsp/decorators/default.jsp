@@ -194,7 +194,7 @@ body {
 											<li><a href="<c:url value="/integracio"/>"><spring:message code="decorator.menu.integracions"/></a></li>
 											<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
 											<li><a href="<c:url value="/registreUser/metriquesView"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.metriques"/></a></li>		
-											<li><a href="<c:url value="/registreUser/anotacionsPendentArxiu"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.anotacionsPendentArxiu"/></a></li>									
+											<li><a href="<c:url value="/registreUser/anotacionsPendentArxiu"/>"><spring:message code="decorator.menu.anotacionsPendentArxiu"/></a></li>									
 										</ul>
 									</div>
 									<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
