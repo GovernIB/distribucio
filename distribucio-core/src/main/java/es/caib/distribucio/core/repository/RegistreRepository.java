@@ -333,6 +333,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esPendent = false or r.pendent = true) " +
 			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
 			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
+			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
@@ -361,7 +362,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
 			@Param("enviatPerEmail") Boolean enviatPerEmail,
 			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
-			@Param("documentacioFisicaCodi") String documentacioFisicaCodi);
+			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
+			@Param("esNullBackCodi") boolean esNullBackCodi,
+			@Param("backCodi") String backCodi);
 
 
 }

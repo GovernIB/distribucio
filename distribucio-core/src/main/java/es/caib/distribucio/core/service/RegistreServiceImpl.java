@@ -524,7 +524,9 @@ public class RegistreServiceImpl implements RegistreService {
 				enviatPerEmail == null,
 				enviatPerEmail,
 				tipusFisicaCodi == null,
-				tipusFisicaCodi);
+				tipusFisicaCodi,
+				filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "");
 	
 
 		contextTotal.stop();
