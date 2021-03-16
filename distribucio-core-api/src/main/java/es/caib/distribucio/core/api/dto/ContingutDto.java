@@ -30,6 +30,7 @@ public abstract class ContingutDto extends AuditoriaDto {
 	protected String darrerMovimentComentari;
 
 	protected boolean perConvertirJson;
+	protected boolean perConeixement;
 	
 	private boolean alerta;
 	
@@ -109,6 +110,12 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public void setPathInicial(List<ContingutDto> pathInicial) {
 		this.pathInicial = pathInicial;
+	}
+	public boolean isPerConeixement() {
+		return perConeixement;
+	}
+	public void setPerConeixement(boolean perConeixement) {
+		this.perConeixement = perConeixement;
 	}
 	public void setPerConvertirJson(boolean perConvertirJson) {
 		this.perConvertirJson = perConvertirJson;

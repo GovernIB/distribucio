@@ -270,7 +270,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="13"
+		data-default-order="14"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -285,6 +285,7 @@ $(document).ready(function() {
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
+				<th data-col-name="perConeixement"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
@@ -382,6 +383,9 @@ $(document).ready(function() {
 						{{/for}}
 						{{if !bustiaActiva}}
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
+						{{/if}}
+						{{if perConeixement}}
+							<span class="fa fa-info-circle text-success" title="<spring:message code="bustia.list.avis.bustia.coneixement"/>"></span>
 						{{/if}}
 					</script>
 				</th>

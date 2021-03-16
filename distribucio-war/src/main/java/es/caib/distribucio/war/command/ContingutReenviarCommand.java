@@ -25,6 +25,8 @@ public class ContingutReenviarCommand {
 	protected boolean deixarCopia;
 	protected String[] params;
 	
+	protected Long[] perConeixement;
+	
  	public Long getOrigenId() {
 		return origenId;
 	}
@@ -55,6 +57,12 @@ public class ContingutReenviarCommand {
 	}
 	public void setParams(String[] params) {
 		this.params = params;
+	}
+	public Long[] getPerConeixement() {
+		return perConeixement;
+	}
+	public void setPerConeixement(Long[] perConeixement) {
+		this.perConeixement = perConeixement;
 	}
 	@Override
 	public String toString() {

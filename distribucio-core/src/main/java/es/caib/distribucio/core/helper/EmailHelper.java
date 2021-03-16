@@ -89,7 +89,7 @@ public class EmailHelper {
 					contenidorMoviment = moviments.get(moviments.size() - 1);
 				else {
 					logger.warn("No s'ha trobat cap moviment pel contingut amb id=" + contingut.getId() + ". S'en crearà un de relacionat amb la bústia");
-					contenidorMoviment = contenidorHelper.ferIEnregistrarMoviment(contingut, bustia, null);
+					contenidorMoviment = contenidorHelper.ferIEnregistrarMoviment(contingut, bustia, null, false);
 				}
 			}			
 		}

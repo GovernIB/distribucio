@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/distribucio" prefix="dis"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ attribute name="id" required="true"%>
 <%@ attribute name="arbre" required="true" type="java.lang.Object"%>
 <%@ attribute name="atributId" required="true"%>
@@ -26,10 +27,12 @@
 <%@ attribute name="isError" type="java.lang.Boolean"%>
 <%@ attribute name="height" required="false" rtexprvalue="true"%>
 <%@ attribute name="isCheckBoxEnabled" type="java.lang.Boolean"%>
+<%@ attribute name="isEnviarConeixementActiu" type="java.lang.Boolean"%>
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
 <c:if test="${empty isCheckBoxEnabled}"><c:set var="isCheckBoxEnabled" value="${false}"/></c:if>
+<c:if test="${empty isEnviarConeixementActiu}"><c:set var="isEnviarConeixementActiu" value="${false}"/></c:if>
 <div id="${id}" class="well" style="width: 100%; overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
@@ -84,7 +87,7 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : ""],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu} ? "contextmenu" : "", "crrm"],
 		"core": {
 			"check_callback": true
 		},
@@ -95,6 +98,9 @@
 		    "three_state": false, //Indicating if checkboxes should cascade down and have an undetermined state
 		    "two_state" : true,
 			"cascade": "down"
+		},
+		"contextmenu" : {
+			"items" : showMenu
 		}
 	})<c:if test="${not empty readyCallback}">
 	.on('ready.jstree', function (e, data) {
@@ -121,7 +127,16 @@
 	})</c:if>
 	.on('ready.jstree click', function (e, data) {
 		changeCheckbox(false);
-	});
+	})
+	<c:if test="${isEnviarConeixementActiu}">
+	.on('show_contextmenu.jstree', function(e, reference, element) {
+        var isBustia = reference.node.icon.includes('inbox');
+		if (!isBustia) {
+            $('.vakata-context').hide();
+        } else {
+        	$('.vakata-context').show();
+        }
+    });</c:if>
 	
 	function changeCheckbox(removeAllSelected) {
 		if (${isCheckBoxEnabled}) {
@@ -134,7 +149,50 @@
 				.find('i.fa-check-square-o')
 				.removeClass('i.fa-check-square-o')
 				.addClass('fa fa-square-o');
+				
+				$('.jstree-anchor').removeClass('jstree-clicked-coneixement');
+		    	perConeixement = [];
 			}
 		}
     }
+	
+	function showMenu(node) {
+		var items = {};
+		var nodeId = node.id;
+		var nodeHrefId = node.a_attr.id;
+		var selectedForConeixement = $('#' + nodeHrefId).hasClass('jstree-clicked-coneixement');
+		if(!selectedForConeixement) {
+			var itemAddConeixement = { 
+				"afegir" : {
+					"separator_before"  : false,
+					"separator_after"   : false,
+					"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
+					"icon" 				: "fa fa-plus",
+					"action"            : function (data) {
+					    						$('#' + nodeHrefId).removeClass('jstree-clicked');
+										    	$('#' + nodeHrefId).addClass('jstree-clicked-coneixement');
+										    	perConeixement.push(nodeId);
+										  }
+				 }
+			}
+			items.afegir = itemAddConeixement.afegir;
+		} else {
+			var itemDeleteConeixement = {
+				"esborrar" : {
+					"separator_before"  : false,
+				    "separator_after"   : false,
+				    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
+				    "icon" 				: "fa fa-minus",
+				    "action"            : function (data) {
+					    						$('#' + nodeHrefId).addClass('jstree-clicked');
+										    	$('#' + nodeHrefId).removeClass('jstree-clicked-coneixement');
+										    	var nodeIdIdx = perConeixement.indexOf(nodeId);
+										    	perConeixement.splice(nodeIdIdx, 1);
+										  }
+				}
+			}
+			items.esborrar = itemDeleteConeixement.esborrar;
+		}
+		return items;
+	}
 </script>

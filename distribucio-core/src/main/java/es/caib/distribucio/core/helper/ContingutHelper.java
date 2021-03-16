@@ -286,6 +286,7 @@ public class ContingutHelper {
 								true);
 						contingutDto.setPathInicial(pathIncial);
 					}
+					contingutDto.setPerConeixement(firstMoviment.isPerConeixement());
 				}
 			}
 			// FILLS
@@ -543,7 +544,8 @@ public class ContingutHelper {
 	public ContingutMovimentEntity ferIEnregistrarMoviment(
 			ContingutEntity contingut,
 			ContingutEntity desti,
-			String comentari) {
+			String comentari,
+			boolean isPerConeixement) {
 		UsuariEntity usuariAutenticat = usuariHelper.getUsuariAutenticat();
 		if (usuariAutenticat == null && contingut.getDarrerMoviment() != null)
 			usuariHelper.generarUsuariAutenticat(
@@ -555,6 +557,7 @@ public class ContingutHelper {
 				desti,
 				usuariHelper.getUsuariAutenticat(),
 				comentari).build();
+		contenidorMoviment.updatePerConeixement(isPerConeixement);
 		contingut.updateDarrerMoviment(
 				contenidorMovimentRepository.save(contenidorMoviment));
 		contingut.updatePare(desti);

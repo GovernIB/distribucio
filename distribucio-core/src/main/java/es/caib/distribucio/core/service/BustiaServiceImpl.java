@@ -860,7 +860,8 @@ public class BustiaServiceImpl implements BustiaService {
 		ContingutMovimentEntity contingutMovimentEntity = contingutHelper.ferIEnregistrarMoviment(
 				anotacioEntity,
 				bustia,
-				null);
+				null,
+				false);
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				bustia.getEntitat(),
 				bustia);
@@ -1213,7 +1214,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long[] bustiaDestiIds,
 			Long registreId,
 			boolean opcioDeixarCopiaSelectada,
-			String comentari) throws NotFoundException {
+			String comentari,
+			Long[] perConeixement) throws NotFoundException {
 		
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
@@ -1237,6 +1239,15 @@ public class BustiaServiceImpl implements BustiaService {
 					bustiaDestiIds[i],
 					false);
 			bustiesDesti.add(bustiaDesti);
+		}
+		
+		List<BustiaEntity> bustiesPerConeixement = new ArrayList<BustiaEntity>();
+		for (int i = 0; i < perConeixement.length; i++) {
+			BustiaEntity bustiaDestiPerConeixement = entityComprovarHelper.comprovarBustia(
+					entitat,
+					perConeixement[i],
+					false);
+			bustiesPerConeixement.add(bustiaDestiPerConeixement);
 		}
 		
 		RegistreEntity reg = registreRepository.findByPareAndId(
@@ -1267,7 +1278,8 @@ public class BustiaServiceImpl implements BustiaService {
 			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 					registrePerReenviar,
 					bustia,
-					comentari);
+					comentari,
+					bustiesPerConeixement.contains(bustia));
 			
 			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
 			if (registrePerReenviar.getClass() == RegistreEntity.class) {
@@ -1438,7 +1450,8 @@ public class BustiaServiceImpl implements BustiaService {
 			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 					registre,
 					bustiaDesti,
-					comentari);
+					comentari,
+					false);
 			// Registra al log l'enviament del contingut
 			contingutLogHelper.logMoviment(
 					registre,

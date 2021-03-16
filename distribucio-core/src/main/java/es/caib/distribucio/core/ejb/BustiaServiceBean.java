@@ -223,14 +223,16 @@ public class BustiaServiceBean implements BustiaService {
 			Long[] bustiaDestiIds,
 			Long contingutId,
 			boolean deixarCopia,
-			String comentari) throws NotFoundException {
+			String comentari,
+			Long[] perConeixement) throws NotFoundException {
 		delegate.registreReenviar(
 				entitatId,
 				bustiaOrigenId,
 				bustiaDestiIds,
 				contingutId,
 				deixarCopia,
-				comentari);
+				comentari,
+				perConeixement);
 	}
 
 	@Override

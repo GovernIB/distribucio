@@ -350,7 +350,8 @@ public class ReglaHelper {
 				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 						registre,
 						bustiaDesti,
-						null);
+						null,
+						false);
 				List<String> params = new ArrayList<>();
 				params.add(regla.getNom());
 				params.add(regla.getTipus().toString());

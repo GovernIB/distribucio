@@ -749,6 +749,7 @@ public class RegistreUserController extends BaseUserController {
 			}
 			model.addAttribute(command);
 			model.addAttribute("maxLevel", getMaxLevelArbre());
+			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -799,7 +800,8 @@ public class RegistreUserController extends BaseUserController {
 					command.getDestins(),
 					registreId,
 					command.isDeixarCopia(),
-					command.getComentariEnviar());
+					command.getComentariEnviar(),
+					command.getPerConeixement());
 			if (command.getParams().length == 0) {
 				
 				if (command.isDeixarCopia() == false && bustiaService.isBustiaReadPermitted(command.getDestins()[0])) {
@@ -926,7 +928,8 @@ public class RegistreUserController extends BaseUserController {
 										command.getDestins(),
 										registreDto.getId(),
 										command.isDeixarCopia(),
-										command.getComentariEnviar());
+										command.getComentariEnviar(),
+										command.getPerConeixement());
 								logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat correctament");
 
 							} catch (Exception e) {
@@ -1456,6 +1459,11 @@ public class RegistreUserController extends BaseUserController {
 		String maxLevelStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.arbre.nivell");
 		int maxLevel = maxLevelStr != null ? Integer.parseInt(maxLevelStr) : 1;
 		return maxLevel;
+	}
+	
+	private boolean isEnviarConeixementActiu() {
+		String isEnviarConeixementStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.coneixement");
+		return Boolean.parseBoolean(isEnviarConeixementStr);
 	}
 
 	private RegistreFiltreCommand getFiltreCommand(

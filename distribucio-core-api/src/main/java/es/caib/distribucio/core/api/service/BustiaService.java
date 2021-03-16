@@ -249,7 +249,8 @@ public interface BustiaService {
 			Long[] bustiaDestiIds,
 			Long contingutId,
 			boolean deixarCopia,
-			String comentari) throws NotFoundException;
+			String comentari,
+			Long[] perConeixement) throws NotFoundException;
 
 	/**
 	 * Consulta l'arbre de les unitats organitzatives per a mostrar les
