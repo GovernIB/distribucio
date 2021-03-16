@@ -47,7 +47,8 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	protected String comentari;
 	@Column(name = "per_coneixement")
 	protected boolean perConeixement;
-
+	@Column(name = "comentari_destins", length = 256)
+	protected String comentariDestins;
 
 	public ContingutEntity getContingut() {
 		return contingut;
@@ -66,6 +67,13 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	}
 	public boolean isPerConeixement() {
 		return perConeixement;
+	}
+	public String getComentariDestins() {
+		return comentariDestins;
+	}
+	
+	public void updateComentariDestins(String comentari) {
+		this.comentariDestins = comentari;
 	}
 	
 	public void updatePerConeixement(boolean perConeixement) {

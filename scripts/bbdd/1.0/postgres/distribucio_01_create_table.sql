@@ -73,6 +73,7 @@ CREATE TABLE DIS_CONT_MOV
   DESTI_ID             bigint                   NOT NULL,
   REMITENT_CODI        character varying(64),
   COMENTARI            character varying(256),
+  COMENTARI_DESTINS    character varying(256),
   PER_CONEIXEMENT 	   boolean,
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,

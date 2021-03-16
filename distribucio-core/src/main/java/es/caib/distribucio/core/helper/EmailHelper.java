@@ -162,7 +162,8 @@ public class EmailHelper {
 					"\t\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
 					"\t\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
 					"\t\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
-					"\t\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n";
+					"\t\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n" +
+					(contenidorMoviment.getComentariDestins() != null ? contenidorMoviment.getComentariDestins() : "");
 		}
 		missatge.setText(text);
 		mailSender.send(missatge);
@@ -201,7 +202,8 @@ public class EmailHelper {
 				"\tNom: " + (contingut != null ? contingut.getNom() : "") + "\n" +
 				"\tRemitent: " + ((contenidorMoviment != null && contenidorMoviment.getRemitent() != null) ? contenidorMoviment.getRemitent().getNom() : "") + "\n" +
 				"\tComentari: " + ((contenidorMoviment != null && contenidorMoviment.getComentari() != null) ? contenidorMoviment.getComentari() : "") + "\n" +
-				"\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n");
+				"\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n\n" +
+				(contenidorMoviment.getComentariDestins() != null ? contenidorMoviment.getComentariDestins() : ""));
 		
 		mailSender.send(missatge);		
 	}

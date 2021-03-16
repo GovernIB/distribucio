@@ -61,7 +61,9 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -83,6 +85,9 @@ import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.ContingutComentariRepository;
+import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
+import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -145,7 +150,10 @@ public class BustiaServiceImpl implements BustiaService {
 	
 	@Autowired
 	private MetricRegistry metricRegistry;
-
+	@Autowired
+	private ContingutComentariRepository contingutComentariRepository;
+	@Autowired
+	private ContingutMovimentRepository contingutMovimentRepository;
 
 	@Override
 	@Transactional
@@ -1261,10 +1269,12 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				registreId,
 				bustiaOrigen);
-
+		List<String> assentamentsPerTramitar = new ArrayList<String>(), assentamentsPerConeixement = new ArrayList<String>();
+		List<ContingutEntity> nousContinguts = new ArrayList<ContingutEntity>();
+		
 		for (int i = 0; i < bustiesDesti.size(); i++) {
 			BustiaEntity bustia = bustiesDesti.get(i);
-			
+			boolean assentamentPerConeixement = bustiesPerConeixement.contains(bustia);
 			ContingutEntity registrePerReenviar = null;
 			boolean ferCopia = opcioDeixarCopiaSelectada || !isLastIteration(i, bustiesDesti);
 			if (ferCopia) {
@@ -1279,7 +1289,7 @@ public class BustiaServiceImpl implements BustiaService {
 					registrePerReenviar,
 					bustia,
 					comentari,
-					bustiesPerConeixement.contains(bustia));
+					assentamentPerConeixement);
 			
 			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
 			if (registrePerReenviar.getClass() == RegistreEntity.class) {
@@ -1309,17 +1319,41 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 					entitat,
 					bustia);
+			
+			if (assentamentPerConeixement) {
+				assentamentsPerConeixement.add(bustia.getNom());
+			} else {
+				assentamentsPerTramitar.add(bustia.getNom());
+			}
+			nousContinguts.add(registrePerReenviar);
 		}
 		
+		boolean crearComentariInformatiu = Boolean.parseBoolean(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.contingut.enviar.crear.comentari"));
+		
+		if (crearComentariInformatiu) {
+			StringBuilder comentariContingut = generarTextDestins(
+					assentamentsPerTramitar, 
+					assentamentsPerConeixement);
+			if (comentariContingut.length() > 0) {
+				for (ContingutEntity contingut: nousContinguts) {
+					ContingutComentariEntity comentariAmbBustiesDesti = ContingutComentariEntity.getBuilder(
+							contingut, 
+							comentariContingut.toString()).build();
+					contingutComentariRepository.save(comentariAmbBustiesDesti);
+					
+					List<ContingutMovimentEntity> contingutMoviment= contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
+					for (ContingutMovimentEntity moviment: contingutMoviment) {
+						moviment.updateComentariDestins(comentariContingut.toString());
+					}
+				}
+			}
+		}
 		// Refrescam cache d'elements pendents de les bústies
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustiaOrigen);
 	}
 	
-	
-
-
 	@Transactional(readOnly = true)
 	@Override
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
@@ -1467,8 +1501,38 @@ public class BustiaServiceImpl implements BustiaService {
 		return ret;
 	}
 
-
-
+	private StringBuilder generarTextDestins(
+			List<String> assentamentsPerTramitar, 
+			List<String> assentamentsPerConeixement) {
+		StringBuilder comentariContingut = new StringBuilder();
+		if (!assentamentsPerTramitar.isEmpty()) {
+			String bustiesTramitacio = messageHelper.getMessage("registre.anotacio.enviat.pertramitar");
+			comentariContingut.append(bustiesTramitacio);
+			int i = 0;
+			for (String perTramitarNom: assentamentsPerTramitar) {
+				comentariContingut.append(perTramitarNom);
+				if(i++ != assentamentsPerTramitar.size() - 1){
+					comentariContingut.append(", ");
+				}
+			}
+		}
+		
+		if (!assentamentsPerConeixement.isEmpty()) {
+			if (!assentamentsPerTramitar.isEmpty())
+				comentariContingut.append("\n\r");
+			
+			String bustiesConeixment = messageHelper.getMessage("registre.anotacio.enviat.perconeixment");
+			comentariContingut.append(bustiesConeixment);
+			int j = 0;
+			for (String perConeixementNom: assentamentsPerConeixement) {
+				comentariContingut.append(perConeixementNom);
+				if(j++ != assentamentsPerConeixement.size() - 1){
+					comentariContingut.append(", ");
+				}
+			}
+		}
+		return comentariContingut;
+	}
 
 	private void omplirPermisosPerBusties(
 			List<? extends BustiaDto> busties,

@@ -34,6 +34,9 @@
 		    overflow-y: scroll;
 		    margin-bottom: 15px;
 		}
+		.comentari-propi p {
+			white-space: pre-line;
+		}
 	</style>
 	
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
