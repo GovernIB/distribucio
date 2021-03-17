@@ -1334,17 +1334,26 @@ public class BustiaServiceImpl implements BustiaService {
 			StringBuilder comentariContingut = generarTextDestins(
 					assentamentsPerTramitar, 
 					assentamentsPerConeixement);
-			if (comentariContingut.length() > 0) {
+			if (comentariContingut.length() > 0 && nousContinguts.size() > 1) {
 				for (ContingutEntity contingut: nousContinguts) {
 					ContingutComentariEntity comentariAmbBustiesDesti = ContingutComentariEntity.getBuilder(
 							contingut, 
 							comentariContingut.toString()).build();
 					contingutComentariRepository.save(comentariAmbBustiesDesti);
-					
 					List<ContingutMovimentEntity> contingutMoviment= contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
 					for (ContingutMovimentEntity moviment: contingutMoviment) {
 						moviment.updateComentariDestins(comentariContingut.toString());
 					}
+				}
+			}
+			if (comentari != null && !comentari.isEmpty()) {
+				for (ContingutEntity contingut: nousContinguts) {
+					//etiqueta reenviat
+					String reenviat = "<span class='label label-default'>" + messageHelper.getMessage("bustia.pendent.accio.reenviar.comentari") + "</span> " + comentari;
+					ContingutComentariEntity comentariReenviament = ContingutComentariEntity.getBuilder(
+							contingut, 
+							reenviat).build();
+					contingutComentariRepository.save(comentariReenviament);
 				}
 			}
 		}

@@ -1419,6 +1419,7 @@ public class RegistreUserController extends BaseUserController {
 						true,
 						false,
 						true));
+		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 	}
 	
 	
