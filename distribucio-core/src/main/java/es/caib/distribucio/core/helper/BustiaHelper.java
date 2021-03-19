@@ -27,11 +27,14 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.UsuariBustiaFavoritEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
@@ -209,6 +212,26 @@ public class BustiaHelper {
 		return resposta;
 	}
 	
+	public UsuariBustiaFavoritDto toUsuariBustiaFavoritDto(UsuariBustiaFavoritEntity source) {
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "toUsuariBustiaFavoritDto"));
+		Timer.Context contextTotal = timerTotal.time();
+		UsuariBustiaFavoritEntity sourceDeproxied = HibernateHelper.deproxy(source);
+		
+		UsuariBustiaFavoritDto usuariBustiaFavoritDto = new UsuariBustiaFavoritDto();
+		BustiaDto bustia = new BustiaDto();
+		UsuariDto usuari = new UsuariDto();
+		
+		usuari.setCodi(sourceDeproxied.getUsuari().getCodi());
+		bustia.setNom(sourceDeproxied.getBustia().getNom());
+		bustia.setId(sourceDeproxied.getBustia().getId());
+		
+		usuariBustiaFavoritDto.setId(sourceDeproxied.getId());
+		usuariBustiaFavoritDto.setBustia(bustia);
+		usuariBustiaFavoritDto.setCreatedDate(sourceDeproxied.getCreatedDate().toDate());
+		
+		contextTotal.stop();
+		return usuariBustiaFavoritDto;
+	}
 	
 	public BustiaEntity findBustiaDesti(
 			EntitatEntity entitat,

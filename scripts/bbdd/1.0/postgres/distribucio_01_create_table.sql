@@ -469,3 +469,14 @@ CREATE TABLE DIS_BACKOFFICE
     LASTMODIFIEDBY_CODI CHARACTER VARYING(64 CHAR),
     LASTMODIFIEDDATE TIMESTAMP WITHOUT TIME ZONE
 );
+
+CREATE TABLE DIS_BUSTIA_FAVORIT
+(
+    ID                  BIGSERIAL        			NOT NULL, 
+    BUSTIA_ID           BIGSERIAL        			NOT NULL, 
+    USUARI_CODI         character varying(64)   	NOT NULL, 
+	CREATEDBY_CODI      character varying(64), 
+	CREATEDDATE         timestamp without time zone, 
+	LASTMODIFIEDBY_CODI character varying(64), 
+	LASTMODIFIEDDATE    timestamp without time zone
+);

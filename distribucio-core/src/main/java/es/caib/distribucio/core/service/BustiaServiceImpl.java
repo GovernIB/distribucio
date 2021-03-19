@@ -22,6 +22,7 @@ import javax.mail.internet.MimeMessage.RecipientType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.acls.model.Permission;
@@ -51,6 +52,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -63,12 +65,13 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
-import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.UsuariBustiaFavoritEntity;
+import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
@@ -86,13 +89,14 @@ import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
-import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.repository.UsuariBustiaFavoritRepository;
+import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -154,7 +158,11 @@ public class BustiaServiceImpl implements BustiaService {
 	private ContingutComentariRepository contingutComentariRepository;
 	@Autowired
 	private ContingutMovimentRepository contingutMovimentRepository;
-
+	@Autowired
+	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
+	@Autowired
+	private UsuariRepository usuariRepository;
+	
 	@Override
 	@Transactional
 	public BustiaDto create(
@@ -2572,6 +2580,111 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreUnitatsSuperiors(entitat, filtre, null);
 				
 		return arbre.toDadesList();
+	}
+
+	@Transactional
+	@Override
+	public void addToFavorits(Long entitatId, Long bustiaId) {
+		final Timer timeraddToFavorits = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "addToFavorits"));
+		Timer.Context contextaddToFavorits = timeraddToFavorits.time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);
+		
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat, 
+				bustiaId, 
+				false);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UsuariEntity usuariActual = usuariRepository.findOne(auth.getName());
+		
+		UsuariBustiaFavoritEntity usuariBustiaFavorit = UsuariBustiaFavoritEntity.getBuilder(
+				bustia, 
+				usuariActual).build();
+		usuariBustiaFavoritRepository.save(usuariBustiaFavorit);
+		contextaddToFavorits.stop();
+	}
+
+	@Transactional
+	@Override
+	public PaginaDto<UsuariBustiaFavoritDto> getBustiesFavoritsUsuariActual(
+			Long entitatId, 
+			PaginacioParamsDto paginacioParams) {
+		final Timer timergetBustiesFavoritsUsuariActual = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "getBustiesFavoritsUsuariActual"));
+		Timer.Context contextgetBustiesFavoritsUsuariActual = timergetBustiesFavoritsUsuariActual.time();
+		entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UsuariEntity usuariActual = usuariRepository.findOne(auth.getName());
+		
+		Page<UsuariBustiaFavoritEntity> usuariBustiesFavorits = usuariBustiaFavoritRepository.findByUsuari(
+				usuariActual, 
+				paginacioHelper.toSpringDataPageable(paginacioParams));
+		
+		PaginaDto<UsuariBustiaFavoritDto> paginaDto = paginacioHelper.toPaginaDto(
+				usuariBustiesFavorits, 
+				UsuariBustiaFavoritDto.class,
+				new Converter<UsuariBustiaFavoritEntity, UsuariBustiaFavoritDto>() { //només necessitam el nom de la búsita i l'id de l'entity
+					@Override
+					public UsuariBustiaFavoritDto convert(UsuariBustiaFavoritEntity source) {
+						return bustiaHelper.toUsuariBustiaFavoritDto(source);
+					}
+				});
+		contextgetBustiesFavoritsUsuariActual.stop();
+		return paginaDto;
+	}
+	
+	@Transactional
+	@Override
+	public void removeFromFavorits(
+			Long entitatId, 
+			Long id) {
+		final Timer timerremoveFromFavorits = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "removeFromFavorits"));
+		Timer.Context contextremoveFromFavorits = timerremoveFromFavorits.time();
+		entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);
+		
+		//cercar per id bustia/usuari o per id taula favorits
+		UsuariBustiaFavoritEntity usuariBustiaFavorit = usuariBustiaFavoritRepository.findOne(id);
+		if (usuariBustiaFavorit == null)  {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			BustiaEntity bustia = bustiaRepository.findOne(id);
+			UsuariEntity usuari = usuariRepository.findByCodi(auth.getName());
+			
+			usuariBustiaFavorit = usuariBustiaFavoritRepository.findByBustiaAndUsuari(bustia, usuari);
+		}
+		usuariBustiaFavoritRepository.delete(usuariBustiaFavorit);
+		contextremoveFromFavorits.stop();
+	}
+	
+	@Transactional
+	@Override
+	public boolean checkIfFavoritExists(
+			Long entitatId, 
+			Long id) {
+		final Timer timerremoveFromFavorits = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "checkIfFavoritExists"));
+		Timer.Context contextremoveFromFavorits = timerremoveFromFavorits.time();
+		entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		BustiaEntity bustia = bustiaRepository.findOne(id);
+		UsuariEntity usuari = usuariRepository.findByCodi(auth.getName());
+		
+		Long usuariBustiaFavoritId = usuariBustiaFavoritRepository.findIdByBustiaAndUsuari(bustia, usuari);
+		contextremoveFromFavorits.stop();
+		return (usuariBustiaFavoritId != null) ? true : false;
 	}
 	
 	/** Mètode privat per retornnar un arbre amb les unitats organitzatives superiors

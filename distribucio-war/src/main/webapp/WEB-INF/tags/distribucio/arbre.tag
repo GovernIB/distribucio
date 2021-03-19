@@ -28,11 +28,13 @@
 <%@ attribute name="height" required="false" rtexprvalue="true"%>
 <%@ attribute name="isCheckBoxEnabled" type="java.lang.Boolean"%>
 <%@ attribute name="isEnviarConeixementActiu" type="java.lang.Boolean"%>
+<%@ attribute name="isFavoritsPermes" type="java.lang.Boolean"%>
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
 <c:if test="${empty isCheckBoxEnabled}"><c:set var="isCheckBoxEnabled" value="${false}"/></c:if>
 <c:if test="${empty isEnviarConeixementActiu}"><c:set var="isEnviarConeixementActiu" value="${false}"/></c:if>
+<c:if test="${empty isFavoritsPermes}"><c:set var="isFavoritsPermes" value="${false}"/></c:if>
 <div id="${id}" class="well" style="width: 100%; overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>
@@ -87,7 +89,7 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu} ? "contextmenu" : "", "crrm"],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu && isCheckBoxEnabled} ? "contextmenu" : "", "crrm"],
 		"core": {
 			"check_callback": true
 		},
@@ -100,6 +102,7 @@
 			"cascade": "down"
 		},
 		"contextmenu" : {
+			"select_node": false,
 			"items" : showMenu
 		}
 	})<c:if test="${not empty readyCallback}">
@@ -159,39 +162,68 @@
 	function showMenu(node) {
 		var items = {};
 		var nodeId = node.id;
-		var nodeHrefId = node.a_attr.id;
-		var selectedForConeixement = $('#' + nodeHrefId).hasClass('jstree-clicked-coneixement');
-		if(!selectedForConeixement) {
-			var itemAddConeixement = { 
-				"afegir" : {
-					"separator_before"  : false,
-					"separator_after"   : false,
-					"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
-					"icon" 				: "fa fa-plus",
-					"action"            : function (data) {
-					    						$('#' + nodeHrefId).removeClass('jstree-clicked');
-										    	$('#' + nodeHrefId).addClass('jstree-clicked-coneixement');
-										    	perConeixement.push(nodeId);
-										  }
-				 }
+		var nodeHrefId = '#' + node.a_attr.id;
+		var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
+		
+		if (!isNaN(nodeId)) {
+			var alreadyInFavorits = existsInFavorits(nodeId);
+		
+			if(!selectedForConeixement) {
+				var itemAddConeixement = { 
+					"afegir" : {
+						"separator_before"  : false,
+						"separator_after"   : false,
+						"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
+						"icon" 				: "fa fa-plus",
+						"action"            : function (data) {
+													addToConeixement(nodeId, nodeHrefId, true);
+											  }
+					 }
+				}
+				items.afegir = itemAddConeixement.afegir;
+			} else {
+				var itemDeleteConeixement = {
+					"esborrar" : {
+						"separator_before"  : false,
+					    "separator_after"   : false,
+					    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
+					    "icon" 				: "fa fa-minus",
+					    "action"            : function (data) {
+					    							removeFromConeixement(nodeId, nodeHrefId, false);
+											  }
+					}
+				}
+				items.esborrar = itemDeleteConeixement.esborrar;
 			}
-			items.afegir = itemAddConeixement.afegir;
-		} else {
-			var itemDeleteConeixement = {
-				"esborrar" : {
-					"separator_before"  : false,
-				    "separator_after"   : false,
-				    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
-				    "icon" 				: "fa fa-minus",
-				    "action"            : function (data) {
-					    						$('#' + nodeHrefId).addClass('jstree-clicked');
-										    	$('#' + nodeHrefId).removeClass('jstree-clicked-coneixement');
-										    	var nodeIdIdx = perConeixement.indexOf(nodeId);
-										    	perConeixement.splice(nodeIdIdx, 1);
-										  }
+			if (${isFavoritsPermes}) {
+				if (!alreadyInFavorits) {
+					var itemAddFavorit = {
+							"favorit" : {
+								"separator_before"  : true,
+							    "separator_after"   : false,
+							    "label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.favorits"/>',
+							    "icon" 				: "fa fa-star",
+							    "action"            : function (data) {
+							    						addToFavorits(nodeId);
+													  }
+							}
+					};
+					items.favorit = itemAddFavorit.favorit;
+				} else {
+					var itemRemoveFavorit = {
+							"favorit" : {
+								"separator_before"  : true,
+							    "separator_after"   : false,
+							    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.favorits"/>',
+							    "icon" 				: "fa fa-star",
+							    "action"            : function (data) {
+							    						removeFromFavorits(nodeId);
+													  }
+							}
+					};
+					items.favorit = itemRemoveFavorit.favorit;
 				}
 			}
-			items.esborrar = itemDeleteConeixement.esborrar;
 		}
 		return items;
 	}

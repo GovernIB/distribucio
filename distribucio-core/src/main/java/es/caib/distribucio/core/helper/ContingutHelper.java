@@ -270,7 +270,6 @@ public class ContingutHelper {
 				if (contingut instanceof RegistreEntity) {
 					//directe des de registre
 					ContingutMovimentEntity firstMoviment = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
-					
 					//des de una altre anotació (còpia)
 					if (firstMoviment == null) {
 						List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
@@ -286,7 +285,13 @@ public class ContingutHelper {
 								true);
 						contingutDto.setPathInicial(pathIncial);
 					}
-					contingutDto.setPerConeixement(firstMoviment.isPerConeixement());
+					//##### comprova si l'anotació s'ha marcat per coneixement
+					boolean isEnviarConeixementActiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.contingut.enviar.coneixement");
+					if (isEnviarConeixementActiu) {
+						List<ContingutMovimentEntity> movimentsDesc = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateDesc(contingut);
+						ContingutMovimentEntity lastMoviment = !movimentsDesc.isEmpty() ? movimentsDesc.get(0) : null;
+						contingutDto.setPerConeixement(lastMoviment != null ? lastMoviment.isPerConeixement() : false);
+					}
 				}
 			}
 			// FILLS

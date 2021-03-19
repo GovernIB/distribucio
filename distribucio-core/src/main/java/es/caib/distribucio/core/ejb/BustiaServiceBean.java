@@ -21,6 +21,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
@@ -280,5 +281,29 @@ public class BustiaServiceBean implements BustiaService {
 		return delegate.findBusties(
 				entitatId,
 				mostrarInactives);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void addToFavorits(Long entitatId, Long bustiaId) {
+		delegate.addToFavorits(entitatId, bustiaId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<UsuariBustiaFavoritDto> getBustiesFavoritsUsuariActual(Long entitatId, PaginacioParamsDto paginacioParams) {
+		return delegate.getBustiesFavoritsUsuariActual(entitatId, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void removeFromFavorits(Long entitatId, Long usuariBustiaFavoritId) {
+		delegate.removeFromFavorits(entitatId, usuariBustiaFavoritId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean checkIfFavoritExists(Long entitatId, Long id) {
+		return delegate.checkIfFavoritExists(entitatId, id);
 	}
 }

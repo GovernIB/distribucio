@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
@@ -366,5 +367,23 @@ public interface BustiaService {
 	List<BustiaDto> findBusties(
 			Long entitatId,
 			boolean mostrarInactives);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public void addToFavorits(
+			Long entitatId, 
+			Long bustiaId);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<UsuariBustiaFavoritDto> getBustiesFavoritsUsuariActual(Long entitatId, PaginacioParamsDto paginacioParams);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public void removeFromFavorits(
+			Long entitatId, 
+			Long id);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public boolean checkIfFavoritExists(
+			Long entitatId, 
+			Long id);
 
 }

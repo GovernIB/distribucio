@@ -25,4 +25,5 @@ public interface ContingutMovimentRepository extends JpaRepository<ContingutMovi
 	
 	List<ContingutMovimentEntity> findByContingutAndOrigenNotNullOrderByCreatedDateAsc(ContingutEntity contingut);
 
+	List<ContingutMovimentEntity> findByContingutAndOrigenNotNullOrderByCreatedDateDesc(ContingutEntity contingut);
 }

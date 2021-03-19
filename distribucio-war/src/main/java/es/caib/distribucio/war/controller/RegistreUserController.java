@@ -750,6 +750,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute(command);
 			model.addAttribute("maxLevel", getMaxLevelArbre());
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -1368,7 +1369,50 @@ public class RegistreUserController extends BaseUserController {
 				command.getCodiProcediment());
 		return resultat;
 	}
-
+	
+	//Gestió bústies favorits
+	
+	@RequestMapping(value = "/favorits/add/{bustiaId}", method = RequestMethod.GET)
+	@ResponseBody
+	public void addBustiaToFavorits(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		bustiaService.addToFavorits(entitatActual.getId(), bustiaId);
+	}
+	
+	@RequestMapping(value = "/favorits/remove/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public void removeBustiaFromFavorits(
+			HttpServletRequest request,
+			@PathVariable Long id) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		bustiaService.removeFromFavorits(entitatActual.getId(), id);
+	}
+	
+	@RequestMapping(value = "/favorits/datatable", method = RequestMethod.GET)
+	@ResponseBody
+	public DatatablesResponse registreUserFavoritsDatatable(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return DatatablesHelper.getDatatableResponse(
+				request,
+				bustiaService.getBustiesFavoritsUsuariActual(
+						entitatActual.getId(), 
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
+	}
+	
+	@RequestMapping(value = "/favorits/check/{bustiaId}", method = RequestMethod.GET)
+	@ResponseBody
+	public boolean checkIfExists(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return bustiaService.checkIfFavoritExists(entitatActual.getId(), bustiaId);
+	}
+	
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 	    binder.registerCustomEditor(
@@ -1420,6 +1464,7 @@ public class RegistreUserController extends BaseUserController {
 						false,
 						true));
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 	}
 	
 	
@@ -1465,6 +1510,11 @@ public class RegistreUserController extends BaseUserController {
 	private boolean isEnviarConeixementActiu() {
 		String isEnviarConeixementStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.coneixement");
 		return Boolean.parseBoolean(isEnviarConeixementStr);
+	}
+	
+	private boolean isFavoritsPermes() {
+		String isFavoritsPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.favorits");
+		return Boolean.parseBoolean(isFavoritsPermesStr);
 	}
 
 	private RegistreFiltreCommand getFiltreCommand(
