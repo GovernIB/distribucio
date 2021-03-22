@@ -41,6 +41,7 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -630,18 +631,21 @@ public class ContingutController extends BaseUserController {
 
 	@RequestMapping(value = "/contingut/{registreId}/comentaris/publicar", method = RequestMethod.POST)
 	@ResponseBody
-	public List<ContingutComentariDto> publicarComentari(
+	public RespostaPublicacioComentariDto publicarComentari(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@RequestParam String text,
 			Model model) {
+		RespostaPublicacioComentariDto resposta = new RespostaPublicacioComentariDto();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (text != null && !text.isEmpty()) {
-			contingutService.publicarComentariPerContingut(entitatActual.getId(), registreId, text);
+			resposta = contingutService.publicarComentariPerContingut(entitatActual.getId(), registreId, text);
 		}
-		return contingutService.findComentarisPerContingut(
+		List<ContingutComentariDto> comentaris = contingutService.findComentarisPerContingut(
 				entitatActual.getId(), 
 				registreId);
+		resposta.setComentaris(comentaris);
+		return resposta;
 	}
 
 	@InitBinder

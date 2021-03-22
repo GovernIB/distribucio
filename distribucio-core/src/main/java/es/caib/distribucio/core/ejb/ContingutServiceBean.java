@@ -20,6 +20,7 @@ import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ContingutService;
 
@@ -129,7 +130,7 @@ public class ContingutServiceBean implements ContingutService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public boolean publicarComentariPerContingut(Long entitatId, Long contingutId, String text)
+	public RespostaPublicacioComentariDto publicarComentariPerContingut(Long entitatId, Long contingutId, String text)
 			throws NotFoundException {
 		return delegate.publicarComentariPerContingut(entitatId, contingutId, text);
 	}

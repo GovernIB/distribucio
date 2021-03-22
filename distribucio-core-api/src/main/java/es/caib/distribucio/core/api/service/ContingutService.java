@@ -15,6 +15,7 @@ import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
 /**
@@ -206,12 +207,12 @@ public interface ContingutService {
 	 *            Atribut id del contingut que es vol exportar.
 	 * @param text
 	 *            text del comentari a publicar.
-	 * @return boolea per indicar si s'ha publicat correctament.
+	 * @return RespostaPublicacioComentariDto per indicar si s'ha publicat correctament (amb/sense errors).
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	public boolean publicarComentariPerContingut(
+	public RespostaPublicacioComentariDto publicarComentariPerContingut(
 			Long entitatId,
 			Long contingutId,
 			String text) throws NotFoundException;

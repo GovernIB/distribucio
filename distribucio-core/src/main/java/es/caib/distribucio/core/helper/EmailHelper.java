@@ -207,6 +207,34 @@ public class EmailHelper {
 		
 		mailSender.send(missatge);		
 	}
+	
+	/** Envia un email d'avís amb un contingut pendent de notificar per email. Es diferencia del mètode agrupat perquè només envia
+	 * un moviment i canvia l'assumpte i el cos del missatge.
+	 * 
+	 * @param emailDestinatari
+	 * 			Email a qui s'enviarà l'email.
+	 * @param contingutEmail
+	 */
+	public void sendEmailAvisMencionatComentari(
+			String emailDestinatari,
+			UsuariEntity usuariActual,
+			ContingutEntity contingut,
+			String comentari) {
+		logger.debug("Enviament email comentari a destinatari");
+	
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		missatge.setTo(emailDestinatari);
+		missatge.setFrom(getRemitent());
+		missatge.setSubject(PREFIX_DISTRIBUCIO + " Mencionat al comentari d'una anotació [" + contingut.getNom() + "]");
+		EntitatEntity entitat = contingut.getEntitat();
+		missatge.setText(
+				"L'usuari " + usuariActual.getNom() + "(" + usuariActual.getCodi() + ") t'ha mencionat al comentari d'una anotació [" + contingut.getNom() + "]: \n" +
+				"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+				"\tNom anotació: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+				"\tComentari: " + comentari + "\n");
+		
+		mailSender.send(missatge);		
+	}
 
 	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/registreUser/bustia/642/registre/2669"
 	 * 
