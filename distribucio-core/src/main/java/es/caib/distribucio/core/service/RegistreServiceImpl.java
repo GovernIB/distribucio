@@ -593,6 +593,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setDestiDescripcio(registreEntity.getUnitatAdministrativaDescripcio());
 			anotacioPerBackoffice.setInteressats(toInteressats(registreEntity.getInteressats()));
 			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.getId()));
+			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.getJustificant().getFitxerArxiuUuid());
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}

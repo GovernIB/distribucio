@@ -67,6 +67,7 @@
 <xs:element minOccurs="0" name="transportTipusDescripcio" type="xs:string" />
 <xs:element minOccurs="0" name="usuariCodi" type="xs:string" />
 <xs:element minOccurs="0" name="usuariNom" type="xs:string" />
+<xs:element minOccurs="0" name="justificantFitxerArxiuUuid" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="annex">
