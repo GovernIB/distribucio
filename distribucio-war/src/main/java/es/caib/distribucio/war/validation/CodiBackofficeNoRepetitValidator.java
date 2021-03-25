@@ -35,8 +35,8 @@ public class CodiBackofficeNoRepetitValidator implements ConstraintValidator<Cod
 			
 			BackofficeCommand command = (BackofficeCommand) value;
 			
-			BackofficeDto entitat = backofficeService.findByCodi(command.getEntitatId(), command.getCodi());
-			if (entitat != null) {
+			BackofficeDto existent = backofficeService.findByCodi(command.getEntitatId(), command.getCodi());
+			if (existent != null && (command.getId() == null || !command.getId().equals(existent.getId()))) {
 				return false;
 			} else {
 				return true;
