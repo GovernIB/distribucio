@@ -40,8 +40,6 @@ public interface RegistreService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
-	 * @param contingutId
-	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol consultar.
 	 * @return els detalls de l'anotació.
@@ -51,7 +49,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public RegistreDto findOne(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException;
 
 	/**
@@ -69,27 +66,6 @@ public interface RegistreService {
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds) throws NotFoundException;
-
-	/**
-	 * Rebutja un registre situat dins una bústia.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param bustia
-	 *            Atribut id de la bústia.
-	 * @param registreId
-	 *            Atribut id de l'anotació de registre a afegir.
-	 * @param motiu
-	 *            Motiu del rebuig.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public void rebutjar(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId,
-			String motiu) throws NotFoundException;
 	
 	/**
 	 * Consulta el registre
@@ -125,8 +101,6 @@ public interface RegistreService {
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia de la qual es vol modificar el permís.
 	 * @param registreId
 	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
 	 * @return true si s'ha processat sense errors o false en cas contrari.
@@ -136,7 +110,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException;
 
 	/**
@@ -144,8 +117,6 @@ public interface RegistreService {
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param bustiaId
-	 *            Atribut id de la bústia de la qual es vol modificar el permís.
 	 * @param registreId
 	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
 	 * @return true si s'ha processat sense errors o false en cas contrari.
@@ -155,7 +126,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public boolean reintentarProcessamentUser(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('tothom')")
@@ -251,8 +221,6 @@ public interface RegistreService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
-	 * @param contingutId
-	 *            Atribut id del contingut pare a on està situada l'anotació.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
 	 * @return L'anotació modificada
@@ -260,7 +228,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public RegistreDto marcarLlegida(
 			Long entitatId,
-			Long contingutId,
 			Long registreId);
 	
 	/**
@@ -273,20 +240,17 @@ public interface RegistreService {
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId)
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId)
 			throws NotFoundException;
 
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId, Long annexId)
+	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId, Long annexId)
 			throws NotFoundException;
 
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
+	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long registreId,
 			Long annexId) throws NotFoundException;
 	
-	@PreAuthorize("hasRole('tothom')")
-	public List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId) throws NotFoundException;
-
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
 	public void canviEstat(AnotacioRegistreId id,
@@ -296,7 +260,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId);
 
 	/** 
@@ -304,8 +267,6 @@ public interface RegistreService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
-	 * @param contingutId
-	 *            Atribut id del contingut pare a on està situada l'anotació (bústia).
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol classificar.
 	 * @param procedimentCodi
@@ -317,7 +278,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId,
 			String procedimentCodi) throws NotFoundException;
 

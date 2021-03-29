@@ -137,13 +137,11 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public void registreAnotacioEnviarPerEmail(
 			Long entitatId, 
-			Long contingutId, 
 			Long registreId, 
 			String adresses, 
 			String motiu) throws MessagingException {
 		delegate.registreAnotacioEnviarPerEmail(
 				entitatId, 
-				contingutId, 
 				registreId, 
 				adresses, 
 				motiu);
@@ -219,14 +217,12 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public void registreReenviar(
 			Long entitatId,
-			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
 			Long contingutId,
 			boolean deixarCopia,
 			String comentari) throws NotFoundException {
 		delegate.registreReenviar(
 				entitatId,
-				bustiaOrigenId,
 				bustiaDestiIds,
 				contingutId,
 				deixarCopia,

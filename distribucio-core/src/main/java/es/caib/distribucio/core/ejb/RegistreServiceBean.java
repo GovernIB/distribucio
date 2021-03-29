@@ -50,11 +50,9 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public RegistreDto findOne(
 			Long entitatId,
-			Long contenidorId,
 			Long registreId) {
 		return delegate.findOne(
 				entitatId,
-				contenidorId,
 				registreId);
 	}
 
@@ -103,24 +101,12 @@ public class RegistreServiceBean implements RegistreService {
 	}
 	
 	@Override
-	@RolesAllowed("tothom")
-	public void rebutjar(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId,
-			String motiu) {
-		delegate.rebutjar(entitatId, bustiaId, registreId, motiu);
-	}
-	
-	@Override
 	@RolesAllowed("DIS_ADMIN")
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
 		return delegate.reintentarProcessamentAdmin(
 				entitatId,
-				bustiaId,
 				registreId);
 	}
 
@@ -128,11 +114,9 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public boolean reintentarProcessamentUser(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
 		return delegate.reintentarProcessamentUser(
 				entitatId,
-				bustiaId,
 				registreId);
 	}
 
@@ -185,42 +169,32 @@ public class RegistreServiceBean implements RegistreService {
 	@Override
 	public RegistreDto marcarLlegida(
 			Long entitatId,
-			Long contingutId,
 			Long registreId) {
 		return delegate.marcarLlegida(
 				entitatId,
-				contingutId,
 				registreId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long contingutId, Long registreId) {
-		return delegate.getRegistreJustificant(entitatId, contingutId, registreId);
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId) {
+		return delegate.getRegistreJustificant(entitatId, registreId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long contingutId, Long registreId,
+	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId,
 			Long annexId) throws NotFoundException {
-		return delegate.getAnnexSenseFirmes(entitatId, contingutId, registreId, annexId);
+		return delegate.getAnnexSenseFirmes(entitatId, registreId, annexId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long contingutId, Long registreId,
+	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long registreId,
 			Long annexId) throws NotFoundException {
-		return delegate.getAnnexAmbFirmes(entitatId, contingutId, registreId, annexId);
+		return delegate.getAnnexAmbFirmes(entitatId, registreId, annexId);
 	}
 	
-	@Override
-	@RolesAllowed("tothom")
-	public List<RegistreAnnexDto> getAnnexos(Long entitatId, Long contingutId, Long registreId)
-			throws NotFoundException {
-		return delegate.getAnnexos(entitatId, contingutId, registreId);
-	}
-
-
 	@Override
 	@RolesAllowed("tothom")
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId) {
@@ -243,21 +217,18 @@ public class RegistreServiceBean implements RegistreService {
 	@Override
 	@RolesAllowed("DIS_ADMIN")
 	public boolean reintentarEnviamentBackofficeAdmin(Long entitatId,
-			Long bustiaId,
 			Long registreId) {
-		return delegate.reintentarEnviamentBackofficeAdmin(entitatId, bustiaId, registreId);
+		return delegate.reintentarEnviamentBackofficeAdmin(entitatId, registreId);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
-			Long contingutId,
 			Long registreId,
 			String procedimentCodi) throws NotFoundException {
 		return delegate.classificar(
 				entitatId,
-				contingutId,
 				registreId,
 				procedimentCodi);
 	}

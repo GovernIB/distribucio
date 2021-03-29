@@ -4,18 +4,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class RegistreEnviarViaEmailCommand {
 	
-	Long bustiaId;
 	Long contingutId;
 	@NotEmpty
 	String addresses;
 	String motiu;
 	
-	public Long getBustiaId() {
-		return bustiaId;
-	}
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
-	}
 	public Long getContingutId() {
 		return contingutId;
 	}

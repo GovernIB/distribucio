@@ -21,7 +21,7 @@
 </head>
 <body>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
-		<form:hidden path="bustiaId"/>
+
 		<form:hidden path="contingutId"/>
 		
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>
@@ -34,7 +34,7 @@
 		<dis:inputTextarea name="motiu" textKey="bustia.pendent.contingut.enviarViaEmail.motiu"/>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.enviar"/></button>
-			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 
 	</form:form>

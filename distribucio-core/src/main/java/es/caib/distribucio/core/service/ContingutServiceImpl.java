@@ -487,13 +487,15 @@ public class ContingutServiceImpl implements ContingutService {
 			registre.setProces(RegistreProcesEstatEnum.BUSTIA_PROCESSADA);
 		}
 		
-		// Marca per evitar la cache de la bustia
-		Long bustiaId = contingut.getPare().getId();
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
+		if (contingut.getPare() != null) {
+			// Marca per evitar la cache de la bustia
+			Long bustiaId = contingut.getPareId();
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					bustiaId,
+					true);
+			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
+		}
 		// Si el contingut és una anotació de registre s'ha de 
 		// tancar l'expedient temporal 
 		if (registre != null) {

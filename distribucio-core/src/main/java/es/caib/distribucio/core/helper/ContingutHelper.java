@@ -267,13 +267,13 @@ public class ContingutHelper {
 				contingutDto.setPath(path);
 				
 				if (contingut instanceof RegistreEntity) {
+					List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
 					//directe des de registre
-					ContingutMovimentEntity firstMoviment = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
-					
+					ContingutMovimentEntity firstMoviment = ! moviments.isEmpty() ? moviments.get(0) : null;
 					//des de una altre anotació (còpia)
 					if (firstMoviment == null) {
-						List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
-						firstMoviment = !moviments.isEmpty() ? moviments.get(0) : null;
+						moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
+						firstMoviment = ! moviments.isEmpty() ? moviments.get(0) : null;
 					}
 					if (firstMoviment != null) {
 						ContingutEntity contingutDesti = firstMoviment.getDesti();

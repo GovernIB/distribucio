@@ -101,20 +101,22 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 
 
-	/*@Query("from RegistreEntity r " +
-		    "where r.regla.backofficeTipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-		    "	and r.procesEstatSistra in ( es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.PENDENT, " +
-		    "						   es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.ERROR) " +
-			"	and (r.regla.backofficeIntents is null or  r.procesIntents < r.regla.backofficeIntents) " +
-		    "order by r.data asc")
-	List<RegistreEntity> findAmbReglaPendentProcessarBackofficeSistra();*/
 
+	/*
 	RegistreEntity findByPareAndId(
 			ContingutEntity pare,
 			Long id);
+	*/
+	RegistreEntity findByEntitatAndId(
+			EntitatEntity entitat,
+			Long id);
 	
+	@Query(	"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.pare.id = :pareId ")
 	List<RegistreEntity> findByPareId(
-			Long pareId);
+			@Param("pareId") Long pareId);
 
 	/*List<RegistreEntity> findByPareAndMotiuRebuigNullOrderByDataAsc(
 			ContingutEntity pare);*/

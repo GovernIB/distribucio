@@ -71,26 +71,17 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private RegistreService registreService;
 
-
-
-
-
-
-
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), bustiaId, registreId);
+			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId);
 			model.addAttribute(
 					"justificant",
 					justificant);
-			model.addAttribute("bustiaId",
-					bustiaId);			
 			
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació del justificant", ex);
@@ -100,15 +91,14 @@ public class ContingutController extends BaseUserController {
 		return "registreJustificant";
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
 	public String arxiuInfo(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreDto registre = registreService.findOne(entitatActual.getId(), bustiaId, registreId);
+			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId);
 			model.addAttribute(
 					"registre", 
 					registre);
@@ -124,16 +114,14 @@ public class ContingutController extends BaseUserController {
 		return "arxiuInfo";
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/llegir", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/llegir", method = RequestMethod.GET)
 	public String registreMarcarLlegida(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		registreService.marcarLlegida(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		SessioHelper.marcatLlegit(request);		
 		return getAjaxControllerReturnValueSuccess(
@@ -142,12 +130,11 @@ public class ContingutController extends BaseUserController {
 				"contingut.registre.missatge.anotacio.marcada");
 	}
 	
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/arxiu/content/{tipus}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/annex/{annexId}/arxiu/content/{tipus}", method = RequestMethod.GET)
 	@ResponseBody
 	public FitxerDto descarregarBase64(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws Exception {
@@ -160,11 +147,10 @@ public class ContingutController extends BaseUserController {
 		return fitxer;
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
 	public String descarregar(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws IOException {
@@ -188,11 +174,10 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/justificant", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/justificant", method = RequestMethod.GET)
 	public String descarregarJustificant(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId) throws IOException {
 		
 		try {
@@ -215,11 +200,10 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/annex/{annexId}/firma/{firmaIndex}", method = RequestMethod.GET)
 	public String descarregarFirma(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable int firmaIndex) throws IOException {
@@ -233,11 +217,10 @@ public class ContingutController extends BaseUserController {
 	}
 	
 	/** Recupera el contingut de tots els annexos i crea un ZIP per descarregar */
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/descarregarZip", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/descarregarZip", method = RequestMethod.GET)
 	public String descarregarZipDocumentacio(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId) throws IOException {
 		try {
 			getEntitatActualComprovantPermisos(request);
@@ -261,21 +244,19 @@ public class ContingutController extends BaseUserController {
 	}
 
 
-	@RequestMapping(value = "/contingut/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		if (processatOk) {
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../" + bustiaId,
+					"redirect:../../../",
 					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
@@ -314,14 +295,8 @@ public class ContingutController extends BaseUserController {
 				"logsDetall",
 				logsDetall);
 		// Recupera la informació
-		ContingutDto contingut = contingutService.findAmbIdUser(
-						entitatActual.getId(),
-						registreId,
-						true,
-						false);
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(), 
-				contingut.getPare().getId(), 
 				registreId);
 		model.addAttribute(
 				"logsResum", 
@@ -411,7 +386,6 @@ public class ContingutController extends BaseUserController {
 							false);
 			RegistreDto registre = registreService.findOne(
 					entitatActual.getId(), 
-					contingut.getPare().getId(), 
 					contingutId);
 			List<ContingutLogDetallsDto> logsResum = contingutService.findLogsDetallsPerContingutUser(
 							entitatActual.getId(),
@@ -571,10 +545,6 @@ public class ContingutController extends BaseUserController {
 				String msg = getMessage(request, "contingut.log.resum.msg.reenviar");
 				msg = msg.substring(0, 1).toLowerCase() + msg.substring(1);
 				sb.append(": " + msg);
-//				if (log.getContingutMoviment().getOrigen() != null) {
-//					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
-//					sb.append(log.getContenidorMoviment().getOrigen().getNom()).append("\"");
-//				}
 				if (log.getContingutMoviment().getDesti() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
 					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
@@ -608,17 +578,17 @@ public class ContingutController extends BaseUserController {
 		return sb.toString();
 	}
 
-	@RequestMapping(value = "/contingut/{bustiaId}/comentaris", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{registreId}/comentaris", method = RequestMethod.GET)
 	public String comentaris(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		model.addAttribute(
 				"contingut",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
-						bustiaId,
+						registreId,
 						true,
 						false));
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();

@@ -155,7 +155,6 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute(
 					"registre",
 					registreDto);
-			model.addAttribute("bustiaId", registreDto.getPareId());
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
@@ -265,16 +264,14 @@ public class RegistreAdminController extends BaseAdminController {
 	
 	
 	
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		if (processatOk) {
 			MissatgesHelper.success(
@@ -291,18 +288,16 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.registre.reintentat.error",
 							null));
 		}
-		return "redirect:../../../" + registreId + "/detall";
+		return "redirect:../../" + registreId + "/detall";
 	}
 	
 	
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-					bustiaId,
 					registreId);
 			if (processatOk) {
 				MissatgesHelper.success(request,
@@ -318,7 +313,7 @@ public class RegistreAdminController extends BaseAdminController {
 
 
 
-		return "redirect:../../../" + registreId + "/detall";
+		return "redirect:../../" + registreId + "/detall";
 	}
 	
 	
@@ -361,13 +356,11 @@ public class RegistreAdminController extends BaseAdminController {
 						{
 							// Pendent de processament d'arxiu o regla
 							processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
-									registreDto.getPareId(), 
 									registreId);
 							
 						} else {
 							// Pendent d'envioar a backoffice
 							processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
-									registreDto.getPareId(), 
 									registreId);
 						}
 						if (processatOk)

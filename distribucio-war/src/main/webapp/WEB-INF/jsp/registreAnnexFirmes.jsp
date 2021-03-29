@@ -56,7 +56,7 @@
 				<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
 					<td>
 						${firma.fitxerNom}
-						<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/firma/${statusFirma.index}"/>" class="btn btn-default btn-sm pull-right">
+						<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/firma/${statusFirma.index}"/>" class="btn btn-default btn-sm pull-right">
 							<span class="fa fa-download"  title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 						</a>
 					</td>

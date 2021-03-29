@@ -52,27 +52,24 @@ tr.clicable {
 	    $("#collapse-justificant").on('show.bs.collapse', function(data){    
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/registreJustificant");
 		        $(this).data("loaded", true);
 		    }
 	    });
 	    $(".collapse-annex").on('show.bs.collapse', function(data){  
 		    if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + bustiaId + "/" + registreId + "/" + annexId);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>/" + registreId + "/" + annexId);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/arxiuInfo");
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo");
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -92,7 +89,7 @@ tr.clicable {
 		</li>
 		<c:if test="${not empty registre.expedientArxiuUuid}">
 			<li role="presentation">
-				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
+				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" ><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
 			</li>
 		</c:if>
 		
@@ -299,7 +296,7 @@ tr.clicable {
 							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-justificant"><span class="fa fa-chevron-down"></span></button>
 						</h3>
 					</div>
-					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}">
+					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}" >
 
 					</div>
 				</div>
@@ -463,7 +460,7 @@ tr.clicable {
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>
- 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}" data-annex-id="${annex.id}"> 
+ 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}"  data-annex-id="${annex.id}"> 
 
  							</div> 
 						</div>
@@ -515,10 +512,10 @@ tr.clicable {
 						<spring:message code="registre.detalls.info.errors"/>
 						
 						<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT'}">
-<%-- 							<a href="../${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a> --%>
+<%-- 							<a href="../registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a> --%>
 						</c:if>
 						<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
-<%-- 							<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>					 --%>
+<%-- 							<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>					 --%>
 						</c:if>
 						
 					</div>
@@ -559,7 +556,7 @@ tr.clicable {
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 			
 			    <c:if test="${registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
-					<a href="<c:url value="/registreUser/${registre.pareId}/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="<c:url value="/registreUser/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
 	
 				<dl class="dl-horizontal">
