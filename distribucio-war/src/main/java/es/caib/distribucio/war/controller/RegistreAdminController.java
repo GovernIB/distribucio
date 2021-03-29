@@ -112,17 +112,12 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-		
-		List<BustiaDto> busties = null;
-		if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-			busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
-		}
-		
+				
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
 						entitatActual.getId(),
-						busties,
+						null, // bustiesUsuari
 						RegistreFiltreCommand.asDto(filtreCommand),
 						false,
 						DatatablesHelper.getPaginacioDtoFromRequest(request), 
@@ -160,7 +155,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute(
 					"registre",
 					registreDto);
-			model.addAttribute("bustiaId", registreDto.getPare().getId());
+			model.addAttribute("bustiaId", registreDto.getPareId());
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);

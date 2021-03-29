@@ -361,11 +361,15 @@ $(document).ready(function() {
 				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
-						{{for path}}/
-							{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
-							{{:nom}}
-						{{/for}}
-						{{if !bustiaActiva}}
+						{{if path}}
+							{{for path}}/
+								{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
+								{{:nom}}
+							{{/for}}
+							{{if !bustiaActiva}}
+								<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
+							{{/if}}
+						{{else}}
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
 						{{/if}}
 					</script>

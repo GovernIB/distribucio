@@ -1936,7 +1936,7 @@ public class BustiaServiceImpl implements BustiaService {
 				"			</tr>"+				
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.bustia") + "</th>"+
-				"				<td>" + registre.getPare().getNom() + "</td>"+
+				"				<td>" + (registre.getPare() != null? registre.getPare().getNom() : "-") + "</td>"+
 				"			</tr>"+				
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.motiu") + "</th>"+

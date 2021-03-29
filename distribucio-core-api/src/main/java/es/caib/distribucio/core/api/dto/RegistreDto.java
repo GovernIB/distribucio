@@ -87,7 +87,6 @@ public class RegistreDto extends ContingutDto {
 	private Boolean llegida;
 	private Boolean presencial;
 	
-	private long pareId;
 	private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
 	private boolean procesAutomatic;
 	private long numComentaris;
@@ -130,17 +129,11 @@ public class RegistreDto extends ContingutDto {
 	public void setPresencial(Boolean presencial) {
 		this.presencial = presencial;
 	}
-	public long getPareId() {
-		return pareId;
-	}
 	public RegistreProcesEstatSimpleEnumDto getProcesEstatSimple() {
 		return procesEstatSimple;
 	}
 	public void setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto procesEstatSimple) {
 		this.procesEstatSimple = procesEstatSimple;
-	}
-	public void setPareId(long pareId) {
-		this.pareId = pareId;
 	}
 	public List<ContingutDto> getPath() {
 		return path;

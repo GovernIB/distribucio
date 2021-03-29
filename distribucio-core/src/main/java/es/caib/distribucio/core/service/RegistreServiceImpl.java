@@ -183,10 +183,12 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
+		BustiaEntity bustia =  bustiaId != null && bustiaId > 0 ?
+				entityComprovarHelper.comprovarBustia(
+						entitat,
+						bustiaId,
+						true)
+				: null;
 
 		RegistreEntity registre = registreRepository.findByPareAndId(
 				bustia,
@@ -300,6 +302,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		String bustiesIds="";
 			
+		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
 		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
@@ -309,7 +312,8 @@ public class RegistreServiceImpl implements RegistreService {
 		} else if (bustia != null) {	
 			busties.add(bustia.getId());
 		} else {
-			busties = null;
+			totesLesbusties = true;
+			busties.add(0L);
 		}
 
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
@@ -360,13 +364,15 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
 				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
 				+ "interessat=" + filtre.getInteressat() + ", " 
-				+ "bustiesIds= " + bustiesIds + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
 				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
 
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
 			pagina = registreRepository.findRegistreByPareAndFiltre(
+					entitat,
+					totesLesbusties,
 					busties,
 					StringUtils.isEmpty(filtre.getNumero()),
 					filtre.getNumero() != null ? filtre.getNumero().trim() : "",
@@ -1001,11 +1007,12 @@ public class RegistreServiceImpl implements RegistreService {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		try {
-			// Comprova l'accés a la bústia
-			entityComprovarHelper.comprovarBustia(
-						registre.getEntitat(),
-						registre.getPare().getId(),
-						true);
+			if (registre.getPare() != null)
+				// Comprova l'accés a la bústia
+				entityComprovarHelper.comprovarBustia(
+							registre.getEntitat(),
+							registre.getPare().getId(),
+							true);
 			// Justificant
 			FitxerDto fitxer;
 			// Annexos
@@ -1323,7 +1330,7 @@ public class RegistreServiceImpl implements RegistreService {
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
-				registre.getPare().getId(),
+				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
 				registre.getAssumpteCodi());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
@@ -1375,10 +1382,11 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
+		BustiaEntity bustia = bustiaId != null && bustiaId > 0 ?	
+				entityComprovarHelper.comprovarBustia(	entitat,
+														bustiaId,
+														true)
+				: null;
 		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (procediments != null) {

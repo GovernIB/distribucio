@@ -183,7 +183,6 @@ public class ContingutHelper {
 			
 			// toBustiaContingut 
 			if (registreEntity.getPare() != null) {
-				registreDto.setPareId(registreEntity.getPare().getId());
 				ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
 				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
 			}
