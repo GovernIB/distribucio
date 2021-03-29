@@ -232,7 +232,7 @@ public class RegistreUserController extends BaseUserController {
         model.addAttribute("registreTotal", registreTotal);
         model.addAttribute("ordreColumn", ordreColumn);
         model.addAttribute("ordreDir", ordreDir);
-        return new ModelAndView("redirect:registreUser/registre/" + registreId, model.asMap());
+        return new ModelAndView("redirect:/registreUser/registre/" + registreId, model.asMap());
 	}
 	@RequestMapping(value = "/registre/{registreId}", method = RequestMethod.GET)
 	public String registreUserDetall(

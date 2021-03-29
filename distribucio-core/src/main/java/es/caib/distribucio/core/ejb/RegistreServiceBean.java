@@ -102,6 +102,16 @@ public class RegistreServiceBean implements RegistreService {
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
+	public boolean reintentarBustiaPerDefecte(
+			Long entitatId,
+			Long registreId) {
+		return delegate.reintentarBustiaPerDefecte(
+				entitatId,
+				registreId);
+	}
+	
+	@Override
+	@RolesAllowed("DIS_ADMIN")
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {

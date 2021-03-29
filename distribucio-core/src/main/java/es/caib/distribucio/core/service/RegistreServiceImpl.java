@@ -51,6 +51,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -85,6 +86,7 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
+import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
@@ -158,6 +160,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private UsuariHelper usuariHelper;
 	@Autowired
 	private HistogramPendentsHelper historicsPendentHelper;
+	@Autowired
+	private EmailHelper emailHelper;
 	
 	
 	@Transactional(readOnly = true)
@@ -455,6 +459,8 @@ public class RegistreServiceImpl implements RegistreService {
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
+
+		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
 			for (BustiaDto bustiaUsuari: bustiesUsuari) {
@@ -467,7 +473,8 @@ public class RegistreServiceImpl implements RegistreService {
 		} else if (bustia != null) {
 			busties.add(bustia.getId());
 		} else {
-			busties = null;
+			busties.add(0L);
+			totesLesbusties = true;
 		}
 
 		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
@@ -496,6 +503,8 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 
 		ids = registreRepository.findRegistreIdsByPareAndFiltre(
+				entitat,
+				totesLesbusties,
 				busties,
 				StringUtils.isEmpty(filtre.getNumero()),
 				filtre.getNumero() != null ? filtre.getNumero() : "",
@@ -714,6 +723,68 @@ public class RegistreServiceImpl implements RegistreService {
 
 	}
 
+	@Override
+	@Transactional
+	public boolean reintentarBustiaPerDefecte(
+			Long entitatId,
+			Long registreId) {
+		logger.debug("Reintentant processament d'anotació sense bústia per admins (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);		
+		boolean success = true;
+		if (anotacio.getPare() == null) {
+			try {
+				// Cerca la bústia destí
+				BustiaEntity bustia = bustiaHelper.findBustiaDesti(
+						entitat,
+						anotacio.getUnitatAdministrativa());
+				UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+						entitat.getCodi(),
+						anotacio.getUnitatAdministrativa());
+				
+				ReglaEntity reglaAplicable = null;
+				if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat())) {
+					reglaAplicable = reglaHelper.findAplicable(
+							entitat,
+							unitat.getId(),
+							bustia.getId(),
+							anotacio.getProcedimentCodi(),
+							anotacio.getAssumpteCodi());
+					anotacio.updateRegla(reglaAplicable);
+				}
+				
+				// Mateixes accions que a bustiaService.moveAnotacioToBustiaPerDefecte
+				contingutHelper.ferIEnregistrarMoviment(
+						anotacio,
+						bustia,
+						"Anotacio sense bústia reprocessada des del llistat de l'administrador " +
+						"per assignar bústia per defecte" + (reglaAplicable != null  ? "i regla aplicable" : ""));
+				
+				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+						bustia.getEntitat(),
+						bustia);				
+
+				if (reglaAplicable == null 
+						&& anotacio.getPare() != null) {
+					emailHelper.createEmailsPendingToSend(
+							(BustiaEntity) anotacio.getPare(),
+							anotacio,
+							anotacio.getDarrerMoviment());
+				}
+
+			} catch (Exception e) {
+				success = false;
+			}
+		}
+		return success;
+	}
+	
 	@Override
 	@Transactional
 	public boolean reintentarProcessamentAdmin(

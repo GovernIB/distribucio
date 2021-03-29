@@ -200,16 +200,11 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		} else {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-			List<BustiaDto> busties = null;
-			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
-			}
-			
+			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);			
 			seleccio.addAll(
 					registreService.findRegistreIds(
 							entitatActual.getId(),
-							busties,
+							null, // bustiesUsuari
 							RegistreFiltreCommand.asDto(filtreCommand),
 							true));
 		}
@@ -350,7 +345,14 @@ public class RegistreAdminController extends BaseAdminController {
 					logger.debug("Reprocessar anotació amb id " + registreId);
 					contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 					RegistreDto registreDto = (RegistreDto) contingutDto;
-					if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+					if (registreDto.getPare() == null) {
+						// Restaura la bústia per defecte i la la regla aplicable si s'escau
+						processatOk = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
+								registreId);
+						contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+					} 
+					else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
+					{
 						if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
 							|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
 						{
@@ -359,7 +361,7 @@ public class RegistreAdminController extends BaseAdminController {
 									registreId);
 							
 						} else {
-							// Pendent d'envioar a backoffice
+							// Pendent d'enviar a backoffice
 							processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
 									registreId);
 						}

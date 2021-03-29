@@ -317,7 +317,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
-			"	 (r.pare.id in (:bustiesIds)) " +
+			"    (r.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
 			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
 			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
 			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
@@ -337,6 +338,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 )")
 	public List<Long> findRegistreIdsByPareAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
 			@Param("bustiesIds") List<Long> bustiesIds,
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,

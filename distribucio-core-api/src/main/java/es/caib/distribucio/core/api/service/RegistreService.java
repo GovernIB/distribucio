@@ -97,6 +97,23 @@ public interface RegistreService {
 	
 
 	/**
+	 * Torna a processar una anotació de registre sense bústia assignada. Assigna 
+	 * la bústia per defecte, busca regles pendents i afegeix el primer moviment.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public boolean reintentarBustiaPerDefecte(
+			Long entitatId,
+			Long registreId) throws NotFoundException;
+	
+	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
 	 * 
 	 * @param entitatId
