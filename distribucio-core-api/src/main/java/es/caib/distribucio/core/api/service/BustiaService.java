@@ -357,10 +357,4 @@ public interface BustiaService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public boolean isBustiaReadPermitted(Long bustiaId);
-	
-	@PreAuthorize("hasRole('DIS_ADMIN')")
-	List<BustiaDto> findBusties(
-			Long entitatId,
-			boolean mostrarInactives);
-
 }

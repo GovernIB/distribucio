@@ -11,6 +11,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**
@@ -37,6 +38,13 @@ public class RegistreFiltreCommand {
 	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
 	private String backCodi;
 
+	// Filtre per administradors
+	/** Estat específic. */
+	private RegistreProcesEstatEnum estat;
+	/** Per filtrar només les que tinguin error informat. */
+	private boolean nomesAmbErrors;
+	/** Unitat organitzativa superior. */
+	private Long unitatId;
 
 	public String getBackCodi() {
 		return backCodi;
@@ -134,6 +142,24 @@ public class RegistreFiltreCommand {
 	}
 	public void setNumeroOrigen(String numeroOrigen) {
 		this.numeroOrigen = numeroOrigen;
+	}
+	public RegistreProcesEstatEnum getEstat() {
+		return estat;
+	}
+	public void setEstat(RegistreProcesEstatEnum estat) {
+		this.estat = estat;
+	}
+	public boolean isNomesAmbErrors() {
+		return nomesAmbErrors;
+	}
+	public void setNomesAmbErrors(boolean nomesAmbErrors) {
+		this.nomesAmbErrors = nomesAmbErrors;
+	}
+	public Long getUnitatId() {
+		return unitatId;
+	}
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
 	}	
 	
 }

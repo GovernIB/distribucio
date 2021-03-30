@@ -44,6 +44,7 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
@@ -52,7 +53,22 @@ function formatSelectBustia(item) {
 		return item.text;
 }
 
+function formatSelectUnitat(item) {
+	if (!item.id) {
+	    return item.text;
+	}
+	if (item.data && item.data.estat=="V"){
+		return item.text;
+	} else {
+		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+	}
+}
+
 $(document).ready(function() {
+
+	$('#unitatId').on('change', function (e) {
+		$('#mostrarInactives').change();
+	});
 	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
@@ -60,8 +76,17 @@ $(document).ready(function() {
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
+		$('#nomesAmbErrorsBtn').removeClass('active');
+		$('#nomesAmbErrors').val('');
+		$('#estat').val(null).trigger('change');
 	});
-	
+
+	$('#nomesAmbErrorsBtn').click(function() {
+		nomesAmbErrors = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#nomesAmbErrors').val(nomesAmbErrors);
+	})
+
 	$('#taulaDades').on( 'draw.dt', function () {
 	
 		$('#seleccioAll').on('click', function() {
@@ -125,10 +150,13 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactives').change(function() {
+		$('#bustia').prop('disabled', true);
 		var actual = $('#bustia').val();
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreAdmin/busties'/>?mostrarInactives=" + $(this).val();
+		if ($('#unitatId').val())
+			baseUrl += "&unitatId=" + $('#unitatId').val();
 		$.get(baseUrl)
 			.done(function(data) {
 				bustiesInactives = [];
@@ -138,6 +166,7 @@ $(document).ready(function() {
 						bustiesInactives.push(data[i].id.toString());
 					}
 				}
+				$('#bustia').removeAttr('disabled');
 				$('#bustia').val(actual).change();
 			})
 			.fail(function() {
@@ -149,13 +178,17 @@ $(document).ready(function() {
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
 		e.stopPropagation();
-	});
+	});	
+	
+	$('#numero').focus();
 });
 
 </script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
+		
+		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		
 		<div class="row">
 			<div class="col-md-2">
@@ -172,7 +205,7 @@ $(document).ready(function() {
 				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>
 		</div>
 		<div class="row">
@@ -183,6 +216,20 @@ $(document).ready(function() {
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
 			<div class="col-md-3">
+			
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="unitatId"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="contingut.admin.filtre.uo"
+					suggestValue="id"
+					suggestText="codiAndNom" 
+					optionTemplateFunction="formatSelectUnitat" />
+			</div>
+			<div class="col-md-3">			
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect 
@@ -196,8 +243,8 @@ $(document).ready(function() {
 							optionMinimumResultsForSearch="0" 
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
-					<div class="col-md-2">
-						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+					<div class="col-md-2" style="padding-left: 0;">
+						<button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
 		    	    			<i class="fa fa-ban fa-stack-2x"></i>
@@ -205,25 +252,37 @@ $(document).ready(function() {
 						</button>
 						<dis:inputHidden name="mostrarInactives"/>
 					</div>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
+				</div>			
 			</div>			
 			<div class="col-md-2">
 				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 		</div>
 		<div class="row">			
-			<div class="col-md-4">
+			<div class="col-md-2">
 				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-2">
 				<dis:inputText name="backCodi" inline="true" placeholderKey="bustia.list.filtre.back.codi"/>		
 			</div>
+
+			<div class="col-md-3">
+				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>			
+			</div>
+			<div class="col-md-3">
+				<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat.especific" emptyOption="true"/>
+					</div>
+					<div class="col-md-2" style="padding-left: 0;">
+						<button id="nomesAmbErrorsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+						<dis:inputHidden name="nomesAmbErrors"/>
+					</div>
+				</div>
+			</div>
+			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>

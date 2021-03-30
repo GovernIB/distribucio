@@ -705,7 +705,7 @@ public class BustiaServiceImpl implements BustiaService {
 				
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
+		List<BustiaEntity> busties = bustiaRepository.findAmbEntitatAndFiltre(
 				entitat,
 				filtre.getUnitatIdFiltre() == null, 
 				unitat,
@@ -728,39 +728,6 @@ public class BustiaServiceImpl implements BustiaService {
 		contexttoBustiaDto.stop();
 		return bustiesDto;
 	}
-	
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<BustiaDto> findBusties(
-			Long entitatId,
-			boolean mostrarInactives) {
-		
-		logger.debug("Consulta de busties(" + "entitatId=" + entitatId +  ", mostrarInactives=" + mostrarInactives + ")");
-		
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		
-		List<BustiaEntity> busties;		
-		if (mostrarInactives) {
-			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
-		} else {
-			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
-		}
-		
-		List<BustiaDto> bustiesRetorn = bustiaHelper.toBustiaDto(
-				busties,
-				false,
-				true,
-				false);
-		
-		return bustiesRetorn;
-	}
-	
-	
 
 	@Override
 	@Transactional(readOnly = true)

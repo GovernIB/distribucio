@@ -82,6 +82,7 @@ import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -104,6 +105,7 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -154,6 +156,10 @@ public class RegistreServiceImpl implements RegistreService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	
+	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
@@ -343,7 +349,10 @@ public class RegistreServiceImpl implements RegistreService {
 			c.add(Calendar.HOUR, 24);
 			dataRecepcioFi = c.getTime();
 		}
-		logger.info("Consultant el contingut de l'usuari ("
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.debug("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
 				+ "numero=" + filtre.getNumero() + ", "
@@ -355,6 +364,10 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
 				+ "interessat=" + filtre.getInteressat() + ", " 
 				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ", " 
 				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
 
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
@@ -386,6 +399,11 @@ public class RegistreServiceImpl implements RegistreService {
 					tipusFisicaCodi,
 					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					filtre.getEstat() == null,
+					filtre.getEstat(),
+					filtre.isNomesAmbErrors(),
+					unitat == null,
+					unitat,
 					onlyAmbMoviments,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
@@ -433,15 +451,6 @@ public class RegistreServiceImpl implements RegistreService {
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			boolean isAdmin) {
-		logger.debug("Consultant els identificadors del contingut de l'usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + filtre.getBustia() + ", "
-				+ "numero=" + filtre.getNumero() + ", "
-				+ "titol=" + filtre.getTitol() + ", "
-				+ "remitent=" + filtre.getRemitent() + ", "
-				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
-				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
-				+ "estatContingut=" + filtre.getProcesEstatSimple() + ")");
 		List<Long> ids;
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
 		Timer.Context contextTotal = timerTotal.time();
@@ -502,6 +511,25 @@ public class RegistreServiceImpl implements RegistreService {
 			dataRecepcioFi = c.getTime();
 		}
 
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.debug("Consultant els identificadors del contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : busties) + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ")");
+
 		ids = registreRepository.findRegistreIdsByPareAndFiltre(
 				entitat,
 				totesLesbusties,
@@ -527,7 +555,12 @@ public class RegistreServiceImpl implements RegistreService {
 				tipusFisicaCodi == null,
 				tipusFisicaCodi,
 				filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
-				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "");
+				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+				filtre.getEstat() == null,
+				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
+				unitat == null,
+				unitat);
 	
 
 		contextTotal.stop();

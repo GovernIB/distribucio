@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -243,9 +244,13 @@ public class RegistreAdminController extends BaseAdminController {
 	public List<BustiaDto> busties(
 			HttpServletRequest request,
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			@RequestParam(required = false) Long unitatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return bustiaService.findBusties(entitatActual.getId(), mostrarInactives);
+		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
+		filtre.setActiva(!mostrarInactives);
+		filtre.setUnitatIdFiltre(unitatId);
+		return bustiaService.findAmbEntitatAndFiltre(entitatActual.getId(), filtre);
 	}
 	
 	

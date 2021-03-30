@@ -8,6 +8,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+
 
 /**
  * Informació del filtre de continguts.
@@ -32,6 +34,13 @@ public class RegistreFiltreDto implements Serializable {
 
 	private String backCodi;
 
+	// Filtre per administradors
+	/** Estat específic. */
+	private RegistreProcesEstatEnum estat;
+	/** Per filtrar només les que tinguin error informat. */
+	private boolean nomesAmbErrors;
+	/** Unitat organitzativa superior. */
+	private Long unitatId;
 	
 	public String getBackCodi() {
 		return backCodi;
@@ -112,6 +121,24 @@ public class RegistreFiltreDto implements Serializable {
 		this.mostrarInnactives = mostrarInactives;
 	}
 	
+	public RegistreProcesEstatEnum getEstat() {
+		return estat;
+	}
+	public void setEstat(RegistreProcesEstatEnum estat) {
+		this.estat = estat;
+	}
+	public boolean isNomesAmbErrors() {
+		return nomesAmbErrors;
+	}
+	public void setNomesAmbErrors(boolean nomesAmbErrors) {
+		this.nomesAmbErrors = nomesAmbErrors;
+	}
+	public Long getUnitatId() {
+		return unitatId;
+	}
+	public void setUnitatId(Long unitatId) {
+		this.unitatId = unitatId;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
