@@ -51,6 +51,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -81,10 +82,12 @@ import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
+import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
@@ -102,6 +105,7 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -152,12 +156,18 @@ public class RegistreServiceImpl implements RegistreService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;	
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	
+	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
 	@Resource
 	private UsuariHelper usuariHelper;
 	@Autowired
 	private HistogramPendentsHelper historicsPendentHelper;
+	@Autowired
+	private EmailHelper emailHelper;
 	
 	
 	@Transactional(readOnly = true)
@@ -171,11 +181,9 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreDto findOne(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
 				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -183,47 +191,37 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
-
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		if (registre == null)
+			throw new NotFoundException(registreId, RegistreEntity.class);
 		
-		if (registre == null) {
-			registre = registreRepository.findOne(registreId);
-			if (registre == null) {
-				throw new NotFoundException(registreId, RegistreEntity.class);
-			} else {
-				throw new NotFoundException(registreId, RegistreEntity.class, registre.getPare().getNom());
-			}
-			
-		} else {
-			
-			RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
-					registre,
-					false,
-					false,
-					false,
-					false,
-					true,
-					false,
-					true);
-			contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+							entitat,
+							registre.getPareId(),
+							true);
+					
+		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
+				registre,
+				false,
+				false,
+				false,
+				false,
+				true,
+				false,
+				true);
+		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 
-			// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-				if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
-						|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
-					registreAnotacio.getAnnexos().remove(annexDto);
-					break;
-				}
+		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
+		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
+			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
+					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
+				registreAnotacio.getAnnexos().remove(annexDto);
+				break;
 			}
-			
-			return registreAnotacio;
 		}
+		
+		return registreAnotacio;
 
 	}
 
@@ -300,6 +298,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		String bustiesIds="";
 			
+		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
 		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
@@ -309,7 +308,8 @@ public class RegistreServiceImpl implements RegistreService {
 		} else if (bustia != null) {	
 			busties.add(bustia.getId());
 		} else {
-			busties = null;
+			totesLesbusties = true;
+			busties.add(0L);
 		}
 
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
@@ -329,15 +329,15 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
 		Boolean enviatPerEmail = null;
-		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
 				enviatPerEmail = true;
 			} else {
 				enviatPerEmail = false;
 			}
 		}
 		
-		String tipusFisicaCodi = null;
+ 		String tipusFisicaCodi = null;
 		if (filtre.getTipusDocFisica() != null) {
 			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
 		}
@@ -349,7 +349,10 @@ public class RegistreServiceImpl implements RegistreService {
 			c.add(Calendar.HOUR, 24);
 			dataRecepcioFi = c.getTime();
 		}
-		logger.info("Consultant el contingut de l'usuari ("
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.debug("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
 				+ "numero=" + filtre.getNumero() + ", "
@@ -360,13 +363,20 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
 				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
 				+ "interessat=" + filtre.getInteressat() + ", " 
-				+ "bustiesIds= " + bustiesIds + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
+				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ", " 
 				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
 
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
 			pagina = registreRepository.findRegistreByPareAndFiltre(
+					entitat,
+					totesLesbusties,
 					busties,
 					StringUtils.isEmpty(filtre.getNumero()),
 					filtre.getNumero() != null ? filtre.getNumero().trim() : "",
@@ -390,6 +400,11 @@ public class RegistreServiceImpl implements RegistreService {
 					tipusFisicaCodi,
 					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					filtre.getEstat() == null,
+					filtre.getEstat(),
+					filtre.isNomesAmbErrors(),
+					unitat == null,
+					unitat,
 					onlyAmbMoviments,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
@@ -437,15 +452,6 @@ public class RegistreServiceImpl implements RegistreService {
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			boolean isAdmin) {
-		logger.debug("Consultant els identificadors del contingut de l'usuari ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + filtre.getBustia() + ", "
-				+ "numero=" + filtre.getNumero() + ", "
-				+ "titol=" + filtre.getTitol() + ", "
-				+ "remitent=" + filtre.getRemitent() + ", "
-				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
-				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
-				+ "estatContingut=" + filtre.getProcesEstatSimple() + ")");
 		List<Long> ids;
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
 		Timer.Context contextTotal = timerTotal.time();
@@ -463,6 +469,8 @@ public class RegistreServiceImpl implements RegistreService {
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
+
+		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
 			for (BustiaDto bustiaUsuari: bustiesUsuari) {
@@ -475,15 +483,16 @@ public class RegistreServiceImpl implements RegistreService {
 		} else if (bustia != null) {
 			busties.add(bustia.getId());
 		} else {
-			busties = null;
+			busties.add(0L);
+			totesLesbusties = true;
 		}
 
 		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
 		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
 		Boolean enviatPerEmail = null;
-		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
 				enviatPerEmail = true;
 			} else {
 				enviatPerEmail = false;
@@ -503,7 +512,28 @@ public class RegistreServiceImpl implements RegistreService {
 			dataRecepcioFi = c.getTime();
 		}
 
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.debug("Consultant els identificadors del contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : busties) + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ")");
+
 		ids = registreRepository.findRegistreIdsByPareAndFiltre(
+				entitat,
+				totesLesbusties,
 				busties,
 				StringUtils.isEmpty(filtre.getNumero()),
 				filtre.getNumero() != null ? filtre.getNumero() : "",
@@ -526,7 +556,12 @@ public class RegistreServiceImpl implements RegistreService {
 				tipusFisicaCodi == null,
 				tipusFisicaCodi,
 				filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
-				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "");
+				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+				filtre.getEstat() == null,
+				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
+				unitat == null,
+				unitat);
 	
 
 		contextTotal.stop();
@@ -674,7 +709,6 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreAnnexDto getRegistreJustificant(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException {
 		
 		final Timer timegetRegistreJustificant = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getRegistreJustificant"));
@@ -683,7 +717,6 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
 				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -691,15 +724,15 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
-		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					comprovarPermisBustia);
-
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
+		RegistreEntity registre = registreRepository.findByEntitatAndId(
+				entitat,
 				registreId);
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+						entitat,
+						registre.getPareId(),
+						true);
+
 		RegistreAnnexDto justificant = getJustificantPerRegistre(
 					entitat, 
 					registre);
@@ -709,90 +742,13 @@ public class RegistreServiceImpl implements RegistreService {
 		return justificant;
 	}
 
-	@Transactional(readOnly = true)
-	@Override
-	public List<RegistreAnnexDto> getAnnexos(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId	
-			) throws NotFoundException {
-		logger.debug("Obtenint anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-
-		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					comprovarPermisBustia);
-
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
-		List<RegistreAnnexDto> anexosDto = new ArrayList<>();
-		for (RegistreAnnexEntity annexEntity: registre.getAnnexos()) {
-			
-			RegistreAnnexDto annex = conversioTipusHelper.convertir(
-					annexEntity,
-					RegistreAnnexDto.class);
-			anexosDto.add(annex);
-		}
-		return anexosDto;
-	}
-
-	@Transactional
-	@Override
-	public void rebutjar(
-			Long entitatId,
-			Long bustiaId,
-			Long registreId,
-			String motiu) {
-		logger.debug("Rebutjar anotació de registre a la bústia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
-				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(
-				registreId,
-				null);
-		if (!registre.getPare().equals(bustia)) {
-			logger.error("No s'ha trobat el registre a dins la bústia (" +
-					"bustiaId=" + bustiaId + "," +
-					"registreId=" + registreId + ")");
-			throw new ValidationException(
-					registreId,
-					RegistreEntity.class,
-					"La bústia especificada (id=" + bustiaId + ") no coincideix amb la bústia de l'anotació de registre");
-		}
-		registre.updateMotiuRebuig(motiu);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustia);
-	}
-
 	@Override
 	@Transactional
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
 				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ")");
 
 		List<Long> pendentsIds = new ArrayList<>();
@@ -804,26 +760,88 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Override
 	@Transactional
-	public boolean reintentarProcessamentAdmin(
+	public boolean reintentarBustiaPerDefecte(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
-		logger.debug("Reintentant processament d'anotació pendent per admins (" +
+		logger.debug("Reintentant processament d'anotació sense bústia per admins (" +
 				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);		
+		boolean success = true;
+		if (anotacio.getPare() == null) {
+			try {
+				// Cerca la bústia destí
+				BustiaEntity bustia = bustiaHelper.findBustiaDesti(
+						entitat,
+						anotacio.getUnitatAdministrativa());
+				UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+						entitat.getCodi(),
+						anotacio.getUnitatAdministrativa());
+				
+				ReglaEntity reglaAplicable = null;
+				if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat())) {
+					reglaAplicable = reglaHelper.findAplicable(
+							entitat,
+							unitat.getId(),
+							bustia.getId(),
+							anotacio.getProcedimentCodi(),
+							anotacio.getAssumpteCodi());
+					anotacio.updateRegla(reglaAplicable);
+				}
+				
+				// Mateixes accions que a bustiaService.moveAnotacioToBustiaPerDefecte
+				contingutHelper.ferIEnregistrarMoviment(
+						anotacio,
+						bustia,
+						"Anotacio sense bústia reprocessada des del llistat de l'administrador " +
+						"per assignar bústia per defecte" + (reglaAplicable != null  ? "i regla aplicable" : ""),
+						false);
+				
+				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+						bustia.getEntitat(),
+						bustia);				
+
+				if (reglaAplicable == null 
+						&& anotacio.getPare() != null) {
+					emailHelper.createEmailsPendingToSend(
+							(BustiaEntity) anotacio.getPare(),
+							anotacio,
+							anotacio.getDarrerMoviment());
+				}
+
+			} catch (Exception e) {
+				success = false;
+			}
+		}
+		return success;
+	}
+	
+	@Override
+	@Transactional
+	public boolean reintentarProcessamentAdmin(
+			Long entitatId,
+			Long registreId) {
+		logger.debug("Reintentant processament d'anotació pendent per admins (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
+		
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
 				entitat,
-				bustiaId,
-				false);
-		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
-				registreId,
-				bustia);
+				anotacio.getPareId(),
+				true);
+
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
@@ -832,24 +850,20 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	public boolean reintentarProcessamentUser(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per usuaris (" +
 				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				false,
 				true);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
+		entityComprovarHelper.comprovarBustia(
 				entitat,
-				bustiaId,
+				anotacio.getPareId(),
 				true);
-		RegistreEntity anotacio = entityComprovarHelper.comprovarRegistre(
-				registreId,
-				bustia);
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
@@ -1002,11 +1016,12 @@ public class RegistreServiceImpl implements RegistreService {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		try {
-			// Comprova l'accés a la bústia
-			entityComprovarHelper.comprovarBustia(
-						registre.getEntitat(),
-						registre.getPare().getId(),
-						true);
+			if (registre.getPare() != null)
+				// Comprova l'accés a la bústia
+				entityComprovarHelper.comprovarBustia(
+							registre.getEntitat(),
+							registre.getPare().getId(),
+							true);
 			// Justificant
 			FitxerDto fitxer;
 			// Annexos
@@ -1078,7 +1093,6 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId,
 			Long annexId) throws NotFoundException {
 		
@@ -1087,11 +1101,13 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
-		entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				comprovarPermisBustia);
+		if (!usuariHelper.isAdmin()) {
+			RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					registre.getPareId(),
+					true);
+		}
 		
 		return registreHelper.getAnnexAmbFirmes(
 				annexId);
@@ -1106,27 +1122,27 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreAnnexDto getAnnexSenseFirmes(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId,
 			Long annexId
 			) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
 				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-
-		boolean comprovarPermisBustia = ! usuariHelper.isAdmin();
-		entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					comprovarPermisBustia);
 		
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
+		if (!usuariHelper.isAdmin()) {
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					registre.getPareId(),
+					true);			
+		}
+
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findByRegistreAndId(registre, annexId);
 		
 		RegistreAnnexDto annex = conversioTipusHelper.convertir(
 				registreAnnexEntity,
@@ -1202,11 +1218,9 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreDto marcarLlegida(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) {
 		logger.debug("Marcan com a llegida l'anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaId=" + bustiaId + ", "
 				+ "registreId=" + registreId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -1214,14 +1228,16 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-					entitat,
-					bustiaId,
-					true);
+		RegistreEntity registre = registreRepository.findByEntitatAndId(
+				entitat,
+				registreId);
 
-		RegistreEntity registre = registreRepository.findByPareAndId(
-					bustia,
-					registreId);
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+						entitat,
+						registre.getPareId(),
+						true);
+
 		registre.updateLlegida(true);
 		
 		return (RegistreDto) contingutHelper.toContingutDto(
@@ -1298,13 +1314,11 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId,
 			String procedimentCodi)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
-				"bustiaId=" + bustiaId + ", " +
 				"registreId=" + registreId + ", " +
 				"procedimentCodi=" + procedimentCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1313,18 +1327,26 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 		
+		RegistreEntity registre = registreRepository.findByEntitatAndId(
+				entitat,
+				registreId);
+		
+		if (registre.getPare() == null)
+			throw new ValidationException(
+					registreId,
+					RegistreEntity.class,
+					"El registre (id=" + registreId + ") no té cap bústia assignada i per tant no es pot recuperar la llista de procediments associats a la bústia per procedir a la classificació.");
+
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
-				bustiaId,
-				true);
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
+				registre.getPareId(),
+				!usuariHelper.isAdmin());
+		
 		registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
-				registre.getPare().getId(),
+				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
 				registre.getAssumpteCodi());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
@@ -1376,20 +1398,22 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
-		if (procediments != null) {
-			for (Procediment procediment: procediments) {
-				if (procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) {
-					ProcedimentDto dto = new ProcedimentDto();
-					dto.setCodi(procediment.getCodigo());
-					dto.setCodiSia(procediment.getCodigoSIA());
-					dto.setNom(procediment.getNombre());
-					dtos.add(dto);
+		if (bustiaId != null && bustiaId > 0) {
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
+															entitat,
+															bustiaId,
+															!usuariHelper.isAdmin());
+			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+			if (procediments != null) {
+				for (Procediment procediment: procediments) {
+					if (procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) {
+						ProcedimentDto dto = new ProcedimentDto();
+						dto.setCodi(procediment.getCodigo());
+						dto.setCodiSia(procediment.getCodigoSIA());
+						dto.setNom(procediment.getNombre());
+						dtos.add(dto);
+					}
 				}
 			}
 		}

@@ -183,7 +183,6 @@ public class ContingutHelper {
 			
 			// toBustiaContingut 
 			if (registreEntity.getPare() != null) {
-				registreDto.setPareId(registreEntity.getPare().getId());
 				ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
 				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
 			}
@@ -268,11 +267,12 @@ public class ContingutHelper {
 				contingutDto.setPath(path);
 				
 				if (contingut instanceof RegistreEntity) {
+					List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
 					//directe des de registre
-					ContingutMovimentEntity firstMoviment = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
+					ContingutMovimentEntity firstMoviment = ! moviments.isEmpty() ? moviments.get(0) : null;
 					//des de una altre anotació (còpia)
 					if (firstMoviment == null) {
-						List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
+						moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
 						firstMoviment = !moviments.isEmpty() ? moviments.get(0) : null;
 					}
 					if (firstMoviment != null) {

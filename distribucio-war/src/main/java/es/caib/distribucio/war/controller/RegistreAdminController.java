@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
+import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -112,17 +113,12 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-		
-		List<BustiaDto> busties = null;
-		if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-			busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
-		}
-		
+				
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
 						entitatActual.getId(),
-						busties,
+						null, // bustiesUsuari
 						RegistreFiltreCommand.asDto(filtreCommand),
 						false,
 						DatatablesHelper.getPaginacioDtoFromRequest(request), 
@@ -160,7 +156,6 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute(
 					"registre",
 					registreDto);
-			model.addAttribute("bustiaId", registreDto.getPare().getId());
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
@@ -206,16 +201,11 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		} else {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-			List<BustiaDto> busties = null;
-			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				busties = bustiaService.findBusties(entitatActual.getId(), filtreCommand.isMostrarInactives());
-			}
-			
+			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);			
 			seleccio.addAll(
 					registreService.findRegistreIds(
 							entitatActual.getId(),
-							busties,
+							null, // bustiesUsuari
 							RegistreFiltreCommand.asDto(filtreCommand),
 							true));
 		}
@@ -254,9 +244,13 @@ public class RegistreAdminController extends BaseAdminController {
 	public List<BustiaDto> busties(
 			HttpServletRequest request,
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			@RequestParam(required = false) Long unitatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		return bustiaService.findBusties(entitatActual.getId(), mostrarInactives);
+		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
+		filtre.setActiva(!mostrarInactives);
+		filtre.setUnitatIdFiltre(unitatId);
+		return bustiaService.findAmbEntitatAndFiltre(entitatActual.getId(), filtre);
 	}
 	
 	
@@ -270,16 +264,14 @@ public class RegistreAdminController extends BaseAdminController {
 	
 	
 	
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		if (processatOk) {
 			MissatgesHelper.success(
@@ -296,18 +288,16 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.registre.reintentat.error",
 							null));
 		}
-		return "redirect:../../../" + registreId + "/detall";
+		return "redirect:../../" + registreId + "/detall";
 	}
 	
 	
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-					bustiaId,
 					registreId);
 			if (processatOk) {
 				MissatgesHelper.success(request,
@@ -323,7 +313,7 @@ public class RegistreAdminController extends BaseAdminController {
 
 
 
-		return "redirect:../../../" + registreId + "/detall";
+		return "redirect:../../" + registreId + "/detall";
 	}
 	
 	
@@ -360,19 +350,24 @@ public class RegistreAdminController extends BaseAdminController {
 					logger.debug("Reprocessar anotació amb id " + registreId);
 					contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 					RegistreDto registreDto = (RegistreDto) contingutDto;
-					if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+					if (registreDto.getPare() == null) {
+						// Restaura la bústia per defecte i la la regla aplicable si s'escau
+						processatOk = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
+								registreId);
+						contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+					} 
+					else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
+					{
 						if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
 							|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
 						{
 							// Pendent de processament d'arxiu o regla
 							processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
-									registreDto.getPareId(), 
 									registreId);
 							
 						} else {
-							// Pendent d'envioar a backoffice
+							// Pendent d'enviar a backoffice
 							processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
-									registreDto.getPareId(), 
 									registreId);
 						}
 						if (processatOk)

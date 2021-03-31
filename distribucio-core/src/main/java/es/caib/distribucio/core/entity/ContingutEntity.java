@@ -25,6 +25,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -205,6 +206,12 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	
 	public String getContingutType() {
 		return "desconegut";
+	}
+	
+	/** Consulta de l'identificador del pare. */
+	@Transient
+	public Long getPareId() {
+		return this.pare != null? this.pare.getId() : null;
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;

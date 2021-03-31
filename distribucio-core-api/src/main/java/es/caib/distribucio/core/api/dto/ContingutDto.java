@@ -134,6 +134,12 @@ public abstract class ContingutDto extends AuditoriaDto {
 		else
 			return null;
 	}
+	
+	public Long getPareId() {
+		ContingutDto pare = this.getPare();
+		return pare != null ? pare.getId() : null;
+	}
+
 
 	public String getPathAsStringWebdav() {
 		if (getPath() == null)

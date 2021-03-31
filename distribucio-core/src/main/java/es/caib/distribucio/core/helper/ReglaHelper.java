@@ -135,10 +135,11 @@ public class ReglaHelper {
 			
 			ReglaEntity lastRegla = reglesApplied.get(reglesApplied.size() - 1);
 			if (lastRegla.getTipus() != ReglaTipusEnumDto.BACKOFFICE || (lastRegla.getTipus() == ReglaTipusEnumDto.BACKOFFICE && isAnotacioAlreadySavedInArxiu(registre))) {
-				emailHelper.createEmailsPendingToSend(
-						(BustiaEntity) registre.getPare(),
-						registre,
-						registre.getDarrerMoviment());
+				if (registre.getPare() != null)
+					emailHelper.createEmailsPendingToSend(
+							(BustiaEntity) registre.getPare(),
+							registre,
+							registre.getDarrerMoviment());
 			}
 			
 			

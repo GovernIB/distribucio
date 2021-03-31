@@ -17,7 +17,7 @@
 <script>
 var registres = [];
 <c:forEach var="registre" items="${registres}">
-registres.push({id: ${registre.id}, bustiaId: ${registre.pare.id}});
+registres.push({id: ${registre.id}});
 </c:forEach>
 var processSuccess = 0;
 var processError = 0;
@@ -37,7 +37,7 @@ var inicialitzarClassificacio = function(element) {
 var processarRegistres = function(index, element) {
 	if (index < registres.length) {
 		let registre = registres[index];
-		let classificarUrl = registre.bustiaId + '/classificarMultiple/' + registre.id;
+		let classificarUrl = '/classificarMultiple/' + registre.id;
 		let codiProcediment = $('select#codiProcediment').val();
 		$.post(classificarUrl, { codiProcediment : codiProcediment}, function(response) {
 			actualitzarEstatRegistre(index, true, response);
@@ -204,7 +204,7 @@ $(document).ready(function() {
 		</c:choose>
 		<div id="modal-botons" class="well">
 			<button id="accio-classificar" type="submit" class="btn btn-success" disabled="disabled" data-nosubmit="true"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
-			<a id="accio-cancel" href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a id="accio-cancel" href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

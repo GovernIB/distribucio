@@ -16,7 +16,6 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class ContingutReenviarCommand {
 
-	protected Long origenId;
 	@Size(max=256)
 	protected String comentariEnviar;
 	@NotEmpty
@@ -27,12 +26,6 @@ public class ContingutReenviarCommand {
 	
 	protected Long[] perConeixement;
 	
- 	public Long getOrigenId() {
-		return origenId;
-	}
-	public void setOrigenId(Long origenId) {
-		this.origenId = origenId;
-	}
 	public String getComentariEnviar() {
 		return comentariEnviar;
 	}

@@ -44,6 +44,7 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
@@ -52,7 +53,22 @@ function formatSelectBustia(item) {
 		return item.text;
 }
 
+function formatSelectUnitat(item) {
+	if (!item.id) {
+	    return item.text;
+	}
+	if (item.data && item.data.estat=="V"){
+		return item.text;
+	} else {
+		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+	}
+}
+
 $(document).ready(function() {
+
+	$('#unitatId').on('change', function (e) {
+		$('#mostrarInactives').change();
+	});
 	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
@@ -60,8 +76,18 @@ $(document).ready(function() {
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
+		$('#nomesAmbErrorsBtn').removeClass('active');
+		$('#nomesAmbErrors').val(false);
+		$('#estat').val(null).trigger('change');
+		$('#enviatPerEmail').val(null).change();
 	});
-	
+
+	$('#nomesAmbErrorsBtn').click(function() {
+		nomesAmbErrors = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#nomesAmbErrors').val(nomesAmbErrors);
+	})
+
 	$('#taulaDades').on( 'draw.dt', function () {
 	
 		$('#seleccioAll').on('click', function() {
@@ -125,10 +151,13 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactives').change(function() {
+		$('#bustia').prop('disabled', true);
 		var actual = $('#bustia').val();
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreAdmin/busties'/>?mostrarInactives=" + $(this).val();
+		if ($('#unitatId').val())
+			baseUrl += "&unitatId=" + $('#unitatId').val();
 		$.get(baseUrl)
 			.done(function(data) {
 				bustiesInactives = [];
@@ -138,6 +167,7 @@ $(document).ready(function() {
 						bustiesInactives.push(data[i].id.toString());
 					}
 				}
+				$('#bustia').removeAttr('disabled');
 				$('#bustia').val(actual).change();
 			})
 			.fail(function() {
@@ -149,13 +179,17 @@ $(document).ready(function() {
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
 		e.stopPropagation();
-	});
+	});	
+	
+	$('#numero').focus();
 });
 
 </script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
+		
+		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		
 		<div class="row">
 			<div class="col-md-2">
@@ -172,7 +206,7 @@ $(document).ready(function() {
 				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>
 		</div>
 		<div class="row">
@@ -183,6 +217,20 @@ $(document).ready(function() {
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
 			<div class="col-md-3">
+			
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="unitatId"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="contingut.admin.filtre.uo"
+					suggestValue="id"
+					suggestText="codiAndNom" 
+					optionTemplateFunction="formatSelectUnitat" />
+			</div>
+			<div class="col-md-3">			
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect 
@@ -196,8 +244,8 @@ $(document).ready(function() {
 							optionMinimumResultsForSearch="0" 
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
-					<div class="col-md-2">
-						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+					<div class="col-md-2" style="padding-left: 0;">
+						<button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
 		    	    			<i class="fa fa-ban fa-stack-2x"></i>
@@ -205,25 +253,37 @@ $(document).ready(function() {
 						</button>
 						<dis:inputHidden name="mostrarInactives"/>
 					</div>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
+				</div>			
 			</div>			
 			<div class="col-md-2">
-				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="enviatPerEmail" netejar="false" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 		</div>
 		<div class="row">			
-			<div class="col-md-4">
+			<div class="col-md-2">
 				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-2">
 				<dis:inputText name="backCodi" inline="true" placeholderKey="bustia.list.filtre.back.codi"/>		
 			</div>
+
+			<div class="col-md-3">
+				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>			
+			</div>
+			<div class="col-md-3">
+				<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat.especific" emptyOption="true"/>
+					</div>
+					<div class="col-md-2" style="padding-left: 0;">
+						<button id="nomesAmbErrorsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+						<dis:inputHidden name="nomesAmbErrors"/>
+					</div>
+				</div>
+			</div>
+			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
@@ -256,7 +316,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="13"
+		data-default-order="12"
 		data-default-dir="desc"
 		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
@@ -265,7 +325,6 @@ $(document).ready(function() {
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
-				<th data-col-name="pareId" data-visible="false"></th>
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
@@ -361,11 +420,15 @@ $(document).ready(function() {
 				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
-						{{for path}}/
-							{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
-							{{:nom}}
-						{{/for}}
-						{{if !bustiaActiva}}
+						{{if path}}
+							{{for path}}/
+								{{if bustia}}{{if #getIndex() == 0}}<span class="fa ${iconaUnitat}" title="<spring:message code="contingut.icona.unitat"/>"></span>{{else}}<span class="fa ${iconaBustia}" title="<spring:message code="contingut.icona.bustia"/>"></span>{{/if}}{{/if}}
+								{{:nom}}
+							{{/for}}
+							{{if !bustiaActiva}}
+								<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
+							{{/if}}
+						{{else}}
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
 						{{/if}}
 					</script>
@@ -390,15 +453,15 @@ $(document).ready(function() {
 
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								<li role="separator" class="divider"></li>
-								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/{{:pareId}}/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
-								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/{{:pareId}}/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
-								<li><a href="./registreUser/{{:pareId}}/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
-									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/{{:pareId}}/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 								{{/if}}			
 								<li>
-									<a href="<c:url value="/contingut/{{:pareId}}/registre/{{:id}}/descarregarZip"/>">
+									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
 									</a>
 								</li>

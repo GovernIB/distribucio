@@ -59,7 +59,6 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -118,6 +117,8 @@ public class RegistreHelper {
 	private MetricRegistry metricRegistry;
 	@Autowired
 	private HistogramPendentsHelper historicsPendentHelper;
+	@Autowired
+	private UsuariHelper usuariHelper;
 
 
 	public RegistreAnotacio fromRegistreEntity(
@@ -742,7 +743,6 @@ public class RegistreHelper {
 	
 	public List<RegistreAnnexDto> getAnnexosAmbFirmes(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId) throws NotFoundException {
 
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -751,15 +751,16 @@ public class RegistreHelper {
 				false,
 				false);
 
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+		RegistreEntity registre = registreRepository.findByEntitatAndId(
 				entitat,
-				bustiaId,
-				true);
-
-		RegistreEntity registre = registreRepository.findByPareAndId(
-				bustia,
 				registreId);
-		
+
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					registre.getPareId(),
+					true);
+
 		List<RegistreAnnexDto> annexos = new ArrayList<RegistreAnnexDto>();
 		
 		for (RegistreAnnexEntity registeAnnexEntity: registre.getAnnexos()) {

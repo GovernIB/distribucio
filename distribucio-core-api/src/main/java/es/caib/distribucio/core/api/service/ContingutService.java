@@ -116,8 +116,6 @@ public interface ContingutService {
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat a la qual pertany el contingut.
-	 * @param contingutId
-	 *            Atribut id del contingut del qual es vol consultar el registre.
 	 * @param contingutLogId
 	 *            Atribut id del log del qual es volen veure detalls.
 	 * @return Els detalls de l'acció.

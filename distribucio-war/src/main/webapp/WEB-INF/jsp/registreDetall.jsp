@@ -151,27 +151,24 @@ tr.clicable {
 	    $("#collapse-justificant").on('show.bs.collapse', function(data){    
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant");
 		        $(this).data("loaded", true);
 		    }
 	    });
 	    $(".collapse-annex").on('show.bs.collapse', function(data){  
 		    if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + bustiaId + "/" + registreId + "/" + annexId);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        var bustiaId = $(this).data("bustiaId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + bustiaId + "/registre/" + registreId + "/arxiuInfo");
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo");
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -199,9 +196,9 @@ tr.clicable {
 				
          	// if is in modal window
             if ( self !== top ) {
-            	location.href = '<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
             } else {
-            	location.href = '<c:url value="/registreUser/${bustiaId}/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	location.href = '<c:url value="/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
 	        }
     		
     	});
@@ -209,18 +206,18 @@ tr.clicable {
 
          	// if is in modal window
             if ( self !== top ) {
-            	location.href = "<c:url value="/modal/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+            	location.href = "<c:url value="/modal/registreUser/classificar/${registre.id}"/>";
             } else {
-            	location.href = "<c:url value="/registreUser/${bustiaId}/classificar/${registre.id}"/>";
+            	location.href = "<c:url value="/registreUser/classificar/${registre.id}"/>";
 	        }
     	});    	
     	$( "a#accioMarcarProcessat" ).on( "click", function() {
 
          	// if is in modal window
             if ( self !== top ) {
-            	location.href = "<c:url value="/modal/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+            	location.href = "<c:url value="/modal/registreUser/pendent/${registre.id}/marcarProcessat"/>";
             } else {
-            	location.href = "<c:url value="/registreUser/${bustiaId}/pendent/${registre.id}/marcarProcessat"/>";
+            	location.href = "<c:url value="/registreUser/pendent/${registre.id}/marcarProcessat"/>";
 	        }
     	});   
 
@@ -283,7 +280,7 @@ tr.clicable {
         
         // Recupera i mostrar contingut firmes
         $.get(
-				"<c:url value="/registreUser/registreAnnexFirmes/${bustiaId}/${registreId}/"/>" + annexId,
+				"<c:url value="/registreUser/registreAnnexFirmes/${registreId}/"/>" + annexId,
 				function(data) {
 					if (data.firmes && data.firmes.length > 0) {
 						var nieList = "", nomList = "";
@@ -321,7 +318,7 @@ tr.clicable {
 	    });
 
 	    // Recuperar i mostrar document al visor
-		var urlDescarrega = "<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/"/>" + annexId + "/arxiu/content/DOCUMENT";
+		var urlDescarrega = "<c:url value="/modal/contingut/registre/${registreId}/annex/"/>" + annexId + "/arxiu/content/DOCUMENT";
 		$('#container').attr('src', '');
 		$('#container').addClass('rmodal_loading');
 		showDocument(urlDescarrega);
@@ -406,7 +403,7 @@ tr.clicable {
 					</c:choose>	
 				</c:if>
 				<li>
-					<a href="<c:url value="/contingut/${registre.pareId}/registre/${registre.id}/descarregarZip"/>">
+					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip"/>">
 						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
 					</a>
 				</li>
@@ -433,7 +430,7 @@ tr.clicable {
 		</li>
 		<c:if test="${not empty registre.expedientArxiuUuid}">
 			<li role="presentation">
-				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
+				<a href="#arxiuInfo" class="arxiuInfoTab" aria-controls="arxiuInfo" role="tab" data-toggle="tab" data-registre-id="${registre.id}"><spring:message code="registre.detalls.pipella.arxiu.info"/></a>
 			</li>
 		</c:if>
 		
@@ -475,7 +472,7 @@ tr.clicable {
 							</c:otherwise>
 						</c:choose>
 						
-						<a href="<c:url value="/modal/contingut/${registre.pare.id}/registre/${registre.id}/justificant"/>" class="btn btn-default btn-sm pull-right">
+						<a href="<c:url value="/modal/contingut/registre/${registre.id}/justificant"/>" class="btn btn-default btn-sm pull-right">
 							<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 							<spring:message code="registre.annex.detalls.camp.justificant"/>
 						</a>						
@@ -691,7 +688,7 @@ tr.clicable {
 										<td><c:if test="${not empty annex.origenCiutadaAdmin}">${annex.origenCiutadaAdmin}</c:if></td>
 										<td><c:if test="${not empty annex.ntiElaboracioEstat}"><spring:message code="registre.annex.detalls.camp.ntiElaboracioEstat.${annex.ntiElaboracioEstat}"/></c:if></td>
 										<td>
-											<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
+											<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 												<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 											</a>
 										</td>												
@@ -727,7 +724,7 @@ tr.clicable {
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${bustiaId} + "/" + ${registreId} + "/" + ${annex.id} + "/true");
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true");
 															        $(this).data("loaded", true);
 															    }
 															    event.stopPropagation();
@@ -969,7 +966,7 @@ tr.clicable {
 							<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-justificant"><span class="fa fa-chevron-down"></span></button>
 						</h3>
 					</div>
-					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}">
+					<div id="collapse-justificant" class="panel-collapse collapse" role="tabpanel" aria-labelledby="justificant" data-registre-id="${registre.id}">
 
 					</div>
 				</div>
@@ -1135,7 +1132,7 @@ tr.clicable {
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>
- 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-bustia-id="${bustiaId}" data-annex-id="${annex.id}"> 
+ 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-annex-id="${annex.id}"> 
 
  							</div> 
 						</div>
@@ -1183,16 +1180,16 @@ tr.clicable {
 						<spring:message code="registre.detalls.info.errors"/> 
 						<c:if test="${isRolActualAdministrador}">
 							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
-								<a href="../../registreAdmin/${registre.pare.id}/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
+								<a href="../../registreAdmin/registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a>
 							</c:if>
 							<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
-								<a href="../../registreAdmin/${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+								<a href="../../registreAdmin/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 							</c:if>
 						</c:if>
 					</div>
 				</c:if>
 				<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0)}">
-					<a href="../${registre.pare.id}/registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>
 
 				<!------ PROCESSAMENT INFO ------>
@@ -1233,7 +1230,7 @@ tr.clicable {
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 				
 			    <c:if test="${isRolActualAdministrador == true && (registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR')}">
-					<a href="<c:url value="/registreUser/${registre.pareId}/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="<c:url value="/registreUser/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
 				<div class="processamentInfo">
 					<dl class="dl-horizontal">

@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -94,13 +95,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-		model.addAttribute(filtreCommand);
-		
-//		List<HistogramEntryDto> histogram = registreService.getHistogram();
-//		for (HistogramEntryDto histogramEntryDto : histogram) {
-//			logger.info(histogramEntryDto.toString());
-//		}
-		
+		model.addAttribute(filtreCommand);		
 		
 		return "registreUserList";
 	}
@@ -219,10 +214,29 @@ public class RegistreUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
 	
+	/** Redirecciona les urls dels emails amb notificació de nova anotació que encara contenen /bustia/bustiaId
+	 * a la URL.
+	 * @return Retorna una redirecció cap a la URL normal.
+	 */
 	@RequestMapping(value = "/bustia/{bustiaId}/registre/{registreId}", method = RequestMethod.GET)
-	public String registreUserDetall(
+	public ModelAndView registreUserDetallRedirect(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
+			@PathVariable Long registreId,
+			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
+			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			Model model) {
+        model.addAttribute("registreNumero", registreNumero);
+        model.addAttribute("registreTotal", registreTotal);
+        model.addAttribute("ordreColumn", ordreColumn);
+        model.addAttribute("ordreDir", ordreDir);
+        return new ModelAndView("redirect:/registreUser/registre/" + registreId, model.asMap());
+	}
+	@RequestMapping(value = "/registre/{registreId}", method = RequestMethod.GET)
+	public String registreUserDetall(
+			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
@@ -235,9 +249,7 @@ public class RegistreUserController extends BaseUserController {
 					"registre",
 					registreService.findOne(
 							entitatActual.getId(),
-							bustiaId,
 							registreId));
-			model.addAttribute("bustiaId", bustiaId);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
@@ -306,7 +318,7 @@ public class RegistreUserController extends BaseUserController {
 			// Posa les dades dels registres al model segons la consulta
 			if (!pagina.getContingut().isEmpty()) {
 				registre = pagina.getContingut().get(0);
-				ret = "redirect:/modal/registreUser/bustia/" + registre.getPare().getId() + "/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
 			}
 		} catch (Exception e) {
 			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
@@ -319,10 +331,9 @@ public class RegistreUserController extends BaseUserController {
 		return ret;
 	}
 
-	@RequestMapping(value = "/registreAnnex/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/registreAnnex/{registreId}/{annexId}", method = RequestMethod.GET)
 	public String registreAnnex(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			Model model) {
@@ -332,7 +343,6 @@ public class RegistreUserController extends BaseUserController {
 					"annex",
 					registreService.getAnnexSenseFirmes(
 							entitatActual.getId(),
-							bustiaId,
 							registreId,
 							annexId));
 			model.addAttribute("registreId", registreId);
@@ -344,10 +354,9 @@ public class RegistreUserController extends BaseUserController {
 		return "registreAnnex";
 	}
 	
-	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}/{isResum}", method = RequestMethod.GET)
+	@RequestMapping(value = "/registreAnnexFirmes/{registreId}/{annexId}/{isResum}", method = RequestMethod.GET)
 	public String registreAnnexFirmes(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable boolean isResum,
@@ -358,7 +367,6 @@ public class RegistreUserController extends BaseUserController {
 					"annex",
 					registreService.getAnnexAmbFirmes(
 							entitatActual.getId(),
-							bustiaId,
 							registreId,
 							annexId));
 			model.addAttribute("registreId", registreId);
@@ -376,11 +384,10 @@ public class RegistreUserController extends BaseUserController {
 		return "registreAnnexFirmes";
 	}
 	
-	@RequestMapping(value = "/registreAnnexFirmes/{bustiaId}/{registreId}/{annexId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/registreAnnexFirmes/{registreId}/{annexId}", method = RequestMethod.GET)
 	@ResponseBody
 	public RegistreAnnexDto registreAnnexFirmes(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			Model model) {
@@ -389,7 +396,6 @@ public class RegistreUserController extends BaseUserController {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			annexFirmes = registreService.getAnnexAmbFirmes(
 							entitatActual.getId(),
-							bustiaId,
 							registreId,
 							annexId);
 		} catch(Exception ex) {
@@ -517,9 +523,6 @@ public class RegistreUserController extends BaseUserController {
 	public List<HistogramPendentsEntryDto> expedientsEntitatChartData(HttpServletRequest request) {
 		
 		List<HistogramPendentsEntryDto> histogram = registreService.getHistogram();
-//		for (HistogramEntryDto histogramEntryDto : histogram) {
-//			logger.info(histogramEntryDto.toString());
-//		}
 
 		return histogram;
 	}
@@ -538,20 +541,18 @@ public class RegistreUserController extends BaseUserController {
 		return "redirect:registreUser";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/enviarViaEmail/{contingutId}", method = RequestMethod.GET)
 	public String enviarViaEmailGet(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
-		command.setBustiaId(bustiaId);
 		command.setContingutId(contingutId);
 		model.addAttribute(command);
 		return "registreViaEmail";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/enviarViaEmail/{contingutId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/enviarViaEmail/{contingutId}", method = RequestMethod.POST)
 	public String enviarViaEmailPost(
 			HttpServletRequest request,
 			@Valid RegistreEnviarViaEmailCommand command,
@@ -567,7 +568,6 @@ public class RegistreUserController extends BaseUserController {
 		try {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
-					command.getBustiaId(),
 					command.getContingutId(),
 					adreces, 
 					command.getMotiu());
@@ -636,7 +636,6 @@ public class RegistreUserController extends BaseUserController {
 					try {
 						bustiaService.registreAnotacioEnviarPerEmail(
 								entitatActual.getId(),
-								registreDto.getPare().getId(),
 								registreDto.getId(),
 								adreces, 
 								command.getMotiu());
@@ -720,10 +719,9 @@ public class RegistreUserController extends BaseUserController {
 		return StringUtils.join(adrecesRevisades,",");
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/reenviar", method = RequestMethod.GET)
+	@RequestMapping(value = "/pendent/{registreId}/reenviar", method = RequestMethod.GET)
 	public String registreReenviarGet(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@RequestParam(value="registreNumero", required = false) Integer registreNumero,
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
@@ -733,9 +731,8 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			omplirModelPerReenviar(entitatActual, bustiaId, registreId, model);
+			omplirModelPerReenviar(entitatActual, registreId, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
-			command.setOrigenId(bustiaId);
 			RegistreFiltreCommand filtre = getFiltreCommand(request);
 			//boolean isAvanzarNullAndLastRegistre = avanzarPagina == null && (registreNumero == registreTotal);
 			boolean isNotAvanzarAndNotLastRegistre = !Boolean.parseBoolean(avanzarPagina) && (registreTotal != null && registreNumero < registreTotal);
@@ -756,22 +753,21 @@ public class RegistreUserController extends BaseUserController {
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
 				return getModalControllerReturnValueError(
 						request,
-						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+						"redirect:/registreUser/registre/" + registreId,
 						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
-						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+						"redirect:/registreUser/registre/" + registreId,
 						e.getMessage());
 			}
 		}
 		return "registreReenviarForm";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/reenviar", method = RequestMethod.POST)
+	@RequestMapping(value = "/pendent/{registreId}/reenviar", method = RequestMethod.POST)
 	public String registreReenviarPost(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
@@ -781,7 +777,6 @@ public class RegistreUserController extends BaseUserController {
 			if (bindingResult.hasErrors()) {
 				omplirModelPerReenviar(
 						entitatActual,
-						bustiaId,
 						registreId,
 						model);
 				return "registreReenviarForm";
@@ -797,7 +792,6 @@ public class RegistreUserController extends BaseUserController {
 			}
 			bustiaService.registreReenviar(
 					entitatActual.getId(),
-					bustiaId,
 					command.getDestins(),
 					registreId,
 					command.isDeixarCopia(),
@@ -808,7 +802,7 @@ public class RegistreUserController extends BaseUserController {
 				if (command.isDeixarCopia() == false && bustiaService.isBustiaReadPermitted(command.getDestins()[0])) {
 					return getModalControllerReturnValueSuccess(
 							request,
-							"redirect:/registreUser/bustia/" + command.getDestins()[0] + "/registre/" + registreId,
+							"redirect:/registreUser/registre/" + registreId,
 							"bustia.controller.pendent.contingut.reenviat.ok");
 				} else {
 					return getModalControllerReturnValueSuccess(
@@ -838,12 +832,12 @@ public class RegistreUserController extends BaseUserController {
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
 				return getModalControllerReturnValueError(
 						request,
-						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+						"redirect:/registreUser/registre/" + registreId,
 						"registre.user.controller.reenviar.error.registreNoTrobat");
 			} else {
 				return getModalControllerReturnValueErrorNoKey(
 						request,
-						"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+						"redirect:/registreUser/registre/" + registreId,
 						e.getMessage());
 			}
 		}
@@ -925,7 +919,6 @@ public class RegistreUserController extends BaseUserController {
 							try {
 								bustiaService.registreReenviar(
 										entitatActual.getId(),
-										registreDto.getPareId(),
 										command.getDestins(),
 										registreDto.getId(),
 										command.isDeixarCopia(),
@@ -976,21 +969,19 @@ public class RegistreUserController extends BaseUserController {
 	
 	
 
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		if (processatOk) {
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:../../../" + bustiaId,
+					"redirect:../../../",
 					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
@@ -1003,14 +994,12 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 	
-	@RequestMapping(value = "/{bustiaId}/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-					bustiaId,
 					registreId);
 			if (processatOk) {
 				MissatgesHelper.success(request,
@@ -1024,13 +1013,12 @@ public class RegistreUserController extends BaseUserController {
 								null));
 			}
 
-		return "redirect:../../../../modal/registreUser/bustia/" + bustiaId + "/registre/" + registreId;
+		return "redirect:../../modal/registreUser/registre/" + registreId;
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/marcarProcessat", method = RequestMethod.GET)
+	@RequestMapping(value = "/pendent/{contingutId}/marcarProcessat", method = RequestMethod.GET)
 	public String bustiaMarcarProcessatGet(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
@@ -1039,10 +1027,9 @@ public class RegistreUserController extends BaseUserController {
 		return "registreUserMarcarProcessat";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{registreId}/marcarProcessat", method = RequestMethod.POST)
+	@RequestMapping(value = "/pendent/{registreId}/marcarProcessat", method = RequestMethod.POST)
 	public String bustiaMarcarProcessatPost(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@Valid MarcarProcessatCommand command,
 			BindingResult bindingResult,
@@ -1062,7 +1049,7 @@ public class RegistreUserController extends BaseUserController {
 					"</span> " + command.getMotiu());
 			return getModalControllerReturnValueSuccess(
 					request,
-					"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+					"redirect:/registreUser/registre/" + registreId,
 					"bustia.controller.pendent.contingut.marcat.processat.ok");
 		} catch (RuntimeException re) {
 			MissatgesHelper.error(
@@ -1176,22 +1163,19 @@ public class RegistreUserController extends BaseUserController {
 		return modalUrlTancar();
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes", method = RequestMethod.GET)
+	@RequestMapping(value = "/pendent/{contingutId}/alertes", method = RequestMethod.GET)
 	public String bustiaListatAlertes(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
-		model.addAttribute("bustiaId", bustiaId);
 		model.addAttribute("contingutId", contingutId);
 		return "registreErrors";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/datatable", method = RequestMethod.GET)
+	@RequestMapping(value = "/pendent/{contingutId}/alertes/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse bustiaListatAlertesDatatable(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			Model model) {
 		return DatatablesHelper.getDatatableResponse(
@@ -1202,11 +1186,10 @@ public class RegistreUserController extends BaseUserController {
 						DatatablesHelper.getPaginacioDtoFromRequest(request)));
 	}
 
-	@RequestMapping(value = "/{bustiaId}/pendent/{contingutId}/alertes/{alertaId}/llegir", method = RequestMethod.GET)
+	@RequestMapping(value = "/pendent/{contingutId}/alertes/{alertaId}/llegir", method = RequestMethod.GET)
 	@ResponseBody
 	public void bustiaListatAlertesLlegir(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long contingutId,
 			@PathVariable Long alertaId,
 			Model model) {
@@ -1233,20 +1216,17 @@ public class RegistreUserController extends BaseUserController {
 		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 
-	@RequestMapping(value = "/{bustiaId}/classificar/{registreId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/classificar/{registreId}", method = RequestMethod.GET)
 	public String bustiaClassificarGet(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			Model model) {
 		try {
 			String procedimentCodi = emplenarModelClassificar(
 					request,
-					bustiaId,
 					registreId,
 					model);
 			RegistreClassificarCommand command = new RegistreClassificarCommand();
-			command.setBustiaId(bustiaId);
 			command.setContingutId(registreId);
 			command.setCodiProcediment(procedimentCodi);
 			model.addAttribute(command);
@@ -1254,16 +1234,15 @@ public class RegistreUserController extends BaseUserController {
 			logger.error(e.getMessage(), e);
 			return getModalControllerReturnValueErrorNoKey(
 					request,
-					"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+					"redirect:/registreUser/registre/" + registreId,
 					e.getMessage());
 		}
 		return "registreClassificar";
 	}
 
-	@RequestMapping(value = "/{bustiaId}/classificar/{registreId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/classificar/{registreId}", method = RequestMethod.POST)
 	public String bustiaClassificarPost(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@Validated(Classificar.class) RegistreClassificarCommand command,
 			BindingResult bindingResult,
@@ -1272,14 +1251,12 @@ public class RegistreUserController extends BaseUserController {
 		if (bindingResult.hasErrors()) {
 			emplenarModelClassificar(
 					request,
-					bustiaId,
 					registreId,
 					model);
 			return "registreClassificar";
 		}
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
-				bustiaId,
 				registreId,
 				command.getCodiProcediment());
 		switch (resultat.getResultat()) {
@@ -1316,7 +1293,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:/registreUser/bustia/" + bustiaId + "/registre/" + registreId,
+				"redirect:/registreUser/registre/" + registreId,
 				"bustia.controller.pendent.contingut.classificat.ok");
 	}
 
@@ -1353,18 +1330,16 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 
-	@RequestMapping(value = "/{bustiaId}/classificarMultiple/{registreId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/classificarMultiple/{registreId}", method = RequestMethod.POST)
 	@ResponseBody
 	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
-			@PathVariable Long bustiaId,
 			@PathVariable Long registreId,
 			@Validated(Classificar.class) RegistreClassificarCommand command,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
-				bustiaId,
 				registreId,
 				command.getCodiProcediment());
 		return resultat;
@@ -1422,9 +1397,8 @@ public class RegistreUserController extends BaseUserController {
 	    				true));
 	}
 
-	private void omplirModelPerReenviar(
+	private RegistreDto omplirModelPerReenviar(
 			EntitatDto entitatActual,
-			Long bustiaId,
 			Long registreId,
 			Model model) {
 
@@ -1435,7 +1409,6 @@ public class RegistreUserController extends BaseUserController {
 		boolean disableDeixarCopia = false;
 		RegistreDto registreDto = registreService.findOne(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		
 		boolean duplicarContingutInArxiu = new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu"));
@@ -1465,6 +1438,8 @@ public class RegistreUserController extends BaseUserController {
 						true));
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+		
+		return registreDto;
 	}
 	
 	
@@ -1536,20 +1511,18 @@ public class RegistreUserController extends BaseUserController {
 
 	private String emplenarModelClassificar(
 			HttpServletRequest request,
-			Long bustiaId,
 			Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(),
-				bustiaId,
 				registreId);
 		model.addAttribute("registre", registre);
 		model.addAttribute(
 				"procediments",
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
-						bustiaId));
+						registre.getPareId()));
 		return registre.getProcedimentCodi();
 	}
 
@@ -1567,9 +1540,9 @@ public class RegistreUserController extends BaseUserController {
 		if (!registres.isEmpty()) {
 			for (RegistreDto registre: registres) {
 				if (bustiaIdActual == null) {
-					bustiaIdActual = registre.getPare().getId();
+					bustiaIdActual = registre.getPareId();
 				}
-				if (!bustiaIdActual.equals(registre.getPare().getId())) {
+				if (!bustiaIdActual.equals(registre.getPareId())) {
 					mateixPare = false;
 					break;
 				}

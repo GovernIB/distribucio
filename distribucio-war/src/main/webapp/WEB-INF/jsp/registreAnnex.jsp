@@ -15,9 +15,8 @@
 	    $("#collapse-registre-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
 		    if (!$(this).data("loaded")) {
 		    	var registreId = $(this).parents(".collapse-annex").data("registreId"); 
-		        var bustiaId = $(this).parents(".collapse-annex").data("bustiaId"); 
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + bustiaId + "/" + registreId + "/" + ${annex.id} + "/false");
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + registreId + "/" + ${annex.id} + "/false");
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -106,7 +105,7 @@
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
 		
-			<a href="<c:url value="/modal/contingut/${bustiaId}/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
+			<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 			</a>
 		</td>

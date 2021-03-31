@@ -41,7 +41,7 @@
 	<table 
 		id="taulaAlertes"
 		data-toggle="datatable"
-		data-url="<c:url value="/registreUser/${bustiaId}/pendent/${contingutId}/alertes/datatable"/>"
+		data-url="<c:url value="/registreUser/pendent/${contingutId}/alertes/datatable"/>"
 		data-paging-enabled="false"
 		class="table table-bordered table-striped"
 		data-row-info="true"

@@ -127,11 +127,7 @@ public class ContingutAdminController extends BaseAdminController {
 			model.addAttribute(
 					"registreId",
 					contingutDto.getId());
-			
-			model.addAttribute(
-					"bustiaId",
-					contingutDto.getPare().getId());
-			
+						
 			model.addAttribute(
 					"isContingutAdmin",
 					true);
@@ -185,46 +181,6 @@ public class ContingutAdminController extends BaseAdminController {
 				contingutId,
 				contingutLogId);
 	}
-	
-	
-
-//	@RequestMapping(value = "/{contingutId}/undelete", method = RequestMethod.GET)
-//	public String undelete(
-//			HttpServletRequest request,
-//			@PathVariable Long contingutId,
-//			Model model) throws IOException {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-//		try {
-//			contingutService.undelete(
-//					entitatActual.getId(),
-//					contingutId);
-//			return getAjaxControllerReturnValueSuccess(
-//					request,
-//					"redirect:../../esborrat",
-//					"contingut.admin.controller.recuperat.ok");
-//		} catch (ValidationException ex) {
-//			return getAjaxControllerReturnValueError(
-//					request,
-//					"redirect:../../esborrat",
-//					"contingut.admin.controller.recuperat.duplicat");
-//		}
-//	}
-
-//	@RequestMapping(value = "/{contingutId}/delete", method = RequestMethod.GET)
-//	public String delete(
-//			HttpServletRequest request,
-//			@PathVariable Long contingutId,
-//			Model model) {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-//		contingutService.deleteDefinitiu(
-//				entitatActual.getId(),
-//				contingutId);
-//		return getAjaxControllerReturnValueSuccess(
-//				request,
-//				"redirect:../../esborrat",
-//				"contingut.admin.controller.esborrat.definitiu.ok");
-//	}
-
 
 
 	@InitBinder

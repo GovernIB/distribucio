@@ -87,6 +87,7 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
@@ -138,6 +139,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private ReglaHelper reglaHelper;
 	@Autowired
 	private RegistreHelper registreHelper;
+	@Autowired
+	private UsuariHelper usuariHelper;
 	@Autowired
 	private EntityComprovarHelper entityComprovarHelper;
 	@Autowired
@@ -718,7 +721,7 @@ public class BustiaServiceImpl implements BustiaService {
 				
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre(
+		List<BustiaEntity> busties = bustiaRepository.findAmbEntitatAndFiltre(
 				entitat,
 				filtre.getUnitatIdFiltre() == null, 
 				unitat,
@@ -741,39 +744,6 @@ public class BustiaServiceImpl implements BustiaService {
 		contexttoBustiaDto.stop();
 		return bustiesDto;
 	}
-	
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<BustiaDto> findBusties(
-			Long entitatId,
-			boolean mostrarInactives) {
-		
-		logger.debug("Consulta de busties(" + "entitatId=" + entitatId +  ", mostrarInactives=" + mostrarInactives + ")");
-		
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				true,
-				false);
-		
-		List<BustiaEntity> busties;		
-		if (mostrarInactives) {
-			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
-		} else {
-			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
-		}
-		
-		List<BustiaDto> bustiesRetorn = bustiaHelper.toBustiaDto(
-				busties,
-				false,
-				true,
-				false);
-		
-		return bustiesRetorn;
-	}
-	
-	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -966,7 +936,8 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitatOrganitzativaCodi,
 				anotacioEntity);
-		if (reglaAplicable == null) {
+		if (reglaAplicable == null 
+				&& anotacioEntity.getPare() != null) {
 			emailHelper.createEmailsPendingToSend(
 					(BustiaEntity) anotacioEntity.getPare(),
 					anotacioEntity,
@@ -1019,7 +990,6 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public void registreAnotacioEnviarPerEmail(
 			Long entitatId,
-			Long bustiaId,
 			Long registreId, 
 			String adresses, 
 			String motiu) throws MessagingException {
@@ -1030,30 +1000,25 @@ public class BustiaServiceImpl implements BustiaService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreDto registre = registreService.findOne(
 				entitatId,
-				bustiaId,
 				registreId);
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				entitat,
-				bustiaId,
-				true);
-		RegistreEntity registreEntity = registreRepository.findByPareAndId(
-				bustia,
-				registreId);
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+					entitat,
+					registre.getPareId(),
+					true);
 		RegistreAnnexDto justificant = null;
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			justificant = registreService.getRegistreJustificant(
 					entitatId,
-					bustiaId, 
 					registreId);
 		}
 		List<RegistreAnnexDto> anexos = registreHelper.getAnnexosAmbFirmes(
 				entitatId,
-				bustiaId,
 				registreId);
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
@@ -1081,7 +1046,6 @@ public class BustiaServiceImpl implements BustiaService {
 					justificantDataCaptura,
 					concsvBaseUrl,
 					appBaseUrl,
-					bustiaId,
 					registreId);
 		}
 		String htmlAnnexosTable = "";
@@ -1091,7 +1055,6 @@ public class BustiaServiceImpl implements BustiaService {
 					sdf,
 					appBaseUrl,
 					concsvBaseUrl,
-					bustiaId,
 					registreId);
 		}
 		String htmlInteressatsTable = "";
@@ -1168,6 +1131,9 @@ public class BustiaServiceImpl implements BustiaService {
 		mailSender.send(missatge);
 		
 		List<String> params = new ArrayList<>();
+		RegistreEntity registreEntity = registreRepository.findByEntitatAndId(
+				entitat,
+				registreId);
 		params.add(registreEntity.getNom());
 		params.add(adresses);
 		//String logTo = "Destinataris: " + adresses;
@@ -1226,7 +1192,6 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public void registreReenviar(
 			Long entitatId,
-			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
 			Long registreId,
 			boolean opcioDeixarCopiaSelectada,
@@ -1235,7 +1200,6 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
-				+ "bustiaOrigenId=" + bustiaOrigenId + ", "
 				+ "bustiaDestiIds=" + bustiaDestiIds + ", "
 				+ "registreId=" + registreId + ", "
 				+ "comentari=" + comentari + ")");
@@ -1244,9 +1208,19 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false,
 				false);
-		BustiaEntity bustiaOrigen = entityComprovarHelper.comprovarBustia(
+
+		RegistreEntity reg = registreRepository.findByEntitatAndId(
 				entitat,
-				bustiaOrigenId,
+ 				registreId);
+		if (reg == null) {
+			throw new NotFoundException(registreId, RegistreEntity.class);
+		}
+		
+		BustiaEntity bustiaOrigen = null;
+		if (!usuariHelper.isAdmin())
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+				entitat,
+				reg.getPareId(),
 				true);
 		List<BustiaEntity> bustiesDesti = new ArrayList<BustiaEntity>();
 		for (int i = 0; i < bustiaDestiIds.length; i++) {
@@ -1266,12 +1240,6 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiesPerConeixement.add(bustiaDestiPerConeixement);
 		}
 		
-		RegistreEntity reg = registreRepository.findByPareAndId(
-				bustiaOrigen,
- 				registreId);
-		if (reg == null) {
-			throw new NotFoundException(registreId, RegistreEntity.class);
-		}
 		
 		ContingutEntity registreOriginal = entityComprovarHelper.comprovarContingut(
 				entitat,
@@ -1585,7 +1553,7 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 	
-	private String getHtmlJustificant(RegistreAnnexDto justificant, Object justificantDataCaptura, String concsvBaseUrl, String appBaseUrl, Long bustiaId, Long registreId) {
+	private String getHtmlJustificant(RegistreAnnexDto justificant, Object justificantDataCaptura, String concsvBaseUrl, String appBaseUrl, Long registreId) {
 		String htmlJustificant = 
 				"		<table>"+
 				"			<tr>"+
@@ -1624,7 +1592,7 @@ public class BustiaServiceImpl implements BustiaService {
 				"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)" +
 				(concsvBaseUrl != null && justificant.getFirmaCsv() != null?
 						"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+justificant.getFirmaCsv()+"\"> Descarregar </a>"
-						:"<a href=\""+appBaseUrl+"/modal/contingut/"+bustiaId+"/registre/"+registreId+"/justificant\"> Descarregar </a>") +
+						:"<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/justificant\"> Descarregar </a>") +
 				"</td>"+
 				"			</tr>"+								
 				"		</table>";
@@ -1632,7 +1600,7 @@ public class BustiaServiceImpl implements BustiaService {
 		return htmlJustificant;
 	}	
 	
-	private String getHtmlAnnexosTable(List<RegistreAnnexDto> anexos, SimpleDateFormat sdf, String appBaseUrl, String concsvBaseUrl, Long bustiaId, Long registreId) {
+	private String getHtmlAnnexosTable(List<RegistreAnnexDto> anexos, SimpleDateFormat sdf, String appBaseUrl, String concsvBaseUrl, Long registreId) {
 		
 		String htmlAnnexos = "";
 		for (RegistreAnnexDto annex: anexos) {
@@ -1752,7 +1720,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
 					(concsvBaseUrl != null && annex.getFirmaCsv()!=null?
 							"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+annex.getFirmaCsv()+"\"> Descarregar </a>"
-							:"<a href=\""+appBaseUrl+"/modal/contingut/"+bustiaId+"/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>") +
+							:"<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>") +
 					"</td>"+
 					"			</tr>"+
 					htmlFirmes+"";
@@ -2030,7 +1998,7 @@ public class BustiaServiceImpl implements BustiaService {
 				"			</tr>"+				
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.bustia") + "</th>"+
-				"				<td>" + registre.getPare().getNom() + "</td>"+
+				"				<td>" + (registre.getPare() != null? registre.getPare().getNom() : "-") + "</td>"+
 				"			</tr>"+				
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.motiu") + "</th>"+

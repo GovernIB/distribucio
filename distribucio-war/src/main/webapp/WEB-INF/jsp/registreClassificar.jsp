@@ -74,14 +74,13 @@ $(document).ready(function() {
 		</table>
 	</div>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreClassificarCommand">
-		<form:hidden path="bustiaId"/>
+
 		<form:hidden path="contingutId"/>
 		<c:choose>
 			<c:when test="${empty procediments}">
 				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">
 					<p class="text-danger">
 						<spring:message code="bustia.pendent.classificar.no.procediments"/>
-						<!--"${registre.pare.nom}"-->
 					</p>
 				</dis:inputFixed>
 			</c:when>
@@ -91,7 +90,7 @@ $(document).ready(function() {
 		</c:choose>
 		<div id="modal-botons" class="well">
 			<button id="accio-classificar" type="submit" class="btn btn-success" disabled="disabled"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
-			<a href="<c:url value="/contenidor/${expedientCommand.pareId}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

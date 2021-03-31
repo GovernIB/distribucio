@@ -15,8 +15,10 @@ import org.springframework.data.repository.query.Param;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -99,20 +101,22 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 
 
-	/*@Query("from RegistreEntity r " +
-		    "where r.regla.backofficeTipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-		    "	and r.procesEstatSistra in ( es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.PENDENT, " +
-		    "						   es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum.ERROR) " +
-			"	and (r.regla.backofficeIntents is null or  r.procesIntents < r.regla.backofficeIntents) " +
-		    "order by r.data asc")
-	List<RegistreEntity> findAmbReglaPendentProcessarBackofficeSistra();*/
 
+	/*
 	RegistreEntity findByPareAndId(
 			ContingutEntity pare,
 			Long id);
+	*/
+	RegistreEntity findByEntitatAndId(
+			EntitatEntity entitat,
+			Long id);
 	
+	@Query(	"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.pare.id = :pareId ")
 	List<RegistreEntity> findByPareId(
-			Long pareId);
+			@Param("pareId") Long pareId);
 
 	/*List<RegistreEntity> findByPareAndMotiuRebuigNullOrderByDataAsc(
 			ContingutEntity pare);*/
@@ -162,15 +166,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullFins") boolean esNullFins,
 			@Param("fins") Date fins
 		);
-
-
 	
-
-	
-
-	/** Consulta les anotacions de registre que tenen 
-	 * l'expedient a l'arxiu pendents de tancar i a les quals
-	 * ja s'ha excedit el temps d'espera establert
+	/** Consulta les anotacions de registre que tenen l'expedient a l'arxiu pendents
+	 * de tancar i a les quals ja s'ha excedit el temps d'espera establert
+	 * 
 	 * @return
 	 */
 	@Query("from RegistreEntity r " +
@@ -209,7 +208,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
-			"	 (r.pare.id in (:bustiesIds)) " +
+			"    (r.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
 			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
 			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
 			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
@@ -221,6 +221,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
 			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
 			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
+			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
+			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
+			"and (:nomesAmbErrors = false or r.procesError != null ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
@@ -241,6 +244,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"									and mov2.origen is not null " + 
 			"									and rownum <= 1)) > 0))") //anotacions amb moviments sense/amb còpia
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
 			@Param("bustiesIds") List<Long> bustiesIds,
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
@@ -264,57 +269,14 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
 			@Param("esNullBackCodi") boolean esNullBackCodi,
 			@Param("backCodi") String backCodi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("onlyAmbMoviments") boolean onlyAmbMoviments,
 			Pageable pageable);
 	
-	/** Consulta pel datatable del registre user 
-	@Query(	"select r " +
-			"from " +
-			"    RegistreEntity r " +
-			"		left outer join r.darrerMoviment.remitent as remitent "	+
-			"       inner join ContingutMovimentEntity mov on mov.id = r.darrerMoviment.id" +
-			"where " +
-			"	 (r.pare.id in (:bustiesIds)) " +
-			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
-			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
-			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
-			"and (:esNullDataInici = true or r.data >= :dataInici) " +
-			"and (:esNullDataFi = true or r.data < :dataFi) " +
-			"and (:esProcessat = false or r.pendent = false) " +
-			"and (:esPendent = false or r.pendent = true) " +
-			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
-			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
-			"and (:esNullInteressat = true " +
-			"		or (select count(interessat) " +
-			"			from r.interessats as interessat" +
-			"			where " +
-			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
-			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 )")
-	public Page<RegistreEntity> findRegistreByPareAndFiltre(
-			@Param("bustiesIds") List<Long> bustiesIds,
-			@Param("esNullNumero") boolean esNullNumero,
-			@Param("numero") String numero,
-			@Param("esNullExtracte") boolean esNullExtracte,
-			@Param("extracte") String extracte,
-			@Param("esNumeroOrigen") boolean esNumeroOrigen,
-			@Param("numeroOrigen") String numeroOrigen,
-			@Param("esNullRemitent") boolean esNullRemitent,
-			@Param("remitent") String remitent,
-			@Param("esNullDataInici") boolean esNullDataInici,
-			@Param("dataInici") Date dataInici,
-			@Param("esNullDataFi") boolean esNullDataFi,
-			@Param("dataFi") Date dataFi,
-			@Param("esProcessat") boolean esProcessat,
-			@Param("esPendent") boolean esPendent,
-			@Param("esNullInteressat") boolean esNullInteressat,
-			@Param("interessat") String interessat,
-			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
-			@Param("enviatPerEmail") Boolean enviatPerEmail,
-			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
-			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
-			Pageable pageable);*/
 	
 	/** Consulta dels identificadors de registre per a la selecció en registre user */
 	@Query(	"select r.id " +
@@ -322,7 +284,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"		left outer join r.darrerMoviment.remitent as remitent "	+
 			"where " +
-			"	 (r.pare.id in (:bustiesIds)) " +
+			"    (r.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
 			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
 			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
 			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
@@ -340,8 +303,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"			where " +
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 )")
+			"			) > 0 )" +
+			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
+			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
+			"and (:nomesAmbErrors = false or r.procesError != null ) ")
 	public List<Long> findRegistreIdsByPareAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
 			@Param("bustiesIds") List<Long> bustiesIds,
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
@@ -364,7 +332,12 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
 			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
 			@Param("esNullBackCodi") boolean esNullBackCodi,
-			@Param("backCodi") String backCodi);
+			@Param("backCodi") String backCodi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
 
 
 }

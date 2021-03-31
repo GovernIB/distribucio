@@ -232,8 +232,6 @@ public interface BustiaService {
 	 * 
 	 * @param entitatId
 	 *            Id de l'entitat.
-	 * @param bustiaOrigenId
-	 *            Atribut id de la bústia d'origen.
 	 * @param bustiaDestiId
 	 *            Atribut id de la bústia de destí.
 	 * @param contingutId
@@ -246,7 +244,6 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom')")
 	public void registreReenviar(
 			Long entitatId,
-			Long bustiaOrigenId,
 			Long[] bustiaDestiIds,
 			Long contingutId,
 			boolean deixarCopia,
@@ -325,7 +322,7 @@ public interface BustiaService {
 	public String getApplictionMetrics();
 
 	@PreAuthorize("hasRole('tothom')")
-	public void registreAnotacioEnviarPerEmail(Long entitatId, Long contingutId, Long registreId, String adresses, String motiu)
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long registreId, String adresses, String motiu)
 			throws MessagingException;
 
 	/**
@@ -362,12 +359,7 @@ public interface BustiaService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public boolean isBustiaReadPermitted(Long bustiaId);
-	
-	@PreAuthorize("hasRole('DIS_ADMIN')")
-	List<BustiaDto> findBusties(
-			Long entitatId,
-			boolean mostrarInactives);
-	
+		
 	@PreAuthorize("hasRole('tothom')")
 	public void addToFavorits(
 			Long entitatId, 
