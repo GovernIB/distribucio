@@ -30,7 +30,7 @@ public class RegistreFiltreDto implements Serializable {
 	private String numeroOrigen;
 	private String interessat;
 	private RegistreTipusDocFisicaEnumDto tipusDocFisica;
-	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
+	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 
 	private String backCodi;
 
@@ -48,11 +48,11 @@ public class RegistreFiltreDto implements Serializable {
 	public void setBackCodi(String backCodi) {
 		this.backCodi = backCodi;
 	}
-	public RegistreEnviatPerEmailEnumDto getRegistreEnviatPerEmailEnum() {
-		return registreEnviatPerEmailEnum;
+	public RegistreEnviatPerEmailEnumDto getEnviatPerEmail() {
+		return enviatPerEmail;
 	}
-	public void setRegistreEnviatPerEmailEnum(RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum) {
-		this.registreEnviatPerEmailEnum = registreEnviatPerEmailEnum;
+	public void setEnviatPerEmail(RegistreEnviatPerEmailEnumDto enviatPerEmail) {
+		this.enviatPerEmail = enviatPerEmail;
 	}
 	public RegistreTipusDocFisicaEnumDto getTipusDocFisica() {
 		return tipusDocFisica;

@@ -66,6 +66,7 @@ $(document).ready(function() {
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
+		$('#enviatPerEmail').val(null).change();
 	});
 	
 	$('#taulaDades').on( 'draw.dt', function () {
@@ -218,7 +219,7 @@ $(document).ready(function() {
 				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>			
 			<div class="col-md-2">
-				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="enviatPerEmail" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 		</div>
 		<div class="row">			

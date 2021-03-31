@@ -147,7 +147,9 @@ public class ContingutController extends BaseUserController {
 		return fitxer;
 	}
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", method = RequestMethod.GET)
+	@RequestMapping(value = {	"/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", // URL antiga
+								"/contingut/registre/{registreId}/annex/{annexId}/arxiu/{tipus}"},
+								method = RequestMethod.GET)
 	public String descarregar(
 			HttpServletRequest request,
 			HttpServletResponse response,
@@ -174,7 +176,9 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/justificant", method = RequestMethod.GET)
+	@RequestMapping(value = {	"/contingut/{contingutId}/registre/{registreId}/justificant", // URL antiga
+								"/contingut/registre/{registreId}/justificant"}, 
+					method = RequestMethod.GET)
 	public String descarregarJustificant(
 			HttpServletRequest request,
 			HttpServletResponse response,

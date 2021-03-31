@@ -77,8 +77,9 @@ $(document).ready(function() {
 		$('#mostrarInactivesBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
 		$('#nomesAmbErrorsBtn').removeClass('active');
-		$('#nomesAmbErrors').val('');
+		$('#nomesAmbErrors').val(false);
 		$('#estat').val(null).trigger('change');
+		$('#enviatPerEmail').val(null).change();
 	});
 
 	$('#nomesAmbErrorsBtn').click(function() {
@@ -255,7 +256,7 @@ $(document).ready(function() {
 				</div>			
 			</div>			
 			<div class="col-md-2">
-				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="enviatPerEmail" netejar="false" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 		</div>
 		<div class="row">			

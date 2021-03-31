@@ -329,15 +329,15 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
 		Boolean enviatPerEmail = null;
-		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
 				enviatPerEmail = true;
 			} else {
 				enviatPerEmail = false;
 			}
 		}
 		
-		String tipusFisicaCodi = null;
+ 		String tipusFisicaCodi = null;
 		if (filtre.getTipusDocFisica() != null) {
 			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
 		}
@@ -364,6 +364,7 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
 				+ "interessat=" + filtre.getInteressat() + ", " 
 				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
+				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
 				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
 				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
 				+ "estat= " + filtre.getEstat() + ", " 
@@ -490,8 +491,8 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
 
 		Boolean enviatPerEmail = null;
-		if (filtre.getRegistreEnviatPerEmailEnum() != null) {
-			if (filtre.getRegistreEnviatPerEmailEnum() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
 				enviatPerEmail = true;
 			} else {
 				enviatPerEmail = false;

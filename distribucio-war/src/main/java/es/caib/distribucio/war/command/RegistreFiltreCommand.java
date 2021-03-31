@@ -35,7 +35,7 @@ public class RegistreFiltreCommand {
 	private String interessat;
 	private RegistreTipusDocFisicaEnumDto tipusDocFisica;
 	
-	private RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum;
+	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 	private String backCodi;
 
 	// Filtre per administradors
@@ -52,11 +52,11 @@ public class RegistreFiltreCommand {
 	public void setBackCodi(String backCodi) {
 		this.backCodi = backCodi;
 	}
-	public RegistreEnviatPerEmailEnumDto getRegistreEnviatPerEmailEnum() {
-		return registreEnviatPerEmailEnum;
+	public RegistreEnviatPerEmailEnumDto getEnviatPerEmail() {
+		return this.enviatPerEmail;
 	}
-	public void setRegistreEnviatPerEmailEnum(RegistreEnviatPerEmailEnumDto registreEnviatPerEmailEnum) {
-		this.registreEnviatPerEmailEnum = registreEnviatPerEmailEnum;
+	public void setEnviatPerEmail(RegistreEnviatPerEmailEnumDto enviatPerEmail) {
+		this.enviatPerEmail = enviatPerEmail;
 	}
 	public String getInteressat() {
 		return interessat;
