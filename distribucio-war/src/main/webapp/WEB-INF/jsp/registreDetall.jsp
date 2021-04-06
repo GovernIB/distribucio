@@ -236,7 +236,14 @@ tr.clicable {
 					params.set("ordreColumn", '${ordreColumn}');
 					params.set("ordreDir", '${ordreDir}');
 	    			// Navega al registre
-	    			location.href = '<c:url value="/registreUser/navega/"/>' + registreNumero  +'?' + params.toString();
+	    			<c:choose>
+	    				<c:when test="${isRolActualAdministrador}">
+			    			location.href = '<c:url value="/registreAdmin/navega/"/>' + registreNumero  +'?' + params.toString();
+	    				</c:when>
+	    				<c:otherwise>
+			    			location.href = '<c:url value="/registreUser/navega/"/>' + registreNumero  +'?' + params.toString();
+	    				</c:otherwise>
+	    			</c:choose>
 	    		} catch(e) {
 	    			console.error("Error en la navegació de registre: " + e);
 	    		}
@@ -385,17 +392,17 @@ tr.clicable {
 			<ul class="dropdown-menu">
 				<c:choose>
 					<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
-						<li><a id="accioClassificar"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+						<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 					</c:when>
 					<c:otherwise>
 						<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 					</c:otherwise>
 				</c:choose>
-				<li><a id="accioReenviar"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+				<li><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 				<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
 					<c:choose>
-						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT'}">
-							<li><a id="accioMarcarProcessat"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
+							<li><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 						</c:when>
 						<c:otherwise>
 							<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
