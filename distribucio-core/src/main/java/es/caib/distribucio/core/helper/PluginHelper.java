@@ -886,7 +886,13 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					procedimentPlugin = (ProcedimentPlugin)clazz.newInstance();
+					try {
+						procedimentPlugin = (ProcedimentPlugin)clazz.newInstance();
+					} catch (InstantiationException ex) {
+						procedimentPlugin = (ProcedimentPlugin)clazz.getDeclaredConstructor(
+								Properties.class).newInstance(
+								PropertiesHelper.getProperties().findAll());
+					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_PROCEDIMENT,

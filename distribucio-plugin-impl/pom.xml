@@ -162,6 +162,18 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>apb</id>
+			<dependencies>
+				<dependency>
+					<groupId>es.caib.distribucio</groupId>
+					<artifactId>distribucio-plugin-apbfiles</artifactId>
+					<version>0.9</version>
+				</dependency>
+			</dependencies>	
+		</profile>
+	</profiles>
 	<build>
 		<plugins>
 			<plugin>

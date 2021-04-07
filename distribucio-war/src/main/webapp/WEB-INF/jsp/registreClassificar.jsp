@@ -13,6 +13,7 @@
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script>
 $(document).ready(function() {
@@ -85,7 +86,7 @@ $(document).ready(function() {
 				</dis:inputFixed>
 			</c:when>
 			<c:otherwise>
-				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" required="true"/>
+				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" optionMinimumResultsForSearch="0" required="true"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

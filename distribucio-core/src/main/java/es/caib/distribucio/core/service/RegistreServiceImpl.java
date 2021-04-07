@@ -6,6 +6,8 @@ package es.caib.distribucio.core.service;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -628,7 +630,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setDestiDescripcio(registreEntity.getUnitatAdministrativaDescripcio());
 			anotacioPerBackoffice.setInteressats(toInteressats(registreEntity.getInteressats()));
 			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.getId()));
-			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.getJustificant().getFitxerArxiuUuid());
+			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.getJustificantArxiuUuid());
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
@@ -1407,15 +1409,20 @@ public class RegistreServiceImpl implements RegistreService {
 			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			if (procediments != null) {
 				for (Procediment procediment: procediments) {
-					if (procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) {
+					if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
+							(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
 						ProcedimentDto dto = new ProcedimentDto();
 						dto.setCodi(procediment.getCodigo());
-						dto.setCodiSia(procediment.getCodigoSIA());
+						dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
 						dto.setNom(procediment.getNombre());
 						dtos.add(dto);
 					}
 				}
 			}
+		}
+		//### Ordenar per nom
+		if (dtos.isEmpty()) {
+			Collections.sort(dtos);
 		}
 		return dtos;
 	}

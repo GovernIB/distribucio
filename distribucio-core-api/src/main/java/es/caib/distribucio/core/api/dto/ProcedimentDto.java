@@ -3,12 +3,14 @@
  */
 package es.caib.distribucio.core.api.dto;
 
+import java.util.Comparator;
+
 /**
  * Informació d'un procediment.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ProcedimentDto {
+public class ProcedimentDto implements Comparable<ProcedimentDto>{
 
 	private String codi;
 	private String nom;
@@ -31,6 +33,11 @@ public class ProcedimentDto {
 	}
 	public void setCodiSia(String codiSia) {
 		this.codiSia = codiSia;
+	}
+	
+	@Override
+	public int compareTo(ProcedimentDto o) {
+		return nom.compareTo(o.getNom());
 	}
 
 }
