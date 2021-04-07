@@ -43,18 +43,18 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV
-	private static final String UNITAT_ADM_CODI = "A04017960"; //"A04018961";//A04031605, A04026923 DEV
+	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV
+	private static final String UNITAT_ADM_CODI = "A04026923"; //"A04018961";//A04031605, A04026923 DEV
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
-	private static final String ASSUMPTE_DESC = "Descripcio CodA";
+	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = null; //"BACK_HELIUM";
+	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova regla bustia " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta des de JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = "A04019281";
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -67,9 +67,9 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
 	
 
-	private static final int N_ANOTACIONS = 1;
+	private static final int N_ANOTACIONS = 60;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_FIRMA_DETACHED = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos

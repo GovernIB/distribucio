@@ -147,6 +147,7 @@ public class EntityComprovarHelper {
 		return contingut;
 	}
 
+
 	public BustiaEntity comprovarBustia(
 			EntitatEntity entitat,
 			Long bustiaId,
@@ -154,47 +155,36 @@ public class EntityComprovarHelper {
 		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarBustia"));
 		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
 		
-		ContingutEntity contingut = contingutRepository.findOne(bustiaId);
-		if (contingut instanceof BustiaEntity) {
-
-			BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
-			if (bustia == null) {
-				throw new NotFoundException(
-						bustiaId,
-						BustiaEntity.class);
-			}
-			if (!entitat.getId().equals(bustia.getEntitat().getId())) {
-				throw new ValidationException(
-						bustiaId,
-						BustiaEntity.class,
-						"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la bústia (id=" + bustia.getEntitat().getId() + ")");
-			}
-			if (comprovarPermisRead) {
-				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-				/*cxxxx*/
-				boolean esPermisRead = permisosHelper.isGrantedAll(
-						bustiaId,
-						BustiaEntity.class,
-						new Permission[] {ExtendedPermission.READ},
-						auth);
-				if (!esPermisRead) {
-					throw new PermissionDeniedException(
-							bustiaId,
-							BustiaEntity.class,
-							auth.getName(),
-							"READ");
-				}
-			}
-			comprovarBustiaContext.stop();
-			return bustia;
-			
-		} else {
+		BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
+		if (bustia == null) {
+			throw new NotFoundException(
+					bustiaId,
+					BustiaEntity.class);
+		}
+		if (!entitat.getId().equals(bustia.getEntitat().getId())) {
 			throw new ValidationException(
 					bustiaId,
-					ContingutEntity.class,
-					"El contingut especificat no és de tipus bústia");
+					BustiaEntity.class,
+					"L'entitat especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la bústia (id=" + bustia.getEntitat().getId() + ")");
 		}
-
+		if (comprovarPermisRead) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			/*cxxxx*/
+			boolean esPermisRead = permisosHelper.isGrantedAll(
+					bustiaId,
+					BustiaEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			if (!esPermisRead) {
+				throw new PermissionDeniedException(
+						bustiaId,
+						BustiaEntity.class,
+						auth.getName(),
+						"READ");
+			}
+		}
+		comprovarBustiaContext.stop();
+		return bustia;
 	}
 
 	public RegistreEntity comprovarRegistre(

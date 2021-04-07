@@ -290,7 +290,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		ContingutDto registre = null;
 		String ret = null;
-		// Recupera el registre a partir del número de regitre
+		// Recupera el registre a partir del número de registre
 		try {
 			// Prepara la pàgina per consultar
 			int paginaTamany = 1;

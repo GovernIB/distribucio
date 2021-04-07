@@ -34,6 +34,7 @@ import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
@@ -175,9 +176,65 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		}
 		return "registreDetall";
-	}	
+	}
 	
-	
+
+	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des
+	 * dels botons "Anterior" i "Següent" de la pàgina del detall.
+	 * @param request
+	 * @param registreNumero
+	 * @param ordreColumn
+	 * @param ordreDir
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/navega/{registreNumero}", method = RequestMethod.GET)
+	public String registreNavegacio(
+			HttpServletRequest request,
+			@PathVariable int registreNumero,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			Model model) {
+		
+		ContingutDto registre = null;
+		String ret = null;
+		// Recupera el registre a partir del número de registre
+		try {
+			// Prepara la pàgina per consultar
+			int paginaTamany = 1;
+			int paginaNum = registreNumero - 1;
+			PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
+			paginacioParams.setPaginaTamany(paginaTamany);
+			paginacioParams.setPaginaNum(paginaNum);
+			paginacioParams.afegirOrdre(
+					ordreColumn,
+					"asc".equals(ordreDir) ? OrdreDireccioDto.ASCENDENT : OrdreDireccioDto.DESCENDENT);
+			// Consulta la pàgina amb el registre anterior, actual i final
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
+			List<BustiaDto> bustiesPermesesPerUsuari = null;
+			PaginaDto<ContingutDto> pagina = 
+				registreService.findRegistre(
+						entitatActual.getId(),
+						bustiesPermesesPerUsuari,
+						RegistreFiltreCommand.asDto(registreFiltreCommand),
+						false,
+						paginacioParams, false);
+			// Posa les dades dels registres al model segons la consulta
+			if (!pagina.getContingut().isEmpty()) {
+				registre = pagina.getContingut().get(0);
+				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+			}
+		} catch (Exception e) {
+			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
+			logger.error(errMsg, e);
+			MissatgesHelper.error(request, errMsg);
+		}
+		if (ret == null) {
+			ret = "redirect:" + request.getHeader("referer");
+		}
+		return ret;
+	}
 	
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
 	@ResponseBody
