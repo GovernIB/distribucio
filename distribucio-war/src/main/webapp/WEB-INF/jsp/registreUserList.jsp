@@ -54,11 +54,7 @@ function formatSelectBustia(item) {
 }
 
 $(document).ready(function() {
-	$("#header").append("<div style='float: right;'><button id='canviVistaReenvios' class='btn btn-default'><spring:message code='bustia.list.vista.moviments'/></button></div>");
-	
-	$("#canviVistaReenvios").click(function(){
-		window.location.replace("/distribucio/registreUser/moviments");
-	});
+	$("#canviVistaReenvios").removeClass('active');
 	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');

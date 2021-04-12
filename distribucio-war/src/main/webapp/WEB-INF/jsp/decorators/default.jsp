@@ -88,6 +88,55 @@ body {
 	// Guarda l'idioma de la configuració de l'usuari a local storage
 	// necesari per les traduccions de literals del paginador del dataTables
 	localStorage.setItem('requestLocale', '${requestLocale}');
+	
+	$(document).ready(function() {
+		var botoCanviVista = $("#canviVistaReenvios");
+		
+		if (!botoCanviVista.hasClass('active')) {
+			setCookie("vistaMoviments", false);
+		};
+		
+		botoCanviVista.click(function() {
+			var isVistaMoviments = getCookie("vistaMoviments");
+				
+			if (isVistaMoviments == "" || !JSON.parse(isVistaMoviments)) {
+				window.location.replace("/distribucio/registreUser/moviments");
+				$(this).addClass('active');
+				setCookie("vistaMoviments", true);
+			} else {
+				window.location.replace("/distribucio/registreUser");
+				$(this).removeClass('active');
+				setCookie("vistaMoviments", false);
+			}
+		});
+	
+	});
+	
+	function setCookie(cname,cvalue) {
+		var exdays = 30;
+	    var d = new Date();
+	    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	    var expires = "expires=" + d.toGMTString();
+	    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	function getCookie(cname) {
+	    var name = cname + "=";
+	    var ca = document.cookie.split(';');
+	    for(var i = 0; i < ca.length; i++) {
+	        var c = ca[i];
+	        while (c.charAt(0) == ' ') {
+	            c = c.substring(1);
+	        }
+	        if (c.indexOf(name) == 0) {
+	            return c.substring(name.length, c.length);
+	        }
+	    }
+	    return "";
+	}
+	function removeCookie(cname) {
+	    var expires = new Date(0).toUTCString();
+	    document.cookie = cname + "=; path=/; expires=" + expires + ";";
+	}
 </script>
 </head>
 <body>
@@ -223,9 +272,12 @@ body {
 									<c:if test="${teAccesExpedients}">
 										<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 									</c:if>
-									<a href="<c:url value="/registreUser"/>" class="btn btn-primary">
+									<a href="<c:url value="/registreUser"/>" id="contingutBusties" class="btn btn-primary">
 										<spring:message code="decorator.menu.busties"/>
 										<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
+									</a>
+									<a href="#" id="canviVistaReenvios" class="btn btn-primary">
+										<spring:message code='bustia.list.vista.moviments'/>
 									</a>
 								</c:when>
 							</c:choose>

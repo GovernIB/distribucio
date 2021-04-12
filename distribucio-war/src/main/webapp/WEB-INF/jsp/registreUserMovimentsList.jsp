@@ -8,7 +8,7 @@
 <dis:blocIconaContingutNoms/>
 <html>
 <head>
-	<title><spring:message code="bustia.user.list.titol"/></title>
+	<title><spring:message code="bustia.user.list.moviments.titol"/></title>
 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
@@ -61,11 +61,7 @@ function formatSelectBustia(item) {
 }
 
 $(document).ready(function() {
-	$("#header").append("<div style='float: right;'><button id='canviVistaReenvios' class='btn btn-default active'><spring:message code='bustia.list.vista.moviments'/></button></div>");
-	
-	$("#canviVistaReenvios").click(function(){
-		window.location.replace("/distribucio/registreUser");
-	});
+	$("#canviVistaReenvios").addClass('active');
 	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
@@ -222,7 +218,7 @@ $(document).ready(function() {
 				</div>
 			</div>		
 			<div class="col-md-2">
-				<dis:inputSelect name="registreEnviatPerEmailEnum" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+				<dis:inputSelect name="enviatPerEmail" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
 			</div>
 			<div class="row">		
 				<div class="col-md-2 pull-right">
