@@ -414,6 +414,8 @@ tr.clicable {
 						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
 					</a>
 				</li>
+				<li role="separator" class="divider"></li>
+				<li><a href="<c:url value="/contingut/${registre.id}/log"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 			</ul>
 		</div>	
 
