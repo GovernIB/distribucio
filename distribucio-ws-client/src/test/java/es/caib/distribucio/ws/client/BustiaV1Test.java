@@ -43,8 +43,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV
-	private static final String UNITAT_ADM_CODI = "A04026923"; //"A04018961";//A04031605, A04026923 DEV
+	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV
+	private static final String UNITAT_ADM_CODI = "A04017960"; //"A04018961";//A04031605, A04026923 DEV
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -67,9 +67,9 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
 	
 
-	private static final int N_ANOTACIONS = 60;
+	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMA_DETACHED = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos

@@ -54,7 +54,7 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 		try {
 			
 //			getAvailableProfiles(api);
-			String perfil = "CADES_DETACHED";
+			String perfil = getPropertyPerfil();
 			result = internalSignDocument(
 					api,
 					perfil,
@@ -178,5 +178,10 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.password");
 	}
 	
+	private String getPropertyPerfil() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil");
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(FirmaSimplePluginPortafib.class);
 }
