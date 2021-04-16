@@ -265,5 +265,16 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.getNumberThreads();
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public void agafar(Long entitatId, Long id) {
+		delegate.agafar(entitatId, id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void alliberar(Long entitatId, Long id) {
+		delegate.alliberar(entitatId, id);
+	}
 
 }

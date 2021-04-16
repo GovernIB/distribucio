@@ -40,9 +40,22 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
     color: #333;
 }
-
+.list-info {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	white-space: nowrap;
+}
+.alliberat {
+	background: #FF9C59 !important;
+	border-color: #FF9C59 !important;
+}
 </style>
 <script>
+$.views.helpers({
+	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions}
+});
+
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
 //Funció per donar format als items de la select de bústies segons si estan actives o no
@@ -267,7 +280,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="13"
+		data-default-order="15"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -282,6 +295,8 @@ $(document).ready(function() {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="perConeixement"  data-visible="false">
+				<th data-col-name="agafat" data-visible="false"></th>
+				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
@@ -396,7 +411,7 @@ $(document).ready(function() {
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && (!agafat || agafatPer.codi != '${pageContext.request.userPrincipal.name}')}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li>
 									<a id="detall-button"
@@ -408,18 +423,37 @@ $(document).ready(function() {
 									<li><a href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 								<li role="separator" class="divider"></li>
-								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-								<li role="separator" class="divider"></li>
+								
+								{{if !~hlpIsPermesReservarAnotacions || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
+									<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+									<li role="separator" class="divider"></li>
+								{{/if}}
 								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
-								<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-								{{if procesEstatSimple == 'PENDENT'}}
-									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
-								{{/if}}		
-								<li>
+								
+								{{if !~hlpIsPermesReservarAnotacions || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
+									<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									{{if procesEstatSimple == 'PENDENT'}}
+										<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									{{/if}}		
+									<li>
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
 									</a>
-								</li>
+									</li>
+								{{/if}}
+								{{if ~hlpIsPermesReservarAnotacions}}
+									{{if !agafat}}
+										<li><a href="./registreUser/{{:id}}/agafar"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+									{{else}}
+										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}
+											<li><a href="./registreUser/{{:id}}/agafar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+											<li role="separator" class="divider"></li>
+											<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>
+										{{else}}
+											<li><a href="./registreUser/{{:id}}/alliberar"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+										{{/if}}
+									{{/if}}
+								{{/if}}
 							</ul>
 						</div>
 					</script>

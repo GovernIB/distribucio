@@ -99,6 +99,18 @@ public class RegistreDto extends ContingutDto {
 	private boolean reintentsEsgotat;
 	private int maxReintents;
 	
+	private UsuariDto agafatPer;
+	
+	public boolean isAgafat() {
+		return agafatPer != null;
+	}
+	
+	public UsuariDto getAgafatPer() {
+		return agafatPer;
+	}
+	public void setAgafatPer(UsuariDto agafatPer) {
+		this.agafatPer = agafatPer;
+	}
 	public int getMaxReintents() {
 		return maxReintents;
 	}

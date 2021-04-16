@@ -46,6 +46,7 @@ import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.PropertiesHelper;
+import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
@@ -97,6 +98,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private EmailHelper emailHelper;
 	@Resource
 	private MessageHelper messageHelper;
+	@Resource
+	private RegistreHelper registreHelper;
 
 
 	@Transactional(readOnly = true)
@@ -518,6 +521,10 @@ public class ContingutServiceImpl implements ContingutService {
 		long registresAmbMateixUuid = 0;
 		if (ContingutTipusEnumDto.REGISTRE == contingut.getTipus()) {
 			registre = (RegistreEntity)contingut;
+			
+			if (isPermesReservarAnotacions())
+				registreHelper.comprovarRegistreAgafatPerUsuariActual(registre);
+			
 			registresAmbMateixUuid = registreRepository.countByExpedientArxiuUuidAndEsborrat(registre.getExpedientArxiuUuid(), 0);
 		}
 		
@@ -564,7 +571,9 @@ public class ContingutServiceImpl implements ContingutService {
 				text).isPublicat();
 	}
 
-
+	private boolean isPermesReservarAnotacions() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+	}
 
 	private int getPropertyExpedientDiesTancament() {
 		String numDies = PropertiesHelper.getProperties().getProperty(

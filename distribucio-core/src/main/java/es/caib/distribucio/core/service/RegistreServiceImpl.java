@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -1333,6 +1332,9 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				registreId);
 		
+		if (isPermesReservarAnotacions())
+			registreHelper.comprovarRegistreAgafatPerUsuariActual(registre);
+		
 		if (registre.getPare() == null)
 			throw new ValidationException(
 					registreId,
@@ -1425,6 +1427,52 @@ public class RegistreServiceImpl implements RegistreService {
 			Collections.sort(dtos);
 		}
 		return dtos;
+	}
+	
+	@Transactional
+	@Override
+	public void agafar(Long entitatId, Long id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Agafant l'anotació com a usuari (" + "entitatId=" + entitatId + ", " + "id=" + id + ", " + "usuari=" + auth.getName() + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		if (!isPermesReservarAnotacions()) {
+			throw new ValidationException(
+					id, 
+					RegistreEntity.class, 
+					"La funcionalitat de reserva d'anotacions no està activa");
+		}
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
+		registreHelper.agafar(
+				registre, 
+				usuariHelper.getUsuariAutenticat().getCodi());
+	}
+	
+	@Transactional
+	@Override
+	public void alliberar(Long entitatId, Long id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Alliberant l'anotació com a usuari (" + "entitatId=" + entitatId + ", " + "id=" + id + ", " + "usuari=" + auth.getName() + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		boolean permetreReservarAnotacio = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		if (!permetreReservarAnotacio) {
+			throw new ValidationException(
+					id, 
+					RegistreEntity.class, 
+					"La funcionalitat de reserva d'anotacions no està activa");
+		}
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
+		registreHelper.alliberar(registre);
 	}
 
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
@@ -1798,6 +1846,9 @@ public class RegistreServiceImpl implements RegistreService {
 				RegistreAnnexDto.class);
 	}
 	
-
+	private boolean isPermesReservarAnotacions() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 }

@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
@@ -66,6 +69,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
@@ -290,7 +294,34 @@ public class RegistreHelper {
 		return registreEntity;
 	}
 	
+	public void agafar(RegistreEntity registreEntity, String usuariCodi) {
+		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
+		UsuariEntity usuariActual = registreEntity.getAgafatPer();
+		UsuariEntity usuariNou = usuariHelper.getUsuariByCodi(usuariCodi);
+		registreEntity.updateAgafatPer(usuariNou);
+		if (usuariActual != null) {
+			// Avisa a l'usuari que li han pres
+			//emailHelper.contingutAgafatPerAltreUsusari(expedient, usuariOriginal, usuariNou);
+		}
+		
+		List<String> params = new ArrayList<>();
+		params.add(usuariCodi);
+		params.add(null);
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.AGAFAR,
+				params,
+				false);
+	}
 	
+	public void alliberar(RegistreEntity registreEntity) {
+		UsuariEntity prevUserAgafat = registreEntity.getAgafatPer();
+		registreEntity.updateAgafatPer(null);
+		List<String> params = new ArrayList<>();
+		params.add(prevUserAgafat.getCodi());
+		params.add(null);
+		contingutLogHelper.log(registreEntity, LogTipusEnumDto.ALLIBERAR, params, false);
+	}
 	
 	public static String encrypt
 	(String messageToEncrypt,
@@ -1061,6 +1092,26 @@ public class RegistreHelper {
 		}
 	}
 
+	public void comprovarRegistreAgafatPerUsuariActual(RegistreEntity registre) {
+		UsuariEntity agafatPer = registre.getAgafatPer();
+		if (agafatPer != null && HibernateHelper.isProxy(agafatPer))
+			agafatPer = HibernateHelper.deproxy(agafatPer);
+		
+		if (agafatPer == null) {
+			throw new ValidationException(
+					registre.getId(),
+					RegistreEntity.class,
+					"L'anotació no està agafada per cap usuari");
+		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!auth.getName().equals(agafatPer.getCodi())) {
+			throw new ValidationException(
+					registre.getId(),
+					RegistreEntity.class,
+					"L'anotació no està agafada per l'usuari actual (" +
+					"usuariActualCodi=" + auth.getName() + ")");
+		}
+	}
 	
 	private RegistreInteressat fromInteressatEntity(
 			RegistreInteressatEntity interessatEntity) {

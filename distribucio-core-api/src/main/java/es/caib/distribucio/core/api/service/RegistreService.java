@@ -320,5 +320,31 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public int getNumberThreads();
 
+	/**
+	 * Assigna el registre a l'usuari actual.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el registre.
+	 * @param id
+	 *            Atribut id del registre/anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	void agafar(Long entitatId, Long id);
+
+	/**
+	 * Allibera un registre agafat per l'usuari actual.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el registre.
+	 * @param id
+	 *            Atribut id del registre/anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	void alliberar(Long entitatId, Long id);
+
 
 }

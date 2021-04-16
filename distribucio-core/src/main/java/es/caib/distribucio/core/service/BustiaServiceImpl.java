@@ -1216,6 +1216,9 @@ public class BustiaServiceImpl implements BustiaService {
 			throw new NotFoundException(registreId, RegistreEntity.class);
 		}
 		
+		if (isPermesReservarAnotacions())
+			registreHelper.comprovarRegistreAgafatPerUsuariActual(reg);
+	
 		BustiaEntity bustiaOrigen = null;
 		if (!usuariHelper.isAdmin())
 			bustiaOrigen = entityComprovarHelper.comprovarBustia(
@@ -2697,6 +2700,9 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		}
 		return arbre;
 	}
-
+	
+	private boolean isPermesReservarAnotacions() {
+		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+	}
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 }

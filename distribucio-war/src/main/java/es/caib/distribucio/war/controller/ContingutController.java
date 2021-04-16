@@ -570,7 +570,12 @@ public class ContingutController extends BaseUserController {
 		case BACK_ERROR:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_ERROR"));
 			break;
-		
+		case AGAFAR:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.AGAFAR", new Object[] {log.getParams().get(0)}));
+			break;
+		case ALLIBERAR:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.ALLIBERAR"));
+			break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");

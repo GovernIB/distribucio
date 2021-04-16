@@ -11,6 +11,8 @@
 				es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
 %>
 
+
+<c:if test="${registre.agafatPer.codi == pageContext.request.userPrincipal.name}"><c:set var="registreAgafatPerUsuariActual" value="${true}"/></c:if>
 <html>
 <head>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
@@ -138,7 +140,16 @@ tr.clicable {
 #avanzarPagina:focus[aria-pressed="false"] {
 	background-color: #fff;
 }
-
+.list-info {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	white-space: nowrap;
+}
+.alliberat {
+	background: #FF9C59 !important;
+	border-color: #FF9C59 !important;
+}
 </style>
 <script type="text/javascript">
 	// <![CDATA[
@@ -388,26 +399,28 @@ tr.clicable {
 					<i class="fa fa-forward"></i>
 		    	</span>
 			</button>&nbsp;
-			<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary ${(isPermesReservarAnotacions && (!registre.agafat || !registreAgafatPerUsuariActual) ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
-				<c:choose>
-					<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
-						<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-					</c:when>
-					<c:otherwise>
-						<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-					</c:otherwise>
-				</c:choose>
-				<li><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-				<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
+				<c:if test="${!isPermesReservarAnotacions || (registre.agafat && registreAgafatPerUsuariActual)}">
 					<c:choose>
-						<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
-							<li><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
+							<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 						</c:when>
 						<c:otherwise>
-							<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+							<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 						</c:otherwise>
-					</c:choose>	
+					</c:choose>
+					<li><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
+						<c:choose>
+							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
+								<li><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+							</c:when>
+							<c:otherwise>
+								<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+							</c:otherwise>
+						</c:choose>	
+					</c:if>
 				</c:if>
 				<li>
 					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip"/>">
@@ -416,6 +429,25 @@ tr.clicable {
 				</li>
 				<li role="separator" class="divider"></li>
 				<li><a href="<c:url value="/contingut/${registre.id}/log"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+				<c:if test="${isPermesReservarAnotacions}">
+					<c:choose>
+						<c:when test="${!registre.agafat}">
+							<li><a href="<c:url value="/registreUser/${registre.id}/agafar"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+						</c:when>
+						<c:otherwise>
+							<c:choose>
+								<c:when test="${!registreAgafatPerUsuariActual}">
+									<li><a href="<c:url value="/registreUser/${registre.id}/agafar"/>" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> ${registre.agafatPer.codi}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+									<li role="separator" class="divider"></li>
+									<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;${registre.agafatPer.codi}</li>
+								</c:when>
+								<c:otherwise>
+									<li><a href="<c:url value="/registreUser/${registre.id}/alliberar"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+								</c:otherwise>
+							</c:choose>
+						</c:otherwise>
+					</c:choose>
+				</c:if>
 			</ul>
 		</div>	
 

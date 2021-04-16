@@ -226,6 +226,10 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "enviat_per_email")
 	private boolean enviatPerEmail;
 
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "agafat_per")
+	@ForeignKey(name = "dis_agafatper_registre_fk")
+	protected UsuariEntity agafatPer;
 	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
@@ -422,6 +426,12 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getBackObservacions() {
 		return backObservacions;
+	}
+	public UsuariEntity getAgafatPer() {
+		return agafatPer;
+	}
+	public void updateAgafatPer(UsuariEntity usuari) {
+		this.agafatPer = usuari;
 	}
 	// Informació sobre el tancament del registre
 	public Date getDataTancament() {

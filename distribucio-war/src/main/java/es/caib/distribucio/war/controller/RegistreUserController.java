@@ -64,6 +64,7 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
+import es.caib.distribucio.war.helper.ModalHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -96,6 +97,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);		
+		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		
 		return "registreUserList";
 	}
@@ -254,6 +256,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
 			model.addAttribute("ordreDir", ordreDir);
+			model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
 			if (thr != null) {
@@ -1396,6 +1399,64 @@ public class RegistreUserController extends BaseUserController {
 	    				new SimpleDateFormat("dd/MM/yyyy"),
 	    				true));
 	}
+	
+	@RequestMapping(value = "/{registreId}/agafar", method = RequestMethod.GET)
+	public String agafar(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		model.addAttribute("mantenirPaginacio", true);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		try {
+			registreService.agafar(
+					entitatActual.getId(),
+					registreId);
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"bustia.pendent.controller.agafat.ok"));
+			return "redirect:" + request.getHeader("referer");
+			/*return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:/registreUser/registre/" + registreId,
+					"bustia.pendent.controller.agafat.ok");*/
+		} catch (Exception e) {
+			logger.error("Error agafant expedient", e);
+			throw e;
+			/*Exception permisExcepcion = ExceptionHelper.findExceptionInstance(e, PermissionDeniedException.class, 3);
+			if (permisExcepcion != null) {
+				return getAjaxControllerReturnValueError(
+						request,
+						"redirect:/registreUser/registre/" + registreId,
+						"bustia.pendent.controller.agafat.ko");
+			} else {
+				throw e;
+			}*/
+		}
+	}
+	
+	@RequestMapping(value = "/{registreId}/alliberar", method = RequestMethod.GET)
+	public String alliberar(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		model.addAttribute("mantenirPaginacio", true);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		registreService.alliberar(
+				entitatActual.getId(),
+				registreId);
+		MissatgesHelper.success(
+				request, 
+				getMessage(
+						request, 
+						"bustia.pendent.controller.alliberat.ok"));
+		return "redirect:" + request.getHeader("referer");
+		/*return getAjaxControllerReturnValueSuccess(
+			request,
+			"redirect:/registreUser/registre/" + registreId,
+			"bustia.pendent.controller.alliberat.ok");*/
+	}
 
 	private RegistreDto omplirModelPerReenviar(
 			EntitatDto entitatActual,
@@ -1442,6 +1503,9 @@ public class RegistreUserController extends BaseUserController {
 		return registreDto;
 	}
 	
+	private boolean isPermesReservarAnotacions() {
+		return new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar"));
+	}
 	
 	private void omplirModelPerReenviarMultiple(
 			EntitatDto entitatActual,
