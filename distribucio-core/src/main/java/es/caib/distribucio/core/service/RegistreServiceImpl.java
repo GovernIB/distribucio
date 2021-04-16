@@ -1434,7 +1434,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public void agafar(Long entitatId, Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Agafant l'anotació com a usuari (" + "entitatId=" + entitatId + ", " + "id=" + id + ", " + "usuari=" + auth.getName() + ")");
-		entityComprovarHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -1448,6 +1448,8 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
+		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), true);
+		
 		registreHelper.agafar(
 				registre, 
 				usuariHelper.getUsuariAutenticat().getCodi());
@@ -1458,7 +1460,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public void alliberar(Long entitatId, Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Alliberant l'anotació com a usuari (" + "entitatId=" + entitatId + ", " + "id=" + id + ", " + "usuari=" + auth.getName() + ")");
-		entityComprovarHelper.comprovarEntitat(
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
@@ -1472,6 +1474,8 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
+		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), true);
+		
 		registreHelper.alliberar(registre);
 	}
 

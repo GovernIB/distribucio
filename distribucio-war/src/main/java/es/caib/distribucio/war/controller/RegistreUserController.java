@@ -47,6 +47,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.AplicacioService;
@@ -1417,22 +1418,19 @@ public class RegistreUserController extends BaseUserController {
 							request, 
 							"bustia.pendent.controller.agafat.ok"));
 			return "redirect:" + request.getHeader("referer");
-			/*return getAjaxControllerReturnValueSuccess(
-					request,
-					"redirect:/registreUser/registre/" + registreId,
-					"bustia.pendent.controller.agafat.ok");*/
 		} catch (Exception e) {
-			logger.error("Error agafant expedient", e);
-			throw e;
-			/*Exception permisExcepcion = ExceptionHelper.findExceptionInstance(e, PermissionDeniedException.class, 3);
-			if (permisExcepcion != null) {
-				return getAjaxControllerReturnValueError(
-						request,
-						"redirect:/registreUser/registre/" + registreId,
-						"bustia.pendent.controller.agafat.ko");
+			logger.error("Error agafant l'anotació", e);
+			boolean permisExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, PermissionDeniedException.class);
+			if (permisExcepcion) {
+				MissatgesHelper.error(
+						request, 
+						getMessage(
+								request, 
+								"bustia.pendent.controller.agafat.ko"));
+				return "redirect:" + request.getHeader("referer");
 			} else {
 				throw e;
-			}*/
+			}
 		}
 	}
 	
@@ -1443,19 +1441,30 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		model.addAttribute("mantenirPaginacio", true);
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		registreService.alliberar(
-				entitatActual.getId(),
-				registreId);
-		MissatgesHelper.success(
-				request, 
-				getMessage(
+		try {
+			registreService.alliberar(
+					entitatActual.getId(),
+					registreId);
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"bustia.pendent.controller.alliberat.ok"));
+			return "redirect:" + request.getHeader("referer");
+		} catch (Exception e) {
+			logger.error("Error alliberant l'anotació", e);
+			boolean permisExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, PermissionDeniedException.class);
+			if (permisExcepcion) {
+				MissatgesHelper.error(
 						request, 
-						"bustia.pendent.controller.alliberat.ok"));
-		return "redirect:" + request.getHeader("referer");
-		/*return getAjaxControllerReturnValueSuccess(
-			request,
-			"redirect:/registreUser/registre/" + registreId,
-			"bustia.pendent.controller.alliberat.ok");*/
+						getMessage(
+								request, 
+								"bustia.pendent.controller.alliberat.ko"));
+				return "redirect:" + request.getHeader("referer");
+			} else {
+				throw e;
+			}
+		}
 	}
 
 	private RegistreDto omplirModelPerReenviar(

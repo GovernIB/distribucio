@@ -24,6 +24,7 @@ import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
@@ -235,6 +236,35 @@ public class EmailHelper {
 		
 		mailSender.send(missatge);		
 	}
+	
+	/**
+	 * Envia un email d'avís quan un usuari agafa una anotació que ja està reservada per un altre usuari prèviament.
+	 * 
+	 * @param registreEntity
+	 * 			La informació del registre agafat
+	 * @param usuariActual
+	 * 			Usuari que té agafada l'anotació
+	 * @param usuariNou
+	 * 			L'usuari nou que agafa l'anotació
+	 */
+	public void contingutAgafatPerAltreUsusari(
+			RegistreEntity registreEntity, 
+			UsuariEntity usuariActual,
+			UsuariEntity usuariNou) {
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		missatge.setFrom(getRemitent());
+		missatge.setTo(usuariActual.getEmail());
+		missatge.setSubject(PREFIX_DISTRIBUCIO + " Registre agafat per un altre usuari: [" + registreEntity.getNom() + "]");
+		EntitatEntity entitat = registreEntity.getEntitat();
+		missatge.setText("Informació del registre:\n" +
+				"\tEntitat: " + entitat.getNom() + "\n" +
+				"\tNúmero: " + registreEntity.getNumero() + "\n" +
+				"\tNom: " + registreEntity.getNom() + "\n\n" + 
+				"\tPersona que ho ha agafat: " + usuariNou.getNom() + "(" + usuariNou.getCodi() + ").");
+		
+		mailSender.send(missatge);		
+	}
+
 
 	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/registreUser/bustia/642/registre/2669"
 	 * 

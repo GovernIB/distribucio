@@ -300,8 +300,7 @@ public class RegistreHelper {
 		UsuariEntity usuariNou = usuariHelper.getUsuariByCodi(usuariCodi);
 		registreEntity.updateAgafatPer(usuariNou);
 		if (usuariActual != null) {
-			// Avisa a l'usuari que li han pres
-			//emailHelper.contingutAgafatPerAltreUsusari(expedient, usuariOriginal, usuariNou);
+			emailHelper.contingutAgafatPerAltreUsusari(registreEntity, usuariActual, usuariNou);
 		}
 		
 		List<String> params = new ArrayList<>();
