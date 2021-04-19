@@ -36,6 +36,7 @@ public interface ContingutService {
 	 *            Indica si la resposta ha d'incloure els fills del contingut.
 	 * @param ambVersions
 	 *            Indica si la resposta ha d'incloure les versions del contingut.
+	 * @param rolActual Rol de l'usuari actual
 	 * @return El contingut amb l'id especificat.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -45,7 +46,8 @@ public interface ContingutService {
 			Long entitatId,
 			Long contingutId,
 			boolean ambFills,
-			boolean ambVersions) throws NotFoundException;
+			boolean ambVersions, 
+			String rolActual) throws NotFoundException;
 
 	/**
 	 * Obté la informació del contingut especificat.
@@ -225,6 +227,7 @@ public interface ContingutService {
 	 *            Atribut id del contingut que es vol exportar.
 	 * @param text
 	 *            text del comentari a publicar.
+	 * @param rolActual Rol de l'usuari actual
 	 * @return boolea per indicar si el procés ha finaltizat correctament
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -233,5 +236,6 @@ public interface ContingutService {
 	public boolean marcarProcessat(
 			Long entitatId,
 			Long contingutId,
-			String text) throws NotFoundException;
+			String text, 
+			String rolActual) throws NotFoundException;
 }

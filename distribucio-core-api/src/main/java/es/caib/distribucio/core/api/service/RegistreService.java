@@ -161,12 +161,14 @@ public interface RegistreService {
 
 	/** Retorna un fitxer amb el justificant i annexos comprimits en un .zip o 
 	 * llença error en cas de no poder recuperar el contingut.
+	 * @param rolActual Rol de l'usuari actual
 	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
 	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
 	 */
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getZipDocumentacio(
-			Long registreId) throws Exception;
+			Long registreId, 
+			String rolActual) throws Exception;
 	/**
 	 * Retorna un justificant amb contingut o sense
 	 * 

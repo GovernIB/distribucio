@@ -65,8 +65,8 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
-import es.caib.distribucio.war.helper.ModalHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per al manteniment de registres.
@@ -1039,6 +1039,7 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
 		if (bindingResult.hasErrors()) {
 			return "registreUserMarcarProcessat";
 		}
@@ -1050,7 +1051,8 @@ public class RegistreUserController extends BaseUserController {
 					getMessage(
 							request, 
 							"bustia.pendent.accio.marcat.processat") + 
-					"</span> " + command.getMotiu());
+					"</span> " + command.getMotiu(), 
+					rolActual);
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:/registreUser/registre/" + registreId,
@@ -1084,6 +1086,7 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
 		if (bindingResult.hasErrors()) {
 			return "registreUserMarcarProcessat";
 		}
@@ -1119,7 +1122,8 @@ public class RegistreUserController extends BaseUserController {
 								getMessage(
 										request, 
 										"bustia.pendent.accio.marcat.processat") + 
-								"</span> " + command.getMotiu());
+								"</span> " + command.getMotiu(), 
+								rolActual);
 						
 
 					} catch (Exception e) {

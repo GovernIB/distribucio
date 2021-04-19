@@ -45,12 +45,14 @@ public class ContingutServiceBean implements ContingutService {
 			Long entitatId,
 			Long contingutId,
 			boolean ambFills,
-			boolean ambVersions) {
+			boolean ambVersions, 
+			String rolActual) {
 		return delegate.findAmbIdUser(
 				entitatId,
 				contingutId,
 				ambFills,
-				ambVersions);
+				ambVersions, 
+				rolActual);
 	}
 
 	@Override
@@ -137,8 +139,8 @@ public class ContingutServiceBean implements ContingutService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public boolean marcarProcessat(Long entitatId, Long contingutId, String text) throws NotFoundException {
-		return delegate.marcarProcessat(entitatId, contingutId, text);
+	public boolean marcarProcessat(Long entitatId, Long contingutId, String text, String rolActual) throws NotFoundException {
+		return delegate.marcarProcessat(entitatId, contingutId, text, rolActual);
 	}
 
 	@Override

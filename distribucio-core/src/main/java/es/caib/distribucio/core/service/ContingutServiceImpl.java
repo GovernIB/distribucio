@@ -108,7 +108,8 @@ public class ContingutServiceImpl implements ContingutService {
 			Long entitatId,
 			Long contingutId,
 			boolean ambFills,
-			boolean ambVersions) {
+			boolean ambVersions, 
+			String rolActual) {
 		logger.debug("Obtenint contingut amb id per usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
@@ -125,7 +126,7 @@ public class ContingutServiceImpl implements ContingutService {
 				null);
 		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
-				true,
+				!rolActual.equals("DIS_ADMIN"),
 				false,
 				false,
 				true);
@@ -506,7 +507,8 @@ public class ContingutServiceImpl implements ContingutService {
 	public boolean marcarProcessat(
 			Long entitatId,
 			Long contingutId,
-			String text) {
+			String text, 
+			String rolActual) {
 		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -538,7 +540,7 @@ public class ContingutServiceImpl implements ContingutService {
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
-					true);
+					!rolActual.equals("DIS_ADMIN"));
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
 		}
 		// Si el contingut és una anotació de registre s'ha de 

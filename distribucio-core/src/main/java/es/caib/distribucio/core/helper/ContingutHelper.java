@@ -381,7 +381,7 @@ public class ContingutHelper {
 				// els altres usuaris no hi tendran accés.
 				comprovarPermisosContingut(
 						contingutPath,
-						true,
+						comprovarPermisRead || comprovarPermisWrite || comprovarPermisDelete,
 						false,
 						false);
 			}

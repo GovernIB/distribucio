@@ -145,8 +145,8 @@ public class RegistreServiceBean implements RegistreService {
 	
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto getZipDocumentacio(Long registreId) throws Exception{
-		return delegate.getZipDocumentacio(registreId);
+	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception{
+		return delegate.getZipDocumentacio(registreId, rolActual);
 	}
 
 

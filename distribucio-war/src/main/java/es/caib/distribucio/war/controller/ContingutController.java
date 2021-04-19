@@ -48,6 +48,7 @@ import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
+import es.caib.distribucio.war.helper.RolHelper;
 import es.caib.distribucio.war.helper.SessioHelper;
 import fr.opensagres.xdocreport.converter.ConverterTypeTo;
 import fr.opensagres.xdocreport.converter.Options;
@@ -227,9 +228,10 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long registreId) throws IOException {
+		String rolActual = RolHelper.getRolActual(request);
 		try {
 			getEntitatActualComprovantPermisos(request);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -255,6 +257,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				registreId);
@@ -280,6 +283,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
 		
 		model.addAttribute(
 				"isPanelUser",
@@ -291,7 +295,8 @@ public class ContingutController extends BaseUserController {
 						entitatActual.getId(),
 						registreId,
 						true,
-						false));
+						false, 
+						rolActual));
 
 		List<ContingutLogDetallsDto> logsDetall = contingutService.findLogsDetallsPerContingutUser(
 				entitatActual.getId(),
@@ -376,6 +381,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
 			Model model) throws Exception {
+		String rolActual = RolHelper.getRolActual(request);
 		
 		String ret = null;
 		try {
@@ -388,7 +394,8 @@ public class ContingutController extends BaseUserController {
 							entitatActual.getId(),
 							contingutId,
 							true,
-							false);
+							false, 
+							rolActual);
 			RegistreDto registre = registreService.findOne(
 					entitatActual.getId(), 
 					contingutId);
@@ -594,13 +601,15 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
 		model.addAttribute(
 				"contingut",
 				contingutService.findAmbIdUser(
 						entitatActual.getId(),
 						registreId,
 						true,
-						false));
+						false, 
+						rolActual));
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();
 		model.addAttribute(
 				"usuariActual",

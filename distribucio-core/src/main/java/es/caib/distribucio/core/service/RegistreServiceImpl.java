@@ -1009,7 +1009,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Transactional(readOnly = true)
-	public FitxerDto getZipDocumentacio(Long registreId) throws Exception {
+	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
 				
@@ -1022,7 +1022,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entityComprovarHelper.comprovarBustia(
 							registre.getEntitat(),
 							registre.getPare().getId(),
-							true);
+							!rolActual.equals("DIS_ADMIN"));
 			// Justificant
 			FitxerDto fitxer;
 			// Annexos
