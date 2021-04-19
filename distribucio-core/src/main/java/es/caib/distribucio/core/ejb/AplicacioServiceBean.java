@@ -54,7 +54,6 @@ public class AplicacioServiceBean implements AplicacioService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public UsuariDto getUsuariActual() {
 		return delegate.getUsuariActual();
 	}
