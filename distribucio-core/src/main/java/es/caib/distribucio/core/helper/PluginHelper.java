@@ -146,7 +146,7 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 			return documentUuid;
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al crear el document annex a dins el contenidor";
+			String errorDescripcio = "Error al crear el document annex (Titol=" + annex.getTitol() + ") a dins el contenidor";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,

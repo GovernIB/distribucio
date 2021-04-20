@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -478,9 +479,10 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesError = null;
 	}
 	
-	public void updateProces(
+	
+	public void updateProcesMultipleExcepcions(
 			RegistreProcesEstatEnum procesEstat,
-			Throwable exception) {
+			List<Exception> exceptions) {
 		this.procesData = new Date();
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;
@@ -488,13 +490,25 @@ public class RegistreEntity extends ContingutEntity {
 			this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 		}
 		this.procesIntents++;
-		if (exception != null) {
-			String error = exception.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(exception);
-			this.procesError = StringUtils.abbreviate(error, ERROR_MAX_LENGTH);
+		if (exceptions != null && !exceptions.isEmpty()) {
+			String error = "";
+			for (Throwable throwable : exceptions) {
+				error += StringUtils.abbreviate(throwable.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(throwable), (ERROR_MAX_LENGTH / exceptions.size()) - 2) + "\r\n";
+			}
+			
+			this.procesError = error;
 		} else {
 			this.procesError = null;
 		}
 	}
+	
+	
+	public void updateProces(
+			RegistreProcesEstatEnum procesEstat,
+			Exception exception) {
+		updateProcesMultipleExcepcions(procesEstat, Arrays.asList(exception));
+	}
+	
 	public void updateProcesBackPendent() {
 		this.procesData = null;
 		this.procesIntents = 0;

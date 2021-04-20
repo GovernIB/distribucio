@@ -471,11 +471,11 @@ public class RegistreHelper {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
 		
 		// PROCESSAR ARXIU
-		Exception exceptionGuardantAnnexos = createRegistreAndAnnexosInArxiu(
+		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(
 				anotacio,
 				anotacio.getEntitat().getCodiDir3(),
 				true);
-		if (exceptionGuardantAnnexos == null) {
+		if (exceptionsGuardantAnnexos == null) {
 			
 			boolean allRegistresWithSameNumeroSavedInArxiu = true;
 			List<RegistreEntity> registres = registreRepository.findRegistresByNumero(anotacio.getNumero());
@@ -500,21 +500,22 @@ public class RegistreHelper {
 				} else {
 					nouEstat = RegistreProcesEstatEnum.BUSTIA_PENDENT;	
 				}
-				anotacio.updateProces(
+				anotacio.updateProcesMultipleExcepcions(
 						nouEstat, 
 						null);
 			} else {
-				anotacio.updateProces(
+				anotacio.updateProcesMultipleExcepcions(
 						null, 
 						null);
 			}
 
 			return null;
 		} else {
-			anotacio.updateProces(
+			anotacio.updateProcesMultipleExcepcions(
 					null, 
-					exceptionGuardantAnnexos);
-			return exceptionGuardantAnnexos;
+					exceptionsGuardantAnnexos);
+			
+			return exceptionsGuardantAnnexos != null && !exceptionsGuardantAnnexos.isEmpty() ? exceptionsGuardantAnnexos.get(0) : null;
 		}
 	}
 
@@ -543,12 +544,12 @@ public class RegistreHelper {
 	 * @param crearAutofirma
 	 * @return
 	 */
-	public Exception createRegistreAndAnnexosInArxiu(
+	public List<Exception> createRegistreAndAnnexosInArxiu(
 			RegistreEntity registreEntity,
 			String unitatOrganitzativaCodi,
 			boolean crearAutofirma) {
 		
-		Exception exception = null;
+		List<Exception> exceptions = new ArrayList<>();
 		
 		if (registreEntity.getAnnexos() != null && registreEntity.getAnnexos().size() > 0) {
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
@@ -577,7 +578,7 @@ public class RegistreHelper {
 					loadJustificantToDB(registreEntity.getId());
 					
 				} catch (Exception ex) {
-					return ex;
+					return Arrays.asList(ex);
 				}
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
@@ -660,13 +661,13 @@ public class RegistreHelper {
 						}
 					
 					} catch (Exception ex) {
-						exception = ex;
+						exceptions.add(ex);
 					}
 				}
 			}
 		}
-		if (exception != null) {
-			return exception;
+		if (exceptions != null && !exceptions.isEmpty()) {
+			return exceptions;
 		} else {
 			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
 					"anotacioId=" + registreEntity.getId() + ", " +
@@ -974,9 +975,9 @@ public class RegistreHelper {
 	
 	// sends ids of anotacions to backoffice
 	@Transactional(readOnly = true)
-	public Throwable enviarIdsAnotacionsBackoffice(List<Long> pendentsIdsGroupedByRegla) {
+	public Exception enviarIdsAnotacionsBackoffice(List<Long> pendentsIdsGroupedByRegla) {
 
-		Throwable throwable = null;
+		Exception throwable = null;
 		List <RegistreEntity> pendentsByRegla = new ArrayList<>();
 		try {
 
@@ -1016,7 +1017,7 @@ public class RegistreHelper {
 			backofficeClient.comunicarAnotacionsPendents(ids);
 			logger.debug(">>> Despres de cridar backoffice WS");			
 			return null;
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			logger.error("Error enviant anotacions al backoffice", ex);
 			throwable = ex;
 			return throwable;
@@ -1042,16 +1043,16 @@ public class RegistreHelper {
 	}
 	
 
-	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
+	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 
-		Throwable throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		Exception throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
 		updateBackEnviarDelayData(pendentsIdsGroupedByRegla, throwable);
 		return throwable;
 	}
 	
 	
 	@Transactional()
-	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Throwable throwable) {
+	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable) {
 	
 		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
 		for (Long id : pendentsIdsGroupedByRegla) {

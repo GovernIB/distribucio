@@ -1274,7 +1274,7 @@ public class BustiaServiceImpl implements BustiaService {
 			if (registrePerReenviar.getClass() == RegistreEntity.class) {
 				RegistreEntity registre = (RegistreEntity) registrePerReenviar;
 				if (registre.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
-					registre.updateProces(
+					registre.updateProcesMultipleExcepcions(
 							RegistreProcesEstatEnum.BUSTIA_PENDENT,
 							null);
 				}
