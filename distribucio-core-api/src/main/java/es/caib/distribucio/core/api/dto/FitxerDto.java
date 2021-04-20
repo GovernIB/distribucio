@@ -18,7 +18,8 @@ public class FitxerDto implements Serializable {
 	private String contentType;
 	private byte[] contingut;
 	private long tamany;
-
+	private boolean error;
+	private String errorMsg;
 
 
 	public String getNom() {
@@ -59,6 +60,18 @@ public class FitxerDto implements Serializable {
 		}
 	}
 
+	public boolean isError() {
+		return error;
+	}
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+	public void setError(boolean error) {
+		this.error = error;
+	}
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

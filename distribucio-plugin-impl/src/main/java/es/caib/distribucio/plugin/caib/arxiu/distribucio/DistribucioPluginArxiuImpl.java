@@ -567,7 +567,11 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al obtenir detalls del document";
+			String excMsg = ex.getMessage();
+			if (!ex.getCause().getClass().equals(ex.getClass())) {
+				excMsg += ": " + ex.getCause().getMessage();
+			}
+			String errorDescripcio = "Error al obtenir detalls del document: " + excMsg;
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,

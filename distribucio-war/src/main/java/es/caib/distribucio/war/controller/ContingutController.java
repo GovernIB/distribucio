@@ -140,11 +140,13 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws Exception {
-		FitxerDto fitxer = null;
+		FitxerDto fitxer = new FitxerDto();
 		try {
 			fitxer = registreService.getAnnexFitxer(annexId);
 		} catch (Exception ex) {
-			throw new Exception(ex.getMessage());
+			fitxer.setError(true);
+			fitxer.setErrorMsg(ex.getMessage());
+			fitxer.setNom("");
 		}
 		return fitxer;
 	}
