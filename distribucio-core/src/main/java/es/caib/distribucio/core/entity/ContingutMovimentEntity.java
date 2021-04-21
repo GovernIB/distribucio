@@ -43,7 +43,7 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	@JoinColumn(name = "remitent_codi")
 	@ForeignKey(name = "dis_remitent_contmov_fk")
 	protected UsuariEntity remitent;
-	@Column(name = "comentari", length = 256)
+	@Column(name = "comentari", length = 3940)
 	protected String comentari;
 	@Column(name = "per_coneixement")
 	protected Boolean perConeixement;

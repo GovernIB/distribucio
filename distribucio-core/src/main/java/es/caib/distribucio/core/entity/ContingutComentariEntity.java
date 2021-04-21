@@ -32,7 +32,7 @@ public class ContingutComentariEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "contingut_id")
 	protected ContingutEntity contingut;
-	@Column(name = "text", length = 1024)
+	@Column(name = "text", length = 4000)
 	protected String text;
 
 	public ContingutEntity getContingut() {

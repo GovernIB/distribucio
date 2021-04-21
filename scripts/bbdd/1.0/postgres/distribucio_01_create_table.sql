@@ -72,7 +72,7 @@ CREATE TABLE DIS_CONT_MOV
   ORIGEN_ID            bigint,
   DESTI_ID             bigint                   NOT NULL,
   REMITENT_CODI        character varying(64),
-  COMENTARI            character varying(256),
+  COMENTARI            character varying(3940),
   COMENTARI_DESTINS    character varying(256),
   PER_CONEIXEMENT 	   boolean,
   CREATEDDATE          timestamp without time zone,
@@ -379,7 +379,7 @@ CREATE TABLE DIS_CONT_COMMENT
 (
   ID                   BIGSERIAL                   NOT NULL,
   CONTINGUT_ID         bigint 		        NOT NULL,
-  TEXT		       character varying (1024),
+  TEXT		       character varying (4000),
   CREATEDDATE          timestamp without time zone,
   LASTMODIFIEDDATE     timestamp without time zone,
   CREATEDBY_CODI       character varying(64),
