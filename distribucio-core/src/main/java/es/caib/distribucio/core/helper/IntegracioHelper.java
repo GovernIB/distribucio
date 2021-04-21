@@ -177,15 +177,15 @@ public class IntegracioHelper {
 	private LinkedList<IntegracioAccioDto> getLlistaAccions(
 			String integracioCodi) {
 		synchronized(accionsIntegracio){
-			LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
-			if (accions == null) {
+		LinkedList<IntegracioAccioDto> accions = accionsIntegracio.get(integracioCodi);
+		if (accions == null) {
 				accions = new LinkedList<IntegracioAccioDto>();
 				accionsIntegracio.put(
 						integracioCodi,
 						accions);
-			} 
+			}
 			return accions;
-		}
+		} 
 	}
 	private int getMaxAccions(
 			String integracioCodi) {
@@ -204,15 +204,17 @@ public class IntegracioHelper {
 			IntegracioAccioDto accio) {
 		afegirParametreUsuari(accio);
 		LinkedList<IntegracioAccioDto> accions = getLlistaAccions(integracioCodi);
-		int max = getMaxAccions(integracioCodi);
-		while (accions.size() >= max) {
-			accions.remove(accions.size() - 1);
+		synchronized(accions) {
+			int max = getMaxAccions(integracioCodi);
+			while (accions.size() >= max) {
+				accions.remove(accions.size() - 1);
+			}
+			accio.setId(generateIdAccio());
+			
+			accions.add(
+					0,
+					accio);
 		}
-		accio.setId(generateIdAccio());
-		
-		accions.add(
-				0,
-				accio);
 	}
 
 	private void afegirParametreUsuari(
