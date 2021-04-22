@@ -86,7 +86,7 @@ $(document).ready(function() {
 				</dis:inputFixed>
 			</c:when>
 			<c:otherwise>
-				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" optionMinimumResultsForSearch="0" required="true"/>
+				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="codiNom" optionMinimumResultsForSearch="0" required="true"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

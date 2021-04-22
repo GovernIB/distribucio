@@ -34,6 +34,9 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	public void setCodiSia(String codiSia) {
 		this.codiSia = codiSia;
 	}
+	public String getCodiNom() {
+		return codi + " - " + nom;
+	}
 	
 	@Override
 	public int compareTo(ProcedimentDto o) {
