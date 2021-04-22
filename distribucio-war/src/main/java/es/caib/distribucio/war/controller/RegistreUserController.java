@@ -259,15 +259,25 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		} catch (Exception e) {
-			Throwable thr = ExceptionHelper.findThrowableInstance(e, NotFoundException.class, 3);
-			if (thr != null) {
+			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
+			if (thr.getClass() == NotFoundException.class) {
 				NotFoundException exc = (NotFoundException) thr;
 				if (exc.getObjectClass().getName().equals("es.caib.distribucio.core.entity.RegistreEntity")) {
-					model.addAttribute("currentContainingBustia", exc.getParam());
-					return "errorRegistreNotFound";
+					model.addAttribute("errorTitol", getMessage(request, "error.titol.not.found"));
+					model.addAttribute("missatgeError", getMessage(request, "registre.detalls.notFound"));
+					return "ajaxErrorPage";
 				} else {
 					throw e;
 				}
+			} else if (thr.getClass() == PermissionDeniedException.class) {
+				PermissionDeniedException exc = (PermissionDeniedException) thr;
+				if (exc.getObjectClass().getName().equals("es.caib.distribucio.core.entity.BustiaEntity") ) {
+					model.addAttribute("missatgeError", getMessage(request, "registre.detalls.noPermisos", new Object[] { exc.getParam() }));
+					return "ajaxErrorPage";
+				} else {
+					throw e;
+				}
+				
 			} else {
 				throw e;
 			}

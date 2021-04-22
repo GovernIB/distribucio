@@ -15,6 +15,7 @@ public class PermissionDeniedException extends RuntimeException {
 	private Class<?> objectClass;
 	private String userName;
 	private String permissionName;
+	private String param;
 	
 	public PermissionDeniedException(
 			Object objectId,
@@ -31,6 +32,29 @@ public class PermissionDeniedException extends RuntimeException {
 		this.userName = userName;
 		this.permissionName = permissionName;
 	}
+	
+
+	public PermissionDeniedException(
+			Object objectId,
+			Class<?> objectClass,
+			String userName,
+			String permissionName,
+			String param) {
+		super(getExceptionMessage(
+				objectId,
+				objectClass,
+				userName,
+				permissionName));
+		this.objectId = objectId;
+		this.objectClass = objectClass;
+		this.userName = userName;
+		this.permissionName = permissionName;
+		this.param = param;
+	}
+
+
+
+
 
 	public Object getObjectId() {
 		return objectId;
@@ -43,6 +67,10 @@ public class PermissionDeniedException extends RuntimeException {
 	}
 	public String getPermissionName() {
 		return permissionName;
+	}
+
+	public String getParam() {
+		return param;
 	}
 
 	public static String getExceptionMessage(

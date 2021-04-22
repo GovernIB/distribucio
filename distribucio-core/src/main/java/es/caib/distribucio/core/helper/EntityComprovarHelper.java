@@ -180,7 +180,8 @@ public class EntityComprovarHelper {
 						bustiaId,
 						BustiaEntity.class,
 						auth.getName(),
-						"READ");
+						"READ",
+						bustia.getNom());
 			}
 		}
 		comprovarBustiaContext.stop();
