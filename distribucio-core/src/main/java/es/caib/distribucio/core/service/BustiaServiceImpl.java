@@ -1076,7 +1076,9 @@ public class BustiaServiceImpl implements BustiaService {
 				htmlJustificant,
 				htmlAnnexosTable,
 				htmlInteressatsTable,
-				dadesUsuariActual, motiu);
+				dadesUsuariActual, 
+				motiu, 
+				appBaseUrl);
 		
 		
 		// ################## PLAIN TEXT ###################
@@ -1900,7 +1902,8 @@ public class BustiaServiceImpl implements BustiaService {
 			String htmlAnnexosTable, 
 			String htmlInteressatsTable, 
 			DadesUsuari usuariActual, 
-			String motiu) {
+			String motiu, 
+			String appBaseUrl) {
 		
 		String html = 
 				"<!DOCTYPE html>"+
@@ -2032,6 +2035,10 @@ public class BustiaServiceImpl implements BustiaService {
 				"			<tr>"+
 				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.proces.presencial") + "</th>"+
 				"				<td>" + messageHelper.getMessage("boolean." + Objects.toString(registre.getPresencial(), "")) + "</td>"+
+				"			</tr>"+
+				"			<tr>"+
+				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.fitxers") + "</th>"+
+				"			    <td>" + "<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>" + "</td>" +
 				"			</tr>"+
 				"		</table>"+
 
