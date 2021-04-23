@@ -309,7 +309,7 @@ public class RegistreServiceImpl implements RegistreService {
 		} else if (bustia != null) {	
 			busties.add(bustia.getId());
 		} else {
-			totesLesbusties = true;
+			totesLesbusties = isAdmin;
 			busties.add(0L);
 		}
 
