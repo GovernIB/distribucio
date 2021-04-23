@@ -70,7 +70,8 @@ public class BustiaV1Test {
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
-	private static final boolean TEST_ANNEX_FIRMA_DETACHED = false;
+	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false;
+	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
@@ -160,30 +161,30 @@ public class BustiaV1Test {
 	        for (int j=1; j<=nAnnexos; j++) {
 		        if (TEST_ANNEX_FIRMAT ) {
 		        	
-		        	if (!TEST_ANNEX_FIRMA_DETACHED) {
+		        	if (TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED) {
+		        		
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
-			            firma.setFitxerNom("annex_firmat.pdf");
-			            firma.setTipusMime("application/pdf");
-			            firma.setContingut(
-			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
-			            firma.setTipus("TF06");
-			            firma.setPerfil("EPES");
+			            firma.setTipusMime("application/xsig");
+			            firma.setContingut(null);
+			            firma.setTipus("TF02");
+			            firma.setPerfil("BES");
 			            firmes.add(firma);
 			            annex = crearAnnex(
 				        		"Annex222" + j,
 				        		//"annex.pdf",
-				        		"annex_firmat_pades.pdf",
-				        		"application/pdf",
+				        		"annex_firmat_xades.xsig",
+				        		"application/xsig",
 				        		null,
-				        		null,
+				        		getContingutWithFirmaXadesInternallyDettached(),
 				        		"0",
 				        		"EE01",
 				        		"TD01",
 				        		"01",
 				        		firmes);
-					} else {
-						
+		        		
+		        	} else if (TEST_ANNEX_FIRMA_CADES_DETACHED) {
+		        		
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
 			            firma.setFitxerNom("firma_cades_detached.csig");
@@ -200,6 +201,30 @@ public class BustiaV1Test {
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+
+					} else {
+						
+			        	firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setFitxerNom("annex_firmat.pdf");
+			            firma.setTipusMime("application/pdf");
+			            firma.setContingut(
+			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+			            firma.setTipus("TF06");
+			            firma.setPerfil("EPES");
+			            firmes.add(firma);
+			            annex = crearAnnex(
+				        		"Annex222" + j,
+				        		//"annex.pdf",
+				        		"annex_firmat_pades.pdf",
+				        		"application/pdf",
+				        		null,
+				        		null,
 				        		"0",
 				        		"EE01",
 				        		"TD01",
@@ -434,6 +459,12 @@ public class BustiaV1Test {
 	private InputStream getContingutFirmaCadesDetached() {
 		InputStream is = getClass().getResourceAsStream(
         		"/firma_cades_detached.csig");
+		return is;
+	}
+	
+	private InputStream getContingutWithFirmaXadesInternallyDettached() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/formulario.xml_signed.xsig");
 		return is;
 	}
 	

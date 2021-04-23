@@ -295,7 +295,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			throw new ValidationException(
 					"El tipus de firma '" + firma.getTipus() + "' no es reconeix com a vàlid.");
 		}
-		boolean detached = DocumentNtiTipoFirmaEnumDto.TF02.equals(firmaTipus) || DocumentNtiTipoFirmaEnumDto.TF04.equals(firmaTipus);
+		boolean detached = DocumentNtiTipoFirmaEnumDto.TF04.equals(firmaTipus);
 		if (detached) {
 			if (annex.getFitxerContingut() == null) {
 				throw new ValidationException(

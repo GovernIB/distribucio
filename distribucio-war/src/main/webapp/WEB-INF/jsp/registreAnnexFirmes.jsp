@@ -53,7 +53,7 @@
 				<c:if test="${!isResum}">
 					<td>${detall.emissorCertificat}</td>
 				</c:if>
-				<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV'}">
+				<c:if test="${firma.tipus != 'PADES' and firma.tipus != 'CADES_ATT' and firma.tipus != 'XADES_ENV' and firma.tipus !='XADES_DET'}">
 					<td>
 						${firma.fitxerNom}
 						<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/firma/${statusFirma.index}"/>" class="btn btn-default btn-sm pull-right">
