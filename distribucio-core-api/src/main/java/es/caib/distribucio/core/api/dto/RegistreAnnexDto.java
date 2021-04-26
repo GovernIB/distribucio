@@ -182,6 +182,10 @@ public class RegistreAnnexDto implements Serializable {
 	public void setFitxerContingut(byte[] fitxerContingut) {
 		this.fitxerContingut = fitxerContingut;
 	}
+	
+	public String getFitxerExtension() {
+		return this.fitxerNom.substring(this.fitxerNom.indexOf(".") + 1);
+	}
 
 
 }

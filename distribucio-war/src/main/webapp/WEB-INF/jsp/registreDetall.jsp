@@ -727,7 +727,7 @@ tr.clicable {
 						</thead>
 						<tbody>
 							<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
-									<tr title="<spring:message code="registre.annex.detalls.previsualitzar"/>" <c:choose><c:when test="${annex.fitxerTipusMime == 'application/pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
+									<tr title="<spring:message code="registre.annex.detalls.previsualitzar"/>" <c:choose><c:when test="${annex.fitxerExtension == 'pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
 										<td>${annex.titol}</td>
 										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
 										<td>${annex.observacions}</td>

@@ -88,7 +88,7 @@ public class ConversioTipusHelper {
 						RegistreAnnexDto target = new RegistreAnnexDto();
 						target.setId(source.getId());
 						target.setTitol(source.getTitol());
-						target.setFitxerNom(source.getTitol());
+						target.setFitxerNom(source.getFitxerNom());
 						target.setFitxerTamany(source.getFitxerTamany());
 						target.setFitxerTipusMime(source.getFitxerTipusMime());
 						target.setDataCaptura(source.getDataCaptura());
