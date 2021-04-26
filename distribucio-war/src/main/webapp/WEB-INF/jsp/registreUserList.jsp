@@ -446,7 +446,7 @@ $(document).ready(function() {
 										<li><a href="./registreUser/{{:id}}/agafar"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
 									{{else}}
 										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}
-											<li><a href="./registreUser/{{:id}}/agafar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+											<li><a href="./registreUser/{{:id}}/agafar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
 											<li role="separator" class="divider"></li>
 											<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>
 										{{else}}
