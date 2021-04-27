@@ -251,7 +251,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</script>
-	<script id="rowhrefTemplate" type="text/x-jsrender">/registre/{{:id}}</script>
+	<script id="rowhrefTemplate" type="text/x-jsrender">registre/{{:id}}</script>
 	<table 
 		id="taulaDades" 
 		class="table table-bordered table-striped"style="width:100%"
