@@ -671,7 +671,15 @@ public class RegistreServiceImpl implements RegistreService {
 						RegistreProcesEstatEnum.BACK_PROCESSADA,
 						observacions);
 				registre.updateBackProcesRebutjErrorData(new Date());
-				registreHelper.tancarExpedientArxiu(registre.getId());
+				
+				int dies = getPropertyExpedientDiesTancament();
+				Date ara = new Date();
+				Calendar c = Calendar.getInstance();
+				c.setTime(ara);
+				c.add(Calendar.DATE, dies);
+				Date dataTancament = c.getTime();
+				registre.updateDataTancament(dataTancament);
+				
 				contingutLogHelper.log(
 						registre,
 						LogTipusEnumDto.BACK_PROCESSADA,
@@ -1853,6 +1861,14 @@ public class RegistreServiceImpl implements RegistreService {
 	private boolean isPermesReservarAnotacions() {
 		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
+	
+	private int getPropertyExpedientDiesTancament() {
+		String numDies = PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.tancament.expedient.dies",
+				"30");
+		return Integer.parseInt(numDies);
+	}
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 }

@@ -55,7 +55,7 @@ public class BustiaV1Test {
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Alta des de JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
-	private static final String ENTITAT_CODI = "A04019281";
+	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
 	private static final String OFICINA_DESC = "Oficina de proves";
@@ -424,6 +424,7 @@ public class BustiaV1Test {
 		RegistreInteressat interessatPersonaJuridica = new RegistreInteressat();
 		interessatPersonaJuridica.setTipus("3");
 		interessatPersonaJuridica.setDocumentNum("11111111T");
+		interessatPersonaJuridica.setDocumentTipus("O");
 		interessatPersonaJuridica.setRaoSocial("raoSocialJuridica");
 		anotacio.getInteressats().add(interessatPersonaJuridica);
 		
@@ -431,7 +432,7 @@ public class BustiaV1Test {
 		RegistreInteressat interessatAdministracio = new RegistreInteressat();
 		interessatAdministracio.setTipus("1");
 		interessatAdministracio.setDocumentTipus("O");
-		interessatAdministracio.setDocumentNum("A04019281");
+		interessatAdministracio.setDocumentNum(ENTITAT_DIST_CODI);
 		interessatAdministracio.setRaoSocial("raoSocialAdministracio");
 		anotacio.getInteressats().add(interessatAdministracio);
 	}
