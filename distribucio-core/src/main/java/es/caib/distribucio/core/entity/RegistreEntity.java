@@ -56,7 +56,6 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
-	private static final int ERROR_MAX_LENGTH = 3000;
 
 	@Column(name = "tipus", length = 1, nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -162,7 +161,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String identificadorTramitSistra;
 	@Column(name = "sistra_id_proc", length = 100)
 	private String identificadorProcedimentSistra;
-	@Column(name = "proces_error", length = ERROR_MAX_LENGTH)
+	@Lob
+	@Column(name = "proces_error")
 	private String procesError;
 	@Column(name = "proces_intents")
 	private int procesIntents;
@@ -493,7 +493,7 @@ public class RegistreEntity extends ContingutEntity {
 		if (exceptions != null && !exceptions.isEmpty()) {
 			String error = "";
 			for (Throwable throwable : exceptions) {
-				error += StringUtils.abbreviate(throwable.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(throwable), (ERROR_MAX_LENGTH / exceptions.size()) - 2) + "\r\n";
+				error += StringUtils.abbreviate(throwable.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(throwable), (2000)) + "\r\n";
 			}
 			
 			this.procesError = error;

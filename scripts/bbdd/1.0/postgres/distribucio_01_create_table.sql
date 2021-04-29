@@ -170,7 +170,7 @@ CREATE TABLE DIS_REGISTRE
   PROCES_DATA          timestamp without time zone,
   PROCES_ESTAT         character varying(64)    NOT NULL,
   PROCES_INTENTS       integer,
-  PROCES_ERROR         character varying(3000),
+  PROCES_ERROR         text,
   REGLA_ID             bigint,
   CREATEDDATE          timestamp without time zone,
   CREATEDBY_CODI       character varying(256),
