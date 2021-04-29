@@ -474,20 +474,22 @@
 	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand" onsubmit="updateConeixement()">
 		<form:hidden path="params"/>
 	    <c:choose>
-	    	<c:when test="${isEnviarConeixementActiu}">
+	    	<c:when test="${isFavoritsPermes}">
 	    		<div class="form-group">
-		    		<div class="capsalera ${isFavoritsPermes ? 'col-xs-offset-6 col-xs-6' : 'col-xs-offset-4 col-xs-8'}">
-						<div class="leyenda">
-							<div class="leyenda_title"><span><spring:message code="contingut.enviar.info.llegenda"/></span></div>
-							<div class="leyenda_container">
-								<div class="leyenda_processar">
-									<div></div><span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>
-								</div>
-								<div class="leyenda_coneixement">
-									<div></div><span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>
+		    		<div class="${isEnviarConeixementActiu ? 'capsalera' : ''} ${isFavoritsPermes ? 'col-xs-offset-6 col-xs-6' : 'col-xs-offset-4 col-xs-8'}">
+		    			<c:if test="${isEnviarConeixementActiu}"> 
+							<div class="leyenda">
+								<div class="leyenda_title"><span><spring:message code="contingut.enviar.info.llegenda"/></span></div>
+								<div class="leyenda_container">
+									<div class="leyenda_processar">
+										<div></div><span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>
+									</div>
+									<div class="leyenda_coneixement">
+										<div></div><span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>
+									</div>
 								</div>
 							</div>
-						</div>
+						</c:if>
 						<div class="jstree-search-container">
 							<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 						</div>
@@ -522,11 +524,13 @@
 											<a href="#" class="btn btn-tramitar" value="{{:bustia.id}}"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.afegir.tramitacio"/></a>
 										</script>
 										</th>
-										<th data-col-name="id" data-orderable="false" data-template="#cellFavoritConeixementTemplate" width="10%">
-											<script id="cellFavoritConeixementTemplate" type="text/x-jsrender">
-											<a href="#" class="btn btn-coneixement" value="{{:bustia.id}}"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/></a>
-										</script>
-										</th>
+										<c:if test="${isEnviarConeixementActiu}">
+											<th data-col-name="id" data-orderable="false" data-template="#cellFavoritConeixementTemplate" width="10%">
+												<script id="cellFavoritConeixementTemplate" type="text/x-jsrender">
+													<a href="#" class="btn btn-coneixement" value="{{:bustia.id}}"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/></a>
+												</script>
+											</th>
+										</c:if>
 										<th data-col-name="id" data-orderable="false" data-template="#cellFavoritEsborrarTemplate" width="10%">
 											<script id="cellFavoritEsborrarTemplate" type="text/x-jsrender">
 											<a href="#" class="btn btn-danger favorit-esborrar" value="{{:id}}"><span class="fa fa-trash"></span></a>
@@ -541,7 +545,7 @@
 						<dis:inputArbre name="destins" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 						fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 						fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
-						readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${true}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
+						readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
 					
 						<form:hidden path="perConeixement"/>
 						<dis:inputCheckbox name="deixarCopia" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}" labelSize="${isFavoritsPermes ? '2' : ''}"/>

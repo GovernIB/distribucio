@@ -89,7 +89,7 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu && isCheckBoxEnabled} ? "contextmenu" : "", "crrm"],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu || isFavoritsPermes} ? "contextmenu" : "", "crrm"],
 		"core": {
 			"check_callback": true
 		},
@@ -167,33 +167,34 @@
 		
 		if (!isNaN(nodeId)) {
 			var alreadyInFavorits = existsInFavorits(nodeId);
-		
-			if(!selectedForConeixement) {
-				var itemAddConeixement = { 
-					"afegir" : {
-						"separator_before"  : false,
-						"separator_after"   : false,
-						"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
-						"icon" 				: "fa fa-plus",
-						"action"            : function (data) {
-													addToConeixement(nodeId, nodeHrefId, true);
-											  }
-					 }
-				}
-				items.afegir = itemAddConeixement.afegir;
-			} else {
-				var itemDeleteConeixement = {
-					"esborrar" : {
-						"separator_before"  : false,
-					    "separator_after"   : false,
-					    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
-					    "icon" 				: "fa fa-minus",
-					    "action"            : function (data) {
-					    							removeFromConeixement(nodeId, nodeHrefId, false);
-											  }
+			if (${isEnviarConeixementActiu}) {
+				if(!selectedForConeixement) {
+					var itemAddConeixement = { 
+						"afegir" : {
+							"separator_before"  : false,
+							"separator_after"   : false,
+							"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
+							"icon" 				: "fa fa-plus",
+							"action"            : function (data) {
+														addToConeixement(nodeId, nodeHrefId, true);
+												  }
+						 }
 					}
+					items.afegir = itemAddConeixement.afegir;
+				} else {
+					var itemDeleteConeixement = {
+						"esborrar" : {
+							"separator_before"  : false,
+						    "separator_after"   : false,
+						    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
+						    "icon" 				: "fa fa-minus",
+						    "action"            : function (data) {
+						    							removeFromConeixement(nodeId, nodeHrefId, false);
+												  }
+						}
+					}
+					items.esborrar = itemDeleteConeixement.esborrar;
 				}
-				items.esborrar = itemDeleteConeixement.esborrar;
 			}
 			if (${isFavoritsPermes}) {
 				if (!alreadyInFavorits) {
