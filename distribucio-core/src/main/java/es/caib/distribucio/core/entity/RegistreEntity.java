@@ -56,7 +56,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
-	private static final int ERROR_MAX_LENGTH = 1000;
+	private static final int ERROR_MAX_LENGTH = 3000;
 
 	@Column(name = "tipus", length = 1, nullable = false)
 	@Enumerated(EnumType.STRING)
