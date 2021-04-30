@@ -396,7 +396,7 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" data-orderable="true" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="comu.error"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
