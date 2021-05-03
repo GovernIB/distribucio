@@ -81,6 +81,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
+import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 
 /**
@@ -956,7 +957,8 @@ public class RegistreHelper {
 		Exception exception = null;
 		try {
 			if (registre.getExpedientArxiuUuid() != null) {
-				if (registre.getAnnexos() != null && ! registre.getAnnexos().isEmpty()) {
+				Expedient expedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
+				if (expedient.getContinguts() != null && !expedient.getContinguts().isEmpty()) {
 					pluginHelper.arxiuExpedientTancar(registre);
 				} else {
 					// Si no té annexos esborra l'espedient, el tancament fallaria
