@@ -270,17 +270,17 @@ public class ContingutHelper {
 					List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
 					//directe des de registre
 					ContingutMovimentEntity firstMoviment = ! moviments.isEmpty() ? moviments.get(0) : null;
-					//des de una altre anotació (còpia)
+					//des de una altre anotació (deixant còpia)
 					if (firstMoviment == null) {
 						moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
 						firstMoviment = !moviments.isEmpty() ? moviments.get(0) : null;
 					}
 					if (firstMoviment != null) {
-						ContingutEntity contingutDesti = firstMoviment.getDesti();
-						if (HibernateHelper.isProxy(firstMoviment.getDesti()))
-							contingutDesti = HibernateHelper.deproxy(contingutDesti);
+						ContingutEntity contingutOrigen = firstMoviment.getOrigen() != null ? firstMoviment.getOrigen() : firstMoviment.getDesti(); //directe de Registre o reenviament dins Distribució
+						if (HibernateHelper.isProxy(firstMoviment.getOrigen()))
+							contingutOrigen = HibernateHelper.deproxy(contingutOrigen);
 						List<ContingutDto> pathIncial = getPathContingutComDto(
-								contingutDesti,
+								contingutOrigen,
 								ambPermisos,
 								true);
 						contingutDto.setPathInicial(pathIncial);

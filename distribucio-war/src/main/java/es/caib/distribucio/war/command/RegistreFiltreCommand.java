@@ -45,6 +45,8 @@ public class RegistreFiltreCommand {
 	private boolean nomesAmbErrors;
 	/** Unitat organitzativa superior. */
 	private Long unitatId;
+	
+	private String bustiaOrigen;
 
 	public String getBackCodi() {
 		return backCodi;
@@ -160,6 +162,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setUnitatId(Long unitatId) {
 		this.unitatId = unitatId;
-	}	
+	}
+	public String getBustiaOrigen() {
+		return bustiaOrigen;
+	}
+	public void setBustiaOrigen(String bustiaOrigen) {
+		this.bustiaOrigen = bustiaOrigen;
+	}
 	
 }

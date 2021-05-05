@@ -290,11 +290,17 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null;
+		BustiaEntity bustia = null, bustiaOrigen = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
+					!isAdmin);
+		}
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
 					!isAdmin);
 		}
 		String bustiesIds="";
@@ -407,6 +413,8 @@ public class RegistreServiceImpl implements RegistreService {
 					unitat == null,
 					unitat,
 					onlyAmbMoviments,
+					bustiaOrigen == null,
+					bustiaOrigen,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
