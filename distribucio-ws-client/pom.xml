@@ -7,6 +7,7 @@
 		<artifactId>distribucio</artifactId>
 		<version>0.9</version>
 	</parent>
+	<version>0.9.35</version>
 	<artifactId>distribucio-ws-client</artifactId>
 	<dependencies>
 		<dependency>
