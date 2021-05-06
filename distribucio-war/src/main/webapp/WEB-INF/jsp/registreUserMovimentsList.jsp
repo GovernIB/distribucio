@@ -285,7 +285,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="12"
+		data-default-order="11"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -317,7 +317,7 @@ $(document).ready(function() {
 				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				
-				<th data-col-name="procesError" data-orderable="true" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="comu.error"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -402,7 +402,7 @@ $(document).ready(function() {
 				</th>			
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="../contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
