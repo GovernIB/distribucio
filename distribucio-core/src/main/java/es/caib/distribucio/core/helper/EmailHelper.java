@@ -224,8 +224,9 @@ public class EmailHelper {
 		logger.debug("Enviament email comentari a destinatari");
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		BustiaEntity bustia = null;
-		if (contingut.getPare() != null && contingut.getPare() instanceof BustiaEntity)
-			bustia = (BustiaEntity) contingut.getPare();
+		ContingutEntity pare = contingut.getPare();
+		if (pare != null && pare instanceof BustiaEntity)
+			bustia = (BustiaEntity) pare;
 		
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
