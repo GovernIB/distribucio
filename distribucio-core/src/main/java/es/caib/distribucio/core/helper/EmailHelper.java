@@ -247,20 +247,20 @@ public class EmailHelper {
 	 * @param usuariNou
 	 * 			L'usuari nou que agafa l'anotació
 	 */
-	public void contingutAgafatPerAltreUsusari(
+	public void contingutAlliberatPerAltreUsusari(
 			RegistreEntity registreEntity, 
 			UsuariEntity usuariActual,
-			UsuariEntity usuariNou) {
+			UsuariEntity usuariResponsableBloqueig) {
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setFrom(getRemitent());
 		missatge.setTo(usuariActual.getEmail());
-		missatge.setSubject(PREFIX_DISTRIBUCIO + " Registre agafat per un altre usuari: [" + registreEntity.getNom() + "]");
+		missatge.setSubject(PREFIX_DISTRIBUCIO + " Registre alliberat per un altre usuari: [" + registreEntity.getNom() + "]");
 		EntitatEntity entitat = registreEntity.getEntitat();
 		missatge.setText("Informació del registre:\n" +
 				"\tEntitat: " + entitat.getNom() + "\n" +
 				"\tNúmero: " + registreEntity.getNumero() + "\n" +
 				"\tNom: " + registreEntity.getNom() + "\n\n" + 
-				"\tPersona que ho ha agafat: " + usuariNou.getNom() + "(" + usuariNou.getCodi() + ").");
+				"\tPersona responsable de l'alliberament: " + usuariResponsableBloqueig.getNom() + "(" + usuariResponsableBloqueig.getCodi() + ").");
 		
 		mailSender.send(missatge);		
 	}

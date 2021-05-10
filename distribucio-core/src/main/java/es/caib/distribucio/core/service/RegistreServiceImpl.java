@@ -1349,7 +1349,7 @@ public class RegistreServiceImpl implements RegistreService {
 				registreId);
 		
 		if (isPermesReservarAnotacions())
-			registreHelper.comprovarRegistreAgafatPerUsuariActual(registre);
+			registreHelper.comprovarRegistreAlliberat(registre);
 		
 		if (registre.getPare() == null)
 			throw new ValidationException(
@@ -1447,7 +1447,7 @@ public class RegistreServiceImpl implements RegistreService {
 	
 	@Transactional
 	@Override
-	public void agafar(Long entitatId, Long id) {
+	public void bloquejar(Long entitatId, Long id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Agafant l'anotació com a usuari (" + "entitatId=" + entitatId + ", " + "id=" + id + ", " + "usuari=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1466,7 +1466,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
 		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), true);
 		
-		registreHelper.agafar(
+		registreHelper.bloquejar(
 				registre, 
 				usuariHelper.getUsuariAutenticat().getCodi());
 	}
@@ -1492,7 +1492,9 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(id, null);
 		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), true);
 		
-		registreHelper.alliberar(registre);
+		registreHelper.alliberar(
+				registre, 
+				usuariHelper.getUsuariAutenticat().getCodi());
 	}
 
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {

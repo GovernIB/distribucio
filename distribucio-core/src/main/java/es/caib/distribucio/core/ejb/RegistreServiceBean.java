@@ -267,8 +267,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void agafar(Long entitatId, Long id) {
-		delegate.agafar(entitatId, id);
+	public void bloquejar(Long entitatId, Long id) {
+		delegate.bloquejar(entitatId, id);
 	}
 
 	@Override

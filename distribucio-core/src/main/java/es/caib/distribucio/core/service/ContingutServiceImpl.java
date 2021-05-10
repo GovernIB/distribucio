@@ -525,7 +525,7 @@ public class ContingutServiceImpl implements ContingutService {
 			registre = (RegistreEntity)contingut;
 			
 			if (isPermesReservarAnotacions())
-				registreHelper.comprovarRegistreAgafatPerUsuariActual(registre);
+				registreHelper.comprovarRegistreAlliberat(registre);
 			
 			registresAmbMateixUuid = registreRepository.countByExpedientArxiuUuidAndEsborrat(registre.getExpedientArxiuUuid(), 0);
 		}

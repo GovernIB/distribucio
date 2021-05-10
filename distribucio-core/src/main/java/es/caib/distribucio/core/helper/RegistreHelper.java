@@ -24,8 +24,6 @@ import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -295,15 +293,10 @@ public class RegistreHelper {
 		return registreEntity;
 	}
 	
-	public void agafar(RegistreEntity registreEntity, String usuariCodi) {
+	public void bloquejar(RegistreEntity registreEntity, String usuariCodi) {
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
-		UsuariEntity usuariActual = registreEntity.getAgafatPer();
 		UsuariEntity usuariNou = usuariHelper.getUsuariByCodi(usuariCodi);
 		registreEntity.updateAgafatPer(usuariNou);
-		if (usuariActual != null) {
-			emailHelper.contingutAgafatPerAltreUsusari(registreEntity, usuariActual, usuariNou);
-		}
-		
 		List<String> params = new ArrayList<>();
 		params.add(usuariCodi);
 		params.add(null);
@@ -314,9 +307,18 @@ public class RegistreHelper {
 				false);
 	}
 	
-	public void alliberar(RegistreEntity registreEntity) {
+	public void alliberar(RegistreEntity registreEntity, String usuariCodi) {
 		UsuariEntity prevUserAgafat = registreEntity.getAgafatPer();
+		UsuariEntity usuariResponsableBloqueig = usuariHelper.getUsuariByCodi(usuariCodi);
 		registreEntity.updateAgafatPer(null);
+		
+		if (prevUserAgafat != usuariResponsableBloqueig) {
+			emailHelper.contingutAlliberatPerAltreUsusari(
+					registreEntity, 
+					prevUserAgafat, 
+					usuariResponsableBloqueig);
+		}
+		
 		List<String> params = new ArrayList<>();
 		params.add(prevUserAgafat.getCodi());
 		params.add(null);
@@ -1094,24 +1096,16 @@ public class RegistreHelper {
 		}
 	}
 
-	public void comprovarRegistreAgafatPerUsuariActual(RegistreEntity registre) {
+	public void comprovarRegistreAlliberat(RegistreEntity registre) {
 		UsuariEntity agafatPer = registre.getAgafatPer();
 		if (agafatPer != null && HibernateHelper.isProxy(agafatPer))
 			agafatPer = HibernateHelper.deproxy(agafatPer);
 		
-		if (agafatPer == null) {
+		if (agafatPer != null) {
 			throw new ValidationException(
 					registre.getId(),
 					RegistreEntity.class,
-					"L'anotació no està agafada per cap usuari");
-		}
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!auth.getName().equals(agafatPer.getCodi())) {
-			throw new ValidationException(
-					registre.getId(),
-					RegistreEntity.class,
-					"L'anotació no està agafada per l'usuari actual (" +
-					"usuariActualCodi=" + auth.getName() + ")");
+					"L'anotació està bloquejada per un usuari (codiUsuari=" + agafatPer.getCodi() + "). Prova d'alliberar-la abans de realitzar una acció.");
 		}
 	}
 	

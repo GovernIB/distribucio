@@ -406,9 +406,9 @@ tr.clicable {
 					<i class="fa fa-forward"></i>
 		    	</span>
 			</button>&nbsp;
-			<button class="btn btn-primary ${(!cookie['vistaMoviments'].value && isPermesReservarAnotacions && (!registre.agafat || !registreAgafatPerUsuariActual) ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary ${(!cookie['vistaMoviments'].value && isPermesReservarAnotacions && registre.agafat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
-				<c:if test="${!cookie['vistaMoviments'].value && (!isPermesReservarAnotacions || (registre.agafat && registreAgafatPerUsuariActual))}">
+				<c:if test="${!cookie['vistaMoviments'].value && (!isPermesReservarAnotacions || !registre.agafat)}">
 					<c:choose>
 						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
 							<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
@@ -437,15 +437,15 @@ tr.clicable {
 				<li role="separator" class="divider"></li>
 				<li><a href="<c:url value="/contingut/${registre.id}/log"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 				<c:if test="${!cookie['vistaMoviments'].value && isPermesReservarAnotacions}">
+					<li role="separator" class="divider"></li>
 					<c:choose>
 						<c:when test="${!registre.agafat}">
-							<li><a href="<c:url value="/registreUser/${registre.id}/agafar"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+							<li><a href="<c:url value="/registreUser/${registre.id}/bloquejar"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
 								<c:when test="${!registreAgafatPerUsuariActual}">
-									<li><a href="<c:url value="/registreUser/${registre.id}/agafar"/>" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> ${registre.agafatPer.codi}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-									<li role="separator" class="divider"></li>
+									<li><a href="<c:url value="/registreUser/${registre.id}/alliberar"/>" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> ${registre.agafatPer.codi}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
 									<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;${registre.agafatPer.codi}</li>
 								</c:when>
 								<c:otherwise>

@@ -333,7 +333,7 @@ public interface RegistreService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('tothom')")
-	void agafar(Long entitatId, Long id);
+	void bloquejar(Long entitatId, Long id);
 
 	/**
 	 * Allibera un registre agafat per l'usuari actual.

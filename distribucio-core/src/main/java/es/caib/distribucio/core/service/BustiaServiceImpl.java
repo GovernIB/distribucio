@@ -1219,7 +1219,7 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		
 		if (isPermesReservarAnotacions())
-			registreHelper.comprovarRegistreAgafatPerUsuariActual(reg);
+			registreHelper.comprovarRegistreAlliberat(reg);
 	
 		BustiaEntity bustiaOrigen = null;
 		if (!usuariHelper.isAdmin())

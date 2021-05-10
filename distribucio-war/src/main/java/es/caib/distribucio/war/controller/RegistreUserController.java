@@ -1415,7 +1415,7 @@ public class RegistreUserController extends BaseUserController {
 	    				true));
 	}
 	
-	@RequestMapping(value = "/{registreId}/agafar", method = RequestMethod.GET)
+	@RequestMapping(value = "/{registreId}/bloquejar", method = RequestMethod.GET)
 	public String agafar(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
@@ -1423,7 +1423,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("mantenirPaginacio", true);
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		try {
-			registreService.agafar(
+			registreService.bloquejar(
 					entitatActual.getId(),
 					registreId);
 			MissatgesHelper.success(

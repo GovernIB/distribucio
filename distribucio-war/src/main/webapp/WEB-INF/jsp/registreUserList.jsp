@@ -411,7 +411,7 @@ $(document).ready(function() {
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
-							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && (!agafat || agafatPer.codi != '${pageContext.request.userPrincipal.name}')}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && agafat}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li>
 									<a id="detall-button"
@@ -424,13 +424,13 @@ $(document).ready(function() {
 								{{/if}}
 								<li role="separator" class="divider"></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
+								{{if !~hlpIsPermesReservarAnotacions || !agafat}}
 									<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 									<li role="separator" class="divider"></li>
 								{{/if}}
 								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
+								{{if !~hlpIsPermesReservarAnotacions || !agafat}}
 									<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 									{{if procesEstatSimple == 'PENDENT'}}
 										<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
@@ -442,15 +442,15 @@ $(document).ready(function() {
 									</li>
 								{{/if}}
 								{{if ~hlpIsPermesReservarAnotacions}}
+									<li role="separator" class="divider"></li>
 									{{if !agafat}}
-										<li><a href="./registreUser/{{:id}}/agafar"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
+										<li><a href="./registreUser/{{:id}}/bloquejar"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
 									{{else}}
 										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}
-											<li><a href="./registreUser/{{:id}}/agafar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.agafar"/></a></li>
-											<li role="separator" class="divider"></li>
+											<li><a href="./registreUser/{{:id}}/alliberar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>										
 											<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>
 										{{else}}
-											<li><a href="./registreUser/{{:id}}/alliberar"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+											<li><a href="./registreUser/{{:id}}/alliberar"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>										
 										{{/if}}
 									{{/if}}
 								{{/if}}
