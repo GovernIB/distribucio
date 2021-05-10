@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.api.dto;
 
-import java.util.Comparator;
 
 /**
  * Informació d'un procediment.
@@ -35,7 +34,7 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 		this.codiSia = codiSia;
 	}
 	public String getCodiNom() {
-		return codi + " - " + nom;
+		return (codi != null ? codi : codiSia) + " - " + nom;
 	}
 	
 	@Override

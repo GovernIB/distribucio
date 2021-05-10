@@ -222,7 +222,11 @@ public class EmailHelper {
 			ContingutEntity contingut,
 			String comentari) {
 		logger.debug("Enviament email comentari a destinatari");
-	
+		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		BustiaEntity bustia = null;
+		if (contingut.getPare() != null && contingut.getPare() instanceof BustiaEntity)
+			bustia = (BustiaEntity) contingut.getPare();
+		
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
 		missatge.setFrom(getRemitent());
@@ -232,6 +236,7 @@ public class EmailHelper {
 				"L'usuari " + usuariActual.getNom() + "(" + usuariActual.getCodi() + ") t'ha mencionat al comentari d'una anotació [" + contingut.getNom() + "]: \n" +
 				"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
 				"\tNom anotació: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+				(bustia != null ? "\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n" : "") +
 				"\tComentari: " + comentari + "\n");
 		
 		mailSender.send(missatge);		
