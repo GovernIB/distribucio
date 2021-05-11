@@ -34,12 +34,12 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 		this.codiSia = codiSia;
 	}
 	public String getCodiNom() {
-		return (codi != null ? codi : codiSia) + " - " + nom;
+		return codiSia + " - " + nom;
 	}
 	
 	@Override
 	public int compareTo(ProcedimentDto o) {
-		return nom.compareTo(o.getNom());
+		return codiSia.compareTo(o.getCodiSia());
 	}
 
 }

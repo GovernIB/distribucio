@@ -1438,8 +1438,8 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 		}
-		//### Ordenar per nom
-		if (dtos.isEmpty()) {
+		//### Ordenar per codi SIA
+		if (!dtos.isEmpty()) {
 			Collections.sort(dtos);
 		}
 		return dtos;
