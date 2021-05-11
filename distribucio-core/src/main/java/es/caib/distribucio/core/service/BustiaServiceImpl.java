@@ -2620,6 +2620,28 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	
 	@Transactional
 	@Override
+	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId) {
+		final Timer timergetBustiesFavoritsUsuariActual = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "getIdsBustiesFavoritsUsuariActual"));
+		Timer.Context contextgetBustiesFavoritsUsuariActual = timergetBustiesFavoritsUsuariActual.time();
+		entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);
+		List<Long> idsBustiesFavorits = new ArrayList<Long>();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UsuariEntity usuariActual = usuariRepository.findOne(auth.getName());
+		
+		List<UsuariBustiaFavoritEntity> usuariBustiesFavorits = usuariBustiaFavoritRepository.findByUsuari(usuariActual);
+		for (UsuariBustiaFavoritEntity usuariBustiaFavoritEntity : usuariBustiesFavorits) {
+			idsBustiesFavorits.add(usuariBustiaFavoritEntity.getBustia().getId());
+		}
+		contextgetBustiesFavoritsUsuariActual.stop();
+		return idsBustiesFavorits;
+	}
+	
+	@Transactional
+	@Override
 	public void removeFromFavorits(
 			Long entitatId, 
 			Long id) {
@@ -2712,4 +2734,5 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
+
 }

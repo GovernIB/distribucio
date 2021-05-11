@@ -292,4 +292,10 @@ public class BustiaServiceBean implements BustiaService {
 	public boolean checkIfFavoritExists(Long entitatId, Long id) {
 		return delegate.checkIfFavoritExists(entitatId, id);
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId) {
+		return delegate.getIdsBustiesFavoritsUsuariActual(entitatId);
+	}
 }

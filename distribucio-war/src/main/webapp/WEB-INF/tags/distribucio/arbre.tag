@@ -89,7 +89,7 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", ${isEnviarConeixementActiu || isFavoritsPermes} ? "contextmenu" : "", "crrm"],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", "crrm"],
 		"core": {
 			"check_callback": true
 		},
@@ -100,10 +100,6 @@
 		    "three_state": false, //Indicating if checkboxes should cascade down and have an undetermined state
 		    "two_state" : true,
 			"cascade": "down"
-		},
-		"contextmenu" : {
-			"select_node": false,
-			"items" : showMenu
 		}
 	})<c:if test="${not empty readyCallback}">
 	.on('ready.jstree', function (e, data) {
@@ -114,6 +110,9 @@
 		// var height = $('html').height();
 		// iframe.height(height + 'px');
 		changeCheckbox(false);
+		if (${isFavoritsPermes})
+			addIcons();
+		checkSelectedNodes();
 	})
 	.on('after_close.jstree', function (e, data) {
 		// var iframe = $('.modal-body iframe', window.parent.document);
@@ -122,6 +121,8 @@
 	})<c:if test="${not empty changedCallback}">
 	.on('changed.jstree', function (e, data) {
 		//console.log('>>> changed.jstree');
+		if (data.action != undefined && data.action == "deselect_all" && ${isFavoritsPermes})
+			${readyCallback}(e, data);
 		return ${changedCallback}(e, data);
 	})</c:if><c:if test="${not empty deselectAllCallback}">
 	.on('deselect_all.jstree', function (e, data) {
@@ -130,16 +131,7 @@
 	})</c:if>
 	.on('ready.jstree click', function (e, data) {
 		changeCheckbox(false);
-	})
-	<c:if test="${isEnviarConeixementActiu}">
-	.on('show_contextmenu.jstree', function(e, reference, element) {
-        var isBustia = reference.node.icon.includes('inbox');
-		if (!isBustia) {
-            $('.vakata-context').hide();
-        } else {
-        	$('.vakata-context').show();
-        }
-    });</c:if>
+	});
 	
 	function changeCheckbox(removeAllSelected) {
 		if (${isCheckBoxEnabled}) {
@@ -159,73 +151,24 @@
 		}
     }
 	
-	function showMenu(node) {
-		var items = {};
-		var nodeId = node.id;
-		var nodeHrefId = '#' + node.a_attr.id;
-		var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-		
-		if (!isNaN(nodeId)) {
-			var alreadyInFavorits = existsInFavorits(nodeId);
-			if (${isEnviarConeixementActiu}) {
-				if(!selectedForConeixement) {
-					var itemAddConeixement = { 
-						"afegir" : {
-							"separator_before"  : false,
-							"separator_after"   : false,
-							"label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/>',
-							"icon" 				: "fa fa-plus",
-							"action"            : function (data) {
-														addToConeixement(nodeId, nodeHrefId, true);
-												  }
-						 }
-					}
-					items.afegir = itemAddConeixement.afegir;
-				} else {
-					var itemDeleteConeixement = {
-						"esborrar" : {
-							"separator_before"  : false,
-						    "separator_after"   : false,
-						    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.coneixement"/>',
-						    "icon" 				: "fa fa-minus",
-						    "action"            : function (data) {
-						    							removeFromConeixement(nodeId, nodeHrefId, false);
-												  }
-						}
-					}
-					items.esborrar = itemDeleteConeixement.esborrar;
-				}
-			}
-			if (${isFavoritsPermes}) {
-				if (!alreadyInFavorits) {
-					var itemAddFavorit = {
-							"favorit" : {
-								"separator_before"  : true,
-							    "separator_after"   : false,
-							    "label"             : '<spring:message code="contingut.enviar.contextmenu.afegir.favorits"/>',
-							    "icon" 				: "fa fa-star",
-							    "action"            : function (data) {
-							    						addToFavorits(nodeId);
-													  }
-							}
-					};
-					items.favorit = itemAddFavorit.favorit;
-				} else {
-					var itemRemoveFavorit = {
-							"favorit" : {
-								"separator_before"  : true,
-							    "separator_after"   : false,
-							    "label"             : '<spring:message code="contingut.enviar.contextmenu.esborrar.favorits"/>',
-							    "icon" 				: "fa fa-star",
-							    "action"            : function (data) {
-							    						removeFromFavorits(nodeId);
-													  }
-							}
-					};
-					items.favorit = itemRemoveFavorit.favorit;
-				}
-			}
-		}
-		return items;
+	function addIcons() {
+		var $arbre = $('#${id}');
+		$arbre.find('li').each(function (index,value) {
+	        var node = $arbre.jstree().get_node(this.id);
+	        var nodeId = node.id;
+	    	var isBustia = node.icon.includes('inbox');
+	    	var nodeAnchor = $('#' + node.a_attr.id);
+	    	if (isBustia && nodeAnchor.next('span').length == 0) {
+	    		nodeAnchor.after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+	    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
+	    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
+	    			nodeAnchor.next().addClass('favorit');
+	    	}
+	    	
+	    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next().next('span').length == 0) {
+	    		nodeAnchor.next().after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+	    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+	    	}
+		});
 	}
 </script>

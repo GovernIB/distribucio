@@ -144,10 +144,74 @@
 		.favorits_title {
 			text-decoration: underline;
 		}
+		
+		.star-parent {
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			height: 18px;
+			width: 18px;
+			border-radius: 50%;
+			background-color: #f2c185;
+			cursor: pointer;
+			margin-left: 4px;
+		}
+		
+		.star-parent.favorit {
+			background-color: #ed8607 !important;
+		}
+		
+		.star-parent i {
+			color: #fff;
+			font-size: 11px;	
+		}
+		
+		.info-parent {
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			height: 18px;
+			width: 18px;
+			border-radius: 50%;
+			background-color: #a6def4;
+			cursor: pointer;
+			margin-left: 5px;
+		}
+		
+		.info-parent.coneixement {
+			background-color: #00aaed !important;
+		}
+		
+		.info-parent i {
+			color: #fff;
+			font-size: 11px;		
+		}
+		
+		input#favorits {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 15px;
+			width: 20px;
+		}
+		
 	</style>
 	<script type="text/javascript">
+		var idsBustiesFavorits = [];
 		perConeixement = [];
 		$(document).ready(function() {
+			$.ajax({
+	 			type: "GET",
+	 			async: false,
+				url: '<c:url value="/registreUser/favorits/list"/>',
+				success: function (result) {
+					idsBustiesFavorits = result;
+				},
+				error: function(e) {
+					alert("hi ha hagut un recuperant la lista de ids de les bústies favorits");
+				}
+	 		});
+			
 			$('#jstree-search').on('input', function() {
 				$("#arbreUnitats_destins").jstree("search", $(this).val());
 			});
@@ -157,7 +221,6 @@
 				var nodeId = '#' + data.node.id;
 				var nodeHrefId = '#' + data.node.a_attr.id;
 				var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-	            
 	            var hasClassSquare = $(nodeHrefId).find('i.fa-square-o').length != 0;
 	    		var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
 	    		
@@ -166,15 +229,10 @@
 	    			var currentCheckbox = $(nodeHrefId).find('i.fa-square-o');
 	                currentCheckbox.removeClass('fa-square-o');
 	                currentCheckbox.addClass('fa-check-square-o');
-
-	  	          	//===== canviar text
-	  		    	var nodeButton = $('a.btn-tramitar[value="' + data.node.id + '"]');
-	  		    	updateButtonTramitacio(nodeButton, true);
 	    		} else if(!hasClassClicked) {
 	    			var currentCheckbox = $(nodeHrefId).find('i.fa-check-square-o');
 	                currentCheckbox.removeClass('fa-check-square-o');
 	                currentCheckbox.addClass('fa-square-o');
-	                
 	                //============ esborrar de coneixement si s'ha seleccionat prèviament i deseleccionar ================
 	                if (selectedForConeixement) {
 	                	removeFromConeixement(nodeId, nodeHrefId, false);
@@ -197,145 +255,124 @@
 	            //============= deseleccionar ===========
 	            currentCheckbox.removeClass('fa-check-square-o');
 	            currentCheckbox.addClass('fa-square-o');
-	            
-	          	//===== canviar text
-  		    	var nodeButton = $('a.btn-tramitar[value="' + data.node.id + '"]');
-  		    	updateButtonTramitacio(nodeButton, false);
-  		    	
   		    	//============ esborrar de coneixement si s'ha seleccionat prèviament i actualitzar botó ================
 	            if(selectedForConeixement) {
 					removeFromConeixement(nodeId, nodeHrefId, true);
-					//change text
-			    	var nodeButton = $('a.btn-coneixement[value="' + nodeId + '"]');
-			    	updateButtonConeixement(nodeButton, false);
 				}
 			});
-			
-			$('#taulaFavorits').on( 'draw.dt', function () {
-				
-				//============ en pitjar 'afegir/llevar per tramitar' ================
-				$('.btn-tramitar').on('click', function() {
-					var nodeId = $(this).attr('value');
-					var nodeHrefId = '#' + nodeId + '_anchor';
-					var isAfegir = $(this).find('span').hasClass('fa-plus');
-		            var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-		            //============ actualitzar text/icona 'afegir per tramitar' ================
-		            updateButtonTramitacio($(this), isAfegir);
-		            
-		            if (isAfegir) {
-		           		$("#arbreUnitats_destins").jstree('select_node', nodeId);
-		            } else {
-		            	$("#arbreUnitats_destins").jstree('select_node', nodeId);
-		            	$("#arbreUnitats_destins").jstree('deselect_node', nodeId);
-
-				        //============ desactivar botó 'afegir per coneixement'================
-			            var nodeButtonConeixement = $(this).closest('tr').find('a.btn-coneixement');
-			            updateButtonConeixement(nodeButtonConeixement, false);
-		            }
-				});
-				
-				//============ en pitjar 'afegir/llevar per coneixement' ================
-				$('.btn-coneixement').on('click', function() {
-					var nodeId = '#' + $(this).attr('value');
-					var nodeHrefId = nodeId + '_anchor';
-					var isAfegir = $(this).find('span').hasClass('fa-plus');
-		            var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-		           //============ actualitzar text/icona 'afegir per conexiement' ================
-		          	updateButtonConeixement($(this), isAfegir);
-
-		           //============ desactivar 'afegir per tramitar' ================
-	          		var nodeButtonTramitacio = $(this).closest('tr').find('a.btn-tramitar');
-		          	if (isAfegir) {
-		          		nodeButtonTramitacio.addClass('disabled');
-		          	} else {
-		          		updateButtonTramitacio(nodeButtonTramitacio, true);
-		          		nodeButtonTramitacio.removeClass('disabled');
-		          	}
-		          	
-
-			        //============ actualitzar node ================
-		            var hasClassSquare = $(nodeId).find('i.fa-square-o').length != 0;
-		    		var hasClassClicked = $(nodeId).parent().find('.jstree-clicked').length != 0;
-		    	
-		    		if(hasClassSquare) {
-		    			var currentCheckbox = $(nodeId).find('i.fa-square-o');
-		                currentCheckbox.removeClass('fa-square-o');
-		                currentCheckbox.addClass('fa-check-square-o');
-		            //============ esborrar de coneixement si s'ha seleccionat prèviament ================
-		    		} else if (selectedForConeixement) {
-		    			removeFromConeixement(nodeId, nodeHrefId, false);
-		    		}
-
-		    	   	//============ canviar estil per coneixement ================
-		            if(!selectedForConeixement) {
-						addToConeixement(nodeId, nodeHrefId, false);
-					} else {
-						removeFromConeixement(nodeId, nodeHrefId, false);
-					}
-				});
-				
-				//============ esborrar de la taula favorits en pitjar botó taula ================
-				$('.favorit-esborrar').on('click', function() {
-					var bustiaId = $(this).attr('value');
-					removeFromFavorits(bustiaId);
-				});
+	
+			$('#favorits').on('change', function() {
+				var $arbre = $("#arbreUnitats_destins");
+				if($(this).is(':checked')) {
+					//mostrar favorits
+					actualitzarArbreAmbFavorits($arbre);
+				} else {
+					//recarregar arbre
+					$arbre.jstree(true).refresh();
+				}
 			});
 		});
 		
-		//============ afegir estil seleccionat per coneixement ================
-		//# - nodeId: id node seleccionat
-		//# - nodeHrefId: id href node seleccionat
-		//# - selet: forçar la seva selecció
+		function actualitzarArbreAmbFavorits($arbre) {
+			$arbre.jstree('open_all');
+			//amaga les que no són favorits
+			$arbre.find('li').each(function (index,value) {
+		        var node = $arbre.jstree().get_node(this.id);
+		        var nodeId = node.id;
+		    	var isBustia = node.icon.includes('inbox');
+		    	if (isBustia) {
+		    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) == -1)
+		    			$arbre.jstree('hide_node', nodeId);
+		    	}
+			});
+
+			$('.jstree-anchor')
+				.find('i.jstree-checkbox')
+				.removeClass('jstree-icon jstree-checkbox')
+				.addClass('fa fa-square-o');
+			
+			//li afegeix l'icona de favorit
+			$arbre.find('li').each(function (index,value) {
+		        var node = $arbre.jstree().get_node(this.id);
+		        var nodeId = node.id;
+		    	var isBustia = node.icon.includes('inbox');
+		    	var nodeAnchor = $('#' + node.a_attr.id);
+		    	if (isBustia && nodeAnchor.next('span').length == 0) {
+		    		nodeAnchor.after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
+		    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
+		    			nodeAnchor.next().addClass('favorit');
+		    		
+		    		var nodeHrefId = '#' + node.a_attr.id;		            
+		            var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
+		            //============= canviar icona (checked/unchecked)===========
+		    		if(hasClassClicked) {
+		    			var currentCheckbox = $(nodeHrefId).find('i.fa-square-o');
+		                currentCheckbox.removeClass('fa-square-o');
+		                currentCheckbox.addClass('fa-check-square-o');
+		            }	         
+		    	}
+		    	
+		    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next().next('span').length == 0) {
+		    		nodeAnchor.next().after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+		    		if (perConeixement.indexOf(nodeId) != -1) {
+		    			nodeAnchor.next().next().addClass('coneixement');
+		    			addToConeixement(nodeId, nodeHrefId, false);
+		    		}
+		    	}
+			});
+			$arbre.find('li[data-jstree*="fa-folder"]').find('.jstree-anchor:first').find('.fa-square-o').hide();
+		}
+		
+		function toggleFavorits(nodeId) {
+			var $arbre = $("#arbreUnitats_destins");
+			var node = $arbre.jstree().get_node(nodeId);
+			var nodeHrefId = '#' + node.a_attr.id;
+			var markedAsFavorit = $(nodeHrefId).next().hasClass('favorit');
+			if (markedAsFavorit) {
+				removeFromFavorits(nodeId);
+				idsBustiesFavorits = $.grep(idsBustiesFavorits, function(value) {
+				  return value != nodeId;
+				});
+				$('#favorits').trigger('change');
+			} else {
+				addToFavorits(nodeId);
+				idsBustiesFavorits.push(parseInt(nodeId));
+			}
+		}
+		
+		function toggleConeixement(nodeId) {
+			var $arbre = $("#arbreUnitats_destins");
+			var node = $arbre.jstree().get_node(nodeId);
+			var nodeHrefId = '#' + node.a_attr.id;
+			var addToConeixmenet = $(nodeHrefId).next().next().hasClass('coneixement');
+			if (addToConeixmenet) {
+				removeFromConeixement(nodeId, nodeHrefId, false);
+			} else {
+				addToConeixement(nodeId, nodeHrefId, true);
+			}
+		}
+		
 		function addToConeixement(nodeId, nodeHrefId, select) {
 			if (select)
 				$("#arbreUnitats_destins").jstree('select_node', nodeId);
-			$(nodeHrefId).removeClass('jstree-clicked');
-	    	$(nodeHrefId).addClass('jstree-clicked-coneixement');
+			/*$(nodeHrefId).removeClass('jstree-clicked');
+	    	$(nodeHrefId).addClass('jstree-clicked-coneixement');*/
 	    	perConeixement.push(nodeId);
-	    	
-	    	var nodeButton = $('a.btn-coneixement[value="' + nodeId + '"]');
-	    	updateButtonConeixement(nodeButton, true);
-	    	
-	    	// desactivar botó tramitar per no confundir
-      		var nodeButtonTramitacio = nodeButton.closest('tr').find('a.btn-tramitar');
-          	nodeButtonTramitacio.addClass('disabled');
+          	$(nodeHrefId).next().next().addClass('coneixement');
 		}
 		
-		//============ esborrar estil seleccionat per coneixement ================
-		//# - nodeId: id node seleccionat
-		//# - nodeHrefId: id href node seleccionat
-		//# - onlyConeixement: forçar per esborrar únicament de coneixement (deixar seleccionat)
 		function removeFromConeixement(nodeId, nodeHrefId, onlyConeixement) {
 			if (!onlyConeixement)
 				$(nodeHrefId).addClass('jstree-clicked');
 	    	$(nodeHrefId).removeClass('jstree-clicked-coneixement');
-	    	//var nodeIdIdx = perConeixement.indexOf(nodeId);
-	    	//perConeixement.splice(nodeIdIdx, 1);
-	    	//esborrat de l'arbre o taula
-	    	var localNodeId = nodeId.includes('#') ? nodeId : '#' + nodeId;
-	    	removeA(perConeixement, localNodeId);
-	    	var nodeButton = $('a.btn-coneixement[value="' + nodeId + '"]');
-	    	updateButtonConeixement(nodeButton, false);
-	    	
-	    	// activa botó tramitar
-      		var nodeButtonTramitacio = nodeButton.closest('tr').find('a.btn-tramitar');
-      		updateButtonTramitacio(nodeButtonTramitacio, true);
-          	nodeButtonTramitacio.removeClass('disabled');
+          	perConeixement = $.grep(perConeixement, function(value) {
+				 return value != nodeId;
+			});
+          	$(nodeHrefId).next().next().removeClass('coneixement');
 		}
         
-		//============ esborrar de coneixement ================
-		//# - element: icona node seleccionat
-		//# - show: cheked/unchecked
-		function toggleCheckClasses(element, show) {
-	        if (show) {
-	            element.removeClass('fa-square-o');
-	            element.addClass('fa-check-square-o');
-	        } else {
-	            element.removeClass('fa-check-square-o');
-	            element.addClass('fa-square-o');
-	        }
-	    }
-		
 		//============ afegir a favorits ================
 		//# - nodeId: id de la bústia
 		function addToFavorits(nodeId) {
@@ -347,18 +384,10 @@
 				url: '<c:url value="/registreUser/favorits/add/"/>' + nodeId,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
+			 		$(nodeHrefId).next().addClass('favorit');
 				},
 				error: function(e) {
 					alert("hi ha hagut un error actualitzant els favorits");
-				}
-	 		});
-	 		//=========== actualitzar taula si s'ha seleccionat abans d'afegir a favorits =====
-	 		$('#taulaFavorits').on( 'draw.dt', function () {
-				if (selectedForConeixement) {
-					addToConeixement(nodeId, nodeHrefId, false);
-				} else if (selected) {
-					var nodeButton = $('a.btn-tramitar[value="' + nodeId + '"]');
-	  		    	updateButtonTramitacio(nodeButton, true);
 				}
 	 		});
 		}
@@ -366,34 +395,18 @@
 		//============ esborrar de favorits ================
 		//# - nodeId: id de la bústia
 		function removeFromFavorits(nodeId) {
+			var nodeHrefId = '#' + nodeId + '_anchor';
 			$.ajax({
 	 			type: "GET",
 				url: '<c:url value="/registreUser/favorits/remove/"/>' + nodeId,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
+					$(nodeHrefId).next().removeClass('favorit');
 				},
 				error: function(e) {
 					alert("hi ha hagut un error esborrant la bústia de favorits");
 				}
 	 		});
-		}
-		
-		//============ comprovar si és un favorit ================
-		//# - nodeId: id de la bústia
-		function existsInFavorits(nodeId) {
-			var exists = false;
-			$.ajax({
-	 			type: "GET",
-	 			async: false,
-				url: '<c:url value="/registreUser/favorits/check/"/>' + nodeId,
-				success: function (data) {
-					exists = data;
-				},
-				error: function(e) {
-					alert("hi ha hagut un error comprovant la existència del favorit");
-				}
-	 		});
-			return exists;
 		}
 		
 		//============ actualitzar array amb destins (combinar per coneixement i per tramitar) ================
@@ -421,29 +434,9 @@
 			$('#perConeixement').val(forConeixement);
 		}
 		
-		//============ canviar text/icona 'afegir per coneixement' ================
-		//# - button: botó seleccionat
-		//# - isAfegir: afegir or llevar
-		function updateButtonConeixement(button, isAfegir) {
-			if (isAfegir) {
-				button.html('<span class="fa fa-minus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.esborrar.coneixement"/>');
-          	} else {
-          		button.html('<span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.afegir.coneixement"/>');
-          	}
-		}
-		
-		//============ canviar text/icona 'afegir per tramitar' ================
-		//# - button: botó seleccionat
-		//# - isAfegir: afegir or llevar
-		function updateButtonTramitacio(button, isAfegir) {
-			if (isAfegir) {
-          		button.html('<span class="fa fa-minus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.esborrar.tramitacio"/>');
-          	} else {
-				button.html('<span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.afegir.tramitacio"/>');
-          	}
-		}
-		
 		function readyCallback(e,data) {
+			var $arbre = $("#arbreUnitats_destins");
+			$arbre.jstree('close_all');
 			if (e.currentTarget.childNodes != undefined) {
 				e.currentTarget.childNodes.forEach(function(parent) {
 					openNodes(parent);
@@ -468,6 +461,34 @@
 				}
 			});
 		}
+		
+		function checkSelectedNodes() {
+			var $arbre = $("#arbreUnitats_destins");
+			//li afegeix l'icona de favorit
+			$arbre.find('li').each(function (index,value) {
+		        var node = $arbre.jstree().get_node(this.id);
+		        var nodeId = node.id;
+		        var nodeHrefId = '#' + node.a_attr.id;
+		    	var isBustia = node.icon.includes('inbox');
+		    	var nodeAnchor = $('#' + node.a_attr.id);
+		    	
+		    	if (isBustia) {
+		    		var nodeHrefId = '#' + node.a_attr.id;		            
+		            var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
+		            //============= canviar icona (checked/unchecked)===========
+		    		if(hasClassClicked) {
+		    			var currentCheckbox = $(nodeHrefId).find('i.fa-square-o');
+		                currentCheckbox.removeClass('fa-square-o');
+		                currentCheckbox.addClass('fa-check-square-o');
+		            }	         
+		            
+		    		if (perConeixement.indexOf(nodeId) != -1) {
+		    			nodeAnchor.next().next().toggleClass('coneixement');
+		    			addToConeixement(nodeId, nodeHrefId, false);
+		    		}
+		    	}
+			});
+		}
 	</script>
 </head>
 <body>
@@ -476,71 +497,15 @@
 	    <c:choose>
 	    	<c:when test="${isFavoritsPermes}">
 	    		<div class="form-group">
-		    		<div class="${isEnviarConeixementActiu ? 'capsalera' : ''} ${isFavoritsPermes ? 'col-xs-offset-6 col-xs-6' : 'col-xs-offset-4 col-xs-8'}">
-		    			<c:if test="${isEnviarConeixementActiu}"> 
-							<div class="leyenda">
-								<div class="leyenda_title"><span><spring:message code="contingut.enviar.info.llegenda"/></span></div>
-								<div class="leyenda_container">
-									<div class="leyenda_processar">
-										<div></div><span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>
-									</div>
-									<div class="leyenda_coneixement">
-										<div></div><span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>
-									</div>
-								</div>
-							</div>
-						</c:if>
+		    		<div class="${isFavoritsPermes ? 'col-xs-offset-3 col-xs-9' : 'col-xs-offset-4 col-xs-8'}">
 						<div class="jstree-search-container">
+							<label><input id="favorits" type="checkbox">&nbsp;<span class="star-parent"><i class="fa fa-star favorit"></i></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.info.filtre.favorits"/></label>
 							<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 						</div>
 					</div>
 				</div>
 	    		<div class="bustia_container">
-	    			<c:if test="${isFavoritsPermes}">
-		    			<div class="favorits_container">
-		    				<div class="favorits_title">
-		    					<h4><spring:message code="contingut.enviar.info.favorits"/></h4>
-		    				</div>
-		    				<table 
-								id="taulaFavorits" 
-								class="table table-bordered table-striped"style="width:100%"
-								data-toggle="datatable"
-								data-url="<c:url value="/registreUser/favorits/datatable"/>"
-								data-paging-enabled="false"
-								data-default-order="1" 
-								data-default-dir="desc"
-								data-agrupar="5"
-								class="table table-bordered table-striped"
-								style="width:100%">
-								<thead>
-									<tr>
-										<th data-col-name="id" data-visible="false"></th>
-										<th data-col-name="createdDate" data-visible="false"></th>
-										<th data-col-name="bustia.id" data-visible="false"></th>
-										<th data-col-name="bustia.nom" data-orderable="false" width="25%"><spring:message code="contingut.enviar.camp.desti"/></th>
-										
-										<th data-col-name="id" data-orderable="false" data-template="#cellFavoritTramitarTemplate" width="10%">
-											<script id="cellFavoritTramitarTemplate" type="text/x-jsrender">
-											<a href="#" class="btn btn-tramitar" value="{{:bustia.id}}"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.favorits.afegir.tramitacio"/></a>
-										</script>
-										</th>
-										<c:if test="${isEnviarConeixementActiu}">
-											<th data-col-name="id" data-orderable="false" data-template="#cellFavoritConeixementTemplate" width="10%">
-												<script id="cellFavoritConeixementTemplate" type="text/x-jsrender">
-													<a href="#" class="btn btn-coneixement" value="{{:bustia.id}}"><span class="fa fa-plus"></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.contextmenu.afegir.coneixement"/></a>
-												</script>
-											</th>
-										</c:if>
-										<th data-col-name="id" data-orderable="false" data-template="#cellFavoritEsborrarTemplate" width="10%">
-											<script id="cellFavoritEsborrarTemplate" type="text/x-jsrender">
-											<a href="#" class="btn btn-danger favorit-esborrar" value="{{:id}}"><span class="fa fa-trash"></span></a>
-										</script>
-										</th>
-									</tr>
-								</thead>
-							</table>
-		    			</div>
-	    			</c:if>
+	    			
 					<div class="busties">
 						<dis:inputArbre name="destins" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 						fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 

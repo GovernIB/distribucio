@@ -1397,6 +1397,16 @@ public class RegistreUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
 	
+	@RequestMapping(value = "/favorits/list", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Long> registreUserFavoritsList(
+			HttpServletRequest request) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		List<Long> idsBustiesFavorits = bustiaService.getIdsBustiesFavoritsUsuariActual(entitatActual.getId());
+		return idsBustiesFavorits;
+	}
+	
 	@RequestMapping(value = "/favorits/check/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody
 	public boolean checkIfExists(

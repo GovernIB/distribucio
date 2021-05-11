@@ -377,5 +377,8 @@ public interface BustiaService {
 	public boolean checkIfFavoritExists(
 			Long entitatId, 
 			Long id);
+	
+	@PreAuthorize("hasRole('tothom')")
+	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId);
 
 }

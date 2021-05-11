@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.core.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,4 +33,6 @@ public interface UsuariBustiaFavoritRepository extends JpaRepository<UsuariBusti
 	public Long findIdByBustiaAndUsuari(
 			@Param("bustia") BustiaEntity bustia,
 			@Param("usuari") UsuariEntity usuari);
+	
+	public List<UsuariBustiaFavoritEntity> findByUsuari(UsuariEntity usuari);
 }
