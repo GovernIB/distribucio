@@ -59,8 +59,8 @@
 				if (this.settings.conditionalselect.call(this, this.get_node(obj))) {
 					parent.select_node.call(this, obj, supress_event, prevent_open);
 				} else {
-					changeCheckbox(true);
-					parent.deselect_all.call(this, obj, supress_event, prevent_open);
+					//changeCheckbox(true);
+					//parent.deselect_all.call(this, obj, supress_event, prevent_open);
 				}
 			};
 		};

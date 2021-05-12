@@ -43,17 +43,39 @@
 		}
 		
 		#jstree-search {
-			float: right;
 			border: 1px solid #ccc;
 			border-radius: 4px;
+			width: 100%;
 		}
 		
 		.jstree-search-container {
-			place-self: flex-end;
+			position: relative;
+			top: 25px;
+			width: 80%;
+			margin-left: 15%;
+			display: flex;
+			z-index: 100;
+		}
+		
+		.jstree-search-container div:nth-child(1) {
+			width: 35%;
+		}
+		
+		.jstree-search-container div:nth-child(2) {
+			margin-left: 5%;
 		}
 		
 		.bustia_container {
 			display: flex;
+		}
+		
+		.arbre_container {
+			width: 45%;
+		}
+		
+		.taules_container {
+			width: 55%;
+			margin: 2% 0 0 1%;
 		}
 		
 		.busties {
@@ -188,8 +210,8 @@
 		}
 		
 		input#favorits {
-			position: absolute;
-			top: 0;
+			position: relative;
+			top: 2px;
 			left: 0;
 			height: 15px;
 			width: 20px;
@@ -198,14 +220,16 @@
 	</style>
 	<script type="text/javascript">
 		var idsBustiesFavorits = [];
-		perConeixement = [];
+		var idsPerConeixement = [];
 		$(document).ready(function() {
+			$('#taula_coneixement').hide();
+			var $arbre = $("#arbreUnitats_destins");
 			$.ajax({
 	 			type: "GET",
 	 			async: false,
 				url: '<c:url value="/registreUser/favorits/list"/>',
-				success: function (result) {
-					idsBustiesFavorits = result;
+				success: function (resultat) {
+					idsBustiesFavorits = resultat;
 				},
 				error: function(e) {
 					alert("hi ha hagut un recuperant la lista de ids de les bústies favorits");
@@ -217,10 +241,11 @@
 			});
 			
 			//============= en seleccionar un node ===========
-			$("#arbreUnitats_destins").on("select_node.jstree", function (e, data) {
-				var nodeId = '#' + data.node.id;
+			$arbre.on("select_node.jstree", function (e, data) {
+				var idNode = data.node.id;
 				var nodeHrefId = '#' + data.node.a_attr.id;
-				var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
+				//var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
+				var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
 	            var hasClassSquare = $(nodeHrefId).find('i.fa-square-o').length != 0;
 	    		var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
 	    		
@@ -229,45 +254,43 @@
 	    			var currentCheckbox = $(nodeHrefId).find('i.fa-square-o');
 	                currentCheckbox.removeClass('fa-square-o');
 	                currentCheckbox.addClass('fa-check-square-o');
+	                if(isPerConeixement) {
+	                	actualitzarTaulaConeixement(idNode, isPerConeixement, false);
+	                } else {
+	               		actualitzarTaulaTramitacio(idNode);
+	                }
 	    		} else if(!hasClassClicked) {
 	    			var currentCheckbox = $(nodeHrefId).find('i.fa-check-square-o');
 	                currentCheckbox.removeClass('fa-check-square-o');
 	                currentCheckbox.addClass('fa-square-o');
-	                //============ esborrar de coneixement si s'ha seleccionat prèviament i deseleccionar ================
-	                if (selectedForConeixement) {
-	                	removeFromConeixement(nodeId, nodeHrefId, false);
-	                	$("#arbreUnitats_destins").jstree('deselect_node', nodeId);
-	                }
 	    		}
-	    		//============ seleccionat de la taula esborrat de l'arbre ================
-	    		if (selectedForConeixement) {
-                	removeFromConeixement(data.node.id, nodeHrefId, false);
-                }
 			});
 			
 			//============= en deseleccionar un node ===========
-			$("#arbreUnitats_destins").on("deselect_node.jstree", function (e, data) {
-				var nodeId = '#' + data.node.id;
+			$arbre.on("deselect_node.jstree", function (e, data) {
+				var idNode = data.node.id;
 				var nodeHrefId = '#' + data.node.a_attr.id;
 	    		var currentCheckbox = $(nodeHrefId).find('i.fa-check-square-o');
-	            var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-	            
 	            //============= deseleccionar ===========
 	            currentCheckbox.removeClass('fa-check-square-o');
 	            currentCheckbox.addClass('fa-square-o');
-  		    	//============ esborrar de coneixement si s'ha seleccionat prèviament i actualitzar botó ================
-	            if(selectedForConeixement) {
-					removeFromConeixement(nodeId, nodeHrefId, true);
+				esborrarDeConeixement(idNode, true);
+				var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
+				if(isPerConeixement) {
+					actualitzarTaulaConeixement(idNode, false, false);
+		          	$(nodeHrefId).next().next().removeClass('coneixement');
+				} else {
+					actualitzarTaulaTramitacio(idNode);
 				}
 			});
 	
 			$('#favorits').on('change', function() {
-				var $arbre = $("#arbreUnitats_destins");
+				//var $arbre = $("#arbreUnitats_destins");
 				if($(this).is(':checked')) {
 					//mostrar favorits
 					actualitzarArbreAmbFavorits($arbre);
 				} else {
-					//recarregar arbre
+					//mostrar tots
 					$arbre.jstree(true).refresh();
 				}
 			});
@@ -278,11 +301,11 @@
 			//amaga les que no són favorits
 			$arbre.find('li').each(function (index,value) {
 		        var node = $arbre.jstree().get_node(this.id);
-		        var nodeId = node.id;
+		        var idNode = node.id;
 		    	var isBustia = node.icon.includes('inbox');
 		    	if (isBustia) {
-		    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) == -1)
-		    			$arbre.jstree('hide_node', nodeId);
+		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) == -1)
+		    			$arbre.jstree('hide_node', idNode);
 		    	}
 			});
 
@@ -294,94 +317,98 @@
 			//li afegeix l'icona de favorit
 			$arbre.find('li').each(function (index,value) {
 		        var node = $arbre.jstree().get_node(this.id);
-		        var nodeId = node.id;
+		        var idNode = node.id;
 		    	var isBustia = node.icon.includes('inbox');
-		    	var nodeAnchor = $('#' + node.a_attr.id);
+	    		var nodeHrefId = '#' + node.a_attr.id;		
+		    	var nodeAnchor = $(nodeHrefId);
+	            var hasClassClicked = nodeAnchor.parent().find('.jstree-clicked').length != 0;
+	            var noSeleccionatPerConeixement = nodeAnchor.next().next('span').length == 0;
+	            
 		    	if (isBustia && nodeAnchor.next('span').length == 0) {
-		    		nodeAnchor.after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+		    		nodeAnchor.after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
-		    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
+		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
 		    			nodeAnchor.next().addClass('favorit');
-		    		
-		    		var nodeHrefId = '#' + node.a_attr.id;		            
-		            var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
+		    		}        
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
-		    			var currentCheckbox = $(nodeHrefId).find('i.fa-square-o');
+		    			var currentCheckbox = nodeAnchor.find('i.fa-square-o');
 		                currentCheckbox.removeClass('fa-square-o');
 		                currentCheckbox.addClass('fa-check-square-o');
 		            }	         
 		    	}
 		    	
-		    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next().next('span').length == 0) {
-		    		nodeAnchor.next().after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+		    	if (${isEnviarConeixementActiu} && isBustia && noSeleccionatPerConeixement) {
+		    		nodeAnchor.next().after('<span id="' + idNode + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
 		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
-		    		if (perConeixement.indexOf(nodeId) != -1) {
+		    		if (idsPerConeixement.indexOf(idNode) != -1) {
 		    			nodeAnchor.next().next().addClass('coneixement');
-		    			addToConeixement(nodeId, nodeHrefId, false);
 		    		}
 		    	}
 			});
 			$arbre.find('li[data-jstree*="fa-folder"]').find('.jstree-anchor:first').find('.fa-square-o').hide();
 		}
 		
-		function toggleFavorits(nodeId) {
+		function toggleFavorits(idNode) {
 			var $arbre = $("#arbreUnitats_destins");
-			var node = $arbre.jstree().get_node(nodeId);
+			var node = $arbre.jstree().get_node(idNode);
 			var nodeHrefId = '#' + node.a_attr.id;
 			var markedAsFavorit = $(nodeHrefId).next().hasClass('favorit');
 			if (markedAsFavorit) {
-				removeFromFavorits(nodeId);
+				esborrarDeFavorits(idNode);
 				idsBustiesFavorits = $.grep(idsBustiesFavorits, function(value) {
-				  return value != nodeId;
+				  return value != idNode;
 				});
 				$('#favorits').trigger('change');
 			} else {
-				addToFavorits(nodeId);
-				idsBustiesFavorits.push(parseInt(nodeId));
+				afegirPerFavorits(idNode);
+				idsBustiesFavorits.push(parseInt(idNode));
 			}
 		}
 		
-		function toggleConeixement(nodeId) {
+		function toggleConeixement(idNode) {
 			var $arbre = $("#arbreUnitats_destins");
-			var node = $arbre.jstree().get_node(nodeId);
+			var node = $arbre.jstree().get_node(idNode);
 			var nodeHrefId = '#' + node.a_attr.id;
-			var addToConeixmenet = $(nodeHrefId).next().next().hasClass('coneixement');
-			if (addToConeixmenet) {
-				removeFromConeixement(nodeId, nodeHrefId, false);
+			var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
+			if (isPerConeixement) {
+				esborrarDeConeixement(idNode, true);
 			} else {
-				addToConeixement(nodeId, nodeHrefId, true);
+				afegirPerConeixement(idNode, nodeHrefId, true);
 			}
+          	console.log("seleccionat per coneixement: " + idsPerConeixement);
+
+          	console.log("seleccionat per tramitació: " + $('#destins').val());
 		}
 		
-		function addToConeixement(nodeId, nodeHrefId, select) {
-			if (select)
-				$("#arbreUnitats_destins").jstree('select_node', nodeId);
-			/*$(nodeHrefId).removeClass('jstree-clicked');
-	    	$(nodeHrefId).addClass('jstree-clicked-coneixement');*/
-	    	perConeixement.push(nodeId);
+		function afegirPerConeixement(idNode, nodeHrefId, updateTaula) {
+			var $arbre = $("#arbreUnitats_destins");
+	    	var markedForTramitacio = $(nodeHrefId).hasClass('jstree-clicked');
+	    	if (markedForTramitacio && updateTaula) {
+	    		actualitzarTaulaTramitacio(idNode);
+	    		actualitzarTaulaConeixement(idNode, true, false);
+	    	}
+	    	idsPerConeixement.push(idNode);
           	$(nodeHrefId).next().next().addClass('coneixement');
+          	$arbre.jstree('select_node', idNode);
 		}
 		
-		function removeFromConeixement(nodeId, nodeHrefId, onlyConeixement) {
-			if (!onlyConeixement)
-				$(nodeHrefId).addClass('jstree-clicked');
-	    	$(nodeHrefId).removeClass('jstree-clicked-coneixement');
-          	perConeixement = $.grep(perConeixement, function(value) {
-				 return value != nodeId;
+		function esborrarDeConeixement(idNode, onlyConeixement) {
+			var $arbre = $("#arbreUnitats_destins");
+          	idsPerConeixement = $.grep(idsPerConeixement, function(value) {
+				 return value != idNode;
 			});
-          	$(nodeHrefId).next().next().removeClass('coneixement');
+          	$arbre.jstree('deselect_node', idNode);
 		}
         
 		//============ afegir a favorits ================
-		//# - nodeId: id de la bústia
-		function addToFavorits(nodeId) {
-			var nodeHrefId = '#' + nodeId + '_anchor';
+		//# - idNode: id de la bústia
+		function afegirPerFavorits(idNode) {
+			var nodeHrefId = '#' + idNode + '_anchor';
 			var selected = $(nodeHrefId).hasClass('jstree-clicked');
-			var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
 	 		$.ajax({
 	 			type: "GET",
-				url: '<c:url value="/registreUser/favorits/add/"/>' + nodeId,
+				url: '<c:url value="/registreUser/favorits/add/"/>' + idNode,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
 			 		$(nodeHrefId).next().addClass('favorit');
@@ -393,12 +420,12 @@
 		}
 		
 		//============ esborrar de favorits ================
-		//# - nodeId: id de la bústia
-		function removeFromFavorits(nodeId) {
-			var nodeHrefId = '#' + nodeId + '_anchor';
+		//# - idNode: id de la bústia
+		function esborrarDeFavorits(idNode) {
+			var nodeHrefId = '#' + idNode + '_anchor';
 			$.ajax({
 	 			type: "GET",
-				url: '<c:url value="/registreUser/favorits/remove/"/>' + nodeId,
+				url: '<c:url value="/registreUser/favorits/remove/"/>' + idNode,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
 					$(nodeHrefId).next().removeClass('favorit');
@@ -412,18 +439,18 @@
 		//============ actualitzar array amb destins (combinar per coneixement i per tramitar) ================
 		//============ *al seleccionar per coneixement no s'està cridant l'event changed de jstree ============
 		function updateConeixement() {
-			var forConeixement = [];
+			var idsPerConeixementFiltered = [];
 			var r = ($('#destins').val().length > 0) ? $('#destins').val().split(',') : [];
 			
-			for(i = 0, j = perConeixement.length; i < j; i++) {
-				var nodeIdNum;
-				if (perConeixement[i].includes('#'))
-					nodeIdNum = perConeixement[i].substring(1, perConeixement[i].length);
+			for(i = 0, j = idsPerConeixement.length; i < j; i++) {
+				var idNodeNum;
+				if (idsPerConeixement[i].includes('#'))
+					idNodeNum = idsPerConeixement[i].substring(1, idsPerConeixement[i].length);
 				else
-					nodeIdNum = perConeixement[i];
+					idNodeNum = idsPerConeixement[i];
 				
-				forConeixement.push(nodeIdNum);
-			    r.push(nodeIdNum);
+				idsPerConeixementFiltered.push(idNodeNum);
+			    r.push(idNodeNum);
 			}
          	//============= guardar node seleccionat manualment ===========
          	var uniqueBustiesId = [];
@@ -431,7 +458,7 @@
 			    if($.inArray(el, uniqueBustiesId) === -1) uniqueBustiesId.push(el);
 			});
           	$('#destins').val(uniqueBustiesId);
-			$('#perConeixement').val(forConeixement);
+			$('#perConeixement').val(idsPerConeixementFiltered);
 		}
 		
 		function readyCallback(e,data) {
@@ -467,7 +494,7 @@
 			//li afegeix l'icona de favorit
 			$arbre.find('li').each(function (index,value) {
 		        var node = $arbre.jstree().get_node(this.id);
-		        var nodeId = node.id;
+		        var idNode = node.id;
 		        var nodeHrefId = '#' + node.a_attr.id;
 		    	var isBustia = node.icon.includes('inbox');
 		    	var nodeAnchor = $('#' + node.a_attr.id);
@@ -482,13 +509,66 @@
 		                currentCheckbox.addClass('fa-check-square-o');
 		            }	         
 		            
-		    		if (perConeixement.indexOf(nodeId) != -1) {
+		    		if (idsPerConeixement.indexOf(idNode) != -1) {
 		    			nodeAnchor.next().next().toggleClass('coneixement');
-		    			addToConeixement(nodeId, nodeHrefId, false);
+		    			afegirPerConeixement(idNode, nodeHrefId, false);
 		    		}
 		    	}
 			});
 		}
+		
+		function actualitzarTaulaTramitacio(idNode, deselect) {
+			var $arbre = $("#arbreUnitats_destins");
+			var $taulaTramitacio = $('#taula_tramitacio');
+			var $tbody = $taulaTramitacio.find('tbody');
+			var node = $arbre.jstree().get_node(idNode);
+			var existsInTable = $taulaTramitacio.find('tr#' + idNode).length > 0;
+			
+			if (!existsInTable) {
+				$tbody.append('<tr id="' + idNode + '"><td>' + node.text + '</td><td width="55px"><button type="button" id ="' + idNode + '"class="btn btn-danger"\
+						onclick="actualitzarTaulaTramitacio(this.id, true)"><span class="fa fa-trash"/></button></td></tr>');
+			} else {
+				if (deselect) {
+					$arbre.jstree('deselect_node', idNode);
+				}
+				$taulaTramitacio.find('tr#' + idNode).remove();
+			}
+			actualitzarFilaBuida($tbody, false);
+		}
+		
+		function actualitzarTaulaConeixement(idNode, selected, deselect) {
+			var $arbre = $("#arbreUnitats_destins");
+			var $taulaConeixement = $('#taula_coneixement');
+			var $tbody = $taulaConeixement.find('tbody');
+			var node = $arbre.jstree().get_node(idNode);
+			var existsInTable = $taulaConeixement.find('tr#' + idNode).length > 0;
+			
+			if (!existsInTable) {
+				$tbody.append('<tr id="' + idNode + '"><td>' + node.text + '</td><td width="55px"><button type="button" id ="' + idNode + '"class="btn btn-danger"\
+						onclick="actualitzarTaulaConeixement(this.id, false, true)"><span class="fa fa-trash"/></button></td></tr>');
+			} else {
+				if (deselect) {
+					esborrarDeConeixement(idNode, true);
+				}
+				if (!selected)
+					$taulaConeixement.find('tr#' + idNode).remove();
+			}
+			actualitzarFilaBuida($tbody, true);
+		}
+		
+		function actualitzarFilaBuida($tbody, hide) {
+			var rows = $tbody.find('tr').length;
+			var isEmptyRow = $tbody.find('tr:first').hasClass('empty');
+			if (rows == 2 && isEmptyRow) {
+				$tbody.find('tr:first').remove();
+				$tbody.parent().show();
+			} else if (rows == 0) {
+				$tbody.append('<tr class="empty"><td colspan="2" class="text-center"><spring:message code="contingut.enviar.seleccionats.sensedades"/></td></tr>');
+				if (hide)
+					$tbody.parent().hide();
+			}
+		}
+		
 	</script>
 </head>
 <body>
@@ -496,27 +576,64 @@
 		<form:hidden path="params"/>
 	    <c:choose>
 	    	<c:when test="${isFavoritsPermes}">
-	    		<div class="form-group">
-		    		<div class="${isFavoritsPermes ? 'col-xs-offset-3 col-xs-9' : 'col-xs-offset-4 col-xs-8'}">
-						<div class="jstree-search-container">
-							<label><input id="favorits" type="checkbox">&nbsp;<span class="star-parent"><i class="fa fa-star favorit"></i></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.info.filtre.favorits"/></label>
-							<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
+	    	
+	    		<div class="bustia_container">
+		    		<div class="arbre_container">
+		    			<div class="jstree-search-container">
+		    				<div>
+		    					<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
+		    				</div>
+		    				<div>
+								<label><input id="favorits" type="checkbox">&nbsp;<span class="star-parent favorit"><i class="fa fa-star favorit"></i></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.info.filtre.favorits"/></label>
+							</div>
+						</div>
+						<div class="busties">
+							<dis:inputArbre name="destins" inline="true" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
+							fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
+							fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
+							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"/>
+
 						</div>
 					</div>
-				</div>
-	    		<div class="bustia_container">
-	    			
-					<div class="busties">
-						<dis:inputArbre name="destins" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
-						fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
-						fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
-						readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
-					
+		    		<div class="taules_container">
+			    		<div class="form-group">
+			    			<div class="col-xs-12">
+			    				<label><spring:message code="contingut.enviar.seleccionats"/></label>
+			    			</div>
+			    			
+			    			<div class="col-xs-12">
+			    				<table id="taula_tramitacio" class="table table-bordered">
+			    					<thead>
+			    						<tr>
+			    							<th><spring:message code="contingut.enviar.seleccionats.tramitacio"/></th>
+			    							<th width="55px"></th>
+			    						</tr>
+			    					</thead>
+			    					<tbody>
+			    						<tr class="empty"><td colspan="2" class="text-center"><spring:message code="contingut.enviar.seleccionats.sensedades"/></td></tr>
+			    					</tbody>
+			    				</table>
+			    			</div>
+			    			<div class="col-xs-12">
+			    				<table id="taula_coneixement" class="table table-bordered">
+			    					<thead>
+			    						<tr>
+			    							<th><spring:message code="contingut.enviar.seleccionats.coneixement"/></th>
+			    							<th width="55px"></th>
+			    						</tr>
+			    					</thead>
+			    					<tbody>
+			    						<tr class="empty"><td colspan="2" class="text-center"><spring:message code="contingut.enviar.seleccionats.sensedades"/></td></tr>
+			    					</tbody>
+			    				</table>
+			    			</div>
+			    		</div>			
 						<form:hidden path="perConeixement"/>
-						<dis:inputCheckbox name="deixarCopia" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
-						<dis:inputTextarea name="comentariEnviar" textKey="contingut.enviar.camp.comentari" labelSize="${isFavoritsPermes ? '2' : ''}"/>
+						<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
+						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>
-				</div>
+	    		</div>
+	    		
 			</c:when>
 			<c:otherwise>
 				<div class="form-group">

@@ -7,6 +7,7 @@
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
+<%@ attribute name="custom" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelSize"><c:choose><c:when test="${not empty labelSize}">${labelSize}</c:when><c:otherwise>4</c:otherwise></c:choose></c:set>
@@ -16,7 +17,7 @@
 <c:choose>
 	<c:when test="${not inline}">
 		<div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
-			<label class="control-label col-xs-${campLabelSize}" for="${campPath}">
+			<label class="${custom ? '' : 'control-label'} col-xs-${campLabelSize}" for="${campPath}" style="${custom ? 'padding-top: 7px;' : ''}">
 				<c:choose>
 					<c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when>
 					<c:when test="${not empty text}">${text}</c:when>
