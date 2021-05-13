@@ -56,8 +56,8 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 				AplicacioService aplicacioService = applicationContext.getBean(AplicacioService.class);
 				List<String> rolsPermisos = aplicacioService.permisosFindRolsDistinctAll();
 				mappableAttributes.addAll(rolsPermisos);
-				// Refrescam els rols disponibles cada hora
-				refrescarTimestamp = System.currentTimeMillis() + (60 * 60 * 1000);
+				// Refrescam els rols disponibles cada minut
+				refrescarTimestamp = System.currentTimeMillis() + (60 * 1000);
 				String rolsPerMostrar = Arrays.toString(mappableAttributes.toArray(new String[mappableAttributes.size()]));
 				LOGGER.debug("Rols disponibles: " + rolsPerMostrar);
 			} catch (RuntimeException ex) {

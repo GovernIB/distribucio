@@ -470,11 +470,13 @@ public class ContingutHelper {
 					usuariUserPermisDto.setHasUsuariPermission(true);
 				} else { // if doesnt exists
 					DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
-					usuariUserPermisDto = new UsuariPermisDto();
-					usuariUserPermisDto.setCodi(permis.getPrincipalNom());
-					usuariUserPermisDto.setNom(dadesUsuari.getNom());
-					usuariUserPermisDto.setHasUsuariPermission(true);
-					usuaris.add(usuariUserPermisDto);
+					if (dadesUsuari != null) {
+						usuariUserPermisDto = new UsuariPermisDto();
+						usuariUserPermisDto.setCodi(permis.getPrincipalNom());
+						usuariUserPermisDto.setNom(dadesUsuari.getNom());
+						usuariUserPermisDto.setHasUsuariPermission(true);
+						usuaris.add(usuariUserPermisDto);
+					}
 				}
 				break;
 			case ROL:
