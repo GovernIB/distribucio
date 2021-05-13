@@ -662,6 +662,12 @@ public class RegistreServiceImpl implements RegistreService {
 			if (!encryptedIdentificator.equals(id.getClauAcces()))
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			RegistreEntity registre = registreRepository.findByNumero(id.getIndetificador());
+			if (registre == null) {
+				throw new NotFoundException(
+						id.getIndetificador(),
+						RegistreEntity.class);
+
+			}
 			switch (estat) {
 			case REBUDA:
 				registre.updateBackEstat(
