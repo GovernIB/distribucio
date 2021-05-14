@@ -419,7 +419,7 @@ public class RegistreServiceImpl implements RegistreService {
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
-			logger.info("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+			logger.debug("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
 		} catch (Exception e) {
 			long endTime = new Date().getTime();
 			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);

@@ -432,7 +432,7 @@ public class RegistreHelper {
 //    	logger.info(Thread.currentThread().getName() + " START = " + registreId);
     	
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(WorkerThread.class, "processarAnotacioPendentArxiu")).time();
-		logger.info("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
+		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
 		
 		long startTime = new Date().getTime();
     	
@@ -672,7 +672,7 @@ public class RegistreHelper {
 		if (exceptions != null && !exceptions.isEmpty()) {
 			return exceptions;
 		} else {
-			logger.debug("Creació del contenidor i dels annexos finalitzada correctament (" +
+			logger.trace("Creació del contenidor i dels annexos finalitzada correctament (" +
 					"anotacioId=" + registreEntity.getId() + ", " +
 					"anotacioNumero=" + registreEntity.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
@@ -820,7 +820,7 @@ public class RegistreHelper {
 	
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
-		logger.info("Loading Signatura detalls to DB");
+		logger.debug("Loading Signatura detalls to DB");
 		
 		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
 		
@@ -1004,7 +1004,7 @@ public class RegistreHelper {
 
 			}
 			BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
-			logger.debug(">>> Abans de crear backoffice WS");
+			logger.trace(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 					getClass().getResource(
 							"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
@@ -1017,9 +1017,9 @@ public class RegistreHelper {
 					null,
 					BackofficeWsService.class);
 			
-			logger.debug(">>> Abans de cridar backoffice WS");
+			logger.trace(">>> Abans de cridar backoffice WS");
 			backofficeClient.comunicarAnotacionsPendents(ids);
-			logger.debug(">>> Despres de cridar backoffice WS");			
+			logger.trace(">>> Despres de cridar backoffice WS");			
 			return null;
 		} catch (Exception ex) {
 			logger.error("Error enviant anotacions al backoffice", ex);

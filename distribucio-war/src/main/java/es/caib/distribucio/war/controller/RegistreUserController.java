@@ -597,7 +597,7 @@ public class RegistreUserController extends BaseUserController {
 			MissatgesHelper.error(
 					request,
 					errMsg);
-			logger.error(errMsg, exception);
+			logger.error(errMsg);
 			return "registreViaEmail";
 		}
 		

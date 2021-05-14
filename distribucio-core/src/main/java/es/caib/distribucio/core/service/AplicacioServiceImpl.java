@@ -64,7 +64,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 
 	@Override
 	public String getVersioActual() {
-		logger.debug("Obtenint versió actual de l'aplicació");
+		logger.trace("Obtenint versió actual de l'aplicació");
 		try {
 			return getVersionProperties().getProperty("app.version");
 		} catch (IOException ex) {
@@ -75,7 +75,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	
 	@Override
 	public String getVersioData() {
-		logger.debug("Obtenint data de l'aplicació");
+		logger.trace("Obtenint data de l'aplicació");
 		try {
 			return getVersionProperties().getProperty("app.date");
 		} catch (IOException ex) {
@@ -88,10 +88,10 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public void processarAutenticacioUsuari() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Processant autenticació (usuariCodi=" + auth.getName() + ")");
+		logger.trace("Processant autenticació (usuariCodi=" + auth.getName() + ")");
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
-			logger.debug("Consultant plugin de dades d'usuari (" +
+			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			String idioma = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.default.user.language");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
@@ -109,7 +109,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 						DadesUsuari.class);
 			}
 		} else {
-			logger.debug("Consultant plugin de dades d'usuari (" +
+			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
@@ -129,7 +129,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public UsuariDto getUsuariActual() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Obtenint usuari actual");
+		logger.trace("Obtenint usuari actual");
 		return toUsuariDtoAmbRols(
 				usuariRepository.findOne(auth.getName()));
 	}
@@ -137,7 +137,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Transactional
 	@Override
 	public UsuariDto updateUsuariActual(UsuariDto dto) {
-		logger.debug("Actualitzant configuració de usuari actual");
+		logger.trace("Actualitzant configuració de usuari actual");
 		UsuariEntity usuari = usuariRepository.findOne(dto.getCodi());
 		usuari.update(
 				dto.getRebreEmailsBustia(), 
@@ -150,7 +150,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Transactional(readOnly = true)
 	@Override
 	public UsuariDto findUsuariAmbCodi(String codi) {
-		logger.debug("Obtenint usuari amb codi (codi=" + codi + ")");
+		logger.trace("Obtenint usuari amb codi (codi=" + codi + ")");
 		return conversioTipusHelper.convertir(
 				usuariRepository.findOne(codi),
 				UsuariDto.class);
@@ -159,7 +159,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UsuariDto> findUsuariAmbText(String text) {
-		logger.debug("Consultant usuaris amb text (text=" + text + ")");
+		logger.trace("Consultant usuaris amb text (text=" + text + ")");
 		return conversioTipusHelper.convertirList(
 				usuariRepository.findByText(text != null? text : ""),
 				UsuariDto.class);
@@ -167,70 +167,70 @@ public class AplicacioServiceImpl implements AplicacioService {
 
 	@Override
 	public List<IntegracioDto> integracioFindAll() {
-		logger.debug("Consultant les integracions");
+		logger.trace("Consultant les integracions");
 		return integracioHelper.findAll();
 	}
 
 	@Override
 	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
-		logger.debug("Consultant les darreres accions per a la integració (" +
+		logger.trace("Consultant les darreres accions per a la integració (" +
 				"codi=" + codi + ")");
 		return integracioHelper.findAccionsByIntegracioCodi(codi);
 	}
 
 	@Override
 	public void excepcioSave(Throwable exception) {
-		logger.debug("Emmagatzemant excepció (" +
+		logger.trace("Emmagatzemant excepció (" +
 				"exception=" + exception + ")");
 		excepcioLogHelper.addExcepcio(exception);
 	}
 
 	@Override
 	public ExcepcioLogDto excepcioFindOne(Long index) {
-		logger.debug("Consulta d'una excepció (index=" + index + ")");
+		logger.trace("Consulta d'una excepció (index=" + index + ")");
 		return excepcioLogHelper.findAll().get(index.intValue());
 	}
 
 	@Override
 	public List<ExcepcioLogDto> excepcioFindAll() {
-		logger.debug("Consulta de les excepcions disponibles");
+		logger.trace("Consulta de les excepcions disponibles");
 		return excepcioLogHelper.findAll();
 	}
 
 	@Override
 	public List<String> permisosFindRolsDistinctAll() {
-		logger.debug("Consulta dels rols definits a les ACLs");
+		logger.trace("Consulta dels rols definits a les ACLs");
 		return aclSidRepository.findSidByPrincipalFalse();
 	}
 
 	@Override
 	public boolean isPluginArxiuActiu() {
-		logger.debug("Consulta si el plugin d'arxiu està actiu");
+		logger.trace("Consulta si el plugin d'arxiu està actiu");
 		return pluginHelper.isArxiuPluginActiu();
 	}
 
 	@Override
 	public String propertyBaseUrl() {
-		logger.debug("Consulta de la propietat base URL");
+		logger.trace("Consulta de la propietat base URL");
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.base.url");
 	}
 
 	@Override
 	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
-		logger.debug("Consulta de la propietat amb les ids pels plugins de passarela de firma");
+		logger.trace("Consulta de la propietat amb les ids pels plugins de passarela de firma");
 		return PropertiesHelper.getProperties().getProperty("plugin.passarelafirma.ignorar.modal.ids");
 	}
 
 	@Override
 	public Properties propertyFindByPrefix(String prefix) {
-		logger.debug("Consulta del valor dels properties amb prefix (" +
+		logger.trace("Consulta del valor dels properties amb prefix (" +
 				"prefix=" + prefix + ")");
 		return PropertiesHelper.getProperties().findByPrefix(prefix);
 	}
 
 	@Override
 	public String propertyFindByNom(String nom) {
-		logger.debug("Consulta del valor del propertat amb nom");
+		logger.trace("Consulta del valor del propertat amb nom");
 		return PropertiesHelper.getProperties().getProperty(nom);
 	}
 

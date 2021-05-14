@@ -135,14 +135,14 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 							byte[] contingut = document.getContingut().getContingut();
 							// Interpreta el contingut amb la classe BackofficeSistra2Utils
 							BackofficeSistra2Utils sistra2Utils = new BackofficeSistra2UtilsImpl();
-							logger.debug("  Document tècnic \"" + titol + "\". Dades:");
+							logger.trace("  Document tècnic \"" + titol + "\". Dades:");
 							try {
 								if ("FORMULARIO".equals(titol)) {
 									Formulario formulario = sistra2Utils.parseXmlFormulario(contingut);
-									logger.debug("  formulario: " + ToStringBuilder.reflectionToString(formulario));								
+									logger.trace("  formulario: " + ToStringBuilder.reflectionToString(formulario));								
 								} else if ("PAGO".equals(titol)) {
 									Pago pago = sistra2Utils.parseXmlPago(contingut);
-									logger.debug("  pago: " + ToStringBuilder.reflectionToString(pago));								
+									logger.trace("  pago: " + ToStringBuilder.reflectionToString(pago));								
 								}
 							} catch(Exception e) {								
 								logger.error("Error obtenint la informació del document tècnic " + titol + ":" + e.getMessage(), e);
@@ -234,7 +234,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 		String usuari = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.test.backofficeIntegracio.usuari");
 		String contrasenya = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.test.backofficeIntegracio.contrasenya");
 		if (url != null && usuari != null && contrasenya != null) {
-			logger.debug(">>> Creant el client BackofficeIntegracio WS");
+			logger.trace(">>> Creant el client BackofficeIntegracio WS");
 			wsClient = BackofficeIntegracioWsClientFactory.getWsClient(
 					url,
 					usuari,
@@ -276,6 +276,6 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 			str.append(" ").append(e.getClass()).append(" ").append(e.getMessage());
 		str.append(" ").append(timeMs).append("ms");
 		
-		logger.debug(str.toString());
+		logger.trace(str.toString());
 	}
 }

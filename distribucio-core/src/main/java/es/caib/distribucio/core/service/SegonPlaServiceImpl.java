@@ -109,7 +109,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		        while (!executor.isTerminated()) {
 		        }
 		        long stopTime = new Date().getTime();
-				logger.info("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");
+				logger.trace("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");
 				
 			}
 
@@ -134,7 +134,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		
-		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
+		logger.trace("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
 		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date());
 		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
@@ -147,7 +147,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				ReglaEntity currentRegla = pendent.getRegla();
 				// if next group of anotacions is detected
 				if (!currentRegla.equals(previousRegla)) {
-					logger.debug(">>> Enviant grup d'anotacions " + pendentsIdsGroupedByRegla.size());
+					logger.trace(">>> Enviant grup d'anotacions " + pendentsIdsGroupedByRegla.size());
 					previousRegla = currentRegla;
 					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 					pendentsIdsGroupedByRegla.clear();
@@ -155,7 +155,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				pendentsIdsGroupedByRegla.add(pendent.getId());
 				// if it is last iteration
 				if (pendent.equals(pendents.get(pendents.size() - 1))) {
-					logger.debug(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
+					logger.trace(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
 					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 				}
 				context.stop();
@@ -163,7 +163,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		
 		long stopTime = new Date().getTime();
-		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
+		logger.trace("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
 	}
 	
 	
@@ -180,7 +180,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		if (pendents != null && !pendents.isEmpty()) {
 			
-			logger.debug("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
+			logger.trace("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
 
 			for (RegistreEntity pendent : pendents) {
 				
@@ -289,7 +289,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.trace("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
 		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date());
 		if (pendents != null && !pendents.isEmpty()) {
-			logger.debug("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
+			logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
 				Timer.Context context = timer.time();
@@ -331,7 +331,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						moviment.getEmail(), 
 						Arrays.asList(moviment));
 				
-				logger.debug("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail());
+				logger.trace("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail());
 				movimentsEnviats++;
 			} catch (Exception e) {
 				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail() + ": " + e.getMessage());
@@ -392,7 +392,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				this.enviarEmailPendent(
 						email, 
 						moviments);
-				logger.debug("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email);
+				logger.trace("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email);
 				movimentsEnviats += moviments.size();
 			} catch (Exception e) {
 				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email + ": " + e.getMessage());
@@ -433,7 +433,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		} else {
 			emailHelper.sendEmailAvisSimpleNouElementBustia(
 					email, 
-					moviments.get(0));
+					moviments.get(0).getId());
 		}
 		// Esborra els moviments pendents de notificar
 		contingutMovimentEmailRepository.delete(moviments);

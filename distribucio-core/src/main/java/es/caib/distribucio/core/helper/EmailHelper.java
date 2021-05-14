@@ -179,8 +179,10 @@ public class EmailHelper {
 	 */
 	public void sendEmailAvisSimpleNouElementBustia(
 			String emailDestinatari,
-			ContingutMovimentEmailEntity contingutEmail) {
+			Long contingutEmailId) {
 		logger.debug("Enviament email moviment a destinatari");
+		
+		ContingutMovimentEmailEntity contingutEmail = contingutMovimentEmailRepository.findOne(contingutEmailId);
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 

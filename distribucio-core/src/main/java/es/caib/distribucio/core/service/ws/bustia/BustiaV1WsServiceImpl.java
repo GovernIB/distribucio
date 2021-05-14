@@ -91,7 +91,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		accioParams.put("annexosFirmats", ambFirma.toString());
 		long t0 = System.currentTimeMillis();
 		try {
-			logger.info(
+			logger.debug(
 					"Nou registre d'entrada rebut en el servei web de bústia (" +
 					"entitat=" + entitat + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
