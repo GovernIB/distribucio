@@ -99,7 +99,7 @@ public class RegistreUserController extends BaseUserController {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);		
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
-		
+		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		return "registreUserList";
 	}
 
