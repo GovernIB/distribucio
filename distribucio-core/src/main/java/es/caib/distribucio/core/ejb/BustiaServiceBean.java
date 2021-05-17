@@ -298,4 +298,10 @@ public class BustiaServiceBean implements BustiaService {
 	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId) {
 		return delegate.getIdsBustiesFavoritsUsuariActual(entitatId);
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<BustiaDto> consultaBustiesOrigen(Long entitatId, List<BustiaDto> bustiesPermesesPerUsuari, boolean mostrarInactives) {
+		return delegate.consultaBustiesOrigen(entitatId, bustiesPermesesPerUsuari, mostrarInactives);
+	}
 }

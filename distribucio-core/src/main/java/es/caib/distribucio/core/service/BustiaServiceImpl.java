@@ -6,6 +6,7 @@ package es.caib.distribucio.core.service;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -794,9 +795,64 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiesRetorn;
 	}
 
-
-	
-	
+	@Transactional
+	@Override
+	public List<BustiaDto> consultaBustiesOrigen(
+			Long entitatId, 
+			List<BustiaDto> bustiesPermesesPerUsuari,
+			boolean mostrarInactivesOrigen) {
+		final Timer consultaBustiesOrigenTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "consultaBustiesOrigen"));
+		Timer.Context consultaBustiesOrigenContext = consultaBustiesOrigenTimer.time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		List<Long> bustiesOrigenIds = null;
+		List<Long> busties = new ArrayList<Long>();
+		long beginTime = new Date().getTime();
+		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
+			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
+				busties.add(bustiaUsuari.getId());
+			}
+		}
+		final Timer consultaBustiesOrigenFindRegistresAndBustiesTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "consultaBustiesOrigenFindRegistresAndBusties"));
+		Timer.Context consultaBustiesOrigenFindRegistresAndBustiesContext = consultaBustiesOrigenFindRegistresAndBustiesTimer.time();
+		try {
+			List<Long> registresIds = registreRepository.findRegistresIdsByBustiesIds(
+					entitat, 
+					busties);
+			bustiesOrigenIds = contingutMovimentRepository.findBustiesOrigenByRegistres(registresIds);
+		} catch (Exception e) {
+			e.printStackTrace();
+			long endTime = new Date().getTime();
+			logger.error("findRegistresByBusties or findBustiesOrigenByRegistres executed with errors in: " + (endTime - beginTime) + "ms", e);
+			consultaBustiesOrigenFindRegistresAndBustiesContext.stop();
+			throw new RuntimeException(e);
+		}
+		consultaBustiesOrigenFindRegistresAndBustiesContext.stop();
+		final Timer consultaBustiesOrigenConversioTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "consultaBustiesOrigenConversioTimer"));
+		Timer.Context consultaBustiesOrigenConversioContext = consultaBustiesOrigenConversioTimer.time();
+		List<BustiaEntity> bustiesOrigenUnique = new ArrayList<BustiaEntity>();
+		for (Long bustiaId : bustiesOrigenIds) {
+			if (bustiaId != null) {
+				BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, bustiaId, false);
+				if (!bustiesOrigenUnique.contains(bustia) && bustia.isActiva()) {
+					bustiesOrigenUnique.add(bustia);
+				} else if (!bustiesOrigenUnique.contains(bustia) && mostrarInactivesOrigen && !bustia.isActiva()) {
+					bustiesOrigenUnique.add(bustia);
+				}
+			}
+		}
+		consultaBustiesOrigenConversioContext.stop();
+		List<BustiaDto> bustiesDto = bustiaHelper.toBustiaDto(
+				bustiesOrigenUnique,
+				false,
+				false,
+				false);
+		consultaBustiesOrigenContext.stop();
+		return bustiesDto;
+	}
 	
 	private EntitatEntity validateRegistre(
 			String entitatCodi,

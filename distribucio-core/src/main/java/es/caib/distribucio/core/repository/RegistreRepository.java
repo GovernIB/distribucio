@@ -297,6 +297,23 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen,
 			@Param("bustiaOrigen") BustiaEntity bustiaOrigen,
 			Pageable pageable);
+
+	@Query("select r.id from" +
+			"    RegistreEntity r " +
+			"where r.entitat = :entitat " +
+			"and r.pare.id in (:bustiesIds) " + 
+			"and ((select count(mov) " +  														//>>> Anotacions amb més d'un enviament
+			"		from ContingutMovimentEntity mov " +
+			"		where r.id = mov.contingut.id) > 1 " + 										// O
+			"		or" + 
+			"		(select count(mov1) " +  													//>>> Anotacions amb moviments no provinent de registre (origen != null)
+			"			from ContingutMovimentEntity mov1" +
+			"			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
+			"							where mov2.contingut.id = r.id " + 
+			"							and mov2.origen is not null)) > 0) ")
+	List<Long> findRegistresIdsByBustiesIds(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("bustiesIds") List<Long> bustiesIds);
 	
 	
 	/** Consulta dels identificadors de registre per a la selecció en registre user */

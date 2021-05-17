@@ -217,6 +217,22 @@ public class RegistreUserController extends BaseUserController {
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
 	
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	@RequestMapping(value = "/bustiesOrigen", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> bustiesOrigen(
+			HttpServletRequest request,
+			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactivesOrigen,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
+		List<BustiaDto> bustiesOrigen = bustiaService.consultaBustiesOrigen(
+				entitatActual.getId(), 
+				bustiesPermesesPerUsuari, 
+				mostrarInactivesOrigen);
+		return bustiesOrigen;
+	}
+	
 	/** Redirecciona les urls dels emails amb notificació de nova anotació que encara contenen /bustia/bustiaId
 	 * a la URL.
 	 * @return Retorna una redirecció cap a la URL normal.

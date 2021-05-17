@@ -301,7 +301,7 @@ public class RegistreServiceImpl implements RegistreService {
 			bustiaOrigen = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustiaOrigen()),
-					!isAdmin);
+					false);
 		}
 		String bustiesIds="";
 			

@@ -44,6 +44,9 @@ public class RegistreFiltreDto implements Serializable {
 	
 	private String bustiaOrigen;
 	
+	/** Per mostrar el contingut de les bústies innactives */
+	private boolean mostrarInnactivesOrigen;
+	
 	public String getBackCodi() {
 		return backCodi;
 	}
@@ -146,6 +149,12 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setBustiaOrigen(String bustiaOrigen) {
 		this.bustiaOrigen = bustiaOrigen;
+	}
+	public boolean isMostrarInactivesOrigen() {
+		return mostrarInnactivesOrigen;
+	}
+	public void setMostrarInactivesOrigen(boolean mostrarInactivesOrigen) {
+		this.mostrarInnactivesOrigen = mostrarInactivesOrigen;
 	}
 	@Override
 	public String toString() {

@@ -47,6 +47,9 @@ public class RegistreFiltreCommand {
 	private Long unitatId;
 	
 	private String bustiaOrigen;
+	
+	/** Per mostrar el contingut de les bústies origen innactives */
+	public boolean mostrarInactivesOrigen;
 
 	public String getBackCodi() {
 		return backCodi;
@@ -168,6 +171,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setBustiaOrigen(String bustiaOrigen) {
 		this.bustiaOrigen = bustiaOrigen;
+	}
+	public boolean isMostrarInactivesOrigen() {
+		return mostrarInactivesOrigen;
+	}
+	public void setMostrarInactivesOrigen(boolean mostrarInactivesOrigen) {
+		this.mostrarInactivesOrigen = mostrarInactivesOrigen;
 	}
 	
 }

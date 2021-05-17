@@ -380,5 +380,20 @@ public interface BustiaService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId);
+	
+	/**
+	 * Llistat de les bústies origen (extretes de la taula de moviments)
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param mostrarInactivesOrigen 
+	 * 				Indica si incloure les bústies innactives en el resultat.
+	 * @return El llistat de bústies origen.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> consultaBustiesOrigen(
+			Long entitatId, 
+			List<BustiaDto> bustiesPermesesPerUsuari, 
+			boolean mostrarInactivesOrigen);
 
 }
