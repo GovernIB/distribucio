@@ -188,6 +188,7 @@ $(document).ready(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
 			});
 	});
+	$('#mostrarInactives').change();
 	$('#mostrarInactivesOrigen').change();
 	
 	$('#showModalProcesEstatButton').click(function(e) {
