@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
+import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
@@ -62,7 +63,16 @@ public class IntegracioController extends BaseUserController {
 									"integracio.list.pipella." + integracio.getCodi()).getText());
 				}
 			}
+			int nErrors = 0;
+			List<IntegracioAccioDto> accions = aplicacioService.integracioFindDarreresAccionsByCodi(integracio.getCodi());
+			for (IntegracioAccioDto integracioAccioDto : accions) {
+				if (integracioAccioDto.getEstat() == IntegracioAccioEstatEnumDto.ERROR) {
+					nErrors++;
+				}
+			}
+			integracio.setNumErrors(nErrors);
 		}
+		
 		model.addAttribute(
 				"integracions",
 				integracions);

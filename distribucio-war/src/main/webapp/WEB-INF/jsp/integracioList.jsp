@@ -14,11 +14,27 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+<script>
+$(document).ready(function() {
+    $('#btnRefresh').click(function() {
+    	window.location = '/distribucio/integracio';
+    });
+});
+</script>
+	
+	
 </head>
 <body>
 	<ul class="nav nav-tabs" role="tablist">
 		<c:forEach var="integracio" items="${integracions}">
-			<li<c:if test="${integracio.codi == codiActual}"> class="active"</c:if>><a href="<c:url value="/integracio/${integracio.codi}"/>"><spring:message code="${integracio.nom}"/></a></li>
+			<li<c:if test="${integracio.codi == codiActual}"> class="active"</c:if>>
+				<a href="<c:url value="/integracio/${integracio.codi}"/>"><spring:message code="${integracio.nom}"/>
+					<c:if test="${integracio.numErrors > 0}">
+						<span id="bustia-pendent-count" class="badge small" style="background-color: #d9534f;">${integracio.numErrors}</span>
+					</c:if>
+				</a>
+			</li>
 		</c:forEach>
 	</ul>
 	<br/>
@@ -52,4 +68,7 @@
 			</tr>
 		</thead>
 	</table>
+	
+		<button id="btnRefresh" type="button" class="btn btn-info pull-right" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
+	
 </body>
