@@ -19,6 +19,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
@@ -259,6 +260,8 @@ public class EmailHelper {
 			RegistreEntity registreEntity, 
 			UsuariEntity usuariActual,
 			UsuariEntity usuariResponsableBloqueig) {
+		if (usuariActual.getEmail() == null || usuariActual.getEmail().isEmpty())
+			throw new EmptyMailException("L'usuari que té agafada l'anotació no disposa d'un correu electrònic assigant. Contacti amb l'administrador per alliberar l'anotació.");
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setFrom(getRemitent());
 		missatge.setTo(usuariActual.getEmail());

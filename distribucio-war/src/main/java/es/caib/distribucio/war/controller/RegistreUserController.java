@@ -46,6 +46,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -1494,12 +1495,20 @@ public class RegistreUserController extends BaseUserController {
 		} catch (Exception e) {
 			logger.error("Error alliberant l'anotació", e);
 			boolean permisExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, PermissionDeniedException.class);
+			boolean emailExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, EmptyMailException.class);
 			if (permisExcepcion) {
 				MissatgesHelper.error(
 						request, 
 						getMessage(
 								request, 
 								"bustia.pendent.controller.alliberat.ko"));
+				return "redirect:" + request.getHeader("referer");
+			} else if (emailExcepcion) {
+				MissatgesHelper.error(
+						request, 
+						getMessage(
+								request, 
+								"bustia.pendent.controller.alliberat.email.ko"));
 				return "redirect:" + request.getHeader("referer");
 			} else {
 				throw e;
