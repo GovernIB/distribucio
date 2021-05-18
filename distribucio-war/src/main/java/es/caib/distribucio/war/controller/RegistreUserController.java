@@ -1579,7 +1579,8 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute(
 				"busties",
 				busties);
-
+		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
