@@ -34,6 +34,7 @@ import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -135,11 +136,16 @@ public class ReglaHelper {
 			
 			ReglaEntity lastRegla = reglesApplied.get(reglesApplied.size() - 1);
 			if (lastRegla.getTipus() != ReglaTipusEnumDto.BACKOFFICE || (lastRegla.getTipus() == ReglaTipusEnumDto.BACKOFFICE && isAnotacioAlreadySavedInArxiu(registre))) {
-				if (registre.getPare() != null)
+
+				ContingutEntity pare = registre.getPare();
+				if (pare != null) {
+					if (HibernateHelper.isProxy(pare))
+						pare = HibernateHelper.deproxy(pare);
 					emailHelper.createEmailsPendingToSend(
-							(BustiaEntity) registre.getPare(),
+							(BustiaEntity)pare,
 							registre,
 							registre.getDarrerMoviment());
+				}
 			}
 			
 			
@@ -317,8 +323,11 @@ public class ReglaHelper {
 							false);
 
 					BustiaEntity pendentBustia = null;
-					if (registre.getPare() instanceof BustiaEntity) {
-						pendentBustia = (BustiaEntity) registre.getPare();
+					ContingutEntity pare = registre.getPare();
+					if (HibernateHelper.isProxy(pare))
+						pare = HibernateHelper.deproxy(pare);
+					if (pare instanceof BustiaEntity) {
+						pendentBustia = (BustiaEntity) pare;
 						if (pendentBustia != null) {
 							bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 									regla.getEntitat(),
@@ -376,8 +385,11 @@ public class ReglaHelper {
 				
 				// ------ evict -----------
 				BustiaEntity pendentBustia = null;
-				if (registre.getPare() instanceof BustiaEntity) {
-					pendentBustia = (BustiaEntity) registre.getPare();
+				ContingutEntity pare = registre.getPare();
+				if (HibernateHelper.isProxy(pare))
+					pare = HibernateHelper.deproxy(pare);
+				if (pare instanceof BustiaEntity) {
+					pendentBustia = (BustiaEntity) pare;
 					if (pendentBustia != null) {
 						bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 								regla.getEntitat(),
@@ -398,7 +410,10 @@ public class ReglaHelper {
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
 			reglesApplied.add(regla);
-			BustiaEntity bustia = (BustiaEntity)registre.getPare();
+			ContingutEntity pare = registre.getPare();
+			if (HibernateHelper.isProxy(pare))
+				pare = HibernateHelper.deproxy(pare);
+			BustiaEntity bustia = (BustiaEntity)pare;
 			ReglaEntity nextReglaToApply = findAplicable(
 					registre.getEntitat(),
 					bustia.getUnitatOrganitzativa().getId(),
