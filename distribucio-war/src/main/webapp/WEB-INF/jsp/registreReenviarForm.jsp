@@ -46,13 +46,15 @@
 			border: 1px solid #ccc;
 			border-radius: 4px;
 			width: 100%;
+			padding: 2px 10px;
+			margin-bottom: 10px;
 		}
 		
 		.jstree-search-container {
 			position: relative;
 			top: 25px;
 			width: 80%;
-			margin-left: 15%;
+			margin-left: 17%;
 			display: flex;
 			z-index: 100;
 		}
@@ -211,7 +213,7 @@
 		
 		input#favorits {
 			position: relative;
-			top: 2px;
+			top: 3px;
 			left: 0;
 			height: 15px;
 			width: 20px;
@@ -627,7 +629,7 @@
 			    			</div>
 			    		</div>			
 						<form:hidden path="perConeixement"/>
-						<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
+						<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/>
 						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>
 	    		</div>
