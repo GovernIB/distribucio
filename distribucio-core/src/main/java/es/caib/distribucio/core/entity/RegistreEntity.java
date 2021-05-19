@@ -490,7 +490,7 @@ public class RegistreEntity extends ContingutEntity {
 			this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 		}
 		this.procesIntents++;
-		if (exceptions != null && !exceptions.isEmpty()) {
+		if (exceptions != null && !exceptions.isEmpty() && exceptions.get(0) != null) {
 			String error = "";
 			for (Throwable throwable : exceptions) {
 				error += StringUtils.abbreviate(throwable.getMessage() + ": " + ExceptionUtils.getRootCauseMessage(throwable), (2000)) + "\r\n";
