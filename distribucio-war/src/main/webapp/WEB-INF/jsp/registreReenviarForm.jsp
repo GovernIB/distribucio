@@ -363,8 +363,7 @@
 		    	var nodeAnchor = $(nodeHrefId);
 	            var hasClassClicked = nodeAnchor.parent().find('.jstree-clicked').length != 0;
 	            var noSeleccionatPerConeixement = nodeAnchor.next('span').length == 0;
-	            debugger
-	       
+	            
 		    	if (${isEnviarConeixementActiu} && isBustia && noSeleccionatPerConeixement) {
 		    		nodeAnchor.after('<span id="' + idNode + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
 		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
@@ -377,13 +376,8 @@
 		    		nodeAnchor.next().after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
-<<<<<<< dis-dev
 		    			nodeAnchor.next().next().addClass('favorit');
-		    		}        
-=======
-		    			nodeAnchor.next().addClass('favorit');
 		    		}
->>>>>>> 070e12b #297: Poder marcar bústies com a favorits
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
 		    			var currentCheckbox = nodeAnchor.find('i.fa-square-o');
