@@ -83,7 +83,8 @@
 		}
 		
 		#arbreUnitats_destins .jstree-open > .jstree-anchor > .fa-square-o, 
-		#arbreUnitats_destins .jstree-closed > .jstree-anchor > .fa-square-o {
+		#arbreUnitats_destins .jstree-closed > .jstree-anchor > .fa-square-o,
+		[data-jstree*="fa-home"] > .jstree-anchor > .fa-square-o {
 			display:none;
 		}
 		
@@ -295,20 +296,57 @@
 				}
 			});
 		});
-		
+
+		var unitats = [];
 		function actualitzarArbreAmbFavorits($arbre) {
 			$arbre.jstree('open_all');
+			
+			//recupera els nodes que són unitats
+			$arbre.find('li').each(function (index,value) {
+		        var node = $arbre.jstree().get_node(this.id);
+		        var idNode = node.id;
+		    	var isUnitat = node.icon.includes('folder');
+		    	if (isUnitat)
+	    			unitats.push(node.id);
+			});
+			
 			//amaga les que no són favorits
 			$arbre.find('li').each(function (index,value) {
 		        var node = $arbre.jstree().get_node(this.id);
 		        var idNode = node.id;
 		    	var isBustia = node.icon.includes('inbox');
 		    	if (isBustia) {
-		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) == -1)
+		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) == -1) {
 		    			$arbre.jstree('hide_node', idNode);
+		    		}
 		    	}
 			});
-
+			
+			//amaga unitats sense bústies favorits
+			$(unitats).each(function(idx, unitatId) {
+				var senseCapBustiaFavorit = true;
+				var unitat = $arbre.jstree().get_node(unitatId);
+				var fills = unitat.children;
+				
+				$(fills).each(function(idxB, fillId) {
+					var fill = $arbre.jstree().get_node(fillId);
+					var isBustia = fill.icon.includes('inbox');
+					var isVisible = fill.state.hidden == undefined;
+					if (isBustia && isVisible) {
+						senseCapBustiaFavorit = false;
+						//assegurar que es mostra l'unitat de la bústia favorita
+						$(fill.parents).each(function(idxP, parentId) {
+							var parent = $arbre.jstree().get_node(parentId);
+							$arbre.jstree('show_node', parent);
+						});
+						return;
+					}
+				});
+				
+				if (senseCapBustiaFavorit)
+					$arbre.jstree('hide_node', unitat);
+			});
+			
 			$('.jstree-anchor')
 				.find('i.jstree-checkbox')
 				.removeClass('jstree-icon jstree-checkbox')
@@ -329,7 +367,7 @@
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
 		    			nodeAnchor.next().addClass('favorit');
-		    		}        
+		    		}
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
 		    			var currentCheckbox = nodeAnchor.find('i.fa-square-o');
