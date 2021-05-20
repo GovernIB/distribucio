@@ -39,7 +39,13 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	
 	@Override
 	public int compareTo(ProcedimentDto o) {
-		return ((Long.valueOf(codiSia)).compareTo(Long.valueOf(o.getCodiSia())));
+		int ret;
+		try {
+			ret = ((Long.valueOf(codiSia)).compareTo(Long.valueOf(o.getCodiSia())));
+		} catch( Exception e) {
+			ret = codiSia.compareTo(o.getCodiSia());
+		}
+		return ret;
 	}
 
 }

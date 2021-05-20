@@ -376,7 +376,11 @@
 		    		nodeAnchor.next().after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
+<<<<<<< HEAD
 		    			nodeAnchor.next().next().addClass('favorit');
+=======
+		    			nodeAnchor.next().addClass('favorit');
+>>>>>>> refs/remotes/origin/dis-0.9
 		    		}
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
