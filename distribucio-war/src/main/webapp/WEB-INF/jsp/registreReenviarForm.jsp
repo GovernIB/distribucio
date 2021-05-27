@@ -47,24 +47,39 @@
 			border-radius: 4px;
 			width: 100%;
 			padding: 2px 10px;
-			margin-bottom: 10px;
 		}
 		
-		.jstree-search-container {
-			position: relative;
-			top: 25px;
-			width: 80%;
-			margin-left: 17%;
+		.jstree-filter {
 			display: flex;
-			z-index: 100;
+			align-items: center;
+			padding-bottom: 10px;
 		}
 		
-		.jstree-search-container div:nth-child(1) {
+		.jstree-filter label {
+			margin-bottom: 0px;
+		}
+		
+		.jstree-filter div:nth-child(1) {
+			width: 15%;
+		}
+		
+		.jstree-filter div:nth-child(2) {
 			width: 35%;
 		}
 		
-		.jstree-search-container div:nth-child(2) {
+		.jstree-filter div:nth-child(3) {
 			margin-left: 5%;
+		}
+		
+		.jstree-filter div:nth-child(3) label {
+			display: flex;
+			align-items: center;
+		}
+		
+		.jstree-filter div:nth-child(3) input {
+			margin: 0;
+			height: 15px;
+			width: 20px;
 		}
 		
 		.bustia_container {
@@ -78,6 +93,19 @@
 		.taules_container {
 			width: 55%;
 			margin: 2% 0 0 1%;
+		}
+		
+		.taules_container div:nth-child(2) {
+			margin-bottom: 0;
+		}
+		
+		.taules_container div:nth-child(3) {
+			display: flex;
+			align-items: center;
+		}
+		
+		.taules_container div:nth-child(3) input[type=checkbox] {
+			margin: 0;
 		}
 		
 		.busties {
@@ -210,14 +238,6 @@
 		.info-parent i {
 			color: #fff;
 			font-size: 11px;		
-		}
-		
-		input#favorits {
-			position: relative;
-			top: 3px;
-			left: 0;
-			height: 15px;
-			width: 20px;
 		}
 		
 	</style>
@@ -376,11 +396,7 @@
 		    		nodeAnchor.next().after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
-<<<<<<< HEAD
 		    			nodeAnchor.next().next().addClass('favorit');
-=======
-		    			nodeAnchor.next().addClass('favorit');
->>>>>>> refs/remotes/origin/dis-0.9
 		    		}
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
@@ -620,7 +636,10 @@
 	    	
 	    		<div class="bustia_container">
 		    		<div class="arbre_container">
-		    			<div class="jstree-search-container">
+		    			<div class="jstree-filter">
+		    				<div>
+								<label><spring:message code="contingut.enviar.camp.desti"/></label>
+							</div>
 		    				<div>
 		    					<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 		    				</div>
@@ -632,7 +651,8 @@
 							<dis:inputArbre name="destins" inline="true" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 							fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 							fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
-							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"/>
+							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"
+							showLabel="false"/>
 
 						</div>
 					</div>
@@ -670,7 +690,11 @@
 			    			</div>
 			    		</div>			
 						<form:hidden path="perConeixement"/>
-						<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/>
+						<div class="form-group col-xs-12">
+							<form:checkbox path="deixarCopia" cssClass="span12" id="deixarCopia" disabled="${disableDeixarCopia}"/>
+							<label for="deixarCopia" style="padding: 7px 0 0 7px;"><spring:message code="contingut.enviar.camp.deixar.copia"/></label>
+						</div>
+						<%--<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/> --%>
 						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>
 	    		</div>
