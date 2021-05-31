@@ -655,11 +655,8 @@ public class RegistreUserController extends BaseUserController {
 			int correctes = 0;
 			int estatErroni = 0;
 			
-			ContingutDto contingutDto;
 			for (Long registreId : seleccioList) {
-				contingutDto = null;
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				RegistreDto registreDto = (RegistreDto) contingutDto;
+				RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
 				if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
 					
 					boolean processatOk = true;
@@ -939,10 +936,8 @@ public class RegistreUserController extends BaseUserController {
 				int correctes = 0;
 
 				for (Long registreId : seleccioList) {
-					ContingutDto contingutDto = null;
-		
-						contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-						RegistreDto registreDto = (RegistreDto) contingutDto;
+
+						RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
 						
 							boolean processatOk = true;
 							
@@ -1131,11 +1126,8 @@ public class RegistreUserController extends BaseUserController {
 			int estatErroni = 0;
 			
 
-			ContingutDto contingutDto;
 			for (Long registreId : seleccioList) {
-				contingutDto = null;
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				RegistreDto registreDto = (RegistreDto) contingutDto;
+				RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
 				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
 					
 					boolean processatOk = true;

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -32,7 +34,8 @@ public class SessioHelper {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			AplicacioService aplicacioService) {
-		if (request.getUserPrincipal() != null) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
 			Boolean autenticacioProcessada = (Boolean)request.getSession().getAttribute(
 					SESSION_ATTRIBUTE_AUTH_PROCESSADA);
 			if (autenticacioProcessada == null) {
@@ -56,7 +59,7 @@ public class SessioHelper {
 		        		response, 
 		        		StringUtils.parseLocaleString(idioma_usuari));
 			} catch (Exception e) {
-				logger.error("Error establint l'idioma de l'usuari " + request.getUserPrincipal(), e);
+				logger.error("Error cestablint l'idioma de l'usuari " + auth.getName() + " :" + e.getMessage(), e);
 			}
 		}
 	}

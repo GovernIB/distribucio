@@ -60,6 +60,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public UsuariDto getUsuariActual();
 	
 	/**
