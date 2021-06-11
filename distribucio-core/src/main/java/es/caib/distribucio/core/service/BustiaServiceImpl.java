@@ -751,7 +751,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId,
 			boolean mostrarInactives) {
-		logger.debug("Consulta de busties permeses per un usuari ("
+		logger.trace("Consulta de busties permeses per un usuari ("
 				+ "entitatId=" + entitatId + ")");
 		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
 		Timer.Context findPermesesPerUsuariContext = findPermesesPerUsuariTimer.time();
@@ -908,10 +908,8 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia.getEntitat(),
 				bustia);
 		logger.debug("Bústia per defecte de l'anotació (" +
-				"entitatUnitatCodi=" + entitat.getCodiDir3() + ", " +
-				"unitatOrganitzativa=" + unitatOrganitzativa + ", " +
 				"anotacioNumero=" + anotacioEntity.getNumero() + ", "  +
-				"bustia=" + bustia + ")");
+				"bustia=" + bustia.getId() + ")");
 		
 		List<String> params = new ArrayList<>();
 		params.add(anotacioEntity.getNom());
@@ -936,12 +934,6 @@ public class BustiaServiceImpl implements BustiaService {
 			RegistreAnotacio registreAnotacio) {
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar")).time();
-		
-		logger.debug("Creant anotació provinent del servei d'enviament a bústia ("
-				+ "entitatCodi=" + entitatCodi + ", "
-				+ "tipus=" + tipus + ", "
-				+ "unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ","
-				+ "anotacio=" + registreAnotacio.getNumero() + ")");
 		
 		//---- validate anotacio -----
 		Timer.Context contextvalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre")).time();
@@ -1014,7 +1006,7 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextprocess = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.process")).time();
 		// if asynchronous processing is turned off save anotacio in arxiu and apply reglas immediately
 		if (!bustiaHelper.isProcessamentAsincronProperty()) {
-			logger.debug("L'anotació es processarà inmediatament (" +
+			logger.trace("L'anotació es processarà inmediatament (" +
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
@@ -1025,7 +1017,7 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 		// if asynchronous processing is turned on there are two @Scheduled methods that will periodically process anotacions pending to save in arxiu or to apply regla to			
 		} else {
-			logger.debug("L'anotació es processarà de forma asíncrona (" +
+			logger.trace("L'anotació es processarà de forma asíncrona (" +
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
@@ -1233,7 +1225,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	public long contingutPendentBustiesAllCount(
 			Long entitatId) {
-		logger.debug("Consultant els elements pendents a totes les busties ("
+		logger.trace("Consultant els elements pendents a totes les busties ("
 				+ "entitatId=" + entitatId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,

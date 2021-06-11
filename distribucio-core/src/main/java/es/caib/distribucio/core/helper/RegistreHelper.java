@@ -562,10 +562,7 @@ public class RegistreHelper {
 			
 			// check if registre is not already created in arxiu
 			if (registreEntity.getExpedientArxiuUuid() == null) {
-				logger.debug("Creant contenidor pels annexos de l'anotació (" +
-						"anotacioId=" + registreEntity.getId() + ", " +
-						"anotacioNumero=" + registreEntity.getNumero() + ", " +
-						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+
 				try {
 					// ============= SAVE REGISTRE AS EXPEDIENT IN ARXIU ============
 					uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
@@ -573,7 +570,7 @@ public class RegistreHelper {
 							distribucioRegistreAnotacio.getNumero(),
 							unitatOrganitzativaCodi);
 					registreEntity.updateExpedientArxiuUuid(uuidExpedient);
-					logger.debug("Creat el contenidor a l'Arxiu per l'anotació (" +
+					logger.trace("Creat el contenidor a l'Arxiu per l'anotació (" +
 							"anotacioId=" + registreEntity.getId() + ", " +
 							"anotacioNumero=" + registreEntity.getNumero() + ", " +
 							"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
@@ -586,7 +583,7 @@ public class RegistreHelper {
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
 				uuidExpedient = registreEntity.getExpedientArxiuUuid();
-				logger.debug("L'anotació (" +
+				logger.trace("L'anotació (" +
 						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") ja estava a l'Arxiu amb uuid " + uuidExpedient);
@@ -603,11 +600,7 @@ public class RegistreHelper {
 						RegistreAnnexEntity annex = registreEntity.getAnnexos().get(i);
 						// Només crea l'annex a dins el contenidor si encara no s'ha creat
 						if (annex.getFitxerArxiuUuid() == null) {
-							logger.debug("Creant annex a dins el contenidor de l'anotació (" +
-									"anotacioId=" + registreEntity.getId() + ", " +
-									"anotacioNumero=" + registreEntity.getNumero() + ", " +
-									"annexTitol=" + annex.getTitol() + ", " +
-									"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+
 							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
 													
 							DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
@@ -820,7 +813,7 @@ public class RegistreHelper {
 	
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
-		logger.debug("Loading Signatura detalls to DB");
+		logger.trace("Loading Signatura detalls to DB");
 		
 		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
 		

@@ -33,7 +33,7 @@ public class RolHelper {
 			HttpServletRequest request) {
 		String canviRol = request.getParameter(REQUEST_PARAMETER_CANVI_ROL);
 		if (canviRol != null && canviRol.length() > 0) {
-			LOGGER.debug("Processant canvi rol (rol=" + canviRol + ")");
+			LOGGER.trace("Processant canvi rol (rol=" + canviRol + ")");
 			if (request.isUserInRole(canviRol)) {
 				request.getSession().setAttribute(
 						SESSION_ATTRIBUTE_ROL_ACTUAL,
@@ -60,7 +60,7 @@ public class RolHelper {
 						rolActual);
 			}
 		}
-		LOGGER.debug("Obtenint rol actual (rol=" + rolActual + ")");
+		LOGGER.trace("Obtenint rol actual (rol=" + rolActual + ")");
 		return rolActual;
 	}
 
@@ -75,7 +75,7 @@ public class RolHelper {
 	}
 
 	public static List<String> getRolsUsuariActual(HttpServletRequest request) {
-		LOGGER.debug("Obtenint rols disponibles per a l'usuari actual");
+		LOGGER.trace("Obtenint rols disponibles per a l'usuari actual");
 		List<String> rols = new ArrayList<String>();
 		if (request.isUserInRole(ROLE_SUPER)) {
 			rols.add(ROLE_SUPER);

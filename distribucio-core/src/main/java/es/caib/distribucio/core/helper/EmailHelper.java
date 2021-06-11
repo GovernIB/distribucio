@@ -132,7 +132,7 @@ public class EmailHelper {
 			String emailDestinatari,
 			List<ContingutMovimentEmailEntity> contingutMovimentEmails) {
 		
-		logger.debug("Enviament emails nou contenidor a bústies");
+		logger.trace("Enviament emails nou contenidor a bústies");
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 			
@@ -181,7 +181,7 @@ public class EmailHelper {
 	public void sendEmailAvisSimpleNouElementBustia(
 			String emailDestinatari,
 			Long contingutEmailId) {
-		logger.debug("Enviament email moviment a destinatari");
+		logger.trace("Enviament email moviment a destinatari");
 		
 		ContingutMovimentEmailEntity contingutEmail = contingutMovimentEmailRepository.findOne(contingutEmailId);
 		
@@ -224,7 +224,7 @@ public class EmailHelper {
 			UsuariEntity usuariActual,
 			ContingutEntity contingut,
 			String comentari) {
-		logger.debug("Enviament email comentari a destinatari");
+		logger.trace("Enviament email comentari a destinatari");
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		BustiaEntity bustia = null;
 		ContingutEntity pare = contingut.getPare();

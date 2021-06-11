@@ -48,7 +48,7 @@ public class DatatablesHelper {
 			Map<String, String[]> mapeigFiltres,
 			Map<String, String[]> mapeigOrdenacions) {
 		DatatablesParams params = new DatatablesParams(request);
-		LOGGER.debug("Informació de la pàgina obtingudes de datatables (" +
+		LOGGER.trace("Informació de la pàgina obtingudes de datatables (" +
 				"draw=" + params.getDraw() + ", " +
 				"start=" + params.getStart() + ", " +
 				"length=" + params.getLength() + ")");
@@ -72,7 +72,7 @@ public class DatatablesHelper {
 					paginacio.afegirFiltre(
 							col,
 							params.getColumnsSearchValue().get(i));
-					LOGGER.debug("Afegit filtre a la paginació (" +
+					LOGGER.trace("Afegit filtre a la paginació (" +
 							"columna=" + col + ", " +
 							"valor=" + params.getColumnsSearchValue().get(i) + ")");
 				}
@@ -92,10 +92,10 @@ public class DatatablesHelper {
 			}
 			for (String col: columnes) {
 				paginacio.afegirOrdre(col, direccio);
-				LOGGER.debug("Afegida ordenació a la paginació (columna=" + columna + ", direccio=" + direccio + ")");
+				LOGGER.trace("Afegida ordenació a la paginació (columna=" + columna + ", direccio=" + direccio + ")");
 			}
 		}
-		LOGGER.debug("Informació de la pàgina sol·licitada (paginaNum=" + paginacio.getPaginaNum() + ", paginaTamany=" + paginacio.getPaginaTamany() + ")");
+		LOGGER.trace("Informació de la pàgina sol·licitada (paginaNum=" + paginacio.getPaginaNum() + ", paginaTamany=" + paginacio.getPaginaTamany() + ")");
 		return paginacio;
 	}
 
@@ -130,7 +130,7 @@ public class DatatablesHelper {
 			PaginaDto<T> pagina,
 			String atributId,
 			String atributSeleccio) {
-		LOGGER.debug("Generant informació de resposta per datatable (" +
+		LOGGER.trace("Generant informació de resposta per datatable (" +
 				"numero=" + pagina.getNumero() + ", " +
 				"tamany=" + pagina.getTamany() + ", " +
 				"total=" + pagina.getTotal() + ", " +
@@ -203,7 +203,7 @@ public class DatatablesHelper {
 			}
 		}
 		response.setData(dataMap);
-		LOGGER.debug("Informació per a datatables (" +
+		LOGGER.trace("Informació per a datatables (" +
 				"draw=" + response.getDraw() + "," +
 				"recordsFiltered=" + response.getRecordsFiltered() + "," +
 				"recordsTotal=" + response.getRecordsTotal() + ")");
@@ -232,9 +232,9 @@ public class DatatablesHelper {
 			List<T> llista,
 			String atributId) {
 		if (llista != null)
-			LOGGER.debug("Informació de la llista (tamany=" + llista.size() + ")");
+			LOGGER.trace("Informació de la llista (tamany=" + llista.size() + ")");
 		else
-			LOGGER.debug("Informació de la llista (null)");
+			LOGGER.trace("Informació de la llista (null)");
 		
 		DatatablesParams params = new DatatablesParams(request);
 		
