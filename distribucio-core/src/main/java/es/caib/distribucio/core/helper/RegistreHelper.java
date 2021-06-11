@@ -828,7 +828,7 @@ public class RegistreHelper {
 			
 			DocumentMetadades metadades = document.getMetadades();
 			if (metadades != null) {
-				annexEntity.updateFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+				annexEntity.updateFirmaCsv(metadades.getCsv());
 			}
 			
 			if (document.getFirmes() != null && document.getFirmes().size() > 0) {
