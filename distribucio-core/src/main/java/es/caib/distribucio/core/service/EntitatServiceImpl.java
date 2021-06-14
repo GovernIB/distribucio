@@ -216,7 +216,7 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Consulta les entitats accessibles per l'usuari actual (" +
+		logger.trace("Consulta les entitats accessibles per l'usuari actual (" +
 				"usuari=" + auth.getName() + ")");
 		return cacheHelper.findEntitatsAccessiblesUsuari(auth.getName());
 	}

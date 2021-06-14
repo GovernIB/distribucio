@@ -1075,7 +1075,7 @@ public class RegistreServiceImpl implements RegistreService {
 					zos.closeEntry();
 				} catch (Exception e) {
 					String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
-					logger.error(errMsg, e);
+					logger.error(errMsg);
 					throw new Exception(errMsg, e);
 				}
 			}
