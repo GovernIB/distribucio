@@ -316,6 +316,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("bustiesIds") List<Long> bustiesIds);
 	
 	
+
+	
+	
 	/** Consulta dels identificadors de registre per a la selecció en registre user */
 	@Query(	"select r.id " +
 			"from " +
@@ -335,16 +338,46 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
 			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
 			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
+			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
+			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
+			"and (:nomesAmbErrors = false or r.procesError != null ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
 			"			where " +
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 )" +
-			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
-			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
-			"and (:nomesAmbErrors = false or r.procesError != null ) ")
+			"			) > 0 ) " + 
+			"and (:onlyAmbMoviments = false or " +														//>>> FILTRE PANTALLA ENVIAMENTS
+			"		(" + 
+			"			((select count(mov) " +  														//>>> Anotacions amb més d'un enviament
+			"				from ContingutMovimentEntity mov " +
+			"				where r.id = mov.contingut.id) > 1 " + 										// O
+			"			or" + 
+			"			(select count(mov1) " +  														//>>> Anotacions amb moviments no provinent de registre (origen != null)
+			" 				from ContingutMovimentEntity mov1" +
+			"	 			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
+			" 									where mov2.contingut.id = r.id " + 
+			"									and mov2.origen is not null)) > 0) " + 
+			"			and (:isNullBustiaOrigen = true " + 											//>>> Amb filtre origen
+			" 				or ((select count(mov2)" + 													//>>> Primer moviment des de registre (origen = primer destí)
+			"						from ContingutMovimentEntity mov2" + 
+			"						where r.id = mov2.contingut.id" + 
+			"						and mov2.origen is null" + 
+			"						and mov2.desti = :bustiaOrigen) > 0" + 
+			"					or ((select count(mov3) " + 											//>>> Reenviament deixant còpia (origen = origen)
+			"									from ContingutMovimentEntity mov3" + 
+			"									where r.id = mov3.contingut.id" + 
+			"									and mov3.origen is null" + 
+			"									and mov3.desti is not null) = 0" + 
+			"										and" + 
+			"											(select count(mov4)" +
+			"												from ContingutMovimentEntity mov4" + 		//>>> Reenviament deixant còpia amb més d'un moviment (agafar origen primer moviment)
+			"												where r.id = mov4.contingut.id" +
+			" 												and mov4.id = (select min(mov5.id) from ContingutMovimentEntity mov5 where r.id = mov5.contingut.id)" +
+			"												and mov4.origen is not null" +
+			"												and mov4.origen = :bustiaOrigen) > 0)))" + 
+			"		))") //el primer destí és l'origen
 	public List<Long> findRegistreIdsByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -375,7 +408,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
+			@Param("onlyAmbMoviments") boolean onlyAmbMoviments,
+			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen,
+			@Param("bustiaOrigen") BustiaEntity bustiaOrigen);
 
 
 }

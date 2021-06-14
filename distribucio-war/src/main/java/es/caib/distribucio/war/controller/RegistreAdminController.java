@@ -267,6 +267,7 @@ public class RegistreAdminController extends BaseAdminController {
 							entitatActual.getId(),
 							null, // bustiesUsuari
 							RegistreFiltreCommand.asDto(filtreCommand),
+							false, 
 							true));
 		}
 		return seleccio.size();

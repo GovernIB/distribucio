@@ -92,11 +92,13 @@ public class RegistreServiceBean implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments, 
 			boolean isAdmin) {
 		return delegate.findRegistreIds(
 				entitatId,
 				bustiesUsuari,
 				filtre,
+				onlyAmbMoviments, 
 				isAdmin);
 	}
 	

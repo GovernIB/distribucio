@@ -460,6 +460,7 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments, 
 			boolean isAdmin) {
 		List<Long> ids;
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
@@ -472,12 +473,19 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null;
+		BustiaEntity bustia = null, bustiaOrigen = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
+		
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
+					false);
+		}
 
 		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
@@ -570,7 +578,10 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
 				unitat == null,
-				unitat);
+				unitat,
+				onlyAmbMoviments,
+				bustiaOrigen == null,
+				bustiaOrigen);
 	
 
 		contextTotal.stop();

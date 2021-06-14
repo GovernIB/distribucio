@@ -80,6 +80,7 @@ public class RegistreUserController extends BaseUserController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "RegistreUserController.session.filtre";
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreUserController.session.seleccio";
+	private static final String SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS = "RegistreUserController.session.seleccio.moviments";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -193,8 +194,6 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return "redirect:registreUser/moviments";
 	}
-
-
 	
 	@RequestMapping(value = "/moviments/datatable", method = RequestMethod.GET)
 	@ResponseBody
@@ -213,10 +212,83 @@ public class RegistreUserController extends BaseUserController {
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
 						true,
-						DatatablesHelper.getPaginacioDtoFromRequest(request), false),
+						DatatablesHelper.getPaginacioDtoFromRequest(request), 
+						false),
 				"id",
-				SESSION_ATTRIBUTE_SELECCIO);
+				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 	}
+	
+	/** Mètode Ajax per seleccionar tots els registres a partir del mateix filtre del datatable.
+	 * 
+	 * @param request
+	 * @param ids
+	 * @return Retorna el número d'elements seleccionats
+	 */
+	@RequestMapping(value = "/select/moviments", method = RequestMethod.GET)
+	@ResponseBody
+	public int selectMoviments(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+			List<BustiaDto> bustiesUsuari = null;
+			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
+				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
+			}
+			seleccio.addAll(
+					registreService.findRegistreIds(
+							entitatActual.getId(),
+							bustiesUsuari,
+							RegistreFiltreCommand.asDto(filtreCommand),
+							true, 
+							false));
+		}
+		return seleccio.size();
+	}
+
+	@RequestMapping(value = "/deselect/moviments", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselectMoviments(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
+	}
+	
+	
 	
 	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
 	@RequestMapping(value = "/bustiesOrigen", method = RequestMethod.GET)
@@ -476,6 +548,7 @@ public class RegistreUserController extends BaseUserController {
 							entitatActual.getId(),
 							bustiesUsuari,
 							RegistreFiltreCommand.asDto(filtreCommand),
+							false, 
 							false));
 		}
 		return seleccio.size();
@@ -506,7 +579,9 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return seleccio.size();
 	}
+	
 
+	
 	@RequestMapping(value = "/metriques", method = RequestMethod.GET)
 	public String bustiaMetriques2(
 			HttpServletRequest request,
@@ -622,18 +697,20 @@ public class RegistreUserController extends BaseUserController {
 	
 	
 	
-	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.GET)
+	@RequestMapping(value = "/enviarViaEmailMultiple/{isMoviments}", method = RequestMethod.GET)
 	public String enviarViaEmailMultipleGet(
 			HttpServletRequest request,
+			@PathVariable boolean isMoviments,
 			Model model) {
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
 		model.addAttribute(command);
 		return "registreViaEmail";
 	}
 
-	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.POST)
+	@RequestMapping(value = "/enviarViaEmailMultiple/{isMoviments}", method = RequestMethod.POST)
 	public String enviarViaEmailMultiplePost(
 			HttpServletRequest request,
+			@PathVariable boolean isMoviments,
 			@Valid RegistreEnviarViaEmailCommand command,
 			BindingResult bindingResult,
 			Model model)  {
@@ -647,7 +724,7 @@ public class RegistreUserController extends BaseUserController {
 		@SuppressWarnings("unchecked")
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
-				SESSION_ATTRIBUTE_SELECCIO);
+				isMoviments ? SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS : SESSION_ATTRIBUTE_SELECCIO);
 		if (seleccio != null && !seleccio.isEmpty()) {
 			List<Long> seleccioList = new ArrayList<Long>();
 			seleccioList.addAll(seleccio);

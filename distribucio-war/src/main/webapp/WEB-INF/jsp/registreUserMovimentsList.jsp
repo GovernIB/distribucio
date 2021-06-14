@@ -73,32 +73,11 @@ $(document).ready(function() {
 		$('#mostrarInactivesOrigenBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
 	});
-	
+
 	$('#taulaDades').on( 'draw.dt', function () {
 		$.get( "./getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
 		})
-		$('#seleccioAll').on('click', function() {
-			$.get(
-					"registreUser/select",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
-		$('#seleccioNone').on('click', function() {
-			$.get(
-					"registreUser/deselect",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('select-none');
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
 		$("tr", this).each(function(){
 			if ($(this).find("#detall-button").length > 0) {
 				var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
@@ -122,13 +101,38 @@ $(document).ready(function() {
 		});
 	} ).on('selectionchange.dataTable', function (e, accio, ids) {
 		$.get(
-				"registreUser/" + accio,
+				"../registreUser/" + accio + "/moviments",
 				{ids: ids},
 				function(data) {
 					$(".seleccioCount").html(data);
 				}
 		);
 	});
+	$('#taulaDades').one( 'draw.dt', function () {
+		$('#seleccioAll').on('click', function() {
+			$.get(
+					"../registreUser/select/moviments",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+		$('#seleccioNone').on('click', function() {
+			$.get(
+					"../registreUser/deselect/moviments",
+					function(data) {
+						$("#seleccioCount").html(data);
+						$('#taulaDades').webutilDatatable('select-none');
+						$('#taulaDades').webutilDatatable('refresh');
+					}
+			);
+			return false;
+		});
+
+	});
+	
 	
 	$('#mostrarInactivesBtn').click(function() {
 		mostrarInactives = !$(this).hasClass('active');
@@ -310,7 +314,7 @@ $(document).ready(function() {
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu">
 						<li>
-							<a href="registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<a href="../registreUser/enviarViaEmailMultiple/true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 								<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 							</a>
 						</li>
