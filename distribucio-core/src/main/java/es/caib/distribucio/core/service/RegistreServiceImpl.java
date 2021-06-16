@@ -1042,10 +1042,12 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Transactional(readOnly = true)
-	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception {
+	public FitxerDto getZipDocumentacio(
+			Long registreId,
+			String rolActual) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
-				
+
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
@@ -1053,34 +1055,51 @@ public class RegistreServiceImpl implements RegistreService {
 			if (registre.getPare() != null)
 				// Comprova l'accés a la bústia
 				entityComprovarHelper.comprovarBustia(
-							registre.getEntitat(),
-							registre.getPare().getId(),
-							!rolActual.equals("DIS_ADMIN"));
+						registre.getEntitat(),
+						registre.getPare().getId(),
+						!rolActual.equals("DIS_ADMIN"));
 			// Justificant
-			FitxerDto fitxer;
+			FitxerDto fitxer = null;
 			// Annexos
 			String nom;
-			for (RegistreAnnexEntity annex : registre.getAnnexos()) {
-				fitxer = this.getAnnexFitxer(annex.getId());
+			if (!registre.getAnnexos().isEmpty()) {
+				for (RegistreAnnexEntity annex : registre.getAnnexos()) {
+					fitxer = this.getAnnexFitxer(annex.getId());
+					try {
+						if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId())
+							nom = annex.getTitol() + " - " + fitxer.getNom();
+						else
+							nom = fitxer.getNom();
+						ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
+						entry.setSize(fitxer.getContingut().length);
+						zos.putNextEntry(entry);
+						zos.write(fitxer.getContingut());
+						zos.closeEntry();
+					} catch (Exception e) {
+						String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+						logger.error(errMsg);
+						throw new Exception(errMsg, e);
+					}
+				}
+			} else {
 				try {
-					if (registre.getJustificant() == null 
-							|| annex.getId() != registre.getJustificant().getId()) 
-						nom = annex.getTitol() + " - " + fitxer.getNom();
-					else
-						nom = fitxer.getNom();
+					fitxer = registreHelper.getJustificant(registreId);
+					nom = fitxer.getNom();
 					ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
 					entry.setSize(fitxer.getContingut().length);
 					zos.putNextEntry(entry);
 					zos.write(fitxer.getContingut());
 					zos.closeEntry();
 				} catch (Exception e) {
-					String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+					String errMsg = "Error afegint justificant del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
 					logger.error(errMsg);
-					throw new Exception(errMsg, e);
+					throw new Exception(errMsg,
+							e);
 				}
 			}
+
 			zos.close();
-			
+
 			zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
 			zip.setContingut(baos.toByteArray());
 			zip.setContentType("application/zip");
@@ -1092,7 +1111,6 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return zip;
 	}
-
 	private static String revisarContingutNom(String nom) {
 		if (nom == null) {
 			return null;

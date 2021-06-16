@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -78,6 +79,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -684,7 +686,26 @@ public class RegistreHelper {
 			
 	}
 	
-	
+
+	public FitxerDto getJustificant(Long registreId) {
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		FitxerDto arxiu = new FitxerDto();
+		Document document = null;
+		document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(),
+				null,
+				true,
+				true);
+		if (document != null) {
+			DocumentContingut documentContingut = document.getContingut();
+			if (documentContingut != null) {
+				arxiu.setNom(obtenirJustificantNom(document));
+				arxiu.setContentType(documentContingut.getTipusMime());
+				arxiu.setContingut(documentContingut.getContingut());
+				arxiu.setTamany(documentContingut.getContingut().length);
+			}
+		}
+		return arxiu;
+	}
 
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long annexId) throws NotFoundException {
