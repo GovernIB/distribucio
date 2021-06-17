@@ -42,6 +42,7 @@ import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -73,15 +74,22 @@ public class RegistreAdminController extends BaseAdminController {
 	private BustiaService bustiaService;
 	@Autowired
 	private ContingutService contingutService;
+	@Autowired
+	private BackofficeService backofficeService;
 	
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
+		model.addAttribute(
+				"backoffices",
+				backofficeService.findByEntitat(
+						entitatActual.getId()));
 
 		return "registreAdminList";
 	}

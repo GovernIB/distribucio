@@ -264,9 +264,8 @@ $(document).ready(function() {
 				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputText name="backCodi" inline="true" placeholderKey="bustia.list.filtre.back.codi"/>		
+				<dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true"/>
 			</div>
-
 			<div class="col-md-3">
 				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>			
 			</div>
