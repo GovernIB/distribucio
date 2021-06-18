@@ -81,11 +81,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    r.regla is not null and r.regla.activa = true and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.DISTRIBUCIO " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
+			"and r.procesIntents < :maxReintents " +
 		    "order by " +
 		    "    r.data desc "
 		    + "group by r.regla.id")
 	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
-			@Param("currentDate") Date currentDate);
+			@Param("currentDate") Date currentDate,
+			@Param("maxReintents") int maxReintents);
 	
 	
 	

@@ -1352,8 +1352,8 @@ public class RegistreHelper {
 
 	/** Consulta els registres pendents d'enviar al backoffice. */
 	@Transactional
-	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date) {
-		return registreRepository.findAmbEstatPendentEnviarBackoffice(date);
+	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date, int maxReintents) {
+		return registreRepository.findAmbEstatPendentEnviarBackoffice(date, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
