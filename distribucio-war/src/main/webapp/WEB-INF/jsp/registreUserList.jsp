@@ -85,6 +85,11 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 .lleganda_tramitacio span:nth-child(1){
 	background-color: #f99957;
 }
+div.extracteColumn {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+}
 </style>
 <script>
 $.views.helpers({
@@ -375,8 +380,13 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="extracte" width="25%" style="min-width:150px;">
+				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
+					<script id="extracteTemplate" type="text/x-jsrender">
+						<div class="extracteColumn">
+							{{:extracte}}
+						</div>
+					</script>
 				</th>			
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
 				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
