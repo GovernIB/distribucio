@@ -135,8 +135,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 		
 		logger.trace("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
+		
+		int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty();
 		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
-		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date());
+		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date(), maxReintents);
 		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
 		if (pendents != null && !pendents.isEmpty()) {
 
@@ -448,7 +450,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 	
-
+	private int getEnviarIdsAnotacionsMaxReintentsProperty() {
+		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
 
 	private int getAplicarReglesMaxReintentsProperty() {
 		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
