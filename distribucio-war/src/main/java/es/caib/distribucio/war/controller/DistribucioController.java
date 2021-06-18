@@ -45,7 +45,7 @@ public class DistribucioController {
 			if (entitat == null)
 				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
 			if (RolHelper.isRolActualAdministrador(request)) {
-				return "redirect:bustiaAdmin";
+				return "redirect:registreAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
 				return "redirect:registreUser";
 			} else {
