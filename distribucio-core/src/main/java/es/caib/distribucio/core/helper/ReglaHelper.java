@@ -242,8 +242,6 @@ public class ReglaHelper {
 
 			}
 			
-	
-			
 			
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
@@ -269,13 +267,11 @@ public class ReglaHelper {
 							nextReglaToApply,
 							reglasApplied,
 							simulatAccions);
+					
+				} else {
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.LOOP_DETECTED, null, nextReglaToApply.getNom()));
 				}
 			}
-			
-			
-			
-
-		
 	}
 
 	
