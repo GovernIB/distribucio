@@ -27,6 +27,7 @@ public class RegistreSimulatCommand {
 	private String assumpteCodi;
 	@Size(max = 64)
 	private String procedimentCodi;
+	private Long bustiaId;
 
 
 	public Long getUnitatId() {
@@ -47,7 +48,12 @@ public class RegistreSimulatCommand {
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
 	}
-	
+	public Long getBustiaId() {
+		return bustiaId;
+	}
+	public void setBustiaId(Long bustiaId) {
+		this.bustiaId = bustiaId;
+	}
 	
 	
 	public static RegistreSimulatCommand asCommand(RegistreSimulatDto dto) {

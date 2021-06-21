@@ -228,11 +228,16 @@ public class ReglaController  extends BaseAdminController {
 	public String simular(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		
 		RegistreSimulatCommand command = new RegistreSimulatCommand();
 		model.addAttribute(command);
 
+		model.addAttribute(
+				"busties",
+			bustiaService.findActivesAmbEntitat(
+						entitatActual.getId()));
+		
 		return "reglaSimuladorForm";
 	}
 	
@@ -243,14 +248,19 @@ public class ReglaController  extends BaseAdminController {
 			@Validated RegistreSimulatCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		model.addAttribute(
+				"busties",
+			bustiaService.findActivesAmbEntitat(
+						entitatActual.getId()));
+		
 		if (bindingResult.hasErrors()) {
 			return "reglaSimuladorForm";
 		}
 		
 		List<RegistreSimulatAccionDto> simulatAccions = reglaService.simularReglaAplicacio(RegistreSimulatCommand.asDto(command));
 		model.addAttribute("simulatAccions", simulatAccions);
-		
 		
 		return "reglaSimuladorForm";
 

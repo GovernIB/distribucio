@@ -88,7 +88,7 @@ $(document).ready(function() {
 			suggestText="codiAndNom"
 			optionTemplateFunction="formatSelectUnitat"
 			required="true"/>
-			
+		<dis:inputSelect name="bustiaId" textKey="regla.simulador.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="procedimentCodi" textKey="regla.simulador.form.camp.procediment.codi"/>
 		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
 		

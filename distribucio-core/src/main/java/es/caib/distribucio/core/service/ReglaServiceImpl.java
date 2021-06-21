@@ -410,6 +410,7 @@ public class ReglaServiceImpl implements ReglaService {
 
 		logger.debug("Simulant regla aplicacio ("
 				+ "unitatId=" + registreSimulatDto.getUnitatId() + ", "
+				+ "bustiaId=" + registreSimulatDto.getBustiaId() + ", "
 				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
 		
@@ -421,9 +422,16 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		EntitatEntity entitatEntity = entitatRepository.findByCodiDir3(unitatOrganitzativaEntity.getCodiDir3Entitat());
 		
-		BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
-				entitatEntity,
-				unitatOrganitzativaEntity.getCodi());
+		BustiaEntity bustiaDesti = null;
+		if (registreSimulatDto.getBustiaId() == null) {
+			bustiaDesti = bustiaHelper.findBustiaDesti(
+					entitatEntity,
+					unitatOrganitzativaEntity.getCodi());
+			simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+
+		} else { 
+			bustiaDesti = bustiaRepository.findOne(registreSimulatDto.getBustiaId());
+		}
 		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitatEntity,
@@ -431,10 +439,8 @@ public class ReglaServiceImpl implements ReglaService {
 				bustiaDesti.getId(),
 				registreSimulatDto.getProcedimentCodi(),
 				registreSimulatDto.getAssumpteCodi());
-		
-		simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+	
 		registreSimulatDto.setBustiaId(bustiaDesti.getId());
-		
 		
 		if (reglaAplicable != null) {
 			reglaHelper.aplicarSimulation(
