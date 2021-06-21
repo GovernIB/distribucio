@@ -38,6 +38,12 @@ table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr
 table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
     color: #333;
 }
+
+div.extracteColumn {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+}
 	
 </style>
 	
@@ -339,10 +345,15 @@ $(document).ready(function() {
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
 						{{/if}}
 					</script>
-				</th>
-				<th data-col-name="extracte" width="25%" style="min-width:150px;">
-					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>			
+				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
+					<spring:message code="bustia.pendent.columna.titol"/>
+					<script id="extracteTemplate" type="text/x-jsrender">
+						<div class="extracteColumn">
+							{{:extracte}}
+						</div>
+					</script>
+				</th>						
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
 				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
 					<script id="docFisTemplate" type="text/x-jsrender">
