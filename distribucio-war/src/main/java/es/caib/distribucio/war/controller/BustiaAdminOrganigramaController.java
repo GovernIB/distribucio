@@ -95,10 +95,11 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				new BustiaFiltreOrganigramaDto());
+				BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,
