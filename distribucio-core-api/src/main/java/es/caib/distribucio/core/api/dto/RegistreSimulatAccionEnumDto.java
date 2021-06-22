@@ -12,5 +12,6 @@ public enum RegistreSimulatAccionEnumDto {
 	BACKOFFICE,
 	UNITAT,
 	BUSTIA_PER_DEFECTE,
-	BUSTIA
+	BUSTIA,
+	LOOP_DETECTED
 }

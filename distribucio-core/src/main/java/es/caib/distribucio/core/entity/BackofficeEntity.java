@@ -40,9 +40,9 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	private String nom;
 	@Column(name = "url", length = 256, nullable = false)
 	private String url;
-	@Column(name = "usuari", length = 64)
+	@Column(name = "usuari", length = 255)
 	private String usuari;
-	@Column(name = "contrasenya", length = 64)
+	@Column(name = "contrasenya", length = 255)
 	private String contrasenya;
 	@Column(name = "intents")
 	private Integer intents;

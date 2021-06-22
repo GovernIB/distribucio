@@ -189,10 +189,13 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
+		
+		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				new BustiaFiltreOrganigramaDto());
+				filtre);
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,
@@ -451,6 +454,19 @@ public class BustiaAdminController extends BaseAdminController {
 					bustiaFiltreCommand);
 		}
 		return bustiaFiltreCommand;
+	}
+	
+	private BustiaFiltreOrganigramaDto omplirFiltreExcelUsuarisPermissionsPerBustia(
+			BustiaFiltreCommand bustiaFiltreCommand) {
+		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
+		filtre.setActiva(bustiaFiltreCommand.getActiva());
+		filtre.setCodiUnitatSuperior(bustiaFiltreCommand.getCodiUnitatSuperior());
+		filtre.setNomFiltre(bustiaFiltreCommand.getNom());
+		filtre.setPerDefecte(bustiaFiltreCommand.getPerDefecte());
+		filtre.setUnitatCodiFiltre(bustiaFiltreCommand.getUnitatCodi());
+		filtre.setUnitatIdFiltre(bustiaFiltreCommand.getUnitatId());
+		filtre.setUnitatObsoleta(bustiaFiltreCommand.getUnitatObsoleta());
+		return filtre;
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaAdminController.class);

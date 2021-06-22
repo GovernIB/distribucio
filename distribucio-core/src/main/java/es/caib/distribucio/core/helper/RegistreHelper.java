@@ -1018,6 +1018,14 @@ public class RegistreHelper {
 
 			}
 			BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
+			String usuari = backofficeDesti.getUsuari();
+			String contrasenya = backofficeDesti.getContrasenya();
+			if (usuari != null && !usuari.isEmpty()) {
+				usuari = PropertiesHelper.getProperties().getProperty(backofficeDesti.getUsuari());
+			}
+			if (contrasenya != null && !contrasenya.isEmpty()) {
+				contrasenya = PropertiesHelper.getProperties().getProperty(backofficeDesti.getContrasenya());
+			}
 			logger.trace(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 					getClass().getResource(
@@ -1026,8 +1034,8 @@ public class RegistreHelper {
 					new QName(
 							"http://www.caib.es/distribucio/ws/backoffice",
 							"BackofficeService"),
-					backofficeDesti.getUsuari(),
-					backofficeDesti.getContrasenya(),
+					usuari,
+					contrasenya,
 					null,
 					BackofficeWsService.class);
 			

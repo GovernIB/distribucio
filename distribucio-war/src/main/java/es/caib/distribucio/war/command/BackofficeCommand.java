@@ -9,9 +9,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
-import es.caib.distribucio.war.validation.CodiBackofficeNoRepetit;
+import es.caib.distribucio.war.validation.Backoffice;
 
-@CodiBackofficeNoRepetit()
+@Backoffice()
 public class BackofficeCommand {
 
     private Long id;
@@ -23,7 +23,9 @@ public class BackofficeCommand {
     private String nom;
     @NotEmpty @Size(max = 256)
     private String url;
+    @Size(max = 255)
     private String usuari;
+    @Size(max = 255)
     private String contrasenya;
     private Integer intents;
     private Integer tempsEntreIntents;
