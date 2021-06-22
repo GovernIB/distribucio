@@ -13,16 +13,16 @@ import javax.validation.Payload;
 
 /**
  * Constraint de validació que controla que no es repeteixi
- * el codi de backoffice.
+ * el codi de backoffice i altres validacions per al backoffice.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=CodiBackofficeNoRepetitValidator.class)
-public @interface CodiBackofficeNoRepetit {
+@Constraint(validatedBy=BackofficeValidator.class)
+public @interface Backoffice {
 
-	String message() default "Ja existeix un altre backoffice amb aquest codi";
+	String message() default "Error en la validació del backoffice.";
 
 	Class<?>[] groups() default {};
 
