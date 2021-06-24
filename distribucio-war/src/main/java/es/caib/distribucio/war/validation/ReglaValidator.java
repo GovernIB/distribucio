@@ -3,6 +3,10 @@
  */
 package es.caib.distribucio.war.validation;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -10,7 +14,9 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
+import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.war.command.ReglaCommand;
 import es.caib.distribucio.war.helper.MessageHelper;
 
@@ -26,6 +32,9 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 
 	@Autowired
 	private HttpServletRequest request;
+	
+	@Autowired
+	private ReglaService reglaService;
 
 	@Override
 	public void initialize(final Regla anotacio) {
@@ -37,7 +46,8 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		boolean valid = true;
 		
 		// Comprova que almenys un camp del firtre esta informat
-		if ((command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
+		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
+			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
 			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
 			 command.getUnitatFiltreId() == null &&
 			 command.getBustiaFiltreId() == null) {
@@ -73,15 +83,50 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 					.addNode("bustiaDestiId")
 					.addConstraintViolation();	
 			valid = false;
-		} else if (command.getTipus() == ReglaTipusEnumDto.BACKOFFICE && command.getBackofficeDestiId() == null) {
-			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
-					.addNode("backofficeDestiId")
-					.addConstraintViolation();	
-			valid = false;
+		} else if (command.getTipus() == ReglaTipusEnumDto.BACKOFFICE) {
+			if (command.getBackofficeDestiId() == null) {
+				context.buildConstraintViolationWithTemplate(
+						MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+						.addNode("backofficeDestiId")
+						.addConstraintViolation();	
+				valid = false;
+			}
+			if (command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) {
+				context.buildConstraintViolationWithTemplate(
+						MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+						.addNode("procedimentCodiFiltre")
+						.addConstraintViolation();	
+				valid = false;
+			}
+
+			// No permetre crear regles de tipus "Gestionar amb backoffice" amb codis SIA ja definits en altres regles
+			if (command.getProcedimentCodiFiltre() != null) {
+				
+				Map<String, List<ReglaDto>> mapa;
+				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
+				List<String> procediments = Arrays.asList(procedimentCodiFiltre.split("\\s+"));
+				mapa = reglaService.findReglesByCodiProcediment(procediments);
+				
+				if (mapa != null && !mapa.isEmpty()) {
+					for(String codiProcediment : mapa.keySet()) {
+						StringBuilder reglesNoms = new StringBuilder("");
+						for(ReglaDto regla : mapa.get(codiProcediment)) {
+							if (!regla.getId().equals(command.getId())) {
+								reglesNoms.append(regla.getNom() + ", " );
+							}
+						}
+						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
+							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment};
+							context.buildConstraintViolationWithTemplate(
+									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codiprocediment.existent", args, new RequestContext(request).getLocale()))
+							.addNode("procedimentCodiFiltre")
+							.addConstraintViolation();	
+							valid = false;
+						}
+					}
+				}
+			}
 		}
-		
-		
 		
 
 		if (!valid)

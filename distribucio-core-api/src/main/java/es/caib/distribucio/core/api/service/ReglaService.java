@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -175,5 +176,12 @@ public interface ReglaService {
 	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
 			RegistreSimulatDto registreSimulatDto);
 
-
+	/**
+	 * Consulta les regles per codi de procediment.
+	 * @param procediments
+	 * 			List de codis procediment
+	 * @return Map<codiProcediment, List<ReglasExistents>>
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
 }

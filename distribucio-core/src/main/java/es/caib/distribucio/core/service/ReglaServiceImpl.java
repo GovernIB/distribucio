@@ -4,7 +4,10 @@
 package es.caib.distribucio.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -381,6 +384,35 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		return resultPagina;
 	}	
+	
+	/**
+	 * Consulta les regles per codi de procediment.
+	 * @return Map<codiProcediment, List<ReglasExistents>>
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
+		
+		Map<String, List<ReglaDto>> result = new HashMap<String, List<ReglaDto>>();
+		for (String procediment : procediments) {
+			List<ReglaEntity> reglasExistents = reglaRepository.findReglaBackofficeByCodiProcediment(procediment);
+			for (ReglaEntity regla : reglasExistents) {
+				if (regla.getProcedimentCodiFiltre() != null) {
+					List<String> procedimentsExistents = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+					if (procedimentsExistents.contains(procediment)) {
+						if (!result.containsKey(procediment)) {
+							result.put(procediment, new ArrayList<ReglaDto>());
+						}
+						result.get(procediment).add(conversioTipusHelper.convertir(
+								regla,
+								ReglaDto.class));	
+					}
+				}
+			}
+		}
+		return result;
+		
+	}
 	
 	@Override
 	@Transactional(readOnly = true)

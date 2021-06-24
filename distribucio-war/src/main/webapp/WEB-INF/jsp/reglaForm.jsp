@@ -55,11 +55,39 @@ function formatSelectUnitat(item) {
 
 
 $(document).ready(function() {
+	var isWindowReload = true;
 	$('#tipus').on('change', function () {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
 		$('div#camps_tipus_BACKOFFICE').css('display', 'none');
 		$('div#camps_tipus_UNITAT').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
+		if ($(this).val() == 'BACKOFFICE') {
+			$('#unitatFiltreId').parent().closest('.form-group').css('display', 'none');
+			$('#unitatFiltreId').val('');
+			$('#bustiaFiltreId').parent().closest('.form-group').css('display', 'none');
+			$('#bustiaFiltreId').val('');
+			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');
+			$('#assumpteCodiFiltre').val('');
+			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
+		} else {
+			$('#unitatFiltreId').parent().closest('.form-group').css('display', '');
+			$('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
+			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
+			$('#asterisk').remove();
+		}
+		if (!isWindowReload) {
+			$('#unitatFiltreId').parent().closest('.form-group').removeClass('has-error');
+			$('#unitatFiltreId').parent().closest('.form-group').find("p.help-block").remove();
+			$('#bustiaFiltreId').parent().closest('.form-group').removeClass('has-error');
+			$('#bustiaFiltreId').parent().closest('.form-group').find("p.help-block").remove();
+			$('#procedimentCodiFiltre').parent().closest('.form-group').removeClass('has-error');
+			$('#procedimentCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
+			$('#assumpteCodiFiltre').parent().closest('.form-group').removeClass('has-error');
+			$('#assumpteCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
+		} else {
+			isWindowReload = false;
+		}
+		
 	});
 	$('#tipus').trigger('change');	
 	$('#backofficeTipus').change(function(){
@@ -118,56 +146,56 @@ $(document).ready(function() {
 
 
 	<c:set var="formAction"><dis:modalUrl value="/regla/save"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="reglaCommand" role="form">
-		<form:hidden path="id"/>
-		
-		<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
-		<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
-		
-		<legend><spring:message code="regla.form.legend.filtre"/></legend>
-		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
-		<dis:inputSuggest 
-			name="unitatFiltreId" 
-			textKey="bustia.form.camp.unitat"
-			urlConsultaInicial="${urlConsultaInicial}" 
-			urlConsultaLlistat="${urlConsultaLlistat}" 
-			inline="false" 
-			placeholderKey="bustia.form.camp.unitat"
-			suggestValue="id"
-			suggestText="codiAndNom"
-			optionTemplateFunction="formatSelectUnitat"/>
-		<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
-		<dis:inputText name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
-		<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
-		
+	<!-- Es redimensiona l'altura de la modal perquè mai desapareguin els botons Guardar/Cancel·lar quan s'oculten o mostren filtres segons el tipus de regla i hi ha errors de validació. -->
+	<div style="height: 650px;">
+		<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="reglaCommand" role="form">
+			<form:hidden path="id"/>
+			
+			<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
+			<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
+			
+			<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+			<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 
-		<legend><spring:message code="regla.form.legend.accio"/></legend>
-		<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
-		<div id="camps_tipus_BUSTIA">
-			<dis:inputSelect 
-				name="bustiaDestiId"
-				textKey="regla.form.camp.bustia" 
-				optionItems="${busties}"
-				optionValueAttribute="id" 
-				optionTextAttribute="nom" 
-				required="true"
-				optionMinimumResultsForSearch="0" 
-				emptyOption="true" />
-		</div>
-		<div id="camps_tipus_BACKOFFICE">
-			<dis:inputSelect 
-				name="backofficeDestiId"
-				textKey="regla.form.camp.backoffice" 
-				optionItems="${backoffices}"
-				optionValueAttribute="id" 
-				optionTextAttribute="nom" 
-				required="true"
-				emptyOption="true" />
-		</div>
-		<div id="camps_tipus_UNITAT">
+			<legend><spring:message code="regla.form.legend.accio"/></legend>
+			<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+			<div id="camps_tipus_BUSTIA">
+				<dis:inputSelect 
+					name="bustiaDestiId"
+					textKey="regla.form.camp.bustia" 
+					optionItems="${busties}"
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					required="true"
+					optionMinimumResultsForSearch="0" 
+					emptyOption="true" />
+			</div>
+			<div id="camps_tipus_BACKOFFICE">
+				<dis:inputSelect 
+					name="backofficeDestiId"
+					textKey="regla.form.camp.backoffice" 
+					optionItems="${backoffices}"
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					required="true"
+					emptyOption="true" />
+			</div>
+			<div id="camps_tipus_UNITAT">
+				<dis:inputSuggest 
+					name="unitatDestiId" 
+					textKey="bustia.form.camp.unitat"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="false" 
+					placeholderKey="bustia.form.camp.unitat"
+					suggestValue="id"
+					suggestText="codiAndNom"
+					optionTemplateFunction="formatSelectUnitat"/>
+			</div>
+			
+			<legend><spring:message code="regla.form.legend.filtre"/></legend>			
 			<dis:inputSuggest 
-				name="unitatDestiId" 
+				name="unitatFiltreId" 
 				textKey="bustia.form.camp.unitat"
 				urlConsultaInicial="${urlConsultaInicial}" 
 				urlConsultaLlistat="${urlConsultaLlistat}" 
@@ -176,13 +204,16 @@ $(document).ready(function() {
 				suggestValue="id"
 				suggestText="codiAndNom"
 				optionTemplateFunction="formatSelectUnitat"/>
-		</div>
-		<div id="modal-botons">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/regla"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
-	</form:form>
-	
+			<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
+			<dis:inputText name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
+			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
+			
+			<div id="modal-botons">
+				<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
+				<a href="<c:url value="/regla"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			</div>
+		</form:form>
+ 	</div>
 	
 </body>
 </html>
