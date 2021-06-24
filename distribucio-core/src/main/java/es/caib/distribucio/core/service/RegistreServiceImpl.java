@@ -10,14 +10,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1063,6 +1066,7 @@ public class RegistreServiceImpl implements RegistreService {
 			// Annexos
 			String nom;
 			if (!registre.getAnnexos().isEmpty()) {
+				Set<String> nomsArxius = new HashSet<String>();
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {
 					fitxer = this.getAnnexFitxer(annex.getId());
 					try {
@@ -1070,7 +1074,8 @@ public class RegistreServiceImpl implements RegistreService {
 							nom = annex.getTitol() + " - " + fitxer.getNom();
 						else
 							nom = fitxer.getNom();
-						ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
+						
+						ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
 						entry.setSize(fitxer.getContingut().length);
 						zos.putNextEntry(entry);
 						zos.write(fitxer.getContingut());
@@ -1117,7 +1122,22 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
 	}
+	private String getZipRecursNom(String nom, Set<String> nomsArxius) {
+		String recursNom;
 
+		// Vigila que no es repeteixi
+		int comptador = 0;
+		do {
+			recursNom = FilenameUtils.removeExtension(nom) + 
+					(comptador > 0 ? " (" + comptador + ")" : "") +
+					"." + FilenameUtils.getExtension(nom);
+			comptador++;
+		} while (nomsArxius.contains(recursNom));
+
+		// Guarda en nom com a utiltizat
+		nomsArxius.add(recursNom);
+		return recursNom;
+	}
 	
 
 	@Transactional(readOnly = true)
