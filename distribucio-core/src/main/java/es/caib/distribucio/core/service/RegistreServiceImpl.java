@@ -1055,12 +1055,6 @@ public class RegistreServiceImpl implements RegistreService {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		try {
-			if (registre.getPare() != null)
-				// Comprova l'accés a la bústia
-				entityComprovarHelper.comprovarBustia(
-						registre.getEntitat(),
-						registre.getPare().getId(),
-						!rolActual.equals("DIS_ADMIN"));
 			// Justificant
 			FitxerDto fitxer = null;
 			// Annexos
