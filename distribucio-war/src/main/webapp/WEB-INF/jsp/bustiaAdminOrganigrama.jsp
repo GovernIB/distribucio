@@ -247,6 +247,10 @@
 
 	}
 
+	function checkSelectedNodes() {
+		
+	}
+	
 	$(document).ready(
 		function() {
 			if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
