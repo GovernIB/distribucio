@@ -118,7 +118,7 @@ public class CacheHelper {
 		Timer.Context contextunitatsOrganitzativesFindArbreByPare = timerunitatsOrganitzativesFindArbreByPare.time();
 		
 		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiDir3Entitat(pareCodi);
+				.findByCodiDir3EntitatOrderByDenominacioAsc(pareCodi);
 		
 		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
 				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);
