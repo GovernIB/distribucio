@@ -57,8 +57,9 @@ public class BackofficeValidator implements ConstraintValidator<Backoffice, Obje
 			LOGGER.error("Error al validar si el codi de backoffice és únic", ex);
 		}
 		
-		if (command.getUsuari() != null && !command.getUsuari().isEmpty()) {
-			String usuari = aplicacioService.propertyFindByNom(command.getUsuari());
+		if (command.getUsuari() != null && !command.getUsuari().isEmpty() && 
+				command.getUsuari().startsWith("${") && command.getUsuari().endsWith("}")) {
+			String usuari = aplicacioService.propertyFindByNom(command.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			if (usuari == null) {
 				valid = false;
 				context.buildConstraintViolationWithTemplate(
@@ -68,8 +69,9 @@ public class BackofficeValidator implements ConstraintValidator<Backoffice, Obje
 			}
 		}
 
-		if (command.getContrasenya() != null && !command.getContrasenya().isEmpty()) {
-			String contrasenya = aplicacioService.propertyFindByNom(command.getContrasenya());
+		if (command.getContrasenya() != null && !command.getContrasenya().isEmpty() && 
+				command.getContrasenya().startsWith("${") && command.getContrasenya().endsWith("}")) {
+			String contrasenya = aplicacioService.propertyFindByNom(command.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			if (contrasenya == null) {
 				valid = false;
 				context.buildConstraintViolationWithTemplate(
