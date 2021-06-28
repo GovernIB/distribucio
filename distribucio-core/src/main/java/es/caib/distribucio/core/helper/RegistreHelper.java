@@ -1020,11 +1020,11 @@ public class RegistreHelper {
 			BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
 			String usuari = backofficeDesti.getUsuari();
 			String contrasenya = backofficeDesti.getContrasenya();
-			if (usuari != null && !usuari.isEmpty()) {
-				usuari = PropertiesHelper.getProperties().getProperty(backofficeDesti.getUsuari());
+			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
+				usuari = PropertiesHelper.getProperties().getProperty(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
-			if (contrasenya != null && !contrasenya.isEmpty()) {
-				contrasenya = PropertiesHelper.getProperties().getProperty(backofficeDesti.getContrasenya());
+			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
+				contrasenya = PropertiesHelper.getProperties().getProperty(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			logger.trace(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
