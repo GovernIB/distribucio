@@ -79,6 +79,8 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	
 	List<UnitatOrganitzativaEntity> findByCodiDir3Entitat(String codiDir3Entitat);
 	
+	List<UnitatOrganitzativaEntity> findByCodiDir3EntitatOrderByDenominacioAsc(String codiDir3Entitat);
+	
 	@Query(	"from " +
 			"    UnitatOrganitzativaEntity uo " +
 			"where " +
