@@ -836,7 +836,10 @@ public class RegistreHelper {
 		
 		logger.trace("Loading Signatura detalls to DB");
 		
-		annexEntity = registreAnnexRepository.getOne(annexEntity.getId());
+		if (annexEntity.getFitxerArxiuUuid() == null || annexEntity.getFitxerArxiuUuid().isEmpty()) {
+			logger.warn("Intent de carregar dades de firmes per l'annex " + annexEntity.getTimestamp() + " de l'anotació " + annexEntity.getRegistre().getIdentificador() + " amb UUID d'Arxiu buit.");
+			return;
+		}
 		
 		try {
 			final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
@@ -894,7 +897,6 @@ public class RegistreHelper {
 				}
 				}
 			annexEntity.updateSignaturaDetallsDescarregat(true);
-			registreAnnexRepository.saveAndFlush(annexEntity);
 		} catch (Exception e) {
 			logger.error("Error al carregar singatura detalls a la base de dades", e);
 			throw new RuntimeException("Error al carregar singatura detalls a la base de dades", e);
