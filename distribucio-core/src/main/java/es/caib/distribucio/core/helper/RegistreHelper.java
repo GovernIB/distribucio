@@ -920,7 +920,7 @@ public class RegistreHelper {
 				annex.updateOrigenCiutadaAdmin(metadades.getOrigen().toString());
 				annex.updateNtiElaboracioEstat(metadades.getEstatElaboracio().toString());
 				annex.updateNtiTipusDocument(metadades.getTipusDocumental().toString());
-				annex.updateFirmaCsv(metadades.getMetadadaAddicional("eni:csv") != null ? String.valueOf(metadades.getMetadadaAddicional("eni:csv")) : null);
+				annex.updateFirmaCsv(metadades.getCsv());
 			}
 			annex.updateRegistre(registre);
 			
