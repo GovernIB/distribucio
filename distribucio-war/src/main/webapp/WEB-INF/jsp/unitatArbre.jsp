@@ -28,6 +28,9 @@
 			var selectedNode = arbre.jstree("get_selected");
 			arbre.jstree("open_all", selectedNode, false, true);
 		}
+		function checkSelectedNodes() {
+			// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
+		}
 	</script>
 </head>
 <body >
