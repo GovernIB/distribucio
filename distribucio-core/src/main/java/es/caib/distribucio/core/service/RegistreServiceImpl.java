@@ -362,7 +362,7 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
 
-		logger.debug("Consultant el contingut de l'usuari ("
+		logger.trace("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
 				+ "numero=" + filtre.getNumero() + ", "
@@ -422,7 +422,7 @@ public class RegistreServiceImpl implements RegistreService {
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
-			logger.debug("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
 		} catch (Exception e) {
 			long endTime = new Date().getTime();
 			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);

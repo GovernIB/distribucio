@@ -47,7 +47,7 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 
 	private void refrescarMappableAttributes() {
 		if (refrescarTimestamp < System.currentTimeMillis()) {
-			LOGGER.debug("Refrescant el llistat de rols per mapejar");
+			LOGGER.trace("Refrescant el llistat de rols per mapejar");
 			mappableAttributes.clear();
 			if (defaultMappableAttributes != null) {
 				mappableAttributes.addAll(defaultMappableAttributes);
@@ -59,7 +59,7 @@ public class RolesBasedMappableAttributesRetriever implements MappableAttributes
 				// Refrescam els rols disponibles cada minut
 				refrescarTimestamp = System.currentTimeMillis() + (60 * 1000);
 				String rolsPerMostrar = Arrays.toString(mappableAttributes.toArray(new String[mappableAttributes.size()]));
-				LOGGER.debug("Rols disponibles: " + rolsPerMostrar);
+				LOGGER.trace("Rols disponibles: " + rolsPerMostrar);
 			} catch (RuntimeException ex) {
 				throw ex;
 			}

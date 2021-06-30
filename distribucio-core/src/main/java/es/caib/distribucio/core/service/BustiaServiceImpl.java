@@ -502,7 +502,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) {
-		logger.debug("Cercant la bústia ("
+		logger.trace("Cercant la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "id=" + id + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -531,7 +531,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) {
-		logger.debug("Cercant les bústies de la unitat per admins ("
+		logger.trace("Cercant les bústies de la unitat per admins ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatCodi=" + unitatCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -555,7 +555,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findAmbUnitatId(
 			Long entitatId,
 			Long unitatId) {
-		logger.debug("Cercant les bústies de la unitat per admins ("
+		logger.trace("Cercant les bústies de la unitat per admins ("
 				+ "entitatId=" + entitatId + ", "
 				+ "unitatId=" + unitatId + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -580,7 +580,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			BustiaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Cercant les bústies segons el filtre ("
+		logger.trace("Cercant les bústies segons el filtre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "filtre=" + filtre + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -655,7 +655,7 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextfindActivesAmbEntitat = timerfindActivesAmbEntitat.time();
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Cercant bústies actives de l'entitat ("
+		logger.trace("Cercant bústies actives de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -683,7 +683,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public List<BustiaDto> findAmbEntitat(
 			Long entitatId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Cercant bústies de l'entitat ("
+		logger.trace("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -705,7 +705,7 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId, 
 			BustiaFiltreOrganigramaDto filtre) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("Cercant bústies de l'entitat ("
+		logger.trace("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
 				+ "usuariCodi=" + auth.getName() + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -1399,7 +1399,7 @@ public class BustiaServiceImpl implements BustiaService {
 			boolean nomesBusties,
 			boolean nomesBustiesPermeses,
 			boolean comptarElementsPendents) {
-		logger.debug("Consulta de l'arbre d'unitats organitzatives ("
+		logger.trace("Consulta de l'arbre d'unitats organitzatives ("
 				+ "entitatId=" + entitatId + ", "
 				+ "nomesBusties=" + nomesBusties + ", "
 				+ "nomesBustiesPermeses=" + nomesBustiesPermeses + ", "
@@ -1436,7 +1436,7 @@ public class BustiaServiceImpl implements BustiaService {
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(
 			Long entitatId,
 			List<BustiaDto> busties) {
-		logger.debug("Consulta de l'arbre d'unitats organitzatives (" +
+		logger.trace("Consulta de l'arbre d'unitats organitzatives (" +
 				"entitatId=" + entitatId +")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
