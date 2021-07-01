@@ -19,6 +19,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
@@ -131,7 +132,7 @@ public class EmailHelper {
 			String emailDestinatari,
 			List<ContingutMovimentEmailEntity> contingutMovimentEmails) {
 		
-		logger.debug("Enviament emails nou contenidor a bústies");
+		logger.trace("Enviament emails nou contenidor a bústies");
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 			
@@ -180,7 +181,7 @@ public class EmailHelper {
 	public void sendEmailAvisSimpleNouElementBustia(
 			String emailDestinatari,
 			Long contingutEmailId) {
-		logger.debug("Enviament email moviment a destinatari");
+		logger.trace("Enviament email moviment a destinatari");
 		
 		ContingutMovimentEmailEntity contingutEmail = contingutMovimentEmailRepository.findOne(contingutEmailId);
 		
@@ -223,7 +224,7 @@ public class EmailHelper {
 			UsuariEntity usuariActual,
 			ContingutEntity contingut,
 			String comentari) {
-		logger.debug("Enviament email comentari a destinatari");
+		logger.trace("Enviament email comentari a destinatari");
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		BustiaEntity bustia = null;
 		ContingutEntity pare = contingut.getPare();
@@ -259,6 +260,8 @@ public class EmailHelper {
 			RegistreEntity registreEntity, 
 			UsuariEntity usuariActual,
 			UsuariEntity usuariResponsableBloqueig) {
+		if (usuariActual.getEmail() == null || usuariActual.getEmail().isEmpty())
+			throw new EmptyMailException("L'usuari que té agafada l'anotació no disposa d'un correu electrònic assigant. Contacti amb l'administrador per alliberar l'anotació.");
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setFrom(getRemitent());
 		missatge.setTo(usuariActual.getEmail());

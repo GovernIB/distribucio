@@ -125,7 +125,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			Long entitatId,
 			UnitatOrganitzativaFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
-		logger.debug("Cercant les unitats organitzatives segons el filtre ("
+		logger.trace("Cercant les unitats organitzatives segons el filtre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "filtre=" + filtre + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(

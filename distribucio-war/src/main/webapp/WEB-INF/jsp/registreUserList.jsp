@@ -50,6 +50,46 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 	background: #FF9C59 !important;
 	border-color: #FF9C59 !important;
 }
+
+.dataTables_length {
+	display: flex;
+}
+
+.llegenda_paginador {
+	display: flex;
+	align-items: center;
+	position: relative;
+	left: 20px;
+}
+
+.item_llegenda {
+	margin: 0 10px 0 10px;
+	display: flex;
+	align-items: center;
+}
+
+.item_llegenda span:nth-child(2){
+	margin-left: 4px;
+}
+
+.llegenda_coneixement span:nth-child(1), .lleganda_tramitacio span:nth-child(1){
+	display: block;
+	width: 10px;
+	height: 10px;
+}
+
+.llegenda_coneixement span:nth-child(1){
+	background-color: #5bc0de;
+}
+
+.lleganda_tramitacio span:nth-child(1){
+	background-color: #f99957;
+}
+div.extracteColumn {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+}
 </style>
 <script>
 $.views.helpers({
@@ -122,8 +162,40 @@ $(document).ready(function() {
 				$a.attr('href', $a.attr('href') + '?' + params.toString());
 				// Afegeix els paràmetres a l'enllaç de la fila
 				$(this).data('href', $(this).data('href') + '?' + params.toString());
+				
+				if (${isEnviarConeixementActiu}) {
+					//tramitació/coneixement
+					var isPerConeixement = $('#taulaDades').dataTable().api().row($(this)).data()['perConeixement'];
+					if (isPerConeixement) {
+						$(this).find("td:eq(0)").css('background-color', '#5bc0de');
+					} else {
+						$(this).find("td:eq(0)").css('background-color', '#ff9c59');
+					}
+				}
 			}
 		});
+		
+		//Llegenda paginador
+		var $paginador = $('.dataTables_length');
+		if ($paginador.find('.llegenda_paginador').length == 0 && ${isEnviarConeixementActiu}) {
+			var $paginador_container = $paginador.closest('.row');
+			$paginador_container.find('div:first').addClass('col-md-6').removeClass('col-md-3');
+			$paginador_container.find('div:nth-child(2)').addClass('col-md-6').removeClass('col-md-9');
+			var llegenda = '<div class="llegenda_paginador">\
+								<div class="item_llegenda">\
+									<span><spring:message code="contingut.enviar.info.llegenda"/>:</span>\
+								</div>\
+								<div class="item_llegenda lleganda_tramitacio">\
+									<span></span>\
+									<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
+								</div>\
+								<div class="item_llegenda llegenda_coneixement">\
+									<span></span>\
+									<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
+								</div>\
+							</div>';
+			$paginador.append(llegenda);
+		}
 	} ).on('selectionchange.dataTable', function (e, accio, ids) {
 		$.get(
 				"registreUser/" + accio,
@@ -263,7 +335,7 @@ $(document).ready(function() {
 						<li><a href="registreUser/marcarProcessatMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.marcar.processat"/>
 						</a></li>
-						<li><a href="registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="registreUser/enviarViaEmailMultiple/false" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 						</a></li>
 					</ul>
@@ -308,8 +380,13 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="extracte" width="25%" style="min-width:150px;">
+				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
+					<script id="extracteTemplate" type="text/x-jsrender">
+						<div class="extracteColumn">
+							{{:extracte}}
+						</div>
+					</script>
 				</th>			
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
 				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
@@ -394,9 +471,6 @@ $(document).ready(function() {
 						{{/for}}
 						{{if !bustiaActiva}}
 							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="bustia.list.avis.bustia.inactiva"/>"></span>
-						{{/if}}
-						{{if perConeixement}}
-							<span class="fa fa-info-circle text-success" title="<spring:message code="bustia.list.avis.bustia.coneixement"/>"></span>
 						{{/if}}
 					</script>
 				</th>

@@ -88,7 +88,7 @@ $(document).ready(function() {
 			suggestText="codiAndNom"
 			optionTemplateFunction="formatSelectUnitat"
 			required="true"/>
-			
+		<dis:inputSelect name="bustiaId" textKey="regla.simulador.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="procedimentCodi" textKey="regla.simulador.form.camp.procediment.codi"/>
 		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
 		
@@ -113,7 +113,7 @@ $(document).ready(function() {
 					<c:forEach var="simulatAccion" items="${simulatAccions}" varStatus="status">
 						<tr>
 							<td>${status.count} </td>
-							<td><spring:message code='regla.simulador.accio.${simulatAccion.accion}'/> "${simulatAccion.param}"</td>
+							<td><spring:message code='regla.simulador.accio.${simulatAccion.accion}'/> <c:if test="${simulatAccion.param!=null}">"${simulatAccion.param}"</c:if></td>
 							<td>${simulatAccion.reglaNom}</td>
 						</tr>
 					</c:forEach>

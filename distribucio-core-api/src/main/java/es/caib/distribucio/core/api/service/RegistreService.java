@@ -93,7 +93,7 @@ public interface RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
-			boolean isAdmin);
+			boolean onlyAmbMoviments, boolean isAdmin);
 	
 
 	/**

@@ -43,8 +43,8 @@
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
-		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari"/>
-		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya"/>
+		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
+		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
 		<block id="backofficeTempsEntreIntentsBlock" style='display:${backofficeCommand.tipus == "SISTRA" ? "inline" : "none"}'>
 			<dis:inputText name="intents" textKey="backoffice.form.camp.intents"/>
 			<dis:inputText name="tempsEntreIntents" textKey="backoffice.form.camp.temps.entre.intents" comment="backoffice.form.camp.temps.entre.intents.info"/>

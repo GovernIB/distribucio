@@ -147,7 +147,6 @@ public class AvisServiceImpl implements AvisService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<AvisDto> findActive() {
-		logger.debug("Consulta els avisos actius");
 		return conversioTipusHelper.convertirList(
 				avisRepository.findActive(DateUtils.truncate(new Date(), Calendar.DATE)), 
 				AvisDto.class);

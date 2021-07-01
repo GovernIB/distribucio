@@ -247,6 +247,10 @@
 
 	}
 
+	function checkSelectedNodes() {
+		// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
+	}
+	
 	$(document).ready(
 		function() {
 			if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {

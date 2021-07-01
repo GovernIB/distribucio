@@ -30,9 +30,9 @@ public class DistribucioAuditorAware implements AuditorAware<UsuariEntity> {
 	public UsuariEntity getCurrentAuditor() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String auditorActual = (auth != null) ? auth.getName() : null;
-		LOGGER.debug("Obtenint l'usuari auditor per a l'usuari (codi=" + auditorActual + ")");
+		LOGGER.trace("Obtenint l'usuari auditor per a l'usuari (codi=" + auditorActual + ")");
 		if (auditorActual == null) {
-			LOGGER.debug("Auditor actual: null");
+			LOGGER.trace("Auditor actual: null");
 			return null;
 		} else {
 			UsuariEntity usuari = usuariRepository.findOne(auditorActual);

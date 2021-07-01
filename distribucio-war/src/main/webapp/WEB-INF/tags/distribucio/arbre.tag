@@ -158,16 +158,17 @@
 	        var nodeId = node.id;
 	    	var isBustia = node.icon.includes('inbox');
 	    	var nodeAnchor = $('#' + node.a_attr.id);
-	    	if (isBustia && nodeAnchor.next('span').length == 0) {
-	    		nodeAnchor.after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
-	    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
-	    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
-	    			nodeAnchor.next().addClass('favorit');
+	    	
+	    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next('span').length == 0) {
+	    		nodeAnchor.after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+	    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
 	    	}
 	    	
-	    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next().next('span').length == 0) {
-	    		nodeAnchor.next().after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
-	    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+	    	if (isBustia && nodeAnchor.next().next('span').length == 0) {
+	    		nodeAnchor.next().after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+	    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
+	    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
+	    			nodeAnchor.next().next().addClass('favorit');
 	    	}
 		});
 	}

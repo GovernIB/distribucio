@@ -76,7 +76,7 @@ public class CacheHelper {
 
 	@Cacheable(value = "entitatsUsuari", key="#usuariCodi")
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi) {
-		logger.debug("Consulta entitats accessibles (usuariCodi=" + usuariCodi + ")");
+		logger.trace("Consulta entitats accessibles (usuariCodi=" + usuariCodi + ")");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<EntitatEntity> entitats = entitatRepository.findByActiva(true);
 		permisosHelper.filterGrantedAny(
@@ -118,7 +118,7 @@ public class CacheHelper {
 		Timer.Context contextunitatsOrganitzativesFindArbreByPare = timerunitatsOrganitzativesFindArbreByPare.time();
 		
 		List<UnitatOrganitzativaEntity> unitatsOrganitzativesEntities = unitatOrganitzativaRepository
-				.findByCodiDir3Entitat(pareCodi);
+				.findByCodiDir3EntitatOrderByDenominacioAsc(pareCodi);
 		
 		List<UnitatOrganitzativa> unitatsOrganitzatives = conversioTipusHelper
 				.convertirList(unitatsOrganitzativesEntities, UnitatOrganitzativa.class);

@@ -46,23 +46,40 @@
 			border: 1px solid #ccc;
 			border-radius: 4px;
 			width: 100%;
+			padding: 2px 10px;
 		}
 		
-		.jstree-search-container {
-			position: relative;
-			top: 25px;
-			width: 80%;
-			margin-left: 15%;
+		.jstree-filter {
 			display: flex;
-			z-index: 100;
+			align-items: center;
+			padding-bottom: 10px;
 		}
 		
-		.jstree-search-container div:nth-child(1) {
+		.jstree-filter label {
+			margin-bottom: 0px;
+		}
+		
+		.jstree-filter div:nth-child(1) {
+			width: 15%;
+		}
+		
+		.jstree-filter div:nth-child(2) {
 			width: 35%;
 		}
 		
-		.jstree-search-container div:nth-child(2) {
+		.jstree-filter div:nth-child(3) {
 			margin-left: 5%;
+		}
+		
+		.jstree-filter div:nth-child(3) label {
+			display: flex;
+			align-items: center;
+		}
+		
+		.jstree-filter div:nth-child(3) input {
+			margin: 0;
+			height: 15px;
+			width: 20px;
 		}
 		
 		.bustia_container {
@@ -76,6 +93,19 @@
 		.taules_container {
 			width: 55%;
 			margin: 2% 0 0 1%;
+		}
+		
+		.taules_container div:nth-child(2) {
+			margin-bottom: 0;
+		}
+		
+		.taules_container div:nth-child(3) {
+			display: flex;
+			align-items: center;
+		}
+		
+		.taules_container div:nth-child(3) input[type=checkbox] {
+			margin: 0;
 		}
 		
 		.busties {
@@ -210,14 +240,6 @@
 			font-size: 11px;		
 		}
 		
-		input#favorits {
-			position: relative;
-			top: 2px;
-			left: 0;
-			height: 15px;
-			width: 20px;
-		}
-		
 	</style>
 	<script type="text/javascript">
 		var idsBustiesFavorits = [];
@@ -246,7 +268,7 @@
 				var idNode = data.node.id;
 				var nodeHrefId = '#' + data.node.a_attr.id;
 				//var selectedForConeixement = $(nodeHrefId).hasClass('jstree-clicked-coneixement');
-				var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
+				var isPerConeixement = $(nodeHrefId).next().hasClass('coneixement');
 	            var hasClassSquare = $(nodeHrefId).find('i.fa-square-o').length != 0;
 	    		var hasClassClicked = $(nodeHrefId).parent().find('.jstree-clicked').length != 0;
 	    		
@@ -276,10 +298,10 @@
 	            currentCheckbox.removeClass('fa-check-square-o');
 	            currentCheckbox.addClass('fa-square-o');
 				esborrarDeConeixement(idNode, true);
-				var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
+				var isPerConeixement = $(nodeHrefId).next().hasClass('coneixement');
 				if(isPerConeixement) {
 					actualitzarTaulaConeixement(idNode, false, false);
-		          	$(nodeHrefId).next().next().removeClass('coneixement');
+		          	$(nodeHrefId).next().removeClass('coneixement');
 				} else {
 					actualitzarTaulaTramitacio(idNode);
 				}
@@ -360,13 +382,21 @@
 	    		var nodeHrefId = '#' + node.a_attr.id;		
 		    	var nodeAnchor = $(nodeHrefId);
 	            var hasClassClicked = nodeAnchor.parent().find('.jstree-clicked').length != 0;
-	            var noSeleccionatPerConeixement = nodeAnchor.next().next('span').length == 0;
+	            var noSeleccionatPerConeixement = nodeAnchor.next('span').length == 0;
 	            
-		    	if (isBustia && nodeAnchor.next('span').length == 0) {
-		    		nodeAnchor.after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+		    	if (${isEnviarConeixementActiu} && isBustia && noSeleccionatPerConeixement) {
+		    		nodeAnchor.after('<span id="' + idNode + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+		    		if (idsPerConeixement.indexOf(idNode) != -1) {
+		    			nodeAnchor.next().addClass('coneixement');
+		    		}
+		    	}
+		    	
+		    	if (isBustia && nodeAnchor.next().next('span').length == 0) {
+		    		nodeAnchor.next().after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
-		    			nodeAnchor.next().addClass('favorit');
+		    			nodeAnchor.next().next().addClass('favorit');
 		    		}
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
@@ -374,14 +404,6 @@
 		                currentCheckbox.removeClass('fa-square-o');
 		                currentCheckbox.addClass('fa-check-square-o');
 		            }	         
-		    	}
-		    	
-		    	if (${isEnviarConeixementActiu} && isBustia && noSeleccionatPerConeixement) {
-		    		nodeAnchor.next().after('<span id="' + idNode + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
-		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
-		    		if (idsPerConeixement.indexOf(idNode) != -1) {
-		    			nodeAnchor.next().next().addClass('coneixement');
-		    		}
 		    	}
 			});
 			$arbre.find('li[data-jstree*="fa-folder"]').find('.jstree-anchor:first').find('.fa-square-o').hide();
@@ -391,7 +413,7 @@
 			var $arbre = $("#arbreUnitats_destins");
 			var node = $arbre.jstree().get_node(idNode);
 			var nodeHrefId = '#' + node.a_attr.id;
-			var markedAsFavorit = $(nodeHrefId).next().hasClass('favorit');
+			var markedAsFavorit = $(nodeHrefId).next().next().hasClass('favorit');
 			if (markedAsFavorit) {
 				esborrarDeFavorits(idNode);
 				idsBustiesFavorits = $.grep(idsBustiesFavorits, function(value) {
@@ -408,15 +430,12 @@
 			var $arbre = $("#arbreUnitats_destins");
 			var node = $arbre.jstree().get_node(idNode);
 			var nodeHrefId = '#' + node.a_attr.id;
-			var isPerConeixement = $(nodeHrefId).next().next().hasClass('coneixement');
+			var isPerConeixement = $(nodeHrefId).next().hasClass('coneixement');
 			if (isPerConeixement) {
 				esborrarDeConeixement(idNode, true);
 			} else {
 				afegirPerConeixement(idNode, nodeHrefId, true);
 			}
-          	console.log("seleccionat per coneixement: " + idsPerConeixement);
-
-          	console.log("seleccionat per tramitació: " + $('#destins').val());
 		}
 		
 		function afegirPerConeixement(idNode, nodeHrefId, updateTaula) {
@@ -427,7 +446,7 @@
 	    		actualitzarTaulaConeixement(idNode, true, false);
 	    	}
 	    	idsPerConeixement.push(idNode);
-          	$(nodeHrefId).next().next().addClass('coneixement');
+          	$(nodeHrefId).next().addClass('coneixement');
           	$arbre.jstree('select_node', idNode);
 		}
 		
@@ -449,7 +468,7 @@
 				url: '<c:url value="/registreUser/favorits/add/"/>' + idNode,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
-			 		$(nodeHrefId).next().addClass('favorit');
+			 		$(nodeHrefId).next().next().addClass('favorit');
 				},
 				error: function(e) {
 					alert("hi ha hagut un error actualitzant els favorits");
@@ -466,7 +485,7 @@
 				url: '<c:url value="/registreUser/favorits/remove/"/>' + idNode,
 				success: function (result) {
 					$('#taulaFavorits').DataTable().ajax.reload();
-					$(nodeHrefId).next().removeClass('favorit');
+					$(nodeHrefId).next().next().removeClass('favorit');
 				},
 				error: function(e) {
 					alert("hi ha hagut un error esborrant la bústia de favorits");
@@ -548,7 +567,7 @@
 		            }	         
 		            
 		    		if (idsPerConeixement.indexOf(idNode) != -1) {
-		    			nodeAnchor.next().next().toggleClass('coneixement');
+		    			nodeAnchor.next().toggleClass('coneixement');
 		    			afegirPerConeixement(idNode, nodeHrefId, false);
 		    		}
 		    	}
@@ -617,7 +636,10 @@
 	    	
 	    		<div class="bustia_container">
 		    		<div class="arbre_container">
-		    			<div class="jstree-search-container">
+		    			<div class="jstree-filter">
+		    				<div>
+								<label><spring:message code="contingut.enviar.camp.desti"/></label>
+							</div>
 		    				<div>
 		    					<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 		    				</div>
@@ -629,7 +651,8 @@
 							<dis:inputArbre name="destins" inline="true" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 							fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 							fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
-							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"/>
+							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"
+							showLabel="false"/>
 
 						</div>
 					</div>
@@ -667,7 +690,11 @@
 			    			</div>
 			    		</div>			
 						<form:hidden path="perConeixement"/>
-						<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}" labelSize="${isFavoritsPermes ? '2' : ''}"/>
+						<div class="form-group col-xs-12">
+							<form:checkbox path="deixarCopia" cssClass="span12" id="deixarCopia" disabled="${disableDeixarCopia}"/>
+							<label for="deixarCopia" style="padding: 7px 0 0 7px;"><spring:message code="contingut.enviar.camp.deixar.copia"/></label>
+						</div>
+						<%--<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/> --%>
 						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>
 	    		</div>

@@ -746,10 +746,7 @@ public class ContingutHelper {
 		contingutRepository.saveAndFlush(registreCopia);
 		boolean duplicarContingutArxiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
 		if (duplicarContingutArxiu) {
-			registreHelper.createRegistreAndAnnexosInArxiu(
-					registreCopia,
-					codiDir3Desti,
-					true);
+			registreCopia.setProces(RegistreProcesEstatEnum.ARXIU_PENDENT);
 		} else {
 			registreCopia.updateExpedientArxiuUuid(registreOriginal.getExpedientArxiuUuid());
 		}

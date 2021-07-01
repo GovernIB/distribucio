@@ -24,6 +24,7 @@
 <%@ attribute name="isEnviarConeixementActiu" type="java.lang.Boolean"%>
 <%@ attribute name="isFavoritsPermes" type="java.lang.Boolean"%>
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
+<%@ attribute name="showLabel" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
@@ -34,7 +35,9 @@
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>">
 <c:choose>
 	<c:when test="${not inline}">
-			<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
+			<c:if test="${showLabel}">
+				<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
+			</c:if>
 			<div class="col-xs-${campInputSize}">
 				<div class="input-group" style="width:100%">
 					<spring:bind path="${campPath}">
@@ -51,7 +54,9 @@
 	</c:when>
 	<c:otherwise>
 		<div class="col-xs-${campInputSize}">
-	   		<label for="${campPath}">${campLabelText}</label>
+			<c:if test="${showLabel}">
+	   			<label for="${campPath}">${campLabelText}</label>
+	   		</c:if>
 	   		<spring:bind path="${campPath}">
 				<input type="hidden" id="${campPath}" name="${campPath}"/>
 				<dis:arbre id="arbreUnitats_${campPath}" readyCallback="${readyCallback}" seleccionatId="${status.value}" arbre="${arbre}" atributId="codi" 

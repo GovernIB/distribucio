@@ -12,6 +12,11 @@
 	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
 	<dis:modalHead/>
+	<script type="text/javascript">
+		function checkSelectedNodes() {
+			// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
+		}
+	</script>
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="moureAnotacionsCommand">

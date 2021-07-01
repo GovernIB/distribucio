@@ -140,6 +140,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					ex);
 		}
 	}
+	
+
 
 	@Override
 	public String saveAnnexAsDocumentInArxiu(
@@ -319,7 +321,11 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		this.gesdocAgrupacioFirmes = gesdocAgrupacioFirmes;
 	}
 
-
+	private String replaceIllegalCharacters(String text) {
+		text = text.replace(".", "_");
+		text = text.replace(" ", "_");
+		return text;
+	}
 
 	private String arxiuDocumentAnnexCrear(
 			DistribucioRegistreAnnex annex,
@@ -369,9 +375,10 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		long t0 = System.currentTimeMillis();
 		try {
 			
+			String annexTitol = replaceIllegalCharacters(annex.getTitol());
 			
-			String annexTitol = uniqueNameArxiu(
-					annex.getTitol(),
+			annexTitol = uniqueNameArxiu(
+					annexTitol,
 					identificadorPare);
 			
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(

@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -161,5 +162,10 @@ public class ReglaServiceBean implements ReglaService {
 				registreSimulatDto);
 	}
 	
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
+		return delegate.findReglesByCodiProcediment(procediments);
+	}
 
 }

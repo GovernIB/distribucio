@@ -15,9 +15,14 @@ public class IntegracioDto implements Serializable {
 
 	private String codi;
 	private String nom;
+	private int numErrors;
 
-
-
+	public int getNumErrors() {
+		return numErrors;
+	}
+	public void setNumErrors(int numErrors) {
+		this.numErrors = numErrors;
+	}
 	public String getCodi() {
 		return codi;
 	}

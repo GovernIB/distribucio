@@ -10,14 +10,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -359,7 +362,7 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
 
-		logger.debug("Consultant el contingut de l'usuari ("
+		logger.trace("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
 				+ "numero=" + filtre.getNumero() + ", "
@@ -419,7 +422,7 @@ public class RegistreServiceImpl implements RegistreService {
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
-			logger.debug("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
 		} catch (Exception e) {
 			long endTime = new Date().getTime();
 			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
@@ -460,6 +463,7 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
+			boolean onlyAmbMoviments, 
 			boolean isAdmin) {
 		List<Long> ids;
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "contingutPendentFindIds"));
@@ -472,12 +476,19 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null;
+		BustiaEntity bustia = null, bustiaOrigen = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
+		
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
+					false);
+		}
 
 		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
@@ -570,7 +581,10 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
 				unitat == null,
-				unitat);
+				unitat,
+				onlyAmbMoviments,
+				bustiaOrigen == null,
+				bustiaOrigen);
 	
 
 		contextTotal.stop();
@@ -1031,45 +1045,60 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Transactional(readOnly = true)
-	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception {
+	public FitxerDto getZipDocumentacio(
+			Long registreId,
+			String rolActual) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
-				
+
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		try {
-			if (registre.getPare() != null)
-				// Comprova l'accés a la bústia
-				entityComprovarHelper.comprovarBustia(
-							registre.getEntitat(),
-							registre.getPare().getId(),
-							!rolActual.equals("DIS_ADMIN"));
 			// Justificant
-			FitxerDto fitxer;
+			FitxerDto fitxer = null;
 			// Annexos
 			String nom;
-			for (RegistreAnnexEntity annex : registre.getAnnexos()) {
-				fitxer = this.getAnnexFitxer(annex.getId());
+			if (!registre.getAnnexos().isEmpty()) {
+				Set<String> nomsArxius = new HashSet<String>();
+				for (RegistreAnnexEntity annex : registre.getAnnexos()) {
+					fitxer = this.getAnnexFitxer(annex.getId());
+					try {
+						if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId())
+							nom = annex.getTitol() + " - " + fitxer.getNom();
+						else
+							nom = fitxer.getNom();
+						
+						ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
+						entry.setSize(fitxer.getContingut().length);
+						zos.putNextEntry(entry);
+						zos.write(fitxer.getContingut());
+						zos.closeEntry();
+					} catch (Exception e) {
+						String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+						logger.error(errMsg);
+						throw new Exception(errMsg, e);
+					}
+				}
+			} else {
 				try {
-					if (registre.getJustificant() == null 
-							|| annex.getId() != registre.getJustificant().getId()) 
-						nom = annex.getTitol() + " - " + fitxer.getNom();
-					else
-						nom = fitxer.getNom();
+					fitxer = registreHelper.getJustificant(registreId);
+					nom = fitxer.getNom();
 					ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
 					entry.setSize(fitxer.getContingut().length);
 					zos.putNextEntry(entry);
 					zos.write(fitxer.getContingut());
 					zos.closeEntry();
 				} catch (Exception e) {
-					String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
-					logger.error(errMsg, e);
-					throw new Exception(errMsg, e);
+					String errMsg = "Error afegint justificant del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+					logger.error(errMsg);
+					throw new Exception(errMsg,
+							e);
 				}
 			}
+
 			zos.close();
-			
+
 			zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
 			zip.setContingut(baos.toByteArray());
 			zip.setContentType("application/zip");
@@ -1081,14 +1110,28 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return zip;
 	}
-
 	private static String revisarContingutNom(String nom) {
 		if (nom == null) {
 			return null;
 		}
 		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
 	}
+	private String getZipRecursNom(String nom, Set<String> nomsArxius) {
+		String recursNom;
 
+		// Vigila que no es repeteixi
+		int comptador = 0;
+		do {
+			recursNom = FilenameUtils.removeExtension(nom) + 
+					(comptador > 0 ? " (" + comptador + ")" : "") +
+					"." + FilenameUtils.getExtension(nom);
+			comptador++;
+		} while (nomsArxius.contains(recursNom));
+
+		// Guarda en nom com a utiltizat
+		nomsArxius.add(recursNom);
+		return recursNom;
+	}
 	
 
 	@Transactional(readOnly = true)
