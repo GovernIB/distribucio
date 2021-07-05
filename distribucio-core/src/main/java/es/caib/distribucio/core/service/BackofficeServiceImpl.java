@@ -50,7 +50,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 				false);
 		
 		
-		BackofficeEntity enitity = BackofficeEntity.getBuilder(backofficeDto.getTipus(),
+		BackofficeEntity enitity = BackofficeEntity.getBuilder(
 				backofficeDto.getCodi(),
 				backofficeDto.getNom(),
 				backofficeDto.getUrl(),
@@ -85,7 +85,6 @@ public class BackofficeServiceImpl implements BackofficeService {
 
 		
 		backofficeEntity.update(
-				backofficeDto.getTipus(),
 				backofficeDto.getCodi(),
 				backofficeDto.getNom(),
 				backofficeDto.getUrl(),

@@ -1236,49 +1236,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreAnotacioDto;
 	}
 
-	@Transactional
-	@Override
-	public void updateProces(
-			Long registreId, 
-			RegistreProcesEstatEnum procesEstat, 
-			RegistreProcesEstatSistraEnum procesEstatSistra,
-			String resultadoProcesamiento) {
-		logger.debug("Actualitzar estat procés anotació de registre ("
-				+ "registreId=" + registreId + ", "
-				+ "procesEstat=" + procesEstat + ", "
-				+ "procesEstatSistra=" + procesEstatSistra + ", "
-				+ "resultadoProcesamiento=" + resultadoProcesamiento + ")");
-		RegistreEntity registre = registreRepository.findOne(registreId);
-		registre.updateProces(
-				procesEstat,
-				resultadoProcesamiento != null ? new Exception(resultadoProcesamiento) : null);
-		registre.updateProcesSistra(procesEstatSistra);
-	}
-
-	@Transactional (readOnly = true)
-	@Override
-	public List<String> findPerBackofficeSistra(
-			String identificadorProcediment, 
-			String identificadorTramit,
-			RegistreProcesEstatSistraEnum procesEstatSistra, 
-			Date desdeDate, 
-			Date finsDate) {
-		logger.debug("Consultant els numeros d'entrada del registre pel backoffice Sistra ("
-				+ "identificadorProcediment=" + identificadorProcediment + ", "
-				+ "identificadorTramit=" + identificadorTramit + ", "
-				+ "procesEstatSistra=" + procesEstatSistra + ", "
-				+ "desdeDate=" + desdeDate + ", "
-				+ "finsDate=" + finsDate + ")");
-		return registreRepository.findPerBackofficeSistra(
-				identificadorProcediment,
-				identificadorTramit,
-				procesEstatSistra == null,
-				procesEstatSistra,
-				desdeDate == null,
-				desdeDate,
-				finsDate == null,
-				finsDate);
-	}
 
 	@Transactional
 	@Override

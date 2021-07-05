@@ -32,10 +32,6 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -202,83 +198,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.trace("Fi de de tasca programada (" + stopTime + "): aplicar regles pendents " + (stopTime - startTime) + "ms");
 		
 	}
-	
-	
-	
-	
-	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
-	public void backofficeSistra() {
-
-		String error = null;
-
-		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentBackofficeSistra();
-
-		if (pendents != null && !pendents.isEmpty()) {
-
-			try {
-				Calendar properProcessamentCal = Calendar.getInstance();
-				for (RegistreEntity pendent : pendents) {
-
-					ReglaEntity regla = pendent.getRegla();
-
-					// comprova si ha passat el temps entre reintents o ha d'esperar
-					boolean esperar = false;
-					Date darrerProcessament = pendent.getProcesData();
-					Integer minutsEntreReintents = pendent.getRegla().getBackofficeDesti().getTempsEntreIntents();
-					if (darrerProcessament != null && minutsEntreReintents != null) {
-						// Calcula el temps pel proper intent
-						properProcessamentCal.setTime(darrerProcessament);
-						properProcessamentCal.add(Calendar.MINUTE,
-								minutsEntreReintents);
-						esperar = new Date().before(properProcessamentCal.getTime());
-					}
-					if (!esperar) {
-						for (RegistreAnnexEntity annex : pendent.getAnnexos()) {
-							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
-								reglaHelper.processarAnnexSistra(pendent,
-										annex);
-						}
-						BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
-							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
-							regla.getBackofficeDesti().getUrl(),
-							new QName(
-									"urn:es:caib:bantel:ws:v2:services",
-									"BantelFacadeService"),
-							regla.getBackofficeDesti().getUsuari(),
-							regla.getBackofficeDesti().getContrasenya(),
-							null,
-							BantelFacadeWsClient.class);
-						// Crea la llista de referències d'entrada
-						ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
-						ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-						referenciaEntrada.setNumeroEntrada(pendent.getNumero());
-						referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));
-						referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
-						// Invoca el backoffice sistra
-						try {
-							backofficeSistraClient.avisoEntradas(referenciesEntrades);
-						} catch (BantelFacadeException bfe) {
-							error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
-						}
-					}
-				}
-			} catch (Exception ex) {
-				Throwable t = ExceptionUtils.getRootCause(ex);
-				if (t == null)
-					t = ex.getCause();
-				if (t == null)
-					t = ex;
-				error = ExceptionUtils.getStackTrace(t);
-			}
-			if (error != null) {
-				throw new AplicarReglaException(error);
-			}
-		}
-
-	}
-	
-	
 	
 
 	@Override

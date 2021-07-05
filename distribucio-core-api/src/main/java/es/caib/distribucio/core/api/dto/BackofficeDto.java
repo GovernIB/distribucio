@@ -3,7 +3,6 @@ package es.caib.distribucio.core.api.dto;
 public class BackofficeDto {
 
     private Long id;
-    private BackofficeTipusEnumDto tipus;
     private String codi;
     private String nom;
     private String url;
@@ -18,12 +17,6 @@ public class BackofficeDto {
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public BackofficeTipusEnumDto getTipus() {
-        return tipus;
-    }
-    public void setTipus(BackofficeTipusEnumDto tipus) {
-        this.tipus = tipus;
     }
     public String getCodi() {
         return codi;

@@ -78,7 +78,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.regla is not null and r.regla.activa = true and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.DISTRIBUCIO " +
+			"    r.regla is not null and r.regla.activa = true " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"and r.procesIntents < :maxReintents " +
@@ -88,21 +88,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
 			@Param("currentDate") Date currentDate,
 			@Param("maxReintents") int maxReintents);
-	
-	
-	
-	@Query(
-			"from" +
-			"    RegistreEntity r " +
-			"where " +
-			"    r.regla is not null and r.regla.activa = true " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-		    "order by " +
-		    "    r.data desc "
-		    + "group by r.regla.id")
-	List<RegistreEntity> findAmbEstatPendentBackofficeSistra();
-	
-
 
 
 	/*
@@ -146,29 +131,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 
 	/** Troba l'anotació de registre per identificador. */
 	RegistreEntity findByIdentificador(String identificador);
-
-	/** Consulta els identificadors pel backoffice sistra segons els paràmetres de filtre. 
-	 * @param b 
-	 * @param procesEstatSistra */
-	@Query("select r.identificador " +
-			"from RegistreEntity r " +
-			"where r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-			"	and r.identificadorProcedimentSistra = :identificadorProcediment " +
-			"	and r.identificadorTramitSistra = :identificadorTramit " +
-			"	and (:esNullProcesEstatSistra = true or r.procesEstatSistra = :estatSistra) " +
-			"	and (:esNullDesde = true or r.data >= :desde) " +
-			"	and (:esNullFins = true  or r.data <= :fins) " +
-		    "order by r.data asc")
-	List<String> findPerBackofficeSistra(
-			@Param("identificadorProcediment") String identificadorProcediment,
-			@Param("identificadorTramit") String identificadorTramit,
-			@Param("esNullProcesEstatSistra") boolean esNullProcesEstatSistra, 
-			@Param("estatSistra") RegistreProcesEstatSistraEnum estatSistra,
-			@Param("esNullDesde") boolean esNullDesde,
-			@Param("desde") Date desde,
-			@Param("esNullFins") boolean esNullFins,
-			@Param("fins") Date fins
-		);
 	
 	/** Consulta les anotacions de registre que tenen l'expedient a l'arxiu pendents
 	 * de tancar i a les quals ja s'ha excedit el temps d'espera establert

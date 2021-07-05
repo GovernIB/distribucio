@@ -90,12 +90,7 @@ $(document).ready(function() {
 		
 	});
 	$('#tipus').trigger('change');	
-	$('#backofficeTipus').change(function(){
-		if ($(this).val() == 'SISTRA')
-			$('#backofficeTempsEntreIntentsBlock').show();
-		else
-			$('#backofficeTempsEntreIntentsBlock').hide();
-	});
+	
 });
 </script>
 </head>
