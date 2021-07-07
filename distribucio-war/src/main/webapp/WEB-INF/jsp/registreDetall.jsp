@@ -70,6 +70,25 @@ tr.clicable {
     margin-left: 280px;
 }
 
+#dropAccions {
+	display: flex;
+	align-items: center;
+}
+
+#dropAccions label:nth-child(1) {
+	width: 200px;
+	height: 30px;
+	margin: 0 10% 0 0;
+}
+
+#dropAccions > label.tramitacio {
+	background-color: #f99957;
+}
+
+#dropAccions > label.coneixement {
+	background-color: #5bc0de;
+}
+
 #dropAccions ul.dropdown-menu {
 	left: auto;
     right: 0;
@@ -239,7 +258,7 @@ tr.clicable {
 	    		try {
 	    			var registreNumero = $(this).data('registreNumero');
 	    			var registreTotal = ${registreTotal};
-	
+				console.log(registreNumero);
 					// Afegeix els paràmetres a l'enllaç dels detalls
 					var url = new URL(window.location);
 					var params = url.searchParams;
@@ -399,8 +418,10 @@ tr.clicable {
 	<dis:blocContenidorPath contingut="${registre}"/>
 	
 	<c:if test="${isContingutAdmin == null}">
-
 		<div class="dropdown" style="float: right;" id="dropAccions">
+			<c:if test="${isEnviarConeixementActiu}">
+				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}" title="<spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>"></label>
+			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
 				<span class="fa-stack" aria-hidden="true">
 					<i class="fa fa-forward"></i>

@@ -347,6 +347,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("ordreColumn", ordreColumn);
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
+			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
