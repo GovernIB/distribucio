@@ -162,6 +162,8 @@
 	    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next('span').length == 0) {
 	    		nodeAnchor.after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
 	    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+	    	} else if(isBustia && nodeAnchor.next('span').length == 0){
+	    		nodeAnchor.after('<span></span>');
 	    	}
 	    	
 	    	if (isBustia && nodeAnchor.next().next('span').length == 0) {

@@ -390,6 +390,8 @@
 		    		if (idsPerConeixement.indexOf(idNode) != -1) {
 		    			nodeAnchor.next().addClass('coneixement');
 		    		}
+		    	} else if (isBustia && noSeleccionatPerConeixement){
+			    	nodeAnchor.after('<span></span>');
 		    	}
 		    	
 		    	if (isBustia && nodeAnchor.next().next('span').length == 0) {
