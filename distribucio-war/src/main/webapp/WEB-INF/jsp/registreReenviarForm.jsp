@@ -306,17 +306,24 @@
 					actualitzarTaulaTramitacio(idNode);
 				}
 			});
-	
-			$('#favorits').on('change', function() {
-				//var $arbre = $("#arbreUnitats_destins");
+
+			var favoritsCheckbox = $('#favorits');
+			var checked = sessionStorage.getItem('favorites_checked');
+			checked = (checked == undefined || checked == null) ? "false" : checked
+			favoritsCheckbox.attr('checked', $.parseJSON(checked.toLowerCase()));
+			
+			favoritsCheckbox.on('change', function() {
 				if($(this).is(':checked')) {
 					//mostrar favorits
+					sessionStorage.setItem('favorites_checked', true);
 					actualitzarArbreAmbFavorits($arbre);
 				} else {
 					//mostrar tots
+					sessionStorage.setItem('favorites_checked', false);
 					$arbre.jstree(true).refresh();
 				}
 			});
+			favoritsCheckbox.trigger('change');
 		});
 
 		var unitats = [];
