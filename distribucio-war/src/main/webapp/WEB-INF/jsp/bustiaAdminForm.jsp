@@ -51,7 +51,10 @@
 	function formatSelectUnitat(item) {
 		return formatSelectUnitatItem($('#unitatId'), item);
 	}
-
+	
+	$(document).ready(function() {
+		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+	});	
 	</script>
 	
 </head>

@@ -29,6 +29,12 @@ pageContext.setAttribute(
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+		});
+	</script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" commandName="contingutFiltreCommand">

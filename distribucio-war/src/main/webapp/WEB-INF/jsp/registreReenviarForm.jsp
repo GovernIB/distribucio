@@ -245,6 +245,8 @@
 		var idsBustiesFavorits = [];
 		var idsPerConeixement = [];
 		$(document).ready(function() {
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 			$('#taula_coneixement').hide();
 			var $arbre = $("#arbreUnitats_destins");
 			$.ajax({

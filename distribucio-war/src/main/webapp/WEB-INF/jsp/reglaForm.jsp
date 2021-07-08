@@ -55,6 +55,8 @@ function formatSelectUnitat(item) {
 
 
 $(document).ready(function() {
+	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 	var isWindowReload = true;
 	$('#tipus').on('change', function () {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');

@@ -62,6 +62,8 @@
 
 	$(document).ready(
 		function() {
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 			$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
 		
 			$("#canviVistaBusties").click(function(){

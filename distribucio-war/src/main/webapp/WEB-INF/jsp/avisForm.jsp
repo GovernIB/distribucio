@@ -22,6 +22,12 @@
 	<script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>	
 	<dis:modalHead/>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+		});
+	</script>
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/avis"/></c:set>
