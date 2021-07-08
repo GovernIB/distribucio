@@ -64,12 +64,6 @@ public class SegonPlaServiceBean implements SegonPlaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void backofficeSistra() {
-		delegate.backofficeSistra();
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public void addNewEntryToHistogram() {
 		delegate.addNewEntryToHistogram();
 	}

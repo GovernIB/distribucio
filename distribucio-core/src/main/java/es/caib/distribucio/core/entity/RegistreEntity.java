@@ -29,7 +29,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
@@ -774,10 +773,6 @@ public class RegistreEntity extends ContingutEntity {
 			built.regla = regla;
 			built.procesIntents = new Integer(0);
 			
-			// Per backoffices tipus Sistra posa l'estat en pendent
-			if (regla != null && regla.getBackofficeDesti() != null && regla.getBackofficeDesti().getTipus() == BackofficeTipusEnumDto.SISTRA) {
-				built.procesEstatSistra = RegistreProcesEstatSistraEnum.PENDENT;
-			}
 			return this;
 		}
 		public Builder oficinaOrigen(Date dataOrigen,

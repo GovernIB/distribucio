@@ -190,7 +190,6 @@
 						<configuration>
 							<wsdlUrls>
 								<wsdlUrl>${basedir}/wsdl/cws/CWS.wsdl</wsdlUrl>
-								<wsdlUrl>${basedir}/wsdl/sistra-bantel/BackofficeFacade.wsdl</wsdlUrl>
 							</wsdlUrls>
 							<vmArgs>
 								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

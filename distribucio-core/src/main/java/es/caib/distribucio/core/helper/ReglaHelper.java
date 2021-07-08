@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
@@ -297,15 +296,12 @@ public class ReglaHelper {
 					if (regla.getBackofficeDesti() == null) {
 						throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
 					}
-					if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.SISTRA)) { 
-						registre.updateProcesBackPendent();
-					} else if (regla.getBackofficeDesti().getTipus().equals(BackofficeTipusEnumDto.DISTRIBUCIO)){ 
-						registre.updateProcesBackPendent();
-						registre.updateBackPendentData(new Date());
-						// Informa del codi del backoffice que processarà l'anotació
-						registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
-						// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
-					}
+					
+					registre.updateProcesBackPendent();
+					registre.updateBackPendentData(new Date());
+					// Informa del codi del backoffice que processarà l'anotació
+					registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
 					
 					
 					// ------ log and evict -----------

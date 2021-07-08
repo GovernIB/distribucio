@@ -160,20 +160,6 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void updateProces(Long registreId, RegistreProcesEstatEnum procesEstat,
-			RegistreProcesEstatSistraEnum procesEstatSistra, String resultadoProcesamiento) {
-		delegate.updateProces(registreId, procesEstat, procesEstatSistra, resultadoProcesamiento);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<String> findPerBackofficeSistra(String identificadorProcediment, String identificadorTramit,
-			RegistreProcesEstatSistraEnum procesEstatSistra, Date desdeDate, Date finsDate) {
-		return delegate.findPerBackofficeSistra(identificadorProcediment, identificadorTramit, procesEstatSistra, desdeDate, finsDate);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public FitxerDto getJustificant(Long registreId) throws NotFoundException {
 		return delegate.getJustificant(registreId);
 	}

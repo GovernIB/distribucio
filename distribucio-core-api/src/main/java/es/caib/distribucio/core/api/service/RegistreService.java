@@ -200,40 +200,6 @@ public interface RegistreService {
 	 */
 	//@PreAuthorize("hasRole('DIS_BSTWS')")
 	public RegistreDto findAmbIdentificador(String identificador);
-
-	/**
-	 * Mètode per actualitzar l'estat d'una anotació de registre.
-	 * @param procesEstat
-	 * 				Estat del procés per a l'anotació
-	 * @param procesEstatSistra
-	 * 				Estat del procés SISTRA per l'anotació
-	 * @param resultat
-	 * 				Descripció del resultat d'error o del processament SISTRA.
-	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
-	public void updateProces(
-			Long registreId,
-			RegistreProcesEstatEnum procesEstat, 
-			RegistreProcesEstatSistraEnum procesEstatSistra,
-			String resultadoProcesamiento);
-
-	/** Mètode per consultar les anotacions de registre per a les consultes de backoffices
-	 * tipus Sistra
-	 * @param identificadorProcediment
-	 * @param identificadorTramit
-	 * @param procesEstatSistra
-	 * @param desdeDate
-	 * @param finsDate
-	 * @return La llista de números d'entrada de registres (identificadors) segons els paràmetres 
-	 * de filtre.
-	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
-	public List<String> findPerBackofficeSistra(
-			String identificadorProcediment, 
-			String identificadorTramit,
-			RegistreProcesEstatSistraEnum procesEstatSistra, 
-			Date desdeDate, 
-			Date finsDate);
 	
 	/**
 	 * Marca com a llegida una anotació de registre
