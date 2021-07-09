@@ -340,6 +340,9 @@ $(document).ready(function() {
 						<li><a href="registreUser/enviarViaEmailMultiple/false" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 						</a></li>
+						<li><a href="registreUser/enviarIProcessarMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
+						</a></li>
 					</ul>
 					
 			</div>

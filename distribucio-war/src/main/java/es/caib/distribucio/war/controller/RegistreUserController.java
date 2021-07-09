@@ -59,6 +59,7 @@ import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand.Classificar;
+import es.caib.distribucio.war.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
@@ -727,57 +728,7 @@ public class RegistreUserController extends BaseUserController {
 				request,
 				isMoviments ? SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS : SESSION_ATTRIBUTE_SELECCIO);
 		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
-			ContingutDto contingutDto;
-			for (Long registreId : seleccioList) {
-				contingutDto = null;
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				RegistreDto registreDto = (RegistreDto) contingutDto;
-				if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
-					
-					boolean processatOk = true;
-					try {
-						bustiaService.registreAnotacioEnviarPerEmail(
-								entitatActual.getId(),
-								registreDto.getId(),
-								adreces, 
-								command.getMotiu());
-						
-					} catch (Exception e) {
-						MissatgesHelper.error(
-								request,
-								getMessage(
-										request, 
-										"registre.user.controller.enviar.email.massiva.error",
-										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
-						processatOk = false;
-					}
-					
-					if (processatOk)
-						correctes++;
-					else
-						errors++;
-				} 
-				else {
-					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
-					estatErroni++;
-				}
-			}
-			if (correctes > 0){
-				MissatgesHelper.success(request, getMessage(request, "registre.user.controller.enviar.email.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request, getMessage(request, "registre.user.controller.enviar.email.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request, getMessage(request, "registre.user.controller.enviar.email.massiva.estatErroni", new Object[]{estatErroni}));
-			}
+			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu());
 		} else {
 			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
 		}
@@ -785,8 +736,102 @@ public class RegistreUserController extends BaseUserController {
 		
 	}
 	
-	
+	private void enviarViaEmailMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String adreces, String motiu) {
 
+		List<Long> seleccioList = new ArrayList<Long>();
+		seleccioList.addAll(seleccio);
+		
+		int errors = 0;
+		int correctes = 0;
+		int estatErroni = 0;
+		
+		ContingutDto contingutDto;
+		for (Long registreId : seleccioList) {
+			contingutDto = null;
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			RegistreDto registreDto = (RegistreDto) contingutDto;
+			if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
+				
+				boolean processatOk = true;
+				try {
+					bustiaService.registreAnotacioEnviarPerEmail(
+							entitatActual.getId(),
+							registreDto.getId(),
+							adreces, 
+							motiu);
+					
+				} catch (Exception e) {
+					MissatgesHelper.error(
+							request,
+							getMessage(
+									request, 
+									"registre.user.controller.enviar.email.massiva.error",
+									new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+					processatOk = false;
+				}
+				
+				if (processatOk)
+					correctes++;
+				else
+					errors++;
+			} 
+			else {
+				logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
+				estatErroni++;
+			}
+		}
+		if (correctes > 0){
+			MissatgesHelper.success(request, getMessage(request, "registre.user.controller.enviar.email.massiva.correctes", new Object[]{correctes}));
+		} 
+		if (errors > 0) {
+			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.enviar.email.massiva.errors", new Object[]{errors}));
+		} 
+		if (estatErroni > 0) {
+			MissatgesHelper.warning(request, getMessage(request, "registre.user.controller.enviar.email.massiva.estatErroni", new Object[]{estatErroni}));
+		}
+	
+	}
+	
+	@RequestMapping(value = "/enviarIProcessarMultiple", method = RequestMethod.GET)
+	public String enviarIProcessarMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
+		model.addAttribute(command);
+		return "registreUserEnviarIProcessar";
+	}
+
+	@RequestMapping(value = "/enviarIProcessarMultiple", method = RequestMethod.POST)
+	public String enviarIProcessarMultiplePost(
+			HttpServletRequest request,
+			@Valid RegistreEnviarIProcessarCommand command,
+			BindingResult bindingResult,
+			Model model)  {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
+		
+		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "registreUserEnviarIProcessar";
+		}
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu());
+			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual);
+		} else {
+			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
+		
+	}
+	
 	/** Realitza les següents accions:
 	 * - Revisa que no es repeteixin les adreces.
 	 * - Substitueix els espais en blanc per comes.
@@ -1202,71 +1247,7 @@ public class RegistreUserController extends BaseUserController {
 				request,
 				SESSION_ATTRIBUTE_SELECCIO);
 		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
-
-			ContingutDto contingutDto;
-			for (Long registreId : seleccioList) {
-				contingutDto = null;
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				RegistreDto registreDto = (RegistreDto) contingutDto;
-				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
-					
-					boolean processatOk = true;
-					
-					try {
-						contingutService.marcarProcessat(
-								entitatActual.getId(), 
-								registreId,
-								"<span class='label label-default'>" + 
-								getMessage(
-										request, 
-										"bustia.pendent.accio.marcat.processat") + 
-								"</span> " + command.getMotiu(), 
-								rolActual);
-						
-
-					} catch (Exception e) {
-						MissatgesHelper.error(
-								request,
-								getMessage(
-										request, 
-										"registre.user.controller.marcar.processat.massiva.error",
-										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
-						
-						processatOk = false;
-						logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
-					}
-					
-					if (processatOk)
-						correctes++;
-					else
-						errors++;
-				} 
-				else {
-					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
-					estatErroni++;
-				}
-			}
-			
-			if (correctes > 0){
-				MissatgesHelper.success(request,
-						getMessage(request, "registre.user.controller.marcar.processat.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request,
-						getMessage(request, "registre.user.controller.marcar.processat.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request,
-						getMessage(request,
-								"registre.user.controller.marcar.processat.massiva.estatErroni", new Object[]{estatErroni}));
-			}
+			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual);
 		} else {
 			MissatgesHelper.error(request,
 					getMessage(request,
@@ -1274,6 +1255,77 @@ public class RegistreUserController extends BaseUserController {
 		}
 		
 		return modalUrlTancar();
+	}
+	
+	private void marcarProcessatMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String motiu, String rolActual) {
+
+		List<Long> seleccioList = new ArrayList<Long>();
+		seleccioList.addAll(seleccio);
+		
+		int errors = 0;
+		int correctes = 0;
+		int estatErroni = 0;
+		
+
+		ContingutDto contingutDto;
+		for (Long registreId : seleccioList) {
+			contingutDto = null;
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			RegistreDto registreDto = (RegistreDto) contingutDto;
+			if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+				
+				boolean processatOk = true;
+				
+				try {
+					contingutService.marcarProcessat(
+							entitatActual.getId(), 
+							registreId,
+							"<span class='label label-default'>" + 
+							getMessage(
+									request, 
+									"bustia.pendent.accio.marcat.processat") + 
+							"</span> " + motiu, 
+							rolActual);
+					
+
+				} catch (Exception e) {
+					MissatgesHelper.error(
+							request,
+							getMessage(
+									request, 
+									"registre.user.controller.marcar.processat.massiva.error",
+									new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+					
+					processatOk = false;
+					logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+				}
+				
+				if (processatOk)
+					correctes++;
+				else
+					errors++;
+			} 
+			else {
+				logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
+				estatErroni++;
+			}
+		}
+		
+		if (correctes > 0){
+			MissatgesHelper.success(request,
+					getMessage(request, "registre.user.controller.marcar.processat.massiva.correctes", new Object[]{correctes}));
+		} 
+		if (errors > 0) {
+			MissatgesHelper.error(request,
+					getMessage(request, "registre.user.controller.marcar.processat.massiva.errors", new Object[]{errors}));
+		} 
+		if (estatErroni > 0) {
+			MissatgesHelper.warning(request,
+					getMessage(request,
+							"registre.user.controller.marcar.processat.massiva.estatErroni", new Object[]{estatErroni}));
+		}
+	
 	}
 
 	@RequestMapping(value = "/pendent/{contingutId}/alertes", method = RequestMethod.GET)
