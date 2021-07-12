@@ -738,6 +738,10 @@ public class RegistreUserController extends BaseUserController {
 	
 	private void enviarViaEmailMultiple(Set<Long> seleccio, HttpServletRequest request, 
 			EntitatDto entitatActual, String adreces, String motiu) {
+		enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, motiu, null);
+	}
+	private void enviarViaEmailMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String adreces, String motiu, List<Long> registreIdErronis) {
 
 		List<Long> seleccioList = new ArrayList<Long>();
 		seleccioList.addAll(seleccio);
@@ -773,8 +777,11 @@ public class RegistreUserController extends BaseUserController {
 				
 				if (processatOk)
 					correctes++;
-				else
+				else {
 					errors++;
+					if (registreIdErronis != null)
+						registreIdErronis.add(registreId);
+				}
 			} 
 			else {
 				logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
@@ -811,6 +818,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
+		List<Long> registreIdErronis = new ArrayList<Long>();
 		
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
 		if (bindingResult.hasErrors()) {
@@ -822,8 +830,8 @@ public class RegistreUserController extends BaseUserController {
 				request,
 				SESSION_ATTRIBUTE_SELECCIO);
 		if (seleccio != null && !seleccio.isEmpty()) {
-			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu());
-			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual);
+			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu(), registreIdErronis);
+			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual, registreIdErronis);
 		} else {
 			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
 		}
@@ -1259,6 +1267,10 @@ public class RegistreUserController extends BaseUserController {
 	
 	private void marcarProcessatMultiple(Set<Long> seleccio, HttpServletRequest request, 
 			EntitatDto entitatActual, String motiu, String rolActual) {
+		marcarProcessatMultiple(seleccio, request, entitatActual, motiu, rolActual, null);
+	}
+	private void marcarProcessatMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String motiu, String rolActual, List<Long> registreIdErronis) {
 
 		List<Long> seleccioList = new ArrayList<Long>();
 		seleccioList.addAll(seleccio);
@@ -1270,45 +1282,47 @@ public class RegistreUserController extends BaseUserController {
 
 		ContingutDto contingutDto;
 		for (Long registreId : seleccioList) {
-			contingutDto = null;
-			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-			RegistreDto registreDto = (RegistreDto) contingutDto;
-			if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
-				
-				boolean processatOk = true;
-				
-				try {
-					contingutService.marcarProcessat(
-							entitatActual.getId(), 
-							registreId,
-							"<span class='label label-default'>" + 
-							getMessage(
-									request, 
-									"bustia.pendent.accio.marcat.processat") + 
-							"</span> " + motiu, 
-							rolActual);
+			if (registreIdErronis == null || (registreIdErronis != null && !registreIdErronis.contains(registreId))) {
+				contingutDto = null;
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				RegistreDto registreDto = (RegistreDto) contingutDto;
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
 					
-
-				} catch (Exception e) {
-					MissatgesHelper.error(
-							request,
-							getMessage(
-									request, 
-									"registre.user.controller.marcar.processat.massiva.error",
-									new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+					boolean processatOk = true;
 					
-					processatOk = false;
-					logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+					try {
+						contingutService.marcarProcessat(
+								entitatActual.getId(), 
+								registreId,
+								"<span class='label label-default'>" + 
+								getMessage(
+										request, 
+										"bustia.pendent.accio.marcat.processat") + 
+								"</span> " + motiu, 
+								rolActual);
+						
+	
+					} catch (Exception e) {
+						MissatgesHelper.error(
+								request,
+								getMessage(
+										request, 
+										"registre.user.controller.marcar.processat.massiva.error",
+										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+						
+						processatOk = false;
+						logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+					}
+					
+					if (processatOk)
+						correctes++;
+					else
+						errors++;
+				} 
+				else {
+					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
+					estatErroni++;
 				}
-				
-				if (processatOk)
-					correctes++;
-				else
-					errors++;
-			} 
-			else {
-				logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
-				estatErroni++;
 			}
 		}
 		
