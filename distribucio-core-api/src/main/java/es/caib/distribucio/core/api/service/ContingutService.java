@@ -47,7 +47,8 @@ public interface ContingutService {
 			Long contingutId,
 			boolean ambFills,
 			boolean ambVersions, 
-			String rolActual) throws NotFoundException;
+			String rolActual,
+			boolean isVistaMoviments) throws NotFoundException;
 
 	/**
 	 * Obté la informació del contingut especificat.
@@ -238,4 +239,20 @@ public interface ContingutService {
 			Long contingutId,
 			String text, 
 			String rolActual) throws NotFoundException;
+	
+	/**
+	 * Comprova si l'usuari actual disposa de permisos sobre una bústia
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param contingutId
+	 *            Atribut id del contingut que es vol exportar.
+	 * @return boolea
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public boolean hasPermisSobreBustia(
+			Long entitatId,
+			Long contingutId) throws NotFoundException;
 }

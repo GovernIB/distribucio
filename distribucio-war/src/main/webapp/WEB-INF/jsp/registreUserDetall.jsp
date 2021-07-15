@@ -69,7 +69,10 @@ tr.clicable {
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo");
+
+		    	var vistaMovimentsCookie = getCookie("vistaMoviments");
+		    	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo/" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    

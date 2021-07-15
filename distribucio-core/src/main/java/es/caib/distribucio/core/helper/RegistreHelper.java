@@ -791,7 +791,8 @@ public class RegistreHelper {
 	
 	public List<RegistreAnnexDto> getAnnexosAmbFirmes(
 			Long entitatId,
-			Long registreId) throws NotFoundException {
+			Long registreId,
+			boolean isVistaMoviments) throws NotFoundException {
 
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -803,7 +804,7 @@ public class RegistreHelper {
 				entitat,
 				registreId);
 
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),

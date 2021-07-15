@@ -174,6 +174,8 @@ tr.clicable {
 	// <![CDATA[
 
 	$(document).ready(function() {
+    	var vistaMovimentsCookie = getCookie("vistaMoviments");
+    	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
 		$(".desplegable").click(function(){
 			$(this).find("span").toggleClass("fa-caret-up");
 			$(this).find("span").toggleClass("fa-caret-down");
@@ -182,7 +184,7 @@ tr.clicable {
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant/" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -191,14 +193,14 @@ tr.clicable {
 		    	var registreId = $(this).data("registreId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId + "/" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo");
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo/" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -287,6 +289,8 @@ tr.clicable {
 		if (event.target.cellIndex === undefined || event.target.cellIndex === 6 || event.target.cellIndex === 7) return;
         var resumViewer = $('#resum-viewer');
         var resumAnnexos = $('#resum-annexos');
+        var vistaMovimentsCookie = getCookie("vistaMoviments");
+    	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
 		// Mostrar/amagar visor
 		if (!resumViewer.is(':visible')) {
 			resumViewer.slideDown(500);
@@ -317,7 +321,7 @@ tr.clicable {
         
         // Recupera i mostrar contingut firmes
         $.get(
-				"<c:url value="/registreUser/registreAnnexFirmes/${registreId}/"/>" + annexId,
+				"<c:url value="/registreUser/registreAnnexFirmes/${registreId}/"/>" + annexId + "/" + isVistaMoviments,
 				function(data) {
 					if (data.firmes && data.firmes.length > 0) {
 						var nieList = "", nomList = "";
@@ -419,7 +423,7 @@ tr.clicable {
 	
 	<c:if test="${isContingutAdmin == null}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
-			<c:if test="${isEnviarConeixementActiu}">
+			<c:if test="${!cookie['vistaMoviments'].value && isEnviarConeixementActiu}">
 				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}" title="<spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>"></label>
 			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
@@ -456,7 +460,7 @@ tr.clicable {
 					</a>
 				</li>
 				<li role="separator" class="divider"></li>
-				<li><a href="<c:url value="/contingut/${registre.id}/log"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+				<li><a href="<c:url value="/contingut/${registre.id}/log/${!cookie['vistaMoviments'].value ? '' : 'moviments'}"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 				<c:if test="${!cookie['vistaMoviments'].value && isPermesReservarAnotacions}">
 					<li role="separator" class="divider"></li>
 					<c:choose>
@@ -790,10 +794,12 @@ tr.clicable {
 												<div id="collapse-resum-firmes-${annex.id}" class="panel-collapse collapse collapse-resum-firmes" role="tabpanel"> 
 													<script type="text/javascript">
 														$(document).ready(function() {
+															var vistaMovimentsCookie = getCookie("vistaMoviments");
+														    var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true");
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true/" + isVistaMoviments);
 															        $(this).data("loaded", true);
 															    }
 															    event.stopPropagation();

@@ -46,13 +46,15 @@ public class ContingutServiceBean implements ContingutService {
 			Long contingutId,
 			boolean ambFills,
 			boolean ambVersions, 
-			String rolActual) {
+			String rolActual,
+			boolean isVistaMoviments) {
 		return delegate.findAmbIdUser(
 				entitatId,
 				contingutId,
 				ambFills,
 				ambVersions, 
-				rolActual);
+				rolActual,
+				isVistaMoviments);
 	}
 
 	@Override
@@ -148,6 +150,12 @@ public class ContingutServiceBean implements ContingutService {
 	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(Long entitatId,
 			Long contingutId) {
 		return delegate.findLogsDetallsPerContingutUser(entitatId, contingutId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean hasPermisSobreBustia(Long entitatId, Long contingutId) throws NotFoundException {
+		return delegate.hasPermisSobreBustia(entitatId, contingutId);
 	}
 
 

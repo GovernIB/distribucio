@@ -73,14 +73,15 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private RegistreService registreService;
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant/{isVistaMoviments}", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@PathVariable boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId);
+			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"justificant",
 					justificant);
@@ -93,14 +94,15 @@ public class ContingutController extends BaseUserController {
 		return "registreJustificant";
 	}
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/arxiuInfo/{isVistaMoviments}", method = RequestMethod.GET)
 	public String arxiuInfo(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@PathVariable boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId);
+			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"registre", 
 					registre);
@@ -279,11 +281,27 @@ public class ContingutController extends BaseUserController {
 		}
 	}
 
+	@RequestMapping(value = "/contingut/{registreId}/log/moviments", method = RequestMethod.GET)
+	public String logMoviments(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		return getLog(request, registreId, model, true);
+	}
+	
 	@RequestMapping(value = "/contingut/{registreId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
+		return getLog(request, registreId, model, false);
+	}
+	
+	private String getLog(
+			HttpServletRequest request,
+			Long registreId,
+			Model model,
+			boolean isVistaMoviments) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
 		
@@ -298,7 +316,8 @@ public class ContingutController extends BaseUserController {
 						registreId,
 						true,
 						false, 
-						rolActual));
+						rolActual,
+						isVistaMoviments));
 
 		List<ContingutLogDetallsDto> logsDetall = contingutService.findLogsDetallsPerContingutUser(
 				entitatActual.getId(),
@@ -309,7 +328,8 @@ public class ContingutController extends BaseUserController {
 		// Recupera la informació
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(), 
-				registreId);
+				registreId,
+				isVistaMoviments);
 		model.addAttribute(
 				"logsResum", 
 				this.buildLogsResum(request, registre, logsDetall));
@@ -377,11 +397,12 @@ public class ContingutController extends BaseUserController {
 	
 	/** Descarrega un informe del resum de moviments a partir d'una plantilla 
 	 * @throws Exception */
-	@RequestMapping(value = "/contingut/{contingutId}/log/informe", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/log/informe/{isVistaMoviments}", method = RequestMethod.GET)
 	public String informe(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
+			@PathVariable boolean isVistaMoviments,
 			Model model) throws Exception {
 		String rolActual = RolHelper.getRolActual(request);
 		
@@ -397,10 +418,12 @@ public class ContingutController extends BaseUserController {
 							contingutId,
 							true,
 							false, 
-							rolActual);
+							rolActual,
+							isVistaMoviments);
 			RegistreDto registre = registreService.findOne(
 					entitatActual.getId(), 
-					contingutId);
+					contingutId,
+					isVistaMoviments);
 			List<ContingutLogDetallsDto> logsResum = contingutService.findLogsDetallsPerContingutUser(
 							entitatActual.getId(),
 							contingutId);
@@ -597,10 +620,11 @@ public class ContingutController extends BaseUserController {
 		return sb.toString();
 	}
 
-	@RequestMapping(value = "/contingut/{registreId}/comentaris", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{registreId}/comentaris/{isVistaMoviments}", method = RequestMethod.GET)
 	public String comentaris(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@PathVariable boolean isVistaMoviments,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
@@ -611,11 +635,17 @@ public class ContingutController extends BaseUserController {
 						registreId,
 						true,
 						false, 
-						rolActual));
+						rolActual,
+						isVistaMoviments));
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();
 		model.addAttribute(
 				"usuariActual",
 				usuariActual);
+		boolean hasPermisBustia = contingutService.hasPermisSobreBustia(
+				entitatActual.getId(), 
+				registreId);
+		model.addAttribute("hasPermisBustia", 
+				hasPermisBustia);
 		return "contingutComentaris";
 	}
 

@@ -241,10 +241,10 @@
 	
 	<div class="col-xs-10">
 		<div class="comentari_destins"><ul></ul></div>
-		<input id="comentari_text" class="form-control" placeholder="<spring:message code="contingut.comentaris.text.placeholder"/>" maxlength="1024"/>
+		<input id="comentari_text" class="form-control" placeholder="<spring:message code="contingut.comentaris.text.placeholder"/>" maxlength="1024" ${hasPermisBustia ? '' : 'disabled'}/>
 	</div>
 	<div class="col-xs-2">
-		<button class="btn btn-success enviar-comentari"><span class="fa fa-paper-plane-o"></span>&nbsp;<spring:message code="comu.boto.enviar"/></button>
+		<button class="btn btn-success enviar-comentari ${hasPermisBustia ? '' : 'disabled'}"><span class="fa fa-paper-plane-o"></span>&nbsp;<spring:message code="comu.boto.enviar"/></button>
 	</div>
 	
 	<div class="col-xs-12" style="height:10px">

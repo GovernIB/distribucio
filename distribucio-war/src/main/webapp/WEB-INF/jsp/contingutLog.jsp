@@ -124,7 +124,8 @@ $(document).ready(function() {
 		<!------------------------------------ TABPANEL RESUM --------------------------------------->
 		<c:if test="${isPanelUser}">
 			<div class="tab-pane active in" id="resum">
-				<a href="<c:url value="/contingut/${contingut.id}/log/informe"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
+				<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
+				<a href="<c:url value="/contingut/${contingut.id}/log/informe/${isVistaMoviments}/"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
 					<i class="fa fa-file-text-o" aria-hidden="true"></i>
 					<spring:message code="comu.boto.informe"/>
 				</a>

@@ -53,10 +53,13 @@ import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
+import es.caib.distribucio.core.entity.VistaMovimentEntity;
+import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -98,7 +101,11 @@ public class ContingutHelper {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Autowired
 	private ContingutMovimentRepository contingutMovimentRepository;
-
+	@Autowired
+	private BustiaRepository bustiaRepository;
+	@Autowired
+	private RegistreRepository registreRepository;
+	
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
 		return toContingutDto(
@@ -267,24 +274,6 @@ public class ContingutHelper {
 				contingutDto.setPath(path);
 				
 				if (contingut instanceof RegistreEntity) {
-					List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutAndOrigenNull(contingut);
-					//directe des de registre
-					ContingutMovimentEntity firstMoviment = ! moviments.isEmpty() ? moviments.get(0) : null;
-					//des de una altre anotació (deixant còpia)
-					if (firstMoviment == null) {
-						moviments = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateAsc(contingut);
-						firstMoviment = !moviments.isEmpty() ? moviments.get(0) : null;
-					}
-					if (firstMoviment != null) {
-						ContingutEntity contingutOrigen = firstMoviment.getOrigen() != null ? firstMoviment.getOrigen() : firstMoviment.getDesti(); //directe de Registre o reenviament dins Distribució
-						if (HibernateHelper.isProxy(firstMoviment.getOrigen()))
-							contingutOrigen = HibernateHelper.deproxy(contingutOrigen);
-						List<ContingutDto> pathIncial = getPathContingutComDto(
-								contingutOrigen,
-								ambPermisos,
-								true);
-						contingutDto.setPathInicial(pathIncial);
-					}
 					//##### comprova si l'anotació s'ha marcat per coneixement
 					boolean isEnviarConeixementActiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.contingut.enviar.coneixement");
 					if (isEnviarConeixementActiu) {
@@ -335,6 +324,122 @@ public class ContingutHelper {
 				contingutDto.setFills(contenidorDtos);
 			}
 
+		contextTotal.stop();
+		return contingutDto;
+	}
+	
+	public ContingutDto movimentToContingutDto(VistaMovimentEntity registreMoviment) {
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "movimentToContingutDto"));
+		Timer.Context contextTotal = timerTotal.time();
+		
+		ContingutDto contingutDto = null;
+		// ########################################### REGISTRE ####################################################	
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				registreMoviment.getEntitat(), 
+				true, 
+				false, 
+				false);
+		RegistreEntity registreEntity = registreRepository.findByEntitatAndId(entitat, registreMoviment.getId());
+		final Timer timerToContingutDtoconvertirToRegistreDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "movimentToContingutDto.convertirToRegistreDto"));
+		Timer.Context contextToContingutDtoconvertirToRegistreDto  = timerToContingutDtoconvertirToRegistreDto.time();
+		RegistreDto registreDto = conversioTipusHelper.convertir(
+					registreEntity,
+					RegistreDto.class);
+		registreDto.setLlegida(registreEntity.getLlegida() == null || registreEntity.getLlegida());
+		contextToContingutDtoconvertirToRegistreDto.stop();
+		
+		//bústia registre/moviment
+		Long bustiaId = registreMoviment.getBustia();
+		if (bustiaId != null) {
+			BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
+			registreDto.setBustiaActiva(bustia.isActiva());				
+		}
+		RegistreProcesEstatEnum registreEstat = registreMoviment.getProcesEstat();
+		if (registreEstat == RegistreProcesEstatEnum.ARXIU_PENDENT || registreEstat == RegistreProcesEstatEnum.REGLA_PENDENT || registreEstat == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+			registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
+		} else if (registreEstat == RegistreProcesEstatEnum.BUSTIA_PROCESSADA || registreEstat == RegistreProcesEstatEnum.BACK_PENDENT || registreEstat == RegistreProcesEstatEnum.BACK_REBUDA || registreEstat == RegistreProcesEstatEnum.BACK_PROCESSADA || registreEstat == RegistreProcesEstatEnum.BACK_REBUTJADA || registreEstat == RegistreProcesEstatEnum.BACK_ERROR) {
+			registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
+		}
+
+		registreDto.setNumeroOrigen(registreEntity.getNumeroOrigen());
+		registreDto.setNumComentaris(contingutComentariRepository.countByContingut(registreEntity));
+			// toBustiaContingut //
+			
+			// Enviaments via email
+			if (registreEntity.isEnviatPerEmail()) {
+				List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(registreEntity);
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				for(ContingutLogEntity log : logs ) {
+					if (LogTipusEnumDto.ENVIAMENT_EMAIL.equals(log.getTipus()) ) {
+						// Cadena tipus dd/MM/yyyy HH:mm:ss Destinataris: email@email.com
+						registreDto.getEnviamentsPerEmail().add(sdf.format(log.getCreatedDate().toDate()) + " " + log.getParam2());
+					}
+				}
+
+			}
+			
+			int maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
+			if (registreEntity.getProcesIntents() >= maxReintents) {
+				registreDto.setReintentsEsgotat(true);
+			}
+			registreDto.setProcesIntents(registreEntity.getProcesIntents());
+			registreDto.setMaxReintents(maxReintents);
+			
+			contingutDto = registreDto;
+		
+		
+		// ########################################### CONTINGUT ####################################################
+		contingutDto.setId(registreDto.getId());
+		contingutDto.setNom(registreDto.getNom());
+		contingutDto.setEsborrat(registreEntity.getEsborrat());
+		contingutDto.setArxiuUuid(registreEntity.getArxiuUuid());
+		contingutDto.setArxiuDataActualitzacio(registreEntity.getArxiuDataActualitzacio());
+			
+		final Timer timerToContingutDtoEntitatMoviemntAudtioria = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.EntitatMoviemntAudtioria"));
+		Timer.Context contextToContingutDtoEntitatMoviemntAudtioria  = timerToContingutDtoEntitatMoviemntAudtioria.time();
+		contingutDto.setEntitat(
+				conversioTipusHelper.convertir(
+						entitat,
+						EntitatDto.class));
+		contingutDto.setAlerta(!registreEntity.getAlertesNoLlegides().isEmpty());
+		// DARRER MOVIMENT
+		if (registreEntity.getDarrerMoviment() != null) {
+			ContingutMovimentEntity darrerMoviment = registreEntity.getDarrerMoviment();
+			contingutDto.setDarrerMovimentUsuari(
+					conversioTipusHelper.convertir(
+							darrerMoviment.getRemitent(),
+							UsuariDto.class));
+			contingutDto.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
+			contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());
+		}
+		// AUDITORIA
+		contingutDto.setCreatedBy(
+				conversioTipusHelper.convertir(
+						registreEntity.getCreatedBy(),
+						UsuariDto.class));
+		contingutDto.setCreatedDate(registreEntity.getCreatedDate().toDate());
+		contingutDto.setLastModifiedBy(
+				conversioTipusHelper.convertir(
+						registreEntity.getLastModifiedBy(),
+						UsuariDto.class));
+		contingutDto.setLastModifiedDate(registreEntity.getLastModifiedDate().toDate());
+		
+		if (registreMoviment.getOrigen() != null) {
+			ContingutEntity origen = contingutRepository.findOne(registreMoviment.getOrigen());
+			List<ContingutDto> pathOrigen = getPathContingutComDto(
+					origen,
+					true,
+					true);
+			contingutDto.setPathInicial(pathOrigen);
+		}
+		ContingutEntity desti = contingutRepository.findOne(registreMoviment.getDesti());
+		List<ContingutDto> pathDesti = getPathContingutComDto(
+				desti,
+				true,
+				true);
+		contingutDto.setPath(pathDesti);
+		contextToContingutDtoEntitatMoviemntAudtioria.stop();
+			
 		contextTotal.stop();
 		return contingutDto;
 	}

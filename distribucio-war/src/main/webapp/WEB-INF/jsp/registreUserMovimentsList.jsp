@@ -62,7 +62,6 @@ function formatSelectBustia(item) {
 
 $(document).ready(function() {
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
-
 	$("#canviVistaReenvios").addClass('active');
 	
 	$('#netejarFiltre').click(function(e) {
@@ -143,17 +142,17 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactives').change(function() {
-		//>>> Valor actual bústia origen
+		//>>> Valor actual bústia destí
 		var actual = $('#bustia').val();
-		//>>> Bústia origen
+		//>>> Bústia destí
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
-		var baseUrl = "<c:url value='/registreUser/bustiesPermeses'/>?mostrarInactives=" + $(this).val();
+		var baseUrl = "<c:url value='/registreUser/busties'/>?mostrarInactives=" + $(this).val();
 		$.get(baseUrl)
 			.done(function(data) {
 				bustiesInactives = [];
 				for (var i = 0; i < data.length; i++) {
-					//>>> Bústia origen
+					//>>> Bústia destí
 					$('#bustia').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
 					if (!data[i].activa) {
 						bustiesInactives.push(data[i].id.toString());
@@ -172,9 +171,9 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactivesOrigen').change(function() {
-		//>>> Valor actual bústia destí
+		//>>> Valor actual bústia origen
 		var actualOrigen = $('#bustiaOrigen').val();
-		//>>> Bústia destí
+		//>>> Bústia origen
 		$('#bustiaOrigen').select2('val', '', true);
 		$('#bustiaOrigen option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreUser/bustiesOrigen'/>?mostrarInactivesOrigen=" + $(this).val();
@@ -182,7 +181,7 @@ $(document).ready(function() {
 			.done(function(data) {
 				bustiesInactives = [];
 				for (var i = 0; i < data.length; i++) {
-					//>>> Bústia destí
+					//>>> Bústia origen
 					$('#bustiaOrigen').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
 					if (!data[i].activa) {
 						bustiesInactives.push(data[i].id.toString());
@@ -206,8 +205,7 @@ $(document).ready(function() {
 </head>
 <body>
 
-
-	<form:form action="/distribucio/registreUser" method="post" cssClass="well" commandName="registreFiltreCommand">
+	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		<div class="row">
 			<div class="col-md-2">
@@ -316,7 +314,7 @@ $(document).ready(function() {
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu">
 						<li>
-							<a href="../registreUser/enviarViaEmailMultiple/true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<a href="../registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 								<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 							</a>
 						</li>
@@ -325,7 +323,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</script>
-	<script id="rowhrefTemplate" type="text/x-jsrender">registre/{{:id}}</script>
+	<script id="rowhrefTemplate" type="text/x-jsrender">registre/{{:id}}/moviments</script>
 	<table 
 		id="taulaDades" 
 		class="table table-bordered table-striped"style="width:100%"
@@ -456,7 +454,7 @@ $(document).ready(function() {
 				</th>			
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="../contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="../contingut/{{:id}}/comentaris/true" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
@@ -466,15 +464,15 @@ $(document).ready(function() {
 							<ul class="dropdown-menu">
 								<li>
 									<a id="detall-button"
-										href=".//registre/{{:id}}"
+										href=".//registre/{{:id}}/moviments"
 											data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a>
 								</li>
-								<li><a href="../contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+								<li><a href="../contingut/{{:id}}/log/moviments" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
 									<li><a href="./pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 								<li role="separator" class="divider"></li>
-								<li {{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li {{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./enviarViaEmail/{{:id}}/true" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								<li>
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>

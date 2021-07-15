@@ -64,7 +64,6 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnu
 import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -87,6 +86,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -110,6 +110,7 @@ import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.core.repository.VistaMovimentRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -162,7 +163,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private GestioDocumentalHelper gestioDocumentalHelper;	
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-	
+	@Autowired
+	private VistaMovimentRepository vistaMovimentRepository;
 	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
@@ -185,7 +187,8 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreDto findOne(
 			Long entitatId,
-			Long registreId) throws NotFoundException {
+			Long registreId,
+			boolean isVistaMoviments) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "registreId=" + registreId + ")");
@@ -199,7 +202,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (registre == null)
 			throw new NotFoundException(registreId, RegistreEntity.class);
 		
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 							entitat,
 							registre.getPareId(),
@@ -282,10 +285,8 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
-			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) {
-		
 		Timer.Context contextTotal  = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistre")).time();
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -293,18 +294,12 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null, bustiaOrigen = null;
+		BustiaEntity bustia = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
-		}
-		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
-			bustiaOrigen = entityComprovarHelper.comprovarBustia(
-					entitat,
-					new Long(filtre.getBustiaOrigen()),
-					false);
 		}
 		String bustiesIds="";
 			
@@ -332,7 +327,7 @@ public class RegistreServiceImpl implements RegistreService {
 		mapeigOrdenacio.put(
 				"darrerMovimentComentari",
 				new String[] {"darrerMoviment.comentari"});
-		Page<RegistreEntity> pagina;
+		Page<RegistreEntity> pagina = null;
 		
 			
 		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
@@ -415,9 +410,6 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.isNomesAmbErrors(),
 					unitat == null,
 					unitat,
-					onlyAmbMoviments,
-					bustiaOrigen == null,
-					bustiaOrigen,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -448,6 +440,181 @@ public class RegistreServiceImpl implements RegistreService {
 								true,
 								false,
 								true);
+					}
+				});
+		contextTotaltoPaginaDto.stop();
+		
+		contextTotal.stop();
+		return pag;
+	}
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<ContingutDto> findMovimentsRegistre(
+			Long entitatId,
+			List<BustiaDto> bustiesPermesesPerUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) {
+		
+		Timer.Context contextTotal  = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findMovimentsRegistre")).time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null, bustiaOrigen = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					false);
+		}
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
+					false);
+		}
+		String bustiesIds="";
+			
+		boolean totesLesbusties =false;
+		List<Long> busties = new ArrayList<Long>();
+		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
+			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
+				busties.add(bustiaUsuari.getId());
+				bustiesIds +=  bustiaUsuari.getId() + ", ";
+			}
+		} else {
+			totesLesbusties = isAdmin;
+			busties.add(0L);
+		}
+
+		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
+		mapeigOrdenacio.put(
+				"darrerMovimentData",
+				new String[] {"darrerMoviment.createdDate"});
+		mapeigOrdenacio.put(
+				"darrerMovimentUsuari.nom",
+				new String[] {"remitent.nom"});
+		mapeigOrdenacio.put(
+				"darrerMovimentComentari",
+				new String[] {"darrerMoviment.comentari"});
+		Page<VistaMovimentEntity> pagina = null;
+		
+			
+		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+		Boolean enviatPerEmail = null;
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+				enviatPerEmail = true;
+			} else {
+				enviatPerEmail = false;
+			}
+		}
+		
+ 		String tipusFisicaCodi = null;
+		if (filtre.getTipusDocFisica() != null) {
+			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+		}
+		
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.trace("Consultant el contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
+				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ", " 
+				+ "bustiaOrigen= " + filtre.getBustiaOrigen() + ", " 
+				+ "bustiaDesti= " + filtre.getBustia() + ", " 
+				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
+
+		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
+		long beginTime = new Date().getTime();
+		try {
+			
+			pagina = vistaMovimentRepository.findMovimentsByFiltre(
+					entitat.getId(), 
+					totesLesbusties, 
+					busties, 
+					StringUtils.isEmpty(filtre.getNumero()),
+					filtre.getNumero() != null ? filtre.getNumero().trim() : "",
+					StringUtils.isEmpty(filtre.getTitol()),
+					filtre.getTitol() != null ? filtre.getTitol().trim() : "",
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen().trim() : "",
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent() != null ? filtre.getRemitent().trim() : "",
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(dataRecepcioFi == null),
+					dataRecepcioFi,
+					esProcessat,
+					esPendent,
+					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+					filtre.getInteressat() != null ? filtre.getInteressat().trim() : "",
+					enviatPerEmail == null,
+					enviatPerEmail,
+					tipusFisicaCodi == null,
+					tipusFisicaCodi,
+					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					filtre.getEstat() == null,
+					filtre.getEstat(),
+					filtre.isNomesAmbErrors(),
+					unitat == null,
+					unitat,
+					bustiaOrigen == null,
+					bustiaOrigen != null ? bustiaOrigen.getId() : null,
+					bustia == null,
+					bustia != null ? bustia.getId() : null,
+					paginacioHelper.toSpringDataPageable(
+							paginacioParams,
+							mapeigOrdenacio));
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			long endTime = new Date().getTime();
+			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+		} catch (Exception e) {
+			long endTime = new Date().getTime();
+			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			throw new RuntimeException(e);
+		}
+		
+		
+		Timer.Context contextTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findMovimentsRegistre.toPaginaDto")).time();
+
+		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
+				pagina,
+				ContingutDto.class,
+				new Converter<VistaMovimentEntity, ContingutDto>() {
+					@Override
+					public ContingutDto convert(VistaMovimentEntity source) {
+						return contingutHelper.movimentToContingutDto(source);
 					}
 				});
 		contextTotaltoPaginaDto.stop();
@@ -746,7 +913,8 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public RegistreAnnexDto getRegistreJustificant(
 			Long entitatId,
-			Long registreId) throws NotFoundException {
+			Long registreId,
+			boolean isVistaMoviments) throws NotFoundException {
 		
 		final Timer timegetRegistreJustificant = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getRegistreJustificant"));
 		Timer.Context contexgetRegistreJustificant = timegetRegistreJustificant.time();
@@ -764,7 +932,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByEntitatAndId(
 				entitat,
 				registreId);
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 						entitat,
 						registre.getPareId(),
@@ -1160,14 +1328,15 @@ public class RegistreServiceImpl implements RegistreService {
 	public RegistreAnnexDto getAnnexAmbFirmes(
 			Long entitatId,
 			Long registreId,
-			Long annexId) throws NotFoundException {
+			Long annexId,
+			boolean isVistaMoviments) throws NotFoundException {
 		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		if (!usuariHelper.isAdmin()) {
+		if (!usuariHelper.isAdmin() && !isVistaMoviments) {
 			RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
 			entityComprovarHelper.comprovarBustia(
 					entitat,
@@ -1189,8 +1358,8 @@ public class RegistreServiceImpl implements RegistreService {
 	public RegistreAnnexDto getAnnexSenseFirmes(
 			Long entitatId,
 			Long registreId,
-			Long annexId
-			) throws NotFoundException {
+			Long annexId,
+			boolean isVistaMoviments) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "registreId=" + registreId + ")");
@@ -1201,7 +1370,7 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		
 		RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
-		if (!usuariHelper.isAdmin()) {
+		if (!usuariHelper.isAdmin() && !isVistaMoviments) {
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),

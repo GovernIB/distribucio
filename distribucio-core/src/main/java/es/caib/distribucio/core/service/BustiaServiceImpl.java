@@ -795,6 +795,39 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiesRetorn;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDto> findBustiesPerUsuari(
+			Long entitatId,
+			boolean mostrarInactives) {
+		logger.trace("Consulta de busties permeses per un usuari ("
+				+ "entitatId=" + entitatId + ")");
+		final Timer findBustiesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findBustiesPerUsuari"));
+		Timer.Context findBustiesPerUsuariContext = findBustiesPerUsuariTimer.time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Obté la llista d'id's amb permisos per a l'usuari
+		List<BustiaEntity> busties;		
+		if (mostrarInactives) {
+			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+		} else {
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+		}
+		
+		final Timer findBustiesPerUsuariTimerToBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findBustiesPerUsuari.ToBustiaDto"));
+		Timer.Context findBustiesPerUsuariContextToBustiaDto = findBustiesPerUsuariTimerToBustiaDto.time();
+		List<BustiaDto> bustiesRetorn = bustiaHelper.toBustiaDto(busties, false, true,
+				false);
+		findBustiesPerUsuariContextToBustiaDto.stop();
+		
+		findBustiesPerUsuariContext.stop();
+		return bustiesRetorn;
+	}
+
+	
 	@Transactional
 	@Override
 	public List<BustiaDto> consultaBustiesOrigen(
@@ -1040,7 +1073,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long registreId, 
 			String adresses, 
-			String motiu) throws MessagingException {
+			String motiu,
+			boolean isVistaMoviments) throws MessagingException {
 		
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
@@ -1048,13 +1082,14 @@ public class BustiaServiceImpl implements BustiaService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreDto registre = registreService.findOne(
 				entitatId,
-				registreId);
+				registreId,
+				isVistaMoviments);
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),
@@ -1063,11 +1098,13 @@ public class BustiaServiceImpl implements BustiaService {
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			justificant = registreService.getRegistreJustificant(
 					entitatId,
-					registreId);
+					registreId,
+					isVistaMoviments);
 		}
 		List<RegistreAnnexDto> anexos = registreHelper.getAnnexosAmbFirmes(
 				entitatId,
-				registreId);
+				registreId,
+				isVistaMoviments);
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		String concsvBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.concsv.base.url");

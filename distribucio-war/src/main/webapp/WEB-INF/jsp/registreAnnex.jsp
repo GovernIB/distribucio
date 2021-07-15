@@ -11,12 +11,13 @@
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
-
+		var vistaMovimentsCookie = getCookie("vistaMoviments");
+	    var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
 	    $("#collapse-registre-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
 		    if (!$(this).data("loaded")) {
 		    	var registreId = $(this).parents(".collapse-annex").data("registreId"); 
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + registreId + "/" + ${annex.id} + "/false");
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + registreId + "/" + ${annex.id} + "/false/" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });

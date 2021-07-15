@@ -322,7 +322,7 @@ public interface BustiaService {
 	public String getApplictionMetrics();
 
 	@PreAuthorize("hasRole('tothom')")
-	public void registreAnotacioEnviarPerEmail(Long entitatId, Long registreId, String adresses, String motiu)
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long registreId, String adresses, String motiu, boolean isVistaMoviments)
 			throws MessagingException;
 
 	/**
@@ -395,5 +395,20 @@ public interface BustiaService {
 			Long entitatId, 
 			List<BustiaDto> bustiesPermesesPerUsuari, 
 			boolean mostrarInactivesOrigen);
+	
+	/**
+	 * Llistat de les bústies a les quals te accés un usuari.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param mostrarInactives 
+	 * 				Indica si incloure les bústies innactives en el resultat.
+	 * @param paginacioParams
+	 *            Paràmetres per a dur a terme la paginació del resultats.
+	 * @return La pàgina de regles.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> findBustiesPerUsuari(
+			Long entitatId, boolean mostrarInactives);
 
 }

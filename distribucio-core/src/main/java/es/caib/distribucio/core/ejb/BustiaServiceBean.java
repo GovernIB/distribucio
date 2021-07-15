@@ -140,12 +140,14 @@ public class BustiaServiceBean implements BustiaService {
 			Long entitatId, 
 			Long registreId, 
 			String adresses, 
-			String motiu) throws MessagingException {
+			String motiu,
+			boolean isVistaMoviments) throws MessagingException {
 		delegate.registreAnotacioEnviarPerEmail(
 				entitatId, 
 				registreId, 
 				adresses, 
-				motiu);
+				motiu,
+				isVistaMoviments);
 	}
 
 
@@ -303,5 +305,11 @@ public class BustiaServiceBean implements BustiaService {
 	@RolesAllowed("tothom")
 	public List<BustiaDto> consultaBustiesOrigen(Long entitatId, List<BustiaDto> bustiesPermesesPerUsuari, boolean mostrarInactives) {
 		return delegate.consultaBustiesOrigen(entitatId, bustiesPermesesPerUsuari, mostrarInactives);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<BustiaDto> findBustiesPerUsuari(Long entitatId, boolean mostrarInactives) {
+		return delegate.findBustiesPerUsuari(entitatId, mostrarInactives);
 	}
 }

@@ -26,6 +26,8 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -109,7 +111,8 @@ public class ContingutServiceImpl implements ContingutService {
 			Long contingutId,
 			boolean ambFills,
 			boolean ambVersions, 
-			String rolActual) {
+			String rolActual,
+			boolean isVistaMoviments) {
 		logger.debug("Obtenint contingut amb id per usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
@@ -124,9 +127,10 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
+		boolean comprovarPermisLectura = !rolActual.equals("DIS_ADMIN") && !isVistaMoviments;
 		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
-				!rolActual.equals("DIS_ADMIN"),
+				comprovarPermisLectura,
 				false,
 				false,
 				true);
@@ -571,6 +575,30 @@ public class ContingutServiceImpl implements ContingutService {
 				entitatId,
 				contingutId,
 				text).isPublicat();
+	}
+
+	@Transactional
+	@Override
+	public boolean hasPermisSobreBustia(Long entitatId, Long contingutId) throws NotFoundException {
+		boolean hasPermis = true;
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+
+		RegistreEntity registre = registreRepository.findOne(contingutId);
+		try {
+			if (!usuariHelper.isAdmin()) {
+				entityComprovarHelper.comprovarBustia(
+								entitat,
+								registre.getPareId(),
+								true);
+			}
+		} catch (PermissionDeniedException e) {
+			hasPermis = false;
+		}
+		return hasPermis;
 	}
 
 	private boolean isPermesReservarAnotacions() {

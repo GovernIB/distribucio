@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.api.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,8 +20,6 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
@@ -42,6 +39,8 @@ public interface RegistreService {
 	 *            Atribut id de l'entitat.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol consultar.
+	 * @param isVistaMoviments
+	 * 			  Atribut per detectar si està en la vista de moviments, llavors no comprovar permisos bústia
 	 * @return els detalls de l'anotació.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -49,7 +48,8 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public RegistreDto findOne(
 			Long entitatId,
-			Long registreId) throws NotFoundException;
+			Long registreId,
+			boolean isVistaMoviments) throws NotFoundException;
 
 	/**
 	 * Retorna la informació de múltples anotacions de registre.
@@ -83,7 +83,6 @@ public interface RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
-			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) throws NotFoundException;
 	
@@ -225,16 +224,16 @@ public interface RegistreService {
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId)
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId, boolean isVistaMoviments)
 			throws NotFoundException;
 
 	@PreAuthorize("hasRole('tothom')")
-	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId, Long annexId)
+	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId, Long annexId, boolean isVistaMoviments)
 			throws NotFoundException;
 
 	@PreAuthorize("hasRole('tothom')")
 	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long registreId,
-			Long annexId) throws NotFoundException;
+			Long annexId, boolean isVistaMoviments) throws NotFoundException;
 	
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
@@ -314,5 +313,22 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	void alliberar(Long entitatId, Long id);
 
-
+	/**
+	 * Consulta els moviments d'un registre
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @param isAdmin 
+	 * @return El contingut pendent.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	PaginaDto<ContingutDto> findMovimentsRegistre(
+			Long entitatId, 
+			List<BustiaDto> bustiesPermesesPerUsuari,
+			RegistreFiltreDto filtre, 
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin);
 }
