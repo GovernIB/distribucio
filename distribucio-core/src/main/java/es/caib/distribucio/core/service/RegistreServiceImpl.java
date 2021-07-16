@@ -189,6 +189,16 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			Long registreId,
 			boolean isVistaMoviments) throws NotFoundException {
+		return findOne(entitatId, registreId, isVistaMoviments, null);		
+	}
+		
+		@Transactional(readOnly = true)
+		@Override
+		public RegistreDto findOne(
+				Long entitatId,
+				Long registreId,
+				boolean isVistaMoviments,
+				String rolActual) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "registreId=" + registreId + ")");
@@ -226,6 +236,16 @@ public class RegistreServiceImpl implements RegistreService {
 				registreAnotacio.getAnnexos().remove(annexDto);
 				break;
 			}
+		}
+		
+		if ("tothom".equalsIgnoreCase(rolActual)) {
+			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
+			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
+				if (!Integer.valueOf(annexDto.getSicresTipusDocument()).equals(SicresTipoDocumento.TECNIC_INTERN.ordinal())) {
+					registreAnnexos.add(annexDto);
+				}
+			}
+			registreAnotacio.setAnnexos(registreAnnexos);
 		}
 		
 		return registreAnotacio;

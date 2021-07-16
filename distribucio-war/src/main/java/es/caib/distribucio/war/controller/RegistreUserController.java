@@ -378,13 +378,15 @@ public class RegistreUserController extends BaseUserController {
 			String ordreDir,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
 		try {
 			model.addAttribute(
 					"registre",
 					registreService.findOne(
 							entitatActual.getId(),
 							registreId,
-							isVistaMoviments));
+							isVistaMoviments,
+							rolActual));
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);

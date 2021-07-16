@@ -56,6 +56,20 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
+	@RolesAllowed("tothom")
+	public RegistreDto findOne(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments,
+			String rolActual) {
+		return delegate.findOne(
+				entitatId,
+				registreId,
+				isVistaMoviments,
+				rolActual);
+	}
+	
+	@Override
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds)

@@ -50,6 +50,27 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
 			boolean isVistaMoviments) throws NotFoundException;
+	
+	/**
+	 * Retorna la informació d'una anotació de registre situada dins un contenidor.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol consultar.
+	 * @param isVistaMoviments
+	 * 			  Atribut per detectar si està en la vista de moviments, llavors no comprovar permisos bústia
+	 * @param rolActual
+	 * @return els detalls de l'anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public RegistreDto findOne(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments, 
+			String rolActual) throws NotFoundException;
 
 	/**
 	 * Retorna la informació de múltples anotacions de registre.
