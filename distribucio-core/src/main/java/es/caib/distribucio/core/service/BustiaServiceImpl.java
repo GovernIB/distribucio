@@ -99,6 +99,7 @@ import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.UsuariBustiaFavoritRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
+import es.caib.distribucio.core.repository.VistaMovimentRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -166,6 +167,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
 	@Autowired
 	private UsuariRepository usuariRepository;
+	@Autowired
+	private VistaMovimentRepository vistaMovimentRepository;
 	
 	@Override
 	@Transactional
@@ -843,19 +846,19 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		List<Long> bustiesOrigenIds = null;
 		List<Long> busties = new ArrayList<Long>();
+		boolean totesLesbusties = false;
 		long beginTime = new Date().getTime();
 		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
 				busties.add(bustiaUsuari.getId());
 			}
+		} else {
+			busties.add(0L);
 		}
 		final Timer consultaBustiesOrigenFindRegistresAndBustiesTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "consultaBustiesOrigenFindRegistresAndBusties"));
 		Timer.Context consultaBustiesOrigenFindRegistresAndBustiesContext = consultaBustiesOrigenFindRegistresAndBustiesTimer.time();
 		try {
-			List<Long> registresIds = registreRepository.findRegistresIdsByBustiesIds(
-					entitat, 
-					busties);
-			bustiesOrigenIds = contingutMovimentRepository.findBustiesOrigenByRegistres(registresIds);
+			bustiesOrigenIds = vistaMovimentRepository.findBustiesOrigenByFiltre(entitat.getId(), totesLesbusties, busties);
 		} catch (Exception e) {
 			e.printStackTrace();
 			long endTime = new Date().getTime();
@@ -870,11 +873,7 @@ public class BustiaServiceImpl implements BustiaService {
 		for (Long bustiaId : bustiesOrigenIds) {
 			if (bustiaId != null) {
 				BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, bustiaId, false);
-				if (!bustiesOrigenUnique.contains(bustia) && bustia.isActiva()) {
 					bustiesOrigenUnique.add(bustia);
-				} else if (!bustiesOrigenUnique.contains(bustia) && mostrarInactivesOrigen && !bustia.isActiva()) {
-					bustiesOrigenUnique.add(bustia);
-				}
 			}
 		}
 		consultaBustiesOrigenConversioContext.stop();

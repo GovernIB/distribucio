@@ -28,9 +28,4 @@ public interface ContingutMovimentRepository extends JpaRepository<ContingutMovi
 	List<ContingutMovimentEntity> findByContingutAndOrigenNotNullOrderByCreatedDateAsc(ContingutEntity contingut);
 
 	List<ContingutMovimentEntity> findByContingutAndOrigenNotNullOrderByCreatedDateDesc(ContingutEntity contingut);
-	
-	@Query( "select distinct mv.origen.id " + 
-			"from ContingutMovimentEntity mv " + 
-			"where mv.contingut.id in (:registresIds)")
-	List<Long> findBustiesOrigenByRegistres(@Param("registresIds") List<Long> registresIds);
 }

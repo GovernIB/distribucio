@@ -455,8 +455,7 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre,
-			PaginacioParamsDto paginacioParams, 
-			boolean isAdmin) {
+			PaginacioParamsDto paginacioParams) {
 		
 		Timer.Context contextTotal  = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findMovimentsRegistre")).time();
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -488,7 +487,6 @@ public class RegistreServiceImpl implements RegistreService {
 				bustiesIds +=  bustiaUsuari.getId() + ", ";
 			}
 		} else {
-			totesLesbusties = isAdmin;
 			busties.add(0L);
 		}
 

@@ -268,14 +268,12 @@ public class RegistreServiceBean implements RegistreService {
 			Long entitatId, 
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre, 
-			PaginacioParamsDto paginacioParams, 
-			boolean isAdmin) {
+			PaginacioParamsDto paginacioParams) {
 		return delegate.findMovimentsRegistre(
 				entitatId, 
 				bustiesPermesesPerUsuari, 
 				filtre, 
-				paginacioParams, 
-				isAdmin);
+				paginacioParams);
 	}
 
 }

@@ -53,7 +53,7 @@ public interface VistaMovimentRepository extends JpaRepository<VistaMovimentEnti
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " +
 			"and (:isNullBustiaOrigen = true or v.origen = :bustiaOrigen) " +
-			"and (:isNullBustiaDesti = true or v.desti = :bustiaDesti)") //el primer destí és l'origen
+			"and (:isNullBustiaDesti = true or v.desti = :bustiaDesti)")
 	public Page<VistaMovimentEntity> findMovimentsByFiltre(
 			@Param("entitat") Long entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -90,4 +90,16 @@ public interface VistaMovimentRepository extends JpaRepository<VistaMovimentEnti
 			@Param("isNullBustiaDesti") boolean isNullBustiaDesti,
 			@Param("bustiaDesti") Long bustiaDesti,
 			Pageable pageable);
+	
+	
+	@Query(	"select distinct v.origen " +
+			"from " +
+			"    VistaMovimentEntity v " +
+			"where " +
+			"    (v.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (v.origen in (:bustiesIds) or v.origen in (:bustiesIds) or (v.desti in (:bustiesIds) or v.origen is null)))")
+	public List<Long> findBustiesOrigenByFiltre(
+			@Param("entitat") Long entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
+			@Param("bustiesIds") List<Long> bustiesIds);
 }

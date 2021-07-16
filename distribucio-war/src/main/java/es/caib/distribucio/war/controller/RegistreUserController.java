@@ -214,8 +214,7 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						DatatablesHelper.getPaginacioDtoFromRequest(request), 
-						false),
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id",
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 	}

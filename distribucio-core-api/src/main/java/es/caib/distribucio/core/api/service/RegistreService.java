@@ -329,6 +329,5 @@ public interface RegistreService {
 			Long entitatId, 
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre, 
-			PaginacioParamsDto paginacioParams, 
-			boolean isAdmin);
+			PaginacioParamsDto paginacioParams);
 }
