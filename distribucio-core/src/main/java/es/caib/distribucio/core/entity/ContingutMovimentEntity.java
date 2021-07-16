@@ -30,15 +30,12 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contingut_id")
-	protected ContingutEntity contingut;
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "origen_id")
-	protected ContingutEntity origen;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "desti_id")
-	protected ContingutEntity desti;
+	@Column(name = "contingut_id")
+	protected Long contingut;
+	@Column(name = "origen_id")
+	protected Long origen;
+	@Column(name = "desti_id")
+	protected Long desti;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "remitent_codi")
 	@ForeignKey(name = "dis_remitent_contmov_fk")
@@ -50,13 +47,13 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	@Column(name = "comentari_destins", length = 256)
 	protected String comentariDestins;
 
-	public ContingutEntity getContingut() {
+	public Long getContingut() {
 		return contingut;
 	}
-	public ContingutEntity getOrigen() {
+	public Long getOrigen() {
 		return origen;
 	}
-	public ContingutEntity getDesti() {
+	public Long getDesti() {
 		return desti;
 	}
 	public UsuariEntity getRemitent() {
@@ -81,9 +78,9 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	}
 	
 	public static Builder getBuilder(
-			ContingutEntity contenidor,
-			ContingutEntity origen,
-			ContingutEntity desti,
+			Long contenidor,
+			Long origen,
+			Long desti,
 			UsuariEntity remitent,
 			String comentari) {
 		return new Builder(
@@ -94,8 +91,8 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 				comentari);
 	}
 	public static Builder getBuilder(
-			ContingutEntity contenidor,
-			ContingutEntity desti,
+			Long contenidor,
+			Long desti,
 			UsuariEntity remitent,
 			String comentari) {
 		return new Builder(
@@ -108,9 +105,9 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	public static class Builder {
 		ContingutMovimentEntity built;
 		Builder(
-				ContingutEntity contingut,
-				ContingutEntity origen,
-				ContingutEntity desti,
+				Long contingut,
+				Long origen,
+				Long desti,
 				UsuariEntity remitent,
 				String comentari) {
 			built = new ContingutMovimentEntity();

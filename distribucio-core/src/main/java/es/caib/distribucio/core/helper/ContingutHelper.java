@@ -664,9 +664,9 @@ public class ContingutHelper {
 					contingut.getDarrerMoviment().getRemitent().getCodi(), 
 					true);
 		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
-				contingut,
-				contingut.getPare(),
-				desti,
+				contingut.getId(),
+				contingut.getPare().getId(),
+				desti.getId(),
 				usuariHelper.getUsuariAutenticat(),
 				comentari).build();
 		contenidorMoviment.updatePerConeixement(isPerConeixement);
