@@ -322,7 +322,7 @@ public interface BustiaService {
 	public String getApplictionMetrics();
 
 	@PreAuthorize("hasRole('tothom')")
-	public void registreAnotacioEnviarPerEmail(Long entitatId, Long registreId, String adresses, String motiu, boolean isVistaMoviments)
+	public void registreAnotacioEnviarPerEmail(Long entitatId, Long registreId, String adresses, String motiu, boolean isVistaMoviments, String rolActual)
 			throws MessagingException;
 
 	/**

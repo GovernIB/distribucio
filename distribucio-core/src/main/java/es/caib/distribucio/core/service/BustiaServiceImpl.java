@@ -1073,7 +1073,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long registreId, 
 			String adresses, 
 			String motiu,
-			boolean isVistaMoviments) throws MessagingException {
+			boolean isVistaMoviments,
+			String rolActual) throws MessagingException {
 		
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
@@ -1082,7 +1083,8 @@ public class BustiaServiceImpl implements BustiaService {
 		RegistreDto registre = registreService.findOne(
 				entitatId,
 				registreId,
-				isVistaMoviments);
+				isVistaMoviments,
+				rolActual);
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -1103,7 +1105,8 @@ public class BustiaServiceImpl implements BustiaService {
 		List<RegistreAnnexDto> anexos = registreHelper.getAnnexosAmbFirmes(
 				entitatId,
 				registreId,
-				isVistaMoviments);
+				isVistaMoviments,
+				rolActual);
 		
 		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
 		String concsvBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.concsv.base.url");

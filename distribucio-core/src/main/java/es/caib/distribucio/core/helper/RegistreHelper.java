@@ -60,6 +60,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
+import es.caib.distribucio.core.api.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -792,7 +793,8 @@ public class RegistreHelper {
 	public List<RegistreAnnexDto> getAnnexosAmbFirmes(
 			Long entitatId,
 			Long registreId,
-			boolean isVistaMoviments) throws NotFoundException {
+			boolean isVistaMoviments, 
+			String rolActual) throws NotFoundException {
 
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -826,6 +828,17 @@ public class RegistreHelper {
 				
 			}
 		}
+				
+		if ("tothom".equalsIgnoreCase(rolActual)) {
+			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
+			for (RegistreAnnexDto annexo: annexos) {
+				if (!Integer.valueOf(annexo.getSicresTipusDocument()).equals(SicresTipoDocumento.TECNIC_INTERN.ordinal())) {		
+					registreAnnexos.add(annexo);
+				}
+			}
+			annexos = registreAnnexos;
+		}
+		
 		return annexos;
 	}
 	

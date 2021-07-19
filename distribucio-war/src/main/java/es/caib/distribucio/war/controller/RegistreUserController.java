@@ -378,7 +378,7 @@ public class RegistreUserController extends BaseUserController {
 			String ordreDir,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		String rolActual = RolHelper.getRolActual(request);
+		
 		try {
 			model.addAttribute(
 					"registre",
@@ -386,7 +386,7 @@ public class RegistreUserController extends BaseUserController {
 							entitatActual.getId(),
 							registreId,
 							isVistaMoviments,
-							rolActual));
+							RolHelper.getRolActual(request)));
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
@@ -731,7 +731,8 @@ public class RegistreUserController extends BaseUserController {
 					command.getContingutId(),
 					adreces, 
 					command.getMotiu(),
-					command.isVistaMoviments());
+					command.isVistaMoviments(),
+					RolHelper.getRolActual(request));
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
@@ -817,7 +818,8 @@ public class RegistreUserController extends BaseUserController {
 							registreDto.getId(),
 							adreces, 
 							motiu,
-							isVistaMoviments);
+							isVistaMoviments,
+							RolHelper.getRolActual(request));
 					
 				} catch (Exception e) {
 					MissatgesHelper.error(
