@@ -177,11 +177,13 @@ public class ContingutLogHelper {
 		ContingutLogDetallsDto detalls = new ContingutLogDetallsDto();
 		emplenarLogDto(log, detalls);
 		if (log.getContingutMoviment() != null) {
-			detalls.setContingutMoviment(
+			ContingutEntity contingutEntity = contingutRepository.findOne(log.getContingutMoviment().getContingut());
+			if (contingutEntity != null)
+				detalls.setContingutMoviment(
 					toContingutMovimentDto(
 							log.getContingutMoviment(),
 							contenidorHelper.toContingutDto(
-									log.getContingutMoviment().getContingut())));
+									contingutEntity)));
 		}
 		if (log.getPare() != null) {
 			ContingutLogDto pare = new ContingutLogDto();
@@ -269,17 +271,21 @@ public class ContingutLogHelper {
 				}
 			} else {
 				if (contingutMoviment.getOrigen() != null) {
-					logContingutSuperior(
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getOrigen());
+					if (contingutEntity != null)
+						logContingutSuperior(
 							contingut,
 							tipus,
-							contingutMoviment.getOrigen(),
+							contingutEntity,
 							logPare);
 				}
 				if (contingutMoviment.getDesti() != null) {
-					logContingutSuperior(
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getDesti());
+					if (contingutEntity != null)
+						logContingutSuperior(
 							contingut,
 							tipus,
-							contingutMoviment.getDesti(),
+							contingutEntity,
 							logPare);
 				}
 			}
@@ -441,13 +447,17 @@ public class ContingutLogHelper {
 						moviment.getRemitent(),
 						UsuariDto.class));
 		if (moviment.getOrigen() != null) {
-			dto.setOrigen(
-					contenidorHelper.toContingutDto(
-							moviment.getOrigen()));
+			ContingutEntity contingutEntity = contingutRepository.findOne(moviment.getOrigen());
+			if (contingutEntity != null)
+				dto.setOrigen(
+						contenidorHelper.toContingutDto(
+								contingutEntity));
 		}
-		dto.setDesti(
+		ContingutEntity contingutDestiEntity = contingutRepository.findOne(moviment.getDesti());
+		if (contingutDestiEntity != null)
+			dto.setDesti(
 				contenidorHelper.toContingutDto(
-						moviment.getDesti()));
+						contingutDestiEntity));
 		return dto;
 	}
 
