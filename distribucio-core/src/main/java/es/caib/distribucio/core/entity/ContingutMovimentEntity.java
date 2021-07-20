@@ -30,12 +30,17 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 
-	@Column(name = "contingut_id")
-	protected Long contingut;
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "contingut_id")
+	protected ContingutEntity contingut;
 	@Column(name = "origen_id")
-	protected Long origen;
+	protected Long origenId;
 	@Column(name = "desti_id")
-	protected Long desti;
+	protected Long destiId;
+	@Column(name = "origen_nom")
+	protected String origenNom;
+	@Column(name = "desti_nom")
+	protected String destiNom;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "remitent_codi")
 	@ForeignKey(name = "dis_remitent_contmov_fk")
@@ -47,14 +52,20 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	@Column(name = "comentari_destins", length = 256)
 	protected String comentariDestins;
 
-	public Long getContingut() {
+	public ContingutEntity getContingut() {
 		return contingut;
 	}
-	public Long getOrigen() {
-		return origen;
+	public Long getOrigenId() {
+		return origenId;
 	}
-	public Long getDesti() {
-		return desti;
+	public Long getDestiId() {
+		return destiId;
+	}
+	public String getOrigenNom() {
+		return origenNom;
+	}
+	public String getDestiNom() {
+		return destiNom;
 	}
 	public UsuariEntity getRemitent() {
 		return remitent;
@@ -78,42 +89,53 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	}
 	
 	public static Builder getBuilder(
-			Long contenidor,
-			Long origen,
-			Long desti,
+			ContingutEntity contenidor,
+			Long origenId,
+			String origenNom,
+			Long destiId,
+			String destiNom,
 			UsuariEntity remitent,
 			String comentari) {
 		return new Builder(
 				contenidor,
-				origen,
-				desti,
+				origenId,
+				origenNom,
+				destiId,
+				destiNom,
 				remitent,
 				comentari);
 	}
 	public static Builder getBuilder(
-			Long contenidor,
-			Long desti,
+			ContingutEntity contenidor,
+			Long destiId,
+			String destiNom,
 			UsuariEntity remitent,
 			String comentari) {
 		return new Builder(
 				contenidor,
 				null,
-				desti,
+				null,
+				destiId,
+				destiNom,
 				remitent,
 				comentari);
 	}
 	public static class Builder {
 		ContingutMovimentEntity built;
 		Builder(
-				Long contingut,
-				Long origen,
-				Long desti,
+				ContingutEntity contingut,
+				Long origenId,
+				String origenNom,
+				Long destiId,
+				String destiNom,
 				UsuariEntity remitent,
 				String comentari) {
 			built = new ContingutMovimentEntity();
 			built.contingut = contingut;
-			built.origen = origen;
-			built.desti = desti;
+			built.origenId = origenId;
+			built.origenNom = origenNom;
+			built.destiId = destiId;
+			built.destiNom = destiNom;
 			built.remitent = remitent;
 			built.comentari = comentari;
 		}

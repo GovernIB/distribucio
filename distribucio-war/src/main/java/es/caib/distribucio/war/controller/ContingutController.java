@@ -397,12 +397,12 @@ public class ContingutController extends BaseUserController {
 	
 	/** Descarrega un informe del resum de moviments a partir d'una plantilla 
 	 * @throws Exception */
-	@RequestMapping(value = "/contingut/{contingutId}/log/informe/{isVistaMoviments}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{contingutId}/log/informe", method = RequestMethod.GET)
 	public String informe(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
-			@PathVariable boolean isVistaMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) throws Exception {
 		String rolActual = RolHelper.getRolActual(request);
 		
@@ -533,8 +533,8 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParams().get(0)}));
 			
 			if (log.getContingutMoviment() != null) {
-				if (log.getContingutMoviment().getDesti() != null) {
-					sb.append(" " + this.getMessage(request, "contingut.log.resum.msg.iEsPosaALaBustia", new Object[] {log.getContenidorMoviment().getDesti().getNom()}));
+				if (log.getContingutMoviment().getDestiId() != null) {
+					sb.append(" " + this.getMessage(request, "contingut.log.resum.msg.iEsPosaALaBustia", new Object[] {log.getContenidorMoviment().getDestiNom()}));
 				}
 			}
 			
@@ -543,13 +543,13 @@ public class ContingutController extends BaseUserController {
 		case REENVIAMENT:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
 			if (log.getContenidorMoviment() != null) {
-				if (log.getContingutMoviment().getOrigen() != null) {
+				if (log.getContingutMoviment().getOrigenId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getOrigen().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getOrigenNom()).append("\"");
 				}
-				if (log.getContingutMoviment().getDesti() != null) {
+				if (log.getContingutMoviment().getDestiId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getDestiNom()).append("\"");
 				}
 			}
 			break;
@@ -582,9 +582,9 @@ public class ContingutController extends BaseUserController {
 				String msg = getMessage(request, "contingut.log.resum.msg.reenviar");
 				msg = msg.substring(0, 1).toLowerCase() + msg.substring(1);
 				sb.append(": " + msg);
-				if (log.getContingutMoviment().getDesti() != null) {
+				if (log.getContingutMoviment().getDestiId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getDestiNom()).append("\"");
 				}
 			}
 			

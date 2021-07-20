@@ -177,13 +177,11 @@ public class ContingutLogHelper {
 		ContingutLogDetallsDto detalls = new ContingutLogDetallsDto();
 		emplenarLogDto(log, detalls);
 		if (log.getContingutMoviment() != null) {
-			ContingutEntity contingutEntity = contingutRepository.findOne(log.getContingutMoviment().getContingut());
-			if (contingutEntity != null)
-				detalls.setContingutMoviment(
+			detalls.setContingutMoviment(
 					toContingutMovimentDto(
 							log.getContingutMoviment(),
 							contenidorHelper.toContingutDto(
-									contingutEntity)));
+									log.getContingutMoviment().getContingut())));
 		}
 		if (log.getPare() != null) {
 			ContingutLogDto pare = new ContingutLogDto();
@@ -270,8 +268,8 @@ public class ContingutLogHelper {
 							logPare);
 				}
 			} else {
-				if (contingutMoviment.getOrigen() != null) {
-					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getOrigen());
+				if (contingutMoviment.getOrigenId() != null) {
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getOrigenId());
 					if (contingutEntity != null)
 						logContingutSuperior(
 							contingut,
@@ -279,8 +277,8 @@ public class ContingutLogHelper {
 							contingutEntity,
 							logPare);
 				}
-				if (contingutMoviment.getDesti() != null) {
-					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getDesti());
+				if (contingutMoviment.getDestiId() != null) {
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getDestiId());
 					if (contingutEntity != null)
 						logContingutSuperior(
 							contingut,
@@ -446,18 +444,12 @@ public class ContingutLogHelper {
 				conversioTipusHelper.convertir(
 						moviment.getRemitent(),
 						UsuariDto.class));
-		if (moviment.getOrigen() != null) {
-			ContingutEntity contingutEntity = contingutRepository.findOne(moviment.getOrigen());
-			if (contingutEntity != null)
-				dto.setOrigen(
-						contenidorHelper.toContingutDto(
-								contingutEntity));
-		}
-		ContingutEntity contingutDestiEntity = contingutRepository.findOne(moviment.getDesti());
-		if (contingutDestiEntity != null)
-			dto.setDesti(
-				contenidorHelper.toContingutDto(
-						contingutDestiEntity));
+		dto.setOrigenId(moviment.getOrigenId());
+		dto.setOrigenNom(moviment.getOrigenNom());
+
+		dto.setDestiId(moviment.getDestiId());
+		dto.setDestiNom(moviment.getDestiNom());
+
 		return dto;
 	}
 

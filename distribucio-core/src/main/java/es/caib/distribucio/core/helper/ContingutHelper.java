@@ -277,7 +277,7 @@ public class ContingutHelper {
 					//##### comprova si l'anotació s'ha marcat per coneixement
 					boolean isEnviarConeixementActiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.contingut.enviar.coneixement");
 					if (isEnviarConeixementActiu) {
-						List<ContingutMovimentEntity> movimentsDesc = contingutMovimentRepository.findByContingutAndOrigenNotNullOrderByCreatedDateDesc(contingut);
+						List<ContingutMovimentEntity> movimentsDesc = contingutMovimentRepository.findByContingutAndOrigenIdNotNullOrderByCreatedDateDesc(contingut);
 						ContingutMovimentEntity lastMoviment = !movimentsDesc.isEmpty() ? movimentsDesc.get(0) : null;
 						contingutDto.setPerConeixement(lastMoviment != null ? lastMoviment.isPerConeixement() : false);
 					}
@@ -664,9 +664,11 @@ public class ContingutHelper {
 					contingut.getDarrerMoviment().getRemitent().getCodi(), 
 					true);
 		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
-				contingut.getId(),
+				contingut,
 				contingut.getPare().getId(),
+				contingut.getPare().getNom(),
 				desti.getId(),
+				desti.getNom(),
 				usuariHelper.getUsuariAutenticat(),
 				comentari).build();
 		contenidorMoviment.updatePerConeixement(isPerConeixement);

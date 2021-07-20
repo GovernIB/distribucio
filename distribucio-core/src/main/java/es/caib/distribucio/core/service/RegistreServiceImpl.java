@@ -769,7 +769,7 @@ public class RegistreServiceImpl implements RegistreService {
 				unitat,
 				onlyAmbMoviments,
 				bustiaOrigen == null,
-				bustiaOrigen);
+				bustiaOrigen != null? bustiaOrigen.getId() : null);
 	
 
 		contextTotal.stop();

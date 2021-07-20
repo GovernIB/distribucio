@@ -17,8 +17,10 @@ public class ContingutMovimentDto implements Serializable {
 
 	private Long id;
 	private ContingutDto contingut;
-	private ContingutDto origen;
-	private ContingutDto desti;
+	private Long origenId;
+	private Long destiId;
+	private String origenNom;
+	private String destiNom;
 	private Date data;
 	private UsuariDto remitent;
 	private String comentari;
@@ -37,17 +39,29 @@ public class ContingutMovimentDto implements Serializable {
 	public void setContingut(ContingutDto contingut) {
 		this.contingut = contingut;
 	}
-	public ContingutDto getOrigen() {
-		return origen;
+	public Long getOrigenId() {
+		return origenId;
 	}
-	public void setOrigen(ContingutDto origen) {
-		this.origen = origen;
+	public void setOrigenId(Long origenId) {
+		this.origenId = origenId;
 	}
-	public ContingutDto getDesti() {
-		return desti;
+	public Long getDestiId() {
+		return destiId;
 	}
-	public void setDesti(ContingutDto desti) {
-		this.desti = desti;
+	public void setDestiId(Long destiId) {
+		this.destiId = destiId;
+	}
+	public String getOrigenNom() {
+		return origenNom;
+	}
+	public void setOrigenNom(String origenNom) {
+		this.origenNom = origenNom;
+	}
+	public String getDestiNom() {
+		return destiNom;
+	}
+	public void setDestiNom(String destiNom) {
+		this.destiNom = destiNom;
 	}
 	public Date getData() {
 		return data;

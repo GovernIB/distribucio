@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -268,25 +267,25 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			" 				from ContingutMovimentEntity mov1" +
 			"	 			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
 			" 									where mov2.contingut.id = r.id " + 
-			"									and mov2.origen is not null)) > 0) " + 
+			"									and mov2.origenId is not null)) > 0) " + 
 			"			and (:isNullBustiaOrigen = true " + 											//>>> Amb filtre origen
 			" 				or ((select count(mov2)" + 													//>>> Primer moviment des de registre (origen = primer destí)
 			"						from ContingutMovimentEntity mov2" + 
 			"						where r.id = mov2.contingut.id" + 
-			"						and mov2.origen is null" + 
-			"						and mov2.desti = :bustiaOrigen) > 0" + 
+			"						and mov2.origenId is null" + 
+			"						and mov2.destiId = :bustiaOrigenId) > 0" + 
 			"					or ((select count(mov3) " + 											//>>> Reenviament deixant còpia (origen = origen)
 			"									from ContingutMovimentEntity mov3" + 
 			"									where r.id = mov3.contingut.id" + 
-			"									and mov3.origen is null" + 
-			"									and mov3.desti is not null) = 0" + 
+			"									and mov3.origenId is null" + 
+			"									and mov3.destiId is not null) = 0" + 
 			"										and" + 
 			"											(select count(mov4)" +
 			"												from ContingutMovimentEntity mov4" + 		//>>> Reenviament deixant còpia amb més d'un moviment (agafar origen primer moviment)
 			"												where r.id = mov4.contingut.id" +
 			" 												and mov4.id = (select min(mov5.id) from ContingutMovimentEntity mov5 where r.id = mov5.contingut.id)" +
-			"												and mov4.origen is not null" +
-			"												and mov4.origen = :bustiaOrigen) > 0)))" + 
+			"												and mov4.origenId is not null" +
+			"												and mov4.origenId = :bustiaOrigenId) > 0)))" + 
 			"		))") //el primer destí és l'origen
 	public List<Long> findRegistreIdsByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
@@ -321,7 +320,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("onlyAmbMoviments") boolean onlyAmbMoviments,
 			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen,
-			@Param("bustiaOrigen") BustiaEntity bustiaOrigen);
+			@Param("bustiaOrigenId") Long bustiaOrigenId);
 
 
 }
