@@ -538,6 +538,9 @@ public class RegistreHelper {
 						null,
 						exceptionAplicantRegla);
 			}
+		} else {
+			// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
+			anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 		}
 		return exceptionAplicantRegla;
 
