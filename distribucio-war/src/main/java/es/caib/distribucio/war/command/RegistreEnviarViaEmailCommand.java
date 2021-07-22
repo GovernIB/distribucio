@@ -8,7 +8,6 @@ public class RegistreEnviarViaEmailCommand {
 	@NotEmpty
 	String addresses;
 	String motiu;
-	boolean vistaMoviments;
 	
 	public Long getContingutId() {
 		return contingutId;
@@ -28,12 +27,5 @@ public class RegistreEnviarViaEmailCommand {
 	public void setMotiu(String motiu) {
 		this.motiu = motiu;
 	}
-	public boolean isVistaMoviments() {
-		return vistaMoviments;
-	}
-	public void setVistaMoviments(boolean vistaMoviments) {
-		this.vistaMoviments = vistaMoviments;
-	}
-
 }
 

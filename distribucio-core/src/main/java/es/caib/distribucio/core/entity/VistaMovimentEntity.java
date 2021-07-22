@@ -25,7 +25,8 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Subselect("select 	r.id as id,"
+@Subselect("select 	concat(r.id,concat('_', dst.id)) as id,"
+		+ "			r.id as idRegistre,"
 		+ "			r.numero as numero, "
 		+ "			r.enviat_per_email as enviatPerEmail, "
 		+ "			r.proces_estat as procesEstat, "
@@ -40,6 +41,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 		+ "			ori.id as origen, "
 		+ "			dst.id as desti, "
 		+ "         m.createdDate as createdDate, "
+		+ "         m.id as movimentId, "
 		+ "         contingut.contmov_id as darrerMoviment, "
 		+ "         contingut.entitat_id as entitat, "
 		+ "         contingut.pare_id as bustia, "
@@ -55,7 +57,13 @@ public class VistaMovimentEntity {
 	
 	@Id
 	@Column(name = "id")
-	private Long id;
+	private String id;
+	
+	@Column(name = "movimentId")
+	private String movimentId;
+	
+	@Column(name = "idRegistre")
+	private Long idRegistre;
 	
 	@Column(name = "numero")
 	protected String numero;
@@ -127,12 +135,28 @@ public class VistaMovimentEntity {
 			orphanRemoval = true)
 	private List<RegistreInteressatEntity> interessats = new ArrayList<RegistreInteressatEntity>();
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getMovimentId() {
+		return movimentId;
+	}
+
+	public void setMovimentId(String movimentId) {
+		this.movimentId = movimentId;
+	}
+
+	public Long getIdRegistre() {
+		return idRegistre;
+	}
+
+	public void setIdRegistre(Long idRegistre) {
+		this.idRegistre = idRegistre;
 	}
 
 	public String getNumero() {

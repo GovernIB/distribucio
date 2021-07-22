@@ -72,7 +72,7 @@ tr.clicable {
 
 		    	var vistaMovimentsCookie = getCookie("vistaMoviments");
 		    	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo/" + isVistaMoviments);
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    

@@ -615,10 +615,10 @@ public class RegistreServiceImpl implements RegistreService {
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
-			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
+			logger.trace("findMovimentsRegistre executed with no errors in: " + (endTime - beginTime) + "ms");
 		} catch (Exception e) {
 			long endTime = new Date().getTime();
-			logger.error("findRegistreByPareAndFiltre executed with errors in: " + (endTime - beginTime) + "ms", e);
+			logger.error("findMovimentsRegistre executed with errors in: " + (endTime - beginTime) + "ms", e);
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			throw new RuntimeException(e);
 		}
@@ -661,20 +661,13 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		
 		// Comprova la bústia i que l'usuari hi tengui accés
-		BustiaEntity bustia = null, bustiaOrigen = null;
+		BustiaEntity bustia = null;
 		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
 			bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					new Long(filtre.getBustia()),
 					!isAdmin);
 		
-		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
-			bustiaOrigen = entityComprovarHelper.comprovarBustia(
-					entitat,
-					new Long(filtre.getBustiaOrigen()),
-					false);
-		}
-
 		boolean totesLesbusties =false;
 		List<Long> busties = new ArrayList<Long>();
 		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
@@ -766,10 +759,7 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getEstat(),
 				filtre.isNomesAmbErrors(),
 				unitat == null,
-				unitat,
-				onlyAmbMoviments,
-				bustiaOrigen == null,
-				bustiaOrigen != null? bustiaOrigen.getId() : null);
+				unitat);
 	
 
 		contextTotal.stop();
@@ -777,8 +767,328 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	
-	
+	@Transactional(readOnly = true)
+	@Override
+	public List<String> findRegistreMovimentsIds(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			boolean isAdmin) {
+		List<String> ids = new ArrayList<String>();
+		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findRegistreMovimentsIds"));
+		Timer.Context contextTotal = timerTotal.time();
 
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null, bustiaOrigen = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty())
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					false);
+		
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
+					false);
+		}
+
+		boolean totesLesbusties =false;
+		List<Long> busties = new ArrayList<Long>();
+		if (bustiesUsuari != null && !bustiesUsuari.isEmpty()) {
+			for (BustiaDto bustiaUsuari: bustiesUsuari) {
+				entityComprovarHelper.comprovarBustia(
+						entitat,
+						new Long(bustiaUsuari.getId()),
+						!isAdmin);
+				busties.add(bustiaUsuari.getId());
+			}
+		} else if (bustia != null) {
+			busties.add(bustia.getId());
+		} else {
+			busties.add(0L);
+			totesLesbusties = true;
+		}
+
+		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+		Boolean enviatPerEmail = null;
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+				enviatPerEmail = true;
+			} else {
+				enviatPerEmail = false;
+			}
+		}
+		
+		String tipusFisicaCodi = null;
+		if (filtre.getTipusDocFisica() != null) {
+			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+		}
+
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.debug("Consultant els identificadors del contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : busties) + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ")");
+
+		ids = vistaMovimentRepository.findRegistreIdsByFiltre(
+				entitat.getId(),
+				totesLesbusties,
+				busties,
+				StringUtils.isEmpty(filtre.getNumero()),
+				filtre.getNumero() != null ? filtre.getNumero() : "",
+				StringUtils.isEmpty(filtre.getTitol()),
+				filtre.getTitol() != null ? filtre.getTitol() : "",
+				filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+				filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen() : "",
+				filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+				filtre.getRemitent() != null ? filtre.getRemitent() : "",
+				(filtre.getDataRecepcioInici() == null),
+				filtre.getDataRecepcioInici(),
+				(dataRecepcioFi == null),
+				dataRecepcioFi,
+				esProcessat,
+				esPendent,
+				filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+				filtre.getInteressat() != null ? filtre.getInteressat() : "",
+				enviatPerEmail == null,
+				enviatPerEmail,
+				tipusFisicaCodi == null,
+				tipusFisicaCodi,
+				filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+				filtre.getEstat() == null,
+				filtre.getEstat(),
+				filtre.isNomesAmbErrors(),
+				unitat == null,
+				unitat,
+				bustiaOrigen == null,
+				bustiaOrigen != null ? bustiaOrigen.getId() : null,
+				bustia == null,
+				bustia != null ? bustia.getId() : null);
+		
+		contextTotal.stop();
+		return ids;
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public PaginaDto<ContingutDto> findMovimentRegistre(
+			Long entitatId,
+			List<BustiaDto> bustiesPermesesPerUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) {
+		
+		Timer.Context contextTotal  = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findMovimentRegistre")).time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Comprova la bústia i que l'usuari hi tengui accés
+		BustiaEntity bustia = null, bustiaOrigen = null;
+		if (filtre.getBustia() != null && !filtre.getBustia().isEmpty()) {
+			bustia = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustia()),
+					false);
+		}
+		if (filtre.getBustiaOrigen() != null && !filtre.getBustiaOrigen().isEmpty()) {
+			bustiaOrigen = entityComprovarHelper.comprovarBustia(
+					entitat,
+					new Long(filtre.getBustiaOrigen()),
+					false);
+		}
+		String bustiesIds="";
+			
+		boolean totesLesbusties =false;
+		List<Long> busties = new ArrayList<Long>();
+		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
+			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
+				busties.add(bustiaUsuari.getId());
+				bustiesIds +=  bustiaUsuari.getId() + ", ";
+			}
+		} else {
+			busties.add(0L);
+		}
+
+		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
+		mapeigOrdenacio.put(
+				"darrerMovimentData",
+				new String[] {"darrerMoviment.createdDate"});
+		mapeigOrdenacio.put(
+				"darrerMovimentUsuari.nom",
+				new String[] {"remitent.nom"});
+		mapeigOrdenacio.put(
+				"darrerMovimentComentari",
+				new String[] {"darrerMoviment.comentari"});
+		Page<VistaMovimentEntity> pagina = null;
+		
+			
+		boolean esPendent = RegistreProcesEstatSimpleEnumDto.PENDENT.equals(filtre.getProcesEstatSimple()); 
+		boolean esProcessat = RegistreProcesEstatSimpleEnumDto.PROCESSAT.equals(filtre.getProcesEstatSimple());;
+
+		Boolean enviatPerEmail = null;
+		if (filtre.getEnviatPerEmail() != null) {
+			if (filtre.getEnviatPerEmail() == RegistreEnviatPerEmailEnumDto.ENVIAT) {
+				enviatPerEmail = true;
+			} else {
+				enviatPerEmail = false;
+			}
+		}
+		
+ 		String tipusFisicaCodi = null;
+		if (filtre.getTipusDocFisica() != null) {
+			tipusFisicaCodi = String.valueOf(filtre.getTipusDocFisica().getValue());
+		}
+		
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+
+		logger.trace("Consultant el contingut de l'usuari ("
+				+ "entitatId=" + entitatId + ", "
+				+ "bustiaId=" + filtre.getBustia() + ", "
+				+ "numero=" + filtre.getNumero() + ", "
+				+ "titol=" + filtre.getTitol() + ", "
+				+ "numeroOrigen=" + filtre.getNumeroOrigen() + ", "
+				+ "remitent=" + filtre.getRemitent() + ", "
+				+ "dataRecepcioInici=" + filtre.getDataRecepcioInici() + ", "
+				+ "dataRecepcioFi=" + filtre.getDataRecepcioFi() + ", "
+				+ "estatContingut=" + filtre.getProcesEstatSimple() + ", "
+				+ "interessat=" + filtre.getInteressat() + ", " 
+				+ "bustiesIds= " + (totesLesbusties ? "(totes)" : bustiesIds) + ", " 
+				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
+				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
+				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "estat= " + filtre.getEstat() + ", " 
+				+ "unitat= " + filtre.getUnitatId() + ", " 
+				+ "bustiaOrigen= " + filtre.getBustiaOrigen() + ", " 
+				+ "bustiaDesti= " + filtre.getBustia() + ", " 
+				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
+
+		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
+		long beginTime = new Date().getTime();
+		try {
+			
+			pagina = vistaMovimentRepository.findMovimentsByFiltre(
+					entitat.getId(), 
+					totesLesbusties, 
+					busties, 
+					StringUtils.isEmpty(filtre.getNumero()),
+					filtre.getNumero() != null ? filtre.getNumero().trim() : "",
+					StringUtils.isEmpty(filtre.getTitol()),
+					filtre.getTitol() != null ? filtre.getTitol().trim() : "",
+					filtre.getNumeroOrigen() == null || filtre.getNumeroOrigen().isEmpty(),
+					filtre.getNumeroOrigen() != null ? filtre.getNumeroOrigen().trim() : "",
+					filtre.getRemitent() == null || filtre.getRemitent().isEmpty(),
+					filtre.getRemitent() != null ? filtre.getRemitent().trim() : "",
+					(filtre.getDataRecepcioInici() == null),
+					filtre.getDataRecepcioInici(),
+					(dataRecepcioFi == null),
+					dataRecepcioFi,
+					esProcessat,
+					esPendent,
+					filtre.getInteressat() == null || filtre.getInteressat().isEmpty(),
+					filtre.getInteressat() != null ? filtre.getInteressat().trim() : "",
+					enviatPerEmail == null,
+					enviatPerEmail,
+					tipusFisicaCodi == null,
+					tipusFisicaCodi,
+					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					filtre.getEstat() == null,
+					filtre.getEstat(),
+					filtre.isNomesAmbErrors(),
+					unitat == null,
+					unitat,
+					bustiaOrigen == null,
+					bustiaOrigen != null ? bustiaOrigen.getId() : null,
+					bustia == null,
+					bustia != null ? bustia.getId() : null,
+					paginacioHelper.toSpringDataPageable(
+							paginacioParams,
+							mapeigOrdenacio));
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			long endTime = new Date().getTime();
+			logger.trace("findMovimentRegistre executed with no errors in: " + (endTime - beginTime) + "ms");
+		} catch (Exception e) {
+			long endTime = new Date().getTime();
+			logger.error("findMovimentRegistre executed with errors in: " + (endTime - beginTime) + "ms", e);
+			contextTotalfindRegistreByPareAndFiltre.stop();
+			throw new RuntimeException(e);
+		}
+		
+		
+		Timer.Context contextTotaltoPaginaDto = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findMovimentRegistre.toPaginaDto")).time();
+
+		PaginaDto<ContingutDto> pag = paginacioHelper.toPaginaDto(
+				pagina,
+				ContingutDto.class,
+				new Converter<VistaMovimentEntity, ContingutDto>() {
+					@Override
+					public ContingutDto convert(VistaMovimentEntity source) {
+						return contingutHelper.movimentToContingutDto(source);
+					}
+				});
+		contextTotaltoPaginaDto.stop();
+		
+		contextTotal.stop();
+		return pag;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<ContingutDto> getPathContingut(
+			Long entitatId, 
+			Long bustiaId) throws NotFoundException {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				true, 
+				false, 
+				false);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				bustiaId,
+				false);
+		return contingutHelper.getPathContingutComDto(bustia, true, true);
+	}
 
 	@Transactional(readOnly = true)
 	@Override
@@ -1023,7 +1333,8 @@ public class RegistreServiceImpl implements RegistreService {
 						bustia,
 						"Anotacio sense bústia reprocessada des del llistat de l'administrador " +
 						"per assignar bústia per defecte" + (reglaAplicable != null  ? "i regla aplicable" : ""),
-						false);
+						false,
+						null);
 				
 				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 						bustia.getEntitat(),

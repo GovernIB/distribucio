@@ -339,12 +339,13 @@ public class ContingutHelper {
 				true, 
 				false, 
 				false);
-		RegistreEntity registreEntity = registreRepository.findByEntitatAndId(entitat, registreMoviment.getId());
+		RegistreEntity registreEntity = registreRepository.findByEntitatAndId(entitat, registreMoviment.getIdRegistre());
 		final Timer timerToContingutDtoconvertirToRegistreDto = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "movimentToContingutDto.convertirToRegistreDto"));
 		Timer.Context contextToContingutDtoconvertirToRegistreDto  = timerToContingutDtoconvertirToRegistreDto.time();
 		RegistreDto registreDto = conversioTipusHelper.convertir(
 					registreEntity,
 					RegistreDto.class);
+		registreDto.setMovimentId(registreMoviment.getId());
 		registreDto.setLlegida(registreEntity.getLlegida() == null || registreEntity.getLlegida());
 		contextToContingutDtoconvertirToRegistreDto.stop();
 		
@@ -438,6 +439,7 @@ public class ContingutHelper {
 				true,
 				true);
 		contingutDto.setPath(pathDesti);
+		contingutDto.setDestiLogic(desti.getId());
 		contextToContingutDtoEntitatMoviemntAudtioria.stop();
 			
 		contextTotal.stop();
@@ -657,7 +659,8 @@ public class ContingutHelper {
 			ContingutEntity contingut,
 			ContingutEntity desti,
 			String comentari,
-			boolean isPerConeixement) {
+			boolean isPerConeixement,
+			ContingutEntity bustiaOrigenLogic) {
 		UsuariEntity usuariAutenticat = usuariHelper.getUsuariAutenticat();
 		if (usuariAutenticat == null && contingut.getDarrerMoviment() != null)
 			usuariHelper.generarUsuariAutenticat(
@@ -665,8 +668,8 @@ public class ContingutHelper {
 					true);
 		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
 				contingut,
-				contingut.getPare().getId(),
-				contingut.getPare().getNom(),
+				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getId() : contingut.getPare().getId(),
+				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getNom() : contingut.getPare().getNom(),
 				desti.getId(),
 				desti.getNom(),
 				usuariHelper.getUsuariAutenticat(),

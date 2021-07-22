@@ -73,11 +73,11 @@ public class ContingutController extends BaseUserController {
 	@Autowired
 	private RegistreService registreService;
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant/{isVistaMoviments}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@PathVariable boolean isVistaMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -94,11 +94,11 @@ public class ContingutController extends BaseUserController {
 		return "registreJustificant";
 	}
 
-	@RequestMapping(value = "/contingut/registre/{registreId}/arxiuInfo/{isVistaMoviments}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/arxiuInfo", method = RequestMethod.GET)
 	public String arxiuInfo(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@PathVariable boolean isVistaMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -455,6 +455,18 @@ public class ContingutController extends BaseUserController {
 		}
 		return ret;
 	}
+	
+	@RequestMapping(value = "/contingut/hasPermisBustia/{bustiaId}", method = RequestMethod.GET)
+	@ResponseBody
+	public boolean hasPermisBustia(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return contingutService.hasPermisSobreBustia(
+				entitatActual.getId(), 
+				bustiaId);
+	}
 
 	/** Retorna el contingut PDF de la generació del report. Construeix els textos i els passa a la plantilla.
 	 * @param request 
@@ -620,11 +632,11 @@ public class ContingutController extends BaseUserController {
 		return sb.toString();
 	}
 
-	@RequestMapping(value = "/contingut/{registreId}/comentaris/{isVistaMoviments}", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/{registreId}/comentaris", method = RequestMethod.GET)
 	public String comentaris(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@PathVariable boolean isVistaMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);

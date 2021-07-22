@@ -935,7 +935,8 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacioEntity,
 				bustia,
 				null,
-				false);
+				false,
+				null);
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				bustia.getEntitat(),
 				bustia);
@@ -1285,7 +1286,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long registreId,
 			boolean opcioDeixarCopiaSelectada,
 			String comentari,
-			Long[] perConeixement) throws NotFoundException {
+			Long[] perConeixement,
+			Long destiLogic) throws NotFoundException {
 		
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
@@ -1305,15 +1307,22 @@ public class BustiaServiceImpl implements BustiaService {
 			throw new NotFoundException(registreId, RegistreEntity.class);
 		}
 		
-		if (isPermesReservarAnotacions())
+		if (destiLogic == null && isPermesReservarAnotacions())
 			registreHelper.comprovarRegistreAlliberat(reg);
 	
+		BustiaEntity bustiaOrigenLogic = null;
 		BustiaEntity bustiaOrigen = null;
-		if (!usuariHelper.isAdmin())
+		if (destiLogic == null && !usuariHelper.isAdmin())
 			bustiaOrigen = entityComprovarHelper.comprovarBustia(
 				entitat,
-				reg.getPareId(),
+				destiLogic != null ? destiLogic : reg.getPareId(),
 				true);
+		if (destiLogic != null)
+			bustiaOrigenLogic = entityComprovarHelper.comprovarBustia(
+					entitat,
+					destiLogic,
+					false);
+		
 		List<BustiaEntity> bustiesDesti = new ArrayList<BustiaEntity>();
 		for (int i = 0; i < bustiaDestiIds.length; i++) {
 			BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
@@ -1357,7 +1366,8 @@ public class BustiaServiceImpl implements BustiaService {
 					registrePerReenviar,
 					bustia,
 					comentari,
-					assentamentPerConeixement);
+					assentamentPerConeixement,
+					bustiaOrigenLogic);
 			
 			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
 			if (registrePerReenviar.getClass() == RegistreEntity.class) {
@@ -1562,7 +1572,8 @@ public class BustiaServiceImpl implements BustiaService {
 					registre,
 					bustiaDesti,
 					comentari,
-					false);
+					false,
+					null);
 			// Registra al log l'enviament del contingut
 			contingutLogHelper.logMoviment(
 					registre,

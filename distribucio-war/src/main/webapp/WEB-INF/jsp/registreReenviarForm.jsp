@@ -701,10 +701,17 @@
 			    			</div>
 			    		</div>			
 						<form:hidden path="perConeixement"/>
-						<div class="form-group col-xs-12">
-							<form:checkbox path="deixarCopia" cssClass="span12" id="deixarCopia" disabled="${disableDeixarCopia}"/>
-							<label for="deixarCopia" style="padding: 7px 0 0 7px;"><spring:message code="contingut.enviar.camp.deixar.copia"/></label>
-						</div>
+						<c:choose>
+						<c:when test="${!cookie['vistaMoviments'].value}">
+							<div class="form-group col-xs-12">
+								<form:checkbox path="deixarCopia" cssClass="span12" id="deixarCopia" disabled="${disableDeixarCopia}"/>
+								<label for="deixarCopia" style="padding: 7px 0 0 7px;"><spring:message code="contingut.enviar.camp.deixar.copia"/></label>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<form:hidden path="deixarCopia" value="true"/>
+						</c:otherwise>
+						</c:choose>
 						<%--<dis:inputCheckbox name="deixarCopia" custom="true" textKey="contingut.enviar.camp.deixar.copia" disabled="${disableDeixarCopia}"/> --%>
 						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>

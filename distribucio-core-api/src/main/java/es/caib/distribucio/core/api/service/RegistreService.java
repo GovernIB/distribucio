@@ -351,4 +351,57 @@ public interface RegistreService {
 			List<BustiaDto> bustiesPermesesPerUsuari,
 			RegistreFiltreDto filtre, 
 			PaginacioParamsDto paginacioParams);
+
+	/**
+	 * Consulta els ids dels moviments d'un registre
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @param isAdmin 
+	 * @return El contingut pendent.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	List<String> findRegistreMovimentsIds(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari, 
+			RegistreFiltreDto filtre,
+			boolean isAdmin);
+	
+	/**
+	 * Consulta el registre
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param filtre del datatable
+	 * @param isAdmin 
+	 * @return El contingut pendent.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public PaginaDto<ContingutDto> findMovimentRegistre(
+			Long entitatId,
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre,
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) throws NotFoundException;
+	
+	/**
+	 * Consulta la path d'un registre
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param bustiaId
+	 * 			  Id de la bústia.
+	 * @return La path de la bústia.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public List<ContingutDto> getPathContingut(
+			Long entitatId,
+			Long bustiaId) throws NotFoundException;
 }

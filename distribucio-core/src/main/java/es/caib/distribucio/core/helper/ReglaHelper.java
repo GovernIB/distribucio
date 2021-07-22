@@ -353,7 +353,8 @@ public class ReglaHelper {
 						registre,
 						bustiaDesti,
 						null,
-						false);
+						false,
+						null);
 				List<String> params = new ArrayList<>();
 				params.add(regla.getNom());
 				params.add(regla.getTipus().toString());

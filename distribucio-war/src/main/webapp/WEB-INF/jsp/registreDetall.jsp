@@ -184,7 +184,7 @@ tr.clicable {
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant/" + isVistaMoviments);
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -193,14 +193,14 @@ tr.clicable {
 		    	var registreId = $(this).data("registreId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId + "/" + isVistaMoviments);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId + "?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo/" + isVistaMoviments);
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -212,12 +212,15 @@ tr.clicable {
     	});
 
     	$( "a#accioReenviar" ).on( "click", function() {
+    		console.log(${registre.destiLogic})
 			var url = new URL(window.location);
 			var params = url.searchParams;
     		//<c:if test="${registreTotal!=null}">
 			var registreTotal = ${registreTotal};
 			var avanzar = $('#avanzarPagina').hasClass('active');
     		// Afegeix els paràmetres a l'enllaç dels detalls
+			if (${isVistaMoviments})
+				params.set("isVistaMoviments", true);
 			if (${registreNumero} < registreTotal) {
 			params.set("registreTotal", registreTotal);
 			params.set("ordreColumn", '${ordreColumn}');
@@ -228,9 +231,9 @@ tr.clicable {
 				
          	// if is in modal window
             if ( self !== top ) {
-            	location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
             } else {
-            	location.href = '<c:url value="/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	location.href = '<c:url value="/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
 	        }
     		
     	});
@@ -260,13 +263,14 @@ tr.clicable {
 	    		try {
 	    			var registreNumero = $(this).data('registreNumero');
 	    			var registreTotal = ${registreTotal};
-				console.log(registreNumero);
 					// Afegeix els paràmetres a l'enllaç dels detalls
 					var url = new URL(window.location);
 					var params = url.searchParams;
 					params.set("registreTotal", registreTotal);
 					params.set("ordreColumn", '${ordreColumn}');
 					params.set("ordreDir", '${ordreDir}');
+					if (${isVistaMoviments})
+						params.set("isVistaMoviments", true);
 	    			// Navega al registre
 	    			<c:choose>
 	    				<c:when test="${isRolActualAdministrador}">
@@ -321,7 +325,7 @@ tr.clicable {
         
         // Recupera i mostrar contingut firmes
         $.get(
-				"<c:url value="/registreUser/registreAnnexFirmes/${registreId}/"/>" + annexId + "/" + isVistaMoviments,
+				"<c:url value="/registreUser/registreAnnexFirmes/${registreId}/"/>" + annexId + "?isVistaMoviments=" + isVistaMoviments,
 				function(data) {
 					if (data.firmes && data.firmes.length > 0) {
 						var nieList = "", nomList = "";
@@ -423,7 +427,11 @@ tr.clicable {
 	
 	<c:if test="${isContingutAdmin == null}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
-			<c:if test="${!cookie['vistaMoviments'].value && isEnviarConeixementActiu}">
+			<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
+			<c:set var="isVistaRegistresAndNoReservat" value="${!isVistaMoviments && (!isPermesReservarAnotacions || !registre.agafat)}" />
+			<c:set var="isVistaRegistresAndReservat" value="${!isVistaMoviments && isPermesReservarAnotacions && registre.agafat}" />
+			
+			<c:if test="${!isVistaMoviments && isEnviarConeixementActiu}">
 				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}" title="<spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>"></label>
 			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
@@ -431,19 +439,21 @@ tr.clicable {
 					<i class="fa fa-forward"></i>
 		    	</span>
 			</button>&nbsp;
-			<button class="btn btn-primary ${(!cookie['vistaMoviments'].value && isPermesReservarAnotacions && registre.agafat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
-				<c:if test="${!cookie['vistaMoviments'].value && (!isPermesReservarAnotacions || !registre.agafat)}">
-					<c:choose>
-						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
-							<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-						</c:when>
-						<c:otherwise>
-							<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-						</c:otherwise>
-					</c:choose>
+				<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat}">
+					<c:if test="${isVistaRegistresAndNoReservat}">
+						<c:choose>
+							<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
+								<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+							</c:when>
+							<c:otherwise>
+								<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
 					<li><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
+					<c:if test="${registre.procesEstatSimple == 'PENDENT' && isVistaRegistresAndNoReservat}">
 						<c:choose>
 							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
 								<li><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
@@ -460,8 +470,8 @@ tr.clicable {
 					</a>
 				</li>
 				<li role="separator" class="divider"></li>
-				<li><a href="<c:url value="/contingut/${registre.id}/log/${!cookie['vistaMoviments'].value ? '' : 'moviments'}"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
-				<c:if test="${!cookie['vistaMoviments'].value && isPermesReservarAnotacions}">
+				<li><a href="<c:url value="/contingut/${registre.id}/log/${!isVistaMoviments ? '' : 'moviments'}"/>" data-toggle="modal"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+				<c:if test="${!isVistaMoviments && isPermesReservarAnotacions}">
 					<li role="separator" class="divider"></li>
 					<c:choose>
 						<c:when test="${!registre.agafat}">
@@ -799,7 +809,7 @@ tr.clicable {
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true/" + isVistaMoviments);
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true?isVistaMoviments=" + isVistaMoviments);
 															        $(this).data("loaded", true);
 															    }
 															    event.stopPropagation();

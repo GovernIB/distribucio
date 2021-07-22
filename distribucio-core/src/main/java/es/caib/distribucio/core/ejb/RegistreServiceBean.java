@@ -290,4 +290,40 @@ public class RegistreServiceBean implements RegistreService {
 				paginacioParams);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public List<String> findRegistreMovimentsIds(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari, 
+			RegistreFiltreDto filtre,
+			boolean isAdmin) {
+		return delegate.findRegistreMovimentsIds(
+				entitatId, 
+				bustiesUsuari, 
+				filtre, 
+				isAdmin);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<ContingutDto> findMovimentRegistre(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre, 
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) throws NotFoundException {
+		return delegate.findMovimentRegistre(
+				entitatId,
+				bustiesUsuari, 
+				filtre, 
+				paginacioParams, 
+				isAdmin);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ContingutDto> getPathContingut(Long entitatId, Long bustiaId) throws NotFoundException {
+		return delegate.getPathContingut(entitatId, bustiaId);
+	}
+
 }

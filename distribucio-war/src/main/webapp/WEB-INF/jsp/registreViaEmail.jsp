@@ -21,9 +21,10 @@
 </head>
 <body>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
-
+		<c:if test="${isVistaMoviments}">
+			<p class="alert alert-warning">L'enviament massiu es farà dels registres dels moviments seleccionats. Si n'hi ha de repetits, s'esborraran.</p>
+		</c:if>
 		<form:hidden path="contingutId"/>
-		<form:hidden path="vistaMoviments"/>
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>
 		<div class="form-group">
 			<div class="col-xs-offset-4 col-xs-8">

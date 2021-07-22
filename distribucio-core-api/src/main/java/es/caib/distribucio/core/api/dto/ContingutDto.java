@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public abstract class ContingutDto extends AuditoriaDto {
 
 	protected Long id;
+	protected String movimentId;
 	protected String nom;
 	protected List<ContingutDto> fills;
 	protected List<ContingutDto> path;
@@ -35,12 +36,19 @@ public abstract class ContingutDto extends AuditoriaDto {
 	private boolean alerta;
 	
 	protected List<ContingutDto> pathInicial;
+	protected Long destiLogic;
 	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getMovimentId() {
+		return movimentId;
+	}
+	public void setMovimentId(String movimentId) {
+		this.movimentId = movimentId;
 	}
 	public String getNom() {
 		return nom;
@@ -116,6 +124,12 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public void setPerConeixement(boolean perConeixement) {
 		this.perConeixement = perConeixement;
+	}
+	public Long getDestiLogic() {
+		return destiLogic;
+	}
+	public void setDestiLogic(Long destiLogic) {
+		this.destiLogic = destiLogic;
 	}
 	public void setPerConvertirJson(boolean perConvertirJson) {
 		this.perConvertirJson = perConvertirJson;
