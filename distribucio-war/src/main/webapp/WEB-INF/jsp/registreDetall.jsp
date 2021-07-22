@@ -212,7 +212,6 @@ tr.clicable {
     	});
 
     	$( "a#accioReenviar" ).on( "click", function() {
-    		console.log(${registre.destiLogic})
 			var url = new URL(window.location);
 			var params = url.searchParams;
     		//<c:if test="${registreTotal!=null}">
@@ -438,7 +437,19 @@ tr.clicable {
 				<span class="fa-stack" aria-hidden="true">
 					<i class="fa fa-forward"></i>
 		    	</span>
-			</button>&nbsp;
+			</button>
+			<script type="text/javascript">
+				var urlComentaris = "";
+				// if is in modal window
+	            if ( self !== top ) {
+	    			<c:set var="urlComentaris" value="${isVistaMoviments ? '../' : ''}../../modal/contingut/${registre.id}/comentaris?isVistaMoviments=${isVistaMoviments}"/>
+	            } else {
+	    			<c:set var="urlComentaris" value="../../contingut/${registre.id}/comentaris?isVistaMoviments=${isVistaMoviments}"/>
+		        }
+			</script>
+			&nbsp;
+			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
+			&nbsp;
 			<button class="btn btn-primary ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat}">
