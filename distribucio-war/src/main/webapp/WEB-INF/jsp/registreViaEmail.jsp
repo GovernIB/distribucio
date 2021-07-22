@@ -21,8 +21,9 @@
 </head>
 <body>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
+		<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
 		<c:if test="${isVistaMoviments}">
-			<p class="alert alert-warning">L'enviament massiu es farà dels registres dels moviments seleccionats. Si n'hi ha de repetits, s'esborraran.</p>
+			<p class="alert alert-warning"><spring:message code="bustia.pendent.contingut.seleccio.info.2"/></p>
 		</c:if>
 		<form:hidden path="contingutId"/>
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>

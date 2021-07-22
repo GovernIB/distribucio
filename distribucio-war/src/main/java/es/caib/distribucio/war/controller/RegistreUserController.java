@@ -100,7 +100,12 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-//		filtreCommand.setBustia(""); //conflicte amb pantalla moviments
+//		###
+//		# resol conflicte filtre bustia pantalla moviments (es mostren totes les bústies)
+		String paginaAnterior = request.getHeader("Referer"); 
+		if (paginaAnterior != null && paginaAnterior.contains("moviments"))
+			filtreCommand.setBustia("");
+//		###
 		model.addAttribute(filtreCommand);		
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
@@ -799,7 +804,9 @@ public class RegistreUserController extends BaseUserController {
 		if (seleccio != null && !seleccio.isEmpty()) {
 			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu(), isVistaMoviments);
 		} else {
-			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
+			MissatgesHelper.error(request,
+					getMessage(request,
+							isVistaMoviments ? "registre.user.controller.massiva.enviament.cap" : "registre.user.controller.massiva.cap"));
 		}
 		return modalUrlTancar();
 		
@@ -1192,8 +1199,8 @@ public class RegistreUserController extends BaseUserController {
 	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.POST)
 	public String registreReenviarMultiplePost(
 			HttpServletRequest request,
-			@Valid ContingutReenviarCommand command,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
+			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -1218,8 +1225,8 @@ public class RegistreUserController extends BaseUserController {
 				seleccioMoviments = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
 						request,
 						SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
-				Set<String> seleccioMovimentsSet = new HashSet<String>(seleccioMoviments);
-				if (seleccioMovimentsSet != null && !seleccioMovimentsSet.isEmpty()) {
+				if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+					Set<String> seleccioMovimentsSet = new HashSet<String>(seleccioMoviments);
 					for (String idVistaMoviment: seleccioMovimentsSet) {
 						String[] idVistaMovimentArr = idVistaMoviment.split("_");
 						Long registreId = Long.valueOf(idVistaMovimentArr[0]);
@@ -1269,7 +1276,8 @@ public class RegistreUserController extends BaseUserController {
 			if ((seleccio == null || seleccio.isEmpty()) && (seleccioMoviments == null || seleccioMoviments.isEmpty())) {
 				MissatgesHelper.error(request,
 						getMessage(request,
-								"registre.user.controller.massiva.cap"));
+								isVistaMoviments ? "registre.user.controller.massiva.enviament.cap" : "registre.user.controller.massiva.cap"));
+				
 			}
 			if (correctes > 0){
 				MissatgesHelper.success(request,
