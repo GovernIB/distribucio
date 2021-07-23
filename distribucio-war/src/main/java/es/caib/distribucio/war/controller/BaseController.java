@@ -9,8 +9,11 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.support.RequestContext;
 
 import es.caib.distribucio.war.helper.AjaxHelper;
@@ -227,5 +230,17 @@ public class BaseController implements MessageSourceAware {
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
+	/** Per afegir el trim de les dades provinents dels formularis per evitar espais en blanc davant i darrera
+	 * els valors.
+	 * 
+	 * @param binder
+	 */
+    @InitBinder
+    public void initBinderBaseController ( WebDataBinder binder )
+    {
+        StringTrimmerEditor stringtrimmer = new StringTrimmerEditor(true);
+        binder.registerCustomEditor(String.class, stringtrimmer);
+    }
 
 }
