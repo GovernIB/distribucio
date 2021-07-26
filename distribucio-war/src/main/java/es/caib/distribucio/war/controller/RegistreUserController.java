@@ -472,7 +472,7 @@ public class RegistreUserController extends BaseUserController {
 			// Posa les dades dels registres al model segons la consulta
 			if (pagina != null && !pagina.getContingut().isEmpty()) {
 				registre = pagina.getContingut().get(0);
-				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir + "&isVistaMoviments=" + isVistaMoviments + "&destiLogic=" + registre.getDestiLogic();
+				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir + "&isVistaMoviments=" + isVistaMoviments + (isVistaMoviments ? "&destiLogic=" + registre.getDestiLogic() : "");
 			}
 		} catch (Exception e) {
 			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();

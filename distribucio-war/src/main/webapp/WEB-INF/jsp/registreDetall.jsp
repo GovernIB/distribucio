@@ -79,6 +79,7 @@ tr.clicable {
 	width: 200px;
 	height: 30px;
 	margin: 0 10% 0 0;
+	border-radius: 4px;
 }
 
 #dropAccions > label.tramitacio {
@@ -87,7 +88,6 @@ tr.clicable {
 
 #dropAccions > label.coneixement {
 	background-color: #5bc0de;
-	border-radius: 4px;
 }
 
 #dropAccions ul.dropdown-menu {
