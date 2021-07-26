@@ -87,6 +87,7 @@ tr.clicable {
 
 #dropAccions > label.coneixement {
 	background-color: #5bc0de;
+	border-radius: 4px;
 }
 
 #dropAccions ul.dropdown-menu {
