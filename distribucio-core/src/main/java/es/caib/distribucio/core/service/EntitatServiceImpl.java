@@ -24,6 +24,7 @@ import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
+import es.caib.distribucio.core.helper.EntitatHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PermisosEntitatHelper;
@@ -57,6 +58,8 @@ public class EntitatServiceImpl implements EntitatService {
 	private PermisosEntitatHelper permisosEntitatHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Resource
+	private EntitatHelper entitatHelper;
 
 
 
@@ -66,13 +69,19 @@ public class EntitatServiceImpl implements EntitatService {
 	public EntitatDto create(EntitatDto entitat) {
 		logger.debug("Creant una nova entitat (" +
 				"entitat=" + entitat + ")");
+		if (entitat.getLogoCapBytes() != null && entitat.getLogoCapBytes().length != 0) {
+			entitatHelper.removeLogos(entitat.getCodiDir3());
+			entitatHelper.createLogo(
+					entitat.getCodiDir3(),
+					entitat.getLogoExtension(),
+					entitat.getLogoCapBytes());
+		}
 		EntitatEntity entity = EntitatEntity.getBuilder(
 				entitat.getCodi(),
 				entitat.getNom(),
 				entitat.getDescripcio(),
 				entitat.getCif(),
 				entitat.getCodiDir3(),
-				entitat.getLogoCapBytes(),
 				entitat.getColorFons(),
 				entitat.getColorLletra()).build();
 		return conversioTipusHelper.convertir(
@@ -91,14 +100,16 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false,
 				false);
-		byte[] logoCapActual = null;
-		
-		if (!entitat.isEliminarLogoCap()) {
+		boolean eliminarLogoActual = entitat.isEliminarLogoCap();
+		if (!eliminarLogoActual) {
 			if (entitat.getLogoCapBytes() != null && entitat.getLogoCapBytes().length != 0) {
-				logoCapActual = entitat.getLogoCapBytes();
-			} else {
-				logoCapActual = entitatEntity.getLogoCapBytes();
+				entitatHelper.createLogo(
+						entitat.getCodiDir3(),
+						entitat.getLogoExtension(),
+						entitat.getLogoCapBytes());
 			}
+		} else if (eliminarLogoActual){
+			entitatHelper.removeLogos(entitat.getCodiDir3());
 		}
 		
 		entitatEntity.update(
@@ -107,7 +118,6 @@ public class EntitatServiceImpl implements EntitatService {
 				entitat.getDescripcio(),
 				entitat.getCif(),
 				entitat.getCodiDir3(),
-				logoCapActual,
 				entitat.getColorFons(),
 				entitat.getColorLletra());
 		return conversioTipusHelper.convertir(
@@ -168,6 +178,28 @@ public class EntitatServiceImpl implements EntitatService {
 		EntitatDto dto = conversioTipusHelper.convertir(
 				entitat,
 				EntitatDto.class);
+		permisosEntitatHelper.omplirPermisosPerEntitat(dto);
+		return dto;
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public EntitatDto findByIdWithLogo(Long id) {
+		logger.debug("Consulta de l'entitat (" +
+				"id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				id,
+				false,
+				false,
+				false);
+		EntitatDto dto = conversioTipusHelper.convertir(
+				entitat,
+				EntitatDto.class);
+		try {
+			dto.setLogoCapBytes(entitatHelper.getLogo(dto.getCodiDir3()));
+		} catch (Exception ex) {
+			logger.error("No s'ha definit cap logo per l'entitat (entitatCodi=" + dto.getCodiDir3() + ")", ex);
+		}
 		permisosEntitatHelper.omplirPermisosPerEntitat(dto);
 		return dto;
 	}

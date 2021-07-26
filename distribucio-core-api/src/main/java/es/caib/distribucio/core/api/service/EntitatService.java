@@ -85,6 +85,19 @@ public interface EntitatService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public EntitatDto findById(
 			Long id) throws NotFoundException;
+	
+	/**
+	 * Consulta una entitat donat el seu id.
+	 * 
+	 * @param id
+	 *            Atribut id de l'entitat a trobar.
+	 * @return L'entitat amb l'id especificat o null si no s'ha trobat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public EntitatDto findByIdWithLogo(
+			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta una entitat donat el seu codi.

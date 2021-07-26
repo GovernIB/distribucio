@@ -236,11 +236,11 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@RequestParam(value="ids[]", required = false) String[] ids) {
 		@SuppressWarnings("unchecked")
-		List<String> seleccio = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
+		Set<String> seleccio = (Set<String>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 		if (seleccio == null) {
-			seleccio = new ArrayList<String>();
+			seleccio = new HashSet<String>();
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,
@@ -265,8 +265,7 @@ public class RegistreUserController extends BaseUserController {
 							RegistreFiltreCommand.asDto(filtreCommand),
 							false));
 		}
-		Set<String> seleccioSet = new HashSet<String>(seleccio);
-		return seleccioSet.size();
+		return seleccio.size();
 	}
 
 	@RequestMapping(value = "/deselect/moviments", method = RequestMethod.GET)
@@ -275,11 +274,11 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@RequestParam(value="ids[]", required = false) String[] ids) {
 		@SuppressWarnings("unchecked")
-		List<String> seleccio = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
+		Set<String> seleccio = (Set<String>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 		if (seleccio == null) {
-			seleccio = new ArrayList<String>();
+			seleccio = new HashSet<String>();
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,

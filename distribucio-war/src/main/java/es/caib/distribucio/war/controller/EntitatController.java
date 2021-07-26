@@ -157,6 +157,34 @@ public class EntitatController extends BaseController {
 		}
 		return null;
 	}
+	
+	@RequestMapping(value = "/{entitatId}/logo", method = RequestMethod.GET)
+	public String getEntitatLogoCap(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long entitatId) throws IOException {
+		EntitatDto entitatActual = entitatService.findByIdWithLogo(entitatId);
+		
+		if (entitatActual != null) {
+			if (entitatActual.getLogoCapBytes() != null) {
+				writeFileToResponse(
+						"Logo_cap.png",
+						entitatActual.getLogoCapBytes(),
+						response);
+			} else {
+				try {
+					File path = new File(servletContext.getRealPath("/") + "/img/govern-logo.png");
+					writeFileToResponse(
+							"Logo_cap.png", 
+							Files.readAllBytes(path.toPath()), 
+							response);
+				} catch (Exception ex) {
+					logger.debug("Error al obtenir el logo de la capçalera", ex);
+				}
+			}
+		}
+		return null;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(EntitatController.class);
 }

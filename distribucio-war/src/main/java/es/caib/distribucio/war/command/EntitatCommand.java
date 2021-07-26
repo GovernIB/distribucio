@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,6 +119,8 @@ public class EntitatCommand {
 		EntitatDto entitat = ConversioTipusHelper.convertir(
 				command,
 				EntitatDto.class);
+		String fileExtension = FilenameUtils.getExtension(command.getLogoCap().getOriginalFilename());
+		entitat.setLogoExtension(fileExtension);
 		entitat.setLogoCapBytes(command.getLogoCap().getBytes());
 		return entitat;
 	}

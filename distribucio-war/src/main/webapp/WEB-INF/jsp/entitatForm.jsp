@@ -36,7 +36,7 @@
 		<dis:inputText name="cif" textKey="entitat.form.camp.cif" required="true"/>
 		<dis:inputText name="codiDir3" textKey="entitat.form.camp.unitat.codi" required="true"/>
 		
-		<dis:inputFile name="logoCap" textKey="entitat.form.camp.logocap" fileEntitat="true"/>
+		<dis:inputFile name="logoCap" textKey="entitat.form.camp.logocap" id="${entitatCommand.id}" fileEntitat="true"/>
 		<dis:inputText name="colorFons" textKey="entitat.form.camp.fons" picker="true"/>
 		<dis:inputText name="colorLletra" textKey="entitat.form.camp.lletra" picker="true"/>
 		<div id="modal-botons">
