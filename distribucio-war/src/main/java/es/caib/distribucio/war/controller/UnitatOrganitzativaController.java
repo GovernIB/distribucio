@@ -12,6 +12,8 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -145,6 +147,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				
 			
 			} catch (Exception exception){
+				logger.error("Error synchronizacion", exception);
 				return getModalControllerReturnValueErrorNoKey(
 						request,
 						"redirect:../../unitatOrganitzativa",
@@ -302,6 +305,8 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		return unitatOrganitzativaFiltreCommand;
 	}
 	
+
+	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaController.class);
 
 
 

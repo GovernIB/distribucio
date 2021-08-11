@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -63,6 +64,8 @@ public class EmailHelper {
 	private ContingutHelper contenidorHelper;
 	@Resource
 	private PermisosHelper permisosHelper;
+	@Autowired
+	private ConfigHelper configHelper;
 
 	public void createEmailsPendingToSend(
 			BustiaEntity bustia,
@@ -134,7 +137,7 @@ public class EmailHelper {
 		
 		logger.trace("Enviament emails nou contenidor a bústies");
 		
-		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
 			
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
@@ -185,7 +188,7 @@ public class EmailHelper {
 		
 		ContingutMovimentEmailEntity contingutEmail = contingutMovimentEmailRepository.findOne(contingutEmailId);
 		
-		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
 
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
@@ -225,7 +228,7 @@ public class EmailHelper {
 			ContingutEntity contingut,
 			String comentari) {
 		logger.trace("Enviament email comentari a destinatari");
-		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
 		BustiaEntity bustia = null;
 		ContingutEntity pare = contingut.getPare();
 		if (pare != null && pare instanceof BustiaEntity)
@@ -332,7 +335,7 @@ public class EmailHelper {
 		return null;
 	}
 	public String getRemitent() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.email.remitent");
+		return configHelper.getConfig("es.caib.distribucio.email.remitent");
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(EmailHelper.class);

@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
@@ -47,7 +49,6 @@ import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
@@ -102,6 +103,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private MessageHelper messageHelper;
 	@Resource
 	private RegistreHelper registreHelper;
+	@Autowired
+	private ConfigHelper configHelper;
 
 
 	@Transactional(readOnly = true)
@@ -602,11 +605,11 @@ public class ContingutServiceImpl implements ContingutService {
 	}
 
 	private boolean isPermesReservarAnotacions() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 
 	private int getPropertyExpedientDiesTancament() {
-		String numDies = PropertiesHelper.getProperties().getProperty(
+		String numDies = configHelper.getConfig(
 				"es.caib.distribucio.tancament.expedient.dies",
 				"30");
 		return Integer.parseInt(numDies);

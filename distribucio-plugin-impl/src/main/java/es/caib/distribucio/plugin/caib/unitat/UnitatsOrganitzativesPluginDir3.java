@@ -262,7 +262,7 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	}
 	private Integer getServiceTimeout() {
 		String key = "es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout";
-		if (PropertiesHelper.getProperties().getProperty(key) != null)
+		if (System.getProperty(key) != null)
 			return PropertiesHelper.getProperties().getAsInt(key);
 		else
 			return null;

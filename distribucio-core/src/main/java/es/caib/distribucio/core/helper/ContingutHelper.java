@@ -105,6 +105,8 @@ public class ContingutHelper {
 	private BustiaRepository bustiaRepository;
 	@Autowired
 	private RegistreRepository registreRepository;
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -275,7 +277,7 @@ public class ContingutHelper {
 				
 				if (contingut instanceof RegistreEntity) {
 					//##### comprova si l'anotació s'ha marcat per coneixement
-					boolean isEnviarConeixementActiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.contingut.enviar.coneixement");
+					boolean isEnviarConeixementActiu = configHelper.getAsBoolean("es.caib.distribucio.contingut.enviar.coneixement", false);
 					if (isEnviarConeixementActiu) {
 						List<ContingutMovimentEntity> movimentsDesc = contingutMovimentRepository.findByContingutAndOrigenIdNotNullOrderByCreatedDateDesc(contingut);
 						ContingutMovimentEntity lastMoviment = !movimentsDesc.isEmpty() ? movimentsDesc.get(0) : null;
@@ -854,7 +856,7 @@ public class ContingutHelper {
 		registreCopia.updateJustificantArxiuUuid(
 				registreOriginal.getJustificantArxiuUuid());
 		contingutRepository.saveAndFlush(registreCopia);
-		boolean duplicarContingutArxiu = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
+		boolean duplicarContingutArxiu = configHelper.getAsBoolean("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu");
 		if (duplicarContingutArxiu) {
 			registreCopia.setProces(RegistreProcesEstatEnum.ARXIU_PENDENT);
 		} else {

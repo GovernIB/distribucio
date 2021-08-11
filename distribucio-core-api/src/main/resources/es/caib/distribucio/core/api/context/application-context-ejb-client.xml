@@ -64,4 +64,9 @@
 			id="backofficeService"
 			jndi-name="distribucio/BackofficeServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.BackofficeService"/>
+			
+	<jee:local-slsb
+			id="configService"
+			jndi-name="distribucio/ConfigServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.ConfigService"/>
 </beans>

@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.jws.WebService;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.backoffice.utils.arxiu.ArxiuPluginListener;
@@ -26,8 +26,8 @@ import es.caib.distribucio.backoffice.utils.sistra.pago.Pago;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.ws.backofficeintegracio.Annex;
@@ -56,6 +56,8 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 	
 	/** Instància del plugin d'Arxiu */
 	private IArxiuPlugin arxiuPlugin = null;
+	@Autowired
+	private ConfigHelper configHelper;
 		
 	/** Mètode del WS que rep les comunicacions d'anotacions pendents. */
 	@Override
@@ -198,17 +200,17 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+//					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
-					} else {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class,
-								Properties.class).newInstance(
-								"es.caib.distribucio.",
-								PropertiesHelper.getProperties().findAll());
-					}
+//					} else {
+//						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+//								String.class,
+//								Properties.class).newInstance(
+//								"es.caib.distribucio.",
+//								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
+//					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_ARXIU,
@@ -224,15 +226,15 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 		return arxiuPlugin;
 	}
 	private String getPropertyPluginArxiu() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	
 	private BackofficeIntegracio getBackofficeIntegracioServicePort() throws Exception {
 		BackofficeIntegracio wsClient = null;
-		String url = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.test.backofficeIntegracio.url");
-		String usuari = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.test.backofficeIntegracio.usuari");
-		String contrasenya = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.test.backofficeIntegracio.contrasenya");
+		String url = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.url");
+		String usuari = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.usuari");
+		String contrasenya = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.contrasenya");
 		if (url != null && usuari != null && contrasenya != null) {
 			logger.trace(">>> Creant el client BackofficeIntegracio WS");
 			wsClient = BackofficeIntegracioWsClientFactory.getWsClient(

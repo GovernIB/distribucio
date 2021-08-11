@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,11 +26,11 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.ExcepcioLogHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.repository.AclSidRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -59,7 +60,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private IntegracioHelper integracioHelper;
 	@Resource
 	private ExcepcioLogHelper excepcioLogHelper;
-
+	@Autowired
+	private ConfigHelper configHelper;
 
 
 	@Override
@@ -93,7 +95,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 		if (usuari == null) {
 			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
-			String idioma = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.default.user.language");
+			String idioma = configHelper.getConfig("es.caib.distribucio.default.user.language");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari = usuariRepository.save(
@@ -212,26 +214,26 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Override
 	public String propertyBaseUrl() {
 		logger.trace("Consulta de la propietat base URL");
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.base.url");
+		return configHelper.getConfig("es.caib.distribucio.base.url");
 	}
 
 	@Override
 	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
 		logger.trace("Consulta de la propietat amb les ids pels plugins de passarela de firma");
-		return PropertiesHelper.getProperties().getProperty("plugin.passarelafirma.ignorar.modal.ids");
+		return configHelper.getConfig("plugin.passarelafirma.ignorar.modal.ids");
 	}
 
 	@Override
 	public Properties propertyFindByPrefix(String prefix) {
 		logger.trace("Consulta del valor dels properties amb prefix (" +
 				"prefix=" + prefix + ")");
-		return PropertiesHelper.getProperties().findByPrefix(prefix);
+		return ConfigHelper.JBossPropertiesHelper.getProperties().findByPrefixProperties(prefix);
 	}
 
 	@Override
 	public String propertyFindByNom(String nom) {
 		logger.trace("Consulta del valor del propertat amb nom");
-		return PropertiesHelper.getProperties().getProperty(nom);
+		return configHelper.getConfig(nom);
 	}
 
 

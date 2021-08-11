@@ -125,7 +125,8 @@ public class RegistreHelper {
 	private HistogramPendentsHelper historicsPendentHelper;
 	@Autowired
 	private UsuariHelper usuariHelper;
-
+	@Autowired
+	private ConfigHelper configHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -359,7 +360,7 @@ public class RegistreHelper {
 	
 	
 	public byte[] getAnnexArxiuContingut(String nomArxiu) {
-		String pathName = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.bustia.contingut.documents.dir");
+		String pathName = configHelper.getConfig("es.caib.distribucio.bustia.contingut.documents.dir");
 		
 		Path path = Paths.get(pathName + "/" + nomArxiu);
 		try {
@@ -1024,7 +1025,7 @@ public class RegistreHelper {
 				pendentsByRegla.add(pendent);
 			}
 
-			String clauSecreta = PropertiesHelper.getProperties().getProperty(
+			String clauSecreta = configHelper.getConfig(
 					"es.caib.distribucio.backoffice.integracio.clau");
 
 			List<AnotacioRegistreId> ids = new ArrayList<>();
@@ -1041,10 +1042,10 @@ public class RegistreHelper {
 			String usuari = backofficeDesti.getUsuari();
 			String contrasenya = backofficeDesti.getContrasenya();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
-				usuari = PropertiesHelper.getProperties().getProperty(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				usuari = configHelper.getConfig(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
-				contrasenya = PropertiesHelper.getProperties().getProperty(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			logger.trace(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
@@ -1071,7 +1072,7 @@ public class RegistreHelper {
 	}
 	
 	public int getGuardarAnnexosMaxReintentsProperty() {
-		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -1080,7 +1081,7 @@ public class RegistreHelper {
 	}
 	
 	public int getMaxThreadsParallelProperty() {
-		String maxThreadsParallel = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.threads.parallel");
+		String maxThreadsParallel = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.threads.parallel");
 		if (maxThreadsParallel != null) {
 			return Integer.parseInt(maxThreadsParallel);
 		} else {
@@ -1121,7 +1122,7 @@ public class RegistreHelper {
 
 			// set delay for another send retry
 			int procesIntents = pend.getProcesIntents();
-			String tempsEspera = PropertiesHelper.getProperties().getProperty(
+			String tempsEspera = configHelper.getConfig(
 					"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
 			// we convert to minutes to not have to deal with too big numbers out of bounds
 			int minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);

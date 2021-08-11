@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -49,7 +50,8 @@ public class PermisosHelper {
 	private LookupStrategy lookupStrategy;
 	@Resource
 	private MutableAclService aclService;
-
+	@Autowired
+	private ConfigHelper configHelper;
 
 
 	public void assignarPermisUsuari(
@@ -490,7 +492,7 @@ public class PermisosHelper {
 
 	private String getMapeigRol(String rol) {
 		String propertyMapeig = 
-				(String)PropertiesHelper.getProperties().get(
+				(String)configHelper.getConfig(
 						"es.caib.distribucio.mapeig.rol." + rol);
 		if (propertyMapeig != null)
 			return propertyMapeig;

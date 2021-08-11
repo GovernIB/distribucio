@@ -88,6 +88,7 @@ import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
@@ -100,7 +101,6 @@ import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
@@ -174,6 +174,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private HistogramPendentsHelper historicsPendentHelper;
 	@Autowired
 	private EmailHelper emailHelper;
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	
 	@Transactional(readOnly = true)
@@ -1099,7 +1101,7 @@ public class RegistreServiceImpl implements RegistreService {
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 		try {
 			// check if anotacio was sent with correct key
-			String clauSecreta = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.backoffice.integracio.clau");
+			String clauSecreta = configHelper.getConfig("es.caib.distribucio.backoffice.integracio.clau");
 			if (clauSecreta == null) {
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
 			}
@@ -1162,7 +1164,7 @@ public class RegistreServiceImpl implements RegistreService {
 			String observacions) {
 		try {
 			// check if anotacio was sent with correct key
-			String clauSecreta = PropertiesHelper.getProperties().getProperty(
+			String clauSecreta = configHelper.getConfig(
 					"es.caib.distribucio.backoffice.integracio.clau");
 			if (clauSecreta == null)
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
@@ -1985,7 +1987,7 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		boolean permetreReservarAnotacio = PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		boolean permetreReservarAnotacio = configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 		if (!permetreReservarAnotacio) {
 			throw new ValidationException(
 					id, 
@@ -2024,7 +2026,7 @@ public class RegistreServiceImpl implements RegistreService {
 				annexPerBackoffice.setSicresTipoDocumento(toSicresTipoDocumento(annexEntity.getSicresTipusDocument()));
 				annexPerBackoffice.setObservacions(annexEntity.getObservacions());
 				annexPerBackoffice.setNtiEstadoElaboracion(NtiEstadoElaboracion.valueOf((annexEntity.getNtiElaboracioEstat().toString())));
-				boolean retornarAnnexIFirmaContingut = PropertiesHelper.getProperties().getAsBoolean(
+				boolean retornarAnnexIFirmaContingut = configHelper.getAsBoolean(
 						"es.caib.distribucio.backoffice.integracio.retornarAnnexIFirmaContingut");
 				// annex should be stored in arxiu
 				if (annexEntity.getFitxerArxiuUuid() != null && !annexEntity.getFitxerArxiuUuid().isEmpty()) {
@@ -2373,11 +2375,11 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	private boolean isPermesReservarAnotacions() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	
 	private int getPropertyExpedientDiesTancament() {
-		String numDies = PropertiesHelper.getProperties().getProperty(
+		String numDies = configHelper.getConfig(
 				"es.caib.distribucio.tancament.expedient.dies",
 				"30");
 		return Integer.parseInt(numDies);

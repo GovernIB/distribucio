@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.security.acls.domain.AccessControlEntryImpl;
@@ -42,7 +43,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import es.caib.distribucio.core.helper.PropertiesHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 
 
 /**
@@ -61,6 +62,10 @@ import es.caib.distribucio.core.helper.PropertiesHelper;
  * @author Johannes Zlattinger
  */
 public class JdbcMutableAclService extends JdbcAclService implements MutableAclService {
+	
+
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	private static final String CLASS_IDENTITY_ORACLE = "SELECT " + TableNames.SEQUENCE_CLASS + ".CURRVAL FROM DUAL";
 	private static final String SID_IDENTITY_ORACLE = "SELECT " + TableNames.SEQUENCE_SID + ".CURRVAL FROM DUAL";
@@ -429,7 +434,7 @@ public class JdbcMutableAclService extends JdbcAclService implements MutableAclS
 	}
 
 	private String getHibernateDialect() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.hibernate.dialect");
+		return configHelper.getConfig("es.caib.distribucio.hibernate.dialect");
 	}
 
 }

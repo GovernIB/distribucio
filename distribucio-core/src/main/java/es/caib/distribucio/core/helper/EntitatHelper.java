@@ -11,7 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.exception.PropietatNotFoundException;
@@ -23,6 +25,9 @@ import es.caib.distribucio.core.api.exception.PropietatNotFoundException;
  */
 @Component
 public class EntitatHelper {
+
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	public void createLogo(
 			String entitatCodi,
@@ -96,7 +101,7 @@ public class EntitatHelper {
 	
 	private String getLogosDir() {
 		String propertyNom = "es.caib.distribucio.entitat.logos.base.dir";
-		String baseDir = PropertiesHelper.getProperties().getProperty(propertyNom);
+		String baseDir = configHelper.getConfig(propertyNom);
 		if (baseDir == null || baseDir.isEmpty())
 			throw new PropietatNotFoundException(propertyNom);
 		return baseDir;

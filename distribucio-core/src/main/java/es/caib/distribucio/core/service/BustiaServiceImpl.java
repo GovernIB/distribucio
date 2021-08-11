@@ -75,6 +75,7 @@ import es.caib.distribucio.core.entity.UsuariBustiaFavoritEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
@@ -84,7 +85,6 @@ import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
@@ -169,6 +169,9 @@ public class BustiaServiceImpl implements BustiaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private VistaMovimentRepository vistaMovimentRepository;
+
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	@Override
 	@Transactional
@@ -1109,8 +1112,8 @@ public class BustiaServiceImpl implements BustiaService {
 				isVistaMoviments,
 				rolActual);
 		
-		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
-		String concsvBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.concsv.base.url");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
+		String concsvBaseUrl = configHelper.getConfig("es.caib.distribucio.concsv.base.url");
 		String message18nRegistreTipus = "";
 		if (registre.getRegistreTipus() == RegistreTipusEnum.ENTRADA) {
 			message18nRegistreTipus = messageHelper.getMessage("registre.detalls.camp.desti");
@@ -1406,7 +1409,7 @@ public class BustiaServiceImpl implements BustiaService {
 			nousContinguts.add(registrePerReenviar);
 		}
 		
-		boolean crearComentariInformatiu = Boolean.parseBoolean(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.contingut.enviar.crear.comentari"));
+		boolean crearComentariInformatiu = Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.crear.comentari"));
 		
 		if (crearComentariInformatiu) {
 			StringBuilder comentariContingut = generarTextDestins(
@@ -2829,7 +2832,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	}
 	
 	private boolean isPermesReservarAnotacions() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 
