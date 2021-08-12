@@ -1027,6 +1027,9 @@ public class RegistreHelper {
 
 			String clauSecreta = configHelper.getConfig(
 					"es.caib.distribucio.backoffice.integracio.clau");
+			if (clauSecreta == null) {
+				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
+			}
 
 			List<AnotacioRegistreId> ids = new ArrayList<>();
 			for (RegistreEntity pendent : pendentsByRegla) {

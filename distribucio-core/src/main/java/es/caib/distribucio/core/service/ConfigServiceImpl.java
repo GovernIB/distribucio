@@ -63,7 +63,11 @@ public class ConfigServiceImpl implements ConfigService {
     	List<ConfigEntity> configs = configRepository.findByJbossPropertyFalse();
     	
     	for (ConfigEntity configEntity : configs) {
-    		configEntity.updateValue(ConfigHelper.JBossPropertiesHelper.getProperties().getProperty(configEntity.getKey()));
+    		String prop = ConfigHelper.JBossPropertiesHelper.getProperties().getProperty(configEntity.getKey());
+			if (prop != null) {
+    			configEntity.updateValue(prop);
+			}
+    		
 		}
     	
     	List<ConfigGroupEntity> configGroups = configGroupRepository.findAll();
