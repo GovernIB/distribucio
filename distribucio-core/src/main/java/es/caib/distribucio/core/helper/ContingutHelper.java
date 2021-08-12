@@ -670,8 +670,8 @@ public class ContingutHelper {
 					true);
 		ContingutMovimentEntity contenidorMoviment = ContingutMovimentEntity.getBuilder(
 				contingut,
-				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getId() : contingut.getPare().getId(),
-				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getNom() : contingut.getPare().getNom(),
+				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getId() : (contingut.getPare() != null ? contingut.getPare().getId() : null),
+				bustiaOrigenLogic != null ? bustiaOrigenLogic.getPare().getNom() : (contingut.getPare() != null ? contingut.getPare().getNom() : null),
 				desti.getId(),
 				desti.getNom(),
 				usuariHelper.getUsuariAutenticat(),
