@@ -10,6 +10,7 @@
 <%@ attribute name="disabled" required="false" rtexprvalue="true"%>
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
+<%@ attribute name="comment" required="false" rtexprvalue="true"%>
 <%@ attribute name="rows" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
@@ -29,6 +30,7 @@
 		<div class="controls col-xs-${campInputSize}">
 			<form:textarea path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" rows="${not empty rows ? rows : 6}"/>
 			<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
+			<c:if test="${not empty comment}"><p class="comentari col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
 		</div>
 	</c:when>
 	<c:otherwise>
@@ -43,6 +45,7 @@
 	   		</label>
 			<form:textarea path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" rows="${not empty rows ? rows : 6}"/>
 			<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
+			<c:if test="${not empty comment}"><p class="comentari col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
 		</div>
 	</c:otherwise>
 </c:choose>
