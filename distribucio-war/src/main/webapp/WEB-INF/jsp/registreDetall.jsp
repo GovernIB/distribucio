@@ -80,6 +80,11 @@ tr.clicable {
 	height: 30px;
 	margin: 0 10% 0 0;
 	border-radius: 4px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-weight: normal;
 }
 
 #dropAccions > label.tramitacio {
@@ -432,7 +437,7 @@ tr.clicable {
 			<c:set var="isVistaRegistresAndReservat" value="${!isVistaMoviments && isPermesReservarAnotacions && registre.agafat}" />
 			
 			<c:if test="${!isVistaMoviments && isEnviarConeixementActiu}">
-				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}" title="<spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>"></label>
+				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}"><spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/></label>
 			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
 				<span class="fa-stack" aria-hidden="true">
