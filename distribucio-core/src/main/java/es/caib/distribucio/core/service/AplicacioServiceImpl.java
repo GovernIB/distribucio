@@ -18,20 +18,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.entity.BustiaDefaultEntity;
+import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
+import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
+import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.ExcepcioLogHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.repository.AclSidRepository;
+import es.caib.distribucio.core.repository.BustiaDefaultRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -62,8 +69,13 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private ExcepcioLogHelper excepcioLogHelper;
 	@Autowired
 	private ConfigHelper configHelper;
-
-
+	@Autowired
+	private EntityComprovarHelper entityComprovarHelper;
+	@Autowired
+	private BustiaDefaultRepository bustiaDefaultRepository;
+	@Autowired
+	private BustiaHelper bustiaHelper;
+	
 	@Override
 	public String getVersioActual() {
 		logger.trace("Obtenint versió actual de l'aplicació");
@@ -138,14 +150,41 @@ public class AplicacioServiceImpl implements AplicacioService {
 	
 	@Transactional
 	@Override
-	public UsuariDto updateUsuariActual(UsuariDto dto) {
+	public UsuariDto updateUsuariActual(UsuariDto dto, Long entitatId) {
 		logger.trace("Actualitzant configuració de usuari actual");
+		EntitatEntity entitatActual = entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				false, 
+				false, 
+				false);
 		UsuariEntity usuari = usuariRepository.findOne(dto.getCodi());
 		usuari.update(
 				dto.getRebreEmailsBustia(), 
 				dto.getRebreEmailsAgrupats(),
 				dto.getIdioma());
+		BustiaDefaultEntity bustiaDefaultEntity = bustiaDefaultRepository.findByEntitatAndUsuari(
+				entitatActual, 
+				usuari);
 		
+		if (dto.getBustiaPerDefecte() != null) {
+			BustiaEntity bustiaPerDefecte = entityComprovarHelper.comprovarBustia(
+					entitatActual, 
+					dto.getBustiaPerDefecte(), 
+					true);
+//			Crear o actualitzar
+			if (bustiaDefaultEntity != null) {
+				bustiaDefaultEntity.updateBustiaDefault(bustiaPerDefecte);
+			} else {
+//				Guarda la bústia per defecte per entitat
+				BustiaDefaultEntity bustiaPerDefecteEntity = BustiaDefaultEntity.getBuilder(
+						entitatActual, 
+						bustiaPerDefecte, 
+						usuari).build();
+				bustiaDefaultRepository.save(bustiaPerDefecteEntity);
+			}
+		} else if (bustiaDefaultEntity != null) {
+			bustiaDefaultRepository.delete(bustiaDefaultEntity);
+		}
 		return toUsuariDtoAmbRols(usuari);
 	}
 
@@ -234,6 +273,31 @@ public class AplicacioServiceImpl implements AplicacioService {
 	public String propertyFindByNom(String nom) {
 		logger.trace("Consulta del valor del propertat amb nom");
 		return configHelper.getConfig(nom);
+	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public BustiaDto getBustiaPerDefecte(UsuariDto dto, Long entitatId) {
+		logger.trace("Recuperant la bústia per defecte de l'usuari actual (" + 
+						"entitatId=" + entitatId + 
+						"usuariCodi=" + dto.getCodi() + ")");
+		EntitatEntity entitatActual = entityComprovarHelper.comprovarEntitat(
+				entitatId, 
+				false, 
+				false, 
+				false);
+		BustiaDto bustia = null;
+		UsuariEntity usuari = usuariRepository.findOne(dto.getCodi());
+		BustiaDefaultEntity bustiaDefaultEntity = bustiaDefaultRepository.findByEntitatAndUsuari(
+				entitatActual, 
+				usuari);
+		if (bustiaDefaultEntity != null)
+			bustia = bustiaHelper.toBustiaDto(
+						bustiaDefaultEntity.getBustia(),
+						false,
+						false,
+						false);
+		return bustia;
 	}
 
 

@@ -158,6 +158,7 @@ $(document).ready(function() {
 	$('#mostrarInactives').change(function() {
 		//>>> Valor actual bústia destí
 		var actual = $('#bustia').val();
+		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		//>>> Bústia destí
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
@@ -173,6 +174,7 @@ $(document).ready(function() {
 					}
 				}
 				$('#bustia').val(actual).change();
+				$('#filtrar').submit();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");

@@ -215,6 +215,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		var actual = $('#bustia').val();
+		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreUser/bustiesPermeses'/>?mostrarInactives=" + $(this).val();
@@ -227,7 +228,10 @@ $(document).ready(function() {
 						bustiesInactives.push(data[i].id.toString());
 					}
 				}
+				actual = actual != '' ? actual : parseInt(bustiaPerDefecte);
 				$('#bustia').val(actual).change();
+				if (bustiaPerDefecte != '')
+					$('#filtrar').submit();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");

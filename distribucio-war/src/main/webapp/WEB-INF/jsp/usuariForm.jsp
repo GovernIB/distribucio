@@ -16,6 +16,28 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$("#rols").prop("disabled", true);
+
+	var bustiaPerDefecte = '${bustiaPerDefecte}'
+	var baseUrl = "<c:url value='/registreUser/bustiesPermeses'/>?mostrarInactives=false";
+	$.get(baseUrl)
+		.done(function(data) {
+			var $bustiaPerDefecte = $('#bustiaPerDefecte');
+			$bustiaPerDefecte.empty();
+			$bustiaPerDefecte.append("<option value=\"\"><spring:message code="comu.empty.option"/></option>");
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].id === parseInt(bustiaPerDefecte)) {  
+					$('#bustiaPerDefecte').append('<option value="' + data[i].id + '" selected>' + data[i].nom + '</option>');
+				} else {
+					$('#bustiaPerDefecte').append('<option value="' + data[i].id + '">' + data[i].nom + '</option>');
+				}
+			}
+			var select2Options = {theme: 'bootstrap', minimumResultsForSearch: "6"};
+			$bustiaPerDefecte.select2("destroy");
+			$bustiaPerDefecte.select2(select2Options);
+		})
+		.fail(function() {
+			alert("<spring:message code="error.jquery.ajax"/>");
+		});	
 });
 </script>
 </head>
@@ -30,6 +52,8 @@ $(document).ready(function() {
 		<dis:inputCheckbox name="rebreEmailsBustia" textKey="usuari.form.camp.rebre.emails.bustia"/>
 		<dis:inputCheckbox name="rebreEmailsAgrupats" textKey="usuari.form.camp.rebre.emails.agrupats"/>
 		<dis:inputSelect name="idioma" optionItems="${idiomaEnumOptions}" textKey="usuari.form.camp.idioma" optionValueAttribute="value" optionTextKeyAttribute="text" disabled="false"/>
+		<dis:inputSelect name="bustiaPerDefecte" optionItems="${replacedByJquery}" textKey="bustia.list.filtre.bustia"/>
+							
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/usuari/configuracio"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

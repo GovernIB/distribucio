@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
@@ -69,7 +71,7 @@ public interface AplicacioService {
 	 * @return L'usuari actual.
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
-	public UsuariDto updateUsuariActual(UsuariDto asDto);
+	public UsuariDto updateUsuariActual(UsuariDto asDto, Long entitatId);
 
 	/**
 	 * Obté un usuari donat el seu codi.
@@ -174,5 +176,17 @@ public interface AplicacioService {
 
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	String propertyFindByNom(String nom);
+	
+	/**
+	 * Obté la bústia per defecte de l'usuari i entitat actuals.
+	 * 
+	 * @param usuari Usuari actual.
+	 * 
+	 * @param entitatId Id entitat acutual.
+	 * 
+	 * @return La bústia per defecte.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId);
 
 }

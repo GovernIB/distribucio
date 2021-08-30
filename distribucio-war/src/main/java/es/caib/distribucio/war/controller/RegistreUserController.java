@@ -46,6 +46,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
@@ -100,15 +101,16 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		UsuariDto usuari = aplicacioService.getUsuariActual();
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		resetFiltreBustia(request, filtreCommand);
 //		###
-//		# resol conflicte filtre bustia pantalla moviments (es mostren totes les bústies)
-		String paginaAnterior = request.getHeader("Referer"); 
-		if (paginaAnterior != null && paginaAnterior.contains("moviments"))
-			filtreCommand.setBustia("");
-//		###
+		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		model.addAttribute(filtreCommand);		
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+		if (bustiaPerDefecte != null)
+			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
 		return "registreUserList";
 	}
 
@@ -169,6 +171,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		model.addAttribute("bustiaPerDefecte", null);
 		model.addAttribute(filtreCommand);
 		return "registreUserMovimentsList";
 	}
@@ -207,9 +210,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
-		List<BustiaDto> bustiesPermesesPerUsuari = null;
-		
-		bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
+		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
 				entitatActual.getId(), 
 				registreFiltreCommand.isMostrarInactives());
 		return DatatablesHelper.getDatatableResponse(
@@ -1870,6 +1871,20 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 
+	private void resetFiltreBustia(
+			HttpServletRequest request, 
+			RegistreFiltreCommand filtreCommand) {
+//		###
+//		# resol conflicte filtre bustia pantalla moviments (es mostren totes les bústies)
+		String paginaAnterior = request.getHeader("Referer"); 
+		if (paginaAnterior != null && paginaAnterior.contains("moviments"))
+			filtreCommand.setBustia("");
+		RequestSessionHelper.actualitzarObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_FILTRE,
+				filtreCommand);
+	}
+	
 	private RegistreDto omplirModelPerReenviar(
 			EntitatDto entitatActual,
 			Long registreId,

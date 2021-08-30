@@ -26,7 +26,8 @@ public class UsuariCommand implements Serializable {
 	private String idioma;
 	private Boolean rebreEmailsBustia;
 	private Boolean rebreEmailsAgrupats;
-
+	private Long bustiaPerDefecte;
+	
 	public String getCodi() {
 		return codi;
 	}
@@ -74,6 +75,12 @@ public class UsuariCommand implements Serializable {
 	}
 	public void setRebreEmailsAgrupats(Boolean rebreEmailsAgrupats) {
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
+	}
+	public Long getBustiaPerDefecte() {
+		return bustiaPerDefecte;
+	}
+	public void setBustiaPerDefecte(Long bustiaPerDefecte) {
+		this.bustiaPerDefecte = bustiaPerDefecte;
 	}
 	
 	public static UsuariCommand asCommand(UsuariDto dto) {

@@ -13,6 +13,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
@@ -61,8 +62,8 @@ public class AplicacioServiceBean implements AplicacioService {
 	
 	@Override
 	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
-	public UsuariDto updateUsuariActual(UsuariDto usuari) {
-		return delegate.updateUsuariActual(usuari);
+	public UsuariDto updateUsuariActual(UsuariDto usuari, Long entitatId) {
+		return delegate.updateUsuariActual(usuari, entitatId);
 	}
 
 	@Override
@@ -138,6 +139,12 @@ public class AplicacioServiceBean implements AplicacioService {
 	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
 	public String propertyFindByNom(String nom) {
 		return delegate.propertyFindByNom(nom);
+	}
+	
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId) {
+		return delegate.getBustiaPerDefecte(usuari, entitatId);
 	}
 
 }
