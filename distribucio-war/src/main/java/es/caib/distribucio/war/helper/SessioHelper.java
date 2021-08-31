@@ -59,7 +59,7 @@ public class SessioHelper {
 		        		response, 
 		        		StringUtils.parseLocaleString(idioma_usuari));
 			} catch (Exception e) {
-				logger.error("Error cestablint l'idioma de l'usuari " + auth.getName() + " :" + e.getMessage(), e);
+				logger.error("Error establint l'idioma de l'usuari " + auth.getName() + " :" + e.getMessage(), e);
 			}
 		}
 	}
