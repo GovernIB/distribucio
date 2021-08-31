@@ -11,7 +11,6 @@ import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.entity.ConfigEntity;
-import es.caib.distribucio.core.entity.ConfigGroupEntity;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
@@ -34,13 +33,15 @@ public class ConfigServiceImpl implements ConfigService {
     private ConversioTipusHelper conversioTipusHelper;
     @Autowired
     private PluginHelper pluginHelper;
-
+    @Autowired
+    private ConfigHelper configHelper;
     @Override
     @Transactional
     public ConfigDto updateProperty(ConfigDto property) {
         ConfigEntity configEntity = configRepository.findOne(property.getKey());
         configEntity.updateValue(property.getValue());
         pluginHelper.reloadProperties(configEntity.getGroupCode());
+        pluginHelper.resetPlugins();
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
     }
 
@@ -60,21 +61,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     @Transactional
     public void synchronize() {
-    	List<ConfigEntity> configs = configRepository.findByJbossPropertyFalse();
-    	
-    	for (ConfigEntity configEntity : configs) {
-    		String prop = ConfigHelper.JBossPropertiesHelper.getProperties().getProperty(configEntity.getKey());
-			if (prop != null) {
-    			configEntity.updateValue(prop);
-			}
-    		
-		}
-    	
-    	List<ConfigGroupEntity> configGroups = configGroupRepository.findAll();
-    	for (ConfigGroupEntity configGroupEntity : configGroups) {
-    		pluginHelper.reloadProperties(configGroupEntity.getKey());
-		}
-    	
+    	configHelper.synchronize();
     }
 
     private void processPropertyValues(ConfigGroupDto cGroup) {

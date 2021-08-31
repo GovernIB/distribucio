@@ -142,4 +142,10 @@ public class EntitatServiceBean implements EntitatService {
 		return delegate.findByIdWithLogo(id);
 	}
 
+	@Override
+	@RolesAllowed("DIS_SUPER")
+	public void evictEntitatsAccessiblesUsuari() {
+		delegate.evictEntitatsAccessiblesUsuari();
+	}
+
 }

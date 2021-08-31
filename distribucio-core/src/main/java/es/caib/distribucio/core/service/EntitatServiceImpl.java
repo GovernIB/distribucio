@@ -252,6 +252,14 @@ public class EntitatServiceImpl implements EntitatService {
 				"usuari=" + auth.getName() + ")");
 		return cacheHelper.findEntitatsAccessiblesUsuari(auth.getName());
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public void evictEntitatsAccessiblesUsuari() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		cacheHelper.evictEntitatsAccessiblesUsuari(auth.getName());
+	}
+	
 
 	@Transactional
 	@Override

@@ -3,8 +3,11 @@ package es.caib.distribucio.core.helper;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,35 @@ public class ConfigHelper {
     private ConfigRepository configRepository;
     @Autowired
     private ConfigGroupRepository configGroupRepository;
-
+    @Autowired
+    private PluginHelper pluginHelper;
+    
+    
+    @PostConstruct
+    public void firstSincronization() {
+		if (configRepository.countNotNullValues() == 0) {
+			synchronize();
+		}
+    }
+    
+    
+    @Transactional
+    public void synchronize() {
+    	List<ConfigEntity> configs = configRepository.findByJbossPropertyFalse();
+    	
+    	for (ConfigEntity configEntity : configs) {
+    		String prop = ConfigHelper.JBossPropertiesHelper.getProperties().getProperty(configEntity.getKey());
+			if (prop != null) {
+    			configEntity.updateValue(prop);
+			}
+		}
+    	
+    	List<ConfigGroupEntity> configGroups = configGroupRepository.findAll();
+    	for (ConfigGroupEntity configGroupEntity : configGroups) {
+    		pluginHelper.reloadProperties(configGroupEntity.getKey());
+		}
+    }
+    
     @Transactional(readOnly = true)
     public String getConfig(String key)  {
         ConfigEntity configEntity = configRepository.findOne(key);
@@ -59,6 +90,14 @@ public class ConfigHelper {
             return;
         }
         for (ConfigEntity config : configGroup.getConfigs()) {
+        	
+			String conf = getConfig(config);
+			if (conf != null) {
+				outProperties.put(config.getKey(), conf);
+			} else {
+				logger.debug("Propietat: " + config.getKey() + " es null");
+			}
+        	
             outProperties.put(config.getKey(), getConfig(config));
         }
 
@@ -98,6 +137,8 @@ public class ConfigHelper {
         }
         return configEntity.getValue();
     }
+    
+	private static final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
 
     public static class JBossPropertiesHelper extends Properties {
 

@@ -758,6 +758,21 @@ public class PluginHelper {
 			return null;
 		return Long.parseLong(text);
 	}
+	
+	
+	public void resetPlugins() {
+		 dadesUsuariPlugin = null;
+		 unitatsOrganitzativesPlugin = null;
+		 dadesExternesPlugin = null;
+		 arxiuPlugin = null;
+		 validaSignaturaPlugin = null;
+		 procedimentPlugin = null;
+		 distribucioPlugin = null;
+	}
+	
+	
+	
+	
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		loadPluginProperties("USUARIS");
@@ -864,17 +879,17 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-//					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
+					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
 						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
-//					} else {
-//						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
-//								String.class,
-//								Properties.class).newInstance(
-//								"es.caib.distribucio.",
-//								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
-//					}
+					} else {
+						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
+								String.class,
+								Properties.class).newInstance(
+								"es.caib.distribucio.",
+								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
+					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_VALIDASIG,

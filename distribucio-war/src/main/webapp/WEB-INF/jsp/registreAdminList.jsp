@@ -449,7 +449,7 @@ $(document).ready(function() {
 				</th>				
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris/false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
@@ -487,4 +487,34 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
+	
+	
+	
+	<!-- Modal pels estats del processament -->
+	<div id="modalProcesEstat" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="<spring:message code="comu.boto.tancar"/>"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><span class="fa fa-list"></span> <spring:message code="bustia.user.proces.estat.legend"></spring:message></h4>
+				</div>
+				<div class="modal-body">
+					<ul>
+						<c:set var="enumValues" value="<%=es.caib.distribucio.core.api.dto.RegistreProcesEstatEnumDto.values()%>"/>
+						<c:forEach items="${enumValues}" var="enumValue">
+						  	<li>
+						  		<strong><spring:message code="registre.proces.estat.enum.${enumValue}"/></strong> :
+						  		<br/>
+						  		<span><spring:message code="registre.proces.estat.enum.${enumValue}.info"/></span>
+						  	</li>
+						</c:forEach>
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="comu.boto.tancar"/></button>
+				</div>
+			</div>
+		</div>
+	</div>	
+		
 </body>

@@ -86,12 +86,14 @@ public class EntitatController extends BaseController {
 		}
 		if (command.getId() != null) {
 			entitatService.update(EntitatCommand.asDto(command));
+			entitatService.evictEntitatsAccessiblesUsuari();
  			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:entitat",
 					"entitat.controller.modificada.ok");
 		} else {
 			entitatService.create(EntitatCommand.asDto(command));
+			entitatService.evictEntitatsAccessiblesUsuari();
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:entitat",
@@ -104,6 +106,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.updateActiva(entitatId, true);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",
@@ -114,6 +117,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.updateActiva(entitatId, false);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",
@@ -125,6 +129,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.delete(entitatId);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",

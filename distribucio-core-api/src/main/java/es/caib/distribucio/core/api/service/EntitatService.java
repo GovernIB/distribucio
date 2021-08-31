@@ -217,5 +217,8 @@ public interface EntitatService {
 			Long id,
 			Long permisId) throws NotFoundException;
 
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public void evictEntitatsAccessiblesUsuari();
+
 
 }

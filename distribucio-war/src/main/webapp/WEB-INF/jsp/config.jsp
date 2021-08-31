@@ -47,7 +47,7 @@ $(document).ready(function() {
         <div class="col-md-3">
             <ul class="nav nav-pills nav-stacked">
                 <c:forEach items="${config_groups}" var="group" varStatus="status_group">
-                    <li role="presentation"><a data-toggle="tab" href="#group-${group.key}">${group.description}</a></li>
+                    <li role="presentation" class="${status_group.first ? 'active': ''}"><a data-toggle="tab" href="#group-${group.key}">${group.description}</a></li>
                 </c:forEach>
             </ul>
         </div>
@@ -56,7 +56,7 @@ $(document).ready(function() {
             <c:forEach items="${config_groups}" var="group" varStatus="status_group">
                 <c:set var="group" value="${group}" scope="request"/>
                 <c:set var="level" value="0" scope="request"/>
-                <div id="group-${group.key}" class="tab-pane fade">
+                <div id="group-${group.key}" class="tab-pane fade ${status_group.first ? 'active in': ''}">
                     <jsp:include page="configGroup.jsp"/>
                 </div>
             </c:forEach>
