@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
@@ -31,9 +30,6 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 
 
 	
-	@Column(name = "tipus", length = 256, nullable = false)
-	@Enumerated(EnumType.STRING)
-	private BackofficeTipusEnumDto tipus;
 	@Column(name = "codi", length = 20, nullable = false)
 	private String codi;
 	@Column(name = "nom", length = 64, nullable = false)
@@ -58,9 +54,6 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 
 	
 	
-	public BackofficeTipusEnumDto getTipus() {
-	    return tipus;
-	}
 	public String getCodi() {
 	    return codi;
 	}
@@ -86,13 +79,11 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	    return entitat;
 	}
 	public static Builder getBuilder(
-			BackofficeTipusEnumDto tipus,
 			String codi,
 			String nom,
 			String url,
 			EntitatEntity entitat) {
 		return new Builder(
-				tipus,
 				codi,
 				nom,
 				url,
@@ -103,13 +94,11 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	    BackofficeEntity built;
 
 		Builder(
-				BackofficeTipusEnumDto tipus,
 				String codi,
 				String nom,
 				String url,
 				EntitatEntity entitat) {
 			built = new BackofficeEntity();
-			built.tipus = tipus;
 	        built.codi = codi;
 	        built.nom = nom;
 	        built.url = url;
@@ -142,7 +131,6 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	}
 
 	public void update(
-			BackofficeTipusEnumDto tipus,
 			String codi,
 			String nom,
 			String url,
@@ -150,7 +138,6 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 			String contrasenya,
 			Integer intents,
 			Integer tempsEntreIntents) {
-		this.tipus = tipus;
 		this.codi = codi;
 		this.nom = nom;
 		this.url = url;

@@ -59,6 +59,7 @@ import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand.Classificar;
+import es.caib.distribucio.war.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
@@ -99,6 +100,12 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+//		###
+//		# resol conflicte filtre bustia pantalla moviments (es mostren totes les bústies)
+		String paginaAnterior = request.getHeader("Referer"); 
+		if (paginaAnterior != null && paginaAnterior.contains("moviments"))
+			filtreCommand.setBustia("");
+//		###
 		model.addAttribute(filtreCommand);		
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
@@ -149,7 +156,6 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						false,
 						DatatablesHelper.getPaginacioDtoFromRequest(request), 
 						false),
 				"id",
@@ -192,7 +198,7 @@ public class RegistreUserController extends BaseUserController {
 						filtreCommand);
 			}
 		}
-		return "redirect:registreUser/moviments";
+		return "redirect:moviments";
 	}
 	
 	@RequestMapping(value = "/moviments/datatable", method = RequestMethod.GET)
@@ -202,21 +208,21 @@ public class RegistreUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = null;
-		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
-		}
+		
+		bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
+				entitatActual.getId(), 
+				registreFiltreCommand.isMostrarInactives());
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				registreService.findRegistre(
+				registreService.findMovimentsRegistre(
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						true,
-						DatatablesHelper.getPaginacioDtoFromRequest(request), 
-						false),
-				"id",
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"movimentId",
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 	}
+	
 	
 	/** Mètode Ajax per seleccionar tots els registres a partir del mateix filtre del datatable.
 	 * 
@@ -226,22 +232,23 @@ public class RegistreUserController extends BaseUserController {
 	 */
 	@RequestMapping(value = "/select/moviments", method = RequestMethod.GET)
 	@ResponseBody
-	public int selectMoviments(
+	public int selectMovimentsByRegistreBustia(
 			HttpServletRequest request,
-			@RequestParam(value="ids[]", required = false) Long[] ids) {
+			@RequestParam(value="ids[]", required = false) String[] ids) {
 		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+		Set<String> seleccio = (Set<String>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 		if (seleccio == null) {
-			seleccio = new HashSet<Long>();
+			seleccio = new HashSet<String>();
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,
 					seleccio);
 		}
 		if (ids != null) {
-			for (Long id: ids) {
+			//per cada registre-desti diferent
+			for (String id: ids) {
 				seleccio.add(id);
 			}
 		} else {
@@ -252,11 +259,10 @@ public class RegistreUserController extends BaseUserController {
 				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
 			}
 			seleccio.addAll(
-					registreService.findRegistreIds(
+					registreService.findRegistreMovimentsIds(
 							entitatActual.getId(),
 							bustiesUsuari,
 							RegistreFiltreCommand.asDto(filtreCommand),
-							true, 
 							false));
 		}
 		return seleccio.size();
@@ -266,20 +272,20 @@ public class RegistreUserController extends BaseUserController {
 	@ResponseBody
 	public int deselectMoviments(
 			HttpServletRequest request,
-			@RequestParam(value="ids[]", required = false) Long[] ids) {
+			@RequestParam(value="ids[]", required = false) String[] ids) {
 		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+		Set<String> seleccio = (Set<String>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 		if (seleccio == null) {
-			seleccio = new HashSet<Long>();
+			seleccio = new HashSet<String>();
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS,
 					seleccio);
 		}
 		if (ids != null) {
-			for (Long id: ids) {
+			for (String id: ids) {
 				seleccio.remove(id);
 			}
 		} else {
@@ -326,6 +332,7 @@ public class RegistreUserController extends BaseUserController {
         model.addAttribute("ordreDir", ordreDir);
         return new ModelAndView("redirect:/registreUser/registre/" + registreId, model.asMap());
 	}
+		
 	@RequestMapping(value = "/registre/{registreId}", method = RequestMethod.GET)
 	public String registreUserDetall(
 			HttpServletRequest request,
@@ -334,19 +341,53 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
+			@RequestParam(required=false) Long destiLogic,
+			Model model) {
+		return getRegistreDetall(
+				request, 
+				registreId, 
+				isVistaMoviments, 
+				destiLogic,
+				registreNumero, 
+				registreTotal, 
+				ordreColumn, 
+				ordreDir, 
+				model);
+	}	
+	
+	private String getRegistreDetall(
+			HttpServletRequest request,
+			Long registreId,
+			boolean isVistaMoviments,
+			Long destiLogic,
+			Integer registreNumero,
+			Integer registreTotal,
+			String ordreColumn,
+			String ordreDir,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
 		try {
-			model.addAttribute(
-					"registre",
-					registreService.findOne(
+			RegistreDto registre = registreService.findOne(
 							entitatActual.getId(),
-							registreId));
+							registreId,
+							isVistaMoviments,
+							RolHelper.getRolActual(request));
+			//recupera la ruta del destí lògic del moviment o no l'actual
+			if (isVistaMoviments && destiLogic != null) {
+				List<ContingutDto> path = registreService.getPathContingut(entitatActual.getId(), destiLogic);
+				registre.setPath(path);
+			}
+			model.addAttribute("registre", registre);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
+			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+			model.addAttribute("isVistaMoviments", isVistaMoviments);
+			model.addAttribute("destiLogic", destiLogic);
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -372,7 +413,7 @@ public class RegistreUserController extends BaseUserController {
 			}
 		}
 		return "registreDetall";
-	}	
+	}
 	
 	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des
 	 * dels botons "Anterior" i "Següent" de la pàgina del detall.
@@ -389,6 +430,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable int registreNumero,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		
 		ContingutDto registre = null;
@@ -411,17 +453,26 @@ public class RegistreUserController extends BaseUserController {
 			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
 				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 			}
-			PaginaDto<ContingutDto> pagina = 
-				registreService.findRegistre(
-						entitatActual.getId(),
-						bustiesPermesesPerUsuari,
-						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						false,
-						paginacioParams, false);
+			PaginaDto<ContingutDto> pagina = null;
+			if (isVistaMoviments) {
+				pagina = registreService.findMovimentRegistre(
+								entitatActual.getId(),
+								bustiesPermesesPerUsuari,
+								RegistreFiltreCommand.asDto(registreFiltreCommand),
+								paginacioParams,
+								false);
+			} else {
+				pagina = registreService.findRegistre(
+								entitatActual.getId(),
+								bustiesPermesesPerUsuari,
+								RegistreFiltreCommand.asDto(registreFiltreCommand),
+								paginacioParams,
+								false);
+			}
 			// Posa les dades dels registres al model segons la consulta
-			if (!pagina.getContingut().isEmpty()) {
+			if (pagina != null && !pagina.getContingut().isEmpty()) {
 				registre = pagina.getContingut().get(0);
-				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir + "&isVistaMoviments=" + isVistaMoviments + (isVistaMoviments ? "&destiLogic=" + registre.getDestiLogic() : "");
 			}
 		} catch (Exception e) {
 			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
@@ -439,6 +490,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -447,7 +499,8 @@ public class RegistreUserController extends BaseUserController {
 					registreService.getAnnexSenseFirmes(
 							entitatActual.getId(),
 							registreId,
-							annexId));
+							annexId,
+							isVistaMoviments));
 			model.addAttribute("registreId", registreId);
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de l'annex", ex);
@@ -463,6 +516,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
 			@PathVariable boolean isResum,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -471,7 +525,8 @@ public class RegistreUserController extends BaseUserController {
 					registreService.getAnnexAmbFirmes(
 							entitatActual.getId(),
 							registreId,
-							annexId));
+							annexId,
+							isVistaMoviments));
 			model.addAttribute("registreId", registreId);
 			
 			model.addAttribute("isUsuariActualAdministration", entitatActual.isUsuariActualAdministration());
@@ -493,6 +548,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@PathVariable Long annexId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		RegistreAnnexDto annexFirmes = new RegistreAnnexDto();
 		try {
@@ -500,7 +556,8 @@ public class RegistreUserController extends BaseUserController {
 			annexFirmes = registreService.getAnnexAmbFirmes(
 							entitatActual.getId(),
 							registreId,
-							annexId);
+							annexId,
+							isVistaMoviments);
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de firma", ex);
 			model.addAttribute("missatgeError", ex.getMessage());
@@ -651,6 +708,7 @@ public class RegistreUserController extends BaseUserController {
 	public String enviarViaEmailGet(
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
 		command.setContingutId(contingutId);
@@ -662,6 +720,7 @@ public class RegistreUserController extends BaseUserController {
 	public String enviarViaEmailPost(
 			HttpServletRequest request,
 			@Valid RegistreEnviarViaEmailCommand command,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
@@ -676,7 +735,9 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual.getId(),
 					command.getContingutId(),
 					adreces, 
-					command.getMotiu());
+					command.getMotiu(),
+					isVistaMoviments,
+					RolHelper.getRolActual(request));
 			MissatgesHelper.success(
 					request,
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
@@ -697,92 +758,165 @@ public class RegistreUserController extends BaseUserController {
 	
 	
 	
-	@RequestMapping(value = "/enviarViaEmailMultiple/{isMoviments}", method = RequestMethod.GET)
+	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.GET)
 	public String enviarViaEmailMultipleGet(
 			HttpServletRequest request,
-			@PathVariable boolean isMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
 		model.addAttribute(command);
+		model.addAttribute("isVistaMoviments", isVistaMoviments);
 		return "registreViaEmail";
 	}
 
-	@RequestMapping(value = "/enviarViaEmailMultiple/{isMoviments}", method = RequestMethod.POST)
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/enviarViaEmailMultiple", method = RequestMethod.POST)
 	public String enviarViaEmailMultiplePost(
 			HttpServletRequest request,
-			@PathVariable boolean isMoviments,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@Valid RegistreEnviarViaEmailCommand command,
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		Set<Long> seleccio = new HashSet<Long>();
 		
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "registreViaEmail";
 		}
-		
-		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				isMoviments ? SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS : SESSION_ATTRIBUTE_SELECCIO);
-		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
-			for (Long registreId : seleccioList) {
-				RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
-				if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
-					
-					boolean processatOk = true;
-					try {
-						bustiaService.registreAnotacioEnviarPerEmail(
-								entitatActual.getId(),
-								registreDto.getId(),
-								adreces, 
-								command.getMotiu());
-						
-					} catch (Exception e) {
-						MissatgesHelper.error(
-								request,
-								getMessage(
-										request, 
-										"registre.user.controller.enviar.email.massiva.error",
-										new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
-						processatOk = false;
-					}
-					
-					if (processatOk)
-						correctes++;
-					else
-						errors++;
-				} 
-				else {
-					logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
-					estatErroni++;
+		if (isVistaMoviments) {
+//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			List<String> seleccioMoviments = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+				for (String idVistaMoviment: seleccioMoviments) {
+					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
 				}
 			}
-			if (correctes > 0){
-				MissatgesHelper.success(request, getMessage(request, "registre.user.controller.enviar.email.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request, getMessage(request, "registre.user.controller.enviar.email.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request, getMessage(request, "registre.user.controller.enviar.email.massiva.estatErroni", new Object[]{estatErroni}));
-			}
 		} else {
-			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
+			seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO);
+		}
+		
+		if (seleccio != null && !seleccio.isEmpty()) {
+			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu(), isVistaMoviments);
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							isVistaMoviments ? "registre.user.controller.massiva.enviament.cap" : "registre.user.controller.massiva.cap"));
 		}
 		return modalUrlTancar();
 		
 	}
 	
-	
+	private void enviarViaEmailMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String adreces, String motiu, boolean isVistaMoviments) {
+		enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, motiu, null, isVistaMoviments);
+	}
+	private void enviarViaEmailMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String adreces, String motiu, List<Long> registreIdErronis, boolean isVistaMoviments) {
 
+		List<Long> seleccioList = new ArrayList<Long>();
+		seleccioList.addAll(seleccio);
+		
+		int errors = 0;
+		int correctes = 0;
+		int estatErroni = 0;
+		
+		ContingutDto contingutDto;
+		for (Long registreId : seleccioList) {
+			contingutDto = null;
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			RegistreDto registreDto = (RegistreDto) contingutDto;
+			if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
+				
+				boolean processatOk = true;
+				try {
+					bustiaService.registreAnotacioEnviarPerEmail(
+							entitatActual.getId(),
+							registreDto.getId(),
+							adreces, 
+							motiu,
+							isVistaMoviments,
+							RolHelper.getRolActual(request));
+					
+				} catch (Exception e) {
+					MissatgesHelper.error(
+							request,
+							getMessage(
+									request, 
+									"registre.user.controller.enviar.email.massiva.error",
+									new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+					processatOk = false;
+				}
+				
+				if (processatOk)
+					correctes++;
+				else {
+					errors++;
+					if (registreIdErronis != null)
+						registreIdErronis.add(registreId);
+				}
+			} 
+			else {
+				logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es envia via email.");
+				estatErroni++;
+			}
+		}
+		if (correctes > 0){
+			MissatgesHelper.success(request, getMessage(request, "registre.user.controller.enviar.email.massiva.correctes", new Object[]{correctes}));
+		} 
+		if (errors > 0) {
+			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.enviar.email.massiva.errors", new Object[]{errors}));
+		} 
+		if (estatErroni > 0) {
+			MissatgesHelper.warning(request, getMessage(request, "registre.user.controller.enviar.email.massiva.estatErroni", new Object[]{estatErroni}));
+		}
+	
+	}
+	
+	@RequestMapping(value = "/enviarIProcessarMultiple", method = RequestMethod.GET)
+	public String enviarIProcessarMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
+		model.addAttribute(command);
+		return "registreUserEnviarIProcessar";
+	}
+
+	@RequestMapping(value = "/enviarIProcessarMultiple", method = RequestMethod.POST)
+	public String enviarIProcessarMultiplePost(
+			HttpServletRequest request,
+			@Valid RegistreEnviarIProcessarCommand command,
+			BindingResult bindingResult,
+			Model model)  {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
+		List<Long> registreIdErronis = new ArrayList<Long>();
+		
+		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "registreUserEnviarIProcessar";
+		}
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			enviarViaEmailMultiple(seleccio, request, entitatActual, adreces, command.getMotiu(), registreIdErronis, false);
+			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual, registreIdErronis);
+		} else {
+			MissatgesHelper.error(request, getMessage(request, "registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
+		
+	}
+	
 	/** Realitza les següents accions:
 	 * - Revisa que no es repeteixin les adreces.
 	 * - Substitueix els espais en blanc per comes.
@@ -834,6 +968,51 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			@RequestParam(value="avanzarPagina", required = false) String avanzarPagina,
 			Model model) {
+		return registreReenviar(
+				request, 
+				registreId,
+				registreNumero, 
+				registreTotal, 
+				ordreColumn, 
+				ordreDir, 
+				avanzarPagina,
+				null,
+				model);
+	}
+	
+	@RequestMapping(value = "/pendent/{registreId}/{destiLogic}/reenviar", method = RequestMethod.GET)
+	public String registreReenviarDestiLogicGet(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable Long destiLogic,
+			@RequestParam(value="registreNumero", required = false) Integer registreNumero,
+			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
+			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
+			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			@RequestParam(value="avanzarPagina", required = false) String avanzarPagina,
+			Model model) {
+		return registreReenviar(
+				request, 
+				registreId,
+				registreNumero, 
+				registreTotal, 
+				ordreColumn, 
+				ordreDir, 
+				avanzarPagina,
+				destiLogic,
+				model);
+	}
+	
+	private String registreReenviar(
+			HttpServletRequest request,
+			Long registreId,
+			Integer registreNumero,
+			Integer registreTotal,
+			String ordreColumn,
+			String ordreDir,
+			String avanzarPagina,
+			Long destiLogic,
+			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			omplirModelPerReenviar(entitatActual, registreId, model);
@@ -853,6 +1032,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("maxLevel", getMaxLevelArbre());
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+			model.addAttribute("destiLogic", destiLogic);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -869,12 +1049,45 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return "registreReenviarForm";
 	}
+	
+	@RequestMapping(value = "/pendent/{registreId}/{destiLogic}/reenviar", method = RequestMethod.POST)
+	public String registreReenviar(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable Long destiLogic,
+			@Valid ContingutReenviarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		return registreReenviarPost(
+				request, 
+				registreId, 
+				destiLogic,
+				command, 
+				bindingResult, 
+				model);
+	}
 
 	@RequestMapping(value = "/pendent/{registreId}/reenviar", method = RequestMethod.POST)
-	public String registreReenviarPost(
+	public String registreReenviar(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@Valid ContingutReenviarCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		return registreReenviarPost(
+				request, 
+				registreId, 
+				null,
+				command, 
+				bindingResult, 
+				model);
+	}
+	
+	private String registreReenviarPost(
+			HttpServletRequest request,
+			Long registreId,
+			Long destiLogic,
+			ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		try {
@@ -901,7 +1114,8 @@ public class RegistreUserController extends BaseUserController {
 					registreId,
 					command.isDeixarCopia(),
 					command.getComentariEnviar(),
-					command.getPerConeixement());
+					command.getPerConeixement(),
+					destiLogic);
 			if (command.getParams().length == 0) {
 				
 				if (command.isDeixarCopia() == false && bustiaService.isBustiaReadPermitted(command.getDestins()[0])) {
@@ -929,7 +1143,7 @@ public class RegistreUserController extends BaseUserController {
 						getMessage(
 								request,
 								"bustia.controller.pendent.contingut.reenviat.ok"));
-				return "redirect:/registreUser/navega/" + command.getParams()[0] + "?ordreColumn=" + command.getParams()[1] + "&ordreDir=" + command.getParams()[2];
+				return "redirect:/registreUser/navega/" + command.getParams()[0] + "?ordreColumn=" + command.getParams()[1] + "&ordreDir=" + command.getParams()[2] + "&isVistaMoviments=" + command.getParams()[3];
 			}
 
 		} catch (Exception e) {
@@ -948,11 +1162,10 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 	
-	
-	
 	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.GET)
 	public String registreReenviarMultipleGet(
 			HttpServletRequest request,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		
 		try {
@@ -981,13 +1194,14 @@ public class RegistreUserController extends BaseUserController {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.POST)
 	public String registreReenviarMultiplePost(
 			HttpServletRequest request,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
-
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			if (bindingResult.hasErrors()) {
 				omplirModelPerReenviarMultiple(entitatActual, model);
@@ -1001,76 +1215,120 @@ public class RegistreUserController extends BaseUserController {
 								"registre.user.controller.massiva.no.desti"));			
 				return "registreReenviarForm";
 			}
-			
-			@SuppressWarnings("unchecked")
-			Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_SELECCIO);
-			if (seleccio != null && !seleccio.isEmpty()) {
-				List<Long> seleccioList = new ArrayList<Long>();
-				seleccioList.addAll(seleccio);
-				
-				int errors = 0;
-				int correctes = 0;
-
-				for (Long registreId : seleccioList) {
-
-						RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
+			int errors = 0;
+			int correctes = 0;
+			Set<Long> seleccio = null;
+			List<String> seleccioMoviments = null;
+			if (isVistaMoviments) {
+//				## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+				seleccioMoviments = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+				if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+					Set<String> seleccioMovimentsSet = new HashSet<String>(seleccioMoviments);
+					for (String idVistaMoviment: seleccioMovimentsSet) {
+						String[] idVistaMovimentArr = idVistaMoviment.split("_");
+						Long registreId = Long.valueOf(idVistaMovimentArr[0]);
+						Long destiLogicId = Long.valueOf(idVistaMovimentArr[1]);
 						
-							boolean processatOk = true;
-							
-							try {
-								bustiaService.registreReenviar(
-										entitatActual.getId(),
-										command.getDestins(),
-										registreDto.getId(),
-										command.isDeixarCopia(),
-										command.getComentariEnviar(),
-										command.getPerConeixement());
-								logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat correctament");
-
-							} catch (Exception e) {
-								processatOk = false;
-								String errMsg;
-								if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
-									errMsg = getMessage(
-											request, 
-											"registre.user.controller.reenviar.error.registreNoTrobat");
-								} else {
-									errMsg = getMessage(
-											request, 
-											"registre.user.controller.reenviar.massiva.error",
-											new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()});
-								}
-								MissatgesHelper.error(request, errMsg);
-								logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat amb error", e);
-							}
-
-							if (processatOk)
-								correctes++;
-							else
-								errors++;
+						boolean processatOk = realitzarReenviamentIndividual(
+								request, 
+								command, 
+								entitatActual, 
+								registreId, 
+								destiLogicId);
+						
+						if (processatOk)
+							correctes++;
+						else
+							errors++;
+					}
 				}
-				
-				if (correctes > 0){
-					MissatgesHelper.success(request,
-							getMessage(request, "registre.user.controller.reenviar.massiva.correctes", new Object[]{correctes}));
-				} 
-				if (errors > 0) {
-					MissatgesHelper.error(request,
-							getMessage(request, "registre.user.controller.reenviar.massiva.errors", new Object[]{errors}));
-				} 
-
 			} else {
+				seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+						request,
+						SESSION_ATTRIBUTE_SELECCIO);
+			
+				if (seleccio != null && !seleccio.isEmpty()) {
+					List<Long> seleccioList = new ArrayList<Long>();
+					seleccioList.addAll(seleccio);
+					for (Long registreId : seleccioList) {
+						
+						boolean processatOk = realitzarReenviamentIndividual(
+								request, 
+								command, 
+								entitatActual, 
+								registreId, 
+								null);
+						
+						if (processatOk)
+							correctes++;
+						else
+							errors++;
+					}
+	
+				} else {
+					
+				}
+			}
+			
+			if ((seleccio == null || seleccio.isEmpty()) && (seleccioMoviments == null || seleccioMoviments.isEmpty())) {
 				MissatgesHelper.error(request,
 						getMessage(request,
-								"registre.user.controller.massiva.cap"));
+								isVistaMoviments ? "registre.user.controller.massiva.enviament.cap" : "registre.user.controller.massiva.cap"));
+				
 			}
+			if (correctes > 0){
+				MissatgesHelper.success(request,
+						getMessage(request, "registre.user.controller.reenviar.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request,
+						getMessage(request, "registre.user.controller.reenviar.massiva.errors", new Object[]{errors}));
+			} 
+			
 			return modalUrlTancar();
 	}
 	
-	
-	
+	private boolean realitzarReenviamentIndividual(
+			HttpServletRequest request,
+			ContingutReenviarCommand command, 
+			EntitatDto entitatActual, 
+			Long registreId, 
+			Long destiLogicId) {
+		ContingutDto contingutDto = null;
+		contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+		RegistreDto registreDto = (RegistreDto) contingutDto;
+		boolean processatOk = true;
+		try {
+			bustiaService.registreReenviar(
+					entitatActual.getId(),
+					command.getDestins(),
+					registreDto.getId(),
+					command.isDeixarCopia(),
+					command.getComentariEnviar(),
+					command.getPerConeixement(),
+					destiLogicId);
+			logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat correctament");
+
+		} catch (Exception e) {
+			processatOk = false;
+			String errMsg;
+			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
+				errMsg = getMessage(
+						request, 
+						"registre.user.controller.reenviar.error.registreNoTrobat");
+			} else {
+				errMsg = getMessage(
+						request, 
+						"registre.user.controller.reenviar.massiva.error",
+						new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+			}
+			MissatgesHelper.error(request, errMsg);
+			logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha reenviat amb error", e);
+		}
+		return processatOk;
+	}
 
 	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
@@ -1196,16 +1454,37 @@ public class RegistreUserController extends BaseUserController {
 				request,
 				SESSION_ATTRIBUTE_SELECCIO);
 		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
+			marcarProcessatMultiple(seleccio, request, entitatActual, command.getMotiu(), rolActual);
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
+	}
+	
+	private void marcarProcessatMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String motiu, String rolActual) {
+		marcarProcessatMultiple(seleccio, request, entitatActual, motiu, rolActual, null);
+	}
+	private void marcarProcessatMultiple(Set<Long> seleccio, HttpServletRequest request, 
+			EntitatDto entitatActual, String motiu, String rolActual, List<Long> registreIdErronis) {
 
-			for (Long registreId : seleccioList) {
-				RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId);
+		List<Long> seleccioList = new ArrayList<Long>();
+		seleccioList.addAll(seleccio);
+		
+		int errors = 0;
+		int correctes = 0;
+		int estatErroni = 0;
+		
+
+		ContingutDto contingutDto;
+		for (Long registreId : seleccioList) {
+			if (registreIdErronis == null || (registreIdErronis != null && !registreIdErronis.contains(registreId))) {
+				contingutDto = null;
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				RegistreDto registreDto = (RegistreDto) contingutDto;
 				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
 					
 					boolean processatOk = true;
@@ -1218,10 +1497,10 @@ public class RegistreUserController extends BaseUserController {
 								getMessage(
 										request, 
 										"bustia.pendent.accio.marcat.processat") + 
-								"</span> " + command.getMotiu(), 
+								"</span> " + motiu, 
 								rolActual);
 						
-
+	
 					} catch (Exception e) {
 						MissatgesHelper.error(
 								request,
@@ -1244,27 +1523,22 @@ public class RegistreUserController extends BaseUserController {
 					estatErroni++;
 				}
 			}
-			
-			if (correctes > 0){
-				MissatgesHelper.success(request,
-						getMessage(request, "registre.user.controller.marcar.processat.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request,
-						getMessage(request, "registre.user.controller.marcar.processat.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request,
-						getMessage(request,
-								"registre.user.controller.marcar.processat.massiva.estatErroni", new Object[]{estatErroni}));
-			}
-		} else {
-			MissatgesHelper.error(request,
-					getMessage(request,
-							"registre.user.controller.massiva.cap"));
 		}
 		
-		return modalUrlTancar();
+		if (correctes > 0){
+			MissatgesHelper.success(request,
+					getMessage(request, "registre.user.controller.marcar.processat.massiva.correctes", new Object[]{correctes}));
+		} 
+		if (errors > 0) {
+			MissatgesHelper.error(request,
+					getMessage(request, "registre.user.controller.marcar.processat.massiva.errors", new Object[]{errors}));
+		} 
+		if (estatErroni > 0) {
+			MissatgesHelper.warning(request,
+					getMessage(request,
+							"registre.user.controller.marcar.processat.massiva.estatErroni", new Object[]{estatErroni}));
+		}
+	
 	}
 
 	@RequestMapping(value = "/pendent/{contingutId}/alertes", method = RequestMethod.GET)
@@ -1318,6 +1592,17 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
+	}
+	
+	/** Retorna el llistat de totes les bústies per filtrar el destí dels moviments. Pot incloure o no les innactives */
+	@RequestMapping(value = "/busties", method = RequestMethod.GET)
+	@ResponseBody
+	public List<BustiaDto> busties(
+			HttpServletRequest request,
+			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return bustiaService.findBustiesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 
 	@RequestMapping(value = "/classificar/{registreId}", method = RequestMethod.GET)
@@ -1597,7 +1882,8 @@ public class RegistreUserController extends BaseUserController {
 		boolean disableDeixarCopia = false;
 		RegistreDto registreDto = registreService.findOne(
 				entitatActual.getId(),
-				registreId);
+				registreId,
+				false);
 		
 		boolean duplicarContingutInArxiu = new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu"));
 		if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && !duplicarContingutInArxiu) {
@@ -1708,7 +1994,8 @@ public class RegistreUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(),
-				registreId);
+				registreId,
+				false);
 		model.addAttribute("registre", registre);
 		model.addAttribute(
 				"procediments",

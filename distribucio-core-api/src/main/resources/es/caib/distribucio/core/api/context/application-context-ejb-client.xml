@@ -57,10 +57,6 @@
 			jndi-name="distribucio/BackofficeWsServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService"/>							
 	<jee:local-slsb
-			id="bantelBackofficeWs"
-			jndi-name="distribucio/BantelBackofficeWsBean/local"
-			business-interface="es.caib.distribucio.core.api.service.bantel.ws.v2.BantelBackofficeWs"/>
-	<jee:local-slsb
 			id="avisService"
 			jndi-name="distribucio/AvisServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.AvisService"/>
@@ -68,4 +64,9 @@
 			id="backofficeService"
 			jndi-name="distribucio/BackofficeServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.BackofficeService"/>
+			
+	<jee:local-slsb
+			id="configService"
+			jndi-name="distribucio/ConfigServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.ConfigService"/>
 </beans>

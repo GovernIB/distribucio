@@ -107,6 +107,7 @@ function formatSelectBustia(item) {
 }
 
 $(document).ready(function() {
+	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	$("#canviVistaReenvios").removeClass('active');
 	
 	$('#netejarFiltre').click(function(e) {
@@ -335,8 +336,11 @@ $(document).ready(function() {
 						<li><a href="registreUser/marcarProcessatMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.marcar.processat"/>
 						</a></li>
-						<li><a href="registreUser/enviarViaEmailMultiple/false" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
+						</a></li>
+						<li><a href="registreUser/enviarIProcessarMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
 						</a></li>
 					</ul>
 					

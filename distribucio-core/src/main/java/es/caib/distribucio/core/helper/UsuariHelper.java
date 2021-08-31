@@ -11,6 +11,7 @@ import javax.ejb.SessionContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +36,8 @@ public class UsuariHelper {
 
 	@Resource
 	private CacheHelper cacheHelper;
-
+	@Autowired
+	private ConfigHelper configHelper;
 
 
 	public Authentication generarUsuariAutenticatEjb(
@@ -86,7 +88,7 @@ public class UsuariHelper {
 			return null;
 		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
 		if (usuari == null) {
-			String idioma = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.default.user.language");
+			String idioma = configHelper.getConfig("es.caib.distribucio.default.user.language");
 			logger.debug("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			// Primer cream l'usuari amb dades fictícies i després l'actualitzam.
@@ -118,7 +120,7 @@ public class UsuariHelper {
 	public UsuariEntity getUsuariByCodi(String codi) {
 		UsuariEntity usuari = usuariRepository.findOne(codi);
 		if (usuari == null) {
-			String idioma = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.default.user.language");
+			String idioma = configHelper.getConfig("es.caib.distribucio.default.user.language");
 			logger.debug("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + codi + ")");
 			// Primer cream l'usuari amb dades fictícies i després l'actualitzam.

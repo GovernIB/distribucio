@@ -7,7 +7,6 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.distribucio.core.api.dto.BackofficeDto;
-import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.validation.Backoffice;
 
@@ -15,8 +14,6 @@ import es.caib.distribucio.war.validation.Backoffice;
 public class BackofficeCommand {
 
     private Long id;
-    @NotNull
-    private BackofficeTipusEnumDto tipus;
     @NotEmpty @Size(max = 20)
     private String codi;
     @NotEmpty @Size(max = 64)
@@ -28,6 +25,7 @@ public class BackofficeCommand {
     @Size(max = 255)
     private String contrasenya;
     private Integer intents;
+    // Deixem aquest camp que era usat per Bantel perquè potser el reutilitzem en el futur
     private Integer tempsEntreIntents;
     
     private Long entitatId;
@@ -37,12 +35,6 @@ public class BackofficeCommand {
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public BackofficeTipusEnumDto getTipus() {
-        return tipus;
-    }
-    public void setTipus(BackofficeTipusEnumDto tipus) {
-        this.tipus = tipus;
     }
     public String getCodi() {
         return codi;

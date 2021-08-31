@@ -13,8 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -78,7 +76,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.regla is not null and r.regla.activa = true and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.DISTRIBUCIO " +
+			"    r.regla is not null and r.regla.activa = true " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"and r.procesIntents < :maxReintents " +
@@ -88,21 +86,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
 			@Param("currentDate") Date currentDate,
 			@Param("maxReintents") int maxReintents);
-	
-	
-	
-	@Query(
-			"from" +
-			"    RegistreEntity r " +
-			"where " +
-			"    r.regla is not null and r.regla.activa = true " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT and r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-		    "order by " +
-		    "    r.data desc "
-		    + "group by r.regla.id")
-	List<RegistreEntity> findAmbEstatPendentBackofficeSistra();
-	
-
 
 
 	/*
@@ -146,29 +129,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 
 	/** Troba l'anotació de registre per identificador. */
 	RegistreEntity findByIdentificador(String identificador);
-
-	/** Consulta els identificadors pel backoffice sistra segons els paràmetres de filtre. 
-	 * @param b 
-	 * @param procesEstatSistra */
-	@Query("select r.identificador " +
-			"from RegistreEntity r " +
-			"where r.regla.backofficeDesti.tipus = es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto.SISTRA " +
-			"	and r.identificadorProcedimentSistra = :identificadorProcediment " +
-			"	and r.identificadorTramitSistra = :identificadorTramit " +
-			"	and (:esNullProcesEstatSistra = true or r.procesEstatSistra = :estatSistra) " +
-			"	and (:esNullDesde = true or r.data >= :desde) " +
-			"	and (:esNullFins = true  or r.data <= :fins) " +
-		    "order by r.data asc")
-	List<String> findPerBackofficeSistra(
-			@Param("identificadorProcediment") String identificadorProcediment,
-			@Param("identificadorTramit") String identificadorTramit,
-			@Param("esNullProcesEstatSistra") boolean esNullProcesEstatSistra, 
-			@Param("estatSistra") RegistreProcesEstatSistraEnum estatSistra,
-			@Param("esNullDesde") boolean esNullDesde,
-			@Param("desde") Date desde,
-			@Param("esNullFins") boolean esNullFins,
-			@Param("fins") Date fins
-		);
 	
 	/** Consulta les anotacions de registre que tenen l'expedient a l'arxiu pendents
 	 * de tancar i a les quals ja s'ha excedit el temps d'espera establert
@@ -233,37 +193,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"			where " +
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 ) " + 
-			"and (:onlyAmbMoviments = false or " +														//>>> FILTRE PANTALLA ENVIAMENTS
-			"		(" + 
-			"			((select count(mov) " +  														//>>> Anotacions amb més d'un enviament
-			"				from ContingutMovimentEntity mov " +
-			"				where r.id = mov.contingut.id) > 1 " + 										// O
-			"			or" + 
-			"			(select count(mov1) " +  														//>>> Anotacions amb moviments no provinent de registre (origen != null)
-			" 				from ContingutMovimentEntity mov1" +
-			"	 			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
-			" 									where mov2.contingut.id = r.id " + 
-			"									and mov2.origen is not null)) > 0) " + 
-			"			and (:isNullBustiaOrigen = true " + 											//>>> Amb filtre origen
-			" 				or ((select count(mov2)" + 													//>>> Primer moviment des de registre (origen = primer destí)
-			"						from ContingutMovimentEntity mov2" + 
-			"						where r.id = mov2.contingut.id" + 
-			"						and mov2.origen is null" + 
-			"						and mov2.desti = :bustiaOrigen) > 0" + 
-			"					or ((select count(mov3) " + 											//>>> Reenviament deixant còpia (origen = origen)
-			"									from ContingutMovimentEntity mov3" + 
-			"									where r.id = mov3.contingut.id" + 
-			"									and mov3.origen is null" + 
-			"									and mov3.desti is not null) = 0" + 
-			"										and" + 
-			"											(select count(mov4)" +
-			"												from ContingutMovimentEntity mov4" + 		//>>> Reenviament deixant còpia amb més d'un moviment (agafar origen primer moviment)
-			"												where r.id = mov4.contingut.id" +
-			" 												and mov4.id = (select min(mov5.id) from ContingutMovimentEntity mov5 where r.id = mov5.contingut.id)" +
-			"												and mov4.origen is not null" +
-			"												and mov4.origen = :bustiaOrigen) > 0)))" + 
-			"		))") //el primer destí és l'origen
+			"			) > 0 ) ")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -295,30 +225,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
-			@Param("onlyAmbMoviments") boolean onlyAmbMoviments,
-			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen,
-			@Param("bustiaOrigen") BustiaEntity bustiaOrigen,
 			Pageable pageable);
-
-	@Query("select r.id from" +
-			"    RegistreEntity r " +
-			"where r.entitat = :entitat " +
-			"and r.pare.id in (:bustiesIds) " + 
-			"and ((select count(mov) " +  														//>>> Anotacions amb més d'un enviament
-			"		from ContingutMovimentEntity mov " +
-			"		where r.id = mov.contingut.id) > 1 " + 										// O
-			"		or" + 
-			"		(select count(mov1) " +  													//>>> Anotacions amb moviments no provinent de registre (origen != null)
-			"			from ContingutMovimentEntity mov1" +
-			"			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
-			"							where mov2.contingut.id = r.id " + 
-			"							and mov2.origen is not null)) > 0) ")
-	List<Long> findRegistresIdsByBustiesIds(
-			@Param("entitat") EntitatEntity entitat,
-			@Param("bustiesIds") List<Long> bustiesIds);
-	
-	
-
 	
 	
 	/** Consulta dels identificadors de registre per a la selecció en registre user */
@@ -349,37 +256,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"			where " +
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 ) " + 
-			"and (:onlyAmbMoviments = false or " +														//>>> FILTRE PANTALLA ENVIAMENTS
-			"		(" + 
-			"			((select count(mov) " +  														//>>> Anotacions amb més d'un enviament
-			"				from ContingutMovimentEntity mov " +
-			"				where r.id = mov.contingut.id) > 1 " + 										// O
-			"			or" + 
-			"			(select count(mov1) " +  														//>>> Anotacions amb moviments no provinent de registre (origen != null)
-			" 				from ContingutMovimentEntity mov1" +
-			"	 			where mov1.id = (select mov2.id from ContingutMovimentEntity mov2 " + 
-			" 									where mov2.contingut.id = r.id " + 
-			"									and mov2.origen is not null)) > 0) " + 
-			"			and (:isNullBustiaOrigen = true " + 											//>>> Amb filtre origen
-			" 				or ((select count(mov2)" + 													//>>> Primer moviment des de registre (origen = primer destí)
-			"						from ContingutMovimentEntity mov2" + 
-			"						where r.id = mov2.contingut.id" + 
-			"						and mov2.origen is null" + 
-			"						and mov2.desti = :bustiaOrigen) > 0" + 
-			"					or ((select count(mov3) " + 											//>>> Reenviament deixant còpia (origen = origen)
-			"									from ContingutMovimentEntity mov3" + 
-			"									where r.id = mov3.contingut.id" + 
-			"									and mov3.origen is null" + 
-			"									and mov3.desti is not null) = 0" + 
-			"										and" + 
-			"											(select count(mov4)" +
-			"												from ContingutMovimentEntity mov4" + 		//>>> Reenviament deixant còpia amb més d'un moviment (agafar origen primer moviment)
-			"												where r.id = mov4.contingut.id" +
-			" 												and mov4.id = (select min(mov5.id) from ContingutMovimentEntity mov5 where r.id = mov5.contingut.id)" +
-			"												and mov4.origen is not null" +
-			"												and mov4.origen = :bustiaOrigen) > 0)))" + 
-			"		))") //el primer destí és l'origen
+			"			) > 0 )") //el primer destí és l'origen
 	public List<Long> findRegistreIdsByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -410,10 +287,5 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
-			@Param("onlyAmbMoviments") boolean onlyAmbMoviments,
-			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen,
-			@Param("bustiaOrigen") BustiaEntity bustiaOrigen);
-
-
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
 }

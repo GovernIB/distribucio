@@ -169,16 +169,17 @@
 										return false;
 									});
 								} else {
-									if (!clon.data('nosubmit')) {
 										clon.on('click', function () {
-											iframe.hide();
-											$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
-											$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
-											$('.modal-body .datatable-dades-carregant').show();
+											// When click submit show loading
+											if (clon.attr('type') === 'submit' && !clon.data('nosubmit')) {
+												iframe.hide();
+												$('.modal-body .datatable-dades-carregant').css('padding-bottom', '0px');
+												$('.modal-body .datatable-dades-carregant').css('padding-top', '60px');
+												$('.modal-body .datatable-dades-carregant').show();
+											}
 											element.click();
 											return false;
 										});
-									}
 								}
 								$('.modal-footer', $(iframe).parent().parent()).append(clon);
 							});

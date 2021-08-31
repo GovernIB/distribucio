@@ -34,7 +34,8 @@ public class GestioDocumentalHelper {
 	private IntegracioHelper integracioHelper;
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-	
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
@@ -274,7 +275,7 @@ public class GestioDocumentalHelper {
 	
 	
 	private String getPropertyPluginGestioDocumental() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.gesdoc.class");
 	}
 	

@@ -54,7 +54,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "assumpte_codi", length = 16)
 	protected String assumpteCodiFiltre;
 	
-	@Column(name = "procediment_codi", length = 64, nullable = false)
+	@Column(name = "procediment_codi", length = 1024, nullable = false)
 	private String procedimentCodiFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)

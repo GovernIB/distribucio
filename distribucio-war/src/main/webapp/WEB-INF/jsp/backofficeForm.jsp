@@ -19,36 +19,21 @@
 	<dis:modalHead/>
 	
 	<script type="text/javascript">
-
 		$(document).ready(function() {
-		
-			$('#tipus').change(function(){
-				if ($(this).val() == 'SISTRA')
-					$('#backofficeTempsEntreIntentsBlock').show();
-				else
-					$('#backofficeTempsEntreIntentsBlock').hide();
-			});
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 		});
 	</script>
-	
-	
-	
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/backoffice/save"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
-		<dis:inputSelect name="tipus" textKey="backoffice.form.camp.tipus" optionItems="${backofficeTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
-		<block id="backofficeTempsEntreIntentsBlock" style='display:${backofficeCommand.tipus == "SISTRA" ? "inline" : "none"}'>
-			<dis:inputText name="intents" textKey="backoffice.form.camp.intents"/>
-			<dis:inputText name="tempsEntreIntents" textKey="backoffice.form.camp.temps.entre.intents" comment="backoffice.form.camp.temps.entre.intents.info"/>
-		</block>
 
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>

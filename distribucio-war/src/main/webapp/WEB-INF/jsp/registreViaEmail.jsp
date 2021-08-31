@@ -15,15 +15,17 @@
 	<dis:modalHead/>
 <script>
 	$(document).ready(function() {
-
+		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	});
 </script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
-
+		<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
+		<c:if test="${isVistaMoviments}">
+			<p class="alert alert-warning"><spring:message code="bustia.pendent.contingut.seleccio.info.2"/></p>
+		</c:if>
 		<form:hidden path="contingutId"/>
-		
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>
 		<div class="form-group">
 			<div class="col-xs-offset-4 col-xs-8">

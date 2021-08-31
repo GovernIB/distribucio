@@ -78,6 +78,8 @@
 	
 	
 	$(document).ready(function() {
+		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 		$('#regles').on('dragupdate.dataTable', function (event, itemId, index) {
 			$.ajax({
 				url: "ajax/regla/" + itemId + "/move/" + index,

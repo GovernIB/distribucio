@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de consulta de dades d'usuaris emprant JDBC.
@@ -113,16 +112,16 @@ public class DadesUsuariPluginJdbc implements DadesUsuariPlugin {
 	}
 
 	private String getDatasourceJndiName() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name");
+		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name");
 	}
 	private String getJdbcQueryUsuariCodi() {
-		String query = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query");
+		String query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query");
 		if (query == null || query.isEmpty())
-			query = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi");
+			query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi");
 		return query;
 	}
 	private String getJdbcQueryUsuariGrup() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
+		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginJdbc.class);

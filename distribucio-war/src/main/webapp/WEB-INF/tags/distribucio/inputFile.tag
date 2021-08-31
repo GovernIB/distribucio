@@ -12,6 +12,7 @@
 <%@ attribute name="labelSize" required="false" rtexprvalue="true"%>
 <%@ attribute name="inputSize" required="false" rtexprvalue="true"%>
 <%@ attribute name="fileEntitat" required="false" rtexprvalue="true"%>
+<%@ attribute name="id" required="false" rtexprvalue="true"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
@@ -35,7 +36,7 @@
 				<label class="control-label col-xs-${campLabelSize}" for="${campPath}"></label>
 				<div class="col-xs-8 img-exists">
 					<div class="col-xs-4 icon">
-						<a href="<c:url value="/entitat/logo"/>"><spring:message code="entitat.form.camp.logocapactual"/></a>
+						<a href="<c:url value="/entitat/${id}/logo"/>"><spring:message code="entitat.form.camp.logocapactual"/></a>
 					</div>
 					<div class="col-xs-4">
 						<form:checkbox path="eliminarLogoCap"/>

@@ -55,6 +55,8 @@ function formatSelectUnitat(item) {
 
 
 $(document).ready(function() {
+	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 	var isWindowReload = true;
 	$('#tipus').on('change', function () {
 		$('div#camps_tipus_BUSTIA').css('display', 'none');
@@ -90,12 +92,7 @@ $(document).ready(function() {
 		
 	});
 	$('#tipus').trigger('change');	
-	$('#backofficeTipus').change(function(){
-		if ($(this).val() == 'SISTRA')
-			$('#backofficeTempsEntreIntentsBlock').show();
-		else
-			$('#backofficeTempsEntreIntentsBlock').hide();
-	});
+	
 });
 </script>
 </head>
@@ -205,7 +202,7 @@ $(document).ready(function() {
 				suggestText="codiAndNom"
 				optionTemplateFunction="formatSelectUnitat"/>
 			<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
-			<dis:inputText name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
+			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			
 			<div id="modal-botons">

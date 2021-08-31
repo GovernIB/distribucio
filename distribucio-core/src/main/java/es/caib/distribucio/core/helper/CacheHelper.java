@@ -73,7 +73,9 @@ public class CacheHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-
+	@Resource
+	private EntitatHelper entitatHelper;
+	
 	@Cacheable(value = "entitatsUsuari", key="#usuariCodi")
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi) {
 		logger.trace("Consulta entitats accessibles (usuariCodi=" + usuariCodi + ")");
@@ -94,6 +96,13 @@ public class CacheHelper {
 		List<EntitatDto> resposta = conversioTipusHelper.convertirList(
 				entitats,
 				EntitatDto.class);
+		for (EntitatDto entitat: resposta) {
+			try {
+				entitat.setLogoCapBytes(entitatHelper.getLogo(entitat.getCodiDir3()));
+			} catch (Exception ex) {
+				logger.error("No s'ha pogut definir el logo per l'entitat (codiDir3=" + entitat.getCodiDir3() + ")");
+			}
+		}
 		permisosEntitatHelper.omplirPermisosPerEntitats(
 				resposta,
 				false);

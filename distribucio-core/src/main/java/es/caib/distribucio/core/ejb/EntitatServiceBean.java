@@ -16,6 +16,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.EntitatService;
 
 /**
@@ -133,6 +134,18 @@ public class EntitatServiceBean implements EntitatService {
 		delegate.deletePermisAdmin(
 				id,
 				permisId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_SUPER")
+	public EntitatDto findByIdWithLogo(Long id) throws NotFoundException {
+		return delegate.findByIdWithLogo(id);
+	}
+
+	@Override
+	@RolesAllowed("DIS_SUPER")
+	public void evictEntitatsAccessiblesUsuari() {
+		delegate.evictEntitatsAccessiblesUsuari();
 	}
 
 }

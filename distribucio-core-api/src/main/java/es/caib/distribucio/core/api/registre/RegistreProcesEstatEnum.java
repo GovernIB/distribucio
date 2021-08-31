@@ -40,6 +40,8 @@ public enum RegistreProcesEstatEnum {
 		estatsPendents.add(BUSTIA_PENDENT);
 		estatsPendents.add(ARXIU_PENDENT);
 		estatsPendents.add(REGLA_PENDENT);
+		estatsPendents.add(BACK_REBUTJADA);
+		estatsPendents.add(BACK_ERROR);
 	}
 	
 	/** Llista d'estats processats. */
@@ -49,8 +51,7 @@ public enum RegistreProcesEstatEnum {
 		estatsProcessats.add(BACK_PENDENT);
 		estatsProcessats.add(BACK_REBUDA);
 		estatsProcessats.add(BACK_PROCESSADA);
-		estatsProcessats.add(BACK_REBUTJADA);
-		estatsProcessats.add(BACK_ERROR);
+
 	}
 
 	/** Mètode per consultar si un estat és pendent. */

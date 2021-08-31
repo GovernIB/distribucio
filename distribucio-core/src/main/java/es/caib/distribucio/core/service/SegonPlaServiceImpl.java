@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.xml.namespace.QName;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,26 +26,17 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
-import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.service.SegonPlaService;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeException;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.BantelFacadeWsClient;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciaEntrada;
-import es.caib.distribucio.core.api.service.bantel.wsClient.v2.model.ReferenciasEntrada;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
-import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
-import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.WorkerThread;
-import es.caib.distribucio.core.helper.WsClientHelper;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
-import es.caib.distribucio.core.repository.RegistreRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -68,13 +55,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Autowired
 	private RegistreHelper registreHelper;
 	@Autowired
-	private ReglaHelper reglaHelper;
-	@Autowired
 	private MetricRegistry metricRegistry;
 	@Autowired
-	private RegistreRepository registreRepository;
-	@Autowired
 	private HistogramPendentsHelper historicsPendentHelper;
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -83,7 +68,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	 * de reintents.
 	 */
 	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio}")
 	public void guardarAnotacionsPendentsEnArxiu() {
 
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
@@ -129,7 +113,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 
 	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio}")
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();
@@ -170,7 +153,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 	
 	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
 	public void aplicarReglesPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();
@@ -203,86 +185,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 	}
 	
-	
-	
-	
-	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio}")
-	public void backofficeSistra() {
-
-		String error = null;
-
-		List<RegistreEntity> pendents = registreRepository.findAmbEstatPendentBackofficeSistra();
-
-		if (pendents != null && !pendents.isEmpty()) {
-
-			try {
-				Calendar properProcessamentCal = Calendar.getInstance();
-				for (RegistreEntity pendent : pendents) {
-
-					ReglaEntity regla = pendent.getRegla();
-
-					// comprova si ha passat el temps entre reintents o ha d'esperar
-					boolean esperar = false;
-					Date darrerProcessament = pendent.getProcesData();
-					Integer minutsEntreReintents = pendent.getRegla().getBackofficeDesti().getTempsEntreIntents();
-					if (darrerProcessament != null && minutsEntreReintents != null) {
-						// Calcula el temps pel proper intent
-						properProcessamentCal.setTime(darrerProcessament);
-						properProcessamentCal.add(Calendar.MINUTE,
-								minutsEntreReintents);
-						esperar = new Date().before(properProcessamentCal.getTime());
-					}
-					if (!esperar) {
-						for (RegistreAnnexEntity annex : pendent.getAnnexos()) {
-							if (annex.getFitxerNom().equals("DatosPropios.xml") || annex.getFitxerNom().equals("Asiento.xml"))
-								reglaHelper.processarAnnexSistra(pendent,
-										annex);
-						}
-						BantelFacadeWsClient backofficeSistraClient = new WsClientHelper<BantelFacadeWsClient>().generarClientWs(
-							getClass().getResource("/es/caib/distribucio/core/service/ws/backofficeSistra/BantelFacade.wsdl"),
-							regla.getBackofficeDesti().getUrl(),
-							new QName(
-									"urn:es:caib:bantel:ws:v2:services",
-									"BantelFacadeService"),
-							regla.getBackofficeDesti().getUsuari(),
-							regla.getBackofficeDesti().getContrasenya(),
-							null,
-							BantelFacadeWsClient.class);
-						// Crea la llista de referències d'entrada
-						ReferenciasEntrada referenciesEntrades = new ReferenciasEntrada();
-						ReferenciaEntrada referenciaEntrada = new ReferenciaEntrada();
-						referenciaEntrada.setNumeroEntrada(pendent.getNumero());
-						referenciaEntrada.setClaveAcceso(ReglaHelper.encrypt(pendent.getNumero()));
-						referenciesEntrades.getReferenciaEntrada().add(referenciaEntrada);
-						// Invoca el backoffice sistra
-						try {
-							backofficeSistraClient.avisoEntradas(referenciesEntrades);
-						} catch (BantelFacadeException bfe) {
-							error = "[" + bfe.getFaultInfo() + "] " + bfe.getLocalizedMessage();
-						}
-					}
-				}
-			} catch (Exception ex) {
-				Throwable t = ExceptionUtils.getRootCause(ex);
-				if (t == null)
-					t = ex.getCause();
-				if (t == null)
-					t = ex;
-				error = ExceptionUtils.getStackTrace(t);
-			}
-			if (error != null) {
-				throw new AplicarReglaException(error);
-			}
-		}
-
-	}
-	
-	
-	
 
 	@Override
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio}")
 	//@Scheduled(fixedRate = 120000)
 	public void tancarContenidorsArxiuPendents() {
 		
@@ -313,7 +217,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	 */
 	@Override
 	@Transactional
-	@Scheduled(fixedDelayString = "${config:es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat}")
 	public void enviarEmailsPendentsNoAgrupats() {
 		
 		long startTime = new Date().getTime();
@@ -362,7 +265,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	 */
 	@Override
 	@Transactional
-	@Scheduled(cron = "${config:es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat}")
 	public void enviarEmailsPendentsAgrupats() {
 		
 		long startTime = new Date().getTime();
@@ -442,7 +344,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	}
 
 	private int getGuardarAnnexosMaxReintentsProperty() {
-		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -451,7 +353,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	}
 	
 	private int getEnviarIdsAnotacionsMaxReintentsProperty() {
-		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -460,7 +362,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	}
 
 	private int getAplicarReglesMaxReintentsProperty() {
-		String maxReintents = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {

@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
+import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -36,6 +39,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
@@ -45,7 +49,6 @@ import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
@@ -100,6 +103,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private MessageHelper messageHelper;
 	@Resource
 	private RegistreHelper registreHelper;
+	@Autowired
+	private ConfigHelper configHelper;
 
 
 	@Transactional(readOnly = true)
@@ -109,7 +114,8 @@ public class ContingutServiceImpl implements ContingutService {
 			Long contingutId,
 			boolean ambFills,
 			boolean ambVersions, 
-			String rolActual) {
+			String rolActual,
+			boolean isVistaMoviments) {
 		logger.debug("Obtenint contingut amb id per usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "contingutId=" + contingutId + ", "
@@ -124,9 +130,10 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
+		boolean comprovarPermisLectura = !rolActual.equals("DIS_ADMIN") && !isVistaMoviments;
 		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
-				!rolActual.equals("DIS_ADMIN"),
+				comprovarPermisLectura,
 				false,
 				false,
 				true);
@@ -573,12 +580,36 @@ public class ContingutServiceImpl implements ContingutService {
 				text).isPublicat();
 	}
 
+	@Transactional
+	@Override
+	public boolean hasPermisSobreBustia(Long entitatId, Long contingutId) throws NotFoundException {
+		boolean hasPermis = true;
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+
+		RegistreEntity registre = registreRepository.findOne(contingutId);
+		try {
+			if (!usuariHelper.isAdmin()) {
+				entityComprovarHelper.comprovarBustia(
+								entitat,
+								registre.getPareId(),
+								true);
+			}
+		} catch (PermissionDeniedException e) {
+			hasPermis = false;
+		}
+		return hasPermis;
+	}
+
 	private boolean isPermesReservarAnotacions() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 
 	private int getPropertyExpedientDiesTancament() {
-		String numDies = PropertiesHelper.getProperties().getProperty(
+		String numDies = configHelper.getConfig(
 				"es.caib.distribucio.tancament.expedient.dies",
 				"30");
 		return Integer.parseInt(numDies);

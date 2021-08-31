@@ -86,12 +86,14 @@ public class EntitatController extends BaseController {
 		}
 		if (command.getId() != null) {
 			entitatService.update(EntitatCommand.asDto(command));
+			entitatService.evictEntitatsAccessiblesUsuari();
  			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:entitat",
 					"entitat.controller.modificada.ok");
 		} else {
 			entitatService.create(EntitatCommand.asDto(command));
+			entitatService.evictEntitatsAccessiblesUsuari();
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:entitat",
@@ -104,6 +106,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.updateActiva(entitatId, true);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",
@@ -114,6 +117,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.updateActiva(entitatId, false);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",
@@ -125,6 +129,7 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		entitatService.delete(entitatId);
+		entitatService.evictEntitatsAccessiblesUsuari();
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../entitat",
@@ -136,6 +141,34 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
+		
+		if (entitatActual != null) {
+			if (entitatActual.getLogoCapBytes() != null) {
+				writeFileToResponse(
+						"Logo_cap.png",
+						entitatActual.getLogoCapBytes(),
+						response);
+			} else {
+				try {
+					File path = new File(servletContext.getRealPath("/") + "/img/govern-logo.png");
+					writeFileToResponse(
+							"Logo_cap.png", 
+							Files.readAllBytes(path.toPath()), 
+							response);
+				} catch (Exception ex) {
+					logger.debug("Error al obtenir el logo de la capçalera", ex);
+				}
+			}
+		}
+		return null;
+	}
+	
+	@RequestMapping(value = "/{entitatId}/logo", method = RequestMethod.GET)
+	public String getEntitatLogoCap(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable Long entitatId) throws IOException {
+		EntitatDto entitatActual = entitatService.findByIdWithLogo(entitatId);
 		
 		if (entitatActual != null) {
 			if (entitatActual.getLogoCapBytes() != null) {

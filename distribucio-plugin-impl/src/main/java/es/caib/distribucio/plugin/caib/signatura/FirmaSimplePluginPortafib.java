@@ -179,7 +179,7 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 	}
 	
 	private String getPropertyPerfil() {
-		return PropertiesHelper.getProperties().getProperty(
+		return System.getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil");
 	}
 

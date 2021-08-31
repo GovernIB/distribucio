@@ -63,6 +63,10 @@ public class BustiaHelper {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
+	@Autowired
+	private ConfigHelper configHelper;
+	
+	
 	
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			EntitatEntity entitat,
@@ -280,11 +284,11 @@ public class BustiaHelper {
 	}
 
 	public boolean isProcessamentAsincronProperty() {
-		String value = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.tasca.dist.anotacio.asincrona");
+		String value = configHelper.getConfig("es.caib.distribucio.tasca.dist.anotacio.asincrona");
 		if (value != null) {
 			return new Boolean(value);
 		}
-		value = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.anotacio.processament.asincron");
+		value = configHelper.getConfig("es.caib.distribucio.anotacio.processament.asincron");
 		if (value != null) {
 			return new Boolean(value);
 		}

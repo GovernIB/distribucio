@@ -29,7 +29,9 @@
 	<context:component-scan base-package="es.caib.distribucio.core.service" />
 	<context:component-scan base-package="es.caib.distribucio.core.helper" />
 	<context:component-scan base-package="es.caib.distribucio.core.aspect" />
+	<context:component-scan base-package="es.caib.distribucio.core.config" />
 	<jpa:repositories base-package="es.caib.distribucio.core.repository" />
+
 
 	<jpa:auditing auditor-aware-ref="auditorAwareBean" />
 	<bean name="auditorAwareBean" class="es.caib.distribucio.core.audit.DistribucioAuditorAware"/>

@@ -75,6 +75,7 @@ import es.caib.distribucio.core.entity.UsuariBustiaFavoritEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
@@ -84,7 +85,6 @@ import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
-import es.caib.distribucio.core.helper.PropertiesHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
@@ -99,6 +99,7 @@ import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.UsuariBustiaFavoritRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
+import es.caib.distribucio.core.repository.VistaMovimentRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -166,6 +167,11 @@ public class BustiaServiceImpl implements BustiaService {
 	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
 	@Autowired
 	private UsuariRepository usuariRepository;
+	@Autowired
+	private VistaMovimentRepository vistaMovimentRepository;
+
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	@Override
 	@Transactional
@@ -795,6 +801,39 @@ public class BustiaServiceImpl implements BustiaService {
 		return bustiesRetorn;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDto> findBustiesPerUsuari(
+			Long entitatId,
+			boolean mostrarInactives) {
+		logger.trace("Consulta de busties permeses per un usuari ("
+				+ "entitatId=" + entitatId + ")");
+		final Timer findBustiesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findBustiesPerUsuari"));
+		Timer.Context findBustiesPerUsuariContext = findBustiesPerUsuariTimer.time();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		// Obté la llista d'id's amb permisos per a l'usuari
+		List<BustiaEntity> busties;		
+		if (mostrarInactives) {
+			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+		} else {
+			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+		}
+		
+		final Timer findBustiesPerUsuariTimerToBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findBustiesPerUsuari.ToBustiaDto"));
+		Timer.Context findBustiesPerUsuariContextToBustiaDto = findBustiesPerUsuariTimerToBustiaDto.time();
+		List<BustiaDto> bustiesRetorn = bustiaHelper.toBustiaDto(busties, false, true,
+				false);
+		findBustiesPerUsuariContextToBustiaDto.stop();
+		
+		findBustiesPerUsuariContext.stop();
+		return bustiesRetorn;
+	}
+
+	
 	@Transactional
 	@Override
 	public List<BustiaDto> consultaBustiesOrigen(
@@ -810,19 +849,19 @@ public class BustiaServiceImpl implements BustiaService {
 				false);
 		List<Long> bustiesOrigenIds = null;
 		List<Long> busties = new ArrayList<Long>();
+		boolean totesLesbusties = false;
 		long beginTime = new Date().getTime();
 		if (bustiesPermesesPerUsuari != null && !bustiesPermesesPerUsuari.isEmpty()) { 
 			for (BustiaDto bustiaUsuari: bustiesPermesesPerUsuari) {
 				busties.add(bustiaUsuari.getId());
 			}
+		} else {
+			busties.add(0L);
 		}
 		final Timer consultaBustiesOrigenFindRegistresAndBustiesTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "consultaBustiesOrigenFindRegistresAndBusties"));
 		Timer.Context consultaBustiesOrigenFindRegistresAndBustiesContext = consultaBustiesOrigenFindRegistresAndBustiesTimer.time();
 		try {
-			List<Long> registresIds = registreRepository.findRegistresIdsByBustiesIds(
-					entitat, 
-					busties);
-			bustiesOrigenIds = contingutMovimentRepository.findBustiesOrigenByRegistres(registresIds);
+			bustiesOrigenIds = vistaMovimentRepository.findBustiesOrigenByFiltre(entitat.getId(), totesLesbusties, busties);
 		} catch (Exception e) {
 			e.printStackTrace();
 			long endTime = new Date().getTime();
@@ -837,11 +876,7 @@ public class BustiaServiceImpl implements BustiaService {
 		for (Long bustiaId : bustiesOrigenIds) {
 			if (bustiaId != null) {
 				BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, bustiaId, false);
-				if (!bustiesOrigenUnique.contains(bustia) && bustia.isActiva()) {
 					bustiesOrigenUnique.add(bustia);
-				} else if (!bustiesOrigenUnique.contains(bustia) && mostrarInactivesOrigen && !bustia.isActiva()) {
-					bustiesOrigenUnique.add(bustia);
-				}
 			}
 		}
 		consultaBustiesOrigenConversioContext.stop();
@@ -903,7 +938,8 @@ public class BustiaServiceImpl implements BustiaService {
 				anotacioEntity,
 				bustia,
 				null,
-				false);
+				false,
+				null);
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				bustia.getEntitat(),
 				bustia);
@@ -1040,7 +1076,9 @@ public class BustiaServiceImpl implements BustiaService {
 			Long entitatId,
 			Long registreId, 
 			String adresses, 
-			String motiu) throws MessagingException {
+			String motiu,
+			boolean isVistaMoviments,
+			String rolActual) throws MessagingException {
 		
 		final Timer timerregistreAnotacioEnviarPerEmail = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioEnviarPerEmail"));
 		Timer.Context contextregistreAnotacioEnviarPerEmail = timerregistreAnotacioEnviarPerEmail.time();
@@ -1048,13 +1086,15 @@ public class BustiaServiceImpl implements BustiaService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		RegistreDto registre = registreService.findOne(
 				entitatId,
-				registreId);
+				registreId,
+				isVistaMoviments,
+				rolActual);
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),
@@ -1063,14 +1103,17 @@ public class BustiaServiceImpl implements BustiaService {
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			justificant = registreService.getRegistreJustificant(
 					entitatId,
-					registreId);
+					registreId,
+					isVistaMoviments);
 		}
 		List<RegistreAnnexDto> anexos = registreHelper.getAnnexosAmbFirmes(
 				entitatId,
-				registreId);
+				registreId,
+				isVistaMoviments,
+				rolActual);
 		
-		String appBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.app.base.url");
-		String concsvBaseUrl = PropertiesHelper.getProperties().getProperty("es.caib.distribucio.concsv.base.url");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
+		String concsvBaseUrl = configHelper.getConfig("es.caib.distribucio.concsv.base.url");
 		String message18nRegistreTipus = "";
 		if (registre.getRegistreTipus() == RegistreTipusEnum.ENTRADA) {
 			message18nRegistreTipus = messageHelper.getMessage("registre.detalls.camp.desti");
@@ -1246,7 +1289,8 @@ public class BustiaServiceImpl implements BustiaService {
 			Long registreId,
 			boolean opcioDeixarCopiaSelectada,
 			String comentari,
-			Long[] perConeixement) throws NotFoundException {
+			Long[] perConeixement,
+			Long destiLogic) throws NotFoundException {
 		
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
@@ -1266,15 +1310,22 @@ public class BustiaServiceImpl implements BustiaService {
 			throw new NotFoundException(registreId, RegistreEntity.class);
 		}
 		
-		if (isPermesReservarAnotacions())
+		if (destiLogic == null && isPermesReservarAnotacions())
 			registreHelper.comprovarRegistreAlliberat(reg);
 	
+		BustiaEntity bustiaOrigenLogic = null;
 		BustiaEntity bustiaOrigen = null;
-		if (!usuariHelper.isAdmin())
+		if (destiLogic == null && !usuariHelper.isAdmin())
 			bustiaOrigen = entityComprovarHelper.comprovarBustia(
 				entitat,
-				reg.getPareId(),
+				destiLogic != null ? destiLogic : reg.getPareId(),
 				true);
+		if (destiLogic != null)
+			bustiaOrigenLogic = entityComprovarHelper.comprovarBustia(
+					entitat,
+					destiLogic,
+					false);
+		
 		List<BustiaEntity> bustiesDesti = new ArrayList<BustiaEntity>();
 		for (int i = 0; i < bustiaDestiIds.length; i++) {
 			BustiaEntity bustiaDesti = entityComprovarHelper.comprovarBustia(
@@ -1318,7 +1369,8 @@ public class BustiaServiceImpl implements BustiaService {
 					registrePerReenviar,
 					bustia,
 					comentari,
-					assentamentPerConeixement);
+					assentamentPerConeixement,
+					bustiaOrigenLogic);
 			
 			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
 			if (registrePerReenviar.getClass() == RegistreEntity.class) {
@@ -1357,7 +1409,7 @@ public class BustiaServiceImpl implements BustiaService {
 			nousContinguts.add(registrePerReenviar);
 		}
 		
-		boolean crearComentariInformatiu = Boolean.parseBoolean(PropertiesHelper.getProperties().getProperty("es.caib.distribucio.contingut.enviar.crear.comentari"));
+		boolean crearComentariInformatiu = Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.crear.comentari"));
 		
 		if (crearComentariInformatiu) {
 			StringBuilder comentariContingut = generarTextDestins(
@@ -1523,7 +1575,8 @@ public class BustiaServiceImpl implements BustiaService {
 					registre,
 					bustiaDesti,
 					comentari,
-					false);
+					false,
+					null);
 			// Registra al log l'enviament del contingut
 			contingutLogHelper.logMoviment(
 					registre,
@@ -2779,7 +2832,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	}
 	
 	private boolean isPermesReservarAnotacions() {
-		return PropertiesHelper.getProperties().getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 

@@ -77,10 +77,11 @@ public class ContingutController extends BaseUserController {
 	public String registreJustific(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId);
+			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"justificant",
 					justificant);
@@ -97,10 +98,11 @@ public class ContingutController extends BaseUserController {
 	public String arxiuInfo(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId);
+			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"registre", 
 					registre);
@@ -279,11 +281,27 @@ public class ContingutController extends BaseUserController {
 		}
 	}
 
+	@RequestMapping(value = "/contingut/{registreId}/log/moviments", method = RequestMethod.GET)
+	public String logMoviments(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		return getLog(request, registreId, model, true);
+	}
+	
 	@RequestMapping(value = "/contingut/{registreId}/log", method = RequestMethod.GET)
 	public String log(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
+		return getLog(request, registreId, model, false);
+	}
+	
+	private String getLog(
+			HttpServletRequest request,
+			Long registreId,
+			Model model,
+			boolean isVistaMoviments) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
 		
@@ -298,7 +316,8 @@ public class ContingutController extends BaseUserController {
 						registreId,
 						true,
 						false, 
-						rolActual));
+						rolActual,
+						isVistaMoviments));
 
 		List<ContingutLogDetallsDto> logsDetall = contingutService.findLogsDetallsPerContingutUser(
 				entitatActual.getId(),
@@ -309,7 +328,8 @@ public class ContingutController extends BaseUserController {
 		// Recupera la informació
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(), 
-				registreId);
+				registreId,
+				isVistaMoviments);
 		model.addAttribute(
 				"logsResum", 
 				this.buildLogsResum(request, registre, logsDetall));
@@ -382,6 +402,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long contingutId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) throws Exception {
 		String rolActual = RolHelper.getRolActual(request);
 		
@@ -397,10 +418,12 @@ public class ContingutController extends BaseUserController {
 							contingutId,
 							true,
 							false, 
-							rolActual);
+							rolActual,
+							isVistaMoviments);
 			RegistreDto registre = registreService.findOne(
 					entitatActual.getId(), 
-					contingutId);
+					contingutId,
+					isVistaMoviments);
 			List<ContingutLogDetallsDto> logsResum = contingutService.findLogsDetallsPerContingutUser(
 							entitatActual.getId(),
 							contingutId);
@@ -431,6 +454,18 @@ public class ContingutController extends BaseUserController {
 					new Object[] {e.getMessage()});
 		}
 		return ret;
+	}
+	
+	@RequestMapping(value = "/contingut/hasPermisBustia/{bustiaId}", method = RequestMethod.GET)
+	@ResponseBody
+	public boolean hasPermisBustia(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		return contingutService.hasPermisSobreBustia(
+				entitatActual.getId(), 
+				bustiaId);
 	}
 
 	/** Retorna el contingut PDF de la generació del report. Construeix els textos i els passa a la plantilla.
@@ -510,8 +545,8 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.creacio", new Object[] {log.getParams().get(0)}));
 			
 			if (log.getContingutMoviment() != null) {
-				if (log.getContingutMoviment().getDesti() != null) {
-					sb.append(" " + this.getMessage(request, "contingut.log.resum.msg.iEsPosaALaBustia", new Object[] {log.getContenidorMoviment().getDesti().getNom()}));
+				if (log.getContingutMoviment().getDestiId() != null) {
+					sb.append(" " + this.getMessage(request, "contingut.log.resum.msg.iEsPosaALaBustia", new Object[] {log.getContenidorMoviment().getDestiNom()}));
 				}
 			}
 			
@@ -520,13 +555,13 @@ public class ContingutController extends BaseUserController {
 		case REENVIAMENT:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
 			if (log.getContenidorMoviment() != null) {
-				if (log.getContingutMoviment().getOrigen() != null) {
+				if (log.getContingutMoviment().getOrigenId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getOrigen().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getOrigenNom()).append("\"");
 				}
-				if (log.getContingutMoviment().getDesti() != null) {
+				if (log.getContingutMoviment().getDestiId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getDestiNom()).append("\"");
 				}
 			}
 			break;
@@ -559,9 +594,9 @@ public class ContingutController extends BaseUserController {
 				String msg = getMessage(request, "contingut.log.resum.msg.reenviar");
 				msg = msg.substring(0, 1).toLowerCase() + msg.substring(1);
 				sb.append(": " + msg);
-				if (log.getContingutMoviment().getDesti() != null) {
+				if (log.getContingutMoviment().getDestiId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.aLaBustia")).append(" \"");
-					sb.append(log.getContenidorMoviment().getDesti().getNom()).append("\"");
+					sb.append(log.getContenidorMoviment().getDestiNom()).append("\"");
 				}
 			}
 			
@@ -601,6 +636,7 @@ public class ContingutController extends BaseUserController {
 	public String comentaris(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
@@ -611,11 +647,17 @@ public class ContingutController extends BaseUserController {
 						registreId,
 						true,
 						false, 
-						rolActual));
+						rolActual,
+						isVistaMoviments));
 		UsuariDto usuariActual = aplicacioService.getUsuariActual();
 		model.addAttribute(
 				"usuariActual",
 				usuariActual);
+		boolean hasPermisBustia = contingutService.hasPermisSobreBustia(
+				entitatActual.getId(), 
+				registreId);
+		model.addAttribute("hasPermisBustia", 
+				hasPermisBustia);
 		return "contingutComentaris";
 	}
 

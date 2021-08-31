@@ -27,8 +27,5 @@ public class RegistreEnviarViaEmailCommand {
 	public void setMotiu(String motiu) {
 		this.motiu = motiu;
 	}
-	
-	
-
 }
 

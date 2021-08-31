@@ -119,20 +119,6 @@ body {
 	    var expires = "expires=" + d.toGMTString();
 	    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 	}
-	function getCookie(cname) {
-	    var name = cname + "=";
-	    var ca = document.cookie.split(';');
-	    for(var i = 0; i < ca.length; i++) {
-	        var c = ca[i];
-	        while (c.charAt(0) == ' ') {
-	            c = c.substring(1);
-	        }
-	        if (c.indexOf(name) == 0) {
-	            return c.substring(name.length, c.length);
-	        }
-	    }
-	    return "";
-	}
 	function removeCookie(cname) {
 	    var expires = new Date(0).toUTCString();
 	    document.cookie = cname + "=; path=/; expires=" + expires + ";";
@@ -244,8 +230,16 @@ body {
 											<li><a href="<c:url value="/excepcio"/>"><spring:message code="decorator.menu.excepcions"/></a></li>
 											<li><a href="<c:url value="/registreUser/metriquesView"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.metriques"/></a></li>		
 											<li><a href="<c:url value="/registreUser/anotacionsPendentArxiu"/>"><spring:message code="decorator.menu.anotacionsPendentArxiu"/></a></li>									
+											<li><a href="<c:url value="/monitor"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.monitor"/></a></li>
 										</ul>
-									</div>
+									</div>										
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.config"/>&nbsp;<span class="caret caret-white"></span></button>
+										<ul class="dropdown-menu">
+											<li><a href="<c:url value="/config"/>"> <spring:message code="decorator.menu.config.properties"/></a></li>
+										</ul>
+									</div> 
+
 									<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
 								</c:when>
 								<c:when test="${isRolActualAdministrador}">

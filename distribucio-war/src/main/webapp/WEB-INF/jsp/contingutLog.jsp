@@ -68,10 +68,10 @@ $(document).ready(function() {
 							$('div.log-info-accio', $newTd).remove();
 						}
 						if (data.contingutMoviment != null) {
-							if (data.contingutMoviment.origen != null) {
-								$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origen.id + "] " + data.contingutMoviment.origen.nom);
+							if (data.contingutMoviment.origenId != null) {
+								$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origenId + "] " + data.contingutMoviment.origenNom);
 							}
-							$('td.log-info-moviment-desti', $newTd).text("[#" + data.contingutMoviment.desti.id + "] " + data.contingutMoviment.desti.nom);
+							$('td.log-info-moviment-desti', $newTd).text("[#" + data.contingutMoviment.destiId + "] " + data.contingutMoviment.destiNom);
 						} else {
 							$('div.log-info-moviment', $newTd).remove();
 						}
@@ -124,7 +124,8 @@ $(document).ready(function() {
 		<!------------------------------------ TABPANEL RESUM --------------------------------------->
 		<c:if test="${isPanelUser}">
 			<div class="tab-pane active in" id="resum">
-				<a href="<c:url value="/contingut/${contingut.id}/log/informe"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
+				<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
+				<a href="<c:url value="/contingut/${contingut.id}/log/informe?isVistaMoviments=${isVistaMoviments}"/>" class="btn btn-primary pull-right" style="margin-bottom:5px">
 					<i class="fa fa-file-text-o" aria-hidden="true"></i>
 					<spring:message code="comu.boto.informe"/>
 				</a>
@@ -240,16 +241,12 @@ $(document).ready(function() {
 								<td><fmt:formatDate value="${moviment.data}" pattern="dd/MM/yyyy HH:mm:ss"/></td>
 								<td>${moviment.remitent.nom}</td>
 								<td>
-									<c:if test="${not empty moviment.origen}">
-										<c:choose>
-											<c:when test="${moviment.origen.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
-										</c:choose>${moviment.origen.nom}
+									<c:if test="${not empty moviment.origenId}">
+										${moviment.origenNom}
 									</c:if>
 								</td>
 								<td>
-									<c:choose>
-										<c:when test="${moviment.desti.bustia}"><spring:message code="contingut.tipus.enum.BUSTIA"/>:</c:when>
-									</c:choose>${moviment.desti.nom}
+									${moviment.destiNom}
 								</td>
 								<td>${moviment.comentari}</td>
 							</tr>

@@ -129,7 +129,6 @@ public class RegistreAdminController extends BaseAdminController {
 						entitatActual.getId(),
 						null, // bustiesUsuari
 						RegistreFiltreCommand.asDto(filtreCommand),
-						false,
 						DatatablesHelper.getPaginacioDtoFromRequest(request), 
 						true),
 				"id",
@@ -169,6 +168,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
 			model.addAttribute("ordreDir", ordreDir);
+			model.addAttribute("isVistaMoviments", false);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -229,7 +229,6 @@ public class RegistreAdminController extends BaseAdminController {
 						entitatActual.getId(),
 						bustiesPermesesPerUsuari,
 						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						false,
 						paginacioParams, false);
 			// Posa les dades dels registres al model segons la consulta
 			if (!pagina.getContingut().isEmpty()) {

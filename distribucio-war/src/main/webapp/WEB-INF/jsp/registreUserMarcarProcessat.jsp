@@ -12,6 +12,12 @@
 	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
 	<dis:modalHead/>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+		});
+	</script>
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="marcarProcessatCommand">

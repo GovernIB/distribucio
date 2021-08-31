@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.ejb;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -26,8 +25,6 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -50,12 +47,28 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public RegistreDto findOne(
 			Long entitatId,
-			Long registreId) {
+			Long registreId,
+			boolean isVistaMoviments) {
 		return delegate.findOne(
 				entitatId,
-				registreId);
+				registreId,
+				isVistaMoviments);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public RegistreDto findOne(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments,
+			String rolActual) {
+		return delegate.findOne(
+				entitatId,
+				registreId,
+				isVistaMoviments,
+				rolActual);
+	}
+	
 	@Override
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
@@ -72,14 +85,12 @@ public class RegistreServiceBean implements RegistreService {
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
-			boolean onlyAmbMoviments,
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) {
 		return delegate.findRegistre(
 				entitatId,
 				bustiesUsuari,
 				filtre,
-				onlyAmbMoviments,
 				paginacioParams, 
 				isAdmin);
 	}
@@ -160,20 +171,6 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void updateProces(Long registreId, RegistreProcesEstatEnum procesEstat,
-			RegistreProcesEstatSistraEnum procesEstatSistra, String resultadoProcesamiento) {
-		delegate.updateProces(registreId, procesEstat, procesEstatSistra, resultadoProcesamiento);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<String> findPerBackofficeSistra(String identificadorProcediment, String identificadorTramit,
-			RegistreProcesEstatSistraEnum procesEstatSistra, Date desdeDate, Date finsDate) {
-		return delegate.findPerBackofficeSistra(identificadorProcediment, identificadorTramit, procesEstatSistra, desdeDate, finsDate);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public FitxerDto getJustificant(Long registreId) throws NotFoundException {
 		return delegate.getJustificant(registreId);
 	}
@@ -189,22 +186,22 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId) {
-		return delegate.getRegistreJustificant(entitatId, registreId);
+	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId, boolean isVistaMoviments) {
+		return delegate.getRegistreJustificant(entitatId, registreId, isVistaMoviments);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId,
-			Long annexId) throws NotFoundException {
-		return delegate.getAnnexSenseFirmes(entitatId, registreId, annexId);
+			Long annexId, boolean isVistaMoviments) throws NotFoundException {
+		return delegate.getAnnexSenseFirmes(entitatId, registreId, annexId, isVistaMoviments);
 	}
 
 	@Override
 	@RolesAllowed("tothom")
 	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long registreId,
-			Long annexId) throws NotFoundException {
-		return delegate.getAnnexAmbFirmes(entitatId, registreId, annexId);
+			Long annexId, boolean isVistaMoviments) throws NotFoundException {
+		return delegate.getAnnexAmbFirmes(entitatId, registreId, annexId, isVistaMoviments);
 	}
 	
 	@Override
@@ -277,6 +274,56 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed("tothom")
 	public void alliberar(Long entitatId, Long id) {
 		delegate.alliberar(entitatId, id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<ContingutDto> findMovimentsRegistre(
+			Long entitatId, 
+			List<BustiaDto> bustiesPermesesPerUsuari,
+			RegistreFiltreDto filtre, 
+			PaginacioParamsDto paginacioParams) {
+		return delegate.findMovimentsRegistre(
+				entitatId, 
+				bustiesPermesesPerUsuari, 
+				filtre, 
+				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<String> findRegistreMovimentsIds(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari, 
+			RegistreFiltreDto filtre,
+			boolean isAdmin) {
+		return delegate.findRegistreMovimentsIds(
+				entitatId, 
+				bustiesUsuari, 
+				filtre, 
+				isAdmin);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public PaginaDto<ContingutDto> findMovimentRegistre(
+			Long entitatId, 
+			List<BustiaDto> bustiesUsuari,
+			RegistreFiltreDto filtre, 
+			PaginacioParamsDto paginacioParams, 
+			boolean isAdmin) throws NotFoundException {
+		return delegate.findMovimentRegistre(
+				entitatId,
+				bustiesUsuari, 
+				filtre, 
+				paginacioParams, 
+				isAdmin);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public List<ContingutDto> getPathContingut(Long entitatId, Long bustiaId) throws NotFoundException {
+		return delegate.getPathContingut(entitatId, bustiaId);
 	}
 
 }

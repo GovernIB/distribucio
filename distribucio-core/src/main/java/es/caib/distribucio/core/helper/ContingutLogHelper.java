@@ -268,18 +268,22 @@ public class ContingutLogHelper {
 							logPare);
 				}
 			} else {
-				if (contingutMoviment.getOrigen() != null) {
-					logContingutSuperior(
+				if (contingutMoviment.getOrigenId() != null) {
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getOrigenId());
+					if (contingutEntity != null)
+						logContingutSuperior(
 							contingut,
 							tipus,
-							contingutMoviment.getOrigen(),
+							contingutEntity,
 							logPare);
 				}
-				if (contingutMoviment.getDesti() != null) {
-					logContingutSuperior(
+				if (contingutMoviment.getDestiId() != null) {
+					ContingutEntity contingutEntity = contingutRepository.findOne(contingutMoviment.getDestiId());
+					if (contingutEntity != null)
+						logContingutSuperior(
 							contingut,
 							tipus,
-							contingutMoviment.getDesti(),
+							contingutEntity,
 							logPare);
 				}
 			}
@@ -440,14 +444,12 @@ public class ContingutLogHelper {
 				conversioTipusHelper.convertir(
 						moviment.getRemitent(),
 						UsuariDto.class));
-		if (moviment.getOrigen() != null) {
-			dto.setOrigen(
-					contenidorHelper.toContingutDto(
-							moviment.getOrigen()));
-		}
-		dto.setDesti(
-				contenidorHelper.toContingutDto(
-						moviment.getDesti()));
+		dto.setOrigenId(moviment.getOrigenId());
+		dto.setOrigenNom(moviment.getOrigenNom());
+
+		dto.setDestiId(moviment.getDestiId());
+		dto.setDestiNom(moviment.getDestiNom());
+
 		return dto;
 	}
 

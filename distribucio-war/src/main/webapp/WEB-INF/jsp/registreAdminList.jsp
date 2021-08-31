@@ -71,6 +71,7 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
+	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
@@ -448,7 +449,7 @@ $(document).ready(function() {
 				</th>				
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
@@ -465,7 +466,7 @@ $(document).ready(function() {
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
-								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}?isVistaMoviments=false" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
@@ -486,4 +487,34 @@ $(document).ready(function() {
 			</tr>
 		</thead>
 	</table>
+	
+	
+	
+	<!-- Modal pels estats del processament -->
+	<div id="modalProcesEstat" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="<spring:message code="comu.boto.tancar"/>"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><span class="fa fa-list"></span> <spring:message code="bustia.user.proces.estat.legend"></spring:message></h4>
+				</div>
+				<div class="modal-body">
+					<ul>
+						<c:set var="enumValues" value="<%=es.caib.distribucio.core.api.dto.RegistreProcesEstatEnumDto.values()%>"/>
+						<c:forEach items="${enumValues}" var="enumValue">
+						  	<li>
+						  		<strong><spring:message code="registre.proces.estat.enum.${enumValue}"/></strong> :
+						  		<br/>
+						  		<span><spring:message code="registre.proces.estat.enum.${enumValue}.info"/></span>
+						  	</li>
+						</c:forEach>
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="comu.boto.tancar"/></button>
+				</div>
+			</div>
+		</div>
+	</div>	
+		
 </body>

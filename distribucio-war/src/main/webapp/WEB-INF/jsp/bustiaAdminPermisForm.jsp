@@ -19,6 +19,8 @@
 	<dis:modalHead/>
 <script>
 	$(document).ready(function() {
+		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+
 		$("#modal-botons button[type='submit']").on('click', function() {
 			$("form#permisCommand *:disabled").attr('readonly', 'readonly');
 			$("form#permisCommand *:disabled").removeAttr('disabled');

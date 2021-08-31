@@ -27,6 +27,7 @@ public class EntitatDto extends AuditoriaDto {
 	private boolean usuariActualAdministration;
 
 	private byte[] logoCapBytes;
+	private String logoExtension;
 	private boolean eliminarLogoCap;
 	private String colorFons;
 	private String colorLletra;
@@ -96,6 +97,12 @@ public class EntitatDto extends AuditoriaDto {
 	}
 	public void setLogoCapBytes(byte[] logoCapBytes) {
 		this.logoCapBytes = logoCapBytes;
+	}
+	public String getLogoExtension() {
+		return logoExtension;
+	}
+	public void setLogoExtension(String logoExtension) {
+		this.logoExtension = logoExtension;
 	}
 	public boolean isEliminarLogoCap() {
 		return eliminarLogoCap;

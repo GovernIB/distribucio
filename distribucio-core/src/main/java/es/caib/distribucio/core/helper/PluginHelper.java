@@ -72,6 +72,8 @@ public class PluginHelper {
 	private IntegracioHelper integracioHelper;
 	@Resource
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Autowired
+	private ConfigHelper configHelper;
 
 	public String saveRegistreAsExpedientInArxiu(
 			String registreNumero,
@@ -756,8 +758,24 @@ public class PluginHelper {
 			return null;
 		return Long.parseLong(text);
 	}
+	
+	
+	public void resetPlugins() {
+		 dadesUsuariPlugin = null;
+		 unitatsOrganitzativesPlugin = null;
+		 dadesExternesPlugin = null;
+		 arxiuPlugin = null;
+		 validaSignaturaPlugin = null;
+		 procedimentPlugin = null;
+		 distribucioPlugin = null;
+	}
+	
+	
+	
+	
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
+		loadPluginProperties("USUARIS");
 		if (dadesUsuariPlugin == null) {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -779,6 +797,7 @@ public class PluginHelper {
 		return dadesUsuariPlugin;
 	}
 	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
+		loadPluginProperties("UNITATS");
 		if (unitatsOrganitzativesPlugin == null) {
 			String pluginClass = getPropertyPluginUnitatsOrganitzatives();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -800,12 +819,13 @@ public class PluginHelper {
 		return unitatsOrganitzativesPlugin;
 	}
 	private IArxiuPlugin getArxiuPlugin() {
+		loadPluginProperties("ARXIU");
 		if (arxiuPlugin == null) {
 			String pluginClass = getPropertyPluginArxiu();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
@@ -814,7 +834,7 @@ public class PluginHelper {
 								String.class,
 								Properties.class).newInstance(
 								"es.caib.distribucio.",
-								PropertiesHelper.getProperties().findAll());
+								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
 					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
@@ -831,6 +851,7 @@ public class PluginHelper {
 		return arxiuPlugin;
 	}
 	private DadesExternesPlugin getDadesExternesPlugin() {
+		loadPluginProperties("DADES_EXTERNES");
 		if (dadesExternesPlugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -852,12 +873,13 @@ public class PluginHelper {
 		return dadesExternesPlugin;
 	}
 	private IValidateSignaturePlugin getValidaSignaturaPlugin() {
+		loadPluginProperties("VALID_SIGN");
 		if (validaSignaturaPlugin == null) {
 			String pluginClass = getPropertyPluginValidaSignatura();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
 						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
@@ -866,7 +888,7 @@ public class PluginHelper {
 								String.class,
 								Properties.class).newInstance(
 								"es.caib.distribucio.",
-								PropertiesHelper.getProperties().findAll());
+								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
 					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
@@ -881,6 +903,7 @@ public class PluginHelper {
 		return validaSignaturaPlugin;
 	}
 	private ProcedimentPlugin getProcedimentPlugin() {
+		loadPluginProperties("ARXIU");
 		if (procedimentPlugin == null) {
 			String pluginClass = getPropertyPluginProcediment();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -891,7 +914,7 @@ public class PluginHelper {
 					} catch (InstantiationException ex) {
 						procedimentPlugin = (ProcedimentPlugin)clazz.getDeclaredConstructor(
 								Properties.class).newInstance(
-								PropertiesHelper.getProperties().findAll());
+								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
 					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
@@ -908,6 +931,9 @@ public class PluginHelper {
 		return procedimentPlugin;
 	}
 	private DistribucioPlugin getDistribucioPlugin() {
+		loadPluginProperties("ARXIU");
+		loadPluginProperties("GES_DOC");
+		loadPluginProperties("SIGNATURA");
 		if (distribucioPlugin == null) {
 			String pluginClass = getPropertyPluginDistribucio();
 			if (pluginClass != null && pluginClass.length() > 0) {
@@ -964,36 +990,54 @@ public class PluginHelper {
 		}
 		return distribucioPlugin;
 	}
+	
+	
+	private final static Map<String, Boolean> propertiesLoaded = new HashMap<>();
+	private synchronized void loadPluginProperties(String codeProperties) {
+		if (!propertiesLoaded.containsKey(codeProperties) || !propertiesLoaded.get(codeProperties)) {
+			propertiesLoaded.put(codeProperties, true);
+			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);
+			for (Map.Entry<String, String> entry : pluginProps.entrySet() ) {
+				String value = entry.getValue() == null ? "" : entry.getValue();
+				System.setProperty(entry.getKey(), value);
+			}
+		}
+	}
+	public void reloadProperties(String codeProperties) {
+		if (propertiesLoaded.containsKey(codeProperties))
+			propertiesLoaded.put(codeProperties, false);
+	}
+	
 
 	private String getPropertyPluginDadesUsuari() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.dades.usuari.class");
 	}
 	private String getPropertyPluginUnitatsOrganitzatives() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.unitats.organitzatives.class");
 	}
 	private String getPropertyPluginArxiu() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginDadesExternes() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.dadesext.class");
 	}
 	private String getPropertyPluginValidaSignatura() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.validatesignature.class");
 	}
 	private String getPropertyPluginProcediment() {
-		return PropertiesHelper.getProperties().getProperty(
+		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.procediment.class");
 	}
 	private String getPropertyPluginDistribucio() {
-		String pluginClass = PropertiesHelper.getProperties().getProperty(
+		String pluginClass = configHelper.getConfig(
 				"es.caib.distribucio.plugins.distribucio.class");
 		if (pluginClass == null) {
-			return PropertiesHelper.getProperties().getProperty(
+			return configHelper.getConfig(
 					"es.caib.distribucio.plugins.distribucio.fitxers.class");
 		} else {
 			return pluginClass;

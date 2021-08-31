@@ -43,8 +43,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 PRE
-	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 PRE
+	private static final String ENTITAT_DIST_CODI = "L01070276"; //A04003003 DEV | A04019281 PRE
+	private static final String UNITAT_ADM_CODI = "L01070276"; //A04026923 DEV | A04032369 PRE
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta des de JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova registre amb fitxers tècnics " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -68,12 +68,12 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 3;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false;
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false;
 	private static final boolean TEST_ANNEX_PDF = true;
-	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
+	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
 	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
@@ -257,7 +257,7 @@ public class BustiaV1Test {
 				        		"0",
 				        		"EE01",
 				        		"TD01",
-				        		"01",
+				        		"02",
 				        		firmes);
 			        }
 		        }
@@ -275,7 +275,7 @@ public class BustiaV1Test {
 			        		"0",
 			        		"EE01",
 			        		"TD99",
-			        		"01",
+			        		"02",
 			        		null));
 	        	// PAGO
 		        anotacio.getAnnexos().add(		        
