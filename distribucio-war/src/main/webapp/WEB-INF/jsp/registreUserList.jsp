@@ -506,13 +506,13 @@ $(document).ready(function() {
 								{{/if}}
 								<li role="separator" class="divider"></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || !agafat}}
+								{{if !~hlpIsPermesReservarAnotacions || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
 									<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 									<li role="separator" class="divider"></li>
 								{{/if}}
 								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || !agafat}}
+								{{if !~hlpIsPermesReservarAnotacions || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
 									<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 									{{if procesEstatSimple == 'PENDENT'}}
 										<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>

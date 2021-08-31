@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -1143,11 +1145,12 @@ public class RegistreHelper {
 	}
 
 	public void comprovarRegistreAlliberat(RegistreEntity registre) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		UsuariEntity agafatPer = registre.getAgafatPer();
 		if (agafatPer != null && HibernateHelper.isProxy(agafatPer))
 			agafatPer = HibernateHelper.deproxy(agafatPer);
 		
-		if (agafatPer != null) {
+		if (agafatPer != null && !agafatPer.getCodi().equals(auth.getName())) {
 			throw new ValidationException(
 					registre.getId(),
 					RegistreEntity.class,
