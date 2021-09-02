@@ -1798,7 +1798,8 @@ public class RegistreUserController extends BaseUserController {
 	}
 	
 	@RequestMapping(value = "/{registreId}/bloquejar", method = RequestMethod.GET)
-	public String agafar(
+	@ResponseBody
+	public boolean agafar(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
@@ -1808,22 +1809,15 @@ public class RegistreUserController extends BaseUserController {
 			registreService.bloquejar(
 					entitatActual.getId(),
 					registreId);
-			MissatgesHelper.success(
-					request, 
-					getMessage(
-							request, 
-							"bustia.pendent.controller.agafat.ok"));
-			return "redirect:" + request.getHeader("referer");
+			return true;
 		} catch (Exception e) {
 			logger.error("Error agafant l'anotació", e);
 			boolean permisExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, PermissionDeniedException.class);
 			if (permisExcepcion) {
-				MissatgesHelper.error(
+				logger.error(getMessage(
 						request, 
-						getMessage(
-								request, 
-								"bustia.pendent.controller.agafat.ko"));
-				return "redirect:" + request.getHeader("referer");
+						"bustia.pendent.controller.agafat.ko"), e);
+				return false;
 			} else {
 				throw e;
 			}
@@ -1831,7 +1825,8 @@ public class RegistreUserController extends BaseUserController {
 	}
 	
 	@RequestMapping(value = "/{registreId}/alliberar", method = RequestMethod.GET)
-	public String alliberar(
+	@ResponseBody
+	public boolean alliberar(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
@@ -1841,30 +1836,21 @@ public class RegistreUserController extends BaseUserController {
 			registreService.alliberar(
 					entitatActual.getId(),
 					registreId);
-			MissatgesHelper.success(
-					request, 
-					getMessage(
-							request, 
-							"bustia.pendent.controller.alliberat.ok"));
-			return "redirect:" + request.getHeader("referer");
+			return true;
 		} catch (Exception e) {
 			logger.error("Error alliberant l'anotació", e);
 			boolean permisExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, PermissionDeniedException.class);
 			boolean emailExcepcion = ExceptionHelper.isExceptionOrCauseInstanceOf(e, EmptyMailException.class);
 			if (permisExcepcion) {
-				MissatgesHelper.error(
-						request, 
-						getMessage(
+				logger.error(getMessage(
 								request, 
-								"bustia.pendent.controller.alliberat.ko"));
-				return "redirect:" + request.getHeader("referer");
+								"bustia.pendent.controller.alliberat.ko"), e);
+				return false;
 			} else if (emailExcepcion) {
-				MissatgesHelper.error(
+				logger.error(getMessage(
 						request, 
-						getMessage(
-								request, 
-								"bustia.pendent.controller.alliberat.email.ko"));
-				return "redirect:" + request.getHeader("referer");
+						"bustia.pendent.controller.alliberat.email.ko"), e);
+				return false;
 			} else {
 				throw e;
 			}

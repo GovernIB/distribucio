@@ -175,10 +175,15 @@ tr.clicable {
 	background: #FF9C59 !important;
 	border-color: #FF9C59 !important;
 }
+
+li[id^="anotacio_"] {
+	cursor: pointer;
+}
+
 </style>
 <script type="text/javascript">
 	// <![CDATA[
-
+	var confirmed = false;
 	$(document).ready(function() {
     	var vistaMovimentsCookie = getCookie("vistaMoviments");
     	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
@@ -424,6 +429,38 @@ tr.clicable {
 	    	$(this).removeAttr('style');
 	    });
 	}
+	
+	function bloquejar(anotacioId) {
+		var currentAnotacio = $('#anotacio_' + anotacioId);
+		$.get(
+			'<c:url value="/registreUser/"/>' + anotacioId + '/bloquejar',
+			function(success) {
+				if (success)
+					$('.accions').addClass('alliberat');
+				currentAnotacio.find('a').replaceWith('<a onClick="alliberar(' + anotacioId + ')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a>');
+			}
+		);
+	}
+
+	function alliberar(anotacioId) {
+		//Confirmar reserva o no agafat
+		var agafatUsuariActual = ${registre.agafat} && '${registre.agafatPer.codi}' != '${pageContext.request.userPrincipal.name}';
+		if ((!confirmed && agafatUsuariActual && confirm("<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> ${registre.agafatPer.codi}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>")
+				|| !agafatUsuariActual || confirmed)) {
+			var currentAnotacio = $('#anotacio_' + anotacioId);
+			$.get(
+				'<c:url value="/registreUser/"/>' + anotacioId + '/alliberar',
+				function(success) {
+					if (success)
+						$('.accions').removeClass('alliberat');
+					$('.opt_classificar_' + anotacioId + ', .opt_separator_' + anotacioId + ', .opt_reenviar_' + anotacioId + ', .opt_processar_' + anotacioId).removeClass('hidden');
+					$('.opt_agafat_' + anotacioId).remove();
+					currentAnotacio.find('a').replaceWith('<a onClick="bloquejar(' + anotacioId + ')"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a>');
+				}
+			);
+			confirmed = true;
+		}
+	}
 </script>
 
 </head>
@@ -435,6 +472,8 @@ tr.clicable {
 			<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
 			<c:set var="isVistaRegistresAndNoReservat" value="${!isVistaMoviments && (!isPermesReservarAnotacions || !registre.agafat)}" />
 			<c:set var="isVistaRegistresAndReservat" value="${!isVistaMoviments && isPermesReservarAnotacions && registre.agafat}" />
+			<c:set var="isVistaRegistresAndReservatUsuariActual" value="${!isVistaMoviments && isPermesReservarAnotacions && registre.agafat && registreAgafatPerUsuariActual}" />
+			<c:set var="isAccioVisible" value="${!isVistaMoviments && !isVistaRegistresAndNoReservat && !isVistaRegistresAndReservatUsuariActual}"/>
 			
 			<c:if test="${!isVistaMoviments && isEnviarConeixementActiu}">
 				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}"><spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/></label>
@@ -456,31 +495,32 @@ tr.clicable {
 			&nbsp;
 			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
 			&nbsp;
-			<button class="btn btn-primary ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
-				<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat}">
-					<c:if test="${isVistaRegistresAndNoReservat}">
-						<c:choose>
-							<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
-								<li><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-							</c:when>
-							<c:otherwise>
-								<li class="disabled"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-							</c:otherwise>
-						</c:choose>
-					</c:if>
-					<li><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-					<c:if test="${registre.procesEstatSimple == 'PENDENT' && isVistaRegistresAndNoReservat}">
+				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>
+					<%-- CLASSIFICAR --%>
+					<c:choose>
+						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
+							<li class="<c:if test="${isAccioVisible}">hidden opt_classificar_${registre.id}</c:if>"><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="<c:if test="${isAccioVisible}">hidden opt_classificar_${registre.id} disabled</c:if>"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+						</c:otherwise>
+					</c:choose>
+					<%-- REENVIAR --%>
+					<li class="<c:if test="${isAccioVisible}">hidden opt_reenviar_${registre.id}</c:if>"><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
+						<%-- PROCESSAR --%>
 						<c:choose>
 							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
-								<li><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if>"><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:when>
 							<c:otherwise>
-								<li class="disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id} disabled</c:if>"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:otherwise>
 						</c:choose>	
 					</c:if>
-				</c:if>
+				<%--</c:if>--%>
 				<li>
 					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip"/>">
 						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
@@ -492,16 +532,16 @@ tr.clicable {
 					<li role="separator" class="divider"></li>
 					<c:choose>
 						<c:when test="${!registre.agafat}">
-							<li><a href="<c:url value="/registreUser/${registre.id}/bloquejar"/>"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
+							<li id="anotacio_${registre.id}"><a onClick="bloquejar(${registre.id})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
 								<c:when test="${!registreAgafatPerUsuariActual}">
-									<li><a href="<c:url value="/registreUser/${registre.id}/alliberar"/>" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> ${registre.agafatPer.codi}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
-									<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;${registre.agafatPer.codi}</li>
+									<li id="anotacio_${registre.id}"><a onClick="alliberar(${registre.id})"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									<li class="opt_agafat_${registre.id} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;${registre.agafatPer.codi}</li>
 								</c:when>
 								<c:otherwise>
-									<li><a href="<c:url value="/registreUser/${registre.id}/alliberar"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									<li id="anotacio_${registre.id}"><a onClick="alliberar(${registre.id})"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
 								</c:otherwise>
 							</c:choose>
 						</c:otherwise>

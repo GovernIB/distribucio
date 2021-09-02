@@ -90,11 +90,19 @@ div.extracteColumn {
     overflow-wrap: break-word;
     overflow-wrap: anywhere;
 }
+li[id^="anotacio_"] {
+	cursor: pointer;
+}
 </style>
 <script>
 $.views.helpers({
-	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions}
+	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
+	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat
 });
+
+function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
+	return !${isPermesReservarAnotacions} || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}');
+}
 
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
@@ -244,6 +252,36 @@ $(document).ready(function() {
 		e.stopPropagation();
 	});
 });
+
+function bloquejar(anotacioId) {
+	var currentAnotacio = $('#anotacio_' + anotacioId);
+	$.get(
+		"registreUser/" + anotacioId + "/bloquejar",
+		function(success) {
+			if (success)
+				$('tr[id="row_' + anotacioId + '"]').find('button').addClass('alliberat');
+			currentAnotacio.find('a').replaceWith('<a onClick="alliberar(' + anotacioId + ')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a>');
+		}
+	);
+}
+
+function alliberar(anotacioId, agafat, agafatPerCodi) {
+	var agafatPerAltreUsuari = agafat && agafatPerCodi != '${pageContext.request.userPrincipal.name}';
+	if ((agafatPerAltreUsuari && confirm("<spring:message code="bustia.pendent.accio.agafar.confirm.1"/>" + agafatPerCodi + ". <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>")
+			|| !agafatPerAltreUsuari)) {
+		var currentAnotacio = $('#anotacio_' + anotacioId);
+		$.get(
+			"registreUser/" + anotacioId + "/alliberar",
+			function(success) {
+				if (success)
+					$('tr[id="row_' + anotacioId + '"]').find('button').removeClass('alliberat');
+				$('.opt_classificar_' + anotacioId + ', .opt_separator_' + anotacioId + ', .opt_reenviar_' + anotacioId + ', .opt_processar_' + anotacioId).removeClass('hidden');
+				$('.opt_agafat_' + anotacioId).remove();
+				currentAnotacio.find('a').replaceWith('<a onClick="bloquejar(' + anotacioId + ')"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a>');
+			}
+		);
+	}
+}
 </script>
 </head>
 <body>
@@ -500,39 +538,41 @@ $(document).ready(function() {
 										href="registreUser/registre/{{:id}}"
 											data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a>
 								</li>
+								{{!-- ALERTES ---}}
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
 									<li><a href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 								<li role="separator" class="divider"></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
-									<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
-									<li role="separator" class="divider"></li>
-								{{/if}}
-								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								{{!-- CLASSIFICAR ---}}
+								<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_classificar_{{:id}} hidden"{{/if}}{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
+								<li role="separator" class="divider opt_separator_{{:id}}{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}}  hidden"{{/if}}"></li>
+
+								{{!-- VIA MAIL ---}}
+								<li{{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								
-								{{if !~hlpIsPermesReservarAnotacions || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}')}}
-									<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-									{{if procesEstatSimple == 'PENDENT'}}
-										<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
-									{{/if}}		
-									<li>
+								{{!-- REENVIAR ---}}
+								<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_reenviar_{{:id}} hidden"{{/if}}><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+									
+								{{!-- PROCESSAR ---}}
+								{{if procesEstatSimple == 'PENDENT'}}
+									<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_processar_{{:id}} hidden"{{/if}} {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								{{/if}}		
+								<li>
+									{{!-- DESCARREGAR ZIP ---}}
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
 									</a>
-									</li>
-								{{/if}}
+								</li>
 								{{if ~hlpIsPermesReservarAnotacions}}
 									<li role="separator" class="divider"></li>
 									{{if !agafat}}
-										<li><a href="./registreUser/{{:id}}/bloquejar"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
+										<li id="anotacio_{{:id}}"><a onClick="bloquejar({{:id}})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
 									{{else}}
-										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}
-											<li><a href="./registreUser/{{:id}}/alliberar" data-confirm="<spring:message code="bustia.pendent.accio.agafar.confirm.1"/> {{:agafatPer.codi}}. <spring:message code="bustia.pendent.accio.agafar.confirm.2"/>"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>										
-											<li class="list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>
-										{{else}}
-											<li><a href="./registreUser/{{:id}}/alliberar"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>										
+											<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
+										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
+											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}
 									{{/if}}
 								{{/if}}
