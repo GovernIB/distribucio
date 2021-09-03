@@ -47,6 +47,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
@@ -1033,6 +1034,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("maxLevel", getMaxLevelArbre());
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 			model.addAttribute("destiLogic", destiLogic);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -1857,6 +1859,15 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 
+	@RequestMapping(value = "/{bustiaId}/usersPermitted", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UsuariPermisDto> getUsersPermitted(
+			HttpServletRequest request,
+			@PathVariable Long bustiaId,
+			Model model) {
+		return bustiaService.getUsersPermittedForBustia(bustiaId);
+	}
+	
 	private void resetFiltreBustia(
 			HttpServletRequest request, 
 			RegistreFiltreCommand filtreCommand) {
@@ -1913,7 +1924,7 @@ public class RegistreUserController extends BaseUserController {
 						true));
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
-		
+		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 		return registreDto;
 	}
 	
@@ -1946,6 +1957,7 @@ public class RegistreUserController extends BaseUserController {
 				busties);
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
@@ -1971,6 +1983,11 @@ public class RegistreUserController extends BaseUserController {
 		return Boolean.parseBoolean(isFavoritsPermesStr);
 	}
 
+	private boolean isMostrarPermisosBustiaPermes() {
+		String isMostrarPermisosBustiaPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.mostrar.permisos");
+		return Boolean.parseBoolean(isMostrarPermisosBustiaPermesStr);
+	}
+	
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
 		RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(

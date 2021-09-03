@@ -29,6 +29,7 @@
 <%@ attribute name="isCheckBoxEnabled" type="java.lang.Boolean"%>
 <%@ attribute name="isEnviarConeixementActiu" type="java.lang.Boolean"%>
 <%@ attribute name="isFavoritsPermes" type="java.lang.Boolean"%>
+<%@ attribute name="isMostrarPermisosBustiaPermes" type="java.lang.Boolean"%>
 <c:if test="${empty isArbreSeleccionable and empty isFullesSeleccionable}"><c:set var="isArbreSeleccionable" value="${true}"/><c:set var="isFullesSeleccionable" value="${true}"/></c:if>
 <c:if test="${empty isOcultarCounts}"><c:set var="isOcultarCounts" value="${false}"/></c:if>
 <c:if test="${empty isError}"><c:set var="isError" value="${false}"/></c:if>
@@ -110,9 +111,8 @@
 		// var height = $('html').height();
 		// iframe.height(height + 'px');
 		changeCheckbox(false);
-		if (${isFavoritsPermes})
-			addIcons();
-		checkSelectedNodes();
+		addIcons();
+		paintSelectedNodes();
 	})
 	.on('after_close.jstree', function (e, data) {
 		// var iframe = $('.modal-body iframe', window.parent.document);
@@ -160,17 +160,31 @@
 	    	var nodeAnchor = $('#' + node.a_attr.id);
 	    	
 	    	if (${isEnviarConeixementActiu} && isBustia && nodeAnchor.next('span').length == 0) {
-	    		nodeAnchor.after('<span id="' + nodeId + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
-	    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
+	    		nodeAnchor.after('<span id="' + nodeId + '" class="parent info-parent"\
+	    								title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+	    								onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/>\
+       							 </span>');
 	    	} else if(isBustia && nodeAnchor.next('span').length == 0){
 	    		nodeAnchor.after('<span></span>');
 	    	}
 	    	
-	    	if (isBustia && nodeAnchor.next().next('span').length == 0) {
-	    		nodeAnchor.next().after('<span id="' + nodeId + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
-	    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
+	    	if (${isFavoritsPermes} && isBustia && nodeAnchor.nextAll('span').eq(1).length == 0) {
+	    		nodeAnchor.next().after('<span id="' + nodeId + '" class="parent star-parent"\
+	    									title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+	    									onclick="toggleFavorits(this.id)"><i class="fa fa-star"/>\
+	    								</span>');
 	    		if (idsBustiesFavorits.indexOf(parseInt(nodeId)) != -1) 
-	    			nodeAnchor.next().next().addClass('favorit');
+	    			nodeAnchor.nextAll('span').eq(1).addClass('favorit');
+	    	} else if(isBustia && nodeAnchor.nextAll('span').eq(1).length == 0){
+	    		nodeAnchor.next().after('<span></span>');
+	    	}
+	    	
+	    	if (${isMostrarPermisosBustiaPermes} && isBustia && nodeAnchor.nextAll('span').eq(2).length == 0) {
+	    		nodeAnchor.nextAll('span').eq(1).after('<span class="parent popover-' + nodeId + '" id="' + nodeId + '"\
+			    											title="<spring:message code="contingut.enviar.icona.permisos.titol"/>"><i class="fa fa-users"/>\
+			    										</span>');
+	    		//aplicar evento popover para cada nodo
+	    		popoverUsers(nodeId);
 	    	}
 		});
 	}

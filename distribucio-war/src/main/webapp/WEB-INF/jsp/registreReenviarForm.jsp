@@ -198,15 +198,19 @@
 			text-decoration: underline;
 		}
 		
-		.star-parent {
+		.parent {
 			display: inline-flex;
 			justify-content: center;
 			align-items: center;
 			height: 18px;
 			width: 18px;
 			border-radius: 50%;
-			background-color: #f2c185;
 			cursor: pointer;
+			margin-left: 1%;
+		}
+		
+		.star-parent {
+			background-color: #f2c185;
 			margin-left: 4px;
 		}
 		
@@ -220,14 +224,7 @@
 		}
 		
 		.info-parent {
-			display: inline-flex;
-			justify-content: center;
-			align-items: center;
-			height: 18px;
-			width: 18px;
-			border-radius: 50%;
 			background-color: #a6def4;
-			cursor: pointer;
 			margin-left: 5px;
 		}
 		
@@ -239,7 +236,12 @@
 			color: #fff;
 			font-size: 11px;		
 		}
-		
+		.table.usersPermitted {
+			margin-bottom: 0;
+		}
+		.popover {
+			max-width: 100%;
+		}
 	</style>
 	<script type="text/javascript">
 		var idsBustiesFavorits = [];
@@ -394,7 +396,7 @@
 	            var noSeleccionatPerConeixement = nodeAnchor.next('span').length == 0;
 	            
 		    	if (${isEnviarConeixementActiu} && isBustia && noSeleccionatPerConeixement) {
-		    		nodeAnchor.after('<span id="' + idNode + '" class="info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
+		    		nodeAnchor.after('<span id="' + idNode + '" class="parent info-parent" title="<spring:message code="contingut.enviar.icona.afegir.coneixement"/>"\
 		    				onclick="toggleConeixement(this.id)"><i class="fa fa-info-circle"/></span>');
 		    		if (idsPerConeixement.indexOf(idNode) != -1) {
 		    			nodeAnchor.next().addClass('coneixement');
@@ -403,11 +405,11 @@
 			    	nodeAnchor.after('<span></span>');
 		    	}
 		    	
-		    	if (isBustia && nodeAnchor.next().next('span').length == 0) {
-		    		nodeAnchor.next().after('<span id="' + idNode + '" class="star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
+		    	if (${isFavoritsPermes} && isBustia && nodeAnchor.nextAll('span').eq(1).length == 0) {
+		    		nodeAnchor.next().after('<span id="' + idNode + '" class="parent star-parent" title="<spring:message code="contingut.enviar.icona.afegir.favorits"/>"\
 		    				onclick="toggleFavorits(this.id)"><i class="fa fa-star"/></span>');
 		    		if (idsBustiesFavorits.indexOf(parseInt(idNode)) != -1) {
-		    			nodeAnchor.next().next().addClass('favorit');
+		    			nodeAnchor.nextAll('span').eq(1).addClass('favorit');
 		    		}
 		            //============= canviar icona (checked/unchecked)===========
 		    		if(hasClassClicked) {
@@ -415,6 +417,14 @@
 		                currentCheckbox.removeClass('fa-square-o');
 		                currentCheckbox.addClass('fa-check-square-o');
 		            }	         
+		    	}
+		    	
+		    	if (${isMostrarPermisosBustiaPermes} && isBustia && nodeAnchor.nextAll('span').eq(2).length == 0) {
+		    		nodeAnchor.next().next().after('<span class="parent popover-' + idNode + '" id="' + idNode + '"\
+		    											title="Permisos bústia"><i class="fa fa-users"/>\
+		    										</span>');
+		    		//aplicar evento popover para cada nodo
+		    		popoverUsers(idNode);
 		    	}
 			});
 			$arbre.find('li[data-jstree*="fa-folder"]').find('.jstree-anchor:first').find('.fa-square-o').hide();
@@ -557,7 +567,7 @@
 			});
 		}
 		
-		function checkSelectedNodes() {
+		function paintSelectedNodes() {
 			var $arbre = $("#arbreUnitats_destins");
 			//li afegeix l'icona de favorit
 			$arbre.find('li').each(function (index,value) {
@@ -637,13 +647,70 @@
 			}
 		}
 		
+		function popoverUsers(nodeId) {
+			$("span[class*='popover-" + nodeId + "']").popover({
+				html: true,
+			    content: function () {
+			    	return getUsersBustia(this.id);   
+			  	}
+			}).on('mouseenter', function () {
+			    $(this).popover("show");
+			   
+			    $(".popover").on('mouseleave', function () {
+			        $(this).popover('hide');
+			    });
+			}).on('mouseleave', function () {
+			   	if (!$('.popover:hover').length) {
+			    	$(this).popover('hide');
+			    }
+			});
+		}
+		
+		function getUsersBustia(bustiaId) {
+			var content = '';
+			$.ajax({
+				type: 'GET',
+		        url: '<c:url value="/registreUser/' + bustiaId + '/usersPermitted"/>',
+		        async: false,
+		        success: function(usersPermitted) {
+		        	content += '<table class="table table-striped usersPermitted"> \
+						<thead class="thead-dark"> \
+							<tr> \
+								<th><spring:message code="contingut.enviar.icona.permisos.taula.codi"/></th> \
+								<th><spring:message code="contingut.enviar.icona.permisos.taula.nom"/></th> \
+							</tr> \
+						</thead> \
+						<tbody>';
+		        	if (usersPermitted.length) {
+						    usersPermitted.forEach(function(user) {
+						    	content += '<tr> \
+						    					<td>' + user.codi + '</td> \
+						    					<td>' + user.nom + '</td> \
+						    				</tr>';
+						    });
+						        		
+		        	} else {
+		        		content += '<tr> \
+				    					<td colspan="2" style="text-align:center;"><spring:message code="contingut.enviar.icona.permisos.taula.buida"/></td> \
+				    				</tr>';
+		        	}	
+				    content += '</tbody> \
+			    		</table>';
+		        },
+		        error: function(e) {
+		        	contant += 'Hi ha hagut un error recuperant els usuarios amb permís sobre la bústia ' + bustiaId;
+		        }
+		    });
+			return content;
+		};
+		
 	</script>
 </head>
 <body>
 	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand" onsubmit="updateConeixement()">
 		<form:hidden path="params"/>
-	    <c:choose>
-	    	<c:when test="${isFavoritsPermes}">
+	    <%--<c:choose>
+	    	<c:when test="${isFavoritsPermes}"> --%>
 	    	
 	    		<div class="bustia_container">
 		    		<div class="arbre_container">
@@ -654,16 +721,18 @@
 		    				<div>
 		    					<input id="jstree-search" placeholder="<spring:message code="contingut.enviar.info.cercar"/>"/>
 		    				</div>
-		    				<div>
-								<label><input id="favorits" type="checkbox">&nbsp;<span class="star-parent favorit"><i class="fa fa-star favorit"></i></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.info.filtre.favorits"/></label>
-							</div>
+		    				<c:if test="${isFavoritsPermes}">
+			    				<div>
+									<label><input id="favorits" type="checkbox">&nbsp;<span class="parent star-parent favorit"><i class="fa fa-star favorit"></i></span>&nbsp;&nbsp;<spring:message code="contingut.enviar.info.filtre.favorits"/></label>
+								</div>
+							</c:if>
 						</div>
 						<div class="busties">
 							<dis:inputArbre name="destins" inline="true" textKey="contingut.enviar.camp.desti" arbre="${arbreUnitatsOrganitzatives}" required="true" fulles="${busties}" 
 							fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 							fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
 							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"
-							showLabel="false"/>
+							showLabel="false" isMostrarPermisosBustiaPermes="${isMostrarPermisosBustiaPermes}"/>
 
 						</div>
 					</div>
@@ -716,7 +785,7 @@
 						<dis:inputTextarea name="comentariEnviar" inline="true" rows="16" textKey="contingut.enviar.camp.comentari" labelSize="0"/>
 					</div>
 	    		</div>
-	    		
+	    	<%-- 
 			</c:when>
 			<c:otherwise>
 				<div class="form-group">
@@ -738,7 +807,7 @@
 				<dis:inputTextarea name="comentariEnviar" textKey="contingut.enviar.camp.comentari"/>
 			</c:otherwise>
 		</c:choose>
-	    
+	     --%>
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

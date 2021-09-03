@@ -25,6 +25,7 @@
 <%@ attribute name="isFavoritsPermes" type="java.lang.Boolean"%>
 <%@ attribute name="inline" required="false" rtexprvalue="true"%>
 <%@ attribute name="showLabel" required="false" rtexprvalue="true"%>
+<%@ attribute name="isMostrarPermisosBustiaPermes" type="java.lang.Boolean"%>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="campLabelText"><c:choose><c:when test="${not empty textKey}"><spring:message code="${textKey}"/></c:when><c:when test="${not empty text}">${text}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose><c:if test="${required}">*</c:if></c:set>
@@ -46,7 +47,7 @@
 						atributNom="denominacio" changedCallback="changedCallback_${campPath}" fulles="${fulles}" fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" 
 						fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" isArbreSeleccionable="${isArbreSeleccionable}" isFullesSeleccionable="${isFullesSeleccionable}" 
 						isOcultarCounts="${isOcultarCounts}" isError="${not empty campErrors}" fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" 
-						isCheckBoxEnabled="${isCheckBoxEnabled}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}"/>
+						isCheckBoxEnabled="${isCheckBoxEnabled}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" isMostrarPermisosBustiaPermes="${isMostrarPermisosBustiaPermes}"/>
 					</spring:bind>
 					<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 				</div>
