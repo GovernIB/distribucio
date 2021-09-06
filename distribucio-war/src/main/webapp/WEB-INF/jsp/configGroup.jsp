@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: bgalmes
-  Date: 12/7/21
-  Time: 17:03
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib tagdir="/WEB-INF/tags/notib" prefix="not"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -20,7 +13,7 @@
         <c:forEach items="${ group.configs }" var="config" varStatus="status_group">
             <c:set var = "configKey" value = "${fn:replace(config.key,'.','_')}"/>
             <c:url var="urlEdit" value="/config/update"/>
-            <form:form id="filtre" action="${urlEdit}" method="post" cssClass="form-horizontal" commandName="config_${configKey}">
+            <form:form id="filtre"  method="post" cssClass="form-update-config form-horizontal" commandName="config_${configKey}">
                 <form:hidden path="key"/>
                 <div class="form-group">
                     <label for="config_${config.key}" class="col-sm-3 control-label" style="word-wrap: break-word;">${ config.description }</label>
@@ -60,6 +53,7 @@
                             </c:otherwise>
                         </c:choose>
                         <span class="help-block">${config.key}</span>
+                        <span class="info-block"></span>
                     </div>
                     <div class="col-sm-1">
                         <button class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>

@@ -1,11 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: limit
-  Date: 9/7/21
-  Time: 14:45
-
-  Pagina per a la gestió de les propietats de configuració de l'aplicació.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib tagdir="/WEB-INF/tags/notib" prefix="not"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -33,10 +25,63 @@
     <script src="<c:url value="/js/webutil.modal.js"/>"></script>
     <script src="<c:url value="/js/jquery.fileDownload.js"/>"></script>
     
+<style>
+.info-block .alert {
+	padding: 2px 10px !important;
+    margin-bottom: 10px;
+    margin-top: -8px;
+}
+.info-block button.close-alertes {
+    background: none repeat scroll 0 0 transparent;
+    border: 0 none;
+    cursor: pointer;
+    padding: 0;
+}
+.info-block .close-alertes {
+    color: #000000;
+    float: right;
+    font-weight: bold;
+    opacity: 0.2;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+</style> 
+
 <script>
+
 $(document).ready(function() {
 	
 	$("#header").append("<div style='float: right;'><a href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+
+	
+	$(".form-update-config").submit(function(e) {
+	    e.preventDefault();
+	    let formData = new FormData(this);
+	
+	    $(this).find('button').find('i').removeClass();
+	    $(this).find('button').find('i').addClass('fa fa-circle-o-notch fa-spin');
+
+	    $.ajax({
+	        url: '<c:url value="/config/update"/>',
+	        type: 'post',
+	        processData: false,
+	        contentType: false,
+	        enctype: 'multipart/form-data',
+	        data: formData,
+	        success: function(json) {
+	
+	            if (json.error) {
+					$('#contingut-missatges').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + json.errorMsg + '</div>');
+				} else {
+		              var $formElement = $('span:contains("' + json.data + '")').parent().parent();
+		              $formElement.find('button').find('i').removeClass();
+		              $formElement.find('button').find('i').addClass('fa fa-edit');
+		              $formElement.find('button').blur();
+		              $formElement.find('.info-block').append('<div class="alert alert-success"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + "La propietat s'ha editat correctament" + '</div>');
+		              $formElement.addClass('has-success');
+				}
+	        }
+	    });
+	});
 });
 </script>
 
