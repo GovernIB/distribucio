@@ -288,7 +288,7 @@ public class BustiaV1Test {
 			        		"0",
 			        		"EE01",
 			        		"TD99",
-			        		"01",
+			        		"02",
 			        		null));
 	        }
 	        	        
