@@ -34,7 +34,7 @@ $(document).ready(function() {
 				$('span', this).addClass('fa fa-circle-o-notch fa-spin');
 				
 				var $row = $(this).closest('tr');
-				$.get(	'log/' + $(this).data('log-id') + '/detalls',
+				$.get(	'<c:url value="/modal/contingut/${contingut.id}/log/"/>' + $(this).data('log-id') + '/detalls',
 						function(data) {
 							$row.after('<tr><td colspan="4"></td></tr>')
 							$newTd = $('td', $row.next());
