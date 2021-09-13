@@ -36,6 +36,8 @@ public class GestioDocumentalHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private PluginHelper pluginHelper;
 	
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
@@ -249,6 +251,7 @@ public class GestioDocumentalHelper {
 
 	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
+		pluginHelper.loadPluginProperties("GES_DOC");
 		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
 			gestioDocumentalPluginConfiguracioProvada = true;
 			String pluginClass = getPropertyPluginGestioDocumental();

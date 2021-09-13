@@ -26,64 +26,77 @@ $(document).ready(function() {
         $('[data-toggle="tab"][href="' + hash + '"]').trigger('click');
     }
 	$('button.log-detalls').click(function() {
-		if ($('span', this).hasClass('fa-chevron-down')) {
-			var $row = $(this).closest('tr');
-			$.get(	'log/' + $(this).data('log-id') + '/detalls',
-					function(data) {
-						$row.after('<tr><td colspan="4"></td></tr>')
-						$newTd = $('td', $row.next());
-						$newTd.html($('#log-info-detall').html());
-						
-						if (data.params && data.params.length > 0) {
-							for (var i = 0; i < data.params.length; i++) {
-							    $('.table-params', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/> "+ (i + 1) +"</b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
-							}
-						} else {
-							$('div.log-info-params', $newTd).remove();
-						}
-						
-						if (data.pare != null) {
-							$('td.log-info-accio-data', $newTd).text(data.pare.createdDateAmbFormat);
-							$('td.log-info-accio-usuari', $newTd).text(data.pare.createdBy.nom);
-							$('td.log-info-accio-tipus', $newTd).text(logTipusEnumText[data.pare.tipus]);
-							$('td.log-info-accio-objecte', $newTd).text("[" + logObjecteTipusEnumText[data.objecteTipus] + "#" + data.objecteId + "] " + data.objecteNom);
-
-							if (data.params !== null) {
+		if (!$(this).data('isClicked')) {
+			$(this).data('isClicked', true);
+			if ($('span', this).hasClass('fa-chevron-down')) {
+				
+				$('span', this).removeClass();
+				$('span', this).addClass('fa fa-circle-o-notch fa-spin');
+				
+				var $row = $(this).closest('tr');
+				$.get(	'<c:url value="/modal/contingut/${contingut.id}/log/"/>' + $(this).data('log-id') + '/detalls',
+						function(data) {
+							$row.after('<tr><td colspan="4"></td></tr>')
+							$newTd = $('td', $row.next());
+							$newTd.html($('#log-info-detall').html());
+							
+							if (data.params && data.params.length > 0) {
 								for (var i = 0; i < data.params.length; i++) {
-								    $('.table-accio', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/></b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
+								    $('.table-params', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/> "+ (i + 1) +"</b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
 								}
 							} else {
 								$('div.log-info-params', $newTd).remove();
 							}
 							
-							if (data.param1 !== null || data.param2 !== null) {
-								if (data.pare.param1 !== null)
-									$('td.log-info-accio-param1-valor', $newTd).text(data.pare.param1);
-								if (data.pare.param2 !== null)
-									$('td.log-info-accio-param2-valor', $newTd).text(data.pare.param2);
+							if (data.pare != null) {
+								$('td.log-info-accio-data', $newTd).text(data.pare.createdDateAmbFormat);
+								$('td.log-info-accio-usuari', $newTd).text(data.pare.createdBy.nom);
+								$('td.log-info-accio-tipus', $newTd).text(logTipusEnumText[data.pare.tipus]);
+								$('td.log-info-accio-objecte', $newTd).text("[" + logObjecteTipusEnumText[data.objecteTipus] + "#" + data.objecteId + "] " + data.objecteNom);
+	
+								if (data.params !== null) {
+									for (var i = 0; i < data.params.length; i++) {
+									    $('.table-accio', $newTd).append("<tr><td class='log-info-param1-titol' width='20%'><b><spring:message code='contingut.log.detall.param'/></b></td><td class='log-info-param1-valor' width='30%'>" + data.params[i] + "</td></tr>");
+									}
+								} else {
+									$('div.log-info-params', $newTd).remove();
+								}
+								
+								if (data.param1 !== null || data.param2 !== null) {
+									if (data.pare.param1 !== null)
+										$('td.log-info-accio-param1-valor', $newTd).text(data.pare.param1);
+									if (data.pare.param2 !== null)
+										$('td.log-info-accio-param2-valor', $newTd).text(data.pare.param2);
+								} else {
+									$('td.log-info-accio-param2-valor', $newTd).closest('tr').remove();
+								}
 							} else {
-								$('td.log-info-accio-param2-valor', $newTd).closest('tr').remove();
+								$('div.log-info-accio', $newTd).remove();
 							}
-						} else {
-							$('div.log-info-accio', $newTd).remove();
-						}
-						if (data.contingutMoviment != null) {
-							if (data.contingutMoviment.origenId != null) {
-								$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origenId + "] " + data.contingutMoviment.origenNom);
+							if (data.contingutMoviment != null) {
+								if (data.contingutMoviment.origenId != null) {
+									$('td.log-info-moviment-origen', $newTd).text("[#" + data.contingutMoviment.origenId + "] " + data.contingutMoviment.origenNom);
+								}
+								$('td.log-info-moviment-desti', $newTd).text("[#" + data.contingutMoviment.destiId + "] " + data.contingutMoviment.destiNom);
+							} else {
+								$('div.log-info-moviment', $newTd).remove();
 							}
-							$('td.log-info-moviment-desti', $newTd).text("[#" + data.contingutMoviment.destiId + "] " + data.contingutMoviment.destiNom);
-						} else {
-							$('div.log-info-moviment', $newTd).remove();
-						}
-					});
-			$('span', this).removeClass('fa-chevron-down');
-			$('span', this).addClass('fa-chevron-up');
-		} else {
-			var $row = $(this).closest('tr').next().remove();
-			$('span', this).removeClass('fa-chevron-up');
-			$('span', this).addClass('fa-chevron-down');
+
+							$('span', "[data-log-id='" + data.id +"']").removeClass();
+							$('span', "[data-log-id='" + data.id +"']").addClass('fa fa-chevron-up');
+							$("[data-log-id='" + data.id +"']").removeData('isClicked');
+						});
+			} else {
+				var $row = $(this).closest('tr').next().remove();
+				$('span', this).removeClass('fa-chevron-up');
+				$('span', this).addClass('fa-chevron-down');
+				$(this).removeData('isClicked');
+			}
+			webutilModalAdjustHeight();
+
+			
 		}
-		webutilModalAdjustHeight();
+		
 	});
 });
 </script>

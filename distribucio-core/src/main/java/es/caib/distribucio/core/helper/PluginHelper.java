@@ -993,7 +993,7 @@ public class PluginHelper {
 	
 	
 	private final static Map<String, Boolean> propertiesLoaded = new HashMap<>();
-	private synchronized void loadPluginProperties(String codeProperties) {
+	public synchronized void loadPluginProperties(String codeProperties) {
 		if (!propertiesLoaded.containsKey(codeProperties) || !propertiesLoaded.get(codeProperties)) {
 			propertiesLoaded.put(codeProperties, true);
 			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);

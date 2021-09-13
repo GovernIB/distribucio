@@ -154,7 +154,7 @@
 					</script>
 				</th>
 				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
-				<th data-col-name="procedimentCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.procediment.codi"/></th>
+				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="unitatOrganitzativaFiltre.codiAndNom" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th>
 				<th data-col-name="bustiaFiltreNom" data-orderable="false"><spring:message code="regla.list.columna.bustia.nom"/></th>
 				
