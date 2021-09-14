@@ -243,7 +243,8 @@ public class RegistreServiceImpl implements RegistreService {
 		if ("tothom".equalsIgnoreCase(rolActual)) {
 			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
 			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-				if (!Integer.valueOf(annexDto.getSicresTipusDocument()).equals(SicresTipoDocumento.TECNIC_INTERN.ordinal())) {
+				if (annexDto.getSicresTipusDocument() == null 
+						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexDto.getSicresTipusDocument())) {
 					registreAnnexos.add(annexDto);
 				}
 			}
