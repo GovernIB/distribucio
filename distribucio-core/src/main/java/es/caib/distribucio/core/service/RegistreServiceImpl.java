@@ -1555,32 +1555,39 @@ public class RegistreServiceImpl implements RegistreService {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 		try {
-			// Justificant
+			String nom;
 			FitxerDto fitxer = null;
 			// Annexos
-			String nom;
 			if (!registre.getAnnexos().isEmpty()) {
 				Set<String> nomsArxius = new HashSet<String>();
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {
-					fitxer = this.getAnnexFitxer(annex.getId());
-					try {
-						if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId())
-							nom = annex.getTitol() + " - " + fitxer.getNom();
-						else
-							nom = fitxer.getNom();
-						
-						ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
-						entry.setSize(fitxer.getContingut().length);
-						zos.putNextEntry(entry);
-						zos.write(fitxer.getContingut());
-						zos.closeEntry();
-					} catch (Exception e) {
-						String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
-						logger.error(errMsg);
-						throw new Exception(errMsg, e);
+					
+					// Filtra documents tècnics si no s'és administrador
+					if (!"tothom".equalsIgnoreCase(rolActual)
+						|| annex.getSicresTipusDocument() == null 
+						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
+					{
+						try {
+							fitxer = this.getAnnexFitxer(annex.getId());
+							if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId()) {
+								nom = annex.getTitol() + " - " + fitxer.getNom();
+							} else {
+								nom = fitxer.getNom();
+							}
+							ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
+							entry.setSize(fitxer.getContingut().length);
+							zos.putNextEntry(entry);
+							zos.write(fitxer.getContingut());
+							zos.closeEntry();
+						} catch (Exception e) {
+							String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
+							logger.error(errMsg);
+							throw new Exception(errMsg, e);
+						}						
 					}
 				}
 			} else {
+				// Justificant en cas de no tenir annexos
 				try {
 					fitxer = registreHelper.getJustificant(registreId);
 					nom = fitxer.getNom();
@@ -1592,11 +1599,9 @@ public class RegistreServiceImpl implements RegistreService {
 				} catch (Exception e) {
 					String errMsg = "Error afegint justificant del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
 					logger.error(errMsg);
-					throw new Exception(errMsg,
-							e);
+					throw new Exception(errMsg, e);
 				}
 			}
-
 			zos.close();
 
 			zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
