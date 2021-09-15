@@ -836,7 +836,8 @@ public class RegistreHelper {
 		if ("tothom".equalsIgnoreCase(rolActual)) {
 			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
 			for (RegistreAnnexDto annexo: annexos) {
-				if (!Integer.valueOf(annexo.getSicresTipusDocument()).equals(SicresTipoDocumento.TECNIC_INTERN.ordinal())) {		
+				if (annexo.getSicresTipusDocument() == null 
+						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexo.getSicresTipusDocument())) {
 					registreAnnexos.add(annexo);
 				}
 			}
