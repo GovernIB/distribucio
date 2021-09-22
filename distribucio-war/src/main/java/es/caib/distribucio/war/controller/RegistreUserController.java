@@ -827,11 +827,12 @@ public class RegistreUserController extends BaseUserController {
 		int correctes = 0;
 		int estatErroni = 0;
 		
-		ContingutDto contingutDto;
 		for (Long registreId : seleccioList) {
-			contingutDto = null;
-			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-			RegistreDto registreDto = (RegistreDto) contingutDto;
+			RegistreDto registreDto = registreService.findOne(
+					entitatActual.getId(), 
+					registreId, 
+					false,
+					RolHelper.getRolActual(request));
 			if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
 				
 				boolean processatOk = true;
@@ -1299,9 +1300,11 @@ public class RegistreUserController extends BaseUserController {
 			EntitatDto entitatActual, 
 			Long registreId, 
 			Long destiLogicId) {
-		ContingutDto contingutDto = null;
-		contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-		RegistreDto registreDto = (RegistreDto) contingutDto;
+		RegistreDto registreDto = registreService.findOne(
+				entitatActual.getId(), 
+				registreId, 
+				false,
+				RolHelper.getRolActual(request));
 		boolean processatOk = true;
 		try {
 			bustiaService.registreReenviar(
@@ -1482,12 +1485,13 @@ public class RegistreUserController extends BaseUserController {
 		int estatErroni = 0;
 		
 
-		ContingutDto contingutDto;
 		for (Long registreId : seleccioList) {
 			if (registreIdErronis == null || (registreIdErronis != null && !registreIdErronis.contains(registreId))) {
-				contingutDto = null;
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				RegistreDto registreDto = (RegistreDto) contingutDto;
+				RegistreDto registreDto = registreService.findOne(
+						entitatActual.getId(), 
+						registreId, 
+						false,
+						RolHelper.getRolActual(request));
 				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
 					
 					boolean processatOk = true;
