@@ -137,6 +137,48 @@
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
 			<bean class="es.caib.distribucio.war.interceptor.AvisosInterceptor"/>
 		</mvc:interceptor>		
+	
+		<!-- Rutes només accessibles amb el rol d'administrador -->
+		<mvc:interceptor>
+			<mvc:mapping path="/bustiaAdminOrganigrama**"/>
+			<mvc:mapping path="/bustiaAdminOrganigrama/**"/>
+			<mvc:mapping path="/unitatOrganitzativa**"/>
+			<mvc:mapping path="/unitatOrganitzativa/**"/>
+			<mvc:mapping path="/regla**"/>
+			<mvc:mapping path="/regla/**"/>
+			<mvc:mapping path="/backoffice**"/>
+			<mvc:mapping path="/backoffice/**"/>
+			<mvc:mapping path="/permis**"/>
+			<mvc:mapping path="/permis/**"/>
+			<mvc:mapping path="/contingutAdmin**"/>
+			<mvc:mapping path="/contingutAdmin/**"/>
+			<mvc:mapping path="/registreAdmin**"/>
+			<mvc:mapping path="/registreAdmin/**"/>
+			<bean class="es.caib.distribucio.war.interceptor.AccesAdminInterceptor"/>
+		</mvc:interceptor>
+		
+		<!-- Rutes només accessibles amb el rol de superusuari -->
+		<mvc:interceptor>
+			<mvc:mapping path="/entitat**"/>
+			<mvc:mapping path="/entitat/**"/>
+			<mvc:mapping path="/integracio**"/>
+			<mvc:mapping path="/integracio/**"/>
+			<mvc:mapping path="/excepcio**"/>
+			<mvc:mapping path="/excepcio/**"/>
+			<mvc:mapping path="/registreUser/metriquesView**"/>
+			<mvc:mapping path="/registreUser/metriquesView/**"/>
+			<mvc:mapping path="/registreUser/anotacionsPendentArxiu**"/>
+			<mvc:mapping path="/registreUser/anotacionsPendentArxiu/**"/>
+			<mvc:mapping path="/monitor**"/>
+			<mvc:mapping path="/monitor/**"/>
+			<mvc:mapping path="/config**"/>
+			<mvc:mapping path="/config/**"/>
+			<mvc:mapping path="/avis**"/>
+			<mvc:mapping path="/avis/**"/>
+			<mvc:exclude-mapping path="/entitat/logo"/>
+			<mvc:exclude-mapping path="/entitat/**/logo"/>
+			<bean class="es.caib.distribucio.war.interceptor.AccesSuperInterceptor"/>
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	<bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

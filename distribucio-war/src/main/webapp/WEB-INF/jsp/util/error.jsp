@@ -25,59 +25,66 @@ pre {
 </style>
 </head>
 <body>
-	<table class="table table-bordered" style="width:100%">
-	<tbody>
-		<c:choose>
-			<c:when test="${errorObject.throwable.class.canonicalName == 'es.caib.distribucio.core.api.exception.NotFoundException'}">
+	<c:choose>
+		<c:when test="${errorObject.throwableClassName == 'java.lang.SecurityException'}">
+			<div class="alert alert-danger" style="margin-top: 20px;" role="alert"><strong>Error accedint a DISTRIBUCIÓ!</strong> ${errorObject.exceptionMessage}</div>
+		</c:when>
+		<c:otherwise>
+			<table class="table table-bordered" style="width:100%">
+			<tbody>
+				<c:choose>
+					<c:when test="${errorObject.throwable.class.canonicalName == 'es.caib.distribucio.core.api.exception.NotFoundException'}">
+						<tr>
+							<td width="20%"><strong><spring:message code="error.tipus.element"/></strong></td>
+							<td>${errorObject.throwable.objectClass.canonicalName}</td>
+						</tr>
+						<tr>
+							<td><strong><spring:message code="error.id"/></strong></td>
+							<td>${errorObject.throwable.objectId}</td>
+						</tr>
+					</c:when>
+					<c:when test="${errorObject.throwable.class.canonicalName == 'es.caib.distribucio.core.api.exception.SistemaExternException'}">
+						<tr>
+							<td><strong><spring:message code="error.sistema.ext"/></strong></td>
+							<td><spring:message code="sistema.extern.codi.${errorObject.throwable.sistemaExternCodi}"/></td>
+						</tr>
+						<tr>
+							<td width="20%"><strong><spring:message code="error.missatge"/></strong></td>
+							<td>${errorObject.throwable.message}</td>
+						</tr>
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td width="20%"><strong><spring:message code="error.recurs"/></strong></td>
+							<td>${errorObject.requestUri}</td>
+						</tr>
+						<tr>
+							<td><strong><spring:message code="error.excepcio"/></strong></td>
+							<td>${errorObject.throwable.class.canonicalName}</td>
+						</tr>
+						<c:if test="${not empty errorObject.exceptionMessage}">
+							<tr>
+								<td><strong><spring:message code="error.missatge"/></strong></td>
+								<td>${errorObject.exceptionMessage}</td>
+							</tr>
+						</c:if>
+					</c:otherwise>
+				</c:choose>
 				<tr>
-					<td width="20%"><strong><spring:message code="error.tipus.element"/></strong></td>
-					<td>${errorObject.throwable.objectClass.canonicalName}</td>
+					<td>
+						<strong>
+							<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#trasaCollapse" aria-expanded="false" aria-controls="trasaCollapse">
+								<spring:message code="error.trasa"/>
+							</button>
+						</strong>
+					</td>
+					<td>
+						<pre class="collapse" id="trasaCollapse"><code>${errorObject.fullStackTrace}</code></pre>
+					</td>
 				</tr>
-				<tr>
-					<td><strong><spring:message code="error.id"/></strong></td>
-					<td>${errorObject.throwable.objectId}</td>
-				</tr>
-			</c:when>
-			<c:when test="${errorObject.throwable.class.canonicalName == 'es.caib.distribucio.core.api.exception.SistemaExternException'}">
-				<tr>
-					<td><strong><spring:message code="error.sistema.ext"/></strong></td>
-					<td><spring:message code="sistema.extern.codi.${errorObject.throwable.sistemaExternCodi}"/></td>
-				</tr>
-				<tr>
-					<td width="20%"><strong><spring:message code="error.missatge"/></strong></td>
-					<td>${errorObject.throwable.message}</td>
-				</tr>
-			</c:when>
-			<c:otherwise>
-				<tr>
-					<td width="20%"><strong><spring:message code="error.recurs"/></strong></td>
-					<td>${errorObject.requestUri}</td>
-				</tr>
-				<tr>
-					<td><strong><spring:message code="error.excepcio"/></strong></td>
-					<td>${errorObject.throwable.class.canonicalName}</td>
-				</tr>
-				<c:if test="${not empty errorObject.exceptionMessage}">
-					<tr>
-						<td><strong><spring:message code="error.missatge"/></strong></td>
-						<td>${errorObject.exceptionMessage}</td>
-					</tr>
-				</c:if>
-			</c:otherwise>
-		</c:choose>
-		<tr>
-			<td>
-				<strong>
-					<button class="btn btn-default" type="button" data-toggle="collapse" data-target="#trasaCollapse" aria-expanded="false" aria-controls="trasaCollapse">
-						<spring:message code="error.trasa"/>
-					</button>
-				</strong>
-			</td>
-			<td>
-				<pre class="collapse" id="trasaCollapse"><code>${errorObject.fullStackTrace}</code></pre>
-			</td>
-		</tr>
-	</tbody>
-	</table>
+			</tbody>
+			</table>
+		</c:otherwise>
+	</c:choose>
 </body>
 </html>
