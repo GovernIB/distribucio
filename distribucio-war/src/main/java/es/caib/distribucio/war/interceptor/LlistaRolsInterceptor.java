@@ -6,8 +6,10 @@ package es.caib.distribucio.war.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.war.helper.ContingutEstaticHelper;
 import es.caib.distribucio.war.helper.RolHelper;
 
@@ -18,14 +20,17 @@ import es.caib.distribucio.war.helper.RolHelper;
  */
 public class LlistaRolsInterceptor extends HandlerInterceptorAdapter {
 
+	@Autowired
+    private AplicacioService aplicacioService;
+	
 	@Override
 	public boolean preHandle(
 			HttpServletRequest request,
 			HttpServletResponse response,
 			Object handler) throws Exception {
 		if (!ContingutEstaticHelper.isContingutEstatic(request)) {
-			RolHelper.processarCanviRols(
-					request);
+			RolHelper.processarCanviRols(request, aplicacioService);
+			RolHelper.setRolActualFromDb(request, aplicacioService);		
 		}
 		return true;
 	}

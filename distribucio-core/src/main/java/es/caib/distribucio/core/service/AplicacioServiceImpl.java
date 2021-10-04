@@ -300,6 +300,15 @@ public class AplicacioServiceImpl implements AplicacioService {
 		return bustia;
 	}
 
+	@Transactional
+	@Override
+	public void setRolUsuariActual(String rolActual) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Actualitzant rol de usuari actual");
+
+		UsuariEntity usuari = usuariRepository.findOne(auth.getName());
+		usuari.updateRolActual(rolActual);
+	}
 
 	private Properties getVersionProperties() throws IOException {
 		if (versionProperties == null) {

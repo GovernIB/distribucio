@@ -146,5 +146,11 @@ public class AplicacioServiceBean implements AplicacioService {
 	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId) {
 		return delegate.getBustiaPerDefecte(usuari, entitatId);
 	}
+	
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public void setRolUsuariActual(String rolActual) {
+		delegate.setRolUsuariActual(rolActual);
+	}
 
 }

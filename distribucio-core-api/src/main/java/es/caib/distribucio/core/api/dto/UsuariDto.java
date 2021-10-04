@@ -22,6 +22,7 @@ public class UsuariDto implements Serializable {
 	private Boolean rebreEmailsBustia;
 	private Boolean rebreEmailsAgrupats;
 	private Long bustiaPerDefecte;
+	private String rolActual;
 	
 	public String getCodi() {
 		return codi;
@@ -77,7 +78,13 @@ public class UsuariDto implements Serializable {
 	public void setBustiaPerDefecte(Long bustiaPerDefecte) {
 		this.bustiaPerDefecte = bustiaPerDefecte;
 	}
-
+	public String getRolActual() {
+		return rolActual;
+	}
+	public void setRolActual(String rolActual) {
+		this.rolActual = rolActual;
+	}
+	
 	private static final long serialVersionUID = -139254994389509932L;
 
 }

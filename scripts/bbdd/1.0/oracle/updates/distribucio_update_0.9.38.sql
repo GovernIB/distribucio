@@ -1,0 +1,2 @@
+--#376 Recordar perfil de l'usuari
+ALTER TABLE DIS_USUARI ADD ROL_ACTUAL VARCHAR2(64 CHAR);

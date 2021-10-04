@@ -39,6 +39,8 @@ public class UsuariEntity implements Serializable {
 	private boolean rebreEmailsBustia = true;
 	@Column(name = "emails_agrupats")
 	private boolean rebreEmailsAgrupats = true;
+	@Column(name="rol_actual", length = 64)
+	private String rolActual;
 	
 	@Version
 	private long version = 0;
@@ -59,6 +61,9 @@ public class UsuariEntity implements Serializable {
 	}
 	public String getIdioma() {
 		return idioma;
+	}
+	public String getRolActual() {
+		return rolActual;
 	}
 	public boolean isInicialitzat() {
 		return inicialitzat;
@@ -88,6 +93,10 @@ public class UsuariEntity implements Serializable {
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
 		this.idioma = idioma;
 	}
+	
+	public void updateRolActual(String rolActual) {
+		this.rolActual = rolActual;
+	}	
 
 	/**
 	 * Obté el Builder per a crear objectes de tipus Usuari.

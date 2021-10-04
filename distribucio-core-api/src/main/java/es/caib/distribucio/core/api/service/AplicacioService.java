@@ -188,5 +188,14 @@ public interface AplicacioService {
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId);
+	
+	/**
+	 * Actualitza el rol de l'usuari actual a la taula de dades d'usuaris.
+	 * 
+	 * @param rolActual Rol de l'usuari actual.
+	 * 
+	 */	
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public void setRolUsuariActual(String rolActual);
 
 }

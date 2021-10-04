@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
 
 /**
  * Utilitat per a gestionar el canvi de rol de l'usuari actual.
@@ -30,7 +31,8 @@ public class RolHelper {
 
 
 	public static void processarCanviRols(
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			AplicacioService aplicacioService) {
 		String canviRol = request.getParameter(REQUEST_PARAMETER_CANVI_ROL);
 		if (canviRol != null && canviRol.length() > 0) {
 			LOGGER.trace("Processant canvi rol (rol=" + canviRol + ")");
@@ -38,7 +40,21 @@ public class RolHelper {
 				request.getSession().setAttribute(
 						SESSION_ATTRIBUTE_ROL_ACTUAL,
 						canviRol);
+				aplicacioService.setRolUsuariActual(canviRol);
 			}
+		}
+	}
+	
+	public static void setRolActualFromDb(HttpServletRequest request, AplicacioService aplicacioService) {
+		String rolActual = (String)request.getSession().getAttribute(
+				SESSION_ATTRIBUTE_ROL_ACTUAL);
+		if (rolActual == null) {
+			rolActual = aplicacioService.getUsuariActual().getRolActual();
+		}
+		if (rolActual != null && !rolActual.isEmpty()) {
+			request.getSession().setAttribute(
+					SESSION_ATTRIBUTE_ROL_ACTUAL,
+					rolActual);
 		}
 	}
 
