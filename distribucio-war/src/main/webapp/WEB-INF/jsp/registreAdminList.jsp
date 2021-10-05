@@ -189,6 +189,19 @@ $(document).ready(function() {
 	});	
 	
 	$('#numero').focus();
+	
+	$('form').submit(function() {
+		$.get(
+				"registreAdmin/deselect",
+				function(data) {
+					$("#seleccioCount").html(data);
+					$('#taulaDades').webutilDatatable('select-none');
+					$('#taulaDades').webutilDatatable('refresh');
+				}
+		);
+		return false;
+	});
+
 });
 
 </script>

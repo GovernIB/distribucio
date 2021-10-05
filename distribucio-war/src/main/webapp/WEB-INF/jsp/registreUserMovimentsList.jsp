@@ -216,6 +216,19 @@ $(document).ready(function() {
 		$('#modalProcesEstat').modal();
 		e.stopPropagation();
 	});
+	
+	$('form').submit(function() {
+		$.get(
+			"../registreUser/deselect/moviments",
+			function(data) {
+				$("#seleccioCount").html(data);
+				$('#taulaDades').webutilDatatable('select-none');
+				$('#taulaDades').webutilDatatable('refresh');
+			}
+		);
+		return false;
+	});
+	
 });
 </script>
 </head>
