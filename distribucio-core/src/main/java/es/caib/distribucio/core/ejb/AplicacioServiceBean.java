@@ -77,6 +77,12 @@ public class AplicacioServiceBean implements AplicacioService {
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		return delegate.findUsuariAmbText(text);
 	}
+	
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public List<UsuariDto> findUsuariAmbCodiAndNom(String text) {
+		return delegate.findUsuariAmbCodiAndNom(text);
+	}
 
 	@Override
 	@RolesAllowed({"DIS_SUPER"})

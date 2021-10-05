@@ -205,6 +205,15 @@ public class AplicacioServiceImpl implements AplicacioService {
 				usuariRepository.findByText(text != null? text : ""),
 				UsuariDto.class);
 	}
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<UsuariDto> findUsuariAmbCodiAndNom(String text) {
+		logger.trace("Consultant usuaris per codi o nom amb text (text=" + text + ")");
+		return conversioTipusHelper.convertirList(
+				usuariRepository.findByCodiAndNom(text != null? text : ""),
+				UsuariDto.class);
+	}
 
 	@Override
 	public List<IntegracioDto> integracioFindAll() {

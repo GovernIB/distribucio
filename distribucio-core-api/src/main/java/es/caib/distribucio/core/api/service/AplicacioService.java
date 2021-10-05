@@ -94,6 +94,16 @@ public interface AplicacioService {
 	public List<UsuariDto> findUsuariAmbText(String text);
 
 	/**
+	 * Consulta els usuaris per codi o nom que coincideixin amb el text donat.
+	 * 
+	 * @param text
+	 *            Text per a fer la consulta.
+	 * @return La llista d'usuaris.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public List<UsuariDto> findUsuariAmbCodiAndNom(String text);
+	
+	/**
 	 * Obté les integracions disponibles.
 	 * 
 	 * @return La llista d'integracions.

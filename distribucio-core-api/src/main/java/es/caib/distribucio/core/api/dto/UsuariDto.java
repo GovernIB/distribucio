@@ -84,7 +84,9 @@ public class UsuariDto implements Serializable {
 	public void setRolActual(String rolActual) {
 		this.rolActual = rolActual;
 	}
-	
+	public String getCodiAndNom() {
+		return nom + " (" + codi + ")";
+	}
 	private static final long serialVersionUID = -139254994389509932L;
 
 }

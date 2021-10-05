@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +80,39 @@ public class AjaxUserController extends BaseUserController {
 			}
 		}
 		return resposta;
+	}
+	
+	@RequestMapping(value = "/remitent", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UsuariDto> getRemitent(HttpServletRequest request, Model model) {
+		return get(request, null, model);
+	}
+	
+	@RequestMapping(value = "/remitent/{text}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UsuariDto> getRemitent(HttpServletRequest request, @PathVariable String text, Model model) {
+		return getRemitentWithParam(request, text, model);
+	}
+	
+	@RequestMapping(value = "/remitent/item/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public UsuariDto getItem(HttpServletRequest request, @PathVariable String codi, Model model) {
+		return aplicacioService.findUsuariAmbCodi(codi);
+	}
+	
+	private List<UsuariDto> getRemitentWithParam(HttpServletRequest request, String text, Model model)  {
+		
+		try {
+			text = URLDecoder.decode(request.getRequestURI().split("/")[4], StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) { }
+		
+		List<UsuariDto> remitentsList = aplicacioService.findUsuariAmbCodiAndNom(text);
+		
+		if (text == null) {
+			return remitentsList.subList(0, 5);
+		}
+
+		return remitentsList;
 	}
 
 }

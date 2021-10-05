@@ -248,7 +248,16 @@ $(document).ready(function() {
 				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputText name="remitent" inline="true" placeholderKey="bustia.list.filtre.remitent"/>
+				<c:url value="/userajax/remitent" var="urlConsultaInicial"/>
+				<c:url value="/userajax/remitent" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="remitent" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					placeholderKey="bustia.list.filtre.remitent"
+					suggestValue="nom"
+					suggestText="codiAndNom"
+					inline="true"/>
 			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>

@@ -31,5 +31,16 @@ public interface UsuariRepository extends JpaRepository<UsuariEntity, String> {
 			+ "order by "
 			+ "    u.nom desc")
 	public List<UsuariEntity> findByText(String text);
+	
+	@Query(   "select "
+			+ "    u "
+			+ "from "
+			+ "    UsuariEntity u "
+			+ "where "
+			+ "    lower(u.nom) like concat('%', lower(?1), '%') "
+			+ "or  lower(u.codi) like concat('%', lower(?1), '%') "
+			+ "order by "
+			+ "    u.nom asc")
+	public List<UsuariEntity> findByCodiAndNom(String filtre);
 
 }
