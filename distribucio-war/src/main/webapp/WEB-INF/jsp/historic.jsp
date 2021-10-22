@@ -191,10 +191,16 @@
 			});
 		}
 		
+		function totalitzar(datasetTotal, dataset) {
+			for (var i = 0; i < datasetTotal.length; i++) {
+				datasetTotal[i] += dataset[i];
+			}
+			return datasetTotal;
+		}
+		
 		function createChartMetric(data, metric, colors) {
 
 			var columns = Object.keys(data);
-			var columns_aux = new Array(columns.length);
 			
 			columns.forEach(function(c){
 				data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
@@ -202,10 +208,12 @@
 			
 			var dates = data[columns[0]].map(item => getDate(item.fecha));
 			
-			var datasets = []
+			var datasets = [];
+			var datasetTotal = new Array(dates.length).fill(0);
 			columns.forEach(function(c){
 				var attrname = metricsDefinition[metric]['attrname'];
 				var dataset = data[c].map(item => item[attrname] != null ? item[attrname] : 0)
+				datasetTotal = totalitzar(datasetTotal, dataset);
 				var color = (colors == null || colors[c] == null) ? getRandomColor() : colors[c]
 				datasets.push({
     				'data': dataset,
@@ -213,11 +221,19 @@
 			        'lineTension': 0, //equivalent to the old bezierCurve: false
     				'backgroundColor': "rgba(0,0,0,0.0)",
     				'borderColor': color
-    				});	
+    			});	
 			});			
 			
+			datasets.push({
+				'data': datasetTotal,
+				'label': 'Total',
+		        'lineTension': 0,
+				'backgroundColor': "rgba(0,0,0,0.0)",
+				'borderColor': getRandomColor()
+			});	
+			
 			var ctx = 'chart-' + metric;
-			var labels = dates
+			var labels = dates;
 			var chart = chartLine(ctx, labels, datasets, metricsDefinition[metric]["text"]);
 			chart.update();
 		}
