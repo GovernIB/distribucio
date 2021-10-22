@@ -224,13 +224,18 @@
     			});	
 			});			
 			
+			var color = '';
+			do {
+				color = getRandomColor()
+			} while (color in colors);
+			
 			datasets.push({
 				'data': datasetTotal,
 				'label': 'Total',
 		        'lineTension': 0,
 				'backgroundColor': "rgba(0,0,0,0.0)",
-				'borderColor': getRandomColor()
-			});	
+				'borderColor': color
+			});
 			
 			var ctx = 'chart-' + metric;
 			var labels = dates;
