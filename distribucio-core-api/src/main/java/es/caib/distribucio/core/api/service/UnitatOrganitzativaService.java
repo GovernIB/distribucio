@@ -107,6 +107,8 @@ public interface UnitatOrganitzativaService {
 
 	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties);
 
+	List<UnitatOrganitzativaDto> findByEntitatAndCodiUnitatSuperiorAndFiltre(String entitatCodi, String codiUnitatSuperior, String filtre, boolean ambArrel, boolean nomesAmbBusties);
+
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
 
 	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);	

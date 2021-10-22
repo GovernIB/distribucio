@@ -439,6 +439,17 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		if ($(this).data('enum')) {
 			var enumValue = $(this).data('enum-value');
 			var $select = $(this);
+			if (enumValue != null && typeof enumValue === 'string' && enumValue.includes(",")) {
+				var valueArr = enumValue.split(',');
+			}
+			function isSelected(enumItemValue){
+				if (valueArr != undefined){
+					return valueArr.includes(enumItemValue);
+				} else{
+					return enumValue == enumItemValue;
+				}
+				
+			}
 			$.ajax({
 				url: webutilAjaxEnumPath($(this).data('enum')),
 				async: false,
@@ -449,7 +460,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 								$('<option>', {
 									value: enumItem['value'],
 									text: enumItem['text'],
-									selected: enumValue == enumItem['value']
+									selected: isSelected(enumItem['value'])
 								}));
 					}
 				}
@@ -512,7 +523,14 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		    ajax: {
 		    	delay: 500,
 		    	url: function(params){
-					return $(this).data('urlLlistat') + "/" + params.term;
+		    		
+		    		var additionalParam = $(this).attr('urlParamAddicional');
+					
+		    		if (additionalParam) {
+		    			return $(this).data('urlLlistat') + "/" + params.term + "/" + additionalParam;
+		    		} else {
+		    			return $(this).data('urlLlistat') + "/" + params.term;
+		    		}
 				},
 				processResults: function (data) {
 					results = [];

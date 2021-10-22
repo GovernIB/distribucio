@@ -59,7 +59,7 @@ public class AjaxUserController extends BaseUserController {
 	public List<HtmlOption> enumValorsAmbText(
 			HttpServletRequest request,
 			@PathVariable String enumClass) throws ClassNotFoundException {
-		Class<?> enumeracio = Class.forName("es.caib.distribucio.core.api.dto." + enumClass);
+		Class<?> enumeracio = findEnumDtoClass(enumClass);
 		StringBuilder textKeyPrefix = new StringBuilder();
 		String[] textKeys = StringUtils.splitByCharacterTypeCamelCase(enumClass);
 		for (String textKey: textKeys) {
@@ -113,6 +113,15 @@ public class AjaxUserController extends BaseUserController {
 		}
 
 		return remitentsList;
+	}
+	
+	private Class<?> findEnumDtoClass(String className) throws ClassNotFoundException{
+		try {
+			return Class.forName("es.caib.distribucio.core.api.dto." + className);
+		} catch(ClassNotFoundException e) {
+			// TODO: això hauria de cercar per tots els subpackages de dto
+			return Class.forName("es.caib.distribucio.core.api.dto.historic." + className);
+		}		
 	}
 
 }
