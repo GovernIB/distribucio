@@ -186,7 +186,10 @@
 		            title: {
 						display: true,
 						text: title
-		            }
+		            },
+			        legend: {
+			    	   position: 'chartArea'
+			       }
 			    }
 			});
 		}
@@ -226,7 +229,7 @@
 			
 			var color = '';
 			do {
-				color = getRandomColor()
+				color = getRandomColor();
 			} while (color in colors);
 			
 			datasets.push({
@@ -243,6 +246,42 @@
 			chart.update();
 		}
 		
+		function createChartAllMetriques(data, metriques) {
+
+			var columns = Object.keys(data);
+			
+			columns.forEach(function(c){
+				data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
+			});
+			
+			var dates = data[columns[0]].map(item => getDate(item.fecha));
+			var colors = new Array(metriques.length).fill(getRandomColor());
+			var datasets = [];
+			
+			var colors = {};
+			for (var metric in metriques) {
+				colors[metric] = getRandomColor();
+			}
+			
+			metriques.forEach(function(metric){
+				var nombre = metricsDefinition[metric]['text'];
+				var attrname = metricsDefinition[metric]['attrname'];
+				var dataset = data[columns[0]].map(item => item[attrname] != null ? item[attrname] : 0);
+				var color = (colors == null || colors[metric] == null) ? getRandomColor() : colors[metric]
+				datasets.push({
+    				'data': dataset,
+    				'label': nombre,
+			        'lineTension': 0, //equivalent to the old bezierCurve: false
+    				'backgroundColor': "rgba(0,0,0,0.0)",
+    				'borderColor': color
+    			});	
+			});
+			
+			var ctx = 'chart-' + columns[0];
+			var labels = dates;
+			var chart = chartLine(ctx, labels, datasets, columns[0]);
+			chart.update();
+		}
 		/**
 		* 	CODI SECCIÓ Dades Per UO
 		*/
@@ -264,17 +303,27 @@
 
 			function viewHistoric(data) {
 				$container.html("");
-
-				var colors = {};
-				for (var column in data) {
-					colors[column] = getRandomColor();
-				}
-				metriques.forEach(function(metric){
-					var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
-					var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
+				
+				var columns = Object.keys(data);
+				
+				if (columns.length > 1) {
+					var colors = {};
+					for (var column in data) {
+						colors[column] = getRandomColor();
+					}
+					metriques.forEach(function(metric){
+						var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
+						var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
+						$container.append(title + canvas);
+						createChartMetric(data, metric, colors);
+						
+					});
+				} else {
+					var title = '<h2>' + '<spring:message code="historic.chart.titol.una.UO"/> '+ columns[0] + '</h2>'
+					var canvas = '<canvas id="chart-' + columns[0] + '" width="400" height="100"></canvas>';
 					$container.append(title + canvas);
-					createChartMetric(data, metric, colors);
-				});
+					createChartAllMetriques(data, metriques);
+				}
 			}
 			
 			viewHistoric(json);
@@ -355,6 +404,8 @@
         	e.preventDefault();
         	
         	$('.div-dades-carregant').show();
+        	
+        	$("#taulaUO").dataTable().fnDestroy();
 
 			setTimeout(function(){ 
 	        	if ($('#dadesMostrar').select2("val").includes("UO")){	

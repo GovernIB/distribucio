@@ -122,21 +122,20 @@ public class HistoricController extends BaseAdminController {
 	
 	@RequestMapping(value = "/JsonDataUO", method = RequestMethod.POST)
 	@ResponseBody
-//	public JsonResponse getDataHistoric(HttpServletRequest request,
 	public Map<String, List<JsonDadesUo>> getDataHistoricUO(HttpServletRequest request,
 			@Valid HistoricFiltreCommand historicFiltreCommand,
 			BindingResult bindingResult,
 			@RequestParam(value = "accio", required = false) String accio,
-			Model model) throws NoSuchAlgorithmException {
-//		return new JsonResponse(cargarTabla());
+			Model model) throws NoSuchAlgorithmException {	
 		model.addAttribute("showDadesUO", historicFiltreCommand.showingDadesUO());
 		model.addAttribute("showDadesEstat", historicFiltreCommand.showingDadesEstat());
 		model.addAttribute("showDadesBusties", historicFiltreCommand.showingDadesBusties());
 		Map<String, List<JsonDadesUo>> results = new HashMap<>();
 		results.put("uo_1", cargarTabla("uo_1"));
+		//TODO: comentar las dos líneas siguientes para ver todas las métricas de la UO en un sólo gráfico
 		results.put("uo_2", cargarTabla("uo_2"));
 		results.put("uo_3", cargarTabla("uo_3"));
-		return results;
+		return results;	
 	}	
 	
 	private List<JsonDadesUo> cargarTabla(String uo) throws NoSuchAlgorithmException {
@@ -151,8 +150,8 @@ public class HistoricController extends BaseAdminController {
 	        c.setTime(dt);
 	        c.add(Calendar.DATE, i);
 	        dt = c.getTime();
-	        JsonDadesUo fila = new JsonDadesUo(dt, "uoCod_"+i, uo, i+j, (i+j)*10,
-					i+j+2, i+j+1, i+j+3, i+j+2, i+j+3, i+j+7);
+	        JsonDadesUo fila = new JsonDadesUo(dt, "uoCod_"+i, uo, i+j, (i+j)*5,
+					i+j+2, i+j+1, i+j+3, i+j+7, i+j+10, i+j+15);
 			lrespuestaJson.add(fila);
 		}
 		return lrespuestaJson;
