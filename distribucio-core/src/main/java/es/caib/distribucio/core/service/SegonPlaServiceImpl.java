@@ -34,6 +34,7 @@ import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
+import es.caib.distribucio.core.helper.HistoricHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.WorkerThread;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
@@ -60,6 +61,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private HistogramPendentsHelper historicsPendentHelper;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private HistoricHelper historicHelper;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -320,6 +323,16 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + "). Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
 		
 	}
+	
+	/** 
+	 * Consulta i guarda les dades històriques
+	 */
+	@Override
+	@Transactional
+	public void calcularDadesHistoriques() {
+		historicHelper.calcularDades(new Date());
+	}
+
 	
 	/** Mètode comú per enviar dins d'un email l'avís amb els moviments pendents a un destinatari. En acabar esborra els movimentsp
 	 * pendents de notificar.

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -30,44 +27,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
-//import es.caib.distribucio.core.api.dto.OrganGestorDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-//import es.caib.distribucio.core.api.dto.historic.HistoricExpedientDto;
-//import es.caib.distribucio.core.api.dto.historic.HistoricInteressatDto;
-//import es.caib.distribucio.core.api.dto.historic.HistoricMetriquesEnumDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
-import es.caib.distribucio.war.command.ConfigCommand;
-//import es.caib.distribucio.core.api.dto.historic.HistoricUsuariDto;
-//import es.caib.distribucio.core.api.exception.PermissionDeniedStatisticsException;
-//import es.caib.distribucio.core.api.service.HistoricService;
+import es.caib.distribucio.core.api.dto.historic.HistoricAnotacioDto;
+import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
+import es.caib.distribucio.core.api.service.HistoricService;
 import es.caib.distribucio.war.command.HistoricFiltreCommand;
-import es.caib.distribucio.war.command.RegistreFiltreCommand;
-import es.caib.distribucio.war.helper.DatatablesHelper;
-import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.war.helper.JsonResponse;
 import es.caib.distribucio.war.helper.JsonDadesUo;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-//import es.caib.distribucio.war.historic.ExportacioActionHistoric;
 
 @Controller
 @RequestMapping("/historic")
 public class HistoricController extends BaseAdminController {
 	private static final String SESSION_ATTRIBUTE_FILTRE = "HistoricController.session.filtre";
 
-//	@Autowired
-//	private HistoricService historicService;
+	@Autowired
+	private HistoricService historicService;
 
 //	@Autowired
 //	private ExportacioActionHistoric exportacioActionHistoric;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 	
 		HistoricFiltreCommand historicFiltreCommand = getFiltreCommand(request);
 		model.addAttribute(historicFiltreCommand);
@@ -127,28 +107,61 @@ public class HistoricController extends BaseAdminController {
 			BindingResult bindingResult,
 			@RequestParam(value = "accio", required = false) String accio,
 			Model model) throws NoSuchAlgorithmException {	
-		model.addAttribute("showDadesUO", historicFiltreCommand.showingDadesUO());
-		model.addAttribute("showDadesEstat", historicFiltreCommand.showingDadesEstat());
-		model.addAttribute("showDadesBusties", historicFiltreCommand.showingDadesBusties());
-		Map<String, List<JsonDadesUo>> results = new HashMap<>();
-		results.put("uo_1", cargarTabla("uo_1"));
-		//TODO: comentar las dos líneas siguientes para ver todas las métricas de la UO en un sólo gráfico
-		results.put("uo_2", cargarTabla("uo_2"));
-		results.put("uo_3", cargarTabla("uo_3"));
+//		Map<String, List<JsonDadesUo>> results = new HashMap<>();		
+//		results.put("uo_1", cargarTabla("uo_1"));
+//		//TODO: comentar las dos líneas siguientes para ver todas las métricas de la UO en un sólo gráfico
+//		results.put("uo_2", cargarTabla("uo_2"));
+//		results.put("uo_3", cargarTabla("uo_3"));
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		HistoricDadesDto dades = historicService.getDadesHistoriques(
+				entitatActual.getId(),
+				historicFiltreCommand.asDto());
+		
+		// Transforma les dades a resultlats
+		Map<String, List<JsonDadesUo>> results = transformarDadesJson(dades);
+
 		return results;	
 	}	
 	
+	private Map<String, List<JsonDadesUo>> transformarDadesJson(HistoricDadesDto dades) {
+		Map<String, List<JsonDadesUo>> results = new HashMap<>();
+		
+		// Dades d'anotacions per UO
+		for (HistoricAnotacioDto anotacio : dades.getDadesAnotacions()) {
+			List<JsonDadesUo> lrespuestaJson = results.get(anotacio.getUnitat().getCodi());
+			if (lrespuestaJson == null) {
+				lrespuestaJson = new ArrayList<JsonDadesUo>();
+				results.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
+			}
+			lrespuestaJson.add(new JsonDadesUo(
+					anotacio.getData(),
+					anotacio.getUnitat().getCodi(), 
+					anotacio.getUnitat().getNom(),
+					anotacio.getAnotacions(), 
+					anotacio.getAnotacionsTotal(), 
+					anotacio.getReenviaments(), 
+					anotacio.getEmails(), 
+					anotacio.getJustificants(), 
+					anotacio.getAnnexos(), 
+					anotacio.getBusties(), 
+					anotacio.getUsuaris()));
+		}
+
+		return results;
+	}
+
 	private List<JsonDadesUo> cargarTabla(String uo) throws NoSuchAlgorithmException {
 		List<JsonDadesUo> lrespuestaJson = new ArrayList<JsonDadesUo>();
 
 		SecureRandom number = SecureRandom.getInstance("SHA1PRNG");
 
-		for (int i = 0; i < 6; i++) {
-			int j = number.nextInt(21);
+		for (long i = 0; i < 6; i++) {
+			long j = number.nextInt(21);
 			Date dt = new Date();
 	        Calendar c = Calendar.getInstance();
 	        c.setTime(dt);
-	        c.add(Calendar.DATE, i);
+	        c.add(Calendar.DATE, new Long(i).intValue());
 	        dt = c.getTime();
 	        JsonDadesUo fila = new JsonDadesUo(dt, "uoCod_"+i, uo, i+j, (i+j)*5,
 					i+j+2, i+j+1, i+j+3, i+j+7, i+j+10, i+j+15);

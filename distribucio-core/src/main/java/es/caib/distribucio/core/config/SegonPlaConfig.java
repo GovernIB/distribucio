@@ -170,7 +170,33 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 }
         );
         
-        
+        // Calcular dades estadístiques històriques
+        taskRegistrar.addTriggerTask(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        segonPlaService.calcularDadesHistoriques();;
+                    }
+                },
+                new Trigger() {
+                    @Override
+                    public Date nextExecutionTime(TriggerContext triggerContext) {
+//                    	String value = configHelper.getConfig("es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat");
+//                    	if (value == null) 
+//							value = "* * * * * *";
+//
+//                    	CronTrigger trigger = new CronTrigger(value);
+//
+//                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
+//                        return nextExecution;
+                    	Long value = new Long("10000");
+                    	//value = 1000*60*60*24L;
+                    	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                        return nextExecution;
+                    }
+                }
+        );        
 
     }
 }

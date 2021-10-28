@@ -13,9 +13,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -54,7 +56,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova backoffice Helium " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -68,7 +70,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 3;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false;
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false;
@@ -492,5 +494,4 @@ public class BustiaV1Test {
 		props.load(is);
 		return props;
 	}
-
 }

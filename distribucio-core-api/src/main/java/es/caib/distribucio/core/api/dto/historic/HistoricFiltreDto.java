@@ -5,6 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/** 
+ * Classe DTO per passar la informació del filtre en la consulta de dades
+ * històriques.
+ */
 public class HistoricFiltreDto {
 
 	private Date dataInici;
@@ -13,57 +17,48 @@ public class HistoricFiltreDto {
 	private List<Long> codiUnitatSuperior;
 	private List<Long> unitatIdFiltre;
 
-	private HistoricDadesMostrarEnumDto dadesMostrar;
+	private List<HistoricDadesMostrarEnumDto> dadesMostrar;
 		
 	private HistoricTipusEnumDto tipusAgrupament; // DIARI, MENSUAL
-	
 	
 	public Date getDataInici() {
 		return dataInici;
 	}
 
-
 	public void setDataInici(Date dataInici) {
 		this.dataInici = dataInici;
 	}
-
 
 	public Date getDataFi() {
 		return dataFi;
 	}
 
-
 	public void setDataFi(Date dataFi) {
 		this.dataFi = dataFi;
 	}
-
 
 	public List<Long> getCodiUnitatSuperior() {
 		return codiUnitatSuperior;
 	}
 
-
 	public void setCodiUnitatSuperior(List<Long> codiUnitatSuperior) {
 		this.codiUnitatSuperior = codiUnitatSuperior;
 	}
-
 
 	public List<Long> getUnitatIdFiltre() {
 		return unitatIdFiltre;
 	}
 
-
 	public void setUnitatIdFiltre(List<Long> unitatIdFiltre) {
 		this.unitatIdFiltre = unitatIdFiltre;
 	}
 
-
-	public HistoricDadesMostrarEnumDto getDadesMostrar() {
+	public List<HistoricDadesMostrarEnumDto> getDadesMostrar() {
 		return dadesMostrar;
 	}
 
 
-	public void setDadesMostrar(HistoricDadesMostrarEnumDto dadesMostrar) {
+	public void setDadesMostrar(List<HistoricDadesMostrarEnumDto> dadesMostrar) {
 		this.dadesMostrar = dadesMostrar;
 	}
 
@@ -72,11 +67,40 @@ public class HistoricFiltreDto {
 		return tipusAgrupament;
 	}
 
-
 	public void setTipusAgrupament(HistoricTipusEnumDto tipusAgrupament) {
 		this.tipusAgrupament = tipusAgrupament;
 	}
-
+	
+	public Date getDataIniciQuery() {
+		if (this.dataInici == null)
+			return null;
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dataInici);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		if (tipusAgrupament == HistoricTipusEnumDto.MENSUAL) {
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+		}
+		return cal.getTime();
+	}
+	
+	public Date getDataFiQuery() {
+		if (this.dataFi == null)
+			return null;		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dataFi);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		if (tipusAgrupament == HistoricTipusEnumDto.MENSUAL) {
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+		}
+		return cal.getTime();
+	}
 
 	public List<Date> getQueriedDates() {		
 		if (tipusAgrupament == HistoricTipusEnumDto.DIARI) {
@@ -86,7 +110,6 @@ public class HistoricFiltreDto {
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
-//			cal.add(Calendar.DAY_OF_MONTH, -1);
 			Date dataFinal = cal.getTime();
 			
 			cal = Calendar.getInstance();

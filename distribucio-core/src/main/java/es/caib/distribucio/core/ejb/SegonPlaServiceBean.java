@@ -67,4 +67,10 @@ public class SegonPlaServiceBean implements SegonPlaService {
 	public void addNewEntryToHistogram() {
 		delegate.addNewEntryToHistogram();
 	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void calcularDadesHistoriques() {
+		delegate.calcularDadesHistoriques();
+	}
 }

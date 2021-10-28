@@ -15,18 +15,18 @@ public class JsonDadesUo implements Comparable<JsonDadesUo>{
     private Date fecha;
     private String uoCodi;
     private String uo;
-    private Integer anotacionsNoves;
-    private Integer anotacionsTotals;
-    private Integer numAnotacionsReenviades;
-	private Integer numAnotacionsEmail;
-    private Integer numJustificants;
-    private Integer numAnnexos;
-    private Integer numBusties;
-    private Integer numUsuaris;
+    private Long anotacionsNoves;
+    private Long anotacionsTotals;
+    private Long numAnotacionsReenviades;
+	private Long numAnotacionsEmail;
+    private Long numJustificants;
+    private Long numAnnexos;
+    private Long numBusties;
+    private Long numUsuaris;
     
-    public JsonDadesUo(Date fecha, String uoCodi, String uo, Integer anotacionsNoves, 
-    		Integer anotacionsTotals, Integer numAnotacionsReenviades, Integer numAnotacionsEmail, Integer numJustificants,
-    		Integer numAnnexos, Integer numBusties, Integer numUsuaris){
+    public JsonDadesUo(Date fecha, String uoCodi, String uo, Long anotacionsNoves, 
+    		Long anotacionsTotals, Long numAnotacionsReenviades, Long numAnotacionsEmail, Long numJustificants,
+    		Long numAnnexos, Long numBusties, Long numUsuaris){
     	this.fecha = fecha;
     	this.uoCodi = uoCodi;
     	this.uo = uo;
@@ -50,16 +50,16 @@ public class JsonDadesUo implements Comparable<JsonDadesUo>{
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-	public Integer getAnotacionsNoves() {
+	public Long getAnotacionsNoves() {
 		return anotacionsNoves;
 	}
-	public void setAnotacionsNoves(Integer anotacionsNoves) {
+	public void setAnotacionsNoves(Long anotacionsNoves) {
 		this.anotacionsNoves = anotacionsNoves;
 	}
-	public Integer getAnotacionsTotals() {
+	public Long getAnotacionsTotals() {
 		return anotacionsTotals;
 	}
-	public void setAnotacionsTotals(Integer anotacionsTotals) {
+	public void setAnotacionsTotals(Long anotacionsTotals) {
 		this.anotacionsTotals = anotacionsTotals;
 	}
 		public String getUoCodi() {
@@ -74,40 +74,40 @@ public class JsonDadesUo implements Comparable<JsonDadesUo>{
 	public void setUo(String uo) {
 		this.uo = uo;
 	}
-	public Integer getNumAnotacionsReenviades() {
+	public Long getNumAnotacionsReenviades() {
 		return numAnotacionsReenviades;
 	}
-	public void setNumAnotacionsReenviades(Integer numAnotacionsReenviades) {
+	public void setNumAnotacionsReenviades(Long numAnotacionsReenviades) {
 		this.numAnotacionsReenviades = numAnotacionsReenviades;
 	}
-	public Integer getNumAnotacionsEmail() {
+	public Long getNumAnotacionsEmail() {
 		return numAnotacionsEmail;
 	}
-	public void setNumAnotacionsEmail(Integer numAnotacionsEmail) {
+	public void setNumAnotacionsEmail(Long numAnotacionsEmail) {
 		this.numAnotacionsEmail = numAnotacionsEmail;
 	}
-	public Integer getNumJustificants() {
+	public Long getNumJustificants() {
 		return numJustificants;
 	}
-	public void setNumJustificants(Integer numJustificants) {
+	public void setNumJustificants(Long numJustificants) {
 		this.numJustificants = numJustificants;
 	}
-	public Integer getNumAnnexos() {
+	public Long getNumAnnexos() {
 		return numAnnexos;
 	}
-	public void setNumAnnexos(Integer numAnnexos) {
+	public void setNumAnnexos(Long numAnnexos) {
 		this.numAnnexos = numAnnexos;
 	}
-	public Integer getNumBusties() {
+	public Long getNumBusties() {
 		return numBusties;
 	}
-	public void setNumBusties(Integer numBusties) {
+	public void setNumBusties(Long numBusties) {
 		this.numBusties = numBusties;
 	}
-	public Integer getNumUsuaris() {
+	public Long getNumUsuaris() {
 		return numUsuaris;
 	}
-	public void setNumUsuaris(Integer numUsuaris) {
+	public void setNumUsuaris(Long numUsuaris) {
 		this.numUsuaris = numUsuaris;
 	}
     
