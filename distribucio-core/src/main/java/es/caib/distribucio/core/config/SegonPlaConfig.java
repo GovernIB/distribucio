@@ -190,7 +190,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 //                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
 //                        return nextExecution;
                     	Long value = new Long("10000");
-                    	//value = 1000*60*60*24L;
+                    	value = 1000*60*60*24L;
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         return nextExecution;

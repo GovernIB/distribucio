@@ -109,13 +109,9 @@
 		} else {
 			$("#dataInici").datepicker({
 				format: "dd/mm/yyyy",
-// 				startView: 0, 
-// 				minViewMode: 0
 			});
 			$("#dataFi").datepicker({
 			    format: "dd/mm/yyyy"
-// 			   	startView: 0, 
-// 				minViewMode: 0
 			});
 		}
 	}
@@ -380,6 +376,7 @@
 		});
 		
 		$('input[name="tipusAgrupament"]').on('change', function() {
+			$('#hdActualitzar').val($('#rbTipusAgrupamentDiari').prop("checked"));
 			//TODO: NO funciona con el tag dis:inputDate, solo con <input type="text" name="dataInici" id="dataInici" /> dentro de un div con class="datepicker"
 			formatDatepickers();
 		});
@@ -412,6 +409,7 @@
 					var content = '';
 					$.ajax({
 						type: 'POST',
+						data: $(this).serialize(),
 				        url: '<c:url value="/historic/JsonDataUO"/>',
 				        async: false,
 				        processData: false,
@@ -475,7 +473,17 @@
 				}
 			}, 1000);
         });
-	        
+	                
+		$('#btnExportar').click(function(event) {
+			$('.div-dades-carregant').show();
+			webutilClearMissatges();
+			return webutilDownloadAndRefresh(
+					$(this).attr('href') + "?format=" + $('#exportFormat').val(), 
+					event,
+					function(){
+						$('.div-dades-carregant').hide();						
+					});
+		});
 
 	});
 	</script>
@@ -522,7 +530,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-7">
+			<div class="col-md-4">
 				<dis:inputSelect name="dadesMostrar" 
 								 optionEnum="HistoricDadesMostrarEnumDto" 
 								 placeholderKey="historic.filtre.dadesMostrar"
@@ -533,22 +541,38 @@
 								 multiple="true"/>
 			
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-4">
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.actualitzar == true}">active</c:if>"> 
+						<form:radiobutton id="rbTipusAgrupamentDiari" path="tipusAgrupament" value="DIARI"/>
+						<i class="fa fa-clock-o"></i> <spring:message code="historic.filtre.mostraDadesActual"/>
+					</label> 
+					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI'}">active</c:if>"> 
+						<form:radiobutton path="tipusAgrupament" value="DIARI"/>
+						<i class="fa fa-calendar"></i> <spring:message code="historic.filtre.mostraDadesPerDia"/>
+					</label> 
+					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'MENSUAL'}">active</c:if>"> 
+						<form:radiobutton path="tipusAgrupament" value="MENSUAL"/>						 
+						<i class="fa fa-calendar-o"></i> <spring:message code="historic.filtre.mostraDadesPerMes"/>
+					</label>
+				</div>
+				<form:hidden path="actualitzar" id="hdActualitzar" />			
+			</div>		
+			<div class="col-md-1">
 				<select id="exportFormat"  name="format" class="form-control" style="width:100%"
 						data-minimumresults="-1"
 						data-toggle="select2">
-							<option value="json">json</option>
-							<option value="xlsx">xlsx</option>
-							<option value="odf">odf</option>
-							<option value="xml">xml</option>
-							<option value="csv">csv</option>
+							<option value="JSON">JSON</option>
+							<option value="XLSX">XLSX</option>
+							<option value="ODT">ODT</option>
+							<option value="XML">XML</option>
 				</select>
 			</div>
 			<div class="col-md-1">
 				<div class="pull-right">
-					<button type="submit" name="accio" value="filtrar" class="btn btn-success">
+					<a id="btnExportar" href="<c:url value="/historic/exportar"/>" class="btn btn-success">
 						<span class="fa fa-download"></span>&nbsp; <spring:message code="historic.exportacio.boto.exportar"/>
-					</button>
+					</a>
 				</div>
 			</div>
 			<div class="col-md-2 pull-right">
@@ -571,19 +595,6 @@
 					</label> 
 				</div>
 			</div>
-			<div class="col-md-3">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI'}">active</c:if>"> 
-						<form:radiobutton path="tipusAgrupament" value="DIARI"/>
-						<i class="fa fa-calendar"></i> <spring:message code="historic.filtre.mostraDadesPerDia"/>
-					</label> 
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'MENSUAL'}">active</c:if>"> 
-						<form:radiobutton path="tipusAgrupament" value="MENSUAL"/>						 
-						<i class="fa fa-calendar-o"></i> <spring:message code="historic.filtre.mostraDadesPerMes"/>
-					</label>
-			
-				</div>
-			</div>		
 		</div>
 	</form:form>
 	

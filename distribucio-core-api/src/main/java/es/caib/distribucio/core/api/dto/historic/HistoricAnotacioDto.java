@@ -2,6 +2,14 @@ package es.caib.distribucio.core.api.dto.historic;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 
@@ -10,10 +18,17 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@XmlRootElement(name = "dadaAnotacio")
+@XmlAccessorType (XmlAccessType.FIELD)
 public class HistoricAnotacioDto {
 
+    @JsonIgnore
+    @XmlTransient
 	private EntitatDto entitat;
+    @JsonIgnore
+    @XmlTransient
 	private UnitatOrganitzativaDto unitat;
+
 	private HistoricTipusEnumDto tipus;
 	private Date data;
 
@@ -37,6 +52,14 @@ public class HistoricAnotacioDto {
 	}
 	public void setUnitat(UnitatOrganitzativaDto unitat) {
 		this.unitat = unitat;
+	}
+	@XmlElement(name = "unitatCodi")
+	public String getUnitatCodi() {
+		return this.unitat != null ? this.unitat.getCodi() : null;
+	}
+	@XmlElement(name = "unitatNom")
+	public String getUnitatNom() {
+		return this.unitat != null ? this.unitat.getNom() : null;
 	}
 	public HistoricTipusEnumDto getTipus() {
 		return tipus;
@@ -97,5 +120,5 @@ public class HistoricAnotacioDto {
 	}
 	public void setUsuaris(Long usuaris) {
 		this.usuaris = usuaris;
-	}
+	}	
 }

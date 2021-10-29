@@ -1,5 +1,6 @@
 package es.caib.distribucio.core.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +13,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +76,8 @@ public class HistoricHelper {
 	 */
 	@Transactional
 	public void calcularDades(Date data) {
+		
+		logger.debug("Calculant dades històriques per la data " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.sss").format(data));
 		
 		Map<Long, EntitatEntity> entitats = new HashMap<>();
 		Map<Long, UnitatOrganitzativaEntity> unitats = new HashMap<>();
@@ -201,12 +206,12 @@ public class HistoricHelper {
     		anotacioEntitat.setTipus(HistoricTipusEnumDto.DIARI);
     		anotacioEntitat.setData(data);
     		anotacioEntitat.setAnotacions((Long) dadesEntitatAnotacions[1]); 
-    		anotacioEntitat.setAnotacionsTotal((Long) dadesEntitatAnotacions[2]); 
+    		anotacioEntitat.setAnotacionsTotal(((Double) dadesEntitatAnotacions[2]).longValue()); 
     		anotacioEntitat.setReenviaments((Long) dadesEntitatAnotacions[3]); 
     		anotacioEntitat.setEmails((Long) dadesEntitatAnotacions[4]); 
     		anotacioEntitat.setJustificants((Long) dadesEntitatAnotacions[5]); 
     		anotacioEntitat.setAnnexos((Long) dadesEntitatAnotacions[6]); 
-    		anotacioEntitat.setBusties((Long) dadesEntitatAnotacions[7]); 
+    		anotacioEntitat.setBusties(((Double) dadesEntitatAnotacions[7]).longValue()); 
     		if (usuarisEntitat.containsKey(anotacioEntitat.getEntitat().getId())) {
     			anotacioEntitat.setUsuaris(new Long(usuarisEntitat.get(anotacioEntitat.getEntitat().getId()).size())); 
     		}
@@ -567,4 +572,5 @@ public class HistoricHelper {
 		return dades;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(HistoricHelper.class);
 }

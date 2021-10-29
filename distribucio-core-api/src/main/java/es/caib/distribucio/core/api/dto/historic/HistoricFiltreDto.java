@@ -14,7 +14,7 @@ public class HistoricFiltreDto {
 	private Date dataInici;
 	private Date dataFi;
 
-	private List<Long> codiUnitatSuperior;
+	private String codiUnitatSuperior;
 	private List<Long> unitatIdFiltre;
 
 	private List<HistoricDadesMostrarEnumDto> dadesMostrar;
@@ -37,11 +37,11 @@ public class HistoricFiltreDto {
 		this.dataFi = dataFi;
 	}
 
-	public List<Long> getCodiUnitatSuperior() {
+	public String getCodiUnitatSuperior() {
 		return codiUnitatSuperior;
 	}
 
-	public void setCodiUnitatSuperior(List<Long> codiUnitatSuperior) {
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
 		this.codiUnitatSuperior = codiUnitatSuperior;
 	}
 
@@ -61,7 +61,6 @@ public class HistoricFiltreDto {
 	public void setDadesMostrar(List<HistoricDadesMostrarEnumDto> dadesMostrar) {
 		this.dadesMostrar = dadesMostrar;
 	}
-
 
 	public HistoricTipusEnumDto getTipusAgrupament() {
 		return tipusAgrupament;

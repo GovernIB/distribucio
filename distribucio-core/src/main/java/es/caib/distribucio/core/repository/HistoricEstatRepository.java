@@ -87,7 +87,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 	@Query(	
 			"from HistoricEstatEntity " +
 			"where entitat.id = :entitatId " +
-			"		and ((:esBuitUnitatsIds = true and unitat is null) " +
+			"		and ((:dadesEntitat = true and unitat is null) " +
 			"            or (unitat.id in (:unitatsIds))) " +
 			"		and tipus = :tipus " +
 			"		and (:esNullDataInici = true or data >= :dataInici) " +
@@ -95,7 +95,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			"order by data asc ")
 	public List<HistoricEstatEntity> findByFiltre (
 			@Param("entitatId") Long entitatId, 
-			@Param("esBuitUnitatsIds") boolean esBuitUnitatsIds, 
+			@Param("dadesEntitat") boolean dadesEntitat, 
 			@Param("unitatsIds") List<Long> unitatsIds, 
 			@Param("tipus") HistoricTipusEnumDto tipus, 
 			@Param("esNullDataInici") boolean esNullDataInici,

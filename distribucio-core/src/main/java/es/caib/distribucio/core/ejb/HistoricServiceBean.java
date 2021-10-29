@@ -1,5 +1,7 @@
 package es.caib.distribucio.core.ejb;
 
+import java.util.Date;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -28,6 +30,12 @@ public class HistoricServiceBean implements HistoricService {
 	@RolesAllowed("DIS_ADMIN")
 	public HistoricDadesDto getDadesHistoriques(Long entitatId, HistoricFiltreDto filtre) {
 		return delegate.getDadesHistoriques(entitatId, filtre);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void calcularDadesHistoriques(Date data) {
+		delegate.calcularDadesHistoriques(data);		
 	}
 
 	

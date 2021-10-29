@@ -125,12 +125,12 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 	@Query(	
 			"select entitat.id, " +
 			"		sum(anotacions), " +
-			"		sum(anotacionsTotal), " +
+			"		avg(anotacionsTotal), " +
 			"		sum(reenviaments), " +
 			"		sum(emails), " +
 			"		sum(justificants), " +
 			"		sum(annexos), " +
-			"		sum(busties) " +
+			"		avg(busties) " +
 			"from HistoricAnotacioEntity " +
 			"where data = :data " +
 			"group by entitat.id"
@@ -160,7 +160,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 
 	@Query(	"from HistoricAnotacioEntity " +
 			"where entitat.id = :entitatId " +
-			"		and ((:esBuitUnitatsIds = true and unitat is null) " +
+			"		and ((:dadesEntitat = true and unitat is null) " +
 			"            or (unitat.id in (:unitatsIds))) " +
 			"		and tipus = :tipus " +
 			"		and (:esNullDataInici = true or data >= :dataInici) " +
@@ -168,7 +168,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"order by data asc ")
 	public List<HistoricAnotacioEntity> findByFiltre (
 			@Param("entitatId") Long entitatId, 
-			@Param("esBuitUnitatsIds") boolean esBuitUnitatsIds, 
+			@Param("dadesEntitat") boolean dadesEntitat, 
 			@Param("unitatsIds") List<Long> unitatsIds, 
 			@Param("tipus") HistoricTipusEnumDto tipus, 
 			@Param("esNullDataInici") boolean esNullDataInici,

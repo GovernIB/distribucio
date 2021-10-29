@@ -8,6 +8,12 @@ function webutilModalTancarPath() {
 function webutilAjaxEnumPath(enumClass) {
 	return webutilContextPath() + '/userajax/enum/' + enumClass;
 }
+function webutilClearMissatges(divMissatges) {
+	if (!divMissatges) {		
+		divMissatges = '#contingut-missatges';
+	}
+	$(divMissatges).empty();
+}
 function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
@@ -69,7 +75,7 @@ function base64toBlob(b64Data, contentType) {
 }
 
 /** Funció per descarregar un arxiu i refrescar missatges */
-function webutilDownloadAndRefresh(arxiuUrl, event) {
+function webutilDownloadAndRefresh(arxiuUrl, event, callbackFunction) {
 
 	// Fa la petició a la url de l'arxiu
 	$.get( arxiuUrl, { responseType: 'arraybuffer' })
@@ -93,6 +99,12 @@ function webutilDownloadAndRefresh(arxiuUrl, event) {
             link.click();
 		}).always(function(){
 			webutilRefreshMissatges();
+			if (callbackFunction)
+				try {
+					callbackFunction();
+				} catch(e) {
+					console.error("Error executant la funció de callback " + callbackFunction + ": " + e);
+				}
 		});
 	// Atura els events de l'enllaç
 	if (event != null) {

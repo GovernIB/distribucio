@@ -1,5 +1,7 @@
 package es.caib.distribucio.core.api.service;
 
+import java.util.Date;
+
 import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricFiltreDto;
 
@@ -28,6 +30,13 @@ public interface HistoricService {
 	public HistoricDadesDto getDadesHistoriques(
 			Long entitatId,
 			HistoricFiltreDto filtre);
+
+	/** Mètode per invocar el càlcul de dades històriques per la data sol·licitada. Normalment
+	 * s'usa des del formulari per calcular les dates pel mateix dia.
+	 * 
+	 * @param data
+	 */
+	public void calcularDadesHistoriques(Date data);
 
 
 }
