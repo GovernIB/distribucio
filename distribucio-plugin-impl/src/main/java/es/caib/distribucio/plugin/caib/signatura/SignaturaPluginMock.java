@@ -11,6 +11,8 @@ import org.apache.commons.io.IOUtils;
 
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
+import es.caib.distribucio.plugin.signatura.SignaturaResposta;
+import es.caib.plugins.arxiu.api.FirmaPerfil;
 
 /**
  * Implementació mock del plugin de signatura. Retorna una signatura falsa 
@@ -22,12 +24,15 @@ import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 public class SignaturaPluginMock implements SignaturaPlugin {	  
 		  
 	@Override
-	public byte[] signar(
+	public SignaturaResposta signar(
 			String id,
 			String nom,
 			String motiu,
-			String tipusFirma,
-			byte[] contingut, String tipusDocumental) throws SistemaExternException {
+			byte[] contingut, 
+			String mime,
+			String tipusDocumental) throws SistemaExternException {
+		
+		SignaturaResposta resposta = new SignaturaResposta();
 		
 		if (id != null && "e".equals(id)) {
 			// Cas per provocar una excepció
@@ -40,11 +45,17 @@ public class SignaturaPluginMock implements SignaturaPlugin {
 		byte[] firmaContingut = null;
 		try {
 			firmaContingut = IOUtils.toByteArray(this.getClass().getResourceAsStream("/es/caib/distribucio/plugin/signatura/firma_document_mock.xml"));
+			resposta.setContingut(firmaContingut);
+			resposta.setMime("application/octet-stream");
+			resposta.setNom("firma_document_mock.xml");
+			resposta.setTipusFirma("CADES");
+			resposta.setTipusFirmaEni("TF04");
+			resposta.setPerfilFirmaEni(FirmaPerfil.BES.toString());
 		} catch (IOException e) {
 			String errMsg = "Error llegint el fitxer mock de firma XAdES: " + e.getMessage();
 			Logger.getLogger(SignaturaPluginMock.class.getName()).log(Level.SEVERE, errMsg, e);
 			e.printStackTrace();
 		}		
-		return firmaContingut;
+		return resposta;
 	}  
 }

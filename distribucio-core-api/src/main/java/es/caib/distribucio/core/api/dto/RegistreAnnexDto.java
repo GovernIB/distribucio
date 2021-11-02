@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.dto;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -185,6 +186,20 @@ public class RegistreAnnexDto implements Serializable {
 	
 	public String getFitxerExtension() {
 		return this.fitxerNom.substring(this.fitxerNom.indexOf(".") + 1);
+	}
+	
+	private static String[] tamanyUnitats = {"b", "Kb", "Mb", "Gb", "Tb", "Pb"};
+	
+	public String getFitxerTamanyStr() {
+		double valor = this.fitxerTamany;
+		int i = 0;
+		while (this.fitxerTamany > Math.pow(1024, i + 1) 
+				&& i < tamanyUnitats.length - 1) {
+			valor = valor / 1024;
+			i++;
+		}
+		DecimalFormat df = new DecimalFormat("#,###.##");
+		return df.format(valor) + " " + tamanyUnitats[i];
 	}
 
 

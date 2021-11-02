@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,7 +27,6 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
-import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.NtiOrigenEnumDto;
@@ -37,6 +40,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
+import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
@@ -201,29 +205,33 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			// en servidor.
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			if (!annexFirmat && isRegistreSignarAnnexos()) {
-				String tipusFirmaServidor;
-				String tipusFirmaArxiu = null;
-				String perfil = null;
-				String fitxerNom = null;
-				String tipusMime = null;
-				String csvRegulacio = null;
-
-				tipusFirmaServidor = "CADES";
-				tipusFirmaArxiu = DocumentNtiTipoFirmaEnumDto.TF04.toString();
-				perfil = FirmaPerfil.BES.toString();
-				fitxerNom = distribucioAnnex.getFitxerNom() + "_cades_det.csig";
-				if ("application/pdf".equalsIgnoreCase(distribucioAnnex.getFitxerTipusMime())) {
-					tipusMime = "application/pdf";
-				} else {
-					tipusMime = "application/octet-stream";
-				}
 				
 				//sign annex and return firma content bytes
-				byte[] firmaDistribucioContingut = signaturaDistribucioSignar(
+				SignaturaResposta signatura = signaturaDistribucioSignar(
 						distribucioAnnex,
 						annexContingut,
-						"Firma en servidor de document annex de l'anotació de registre",
-						tipusFirmaServidor);
+						"Firma en servidor de document annex de l'anotació de registre");
+				
+				if (StringUtils.isEmpty(signatura.getTipusFirmaEni()) 
+						|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
+					logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
+							signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
+					if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
+						logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
+						if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
+							signatura.setTipusFirmaEni("TF04");
+						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
+							signatura.setPerfilFirmaEni("BES");
+					}
+				}
+				byte [] firmaDistribucioContingut = signatura.getContingut();
+				String tipusFirmaArxiu = signatura.getTipusFirmaEni();
+				String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
+				String fitxerNom = signatura.getNom();
+				String tipusMime = signatura.getMime();
+				String csvRegulacio = null;
+				
+				
 				DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
 				annexFirma.setTipus(tipusFirmaArxiu);
 				annexFirma.setPerfil(perfil);
@@ -259,6 +267,38 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
 	}
+
+	/** Map amb el mapeig dels perfils de firma cap als perfils admesos per l'Arxiu. */
+	private static Map<String, String> mapPerfilsFirma = new HashMap<String, String>();
+	static {
+		mapPerfilsFirma.put("AdES-BES", "BES");
+		mapPerfilsFirma.put("AdES-EPES", "EPES");
+		mapPerfilsFirma.put("AdES-T", "T");
+		mapPerfilsFirma.put("AdES-C", "C");
+		mapPerfilsFirma.put("AdES-X", "X");
+		mapPerfilsFirma.put("AdES-X1", "X");
+		mapPerfilsFirma.put("AdES-X2", "X");
+		mapPerfilsFirma.put("AdES-XL", "XL");
+		mapPerfilsFirma.put("AdES-XL1", "XL");
+		mapPerfilsFirma.put("AdES-XL2", "XL");
+		mapPerfilsFirma.put("AdES-A", "A");
+		mapPerfilsFirma.put("PAdES-LTV", "LTV");
+		mapPerfilsFirma.put("PAdES-Basic", "BES");
+	}
+	
+	/** Mapeja els diferents perfils de firma que pot retornar el plugin de firma simple cap
+	 * als perfils admesos per l'Arxiu.
+	 * 
+	 * @param perfil
+	 * @return
+	 */
+	public static String mapPerfilFirma(String perfil) {
+		if (mapPerfilsFirma.containsKey(perfil))
+			perfil = mapPerfilsFirma.get(perfil);
+		return perfil;
+	}
+
+
 
 	@Override
 	public Document documentDescarregar(
@@ -484,8 +524,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				} else if ("TF09".equalsIgnoreCase(annexFirma.getTipus())) {
 					firma.setTipus(ArxiuFirmaTipusEnumDto.OOXML);
 				}
-				firma.setPerfil(
-						ArxiuFirmaPerfilEnumDto.valueOf(annexFirma.getPerfil()));
+				if (StringUtils.isNotEmpty(annexFirma.getPerfil()))
+					firma.setPerfil(ArxiuFirmaPerfilEnumDto.valueOf(annexFirma.getPerfil()));
 				firma.setFitxerNom(annexFirma.getFitxerNom());
 				firma.setTipusMime(annexFirma.getTipusMime());
 				firma.setCsvRegulacio(annexFirma.getCsvRegulacio());
@@ -503,36 +543,41 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return firmes;
 	}
 
-	private byte[] signaturaDistribucioSignar(
+	private SignaturaResposta signaturaDistribucioSignar(
 			DistribucioRegistreAnnex annex,
 			byte[] annexContingut,
-			String motiu,
-			String tipusFirma) throws SistemaExternException {
+			String motiu) throws SistemaExternException {
 		String accioDescripcio = "Firma en servidor de document annex de l'anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("annexId", annex.getId().toString());
 		accioParams.put("annexFitxerNom", annex.getFitxerNom());
 		accioParams.put("annexFitxerContingut", (annexContingut != null ? "" + annexContingut.length : "0") + " bytes");
 		accioParams.put("motiu", motiu);
-		accioParams.put("tipusFirma", tipusFirma);
 		long t0 = System.currentTimeMillis();
 		try {
 			
 			String tipusDocumental = annex.getNtiTipusDocument() != null ? RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor() : null;
 			
-			byte[] firmaContingut = getSignaturaPlugin().signar(
+			SignaturaResposta signatura = getSignaturaPlugin().signar(
 					annex.getId().toString(),
 					annex.getFitxerNom(),
 					motiu,
-					tipusFirma,
 					annexContingut, 
+					annex.getFitxerTipusMime(),
 					tipusDocumental);
+			
+			accioParams.put("resposta", "tipus: " + signatura.getTipusFirmaEni() + 
+										", perfil: " + signatura.getPerfilFirmaEni() + 
+										", nom: " + signatura.getNom() + 
+										", mime: " + signatura.getMime() + 
+										", grandaria: " + (signatura.getContingut() != null ? 
+												signatura.getContingut().length : "-"));
 			integracioAddAccioOk(
 					integracioSignaturaCodi,
 					accioDescripcio,
 					accioParams,
 					System.currentTimeMillis() - t0);
-			return firmaContingut;
+			return signatura;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al firmar document en servidor";
 			integracioAddAccioError(
@@ -1226,4 +1271,5 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				"es.caib.distribucio.plugin.signatura.class");
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(DistribucioPlugin.class);
 }

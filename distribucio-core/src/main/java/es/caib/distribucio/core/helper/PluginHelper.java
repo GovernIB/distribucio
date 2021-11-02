@@ -1044,8 +1044,5 @@ public class PluginHelper {
 		}
 	}
 	
-	
 	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
-
-
 }

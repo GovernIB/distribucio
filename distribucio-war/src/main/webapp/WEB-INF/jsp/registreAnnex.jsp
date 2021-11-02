@@ -105,6 +105,8 @@
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
+
+			${annex.fitxerNom} (<span title="${annex.fitxerTamany} bytes">${annex.fitxerTamanyStr}</span>)
 		
 			<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>

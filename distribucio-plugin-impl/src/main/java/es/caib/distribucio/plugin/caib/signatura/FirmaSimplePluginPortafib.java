@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
+import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -35,20 +36,23 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 	private static final String PROPERTIES_BASE = "es.caib.distribucio.plugin.signatura.portafib.";
 	  
 	@Override
-	public byte[] signar(
+	public SignaturaResposta signar(
 			String id,
 			String nom,
 			String motiu,
-			String tipusFirma,
 			byte[] contingut, 
+			String mime,
 			String tipusDocumental) {
+		
+		SignaturaResposta resposta = new SignaturaResposta();
 
 		ApiFirmaEnServidorSimple api = new ApiFirmaEnServidorSimpleJersey(
 				getPropertyEndpoint(), 
 				getPropertyUsername(),
 				getPropertyPassword());
 		
-		FirmaSimpleFile fileToSign = new FirmaSimpleFile(nom, "application/pdf", contingut);
+//		FirmaSimpleFile fileToSign = new FirmaSimpleFile(nom, "application/pdf", contingut);
+		FirmaSimpleFile fileToSign = new FirmaSimpleFile(nom, mime, contingut);
 
 		FirmaSimpleSignatureResult result;
 		try {
@@ -56,15 +60,27 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 //			getAvailableProfiles(api);
 			String perfil = getPropertyPerfil();
 			result = internalSignDocument(
+					id,
 					api,
 					perfil,
 					fileToSign,
 					motiu,
 					tipusDocumental);
 			
-			return result.getSignedFile().getData();
+			resposta.setContingut(result.getSignedFile().getData());
+			if (result.getSignedFile() != null) {
+				resposta.setNom(result.getSignedFile().getNom());
+				resposta.setMime(result.getSignedFile().getMime());
+			}
+			if (result.getSignedFileInfo() != null) {
+				resposta.setTipusFirma(result.getSignedFileInfo().getSignType());
+				resposta.setTipusFirmaEni(result.getSignedFileInfo().getEniTipoFirma());
+				resposta.setPerfilFirmaEni(result.getSignedFileInfo().getEniPerfilFirma());
+			}
+			
+			return resposta;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new SistemaExternException(e);
 		}
 	}  
 	
@@ -72,12 +88,13 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
    
 	
 	protected FirmaSimpleSignatureResult internalSignDocument(
+			String id, 
 			ApiFirmaEnServidorSimple api,
 			final String perfil,
 			FirmaSimpleFile fileToSign,
 			String motiu,
 			String tipusDocumental) throws Exception, FileNotFoundException, IOException {
-		String signID = "999";
+		String signID = id;
 		String name = fileToSign.getNom();
 		String reason = motiu;
 		String location = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "location", "Palma");

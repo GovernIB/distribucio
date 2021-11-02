@@ -9,12 +9,12 @@ import es.caib.distribucio.plugin.SistemaExternException;
  */
 public interface SignaturaPlugin {
 
-	public byte[] signar(
+	public SignaturaResposta signar(
 			String id, 
 			String nom, 
 			String motiu,
-			String tipusFirma,
 			byte[] contingut, 
+			String mime,
 			String tipusDocumental) throws SistemaExternException;
 
 }
