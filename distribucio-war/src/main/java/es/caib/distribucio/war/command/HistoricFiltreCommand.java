@@ -48,7 +48,7 @@ public class HistoricFiltreCommand {
 		return codiUnitatSuperior;
 	}
 
-	public void setCodisUnitatsSuperior(String codiUnitatSuperior) {
+	public void setCodiUnitatSuperior(String codiUnitatSuperior) {
 		this.codiUnitatSuperior = codiUnitatSuperior;
 	}
 

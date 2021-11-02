@@ -409,9 +409,6 @@
 				$.ajax({
 					type: 'POST',
 			        url: '<c:url value="/historic/JsonDataUO"/>',
- 			        async: false,
-// 			        processData: false,
-// 			        contentType: false,
  					data: $(this).serialize(),
 			        success: function(json) {
 			        	$("#tBodyTaulaUO").empty();
@@ -419,7 +416,7 @@
 							$.each(val, function(j, dataUO) {
 								let fila = '';
 								fila += ('<tr>');
-		 						fila += ('<td>' + dataUO.fecha + '</td>');
+								fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
 		 						fila += ('<td>' + dataUO.uo_codi + '</td>');
 		 						fila += ('<td>' + dataUO.uo + '</td>');
 		 						fila += ('<td>' + dataUO.anotacions_noves + '</td>');

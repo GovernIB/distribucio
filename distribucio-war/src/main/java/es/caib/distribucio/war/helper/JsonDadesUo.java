@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public class JsonDadesUo implements Comparable<JsonDadesUo>{
 
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone="Europe/Madrid")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
     private Date fecha;
     private String uoCodi;
     private String uo;
