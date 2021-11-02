@@ -69,7 +69,7 @@
 			valida = item.data.estat =="V";
 		} else {
 			if ($(select).val() == item.id) {
-				// Consulta si no Ã©s vÃ lida per afegir la icona de incorrecta.
+				// Consulta si no és válida per afegir la icona de incorrecta.
 				$.ajax({
 					url: $(select).data('urlInicial') +'/' + item.id,
 					async: false,
@@ -398,80 +398,82 @@
         });
 
         $('#form_filtre').submit(function(e) {
-        	e.preventDefault();
         	
-        	$('.div-dades-carregant').show();
-        	
-        	$("#taulaUO").dataTable().fnDestroy();
+			$('.div-dades-carregant').show();
+           	
+           	$("#taulaUO").dataTable().fnDestroy();
 
-			setTimeout(function(){ 
-	        	if ($('#dadesMostrar').select2("val").includes("UO")){	
-					var content = '';
-					$.ajax({
-						type: 'POST',
-						data: $(this).serialize(),
-				        url: '<c:url value="/historic/JsonDataUO"/>',
-				        async: false,
-				        processData: false,
-				        contentType: false,
-				        success: function(json) {
-				        	$("#tBodyTaulaUO").empty();
-							$.each(json, function(i, val) {
-								$.each(val, function(j, dataUO) {
-									let fila = '';
-									fila += ('<tr>');
-			 						fila += ('<td>' + dataUO.fecha + '</td>');
-			 						fila += ('<td>' + dataUO.uo_codi + '</td>');
-			 						fila += ('<td>' + dataUO.uo + '</td>');
-			 						fila += ('<td>' + dataUO.anotacions_noves + '</td>');
-			 						fila += ('<td>' + dataUO.anotacions_totals + '</td>');
-			 						fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
-			 						fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
-			 						fila += ('<td>' + dataUO.num_justificants + '</td>');
-			 						fila += ('<td>' + dataUO.num_annexos + '</td>');
-			 						fila += ('<td>' + dataUO.num_busties + '</td>');
-			 						fila += ('<td>' + dataUO.num_usuaris + '</td>');
-			 						fila += ('</tr>');
-			 						$("#tBodyTaulaUO").append(fila);
-								});
+// 			setTimeout(function(){ 
+	        if ($('#dadesMostrar').select2("val").includes("UO")){	
+				var content = '';
+				$.ajax({
+					type: 'POST',
+			        url: '<c:url value="/historic/JsonDataUO"/>',
+ 			        async: false,
+// 			        processData: false,
+// 			        contentType: false,
+ 					data: $(this).serialize(),
+			        success: function(json) {
+			        	$("#tBodyTaulaUO").empty();
+						$.each(json, function(i, val) {
+							$.each(val, function(j, dataUO) {
+								let fila = '';
+								fila += ('<tr>');
+		 						fila += ('<td>' + dataUO.fecha + '</td>');
+		 						fila += ('<td>' + dataUO.uo_codi + '</td>');
+		 						fila += ('<td>' + dataUO.uo + '</td>');
+		 						fila += ('<td>' + dataUO.anotacions_noves + '</td>');
+		 						fila += ('<td>' + dataUO.anotacions_totals + '</td>');
+		 						fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
+		 						fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
+		 						fila += ('<td>' + dataUO.num_justificants + '</td>');
+		 						fila += ('<td>' + dataUO.num_annexos + '</td>');
+		 						fila += ('<td>' + dataUO.num_busties + '</td>');
+		 						fila += ('<td>' + dataUO.num_usuaris + '</td>');
+		 						fila += ('</tr>');
+		 						$("#tBodyTaulaUO").append(fila);
 							});
+						});
 							
-							$("#taulaUO").dataTable( {
-								language: {
-									url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
-								},
-								paging: true,
-								pageLength: 10,
-								order: [[ 0, "asc" ]],
-								pagingStyle: 'page',
-								lengthMenu: [10, 20, 50, 100, 250],
-								dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
-								select: {
-									style: 'multi',
-									selector: 'td:first-child',
-									info: false
-								}
-							} );
-							seccioDadesUO(json);
-			      		},
-				        error: function(e) {
-				        	content += 'Hi ha hagut un error recuperant dades de historic ';
-				        }
-				    });
+						$("#taulaUO").dataTable( {
+							language: {
+								url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
+							},
+							paging: true,
+							pageLength: 10,
+							order: [[ 0, "asc" ]],
+							pagingStyle: 'page',
+							lengthMenu: [10, 20, 50, 100, 250],
+							dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
+							select: {
+								style: 'multi',
+								selector: 'td:first-child',
+								info: false
+							}
+						} );
+						seccioDadesUO(json);
+			      	},
+			        error: function(e) {
+			        	content += 'Hi ha hagut un error recuperant dades de historic ';
+			        },
+			      	complete: function() {
+			      		$('.div-dades-carregant').hide();
+			      	}
+			    });
 				
-					$("#dadesUO").show();
+				$("#dadesUO").show();
 					
-					if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraTaules') {
-						$('#div-taula-uo').show();
-						$('#div-canvas-uo').hide();
-	        		} else if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraGrafics') {
-						$('#div-taula-uo').hide();
-						$('#div-canvas-uo').show();
-		    		}
-					
-					$('.div-dades-carregant').hide();
-				}
-			}, 1000);
+				if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraTaules') {
+					$('#div-taula-uo').show();
+					$('#div-canvas-uo').hide();
+	       		} else if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraGrafics') {
+					$('#div-taula-uo').hide();
+					$('#div-canvas-uo').show();
+		    	}		
+			}
+// 			}, 1000);
+
+	        e.preventDefault();
         });
 	                
 		$('#btnExportar').click(function(event) {
@@ -627,6 +629,7 @@
 	</div>
 
 	<form:form id="form_netejar_filtre" action="" method="post" cssClass="well" commandName="historicFiltreCommand" style="display: none;">
+		<input id="accio" name="accio" type="hidden" value="netejar"/>
 	</form:form>
 	
 </body>

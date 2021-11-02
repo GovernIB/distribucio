@@ -61,7 +61,7 @@ public class HistoricServiceImpl implements HistoricService {
 			List<Long> unitatIdFiltre) {
 		Set<Long> unitatsIds = new HashSet<Long>();
 		if (unitatIdFiltre != null && !unitatIdFiltre.isEmpty())
-			unitatsIds.addAll(unitatsIds);
+			unitatsIds.addAll(unitatIdFiltre);
 		if (codiUnitatSuperior != null) {	
 			List<UnitatOrganitzativaEntity> unitatsSuperiors = 
 					unitatOrganitzativaRepository.findUnitatsSuperiors(entitatId, true, "");

@@ -71,10 +71,14 @@ public class HistoricController extends BaseAdminController {
 	private HistoricService historicService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String get(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {
-	
+	public String get(HttpServletRequest request, 
+			HttpServletResponse response, 
+			Model model) {	
+		
+		getEntitatActualComprovantPermisos(request);
 		HistoricFiltreCommand historicFiltreCommand = getFiltreCommand(request);
 		model.addAttribute(historicFiltreCommand);
+//		model.addAttribute("historicFiltreCommand", historicFiltreCommand);
 		model.addAttribute("showDadesUO", false);
 		model.addAttribute("showDadesEstat", false);
 		model.addAttribute("showDadesBusties", false);
@@ -93,24 +97,29 @@ public class HistoricController extends BaseAdminController {
 			RequestSessionHelper.esborrarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE);
-		} else {
-			if (!bindingResult.hasErrors()) {
-				RequestSessionHelper.actualitzarObjecteSessio(
-						request,
-						SESSION_ATTRIBUTE_FILTRE,
-						historicFiltreCommand);
-			}
-		}
+		} 
+//		else {
+//			if (!bindingResult.hasErrors()) {
+//				RequestSessionHelper.actualitzarObjecteSessio(
+//						request,
+//						SESSION_ATTRIBUTE_FILTRE,
+//						historicFiltreCommand);
+//			}
+//		}
 		return "redirect:historic";
 	}
 	
-	private HistoricFiltreCommand getFiltreCommand(HttpServletRequest request) {
+	private HistoricFiltreCommand getFiltreCommand(
+			HttpServletRequest request) {
 		HistoricFiltreCommand filtreCommand = (HistoricFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new HistoricFiltreCommand();
-			RequestSessionHelper.actualitzarObjecteSessio(request, SESSION_ATTRIBUTE_FILTRE, filtreCommand);
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request, 
+					SESSION_ATTRIBUTE_FILTRE, 
+					filtreCommand);
 		}
 		return filtreCommand;
 	}
@@ -126,22 +135,31 @@ public class HistoricController extends BaseAdminController {
 	
 	@RequestMapping(value = "/JsonDataUO", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, List<JsonDadesUo>> getDataHistoricUO(HttpServletRequest request,
+	public Map<String, List<JsonDadesUo>> getDataHistoricUO(
+			HttpServletRequest request,
 			@Valid HistoricFiltreCommand historicFiltreCommand,
 			BindingResult bindingResult,
-			@RequestParam(value = "accio", required = false) String accio,
-			Model model) throws NoSuchAlgorithmException {	
+			Model model) {
+//			Model model) throws NoSuchAlgorithmException {	
 //		Map<String, List<JsonDadesUo>> results = new HashMap<>();		
 //		results.put("uo_1", cargarTabla("uo_1"));
 //		//TODO: comentar las dos líneas siguientes para ver todas las métricas de la UO en un sólo gráfico
 //		results.put("uo_2", cargarTabla("uo_2"));
 //		results.put("uo_3", cargarTabla("uo_3"));
 
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		if (!bindingResult.hasErrors()) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					historicFiltreCommand);
+		}
+
 		if (historicFiltreCommand.isActualitzar()) {
 				historicService.calcularDadesHistoriques(new Date());
 		}
 			
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		HistoricDadesDto dades = historicService.getDadesHistoriques(
 				entitatActual.getId(),
 				historicFiltreCommand.asDto());
