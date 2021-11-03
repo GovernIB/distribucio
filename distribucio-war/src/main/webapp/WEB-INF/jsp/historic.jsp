@@ -474,14 +474,8 @@
         });
 	                
 		$('#btnExportar').click(function(event) {
-			$('.div-dades-carregant').show();
-			webutilClearMissatges();
-			return webutilDownloadAndRefresh(
-					$(this).attr('href') + "?format=" + $('#exportFormat').val(), 
-					event,
-					function(){
-						$('.div-dades-carregant').hide();						
-					});
+			 event.preventDefault();
+			 window.location.href = $(this).attr('href') + "?format=" + $('#exportFormat').val();
 		});
 
 	});

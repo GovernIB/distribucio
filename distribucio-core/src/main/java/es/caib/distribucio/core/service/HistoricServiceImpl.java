@@ -60,13 +60,11 @@ public class HistoricServiceImpl implements HistoricService {
 			String codiUnitatSuperior, 
 			List<Long> unitatIdFiltre) {
 		Set<Long> unitatsIds = new HashSet<Long>();
-		if (unitatIdFiltre != null && !unitatIdFiltre.isEmpty())
-			unitatsIds.addAll(unitatIdFiltre);
-		if (codiUnitatSuperior != null) {	
+		if (unitatIdFiltre != null && !unitatIdFiltre.isEmpty()) {
+			unitatsIds.addAll(unitatIdFiltre);			
+		} else if (codiUnitatSuperior != null) {	
 			List<UnitatOrganitzativaEntity> unitatsSuperiors = 
 					unitatOrganitzativaRepository.findUnitatsSuperiors(entitatId, true, "");
-			// Crea una llista de codis d'UO amb bústia
-			Set<String> bustiaUnitatCodis = new HashSet<String>();
 			for (UnitatOrganitzativaEntity us : unitatsSuperiors) {
 				unitatsIds.add(us.getId());
 			}

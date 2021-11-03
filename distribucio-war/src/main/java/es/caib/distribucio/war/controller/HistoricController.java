@@ -1,7 +1,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
@@ -30,6 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.velocity.tools.generic.DateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,7 +216,7 @@ public class HistoricController extends BaseAdminController {
 		return lrespuestaJson;
 	}
 	
-	@RequestMapping(value = "/exportar", method = RequestMethod.GET)
+	@RequestMapping(value = "/exportar", method = RequestMethod.GET, produces = {})
 	public void exportar(
 			HttpServletRequest request,
 			HttpServletResponse response,
@@ -231,12 +231,6 @@ public class HistoricController extends BaseAdminController {
 			
 			FitxerDto fitxer = this.exportarDades(request, dades, format);
 			this.writeFileToResponse(fitxer.getNom(), fitxer.getContingut(), response);
-			MissatgesHelper.success(
-					request, 
-					getMessage(
-							request, 
-							"historic.exportacio.success",
-							null));
 		} catch(Exception e) {
 			String errMsg = getMessage(
 					request, 
@@ -248,7 +242,7 @@ public class HistoricController extends BaseAdminController {
 					errMsg);
 		}
 	}
-
+	
 	private FitxerDto exportarDades(HttpServletRequest request, HistoricDadesDto dades, String format) throws Exception {
 		FitxerDto fitxer = new FitxerDto();
 		fitxer.setNom(this.getMessage(request, "historic.exportacio.fitxerNom") + "." + format.toLowerCase());
@@ -450,9 +444,9 @@ public class HistoricController extends BaseAdminController {
 //		report.setFieldsMetadata(metadata);
     	
     	IContext context = report.createContext();
-		context.put("data", "1234");
+		context.put("data", new Date());
 		context.put("dades", dades);
-		//context.put("dateFormatter", new DateTool());
+		context.put("dateFormatter", new DateTool());
 
     	// 3) Set PDF as format converter
     	//Options options = Options.getTo(ConverterTypeTo.PDF);
@@ -460,8 +454,10 @@ public class HistoricController extends BaseAdminController {
     	// 3) Generate report by merging Java model with the ODT and convert it to PDF
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
     	report.process(context, bos);
+    	//report.convert(context, options, bos);
+    	
+    	return bos.toByteArray();
 
-		return bos.toByteArray();
     }
 
 	private static final Logger logger = LoggerFactory.getLogger(HistoricController.class);

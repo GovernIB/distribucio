@@ -487,7 +487,7 @@ public class ContingutController extends BaseUserController {
 
 
 		// 1) Load ODT file and set Velocity template engine and cache it to the registry					
-    	InputStream in= this.getClass().getResourceAsStream("/plantilles/informe_" + locale.getLanguage() + ".odt");
+    	InputStream in= this.getClass().getResourceAsStream("/plantilles/historic_" + locale.getLanguage() + ".odt");
     	IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,TemplateEngineKind.Velocity);
 
     	// 2) Create Java model context 
