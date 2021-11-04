@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
@@ -150,8 +151,22 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("entitatId") Long entitatId,
 			@Param("esNullFiltre") boolean esNullFiltre, 
 			@Param("filtre") String filtre);
-			
-
 	
+	/** Cerca les unitats de la llista de codis que tenen bústia. Serveix per obtenir
+	 * la llista d'unitats descendents amb bústies.
+	 * 
+	 * @param codiDir3Entitat
+	 * @param codisUnitatsDecendants
+	 * @return
+	 */
+	@Query(	"select bustia.unitatOrganitzativa.id " +
+			"from " +
+			"    BustiaEntity bustia " +
+			"where " +
+			" 	bustia.entitat = :entitat " +
+			"   and bustia.unitatOrganitzativa.codi in (:codisUO)")
+	List<Long> findUnitatsIdsAmbBustiaPerCodis(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("codisUO") List<String> codisUO);
 	
 }

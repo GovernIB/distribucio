@@ -51,9 +51,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricAnotacioDto;
+import es.caib.distribucio.core.api.dto.historic.HistoricBustiaDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
+import es.caib.distribucio.core.api.dto.historic.HistoricEstatDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.HistoricService;
 import es.caib.distribucio.war.command.HistoricFiltreCommand;
+import es.caib.distribucio.war.helper.JsonDades;
+import es.caib.distribucio.war.helper.JsonDadesBustia;
+import es.caib.distribucio.war.helper.JsonDadesEstat;
 import es.caib.distribucio.war.helper.JsonDadesUo;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -157,7 +163,7 @@ public class HistoricController extends BaseAdminController {
 		}
 
 		if (historicFiltreCommand.isActualitzar()) {
-				historicService.calcularDadesHistoriques(new Date());
+			historicService.calcularDadesHistoriques(new Date());
 		}
 			
 		HistoricDadesDto dades = historicService.getDadesHistoriques(
@@ -170,15 +176,17 @@ public class HistoricController extends BaseAdminController {
 		return results;	
 	}	
 	
-	private Map<String, List<JsonDadesUo>> transformarDadesJson(HistoricDadesDto dades) {
-		Map<String, List<JsonDadesUo>> results = new HashMap<>();
+	private JsonDades transformarDadesJson(HistoricDadesDto dades) {
+		JsonDades results = null;
 		
 		// Dades d'anotacions per UO
+		Map<String, List<JsonDadesUo>> resultsUo = new HashMap<>();
+		
 		for (HistoricAnotacioDto anotacio : dades.getDadesAnotacions()) {
-			List<JsonDadesUo> lrespuestaJson = results.get(anotacio.getUnitat().getCodi());
+			List<JsonDadesUo> lrespuestaJson = resultsUo.get(anotacio.getUnitat().getCodi());
 			if (lrespuestaJson == null) {
 				lrespuestaJson = new ArrayList<JsonDadesUo>();
-				results.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
+				resultsUo.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
 			}
 			lrespuestaJson.add(new JsonDadesUo(
 					anotacio.getData(),
@@ -194,6 +202,42 @@ public class HistoricController extends BaseAdminController {
 					anotacio.getUsuaris()));
 		}
 
+		// Dades estat
+		Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> resultsEstat = new HashMap<>();
+		for (HistoricEstatDto estat : dades.getDadesEstats()) {
+			List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(estat.getEstat());
+			if (lrespuestaJson == null) {
+				lrespuestaJson = new ArrayList<JsonDadesEstat>();
+				resultsEstat.put(estat.getEstat(), lrespuestaJson);
+			}
+			lrespuestaJson.add(new JsonDadesEstat(
+					estat.getData(),
+					estat.getEstat(),
+					estat.getCorrecte(),
+					estat.getCorrecteTotal(),
+					estat.getError(),
+					estat.getErrorTotal(),
+					estat.getTotal()));
+		}
+				
+		// Dades bústies
+		Map<Long, List<JsonDadesBustia>> resultsBustia = new HashMap<>();
+		for (HistoricBustiaDto bustia : dades.getDadesBusties()) {
+			List<JsonDadesBustia> lrespuestaJson = resultsBustia.get(bustia.getBustiaId());
+			if (lrespuestaJson == null) {
+				lrespuestaJson = new ArrayList<JsonDadesBustia>();
+				resultsBustia.put(bustia.getBustiaId(), lrespuestaJson);
+			}
+			lrespuestaJson.add(new JsonDadesBustia(
+					bustia.getData(),
+					bustia.getUnitatCodi(),
+					bustia.getUnitatNom(),
+					bustia.getBustiaId(),
+					bustia.getNom(),
+					bustia.getUsuaris(),
+					bustia.getUsuarisPermis(),
+					bustia.getUsuarisRol()));
+		}
 		return results;
 	}
 

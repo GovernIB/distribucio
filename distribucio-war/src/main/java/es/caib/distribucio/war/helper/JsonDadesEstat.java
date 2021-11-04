@@ -7,110 +7,93 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
-public class JsonDadesEstat implements Comparable<JsonDadesEstat>{
+public class JsonDadesEstat implements Comparable<JsonDadesUo>{
 
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone="Europe/Madrid")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
     private Date fecha;
-    private String uoCodi;
-    private String uo;
-    private Integer anotacionsNoves;
-    private Integer anotacionsTotals;
-    private Integer numAnotacionsReenviades;
-	private Integer numAnotacionsEmail;
-    private Integer numJustificants;
-    private Integer numAnnexos;
-    private Integer numBusties;
-    private Integer numUsuaris;
-    
-    public JsonDadesEstat(Date fecha, String uoCodi, String uo, Integer anotacionsNoves, 
-    		Integer anotacionsTotals, Integer numAnotacionsReenviades, Integer numAnotacionsEmail, Integer numJustificants,
-    		Integer numAnnexos, Integer numBusties, Integer numUsuaris){
-    	this.fecha = fecha;
-    	this.uoCodi = uoCodi;
-    	this.uo = uo;
-    	this.anotacionsNoves = anotacionsNoves;
-    	this.anotacionsTotals = anotacionsTotals;
-    	this.numAnotacionsReenviades = numAnotacionsReenviades;
-    	this.numAnotacionsEmail = numAnotacionsEmail;
-    	this.numJustificants = numJustificants;
-    	this.numAnnexos = numAnnexos;
-    	this.numBusties = numBusties;
-    	this.numUsuaris = numUsuaris;
-    }
-	@Override
-	public int compareTo(JsonDadesEstat o) {
-		return this.fecha.compareTo(o.getFecha());
+    private RegistreProcesEstatEnum estat;
+    private Long correcte;
+	private Long correcteTotal;
+	private Long error;
+	private Long errorTotal;
+	private Long total;
+        
+	public JsonDadesEstat(Date fecha, RegistreProcesEstatEnum estat, Long correcte, Long correcteTotal, Long error,
+			Long errorTotal, Long total) {
+		this.fecha = fecha;
+		this.estat = estat;
+		this.correcte = correcte;
+		this.correcteTotal = correcteTotal;
+		this.error = error;
+		this.errorTotal = errorTotal;
+		this.total = total;
 	}
 
+	@Override
+	public int compareTo(JsonDadesUo o) {
+		return this.fecha.compareTo(o.getFecha());
+	}
+    
 	public Date getFecha() {
 		return fecha;
 	}
+
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-	public Integer getAnotacionsNoves() {
-		return anotacionsNoves;
+
+	public RegistreProcesEstatEnum getEstat() {
+		return estat;
 	}
-	public void setAnotacionsNoves(Integer anotacionsNoves) {
-		this.anotacionsNoves = anotacionsNoves;
+
+	public void setEstat(RegistreProcesEstatEnum estat) {
+		this.estat = estat;
 	}
-	public Integer getAnotacionsTotals() {
-		return anotacionsTotals;
+
+	public Long getCorrecte() {
+		return correcte;
 	}
-	public void setAnotacionsTotals(Integer anotacionsTotals) {
-		this.anotacionsTotals = anotacionsTotals;
+
+	public void setCorrecte(Long correcte) {
+		this.correcte = correcte;
 	}
-		public String getUoCodi() {
-		return uoCodi;
+
+	public Long getCorrecteTotal() {
+		return correcteTotal;
 	}
-	public void setUoCodi(String uoCodi) {
-		this.uoCodi = uoCodi;
+
+	public void setCorrecteTotal(Long correcteTotal) {
+		this.correcteTotal = correcteTotal;
 	}
-	public String getUo() {
-		return uo;
+
+	public Long getError() {
+		return error;
 	}
-	public void setUo(String uo) {
-		this.uo = uo;
+
+	public void setError(Long error) {
+		this.error = error;
 	}
-	public Integer getNumAnotacionsReenviades() {
-		return numAnotacionsReenviades;
+
+	public Long getErrorTotal() {
+		return errorTotal;
 	}
-	public void setNumAnotacionsReenviades(Integer numAnotacionsReenviades) {
-		this.numAnotacionsReenviades = numAnotacionsReenviades;
+
+	public void setErrorTotal(Long errorTotal) {
+		this.errorTotal = errorTotal;
 	}
-	public Integer getNumAnotacionsEmail() {
-		return numAnotacionsEmail;
+
+	public Long getTotal() {
+		return total;
 	}
-	public void setNumAnotacionsEmail(Integer numAnotacionsEmail) {
-		this.numAnotacionsEmail = numAnotacionsEmail;
+
+	public void setTotal(Long total) {
+		this.total = total;
 	}
-	public Integer getNumJustificants() {
-		return numJustificants;
-	}
-	public void setNumJustificants(Integer numJustificants) {
-		this.numJustificants = numJustificants;
-	}
-	public Integer getNumAnnexos() {
-		return numAnnexos;
-	}
-	public void setNumAnnexos(Integer numAnnexos) {
-		this.numAnnexos = numAnnexos;
-	}
-	public Integer getNumBusties() {
-		return numBusties;
-	}
-	public void setNumBusties(Integer numBusties) {
-		this.numBusties = numBusties;
-	}
-	public Integer getNumUsuaris() {
-		return numUsuaris;
-	}
-	public void setNumUsuaris(Integer numUsuaris) {
-		this.numUsuaris = numUsuaris;
-	}
-    
+
 	public int getMes() {
 		 Calendar cal = Calendar.getInstance();
 		 cal.setTime(fecha);

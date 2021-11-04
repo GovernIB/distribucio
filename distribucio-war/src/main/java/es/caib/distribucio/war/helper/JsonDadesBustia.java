@@ -8,109 +8,101 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
-public class JsonDadesBustia implements Comparable<JsonDadesBustia>{
+public class JsonDadesBustia implements Comparable<JsonDadesUo>{
 
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone="Europe/Madrid")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
     private Date fecha;
     private String uoCodi;
     private String uo;
-    private Integer anotacionsNoves;
-    private Integer anotacionsTotals;
-    private Integer numAnotacionsReenviades;
-	private Integer numAnotacionsEmail;
-    private Integer numJustificants;
-    private Integer numAnnexos;
-    private Integer numBusties;
-    private Integer numUsuaris;
-    
-    public JsonDadesBustia(Date fecha, String uoCodi, String uo, Integer anotacionsNoves, 
-    		Integer anotacionsTotals, Integer numAnotacionsReenviades, Integer numAnotacionsEmail, Integer numJustificants,
-    		Integer numAnnexos, Integer numBusties, Integer numUsuaris){
-    	this.fecha = fecha;
-    	this.uoCodi = uoCodi;
-    	this.uo = uo;
-    	this.anotacionsNoves = anotacionsNoves;
-    	this.anotacionsTotals = anotacionsTotals;
-    	this.numAnotacionsReenviades = numAnotacionsReenviades;
-    	this.numAnotacionsEmail = numAnotacionsEmail;
-    	this.numJustificants = numJustificants;
-    	this.numAnnexos = numAnnexos;
-    	this.numBusties = numBusties;
-    	this.numUsuaris = numUsuaris;
-    }
-	@Override
-	public int compareTo(JsonDadesBustia o) {
-		return this.fecha.compareTo(o.getFecha());
+    private Long bustiaId;
+	private String nom;
+	private Long usuaris;
+	private Long usuarisPermis;
+	private Long usuarisRol;
+	
+	public JsonDadesBustia(Date fecha, String uoCodi, String uo, Long bustiaId, String nom, Long usuaris,
+			Long usuarisPermis, Long usuarisRol) {
+		super();
+		this.fecha = fecha;
+		this.uoCodi = uoCodi;
+		this.uo = uo;
+		this.bustiaId = bustiaId;
+		this.nom = nom;
+		this.usuaris = usuaris;
+		this.usuarisPermis = usuarisPermis;
+		this.usuarisRol = usuarisRol;
 	}
 
+	@Override
+	public int compareTo(JsonDadesUo o) {
+		return this.fecha.compareTo(o.getFecha());
+	}
+    
 	public Date getFecha() {
 		return fecha;
 	}
+
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-	public Integer getAnotacionsNoves() {
-		return anotacionsNoves;
-	}
-	public void setAnotacionsNoves(Integer anotacionsNoves) {
-		this.anotacionsNoves = anotacionsNoves;
-	}
-	public Integer getAnotacionsTotals() {
-		return anotacionsTotals;
-	}
-	public void setAnotacionsTotals(Integer anotacionsTotals) {
-		this.anotacionsTotals = anotacionsTotals;
-	}
-		public String getUoCodi() {
+
+	public String getUoCodi() {
 		return uoCodi;
 	}
+
 	public void setUoCodi(String uoCodi) {
 		this.uoCodi = uoCodi;
 	}
+
 	public String getUo() {
 		return uo;
 	}
+
 	public void setUo(String uo) {
 		this.uo = uo;
 	}
-	public Integer getNumAnotacionsReenviades() {
-		return numAnotacionsReenviades;
+
+	public Long getBustiaId() {
+		return bustiaId;
 	}
-	public void setNumAnotacionsReenviades(Integer numAnotacionsReenviades) {
-		this.numAnotacionsReenviades = numAnotacionsReenviades;
+
+	public void setBustiaId(Long bustiaId) {
+		this.bustiaId = bustiaId;
 	}
-	public Integer getNumAnotacionsEmail() {
-		return numAnotacionsEmail;
+
+	public String getNom() {
+		return nom;
 	}
-	public void setNumAnotacionsEmail(Integer numAnotacionsEmail) {
-		this.numAnotacionsEmail = numAnotacionsEmail;
+
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
-	public Integer getNumJustificants() {
-		return numJustificants;
+
+	public Long getUsuaris() {
+		return usuaris;
 	}
-	public void setNumJustificants(Integer numJustificants) {
-		this.numJustificants = numJustificants;
+
+	public void setUsuaris(Long usuaris) {
+		this.usuaris = usuaris;
 	}
-	public Integer getNumAnnexos() {
-		return numAnnexos;
+
+	public Long getUsuarisPermis() {
+		return usuarisPermis;
 	}
-	public void setNumAnnexos(Integer numAnnexos) {
-		this.numAnnexos = numAnnexos;
+
+	public void setUsuarisPermis(Long usuarisPermis) {
+		this.usuarisPermis = usuarisPermis;
 	}
-	public Integer getNumBusties() {
-		return numBusties;
+
+	public Long getUsuarisRol() {
+		return usuarisRol;
 	}
-	public void setNumBusties(Integer numBusties) {
-		this.numBusties = numBusties;
+
+	public void setUsuarisRol(Long usuarisRol) {
+		this.usuarisRol = usuarisRol;
 	}
-	public Integer getNumUsuaris() {
-		return numUsuaris;
-	}
-	public void setNumUsuaris(Integer numUsuaris) {
-		this.numUsuaris = numUsuaris;
-	}
-    
+
 	public int getMes() {
 		 Calendar cal = Calendar.getInstance();
 		 cal.setTime(fecha);
