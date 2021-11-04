@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
-public class JsonDadesEstat implements Comparable<JsonDadesUo>{
+public class JsonDadesEstat implements Comparable<JsonDadesEstat>{
 
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
@@ -34,7 +34,7 @@ public class JsonDadesEstat implements Comparable<JsonDadesUo>{
 	}
 
 	@Override
-	public int compareTo(JsonDadesUo o) {
+	public int compareTo(JsonDadesEstat o) {
 		return this.fecha.compareTo(o.getFecha());
 	}
     

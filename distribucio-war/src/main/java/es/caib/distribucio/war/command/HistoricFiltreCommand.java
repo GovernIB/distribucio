@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -85,8 +88,9 @@ public class HistoricFiltreCommand {
 	}
 
 	public HistoricFiltreCommand() {
-		this.dataFi = null;
-		this.dataInici = null;
+		DateTime dateStartToday = (new LocalDate()).toDateTimeAtStartOfDay();
+		this.dataFi = dateStartToday.minusDays(1).toDate();
+		this.dataInici = dateStartToday.minusDays(30).toDate();
 		this.codiUnitatSuperior = null;
 		this.unitatIdFiltre = new ArrayList<Long>();
 		this.dadesMostrar = new ArrayList<HistoricDadesMostrarEnumDto>();

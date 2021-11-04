@@ -140,19 +140,13 @@ public class HistoricController extends BaseAdminController {
 	    				true));
 	}
 	
-	@RequestMapping(value = "/JsonDataUO", method = RequestMethod.POST)
+	@RequestMapping(value = "/JsonDadesHistoric", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, List<JsonDadesUo>> getDataHistoricUO(
+	public JsonDades getDadesHistoric(
 			HttpServletRequest request,
 			@Valid HistoricFiltreCommand historicFiltreCommand,
 			BindingResult bindingResult,
 			Model model) {
-//			Model model) throws NoSuchAlgorithmException {	
-//		Map<String, List<JsonDadesUo>> results = new HashMap<>();		
-//		results.put("uo_1", cargarTabla("uo_1"));
-//		//TODO: comentar las dos líneas siguientes para ver todas las métricas de la UO en un sólo gráfico
-//		results.put("uo_2", cargarTabla("uo_2"));
-//		results.put("uo_3", cargarTabla("uo_3"));
 
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		
@@ -171,94 +165,81 @@ public class HistoricController extends BaseAdminController {
 				entitatActual.getId(),
 				historicFiltreCommand.asDto());
 		
-		// Transforma les dades a resultlats
-		Map<String, List<JsonDadesUo>> results = transformarDadesJson(dades);
+		// Transforma les dades a resultats
+		JsonDades results = transformarDadesJson(dades);
 
 		return results;	
 	}	
 	
 	private JsonDades transformarDadesJson(HistoricDadesDto dades) {
-		JsonDades results = null;
 		
 		// Dades d'anotacions per UO
 		Map<String, List<JsonDadesUo>> resultsUo = new HashMap<>();
 		
-		for (HistoricAnotacioDto anotacio : dades.getDadesAnotacions()) {
-			List<JsonDadesUo> lrespuestaJson = resultsUo.get(anotacio.getUnitat().getCodi());
-			if (lrespuestaJson == null) {
-				lrespuestaJson = new ArrayList<JsonDadesUo>();
-				resultsUo.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
+		if (dades.getDadesAnotacions() != null) {
+			for (HistoricAnotacioDto anotacio : dades.getDadesAnotacions()) {
+				List<JsonDadesUo> lrespuestaJson = resultsUo.get(anotacio.getUnitat().getCodi());
+				if (lrespuestaJson == null) {
+					lrespuestaJson = new ArrayList<JsonDadesUo>();
+					resultsUo.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
+				}
+				lrespuestaJson.add(new JsonDadesUo(
+						anotacio.getData(),
+						anotacio.getUnitat().getCodi(), 
+						anotacio.getUnitat().getNom(),
+						anotacio.getAnotacions(), 
+						anotacio.getAnotacionsTotal(), 
+						anotacio.getReenviaments(), 
+						anotacio.getEmails(), 
+						anotacio.getJustificants(), 
+						anotacio.getAnnexos(), 
+						anotacio.getBusties(), 
+						anotacio.getUsuaris()));
 			}
-			lrespuestaJson.add(new JsonDadesUo(
-					anotacio.getData(),
-					anotacio.getUnitat().getCodi(), 
-					anotacio.getUnitat().getNom(),
-					anotacio.getAnotacions(), 
-					anotacio.getAnotacionsTotal(), 
-					anotacio.getReenviaments(), 
-					anotacio.getEmails(), 
-					anotacio.getJustificants(), 
-					anotacio.getAnnexos(), 
-					anotacio.getBusties(), 
-					anotacio.getUsuaris()));
 		}
 
 		// Dades estat
 		Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> resultsEstat = new HashMap<>();
-		for (HistoricEstatDto estat : dades.getDadesEstats()) {
-			List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(estat.getEstat());
-			if (lrespuestaJson == null) {
-				lrespuestaJson = new ArrayList<JsonDadesEstat>();
-				resultsEstat.put(estat.getEstat(), lrespuestaJson);
+		if (dades.getDadesEstats() != null) {
+			for (HistoricEstatDto estat : dades.getDadesEstats()) {
+				List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(estat.getEstat());
+				if (lrespuestaJson == null) {
+					lrespuestaJson = new ArrayList<JsonDadesEstat>();
+					resultsEstat.put(estat.getEstat(), lrespuestaJson);
+				}
+				lrespuestaJson.add(new JsonDadesEstat(
+						estat.getData(),
+						estat.getEstat(),
+						estat.getCorrecte(),
+						estat.getCorrecteTotal(),
+						estat.getError(),
+						estat.getErrorTotal(),
+						estat.getTotal()));
 			}
-			lrespuestaJson.add(new JsonDadesEstat(
-					estat.getData(),
-					estat.getEstat(),
-					estat.getCorrecte(),
-					estat.getCorrecteTotal(),
-					estat.getError(),
-					estat.getErrorTotal(),
-					estat.getTotal()));
 		}
 				
 		// Dades bústies
 		Map<Long, List<JsonDadesBustia>> resultsBustia = new HashMap<>();
-		for (HistoricBustiaDto bustia : dades.getDadesBusties()) {
-			List<JsonDadesBustia> lrespuestaJson = resultsBustia.get(bustia.getBustiaId());
-			if (lrespuestaJson == null) {
-				lrespuestaJson = new ArrayList<JsonDadesBustia>();
-				resultsBustia.put(bustia.getBustiaId(), lrespuestaJson);
+		if (dades.getDadesBusties() != null) {
+			for (HistoricBustiaDto bustia : dades.getDadesBusties()) {
+				List<JsonDadesBustia> lrespuestaJson = resultsBustia.get(bustia.getBustiaId());
+				if (lrespuestaJson == null) {
+					lrespuestaJson = new ArrayList<JsonDadesBustia>();
+					resultsBustia.put(bustia.getBustiaId(), lrespuestaJson);
+				}
+				lrespuestaJson.add(new JsonDadesBustia(
+						bustia.getData(),
+						bustia.getUnitatCodi(),
+						bustia.getUnitatNom(),
+						bustia.getBustiaId(),
+						bustia.getNom(),
+						bustia.getUsuaris(),
+						bustia.getUsuarisPermis(),
+						bustia.getUsuarisRol()));
 			}
-			lrespuestaJson.add(new JsonDadesBustia(
-					bustia.getData(),
-					bustia.getUnitatCodi(),
-					bustia.getUnitatNom(),
-					bustia.getBustiaId(),
-					bustia.getNom(),
-					bustia.getUsuaris(),
-					bustia.getUsuarisPermis(),
-					bustia.getUsuarisRol()));
 		}
-		return results;
-	}
-
-	private List<JsonDadesUo> cargarTabla(String uo) throws NoSuchAlgorithmException {
-		List<JsonDadesUo> lrespuestaJson = new ArrayList<JsonDadesUo>();
-
-		SecureRandom number = SecureRandom.getInstance("SHA1PRNG");
-
-		for (long i = 0; i < 6; i++) {
-			long j = number.nextInt(21);
-			Date dt = new Date();
-	        Calendar c = Calendar.getInstance();
-	        c.setTime(dt);
-	        c.add(Calendar.DATE, new Long(i).intValue());
-	        dt = c.getTime();
-	        JsonDadesUo fila = new JsonDadesUo(dt, "uoCod_"+i, uo, i+j, (i+j)*5,
-					i+j+2, i+j+1, i+j+3, i+j+7, i+j+10, i+j+15);
-			lrespuestaJson.add(fila);
-		}
-		return lrespuestaJson;
+		
+		return new JsonDades(resultsUo, resultsEstat, resultsBustia);
 	}
 	
 	@RequestMapping(value = "/exportar", method = RequestMethod.GET, produces = {})

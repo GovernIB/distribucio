@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
-public class JsonDadesBustia implements Comparable<JsonDadesUo>{
+public class JsonDadesBustia implements Comparable<JsonDadesBustia>{
 
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
@@ -35,7 +35,7 @@ public class JsonDadesBustia implements Comparable<JsonDadesUo>{
 	}
 
 	@Override
-	public int compareTo(JsonDadesUo o) {
+	public int compareTo(JsonDadesBustia o) {
 		return this.fecha.compareTo(o.getFecha());
 	}
     

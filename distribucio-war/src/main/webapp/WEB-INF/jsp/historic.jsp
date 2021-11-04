@@ -60,6 +60,12 @@
 		language = "ca";
 	}
 	
+	var hiHaDadesUO = false;
+	var hiHaDadesEstat = false;
+	var hiHaDadesBustia = false;
+	var hiHaDades = false;
+	var graficoOTaulaValue = 'mostraTaules';
+	
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
 		    return item.text;
@@ -125,7 +131,7 @@
         return color;
     }
 
-	var metricsDefinition = {
+	var metricsDefinition = { // UO
 			'ANOTACIONS_NOVES': {
 				'attrname' : 'anotacions_noves',
 				'text': "<spring:message code="historic.metriques.enum.ANOTACIONS_NOVES"/>"
@@ -157,12 +163,41 @@
 			'USUARIS': {
 				'attrname' : 'num_usuaris',
 				'text': "<spring:message code="historic.metriques.enum.USUARIS"/>"
+			},  // ESTAT
+			'CORRECTE': {
+				'attrname' : 'correcte',
+				'text': "<spring:message code="historic.metriques.enum.CORRECTE"/>"
+			},
+			'CORRECTE_TOTAL': {
+				'attrname' : 'correcte_total',
+				'text': "<spring:message code="historic.metriques.enum.CORRECTE_TOTAL"/>"
+			},
+			'ERROR': {
+				'attrname' : 'error',
+				'text': "<spring:message code="historic.metriques.enum.ERROR"/>"
+			},
+			'ERROR_TOTAL': {
+				'attrname' : 'error_total',
+				'text': "<spring:message code="historic.metriques.enum.ERROR_TOTAL"/>"
+			},
+			'TOTAL': {
+				'attrname' : 'total',
+				'text': "<spring:message code="historic.metriques.enum.TOTAL"/>"
+			},
+			'USUARIS_BUSTIA': { // BUSTIA
+				'attrname' : 'usuaris_bustia',
+				'text': "<spring:message code="historic.metriques.enum.USUARIS_BUSTIA"/>"
+			},
+			'USUARIS_PERMIS': {
+				'attrname' : 'usuaris_permis',
+				'text': "<spring:message code="historic.metriques.enum.USUARIS_PERMIS"/>"
+			},
+			'USUARIS_ROL': {
+				'attrname' : 'usuaris_rol',
+				'text': "<spring:message code="historic.metriques.enum.USUARIS_ROL"/>"
 			}
+			
 		}
-		
-// 		var showDadesUO = ${showDadesUO};
-// 		var showDadesEstat = ${showDadesEstat};
-// 		var showDadesBusties = ${showDadesBusties};
 		
 		function chartLine(canvas, labels, datasets, title) {
 			return new Chart(canvas, {
@@ -197,135 +232,6 @@
 			return datasetTotal;
 		}
 		
-		function createChartMetric(data, metric, colors) {
-
-			var columns = Object.keys(data);
-			
-			columns.forEach(function(c){
-				data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
-			});
-			
-			var dates = data[columns[0]].map(item => getDate(item.fecha));
-			
-			var datasets = [];
-			var datasetTotal = new Array(dates.length).fill(0);
-			columns.forEach(function(c){
-				var attrname = metricsDefinition[metric]['attrname'];
-				var dataset = data[c].map(item => item[attrname] != null ? item[attrname] : 0)
-				datasetTotal = totalitzar(datasetTotal, dataset);
-				var color = (colors == null || colors[c] == null) ? getRandomColor() : colors[c]
-				datasets.push({
-    				'data': dataset,
-    				'label': c,
-			        'lineTension': 0, //equivalent to the old bezierCurve: false
-    				'backgroundColor': "rgba(0,0,0,0.0)",
-    				'borderColor': color
-    			});	
-			});			
-			
-			var color = '';
-			do {
-				color = getRandomColor();
-			} while (color in colors);
-			
-			datasets.push({
-				'data': datasetTotal,
-				'label': 'Total',
-		        'lineTension': 0,
-				'backgroundColor': "rgba(0,0,0,0.0)",
-				'borderColor': color
-			});
-			
-			var ctx = 'chart-' + metric;
-			var labels = dates;
-			var chart = chartLine(ctx, labels, datasets, metricsDefinition[metric]["text"]);
-			chart.update();
-		}
-		
-		function createChartAllMetriques(data, metriques) {
-
-			var columns = Object.keys(data);
-			
-			columns.forEach(function(c){
-				data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
-			});
-			
-			var dates = data[columns[0]].map(item => getDate(item.fecha));
-			var colors = new Array(metriques.length).fill(getRandomColor());
-			var datasets = [];
-			
-			var colors = {};
-			for (var metric in metriques) {
-				colors[metric] = getRandomColor();
-			}
-			
-			metriques.forEach(function(metric){
-				var nombre = metricsDefinition[metric]['text'];
-				var attrname = metricsDefinition[metric]['attrname'];
-				var dataset = data[columns[0]].map(item => item[attrname] != null ? item[attrname] : 0);
-				var color = (colors == null || colors[metric] == null) ? getRandomColor() : colors[metric]
-				datasets.push({
-    				'data': dataset,
-    				'label': nombre,
-			        'lineTension': 0, //equivalent to the old bezierCurve: false
-    				'backgroundColor': "rgba(0,0,0,0.0)",
-    				'borderColor': color
-    			});	
-			});
-			
-			var ctx = 'chart-' + columns[0];
-			var labels = dates;
-			var chart = chartLine(ctx, labels, datasets, columns[0]);
-			chart.update();
-		}
-		/**
-		* 	CODI SECCIÓ Dades Per UO
-		*/
-		function seccioDadesUO(json) {
-
-			var metriques = [
-				'ANOTACIONS_NOVES',
-				'ANOTACIONS_TOTALS',
-				'ANOTACIONS_REENVIADES',
-				'ANOTACIONS_EMAIL',
-				'JUSTIFICANTS',
-				'ANNEXOS',
-				'BUSTIES',
-				'USUARIS'
-			];
-			
-			var selectorContainer = '#div-canvas-uo';
-			var $container = $(selectorContainer);
-
-			function viewHistoric(data) {
-				$container.html("");
-				
-				var columns = Object.keys(data);
-				
-				if (columns.length > 1) {
-					var colors = {};
-					for (var column in data) {
-						colors[column] = getRandomColor();
-					}
-					metriques.forEach(function(metric){
-						var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
-						var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
-						$container.append(title + canvas);
-						createChartMetric(data, metric, colors);
-						
-					});
-				} else {
-					var title = '<h2>' + '<spring:message code="historic.chart.titol.una.UO"/> '+ columns[0] + '</h2>'
-					var canvas = '<canvas id="chart-' + columns[0] + '" width="400" height="100"></canvas>';
-					$container.append(title + canvas);
-					createChartAllMetriques(data, metriques);
-				}
-			}
-			
-			viewHistoric(json);
-
-		}
-		
 		function getDate(date){
 			<c:choose>
 				<c:when test="${historicFiltreCommand.tipusAgrupament=='DIARI'}">
@@ -352,6 +258,7 @@
 			</c:choose>
 		}
 
+		
 	$(document).ready(function() {
 		
 		$('#codiUnitatSuperior').change(function() {
@@ -366,12 +273,34 @@
 				
 		$('input[name="graficsOTaula"]').change(function() {
 		    if (this.value == 'mostraTaules') {
-				$('#div-taula-uo').show();
-				$('#div-canvas-uo').hide();
+		    	if (hiHaDadesUO){
+					$('#div-taula-uo').show();
+					$('#div-canvas-uo').hide();
+		    	}
+		    	if (hiHaDadesEstat){
+					$('#div-taula-estat').show();
+					$('#div-canvas-estat').hide();
+		    	}
+		    	if (hiHaDadesBustia){
+					$('#div-taula-bustia').show();
+					$('#div-canvas-bustia').hide();
+		    	}
+				graficoOTaulaValue = 'mostraTaules';
 		    }
 		    else if (this.value == 'mostraGrafics') {
-				$('#div-taula-uo').hide();
-				$('#div-canvas-uo').show();
+		    	if (hiHaDadesUO){
+					$('#div-taula-uo').hide();
+					$('#div-canvas-uo').show();
+		    	}
+		    	if (hiHaDadesEstat){
+					$('#div-taula-estat').hide();
+					$('#div-canvas-estat').show();
+		    	}
+		    	if (hiHaDadesBustia){
+					$('#div-taula-bustia').hide();
+					$('#div-canvas-bustia').show();
+		    	}
+				graficoOTaulaValue = 'mostraGrafics';
 		    }
 		});
 		
@@ -399,56 +328,57 @@
 
         $('#form_filtre').submit(function(e) {
         	
+        	hiHaDades = false;
+        	hiHaDadesUO = false;
+        	hiHaDadesEstat = false;
+        	hiHaDadesBustia = false;
+        	
 			$('.div-dades-carregant').show();
            	
            	$("#taulaUO").dataTable().fnDestroy();
+           	$("#taulaEstat").dataTable().fnDestroy();
+           	$("#taulaBustia").dataTable().fnDestroy();
 
 // 			setTimeout(function(){ 
-	        if ($('#dadesMostrar').select2("val").includes("UO")){	
+// 	        if ($('#dadesMostrar').select2("val").includes("UO")){	
 				var content = '';
 				$.ajax({
 					type: 'POST',
-			        url: '<c:url value="/historic/JsonDataUO"/>',
+			        url: '<c:url value="/historic/JsonDadesHistoric"/>',
  					data: $(this).serialize(),
-			        success: function(json) {
-			        	$("#tBodyTaulaUO").empty();
-						$.each(json, function(i, val) {
-							$.each(val, function(j, dataUO) {
-								let fila = '';
-								fila += ('<tr>');
-								fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
-		 						fila += ('<td>' + dataUO.uo_codi + '</td>');
-		 						fila += ('<td>' + dataUO.uo + '</td>');
-		 						fila += ('<td>' + dataUO.anotacions_noves + '</td>');
-		 						fila += ('<td>' + dataUO.anotacions_totals + '</td>');
-		 						fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
-		 						fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
-		 						fila += ('<td>' + dataUO.num_justificants + '</td>');
-		 						fila += ('<td>' + dataUO.num_annexos + '</td>');
-		 						fila += ('<td>' + dataUO.num_busties + '</td>');
-		 						fila += ('<td>' + dataUO.num_usuaris + '</td>');
-		 						fila += ('</tr>');
-		 						$("#tBodyTaulaUO").append(fila);
-							});
-						});
-							
-						$("#taulaUO").dataTable( {
-							language: {
-								url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
-							},
-							paging: true,
-							pageLength: 10,
-							order: [[ 0, "asc" ]],
-							pagingStyle: 'page',
-							lengthMenu: [10, 20, 50, 100, 250],
-							dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
-							select: {
-								style: 'multi',
-								selector: 'td:first-child',
-								info: false
-							}
-						} );
-						seccioDadesUO(json);
+			        success: function(json) {	
+			        	if (!jQuery.isEmptyObject(json)) {			        		
+			        		if (!jQuery.isEmptyObject(json.json_dades_uo_map)){
+				        		hiHaDades = true;
+				        		hiHaDadesUO = true;
+				        		tratarDadesUo(json.json_dades_uo_map);
+				        	} else {
+				        		$("#dadesUO").hide();
+				        	}
+	 			        	if (!jQuery.isEmptyObject(json.json_dades_estat_map)){
+								hiHaDades = true;						
+								hiHaDadesEstat = true;						
+	 			        		tratarDadesEstat(json.json_dades_estat_map);
+	 			        	} else {
+				        		$("#dadesEstat").hide();
+				        	}
+	 			        	if (!jQuery.isEmptyObject(json.json_dades_bustia_map)){
+								hiHaDades = true;
+								hiHaDadesBustia = true;
+	 			        		tratarDadesBustia(json.json_dades_bustia_map);
+	 			        	} else {
+				        		$("#dadesBustia").hide();
+				        	}
+			        	}
+			        	if (!hiHaDades) {
+			        		$('#div-sense-dades').show();
+		           			$("#dadesUO").hide();
+		           			$("#dadesEstat").hide();
+		           			$("#dadesBustia").hide();
+			        	} else {
+			        		$('#div-sense-dades').hide();
+			        	}
+					        	
 			      	},
 			        error: function(e) {
 			        	content += 'Hi ha hagut un error recuperant dades de historic ';
@@ -458,16 +388,8 @@
 			      	}
 			    });
 				
-				$("#dadesUO").show();
 					
-				if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraTaules') {
-					$('#div-taula-uo').show();
-					$('#div-canvas-uo').hide();
-	       		} else if (document.querySelector('input[name="graficsOTaula"]:checked').value == 'mostraGrafics') {
-					$('#div-taula-uo').hide();
-					$('#div-canvas-uo').show();
-		    	}		
-			}
+// 			}
 // 			}, 1000);
 
 	        e.preventDefault();
@@ -478,7 +400,377 @@
 			 window.location.href = $(this).attr('href') + "?format=" + $('#exportFormat').val();
 		});
 
-	});
+	}); // FIN $(document).ready
+	
+	function tratarDadesUo(json) {
+		$("#tBodyTaulaUO").empty();
+		$.each(json, function(i, val) {
+			$.each(val, function(j, dataUO) {
+				let fila = '';
+				fila += ('<tr>');
+				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
+					fila += ('<td>' + dataUO.uo_codi + '</td>');
+					fila += ('<td>' + dataUO.uo + '</td>');
+					fila += ('<td>' + dataUO.anotacions_noves + '</td>');
+					fila += ('<td>' + dataUO.anotacions_totals + '</td>');
+					fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
+					fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
+					fila += ('<td>' + dataUO.num_justificants + '</td>');
+					fila += ('<td>' + dataUO.num_annexos + '</td>');
+					fila += ('<td>' + dataUO.num_busties + '</td>');
+					fila += ('<td>' + dataUO.num_usuaris + '</td>');
+					fila += ('</tr>');
+					$("#tBodyTaulaUO").append(fila);
+			});
+		});
+			
+		$("#taulaUO").dataTable( {
+			language: {
+				url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
+			},
+			paging: true,
+			pageLength: 10,
+			order: [[ 0, "asc" ]],
+			pagingStyle: 'page',
+			lengthMenu: [10, 20, 50, 100, 250],
+			dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
+			select: {
+				style: 'multi',
+				selector: 'td:first-child',
+				info: false
+			}
+		} );
+		
+		seccioDadesUO(json);
+		
+		$("#dadesUO").show();
+		
+		if (graficoOTaulaValue == 'mostraTaules') {
+			$('#div-taula-uo').show();
+			$('#div-canvas-uo').hide();
+			$('#div-taula-estat').show();
+			$('#div-canvas-estat').hide();
+			$('#div-taula-bustia').show();
+			$('#div-canvas-bustia').hide();
+		} else if (graficoOTaulaValue == 'mostraGrafics') {
+			$('#div-taula-uo').hide();
+			$('#div-canvas-uo').show();
+			$('#div-taula-estat').hide();
+			$('#div-canvas-estat').show();
+			$('#div-taula-bustia').hide();
+			$('#div-canvas-bustia').show();
+		}
+
+	}
+	
+	function seccioDadesUO(json) {
+
+		var metriques = [
+			'ANOTACIONS_NOVES',
+			'ANOTACIONS_TOTALS',
+			'ANOTACIONS_REENVIADES',
+			'ANOTACIONS_EMAIL',
+			'JUSTIFICANTS',
+			'ANNEXOS',
+			'BUSTIES',
+			'USUARIS'
+		];
+		
+		var selectorContainer = '#div-canvas-uo';
+		var $container = $(selectorContainer);
+
+		function viewHistoric(data) {
+			$container.html("");
+			
+			var columns = Object.keys(data);
+			
+			if (columns.length > 1) {
+				var colors = {};
+				for (var column in data) {
+					colors[column] = getRandomColor();
+				}
+				metriques.forEach(function(metric){
+					var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
+					var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
+					$container.append(title + canvas);
+					createChartMetric(data, metric, colors);
+					
+				});
+			} else {
+				var title = '<h2>' + '<spring:message code="historic.chart.titol.una.UO"/> '+ columns[0] + '</h2>'
+				var canvas = '<canvas id="chart-' + columns[0] + '" width="400" height="100"></canvas>';
+				$container.append(title + canvas);
+				createChartAllMetriques(data, metriques);
+			}
+		}
+		
+		viewHistoric(json);
+
+	}
+	
+	function tratarDadesEstat(json) {
+		$("#tBodyTaulaEstat").empty();
+		$.each(json, function(i, val) {
+			$.each(val, function(j, dataUO) {
+				let fila = '';
+				fila += ('<tr>');
+				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
+					fila += ('<td>' + dataUO.estat + '</td>');
+					fila += ('<td>' + dataUO.correcte + '</td>');
+					fila += ('<td>' + dataUO.correcte_total + '</td>');
+					fila += ('<td>' + dataUO.error + '</td>');
+					fila += ('<td>' + dataUO.error_total + '</td>');
+					fila += ('<td>' + dataUO.total + '</td>');
+					fila += ('</tr>');
+					$("#tBodyTaulaEstat").append(fila);
+			});
+		});
+			
+		$("#taulaEstat").dataTable( {
+			language: {
+				url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
+			},
+			paging: true,
+			pageLength: 10,
+			order: [[ 0, "asc" ]],
+			pagingStyle: 'page',
+			lengthMenu: [10, 20, 50, 100, 250],
+			dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
+			select: {
+				style: 'multi',
+				selector: 'td:first-child',
+				info: false
+			}
+		} );
+		
+		seccioDadesEstat(json);
+		
+		$("#dadesEstat").show();
+		
+		if (graficoOTaulaValue == 'mostraTaules') {
+			$('#div-taula-estat').show();
+			$('#div-canvas-estat').hide();
+		} else if (graficoOTaulaValue == 'mostraGrafics') {
+			$('#div-taula-estat').hide();
+			$('#div-canvas-estat').show();
+		}
+
+	}
+	
+	function seccioDadesEstat(json) {
+
+		var metriques = [
+			'CORRECTE',
+			'CORRECTE_TOTAL',
+			'ERROR',
+			'ERROR_TOTAL',
+			'TOTAL'
+		];
+		
+		var selectorContainer = '#div-canvas-estat';
+		var $container = $(selectorContainer);
+
+		function viewHistoric(data) {
+			$container.html("");
+			
+			var columns = Object.keys(data);
+			
+			if (columns.length > 1) {
+				var colors = {};
+				for (var column in data) {
+					colors[column] = getRandomColor();
+				}
+				metriques.forEach(function(metric){
+					var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
+					var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
+					$container.append(title + canvas);
+					createChartMetric(data, metric, colors);
+					
+				});
+			} else {
+				var title = '<h2>' + '<spring:message code="historic.chart.titol.un.estat"/> '+ columns[0] + '</h2>'
+				var canvas = '<canvas id="chart-' + columns[0] + '" width="400" height="100"></canvas>';
+				$container.append(title + canvas);
+				createChartAllMetriques(data, metriques);
+			}
+		}
+		
+		viewHistoric(json);
+
+	}
+	
+	function tratarDadesBustia(json) {
+		$("#tBodyTaulaBustia").empty();
+		$.each(json, function(i, val) {
+			$.each(val, function(j, dataUO) {
+				let fila = '';
+				fila += ('<tr>');
+				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
+					fila += ('<td>' + dataUO.uo_codi + '</td>');
+					fila += ('<td>' + dataUO.uo + '</td>');
+					fila += ('<td>' + dataUO.bustia_id + '</td>');
+					fila += ('<td>' + dataUO.nom + '</td>');
+					fila += ('<td>' + dataUO.usuaris + '</td>');
+					fila += ('<td>' + dataUO.usuaris_permis + '</td>');
+					fila += ('<td>' + dataUO.usuaris_rol + '</td>');
+					fila += ('</tr>');
+					$("#tBodyTaulaBustia").append(fila);
+			});
+		});
+			
+		$("#taulaBustia").dataTable( {
+			language: {
+				url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
+			},
+			paging: true,
+			pageLength: 10,
+			order: [[ 0, "asc" ]],
+			pagingStyle: 'page',
+			lengthMenu: [10, 20, 50, 100, 250],
+			dom: '<"row"<"col-md-6"i><"col-md-6"<"botons">>>' + 't<"row"<"col-md-3"l><"col-md-9"p>>',
+			select: {
+				style: 'multi',
+				selector: 'td:first-child',
+				info: false
+			}
+		} );
+		
+		seccioDadesBustia(json);
+		
+		$("#dadesBustia").show();
+		
+		if (graficoOTaulaValue == 'mostraTaules') {
+			$('#div-taula-bustia').show();
+			$('#div-canvas-bustia').hide();
+		} else if (graficoOTaulaValue == 'mostraGrafics') {
+			$('#div-taula-bustia').hide();
+			$('#div-canvas-bustia').show();
+		}
+
+	}
+	
+	function seccioDadesBustia(json) {
+
+		var metriques = [
+			'USUARIS_BUSTIA',
+			'USUARIS_PERMIS',
+			'USUARIS_ROL'
+		];
+		
+		var selectorContainer = '#div-canvas-bustia';
+		var $container = $(selectorContainer);
+
+		function viewHistoric(data) {
+			$container.html("");
+			
+			var columns = Object.keys(data);
+			
+			if (columns.length > 1) {
+				var colors = {};
+				for (var column in data) {
+					colors[column] = getRandomColor();
+				}
+				metriques.forEach(function(metric){
+					var title = '<h2>' + metricsDefinition[metric]["text"] + '</h2>'
+					var canvas = '<canvas id="chart-' + metric + '" width="400" height="100"></canvas>';
+					$container.append(title + canvas);
+					createChartMetric(data, metric, colors);
+					
+				});
+			} else {
+				var title = '<h2>' + '<spring:message code="historic.chart.titol.una.bustia"/> '+ columns[0] + '</h2>'
+				var canvas = '<canvas id="chart-' + columns[0] + '" width="400" height="100"></canvas>';
+				$container.append(title + canvas);
+				createChartAllMetriques(data, metriques);
+			}
+		}
+		
+		viewHistoric(json);
+
+	}
+
+	function createChartMetric(data, metric, colors) {
+
+		var columns = Object.keys(data);
+		
+		columns.forEach(function(c){
+			data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
+		});
+		
+		var dates = data[columns[0]].map(item => getDate(item.fecha));
+		
+		var datasets = [];
+		var datasetTotal = new Array(dates.length).fill(0);
+		columns.forEach(function(c){
+			var attrname = metricsDefinition[metric]['attrname'];
+			var dataset = data[c].map(item => item[attrname] != null ? item[attrname] : 0)
+			datasetTotal = totalitzar(datasetTotal, dataset);
+			var color = (colors == null || colors[c] == null) ? getRandomColor() : colors[c]
+			datasets.push({
+				'data': dataset,
+				'label': c,
+		        'lineTension': 0, //equivalent to the old bezierCurve: false
+				'backgroundColor': "rgba(0,0,0,0.0)",
+				'borderColor': color
+			});	
+		});			
+		
+		var color = '';
+		do {
+			color = getRandomColor();
+		} while (color in colors);
+		
+		datasets.push({
+			'data': datasetTotal,
+			'label': 'Total',
+	        'lineTension': 0,
+			'backgroundColor': "rgba(0,0,0,0.0)",
+			'borderColor': color
+		});
+		
+		var ctx = 'chart-' + metric;
+		var labels = dates;
+		var chart = chartLine(ctx, labels, datasets, metricsDefinition[metric]["text"]);
+		chart.update();
+	}
+	
+	function createChartAllMetriques(data, metriques) {
+
+		var columns = Object.keys(data);
+		
+		columns.forEach(function(c){
+			data[c] = data[c].sort((a, b) => (moment(a.fecha,'DD-MM-YYYY') > moment(b.fecha,'DD-MM-YYYY')));
+		});
+		
+		var dates = data[columns[0]].map(item => getDate(item.fecha));
+		var colors = new Array(metriques.length).fill(getRandomColor());
+		var datasets = [];
+		
+		var colors = {};
+		for (var metric in metriques) {
+			colors[metric] = getRandomColor();
+		}
+		
+		metriques.forEach(function(metric){
+			var nombre = metricsDefinition[metric]['text'];
+			var attrname = metricsDefinition[metric]['attrname'];
+			var dataset = data[columns[0]].map(item => item[attrname] != null ? item[attrname] : 0);
+			var color = (colors == null || colors[metric] == null) ? getRandomColor() : colors[metric]
+			datasets.push({
+				'data': dataset,
+				'label': nombre,
+		        'lineTension': 0, //equivalent to the old bezierCurve: false
+				'backgroundColor': "rgba(0,0,0,0.0)",
+				'borderColor': color
+			});	
+		});
+		
+		var ctx = 'chart-' + columns[0];
+		var labels = dates;
+		var chart = chartLine(ctx, labels, datasets, columns[0]);
+		chart.update();
+	}
+	
 	</script>
 </head>
 
@@ -591,6 +883,13 @@
 		</div>
 	</form:form>
 	
+	<div id="div-sense-dades" style="display: none;">
+		<table id="taula-sense-Dades" class='table table-bordered table-striped table-hover' style='width:100%'>
+			<tr class="odd">
+				<td valign="top" align="center" class="dataTables_empty"><spring:message code="historic.titol.seccio.sense.dades"/></td>
+			</tr>
+		</table>
+	</div>
 	<div id="dadesUO" style="display: none;">
 		<h1><spring:message code="historic.titol.seccio.dades.uo"/></h1>
 		<div class="row">
@@ -616,6 +915,53 @@
 				</table>
 			</div>
 			<div id="div-canvas-uo" class="col-md-12" style="display: none;"></div>
+		</div>
+	</div>
+
+	<div id="dadesEstat" style="display: none;">
+		<h1><spring:message code="historic.titol.seccio.dades.estat"/></h1>
+		<div class="row">
+			<div id="div-taula-estat" class="col-md-12" style="display: none;">
+				<table id="taulaEstat" class='table table-bordered table-striped table-hover' style='width:100%'>
+					<thead>
+						<tr>
+							<th><spring:message code="historic.taula.header.data" /></th>
+							<th><spring:message code="historic.taula.header.estat" /></th>
+							<th><spring:message code="historic.taula.header.estats.correcte" /></th>
+							<th><spring:message code="historic.taula.header.estats.correcteTotal" /></th>
+							<th><spring:message code="historic.taula.header.estats.error" /></th>
+							<th><spring:message code="historic.taula.header.estats.errorTotal" /></th>
+							<th><spring:message code="historic.taula.header.estats.total" /></th>
+						</tr>
+					</thead>
+					<tbody id="tBodyTaulaEstat"></tbody>
+				</table>
+			</div>
+			<div id="div-canvas-estat" class="col-md-12" style="display: none;"></div>
+		</div>
+	</div>
+
+	<div id="dadesBustia" style="display: none;">
+		<h1><spring:message code="historic.titol.seccio.usuaris.busties"/></h1>
+		<div class="row">
+			<div id="div-taula-bustia" class="col-md-12" style="display: none;">
+				<table id="taulaBustia" class='table table-bordered table-striped table-hover' style='width:100%'>
+					<thead>
+						<tr>
+							<th><spring:message code="historic.taula.header.data" /></th>
+							<th><spring:message code="historic.taula.header.codi.uo" /></th>
+							<th><spring:message code="historic.taula.header.uo" /></th>
+							<th><spring:message code="historic.taula.header.bustia.id" /></th>
+							<th><spring:message code="historic.taula.header.bustia.nom" /></th>
+							<th><spring:message code="historic.taula.header.busties.usuaris" /></th>
+							<th><spring:message code="historic.taula.header.busties.usuarisPermis" /></th>
+							<th><spring:message code="historic.taula.header.busties.usuarisRol" /></th>
+						</tr>
+					</thead>
+					<tbody id="tBodyTaulaBustia"></tbody>
+				</table>
+			</div>
+			<div id="div-canvas-bustia" class="col-md-12" style="display: none;"></div>
 		</div>
 	</div>
 

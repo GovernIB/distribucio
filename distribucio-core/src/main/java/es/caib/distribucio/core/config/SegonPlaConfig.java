@@ -187,7 +187,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	//    0 0 20-06 * * *
                     	// Cada 1min entre les 11h i les 12h
                     	// 0 0/1 11 * * *
-                    	String value = "0 0 20-06 * * *";                    	
+//                    	String value = "0 0 20-06 * * *"; 
+                    	String value = "0 0 20 * * *";
                     	CronTrigger trigger = new CronTrigger(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
