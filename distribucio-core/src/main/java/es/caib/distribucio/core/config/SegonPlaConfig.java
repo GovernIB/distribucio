@@ -181,18 +181,21 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
-//                    	String value = configHelper.getConfig("es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat");
-//                    	if (value == null) 
-//							value = "* * * * * *";
-//
-//                    	CronTrigger trigger = new CronTrigger(value);
-//
-//                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
-//                        return nextExecution;
-                    	Long value = new Long("10000");
-                    	value = 1000*60*60*24L;
-                    	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                    	// Cada 1h a partir de les 20h:
+                    	//   0 0 20/1 * * *
+                    	// Cada 1h entre les 20h i les 6h
+                    	//    0 0 20-06 * * *
+                    	// Cada 1min entre les 11h i les 12h
+                    	// 0 0/1 11 * * *
+                    	String value = "0 0 20-06 * * *";                    	
+                    	CronTrigger trigger = new CronTrigger(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                        
+                        // Cada 60s
+                    	//Long value = new Long("60000");
+                    	//PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        //Date nextExecution = trigger.nextExecutionTime(triggerContext);
+
                         return nextExecution;
                     }
                 }

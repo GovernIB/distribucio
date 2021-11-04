@@ -509,3 +509,49 @@ CREATE TABLE DIS_CONFIG_TYPE
     CODE                 CHARACTER VARYING(128 CHAR)     NOT NULL,
     VALUE                CHARACTER VARYING(2048 CHAR)    DEFAULT NULL
 );
+
+CREATE TABLE DIS_HIS_ANOTACIO
+(
+	ID						 BIGSERIAL	    NOT NULL,
+    ENTITAT_ID               integer     NOT NULL,
+    UNITAT_ID                integer,
+    TIPUS                    character varying(16) NOT NULL,
+    DATA                     timestamp without time zone   NOT NULL,
+    ANOTACIONS               integer	    NOT NULL,
+    ANOTACIONS_TOTAL         integer	    NOT NULL,
+    REENVIAMENTS             integer	    NOT NULL,
+    EMAILS                   integer	    NOT NULL,
+    JUSTIFICANTS             integer	    NOT NULL,
+    ANNEXOS                  integer	    NOT NULL,
+    BUSTIES                  integer	    NOT NULL,
+    USUARIS                  integer	    NOT NULL
+);
+
+CREATE TABLE DIS_HIS_ESTAT
+(
+	ID						 BIGSERIAL	    NOT NULL,
+    ENTITAT_ID               integer     NOT NULL,
+    UNITAT_ID                integer,
+    TIPUS                    character varying(16) NOT NULL,
+    DATA                     timestamp without time zone   NOT NULL,
+    ESTAT                    character varying(64) NOT NULL,
+    CORRECTE                 integer	    NOT NULL,
+    CORRECTE_TOTAL           integer	    NOT NULL,
+    ERROR                    integer	    NOT NULL,
+    ERROR_TOTAL              integer	    NOT NULL,
+    TOTAL                    integer	    NOT NULL
+);
+
+CREATE TABLE DIS_HIS_BUSTIA
+(
+	ID						 BIGSERIAL	    NOT NULL,
+    ENTITAT_ID               integer     NOT NULL,
+    UNITAT_ID                integer,
+    TIPUS                    character varying(16) NOT NULL,
+    DATA                     timestamp without time zone   NOT NULL,
+    BUSTIA_ID                integer     NOT NULL,
+    NOM                      character varying(1024) NOT NULL,
+    USUARIS                  integer	    NOT NULL,
+    USUARIS_PERMIS           integer	    NOT NULL,
+    USUARIS_ROL              integer	    NOT NULL
+);

@@ -540,7 +540,7 @@
 						<form:radiobutton id="rbTipusAgrupamentDiari" path="tipusAgrupament" value="DIARI"/>
 						<i class="fa fa-clock-o"></i> <spring:message code="historic.filtre.mostraDadesActual"/>
 					</label> 
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI'}">active</c:if>"> 
+					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI' && !historicFiltreCommand.actualitzar == true}">active</c:if>"> 
 						<form:radiobutton path="tipusAgrupament" value="DIARI"/>
 						<i class="fa fa-calendar"></i> <spring:message code="historic.filtre.mostraDadesPerDia"/>
 					</label> 

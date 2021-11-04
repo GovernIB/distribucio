@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -157,7 +158,7 @@ public class HistoricController extends BaseAdminController {
 		}
 
 		if (historicFiltreCommand.isActualitzar()) {
-				historicService.calcularDadesHistoriques(new Date());
+			historicService.calcularDadesHistoriques(new Date());
 		}
 			
 		HistoricDadesDto dades = historicService.getDadesHistoriques(
