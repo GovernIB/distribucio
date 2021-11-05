@@ -219,13 +219,13 @@ public class HistoricController extends BaseAdminController {
 		}
 				
 		// Dades bústies
-		Map<Long, List<JsonDadesBustia>> resultsBustia = new HashMap<>();
+		Map<String, List<JsonDadesBustia>> resultsBustia = new HashMap<>();
 		if (dades.getDadesBusties() != null) {
 			for (HistoricBustiaDto bustia : dades.getDadesBusties()) {
-				List<JsonDadesBustia> lrespuestaJson = resultsBustia.get(bustia.getBustiaId());
+				List<JsonDadesBustia> lrespuestaJson = resultsBustia.get(bustia.getNom() + " (" + bustia.getUnitatCodi() + ")");
 				if (lrespuestaJson == null) {
 					lrespuestaJson = new ArrayList<JsonDadesBustia>();
-					resultsBustia.put(bustia.getBustiaId(), lrespuestaJson);
+					resultsBustia.put(bustia.getNom() + " (" + bustia.getUnitatCodi() + ")", lrespuestaJson);
 				}
 				lrespuestaJson.add(new JsonDadesBustia(
 						bustia.getData(),
@@ -311,8 +311,8 @@ public class HistoricController extends BaseAdminController {
 		
 		// Crea el llibre de càlcul
 		HSSFWorkbook wb;
-		HSSFCellStyle cellStyle;
-		HSSFCellStyle dStyle;
+		HSSFCellStyle dataStyle;
+		HSSFCellStyle defaultStyle;
 		HSSFFont bold;
 		HSSFCellStyle cellGreyStyle;
 		HSSFCellStyle greyStyle;
@@ -328,12 +328,12 @@ public class HistoricController extends BaseAdminController {
 		greyFont.setColor(HSSFColor.GREY_25_PERCENT.index);
 		greyFont.setCharSet(HSSFFont.ANSI_CHARSET);
 		
-		cellStyle = wb.createCellStyle();
-		cellStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd/MM/yyyy HH:mm"));
-		cellStyle.setWrapText(true);
+		dataStyle = wb.createCellStyle();
+		dataStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd/MM/yyyy"));
+		dataStyle.setWrapText(true);
 		
 		cellGreyStyle = wb.createCellStyle();
-		cellGreyStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd/MM/yyyy HH:mm"));
+		cellGreyStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd/MM/yyyy"));
 		cellGreyStyle.setWrapText(true);
 		cellGreyStyle.setFont(greyFont);
 		
@@ -341,8 +341,8 @@ public class HistoricController extends BaseAdminController {
 		greyStyle.setFont(greyFont);
 	
 		DataFormat format = wb.createDataFormat();
-		dStyle = wb.createCellStyle();
-		dStyle.setDataFormat(format.getFormat("0.00"));
+		defaultStyle = wb.createCellStyle();
+		defaultStyle.setDataFormat(format.getFormat("0"));
 	
 		dGreyStyle = wb.createCellStyle();
 		dGreyStyle.setFont(greyFont);
@@ -350,7 +350,7 @@ public class HistoricController extends BaseAdminController {
 		
 		if (dades.hasDadesAnotacions()) {
 			HSSFSheet sheet = wb.createSheet(this.getMessage(request, "historic.titol.seccio.dades.uo"));
-			this.crearCapcaleraXlsx(
+			this.crearCapcaleraXlsxDadesAnotacions(
 					request,
 					wb,
 					sheet);
@@ -359,28 +359,49 @@ public class HistoricController extends BaseAdminController {
 				try {
 					HSSFRow xlsRow = sheet.createRow(rowNum++);
 					
-					HSSFCell cellUnitatCodi = xlsRow.createCell(0);
-					cellUnitatCodi.setCellValue(anotacio.getData());
-					cellUnitatCodi.setCellStyle(dStyle);
+					HSSFCell cellUnitatData = xlsRow.createCell(0);
+					cellUnitatData.setCellValue(anotacio.getData());
+					cellUnitatData.setCellStyle(dataStyle);
 					
 					HSSFCell cellUnitatcodi = xlsRow.createCell(1);
 					cellUnitatcodi.setCellValue(anotacio.getUnitat().getCodi());
-					cellUnitatcodi.setCellStyle(dStyle);
+					cellUnitatcodi.setCellStyle(defaultStyle);
 
 					HSSFCell cellUnitatNom = xlsRow.createCell(2);
 					cellUnitatNom.setCellValue(anotacio.getUnitat().getNom());
-					cellUnitatNom.setCellStyle(dStyle);
+					cellUnitatNom.setCellStyle(defaultStyle);
 					
 					HSSFCell cellAnotacions = xlsRow.createCell(3);
 					cellAnotacions.setCellValue(anotacio.getAnotacions());
-					cellAnotacions.setCellStyle(dStyle);
+					cellAnotacions.setCellStyle(defaultStyle);
 
 					HSSFCell cellAnotacionsTotal = xlsRow.createCell(4);
 					cellAnotacionsTotal.setCellValue(anotacio.getAnotacionsTotal());
-					cellAnotacionsTotal.setCellStyle(dStyle);
+					cellAnotacionsTotal.setCellStyle(defaultStyle);
 					
-					//TODO: posar la resta de columnes
-
+					HSSFCell cellReenviades = xlsRow.createCell(5);
+					cellReenviades.setCellValue(anotacio.getReenviaments());
+					cellReenviades.setCellStyle(defaultStyle);
+					
+					HSSFCell cellPerEmail = xlsRow.createCell(6);
+					cellPerEmail.setCellValue(anotacio.getEmails());
+					cellPerEmail.setCellStyle(defaultStyle);
+					
+					HSSFCell cellJustificants = xlsRow.createCell(7);
+					cellJustificants.setCellValue(anotacio.getJustificants());
+					cellJustificants.setCellStyle(defaultStyle);
+					
+					HSSFCell cellAnnexos = xlsRow.createCell(8);
+					cellAnnexos.setCellValue(anotacio.getAnnexos());
+					cellAnnexos.setCellStyle(defaultStyle);
+					
+					HSSFCell cellBusties = xlsRow.createCell(9);
+					cellBusties.setCellValue(anotacio.getBusties());
+					cellBusties.setCellStyle(defaultStyle);
+					
+					HSSFCell cellUsuaris = xlsRow.createCell(10);
+					cellUsuaris.setCellValue(anotacio.getUsuaris());
+					cellUsuaris.setCellStyle(defaultStyle);
 				} catch (Exception e) {
 					logger.error("Export Excel: No s'ha pogut crear la línia: " + rowNum, e);
 				}
@@ -389,17 +410,107 @@ public class HistoricController extends BaseAdminController {
 				sheet.autoSizeColumn(i);
 		}
 		if (dades.hasDadesEstats()) {
-			
+			HSSFSheet sheet = wb.createSheet(this.getMessage(request, "historic.titol.seccio.dades.estat"));
+			this.crearCapcaleraXlsxDadesEstats(
+					request,
+					wb,
+					sheet);
+			int rowNum = 1;
+			for (HistoricEstatDto estat : dades.getDadesEstats()) {
+				try {
+					HSSFRow xlsRow = sheet.createRow(rowNum++);
+					
+					HSSFCell cellEstatData = xlsRow.createCell(0);
+					cellEstatData.setCellValue(estat.getData());
+					cellEstatData.setCellStyle(dataStyle);
+					
+					HSSFCell cellEstat = xlsRow.createCell(1);
+					cellEstat.setCellValue(estat.getEstat().toString());
+					cellEstat.setCellStyle(defaultStyle);
+
+					HSSFCell cellAnotacionsCorrectes = xlsRow.createCell(2);
+					cellAnotacionsCorrectes.setCellValue(estat.getCorrecte());
+					cellAnotacionsCorrectes.setCellStyle(defaultStyle);
+
+					HSSFCell cellAnotacionsCorrectesTotals = xlsRow.createCell(3);
+					cellAnotacionsCorrectesTotals.setCellValue(estat.getCorrecteTotal());
+					cellAnotacionsCorrectesTotals.setCellStyle(defaultStyle);
+					
+					HSSFCell cellAnotacionsError = xlsRow.createCell(4);
+					cellAnotacionsError.setCellValue(estat.getError());
+					cellAnotacionsError.setCellStyle(defaultStyle);
+					
+					HSSFCell cellAnotacionsErrorTotals = xlsRow.createCell(5);
+					cellAnotacionsErrorTotals.setCellValue(estat.getErrorTotal());
+					cellAnotacionsErrorTotals.setCellStyle(defaultStyle);
+					
+					HSSFCell cellAnotacionsTotal = xlsRow.createCell(6);
+					cellAnotacionsTotal.setCellValue(estat.getTotal());
+					cellAnotacionsTotal.setCellStyle(defaultStyle);
+					
+				} catch (Exception e) {
+					logger.error("Export Excel: No s'ha pogut crear la línia: " + rowNum, e);
+				}
+			}
+			for(int i=0; i<5; i++)
+				sheet.autoSizeColumn(i);		
 		}
 		if (dades.hasDadesBusties()) {
-			
+
+			HSSFSheet sheet = wb.createSheet(this.getMessage(request, "historic.titol.seccio.usuaris.busties"));
+			this.crearCapcaleraXlsxDadesBusties(
+					request,
+					wb,
+					sheet);
+			int rowNum = 1;
+			for (HistoricBustiaDto bustia : dades.getDadesBusties()) {
+				try {
+					HSSFRow xlsRow = sheet.createRow(rowNum++);
+					
+					HSSFCell cellBustiaData = xlsRow.createCell(0);
+					cellBustiaData.setCellValue(bustia.getData());
+					cellBustiaData.setCellStyle(dataStyle);
+					
+					HSSFCell cellBustiaUnitatcodi = xlsRow.createCell(1);
+					cellBustiaUnitatcodi.setCellValue(bustia.getUnitatCodi());
+					cellBustiaUnitatcodi.setCellStyle(defaultStyle);
+
+					HSSFCell cellBustiaUnitatNom = xlsRow.createCell(2);
+					cellBustiaUnitatNom.setCellValue(bustia.getUnitatNom());
+					cellBustiaUnitatNom.setCellStyle(defaultStyle);
+					
+					HSSFCell cellBustiaId = xlsRow.createCell(3);
+					cellBustiaId.setCellValue(bustia.getBustiaId());
+					cellBustiaId.setCellStyle(defaultStyle);
+					
+					HSSFCell cellBustiaNom = xlsRow.createCell(4);
+					cellBustiaNom.setCellValue(bustia.getNom());
+					cellBustiaNom.setCellStyle(defaultStyle);
+
+					HSSFCell cellUsuarisTotals = xlsRow.createCell(5);
+					cellUsuarisTotals.setCellValue(bustia.getUsuaris());
+					cellUsuarisTotals.setCellStyle(defaultStyle);	
+					
+					HSSFCell cellUsuarisPermisDirecte = xlsRow.createCell(6);
+					cellUsuarisPermisDirecte.setCellValue(bustia.getUsuarisPermis());
+					cellUsuarisPermisDirecte.setCellStyle(defaultStyle);	
+					
+					HSSFCell cellUsuarisRol = xlsRow.createCell(7);
+					cellUsuarisRol.setCellValue(bustia.getUsuarisRol());
+					cellUsuarisRol.setCellStyle(defaultStyle);	
+				} catch (Exception e) {
+					logger.error("Export Excel: No s'ha pogut crear la línia: " + rowNum, e);
+				}
+			}
+			for(int i=0; i<5; i++)
+				sheet.autoSizeColumn(i);			
 		}
 		byte[] contingut = wb.getBytes();
 		wb.close();
 		return contingut;
 	}
 	
-	private void crearCapcaleraXlsx(
+	private void crearCapcaleraXlsxDadesAnotacions(
 			HttpServletRequest request, 
 			HSSFWorkbook wb,
 			HSSFSheet sheet) {
@@ -435,10 +546,134 @@ public class HistoricController extends BaseAdminController {
 		cell.setCellStyle(headerStyle);
 
 		cell = xlsRow.createCell(colNum++);
-		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.total")));
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.totals")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.reenviades")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.perEmail")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.justificants")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.annexos")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.busties")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.anotacions.usuaris")));
 		cell.setCellStyle(headerStyle);
 	}
 
+	private void crearCapcaleraXlsxDadesEstats(
+			HttpServletRequest request, 
+			HSSFWorkbook wb,
+			HSSFSheet sheet) {
+		
+		HSSFFont bold;
+		bold = wb.createFont();
+		bold.setBold(true);
+		bold.setColor(HSSFColor.WHITE.index);
+		HSSFCellStyle headerStyle;
+		headerStyle = wb.createCellStyle();
+		headerStyle.setFillPattern(HSSFCellStyle.FINE_DOTS);
+		headerStyle.setFillBackgroundColor(HSSFColor.GREY_80_PERCENT.index);
+		headerStyle.setFont(bold);
+		int rowNum = 0;
+		int colNum = 0;
+		// Capçalera
+		HSSFRow xlsRow = sheet.createRow(rowNum++);
+		HSSFCell cell;
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.data")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estat")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estats.correcte")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estats.correcteTotal")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estats.error")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estats.errorTotal")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.estats.total")));
+		cell.setCellStyle(headerStyle);		
+	}
+	
+	private void crearCapcaleraXlsxDadesBusties(
+			HttpServletRequest request, 
+			HSSFWorkbook wb,
+			HSSFSheet sheet) {
+		
+		HSSFFont bold;
+		bold = wb.createFont();
+		bold.setBold(true);
+		bold.setColor(HSSFColor.WHITE.index);
+		HSSFCellStyle headerStyle;
+		headerStyle = wb.createCellStyle();
+		headerStyle.setFillPattern(HSSFCellStyle.FINE_DOTS);
+		headerStyle.setFillBackgroundColor(HSSFColor.GREY_80_PERCENT.index);
+		headerStyle.setFont(bold);
+		int rowNum = 0;
+		int colNum = 0;
+		// Capçalera
+		HSSFRow xlsRow = sheet.createRow(rowNum++);
+		HSSFCell cell;
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.data")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.codi.uo")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.uo")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.bustia.id")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.bustia.nom")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.usuaris")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.usuarisPermis")));
+		cell.setCellStyle(headerStyle);
+		
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.usuarisRol")));
+		cell.setCellStyle(headerStyle);
+	}
+	
 	private byte[] dadesToJson(HttpServletRequest request, HistoricDadesDto dades) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);

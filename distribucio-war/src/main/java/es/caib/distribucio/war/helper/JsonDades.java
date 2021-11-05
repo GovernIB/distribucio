@@ -13,10 +13,10 @@ public class JsonDades {
 
     private Map<String, List<JsonDadesUo>> jsonDadesUoMap;
     private Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> jsonDadesEstatMap;
-    private Map<Long, List<JsonDadesBustia>> jsonDadesBustiaMap;
+    private Map<String, List<JsonDadesBustia>> jsonDadesBustiaMap;
 	
     public JsonDades(Map<String, List<JsonDadesUo>> jsonDadesUoMap, Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> jsonDadesEstatMap,
-			Map<Long, List<JsonDadesBustia>> jsonDadesBustiaMap) {
+			Map<String, List<JsonDadesBustia>> jsonDadesBustiaMap) {
 		this.jsonDadesUoMap = jsonDadesUoMap;
 		this.jsonDadesEstatMap = jsonDadesEstatMap;
 		this.jsonDadesBustiaMap = jsonDadesBustiaMap;
@@ -38,11 +38,11 @@ public class JsonDades {
 		this.jsonDadesEstatMap = jsonDadesEstatMap;
 	}
 
-	public Map<Long, List<JsonDadesBustia>> getJsonDadesBustiaMap() {
+	public Map<String, List<JsonDadesBustia>> getJsonDadesBustiaMap() {
 		return jsonDadesBustiaMap;
 	}
 
-	public void setJsonDadesBustiaMap(Map<Long, List<JsonDadesBustia>> jsonDadesBustiaMap) {
+	public void setJsonDadesBustiaMap(Map<String, List<JsonDadesBustia>> jsonDadesBustiaMap) {
 		this.jsonDadesBustiaMap = jsonDadesBustiaMap;
 	}
 

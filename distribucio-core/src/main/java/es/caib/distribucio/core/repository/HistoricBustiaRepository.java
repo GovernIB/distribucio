@@ -62,7 +62,7 @@ public interface HistoricBustiaRepository extends JpaRepository<HistoricBustiaEn
 	@Query(	
 			"from HistoricBustiaEntity " +
 			"where entitat.id = :entitatId " +
-			"		and ((:dadesEntitat = true and unitat is null) " +
+			"		and ((:dadesEntitat = true and entitat.id = :entitatId) " +
 			"            or (unitat.id in (:unitatsIds))) " +
 			"		and tipus = :tipus " +
 			"		and (:esNullDataInici = true or data >= :dataInici) " +
