@@ -141,7 +141,7 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "proces_data")
 	private Date procesData;
 	@Enumerated(EnumType.STRING)
-	@Column(name = "proces_estat", length = 16, nullable = false)
+	@Column(name = "proces_estat", length = 64, nullable = false)
 	private RegistreProcesEstatEnum procesEstat;
 	/** Indica si l'anotació de registre està pendent de processament (true) o processada (false). */
 	@Column(name = "pendent")

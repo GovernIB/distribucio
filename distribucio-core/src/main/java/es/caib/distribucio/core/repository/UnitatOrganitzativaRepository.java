@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
@@ -56,6 +57,21 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("filtre") String filtre,
 			@Param("ambArrel") boolean ambArrel);
 	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiDir3Entitat = :codiDir3Entitat " +
+			"and (:ambArrel = true or uo.codi != :codiDir3Entitat) " +
+			"and ((:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
+			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) " +
+			"and codiUnitatSuperior = :codiUnitatSuperior")
+	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAmbCodiUnitatSuperiorAndCodiAndDenominacioFiltre(
+			@Param("codiDir3Entitat") String codiDir3Entitat,
+			@Param("codiUnitatSuperior") String codiUnitatSuperior,
+			@Param("esNullFiltre") boolean esNullFiltreCodi,
+			@Param("filtre") String filtre,
+			@Param("ambArrel") boolean ambArrel);
+	
 	
 	@Query(	"from " +
 			"    UnitatOrganitzativaEntity uo " +
@@ -67,6 +83,22 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			 "and uo.id in (select distinct b.unitatOrganitzativa.id from BustiaEntity b)")
 	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBusties(
 			@Param("codiDir3Entitat") String codiDir3Entitat,
+			@Param("esNullFiltre") boolean esNullFiltreCodi,
+			@Param("filtre") String filtre,
+			@Param("ambArrel") boolean ambArrel);
+	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiDir3Entitat = :codiDir3Entitat " +
+			"and (:ambArrel = true or uo.codi != :codiDir3Entitat) " +
+			"and ((:esNullFiltre = true or lower(uo.codi) like lower('%'||:filtre||'%')) " +
+			"or (:esNullFiltre = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) " +
+			"and uo.id in (select distinct b.unitatOrganitzativa.id from BustiaEntity b)" +
+			"and codiUnitatSuperior = :codiUnitatSuperior")
+	List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAmbCodiUnitatSuperiorAndCodiAndDenominacioFiltreNomesAmbBusties(
+			@Param("codiDir3Entitat") String codiDir3Entitat,
+			@Param("codiUnitatSuperior") String codiUnitatSuperior,
 			@Param("esNullFiltre") boolean esNullFiltreCodi,
 			@Param("filtre") String filtre,
 			@Param("ambArrel") boolean ambArrel);
@@ -119,8 +151,22 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("entitatId") Long entitatId,
 			@Param("esNullFiltre") boolean esNullFiltre, 
 			@Param("filtre") String filtre);
-			
-
 	
+	/** Cerca les unitats de la llista de codis que tenen bústia. Serveix per obtenir
+	 * la llista d'unitats descendents amb bústies.
+	 * 
+	 * @param codiDir3Entitat
+	 * @param codisUnitatsDecendants
+	 * @return
+	 */
+	@Query(	"select bustia.unitatOrganitzativa.id " +
+			"from " +
+			"    BustiaEntity bustia " +
+			"where " +
+			" 	bustia.entitat = :entitat " +
+			"   and bustia.unitatOrganitzativa.codi in (:codisUO)")
+	List<Long> findUnitatsIdsAmbBustiaPerCodis(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("codisUO") List<String> codisUO);
 	
 }

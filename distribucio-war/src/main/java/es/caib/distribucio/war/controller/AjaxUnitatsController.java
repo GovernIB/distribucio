@@ -65,6 +65,27 @@ public class AjaxUnitatsController extends BaseAdminController {
 		return unitatsEntitat;
 	}
 	
+	@RequestMapping(value = "/unitats/{text}/{codiUnitatSuperior}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UnitatOrganitzativaDto> get(
+			HttpServletRequest request,
+			@PathVariable String text,
+			@PathVariable String codiUnitatSuperior,
+			Model model) {
+		String decodedToUTF8 = null;
+		try {
+			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
+				.findByEntitatAndCodiUnitatSuperiorAndFiltre(entitatActual.getCodi(), 
+				codiUnitatSuperior, decodedToUTF8, true, false);
+		
+		return unitatsEntitat;
+	}
+	
 	@RequestMapping(value = "/nomesUnitatsAmbBusties/{text}", method = RequestMethod.GET)
 	@ResponseBody
 	public List<UnitatOrganitzativaDto> getOnlyUnitatsWithBustiesDefined(

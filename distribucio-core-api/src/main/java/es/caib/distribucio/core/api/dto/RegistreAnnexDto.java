@@ -185,7 +185,9 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	
 	public String getFitxerExtension() {
-		return this.fitxerNom.substring(this.fitxerNom.indexOf(".") + 1);
+		return fitxerNom != null && fitxerNom.contains(".") ?
+				fitxerNom.substring(fitxerNom.lastIndexOf('.'), fitxerNom.length())
+				: null;
 	}
 	
 	private static String[] tamanyUnitats = {"b", "Kb", "Mb", "Gb", "Tb", "Pb"};

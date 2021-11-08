@@ -250,7 +250,40 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				UnitatOrganitzativaDto.class);
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnitatOrganitzativaDto> findByEntitatAndCodiUnitatSuperiorAndFiltre(
+			String entitatCodi, 
+			String codiUnitatSuperior, 
+			String filtre, 
+			boolean ambArrel, 
+			boolean nomesAmbBusties) {
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		
+		List<UnitatOrganitzativaEntity> unitats = null;
+		
+		if (nomesAmbBusties) {
+			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAmbCodiUnitatSuperiorAndCodiAndDenominacioFiltreNomesAmbBusties(
+					entitat.getCodiDir3(),
+					codiUnitatSuperior,
+					filtre == null || filtre.isEmpty(), 
+					filtre != null ? filtre : "",
+					ambArrel);
+			
+		} else {
+			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAmbCodiUnitatSuperiorAndCodiAndDenominacioFiltre(
+					entitat.getCodiDir3(),
+					codiUnitatSuperior,
+					filtre == null || filtre.isEmpty(), 
+					filtre != null ? filtre : "",
+					ambArrel);
+		}
 
+		return conversioTipusHelper.convertirList(
+				unitats,
+				UnitatOrganitzativaDto.class);
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public UnitatOrganitzativaDto findById(

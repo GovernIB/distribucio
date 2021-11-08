@@ -510,3 +510,49 @@ CREATE TABLE DIS_CONFIG_TYPE
     CODE                 VARCHAR2(128 CHAR)     NOT NULL,
     VALUE                VARCHAR2(2048 CHAR)   DEFAULT NULL
 );
+
+CREATE TABLE DIS_HIS_ANOTACIO
+(
+	ID						 NUMBER(19)	    NOT NULL,
+    ENTITAT_ID               NUMBER(19)     NOT NULL,
+    UNITAT_ID                NUMBER(19),
+    TIPUS                    VARCHAR2(16 CHAR) NOT NULL,
+    DATA                     TIMESTAMP(6)   NOT NULL,
+    ANOTACIONS               NUMBER(19)	    NOT NULL,
+    ANOTACIONS_TOTAL         NUMBER(19)	    NOT NULL,
+    REENVIAMENTS             NUMBER(19)	    NOT NULL,
+    EMAILS                   NUMBER(19)	    NOT NULL,
+    JUSTIFICANTS             NUMBER(19)	    NOT NULL,
+    ANNEXOS                  NUMBER(19)	    NOT NULL,
+    BUSTIES                  NUMBER(19)	    NOT NULL,
+    USUARIS                  NUMBER(19)	    NOT NULL
+);
+
+CREATE TABLE DIS_HIS_ESTAT
+(
+	ID						 NUMBER(19)	    NOT NULL,
+    ENTITAT_ID               NUMBER(19)     NOT NULL,
+    UNITAT_ID                NUMBER(19),
+    TIPUS                    VARCHAR2(16 CHAR) NOT NULL,
+    DATA                     TIMESTAMP(6)   NOT NULL,
+    ESTAT                    VARCHAR2(64 CHAR) NOT NULL,
+    CORRECTE                 NUMBER(19)	    NOT NULL,
+    CORRECTE_TOTAL           NUMBER(19)	    NOT NULL,
+    ERROR                    NUMBER(19)	    NOT NULL,
+    ERROR_TOTAL              NUMBER(19)	    NOT NULL,
+    TOTAL                    NUMBER(19)	    NOT NULL
+);
+
+CREATE TABLE DIS_HIS_BUSTIA
+(
+	ID						 NUMBER(19)	    NOT NULL,
+    ENTITAT_ID               NUMBER(19)     NOT NULL,
+    UNITAT_ID                NUMBER(19),
+    TIPUS                    VARCHAR2(16 CHAR) NOT NULL,
+    DATA                     TIMESTAMP(6)   NOT NULL,
+    BUSTIA_ID                NUMBER(19)     NOT NULL,
+    NOM                      VARCHAR2(1024 CHAR) NOT NULL,
+    USUARIS                  NUMBER(19)	    NOT NULL,
+    USUARIS_PERMIS           NUMBER(19)	    NOT NULL,
+    USUARIS_ROL              NUMBER(19)	    NOT NULL
+);

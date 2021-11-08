@@ -18,6 +18,10 @@
 <%@ attribute name="suggestValue" required="false" rtexprvalue="true"%>
 <%@ attribute name="suggestText" required="false" rtexprvalue="true"%>
 <%@ attribute name="optionTemplateFunction" required="false" rtexprvalue="true"%>
+<%@ attribute name="multiple" required="false" rtexprvalue="true"%>
+<%@ attribute name="urlParamAddicional" required="false" rtexprvalue="true"%>
+
+<c:set var="multiple"><c:choose><c:when test="${not empty multiple}">${multiple}</c:when><c:otherwise>false</c:otherwise></c:choose></c:set>
 <c:set var="campPath" value="${name}"/>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="minimumInputLength"><c:choose><c:when test="${not empty minimumInputLength}">${minimumInputLength}</c:when><c:otherwise>${3}</c:otherwise></c:choose></c:set>
@@ -45,13 +49,19 @@
 				<c:if test="${required}">*</c:if>
 			</label>
 			<div class="controls col-xs-${campInputSize}">
-				<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}"/>
+				<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}" 
+					multiple="${multiple}"
+					data-url-param-addicional="${urlParamAddicional}"
+					/>
 				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
 			</div>
 		</div>
 	</c:when>
 	<c:otherwise>
-		<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}"/>
+		<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}" 
+			multiple="${multiple}"
+			data-url-param-addicional="${urlParamAddicional}"
+			/>
 	</c:otherwise>
 </c:choose>
 

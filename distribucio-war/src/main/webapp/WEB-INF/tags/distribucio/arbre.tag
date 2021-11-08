@@ -36,6 +36,7 @@
 <c:if test="${empty isCheckBoxEnabled}"><c:set var="isCheckBoxEnabled" value="${false}"/></c:if>
 <c:if test="${empty isEnviarConeixementActiu}"><c:set var="isEnviarConeixementActiu" value="${false}"/></c:if>
 <c:if test="${empty isFavoritsPermes}"><c:set var="isFavoritsPermes" value="${false}"/></c:if>
+<c:if test="${empty isMostrarPermisosBustiaPermes}"><c:set var="isMostrarPermisosBustiaPermes" value="${false}"/></c:if>
 <div id="${id}" class="well" style="width: 100%; overflow: auto; <c:if test="${not empty height}">height: ${height}; </c:if><c:if test="${isError}">margin-bottom:10px; border-color: #A94442</c:if>">
 	<c:if test="${not empty arbre and not empty arbre.arrel}">
 		<c:set var="arrel" value="${arbre.arrel}"/>

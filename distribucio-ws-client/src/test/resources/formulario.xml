@@ -9,4 +9,12 @@
 	<CAMPO id="SISTRA2_SELECCION" tipo="compuesto">
 		<VALOR codigo="prova">Prueba</VALOR>
 	</CAMPO>
+	<CAMPO id="campo_0">
+		<VALOR codigo="cod_0">valor_i</VALOR>
+		<VALOR codigo="cod_0">valor_i</VALOR>
+	</CAMPO>
+	<CAMPO id="campo_1">
+		<VALOR codigo="cod_1">valor_i</VALOR>
+		<VALOR codigo="cod_1">valor_i</VALOR>
+	</CAMPO>	
 </ns2:FORMULARIO>

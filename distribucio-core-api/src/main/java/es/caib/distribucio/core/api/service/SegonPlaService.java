@@ -44,6 +44,9 @@ public interface SegonPlaService {
 
 
 	void addNewEntryToHistogram();
-
 	
+	/** 
+	 * Consulta i guarda les dades històriques del dia
+	 */
+	public void calcularDadesHistoriques();
 }

@@ -8,6 +8,12 @@ function webutilModalTancarPath() {
 function webutilAjaxEnumPath(enumClass) {
 	return webutilContextPath() + '/userajax/enum/' + enumClass;
 }
+function webutilClearMissatges(divMissatges) {
+	if (!divMissatges) {		
+		divMissatges = '#contingut-missatges';
+	}
+	$(divMissatges).empty();
+}
 function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
@@ -69,7 +75,7 @@ function base64toBlob(b64Data, contentType) {
 }
 
 /** Funció per descarregar un arxiu i refrescar missatges */
-function webutilDownloadAndRefresh(arxiuUrl, event) {
+function webutilDownloadAndRefresh(arxiuUrl, event, callbackFunction) {
 
 	// Fa la petició a la url de l'arxiu
 	$.get( arxiuUrl, { responseType: 'arraybuffer' })
@@ -93,6 +99,12 @@ function webutilDownloadAndRefresh(arxiuUrl, event) {
             link.click();
 		}).always(function(){
 			webutilRefreshMissatges();
+			if (callbackFunction)
+				try {
+					callbackFunction();
+				} catch(e) {
+					console.error("Error executant la funció de callback " + callbackFunction + ": " + e);
+				}
 		});
 	// Atura els events de l'enllaç
 	if (event != null) {
@@ -439,6 +451,17 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		if ($(this).data('enum')) {
 			var enumValue = $(this).data('enum-value');
 			var $select = $(this);
+			if (enumValue != null && typeof enumValue === 'string' && enumValue.includes(",")) {
+				var valueArr = enumValue.split(',');
+			}
+			function isSelected(enumItemValue){
+				if (valueArr != undefined){
+					return valueArr.includes(enumItemValue);
+				} else{
+					return enumValue == enumItemValue;
+				}
+				
+			}
 			$.ajax({
 				url: webutilAjaxEnumPath($(this).data('enum')),
 				async: false,
@@ -449,7 +472,7 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 								$('<option>', {
 									value: enumItem['value'],
 									text: enumItem['text'],
-									selected: enumValue == enumItem['value']
+									selected: isSelected(enumItem['value'])
 								}));
 					}
 				}
@@ -512,7 +535,14 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		    ajax: {
 		    	delay: 500,
 		    	url: function(params){
-					return $(this).data('urlLlistat') + "/" + params.term;
+		    		
+		    		var additionalParam = $(this).attr('urlParamAddicional');
+					
+		    		if (additionalParam) {
+		    			return $(this).data('urlLlistat') + "/" + params.term + "/" + additionalParam;
+		    		} else {
+		    			return $(this).data('urlLlistat') + "/" + params.term;
+		    		}
 				},
 				processResults: function (data) {
 					results = [];
