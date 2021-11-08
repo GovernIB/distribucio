@@ -620,6 +620,9 @@ public class ContingutController extends BaseUserController {
 		case ALLIBERAR:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.ALLIBERAR"));
 			break;
+		case DUPLICITAT:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.DUPLICITAT", new Object[] {log.getParams().get(0), log.getParams().get(1)}));
+			break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");

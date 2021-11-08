@@ -52,6 +52,9 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	@Column(name = "comentari_destins", length = 256)
 	protected String comentariDestins;
 
+	@Column(name = "num_duplicat")
+	private Integer numDuplicat;
+
 	public ContingutEntity getContingut() {
 		return contingut;
 	}
@@ -86,6 +89,20 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	
 	public void updatePerConeixement(boolean perConeixement) {
 		this.perConeixement = perConeixement;
+	}
+	
+	public void updateComentari(String comentari) {
+		this.comentari = comentari;
+	}
+
+	public void updateRemitent(UsuariEntity remitent) {
+		this.remitent = remitent;
+	}
+	public Integer getNumDuplicat() {
+		return numDuplicat;
+	}
+	public void incrementNumDuplicat() {
+		this.numDuplicat++;
 	}
 	
 	public static Builder getBuilder(
@@ -138,6 +155,7 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 			built.destiNom = destiNom;
 			built.remitent = remitent;
 			built.comentari = comentari;
+			built.numDuplicat = 1;
 		}
 		public ContingutMovimentEntity build() {
 			return built;

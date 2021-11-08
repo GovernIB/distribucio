@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -63,6 +64,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -128,6 +130,8 @@ public class RegistreHelper {
 	private UsuariHelper usuariHelper;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private ContingutHelper contingutHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -1156,6 +1160,15 @@ public class RegistreHelper {
 					RegistreEntity.class,
 					"L'anotació està bloquejada per un usuari (codiUsuari=" + agafatPer.getCodi() + "). Prova d'alliberar-la abans de realitzar una acció.");
 		}
+	}
+	
+	public void esborrarRegistre(RegistreEntity registre) {
+		ContingutEntity contingut = (ContingutEntity)registre;
+		contingutHelper.esborrarComentarisRegistre(contingut);
+		contingutLogHelper.esborrarConstraintsLogsMovimentsRegistre(contingut);
+		contingutHelper.esborrarEmailsPendentsRegistre(contingut);
+		contingutHelper.esborrarMovimentsRegistre(contingut);
+		registreRepository.delete(registre);
 	}
 	
 	private RegistreInteressat fromInteressatEntity(

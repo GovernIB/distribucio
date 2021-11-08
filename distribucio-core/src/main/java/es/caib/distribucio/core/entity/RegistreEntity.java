@@ -231,6 +231,9 @@ public class RegistreEntity extends ContingutEntity {
 	@ForeignKey(name = "dis_agafatper_registre_fk")
 	protected UsuariEntity agafatPer;
 	
+	@Column(name = "reactivat")
+	private boolean reactivat;
+	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
 	}
@@ -443,7 +446,12 @@ public class RegistreEntity extends ContingutEntity {
 	public boolean getArxiuTancatError() {
 		return this.arxiuTancatError != null ? this.arxiuTancatError.booleanValue() : false;
 	}
-
+	public boolean isReactivat() {
+		return reactivat;
+	}
+	public void updateReactivat(boolean reactivat) {
+		this.reactivat = reactivat;
+	}
 	public void updateMotiuRebuig(
 			String motiuRebuig) {
 		this.motiuRebuig = motiuRebuig;
@@ -458,6 +466,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateArxiuTancatError(Boolean arxiuTancatError){
 		this.arxiuTancatError = arxiuTancatError;
+	}
+	public void updatePendent(boolean pendent) {
+		this.pendent = pendent;
 	}
 	/** Forces updating process state without deleting error information. */
 	public void setProces(

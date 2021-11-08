@@ -127,6 +127,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String numero,
 			Date data);
 
+	/** Registres duplicats */
+	List<RegistreEntity> findRegistresByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndDataAndEsborrat(
+			String entitatCodi,
+			String llibreCodi,
+			String registreTipus,
+			String numero,
+			Date data,
+			int esborrat);
+	
 	/** Troba l'anotació de registre per identificador. */
 	RegistreEntity findByIdentificador(String identificador);
 	

@@ -124,6 +124,13 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 		return pare;
 	}
 
+	public void updatePare(ContingutLogEntity pare) {
+		this.pare = pare;
+	}
+	
+	public void updateContingutMoviment(ContingutMovimentEntity contingutMoviment) {
+		this.contingutMoviment = contingutMoviment;
+	}
 //	public void updateParams(
 //			String param1,
 //			String param2) {

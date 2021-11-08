@@ -26,6 +26,7 @@ public enum LogTipusEnumDto {
 	BACK_REBUTJADA, 
 	BACK_ERROR,
 	AGAFAR,
-	ALLIBERAR
+	ALLIBERAR,
+	DUPLICITAT
 	
 }

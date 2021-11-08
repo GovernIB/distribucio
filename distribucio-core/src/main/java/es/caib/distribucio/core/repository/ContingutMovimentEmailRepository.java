@@ -21,4 +21,5 @@ public interface ContingutMovimentEmailRepository extends JpaRepository<Contingu
 	public List<ContingutMovimentEmailEntity> findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
 	public List<ContingutMovimentEmailEntity> findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
 
+	public List<ContingutMovimentEmailEntity> findByContingutOrderByDestinatariAscBustiaAsc(ContingutEntity contingut);
 }

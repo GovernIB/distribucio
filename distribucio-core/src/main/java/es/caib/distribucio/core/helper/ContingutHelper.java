@@ -42,8 +42,10 @@ import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -57,6 +59,7 @@ import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -107,6 +110,8 @@ public class ContingutHelper {
 	private RegistreRepository registreRepository;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
 	
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -682,6 +687,44 @@ public class ContingutHelper {
 		contingut.updatePare(desti);
 		return contenidorMoviment;
 	}
+	
+	public ContingutMovimentEntity updateMovimentExistent(
+			ContingutMovimentEntity moviment,
+			ContingutEntity contingutRegistre,
+			String comentari,
+			boolean isPerConeixement,
+			ContingutEntity bustiaOrigenLogic, 
+			boolean ferCopia) {
+		UsuariEntity usuariAutenticat = usuariHelper.getUsuariAutenticat();
+		List<String> params = new ArrayList<String>();
+		if (usuariAutenticat == null && contingutRegistre.getDarrerMoviment() != null)
+			usuariHelper.generarUsuariAutenticat(
+					contingutRegistre.getDarrerMoviment().getRemitent().getCodi(), 
+					true);
+//		Actualitza remitent
+		moviment.updateRemitent(usuariHelper.getUsuariAutenticat());
+		
+//		Actualitza estat si és més restrictiu
+		if (moviment.isPerConeixement() && !isPerConeixement) {
+			moviment.updatePerConeixement(false);
+		}
+		
+		moviment.incrementNumDuplicat();
+		
+//		Comentari anotació duplicada
+		ContingutComentariEntity comentariAmbBustiesDesti = ContingutComentariEntity.getBuilder(
+				contingutRegistre, 
+				"Aquesta anotació s'ha rebut <b>" + moviment.getNumDuplicat() + "</b> vegades a la bústia <b>" + moviment.getDestiNom() + "</b>.").build();
+		contingutComentariRepository.save(comentariAmbBustiesDesti);
+		params.add(String.valueOf(moviment.getNumDuplicat()));
+		params.add(moviment.getDestiNom());
+		contingutLogHelper.log(
+				contingutRegistre, 
+				LogTipusEnumDto.DUPLICITAT, 
+				params, 
+				false);
+		return moviment;
+	} 
 
 	public ContingutEntity findContingutArrel(
 			ContingutEntity contingut) {
@@ -1016,6 +1059,31 @@ public class ContingutHelper {
 		        iter.remove();
 		    }
 		}
+	}
+	
+	public List<ContingutMovimentEntity> comprovarExistenciaAnotacioEnDesti(List<RegistreEntity> registreRepetit, Long destiId) {
+		List<ContingutMovimentEntity> movimentsRegistresExistents = new ArrayList<ContingutMovimentEntity>();
+		for (RegistreEntity registreEntity : registreRepetit) {
+			ContingutMovimentEntity darrerMoviment = registreEntity.getDarrerMoviment();
+			if (darrerMoviment != null && darrerMoviment.getDestiId().equals(destiId))
+				movimentsRegistresExistents.add(darrerMoviment);
+		}
+		return movimentsRegistresExistents;
+	}
+	
+	public void esborrarComentarisRegistre(ContingutEntity contingut) {
+		List<ContingutComentariEntity> comentaris = contingutComentariRepository.findByContingutOrderByCreatedDateAsc(contingut);
+		contingutComentariRepository.delete(comentaris);
+	}
+	
+	public void esborrarEmailsPendentsRegistre(ContingutEntity contingut) {
+		List<ContingutMovimentEmailEntity> emailsPendents = contingutMovimentEmailRepository.findByContingutOrderByDestinatariAscBustiaAsc(contingut);
+		contingutMovimentEmailRepository.delete(emailsPendents);
+	}
+	
+	public void esborrarMovimentsRegistre(ContingutEntity contingut) {
+		List<ContingutMovimentEntity> moviments = contenidorMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
+		contenidorMovimentRepository.delete(moviments);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutHelper.class);

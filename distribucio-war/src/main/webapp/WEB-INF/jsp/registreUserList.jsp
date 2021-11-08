@@ -67,24 +67,23 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 	display: flex;
 	align-items: center;
 }
-
 .item_llegenda span:nth-child(2){
 	margin-left: 4px;
 }
-
-.llegenda_coneixement span:nth-child(1), .lleganda_tramitacio span:nth-child(1){
-	display: block;
+.item_color {
 	width: 10px;
 	height: 10px;
 }
-
-.llegenda_coneixement span:nth-child(1){
+.llegenda_coneixement .item_color{
 	background-color: #5bc0de;
 }
-
-.lleganda_tramitacio span:nth-child(1){
+.lleganda_tramitacio .item_color{
 	background-color: #f99957;
 }
+.llegenda_reactivat .item_color{
+	background-color: #c3c2c1;
+}
+
 div.extracteColumn {
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -181,6 +180,11 @@ $(document).ready(function() {
 						$(this).find("td:eq(0)").css('background-color', '#ff9c59');
 					}
 				}
+				
+				var isReactivat = $('#taulaDades').dataTable().api().row($(this)).data()['reactivat'];
+				if (isReactivat) {
+					$(this).css('background-color', '#c3c2c1');
+				}
 			}
 		});
 		
@@ -195,12 +199,16 @@ $(document).ready(function() {
 									<span><spring:message code="contingut.enviar.info.llegenda"/>:</span>\
 								</div>\
 								<div class="item_llegenda lleganda_tramitacio">\
-									<span></span>\
+									<span class="item_color"></span>\
 									<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
 								</div>\
 								<div class="item_llegenda llegenda_coneixement">\
-									<span></span>\
+									<span class="item_color"></span>\
 									<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
+								</div>\
+								<div class="item_llegenda llegenda_reactivat">\
+									<span class="item_color"></span>\
+									<span><spring:message code="contingut.enviar.info.llegenda.reactivat"/></span>\
 								</div>\
 							</div>';
 			$paginador.append(llegenda);
@@ -419,7 +427,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="15"
+		data-default-order="16"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -434,6 +442,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="perConeixement"  data-visible="false">
+				<th data-col-name="reactivat"  data-visible="false">
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false">#</th>

@@ -1351,62 +1351,118 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaOrigen);
 		List<String> assentamentsPerTramitar = new ArrayList<String>(), assentamentsPerConeixement = new ArrayList<String>();
 		List<ContingutEntity> nousContinguts = new ArrayList<ContingutEntity>();
-		
+		List<RegistreEntity> registresExistents = new ArrayList<RegistreEntity>();
 		for (int i = 0; i < bustiesDesti.size(); i++) {
 			BustiaEntity bustia = bustiesDesti.get(i);
 			boolean assentamentPerConeixement = bustiesPerConeixement.contains(bustia);
 			ContingutEntity registrePerReenviar = null;
 			boolean ferCopia = opcioDeixarCopiaSelectada || !isLastIteration(i, bustiesDesti);
-			if (ferCopia) {
-				registrePerReenviar = contingutHelper.ferCopiaRegistre(
-						registreOriginal,
-						bustia.getEntitat().getCodiDir3());
-			} else {
-				registrePerReenviar = registreOriginal;
-			}
+
+//			### Recuperar registres duplicats ###
+			RegistreEntity registre = (RegistreEntity)registreOriginal;
+			List<RegistreEntity> registreRepetit = registreRepository.findRegistresByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndDataAndEsborrat(
+					registre.getEntitatCodi(),
+					registre.getLlibreCodi(),
+					RegistreTipusEnum.ENTRADA.getValor(),
+					registre.getNumero(),
+					registre.getData(),
+					0);
 			
-			ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-					registrePerReenviar,
-					bustia,
-					comentari,
-					assentamentPerConeixement,
-					bustiaOrigenLogic);
-			
-			// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
-			if (registrePerReenviar.getClass() == RegistreEntity.class) {
-				RegistreEntity registre = (RegistreEntity) registrePerReenviar;
-				if (registre.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
-					registre.updateProcesMultipleExcepcions(
-							RegistreProcesEstatEnum.BUSTIA_PENDENT,
-							null);
+//			### Comprovar si existeixen moviments del registre al destí seleccionat ###
+			List<ContingutMovimentEntity> contingutMoviments = contingutHelper.comprovarExistenciaAnotacioEnDesti(registreRepetit, bustia.getId());
+
+			if (!contingutMoviments.isEmpty() && isPermesSobreescriureAnotacions()) {
+				Map<RegistreEntity, ContingutMovimentEntity> registresAmbCanviEstat = new HashMap<RegistreEntity, ContingutMovimentEntity>();
+//				### Còpia registre original (origen) per esborrar en cas de no deixar còpia ###
+				RegistreEntity registreOriginalR = registre;
+//				### Sobrescriure cada moviment/registre existent al destí ###
+				for (ContingutMovimentEntity contingutMovimentEntity : contingutMoviments) {
+//					### Tractar registre existent si és un reenviament duplicat ###
+					registrePerReenviar = contingutMovimentEntity.getContingut();
+					
+					contingutHelper.updateMovimentExistent(
+							contingutMovimentEntity, 
+							registrePerReenviar,
+							comentari,
+							assentamentPerConeixement, 
+							bustiaOrigenLogic,
+							ferCopia);
+					
+//					### Tornar a marcar l'anotació com a pendent si estava processada i es reb per duplicat ###
+					registre = (RegistreEntity)registrePerReenviar;
+					if (!registre.getPendent()) {
+						registresAmbCanviEstat.put(registre, contingutMovimentEntity);
+					}
+//					### Actualitzar històric i crear coa correus per cada registre a crear ###
+					updateMovimentDetail(
+							registrePerReenviar, 
+							registreOriginal, 
+							contingutMovimentEntity, 
+							bustia, 
+							entitat, 
+							nousContinguts,
+							opcioDeixarCopiaSelectada);
+					registresExistents.add(registre);
 				}
-			}	
-			if (opcioDeixarCopiaSelectada) {
-				contingutLogHelper.logMoviment(
-						registreOriginal,
-						LogTipusEnumDto.REENVIAMENT,
-						contingutMoviment,
-						true);
+				
+//				### Esborrar registre si no s'ha marcat per còpia i el reenviament no és a ell mateix ### 
+				if (!ferCopia && !registresExistents.contains(registreOriginalR)) {
+					try {
+						registreHelper.esborrarRegistre(registreOriginalR);
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.error("Hi ha hagut un error esborrant l'anotació origen", e);
+						throw new RuntimeException(e);
+					}
+				}
+//				###Enviar correus si tot ha anat bé
+				for (Map.Entry<RegistreEntity, ContingutMovimentEntity> registreCanviatEstat: registresAmbCanviEstat.entrySet()) {
+					registre = registreCanviatEstat.getKey();
+					ContingutMovimentEntity contingutMovimentEntity = registreCanviatEstat.getValue();
+					registre.updatePendent(true);
+					registre.updateReactivat(true);
+					RegistreProcesEstatEnum estatAnterior = registre.getProcesEstat();
+					registre.updateProces(RegistreProcesEstatEnum.BUSTIA_PENDENT, null);
+//					### Enviar correu avís reactivació anotació ###
+					emailHelper.sendEmailReactivacioAnotacio(
+							registre,
+							contingutMovimentEntity,
+							registre.getProcesEstat(),
+							estatAnterior);
+				}
+				emailHelper.sendEmailDuplicacioAnotacio(contingutMoviments, bustia);
+			} else {
+				if (ferCopia) {
+					registrePerReenviar = contingutHelper.ferCopiaRegistre(
+							registreOriginal,
+							bustia.getEntitat().getCodiDir3());
+				} else {
+					registrePerReenviar = registreOriginal;
+				}
+				
+
+				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
+						registrePerReenviar,
+						bustia,
+						comentari,
+						assentamentPerConeixement,
+						bustiaOrigenLogic);
+				
+				updateMovimentDetail(
+						registrePerReenviar, 
+						registreOriginal, 
+						contingutMoviment, 
+						bustia, 
+						entitat, 
+						nousContinguts, 
+						opcioDeixarCopiaSelectada);
 			}
-			contingutLogHelper.logMoviment(
-					registrePerReenviar,
-					LogTipusEnumDto.REENVIAMENT,
-					contingutMoviment,
-					true);
-			emailHelper.createEmailsPendingToSend(
-					bustia,
-					registrePerReenviar,
-					contingutMoviment);
-			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-					entitat,
-					bustia);
 			
 			if (assentamentPerConeixement) {
 				assentamentsPerConeixement.add(bustia.getNom());
 			} else {
 				assentamentsPerTramitar.add(bustia.getNom());
 			}
-			nousContinguts.add(registrePerReenviar);
 		}
 		
 		boolean crearComentariInformatiu = Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.crear.comentari"));
@@ -1442,6 +1498,45 @@ public class BustiaServiceImpl implements BustiaService {
 		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
 				entitat,
 				bustiaOrigen);
+	}
+	
+	private void updateMovimentDetail(
+			ContingutEntity registrePerReenviar, 
+			ContingutEntity registreOriginal, 
+			ContingutMovimentEntity contingutMoviment, 
+			BustiaEntity bustia, 
+			EntitatEntity entitat,
+			List<ContingutEntity> nousContinguts,
+			boolean opcioDeixarCopiaSelectada) {
+		// when anotacio processed by bustia user is resent to another bustia in new bustia it should be again pending 
+		if (registrePerReenviar.getClass() == RegistreEntity.class) {
+			RegistreEntity registre = (RegistreEntity) registrePerReenviar;
+			if (registre.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) { //En cas d'anotacions duplicades l'estat es canvia en el mètode anterior
+				registre.updateProcesMultipleExcepcions(
+						RegistreProcesEstatEnum.BUSTIA_PENDENT,
+						null);
+			}
+		}	
+		if (opcioDeixarCopiaSelectada) {
+			contingutLogHelper.logMoviment(
+					registreOriginal,
+					LogTipusEnumDto.REENVIAMENT,
+					contingutMoviment,
+					true);
+		}
+		contingutLogHelper.logMoviment(
+				registrePerReenviar,
+				LogTipusEnumDto.REENVIAMENT,
+				contingutMoviment,
+				true);
+		emailHelper.createEmailsPendingToSend(
+				bustia,
+				registrePerReenviar,
+				contingutMoviment);
+		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+				entitat,
+				bustia);
+		nousContinguts.add(registrePerReenviar);
 	}
 	
 	@Transactional(readOnly = true)
@@ -2833,6 +2928,10 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	
 	private boolean isPermesReservarAnotacions() {
 		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
+	}
+	
+	private boolean isPermesSobreescriureAnotacions() {
+		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
 	}
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 

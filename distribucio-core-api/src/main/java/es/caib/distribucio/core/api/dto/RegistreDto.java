@@ -101,6 +101,8 @@ public class RegistreDto extends ContingutDto {
 	
 	private UsuariDto agafatPer;
 	
+	private boolean reactivat;
+	
 	public boolean isAgafat() {
 		return agafatPer != null;
 	}
@@ -534,7 +536,12 @@ public class RegistreDto extends ContingutDto {
 	public void setJustificant(RegistreAnnexDto justificant) {
 		this.justificant = justificant;
 	}
-	
+	public boolean isReactivat() {
+		return reactivat;
+	}
+	public void setReactivat(boolean reactivat) {
+		this.reactivat = reactivat;
+	}
 	public String getInteressatsAndRepresentantsResum() {
 		String interessatsResum = "";
 		if (this.interessats != null)
