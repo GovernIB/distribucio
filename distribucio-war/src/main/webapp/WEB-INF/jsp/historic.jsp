@@ -306,8 +306,12 @@
 		
 		$('input[name="tipusAgrupament"]').on('change', function() {
 			$('#hdActualitzar').val($('#rbTipusAgrupamentDiari').prop("checked"));
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
+			
 			//TODO: NO funciona con el tag dis:inputDate, solo con <input type="text" name="dataInici" id="dataInici" /> dentro de un div con class="datepicker"
 			formatDatepickers();
+			
 		});
 				
 		$("#dadesMostrar").on('change', function() {
@@ -315,10 +319,32 @@
 					theme: 'bootstrap', 
 					width: 'auto', 
 					minimumResultsForSearch: "0"};
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
 		});
-
+		
 		$('#dadesMostrar').trigger('change');
-
+		
+		$("#dataInici").on('change', function() {
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
+		});
+		
+		$("#dataFi").on('change', function() {
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
+		});
+		
+		$("#codiUnitatSuperior").on('change', function() {
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
+		});
+		
+		$("#unitatIdFiltre").on('change', function() {
+			$('#export-format-div').hide();
+        	$('#btnExportar-div').hide();
+		});
+		
         $('#btn-netejar-filtre').click(function() {
         	$('#codiUnitatSuperior').val(null);
     		$('#unitatIdFiltre').val(null);
@@ -339,58 +365,54 @@
            	$("#taulaEstat").dataTable().fnDestroy();
            	$("#taulaBustia").dataTable().fnDestroy();
 
-// 			setTimeout(function(){ 
-// 	        if ($('#dadesMostrar').select2("val").includes("UO")){	
-				var content = '';
-				$.ajax({
-					type: 'POST',
-			        url: '<c:url value="/historic/JsonDadesHistoric"/>',
- 					data: $(this).serialize(),
-			        success: function(json) {	
-			        	if (!jQuery.isEmptyObject(json)) {			        		
-			        		if (!jQuery.isEmptyObject(json.json_dades_uo_map)){
-				        		hiHaDades = true;
-				        		hiHaDadesUO = true;
-				        		tratarDadesUo(json.json_dades_uo_map);
-				        	} else {
-				        		$("#dadesUO").hide();
-				        	}
-	 			        	if (!jQuery.isEmptyObject(json.json_dades_estat_map)){
-								hiHaDades = true;						
-								hiHaDadesEstat = true;						
-	 			        		tratarDadesEstat(json.json_dades_estat_map);
-	 			        	} else {
-				        		$("#dadesEstat").hide();
-				        	}
-	 			        	if (!jQuery.isEmptyObject(json.json_dades_bustia_map)){
-								hiHaDades = true;
-								hiHaDadesBustia = true;
-	 			        		tratarDadesBustia(json.json_dades_bustia_map);
-	 			        	} else {
-				        		$("#dadesBustia").hide();
-				        	}
-			        	}
-			        	if (!hiHaDades) {
-			        		$('#div-sense-dades').show();
-		           			$("#dadesUO").hide();
-		           			$("#dadesEstat").hide();
-		           			$("#dadesBustia").hide();
+			var content = '';
+			$.ajax({
+				type: 'POST',
+		        url: '<c:url value="/historic/JsonDadesHistoric"/>',
+				data: $(this).serialize(),
+		        success: function(json) {	
+		        	if (!jQuery.isEmptyObject(json)) {			        		
+		        		if (!jQuery.isEmptyObject(json.json_dades_uo_map)){
+			        		hiHaDades = true;
+			        		hiHaDadesUO = true;
+			        		tratarDadesUo(json.json_dades_uo_map);
 			        	} else {
-			        		$('#div-sense-dades').hide();
+			        		$("#dadesUO").hide();
 			        	}
-					        	
-			      	},
-			        error: function(e) {
-			        	content += 'Hi ha hagut un error recuperant dades de historic ';
-			        },
-			      	complete: function() {
-			      		$('.div-dades-carregant').hide();
-			      	}
-			    });
-				
-					
-// 			}
-// 			}, 1000);
+ 			        	if (!jQuery.isEmptyObject(json.json_dades_estat_map)){
+							hiHaDades = true;						
+							hiHaDadesEstat = true;						
+ 			        		tratarDadesEstat(json.json_dades_estat_map);
+ 			        	} else {
+			        		$("#dadesEstat").hide();
+			        	}
+ 			        	if (!jQuery.isEmptyObject(json.json_dades_bustia_map)){
+							hiHaDades = true;
+							hiHaDadesBustia = true;
+ 			        		tratarDadesBustia(json.json_dades_bustia_map);
+ 			        	} else {
+			        		$("#dadesBustia").hide();
+			        	}
+		        	}
+		        	if (!hiHaDades) {
+		        		$('#div-sense-dades').show();
+	           			$("#dadesUO").hide();
+	           			$("#dadesEstat").hide();
+	           			$("#dadesBustia").hide();
+		        	} else {
+		        		$('#div-sense-dades').hide();
+		        		$('#export-format-div').show();
+			        	$('#btnExportar-div').show();
+		        	}
+				        	
+		      	},
+		        error: function(e) {
+		        	content += 'Hi ha hagut un error recuperant dades de historic ';
+		        },
+		      	complete: function() {
+		      		$('.div-dades-carregant').hide();
+		      	}
+		    });
 
 	        e.preventDefault();
         });
@@ -423,7 +445,7 @@
 					$("#tBodyTaulaUO").append(fila);
 			});
 		});
-			
+		
 		$("#taulaUO").dataTable( {
 			language: {
 				url: webutilContextPath() + '/js/datatables/i18n/datatables.' + language + '.json'
@@ -843,7 +865,7 @@
 				</div>
 				<form:hidden path="actualitzar" id="hdActualitzar" />			
 			</div>		
-			<div class="col-md-1">
+			<div id="export-format-div" class="col-md-1" style="display: none;">
 				<select id="exportFormat"  name="format" class="form-control" style="width:100%"
 						data-minimumresults="-1"
 						data-toggle="select2">
@@ -853,7 +875,7 @@
 							<option value="XML">XML</option>
 				</select>
 			</div>
-			<div class="col-md-1">
+			<div id="btnExportar-div" class="col-md-1" style="display: none;">
 				<div class="pull-right">
 					<a id="btnExportar" href="<c:url value="/historic/exportar"/>" class="btn btn-success">
 						<span class="fa fa-download"></span>&nbsp; <spring:message code="historic.exportacio.boto.exportar"/>

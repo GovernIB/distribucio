@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
@@ -30,6 +31,7 @@ public class HistoricBustiaDto {
 	private UnitatOrganitzativaDto unitat;
 
 	private HistoricTipusEnumDto tipus;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
 	private Date data;
 
 	private Long bustiaId;
