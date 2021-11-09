@@ -69,4 +69,8 @@
 			id="configService"
 			jndi-name="distribucio/ConfigServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.ConfigService"/>
+	<jee:local-slsb
+			id="historicService"
+			jndi-name="distribucio/HistoricServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.HistoricService"/>
 </beans>

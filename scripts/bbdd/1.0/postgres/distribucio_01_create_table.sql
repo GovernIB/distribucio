@@ -22,7 +22,8 @@ CREATE TABLE DIS_USUARI
   IDIOMA 				character varying(2)  DEFAULT 'CA' NOT NULL,
   REBRE_EMAILS  		boolean,
   EMAILS_AGRUPATS		boolean,
-  VERSION       		bigint                      NOT NULL
+  VERSION       		bigint                      NOT NULL,
+  ROL_ACTUAL            character varying(64)
 );
 
 
@@ -554,4 +555,14 @@ CREATE TABLE DIS_HIS_BUSTIA
     USUARIS                  integer	    NOT NULL,
     USUARIS_PERMIS           integer	    NOT NULL,
     USUARIS_ROL              integer	    NOT NULL
+);
+
+CREATE TABLE DIS_BUSTIA_DEFAULT
+(
+    ID                      INTEGER                 NOT NULL,
+    ENTITAT                 INTEGER                 NOT NULL,
+    BUSTIA                  INTEGER                 NOT NULL,
+    USUARI             CHARACTER VARYING(64)   NOT NULL,
+    CREATEDDATE             TIMESTAMP WITHOUT TIMEZONE,
+    LASTMODIFIEDDATE        TIMESTAMP WITHOUT TIMEZONE
 );

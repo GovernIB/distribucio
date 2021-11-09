@@ -22,7 +22,8 @@ CREATE TABLE DIS_USUARI
   IDIOMA				VARCHAR2(2 CHAR) DEFAULT 'CA' NOT NULL,
   REBRE_EMAILS  		NUMBER(1,0),
   EMAILS_AGRUPATS		NUMBER(1,0),
-  VERSION       		NUMBER(19)              NOT NULL
+  VERSION       		NUMBER(19)              NOT NULL,
+  ROL_ACTUAL			VARCHAR2(64 CHAR)
 );
 
 
@@ -555,4 +556,14 @@ CREATE TABLE DIS_HIS_BUSTIA
     USUARIS                  NUMBER(19)	    NOT NULL,
     USUARIS_PERMIS           NUMBER(19)	    NOT NULL,
     USUARIS_ROL              NUMBER(19)	    NOT NULL
+);
+
+CREATE TABLE DIS_BUSTIA_DEFAULT
+(
+    ID                      NUMBER(19)             NOT NULL,
+    ENTITAT                 NUMBER(19)             NOT NULL,
+    BUSTIA                  NUMBER(19)             NOT NULL,
+    USUARI  	            VARCHAR2(64 CHAR)      NOT NULL,
+    CREATEDDATE             TIMESTAMP(6),
+    LASTMODIFIEDDATE        TIMESTAMP(6)
 );
