@@ -37,15 +37,16 @@ var inicialitzarClassificacio = function(element) {
 var processarRegistres = function(index, element) {
 	if (index < registres.length) {
 		let registre = registres[index];
-		let classificarUrl = '/classificarMultiple/' + registre.id;
 		let codiProcediment = $('select#codiProcediment').val();
-		$.post(classificarUrl, { codiProcediment : codiProcediment}, function(response) {
+		let classificarUrl = 'classificarMultiple/' + registre.id + '/' + codiProcediment;
+		$.get(classificarUrl, function(response) {
 			actualitzarEstatRegistre(index, true, response);
 			processarRegistres(index + 1, element);
 		}).fail(function() {
 			actualitzarEstatRegistre(index, false);
 			processarRegistres(index + 1, element);
 		});
+		return false;
 	} else {
 		finalitzarClassificacio(element);
 	}
@@ -101,10 +102,16 @@ $(document).ready(function() {
 	$(window.frameElement).load(function() {
 		var $modalFooter = $('.modal-footer', $(this).parent().parent());
 		var $botoClassificar = $('button#accio-classificar', $modalFooter);
-		$botoClassificar.click(function(event) {
+		
+	    $("#registreClassificarCommand").submit(function(event){
+			event.preventDefault();
+			event.stopPropagation();
 			inicialitzarClassificacio(this);
 			processarRegistres(0, this);
-		});
+			return false;
+	    });
+
+		
 	});
 });
 </script>
@@ -203,7 +210,7 @@ $(document).ready(function() {
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">
-			<button id="accio-classificar" type="submit" class="btn btn-success" disabled="disabled" data-nosubmit="true"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
+			<button id="accio-classificar" class="btn btn-success" disabled="disabled" data-nosubmit="true"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
 			<a id="accio-cancel" href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

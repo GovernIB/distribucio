@@ -186,7 +186,7 @@ public class RegistreAnnexDto implements Serializable {
 	
 	public String getFitxerExtension() {
 		return fitxerNom != null && fitxerNom.contains(".") ?
-				fitxerNom.substring(fitxerNom.lastIndexOf('.'), fitxerNom.length())
+				fitxerNom.substring(fitxerNom.lastIndexOf('.') + 1, fitxerNom.length())
 				: null;
 	}
 	

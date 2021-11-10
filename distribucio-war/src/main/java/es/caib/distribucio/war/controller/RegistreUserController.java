@@ -1726,23 +1726,23 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 
-	@RequestMapping(value = "/classificarMultiple/{registreId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
 	@ResponseBody
 	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@Validated(Classificar.class) RegistreClassificarCommand command,
+			@PathVariable String codiProcediment,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				command.getCodiProcediment());
+				codiProcediment);
 		return resultat;
 	}
 	
-	//Gestió bústies favorits
 	
+	//Gestió bústies favorits
 	@RequestMapping(value = "/favorits/add/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody
 	public void addBustiaToFavorits(

@@ -31,6 +31,9 @@
 		function checkSelectedNodes() {
 			// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
 		}
+		function paintSelectedNodes() {
+			// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
+		}
 	</script>
 </head>
 <body >

@@ -299,6 +299,22 @@ public class BustiaServiceImpl implements BustiaService {
 				bustiaModifications.getNom(),
 				unitatOrganitzativaDesti);
 		
+		// Cerca la bústia superior
+		BustiaEntity bustiaPare = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNull(
+				entitat,
+				unitatOrganitzativaDesti);
+		// Si la bústia superior no existeix la crea
+		if (bustiaPare == null) {
+			bustiaPare = bustiaRepository.save(
+					BustiaEntity.getBuilder(
+							entitat,
+							unitatOrganitzativaDesti.getDenominacio(),
+							unitatOrganitzativaDesti.getCodi(),
+							unitatOrganitzativaDesti,
+							null).build());
+		}
+		bustiaOriginal.updatePare(bustiaPare);
+		
 		// Registra al log la modificació de la bústia
 		List<String> params = new ArrayList<>();
 		params.add((!nomOriginalBustia.equals(bustiaOriginal.getNom())) ? bustiaOriginal.getNom() : null);
