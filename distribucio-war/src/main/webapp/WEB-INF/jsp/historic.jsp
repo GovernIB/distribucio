@@ -233,29 +233,24 @@
 		}
 		
 		function getDate(date){
-			<c:choose>
-				<c:when test="${historicFiltreCommand.tipusAgrupament=='DIARI'}">
-					return date;
-				</c:when>
-				<c:otherwise>
-
-					mes = date.substring(3, 5);
-					mes = mes.replace(/^0+/, '');
-						
-					if (mes == 1) return '<spring:message code="mes.1"/>';
-					else if (mes == 2) return '<spring:message code="mes.2"/>';
-					else if (mes == 3) return '<spring:message code="mes.3"/>';
-					else if (mes == 4) return '<spring:message code="mes.4"/>';
-					else if (mes == 5) return '<spring:message code="mes.5"/>';
-					else if (mes == 6) return '<spring:message code="mes.6"/>';
-					else if (mes == 7) return '<spring:message code="mes.7"/>';
-					else if (mes == 8) return '<spring:message code="mes.8"/>';
-					else if (mes == 9) return '<spring:message code="mes.9"/>';
-					else if (mes == 10) return '<spring:message code="mes.10"/>';
-					else if (mes == 11) return '<spring:message code="mes.11"/>';
-					else if (mes == 12) return '<spring:message code="mes.12"/>';
-				</c:otherwise>
-			</c:choose>
+			if ($('input[name="tipusAgrupament"]:checked').val() == 'MENSUAL') {
+				mes = date.substring(3, 5);
+				mes = mes.replace(/^0+/, '');		
+				if (mes == 1) return '<spring:message code="mes.1"/>';
+				else if (mes == 2) return '<spring:message code="mes.2"/>';
+				else if (mes == 3) return '<spring:message code="mes.3"/>';
+				else if (mes == 4) return '<spring:message code="mes.4"/>';
+				else if (mes == 5) return '<spring:message code="mes.5"/>';
+				else if (mes == 6) return '<spring:message code="mes.6"/>';
+				else if (mes == 7) return '<spring:message code="mes.7"/>';
+				else if (mes == 8) return '<spring:message code="mes.8"/>';
+				else if (mes == 9) return '<spring:message code="mes.9"/>';
+				else if (mes == 10) return '<spring:message code="mes.10"/>';
+				else if (mes == 11) return '<spring:message code="mes.11"/>';
+				else if (mes == 12) return '<spring:message code="mes.12"/>';	
+			} else { //DIARI
+				return date;	
+			}
 		}
 
 		

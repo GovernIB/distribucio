@@ -89,8 +89,8 @@ public class HistoricFiltreCommand {
 
 	public HistoricFiltreCommand() {
 		DateTime dateStartToday = (new LocalDate()).toDateTimeAtStartOfDay();
-		this.dataFi = dateStartToday.minusDays(1).toDate();
-		this.dataInici = dateStartToday.minusDays(30).toDate();
+		this.dataFi = dateStartToday.toDate();
+		this.dataInici = dateStartToday.minusMonths(1).toDate();
 		this.codiUnitatSuperior = null;
 		this.unitatIdFiltre = new ArrayList<Long>();
 		this.dadesMostrar = new ArrayList<HistoricDadesMostrarEnumDto>();
