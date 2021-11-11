@@ -38,7 +38,8 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"		count(anotacions) " +
 			"from BustiaEntity bustia " +
 			"		left join bustia.fills as anotacions " +
-			"where (anotacions is null or trunc(anotacions.data) = trunc(:data)) " +
+			"where bustia.pare is not null " + 
+			"		and (anotacions is null or trunc(anotacions.data) = trunc(:data)) " +
 			"group by bustia.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getAnotacions(
@@ -52,6 +53,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			" 	  BustiaEntity bustia " +
 			"		left join bustia.fills as anotacionsTotal " +
 			"where bustia.entitat = entitat " +
+			" 		and bustia.pare is not null " +
 			"group by entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getAnotacionsTotal();
@@ -65,6 +67,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"where trunc(moviment.createdDate) = :data " +
 			"		and moviment.origenId is not null " +
 			" 		and moviment.contingut.pare = bustia.id " +
+			"		and bustia.pare is not null " +
 			"group by moviment.contingut.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getReenviaments(
@@ -81,6 +84,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"where email.tipus = 'ENVIAMENT_EMAIL' " + 
 			"		and trunc(email.createdDate) = :data " +
 			" 		and email.contingut.pare = bustia.id " +
+			"		and bustia.pare is not null " +
 			"group by email.contingut.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getEmails(
@@ -91,7 +95,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"		bustia.unitatOrganitzativa.id, " + 
 			"		count(bustia) " +
 			"from BustiaEntity bustia " +
-			"where bustia.activa = true " +
+			"where bustia.activa = true and bustia.pare is not null " +
 			"group by bustia.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getBusties();
@@ -104,6 +108,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"		BustiaEntity bustia " +
 			"where trunc(registre.justificant.createdDate) = :data " +
 			"		and registre.pare.id = bustia.id " +
+			"		and bustia.pare is not null " +
 			"group by registre.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getJustificants(
@@ -117,6 +122,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"		BustiaEntity bustia " +
 			"where trunc(annex.createdDate) = :data " +
 			"		and annex.registre.pare.id = bustia.id " +
+			"		and bustia.pare is not null " + 
 			"group by annex.registre.entitat.id, bustia.unitatOrganitzativa.id"
 	)
 	public List<Object[]> getAnnexos(

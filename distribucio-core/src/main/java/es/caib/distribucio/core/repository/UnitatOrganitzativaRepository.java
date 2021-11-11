@@ -164,6 +164,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			"    BustiaEntity bustia " +
 			"where " +
 			" 	bustia.entitat = :entitat " +
+			" 	and bustia.pare is not null " +
 			"   and bustia.unitatOrganitzativa.codi in (:codisUO)")
 	List<Long> findUnitatsIdsAmbBustiaPerCodis(
 			@Param("entitat") EntitatEntity entitat,

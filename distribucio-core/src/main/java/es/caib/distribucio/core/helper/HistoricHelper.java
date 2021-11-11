@@ -564,10 +564,7 @@ public class HistoricHelper {
 				for  (HistoricEstatDto estat : dades.getDadesEstats())
 					estat.setUnitat(unitat);
 			}
-			if (dades.getDadesBusties() != null) {
-				for  (HistoricBustiaDto bustia : dades.getDadesBusties())
-					bustia.setUnitat(unitat);
-			}
+			// Per les bústies no cal fer res, venen informades correctament
 		}
 		return dades;
 	}

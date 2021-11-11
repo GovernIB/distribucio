@@ -37,7 +37,7 @@ public interface HistoricBustiaRepository extends JpaRepository<HistoricBustiaEn
 			"		bustia.id, " +
 			"		bustia.nom " +
 			"from BustiaEntity bustia " +
-			"where bustia.activa = true"
+			"where bustia.activa = true and bustia.pare is not null"
 	)
 	public List<Object[]> getBusties();
 

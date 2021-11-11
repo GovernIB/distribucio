@@ -46,6 +46,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			"from RegistreEntity registre, " +
 			"		BustiaEntity bustia " +
 			"where registre.pare.id = bustia.id " +
+			"		and bustia.pare is not null "	+
 			"group by registre.entitat.id, bustia.unitatOrganitzativa.id, registre.procesEstat"
 	)
 	public List<Object[]> getEstats(

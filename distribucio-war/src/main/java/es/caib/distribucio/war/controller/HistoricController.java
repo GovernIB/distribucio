@@ -4,12 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -159,6 +156,19 @@ public class HistoricController extends BaseAdminController {
 
 		if (historicFiltreCommand.isActualitzar()) {
 			historicService.calcularDadesHistoriques(new Date());
+//			try {
+//				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); 
+//				Date data = sdf.parse("01-01-2021");
+//				Calendar c = new GregorianCalendar();
+//				c.setTime(data);
+//				do {
+//					System.out.println("Calcular data: " + sdf.format(data) );
+//					c.add(Calendar.HOUR, 24);
+//					data = c.getTime();
+//				} while (data.getTime() < new Date().getTime());
+//			}catch(Exception e) {
+//				System.err.println("Error: " + e.getMessage());
+//			}
 		}
 			
 		HistoricDadesDto dades = historicService.getDadesHistoriques(
