@@ -6,16 +6,15 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
 public class JsonDades {
 
     private Map<String, List<JsonDadesUo>> jsonDadesUoMap;
-    private Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> jsonDadesEstatMap;
+    private Map<String, List<JsonDadesEstat>> jsonDadesEstatMap;
     private Map<String, List<JsonDadesBustia>> jsonDadesBustiaMap;
 	
-    public JsonDades(Map<String, List<JsonDadesUo>> jsonDadesUoMap, Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> jsonDadesEstatMap,
+    public JsonDades(Map<String, List<JsonDadesUo>> jsonDadesUoMap, Map<String, List<JsonDadesEstat>> jsonDadesEstatMap,
 			Map<String, List<JsonDadesBustia>> jsonDadesBustiaMap) {
 		this.jsonDadesUoMap = jsonDadesUoMap;
 		this.jsonDadesEstatMap = jsonDadesEstatMap;
@@ -30,11 +29,11 @@ public class JsonDades {
 		this.jsonDadesUoMap = jsonDadesUoMap;
 	}
 
-	public Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> getJsonDadesEstatMap() {
+	public Map<String, List<JsonDadesEstat>> getJsonDadesEstatMap() {
 		return jsonDadesEstatMap;
 	}
 
-	public void setJsonDadesEstatMap(Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> jsonDadesEstatMap) {
+	public void setJsonDadesEstatMap(Map<String, List<JsonDadesEstat>> jsonDadesEstatMap) {
 		this.jsonDadesEstatMap = jsonDadesEstatMap;
 	}
 

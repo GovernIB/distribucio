@@ -15,14 +15,14 @@ public class JsonDadesEstat implements Comparable<JsonDadesEstat>{
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
     private Date fecha;
-    private RegistreProcesEstatEnum estat;
+    private String estat;
     private Long correcte;
 	private Long correcteTotal;
 	private Long error;
 	private Long errorTotal;
 	private Long total;
         
-	public JsonDadesEstat(Date fecha, RegistreProcesEstatEnum estat, Long correcte, Long correcteTotal, Long error,
+	public JsonDadesEstat(Date fecha, String estat, Long correcte, Long correcteTotal, Long error,
 			Long errorTotal, Long total) {
 		this.fecha = fecha;
 		this.estat = estat;
@@ -46,11 +46,11 @@ public class JsonDadesEstat implements Comparable<JsonDadesEstat>{
 		this.fecha = fecha;
 	}
 
-	public RegistreProcesEstatEnum getEstat() {
+	public String getEstat() {
 		return estat;
 	}
 
-	public void setEstat(RegistreProcesEstatEnum estat) {
+	public void setEstat(String estat) {
 		this.estat = estat;
 	}
 

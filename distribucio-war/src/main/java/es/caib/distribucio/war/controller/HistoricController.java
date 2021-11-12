@@ -176,27 +176,27 @@ public class HistoricController extends BaseAdminController {
 				historicFiltreCommand.asDto());
 		
 		// Transforma les dades a resultats
-		JsonDades results = transformarDadesJson(dades);
+		JsonDades results = transformarDadesJson(request, dades);
 
 		return results;	
 	}	
 	
-	private JsonDades transformarDadesJson(HistoricDadesDto dades) {
+	private JsonDades transformarDadesJson(HttpServletRequest request, HistoricDadesDto dades) {
 		
 		// Dades d'anotacions per UO
 		Map<String, List<JsonDadesUo>> resultsUo = new HashMap<>();
 		
 		if (dades.getDadesAnotacions() != null) {
 			for (HistoricAnotacioDto anotacio : dades.getDadesAnotacions()) {
-				List<JsonDadesUo> lrespuestaJson = resultsUo.get(anotacio.getUnitat().getCodi());
+				List<JsonDadesUo> lrespuestaJson = resultsUo.get(anotacio.getUnitatCodi());
 				if (lrespuestaJson == null) {
 					lrespuestaJson = new ArrayList<JsonDadesUo>();
-					resultsUo.put(anotacio.getUnitat().getCodi(), lrespuestaJson);
+					resultsUo.put(anotacio.getUnitatCodi(), lrespuestaJson);
 				}
 				lrespuestaJson.add(new JsonDadesUo(
 						anotacio.getData(),
-						anotacio.getUnitat().getCodi(), 
-						anotacio.getUnitat().getNom(),
+						anotacio.getUnitatCodi(), 
+						anotacio.getUnitatNom(),
 						anotacio.getAnotacions(), 
 						anotacio.getAnotacionsTotal(), 
 						anotacio.getReenviaments(), 
@@ -209,17 +209,17 @@ public class HistoricController extends BaseAdminController {
 		}
 
 		// Dades estat
-		Map<RegistreProcesEstatEnum, List<JsonDadesEstat>> resultsEstat = new HashMap<>();
+		Map<String, List<JsonDadesEstat>> resultsEstat = new HashMap<>();
 		if (dades.getDadesEstats() != null) {
 			for (HistoricEstatDto estat : dades.getDadesEstats()) {
-				List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(estat.getEstat());
+				List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(getEstatNom(request, estat.getEstat()));
 				if (lrespuestaJson == null) {
 					lrespuestaJson = new ArrayList<JsonDadesEstat>();
-					resultsEstat.put(estat.getEstat(), lrespuestaJson);
+					resultsEstat.put(getEstatNom(request, estat.getEstat()), lrespuestaJson);
 				}
 				lrespuestaJson.add(new JsonDadesEstat(
 						estat.getData(),
-						estat.getEstat(),
+						getEstatNom(request, estat.getEstat()),
 						estat.getCorrecte(),
 						estat.getCorrecteTotal(),
 						estat.getError(),
@@ -374,11 +374,11 @@ public class HistoricController extends BaseAdminController {
 					cellUnitatData.setCellStyle(dataStyle);
 					
 					HSSFCell cellUnitatcodi = xlsRow.createCell(1);
-					cellUnitatcodi.setCellValue(anotacio.getUnitat().getCodi());
+					cellUnitatcodi.setCellValue(anotacio.getUnitatCodi());
 					cellUnitatcodi.setCellStyle(defaultStyle);
 
 					HSSFCell cellUnitatNom = xlsRow.createCell(2);
-					cellUnitatNom.setCellValue(anotacio.getUnitat().getNom());
+					cellUnitatNom.setCellValue(anotacio.getUnitatNom());
 					cellUnitatNom.setCellStyle(defaultStyle);
 					
 					HSSFCell cellAnotacions = xlsRow.createCell(3);
@@ -435,7 +435,7 @@ public class HistoricController extends BaseAdminController {
 					cellEstatData.setCellStyle(dataStyle);
 					
 					HSSFCell cellEstat = xlsRow.createCell(1);
-					cellEstat.setCellValue(estat.getEstat().toString());
+					cellEstat.setCellValue(getEstatNom(request, estat.getEstat()));
 					cellEstat.setCellStyle(defaultStyle);
 
 					HSSFCell cellAnotacionsCorrectes = xlsRow.createCell(2);
@@ -731,5 +731,40 @@ public class HistoricController extends BaseAdminController {
 
     }
 
+	private String getEstatNom(HttpServletRequest request, RegistreProcesEstatEnum estat) {
+		String estatNom = ""; 
+		switch(estat) {
+			case ARXIU_PENDENT:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.ARXIU_PENDENT");
+				break;
+			case REGLA_PENDENT:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.REGLA_PENDENT");
+				break;
+			case BUSTIA_PENDENT:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BUSTIA_PENDENT");
+				break;
+			case BUSTIA_PROCESSADA:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BUSTIA_PROCESSADA");
+				break;
+			case BACK_PENDENT:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_PENDENT");
+				break;
+			case BACK_REBUDA:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_REBUDA");
+				break;
+			case BACK_PROCESSADA:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_PROCESSADA");
+				break;
+			case BACK_REBUTJADA:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_REBUTJADA");
+				break;
+			case BACK_ERROR:
+				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_ERROR");
+				break;
+
+		}
+		return estatNom;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(HistoricController.class);
 }

@@ -55,7 +55,7 @@ public class HistoricBustiaDto {
 	}
 	@XmlElement(name = "unitatNom")
 	public String getUnitatNom() {
-		return this.unitat != null ? this.unitat.getNom() : null;
+		return this.unitat != null ? this.unitat.getDenominacio() : null;
 	}
 	public void setUnitat(UnitatOrganitzativaDto unitat) {
 		this.unitat = unitat;

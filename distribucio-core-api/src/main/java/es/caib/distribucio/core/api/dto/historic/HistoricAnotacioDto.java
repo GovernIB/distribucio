@@ -61,7 +61,7 @@ public class HistoricAnotacioDto {
 	}
 	@XmlElement(name = "unitatNom")
 	public String getUnitatNom() {
-		return this.unitat != null ? this.unitat.getNom() : null;
+		return this.unitat != null ? this.unitat.getDenominacio() : null;
 	}
 	public HistoricTipusEnumDto getTipus() {
 		return tipus;

@@ -236,18 +236,18 @@
 			if ($('input[name="tipusAgrupament"]:checked').val() == 'MENSUAL') {
 				mes = date.substring(3, 5);
 				mes = mes.replace(/^0+/, '');		
-				if (mes == 1) return '<spring:message code="mes.1"/>';
-				else if (mes == 2) return '<spring:message code="mes.2"/>';
-				else if (mes == 3) return '<spring:message code="mes.3"/>';
-				else if (mes == 4) return '<spring:message code="mes.4"/>';
-				else if (mes == 5) return '<spring:message code="mes.5"/>';
-				else if (mes == 6) return '<spring:message code="mes.6"/>';
-				else if (mes == 7) return '<spring:message code="mes.7"/>';
-				else if (mes == 8) return '<spring:message code="mes.8"/>';
-				else if (mes == 9) return '<spring:message code="mes.9"/>';
-				else if (mes == 10) return '<spring:message code="mes.10"/>';
-				else if (mes == 11) return '<spring:message code="mes.11"/>';
-				else if (mes == 12) return '<spring:message code="mes.12"/>';	
+				if (mes == 1) return '<spring:message code="mes.1"/>' + date.substring(5);
+				else if (mes == 2) return '<spring:message code="mes.2"/>' + date.substring(5);
+				else if (mes == 3) return '<spring:message code="mes.3"/>' + date.substring(5);
+				else if (mes == 4) return '<spring:message code="mes.4"/>' + date.substring(5);
+				else if (mes == 5) return '<spring:message code="mes.5"/>' + date.substring(5);
+				else if (mes == 6) return '<spring:message code="mes.6"/>' + date.substring(5);
+				else if (mes == 7) return '<spring:message code="mes.7"/>' + date.substring(5);
+				else if (mes == 8) return '<spring:message code="mes.8"/>' + date.substring(5);
+				else if (mes == 9) return '<spring:message code="mes.9"/>' + date.substring(5);
+				else if (mes == 10) return '<spring:message code="mes.10"/>' + date.substring(5);
+				else if (mes == 11) return '<spring:message code="mes.11"/>' + date.substring(5);
+				else if (mes == 12) return '<spring:message code="mes.12"/>' + date.substring(5);	
 			} else { //DIARI
 				return date;	
 			}
@@ -426,18 +426,18 @@
 				let fila = '';
 				fila += ('<tr>');
 				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
-					fila += ('<td>' + dataUO.uo_codi + '</td>');
-					fila += ('<td>' + dataUO.uo + '</td>');
-					fila += ('<td>' + dataUO.anotacions_noves + '</td>');
-					fila += ('<td>' + dataUO.anotacions_totals + '</td>');
-					fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
-					fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
-					fila += ('<td>' + dataUO.num_justificants + '</td>');
-					fila += ('<td>' + dataUO.num_annexos + '</td>');
-					fila += ('<td>' + dataUO.num_busties + '</td>');
-					fila += ('<td>' + dataUO.num_usuaris + '</td>');
-					fila += ('</tr>');
-					$("#tBodyTaulaUO").append(fila);
+				fila += ('<td>' + dataUO.uo_codi + '</td>');
+				fila += ('<td>' + dataUO.uo + '</td>');
+				fila += ('<td>' + dataUO.anotacions_noves + '</td>');
+				fila += ('<td>' + dataUO.anotacions_totals + '</td>');
+				fila += ('<td>' + dataUO.num_anotacions_reenviades + '</td>');
+				fila += ('<td>' + dataUO.num_anotacions_email + '</td>');
+				fila += ('<td>' + dataUO.num_justificants + '</td>');
+				fila += ('<td>' + dataUO.num_annexos + '</td>');
+				fila += ('<td>' + dataUO.num_busties + '</td>');
+				fila += ('<td>' + dataUO.num_usuaris + '</td>');
+				fila += ('</tr>');
+				$("#tBodyTaulaUO").append(fila);
 			});
 		});
 		
@@ -528,18 +528,18 @@
 	function tratarDadesEstat(json) {
 		$("#tBodyTaulaEstat").empty();
 		$.each(json, function(i, val) {
-			$.each(val, function(j, dataUO) {
+			$.each(val, function(j, dataEstat) {
 				let fila = '';
 				fila += ('<tr>');
-				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
-					fila += ('<td>' + dataUO.estat + '</td>');
-					fila += ('<td>' + dataUO.correcte + '</td>');
-					fila += ('<td>' + dataUO.correcte_total + '</td>');
-					fila += ('<td>' + dataUO.error + '</td>');
-					fila += ('<td>' + dataUO.error_total + '</td>');
-					fila += ('<td>' + dataUO.total + '</td>');
-					fila += ('</tr>');
-					$("#tBodyTaulaEstat").append(fila);
+				fila += ('<td data-sort="' + moment(dataEstat.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataEstat.fecha) + '</td>');
+				fila += ('<td>' + dataEstat.estat + '</td>');
+				fila += ('<td>' + dataEstat.correcte + '</td>');
+				fila += ('<td>' + dataEstat.correcte_total + '</td>');
+				fila += ('<td>' + dataEstat.error + '</td>');
+				fila += ('<td>' + dataEstat.error_total + '</td>');
+				fila += ('<td>' + dataEstat.total + '</td>');
+				fila += ('</tr>');
+				$("#tBodyTaulaEstat").append(fila);
 			});
 		});
 			
@@ -619,19 +619,19 @@
 	function tratarDadesBustia(json) {
 		$("#tBodyTaulaBustia").empty();
 		$.each(json, function(i, val) {
-			$.each(val, function(j, dataUO) {
+			$.each(val, function(j, dataBustia) {
 				let fila = '';
 				fila += ('<tr>');
-				fila += ('<td data-sort="' + moment(dataUO.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataUO.fecha) + '</td>');
-					fila += ('<td>' + dataUO.uo_codi + '</td>');
-					fila += ('<td>' + dataUO.uo + '</td>');
-					fila += ('<td>' + dataUO.bustia_id + '</td>');
-					fila += ('<td>' + dataUO.nom + '</td>');
-					fila += ('<td>' + dataUO.usuaris + '</td>');
-					fila += ('<td>' + dataUO.usuaris_permis + '</td>');
-					fila += ('<td>' + dataUO.usuaris_rol + '</td>');
-					fila += ('</tr>');
-					$("#tBodyTaulaBustia").append(fila);
+				fila += ('<td data-sort="' + moment(dataBustia.fecha, 'dd/MM/yyyy') + '">' +  getDate(dataBustia.fecha) + '</td>');
+				fila += ('<td>' + dataBustia.uo_codi + '</td>');
+				fila += ('<td>' + dataBustia.uo + '</td>');
+				fila += ('<td>' + dataBustia.bustia_id + '</td>');
+				fila += ('<td>' + dataBustia.nom + '</td>');
+				fila += ('<td>' + dataBustia.usuaris + '</td>');
+				fila += ('<td>' + dataBustia.usuaris_permis + '</td>');
+				fila += ('<td>' + dataBustia.usuaris_rol + '</td>');
+				fila += ('</tr>');
+				$("#tBodyTaulaBustia").append(fila);
 			});
 		});
 			
