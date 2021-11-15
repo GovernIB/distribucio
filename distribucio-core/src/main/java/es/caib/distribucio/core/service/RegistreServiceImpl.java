@@ -2064,7 +2064,7 @@ public class RegistreServiceImpl implements RegistreService {
 								annexPerBackoffice.setFirmaTipus(
 										firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
 								annexPerBackoffice.setFirmaPerfil(
-										registreAnneFirma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
+										firma.getPerfil() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaPerfil.valueOf(firma.getPerfil().name()) : null);
 								break;
 							}
 						}
