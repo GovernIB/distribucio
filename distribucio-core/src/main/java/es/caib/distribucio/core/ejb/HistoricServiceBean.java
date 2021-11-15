@@ -38,5 +38,10 @@ public class HistoricServiceBean implements HistoricService {
 		delegate.calcularDadesHistoriques(data);		
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void recalcularTotals(Date data) {
+		delegate.recalcularTotals(data);		
+	}
 	
 }

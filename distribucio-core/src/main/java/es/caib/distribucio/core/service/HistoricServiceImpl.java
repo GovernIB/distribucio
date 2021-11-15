@@ -108,4 +108,9 @@ public class HistoricServiceImpl implements HistoricService {
 		historicHelper.calcularDades(data);		
 	}
 
+	@Transactional
+	@Override
+	public void recalcularTotals(Date data) {
+		historicHelper.recalcularTotals(data);		
+	}
 }

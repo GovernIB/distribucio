@@ -131,7 +131,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 	@Query(	
 			"select entitat.id, " +
 			"		sum(anotacions), " +
-			"		avg(anotacionsTotal), " +
+			"		sum(anotacionsTotal), " +
 			"		sum(reenviaments), " +
 			"		sum(emails), " +
 			"		sum(justificants), " +
@@ -139,6 +139,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"		avg(busties) " +
 			"from HistoricAnotacioEntity " +
 			"where data = :data " +
+			"		and tipus = 'DIARI' " +
 			"group by entitat.id"
 	)
 	public List<Object[]> getDadesPerEntitat(
@@ -158,6 +159,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			"from HistoricAnotacioEntity " +
 			"where data >= :mesInici " +
 			"		and  data < :mesFi " +
+			"		and tipus = 'DIARI' " +
 			"group by entitat.id, unitat.id"
 	)
 	public List<Object[]> getDadesPerMes(
@@ -181,5 +183,23 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			@Param("dataInici") Date dataInici,
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi);
+
+	/** Posa el total com la resta del total del dia o mes seguent menys els nous.*/
+	@Query("update HistoricAnotacioEntity a " +
+			"set a.anotacionsTotal = coalesce ( " +
+			"	(	select aSeguent.anotacionsTotal - aSeguent.anotacions" +
+			"		from HistoricAnotacioEntity aSeguent " +
+			"		where a.entitat = aSeguent.entitat " +
+			"				and ((a.unitat is null and aSeguent.unitat is null) or (a.unitat = aSeguent.unitat)) " +
+			"				and a.tipus = aSeguent.tipus" +
+			"				and ((a.tipus = 'DIARI' and aSeguent.data = :diaSeguent) " +
+			"					or (a.tipus = 'MENSUAL' and aSeguent.data = :mesSeguent))" +
+			"	), anotacionsTotal)" +
+			"where a.data = :data ")
+	@Modifying
+	public void recalcularTotals(
+			@Param("data") Date data,
+			@Param("diaSeguent") Date diaSeguent,
+			@Param("mesSeguent") Date mesSeguent);
 
 }

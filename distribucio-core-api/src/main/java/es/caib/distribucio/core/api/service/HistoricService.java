@@ -38,5 +38,10 @@ public interface HistoricService {
 	 */
 	public void calcularDadesHistoriques(Date data);
 
+	/** Mètode per recalcular els totals d'un dia passat a partir de les dades del dia següent.
+	 * 
+	 * @param data
+	 */
+	public void recalcularTotals(Date data);
 
 }

@@ -6,7 +6,9 @@ import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -76,7 +79,6 @@ public class HistoricController extends BaseAdminController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(HttpServletRequest request, 
-			HttpServletResponse response, 
 			Model model) {	
 		
 		getEntitatActualComprovantPermisos(request);
@@ -101,14 +103,6 @@ public class HistoricController extends BaseAdminController {
 					request,
 					SESSION_ATTRIBUTE_FILTRE);
 		} 
-//		else {
-//			if (!bindingResult.hasErrors()) {
-//				RequestSessionHelper.actualitzarObjecteSessio(
-//						request,
-//						SESSION_ATTRIBUTE_FILTRE,
-//						historicFiltreCommand);
-//			}
-//		}
 		return "redirect:historic";
 	}
 	
@@ -155,19 +149,6 @@ public class HistoricController extends BaseAdminController {
 
 		if (historicFiltreCommand.isActualitzar()) {
 			historicService.calcularDadesHistoriques(new Date());
-//			try {
-//				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); 
-//				Date data = sdf.parse("01-01-2021");
-//				Calendar c = new GregorianCalendar();
-//				c.setTime(data);
-//				do {
-//					System.out.println("Calcular data: " + sdf.format(data) );
-//					c.add(Calendar.HOUR, 24);
-//					data = c.getTime();
-//				} while (data.getTime() < new Date().getTime());
-//			}catch(Exception e) {
-//				System.err.println("Error: " + e.getMessage());
-//			}
 		}
 			
 		HistoricDadesDto dades = historicService.getDadesHistoriques(
@@ -179,6 +160,49 @@ public class HistoricController extends BaseAdminController {
 
 		return results;	
 	}	
+	
+	/** Mètode per forçar el càlcul entre dues dates o des d'una data fins al dia actual
+	 */
+	@RequestMapping(value = "/calcularDades", method = RequestMethod.GET)
+	public String calcularDades(
+			HttpServletRequest request,
+			@DateTimeFormat(pattern = "dd/MM/yyy")
+			@RequestParam(value="dataInici", required = false) Date dataInici,
+			@DateTimeFormat(pattern = "dd/MM/yyy")
+			@RequestParam(value="dataFi", required = false) Date dataFi,
+			Model model) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			if (dataInici == null)
+				dataInici = new Date();
+			if (dataFi == null)
+				dataFi = new Date();
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataFi);
+			int diesCalculats = 0;
+			do {
+				logger.debug("Calculant dades històriques per la data " + sdf.format(c.getTime()));
+				historicService.calcularDadesHistoriques(c.getTime());
+				historicService.recalcularTotals(c.getTime());
+				c.add(Calendar.DATE, -1);
+				diesCalculats++;
+			} while (c.getTime().getTime() >= dataInici.getTime());
+			MissatgesHelper.success(
+					request, 
+					getMessage(request, 
+							"historic.calcularDates.success", 
+							new Object[] {diesCalculats, sdf.format(dataInici), sdf.format(dataFi)}));
+		} catch (Exception e) {
+			String errMsg = getMessage(request, 
+							"historic.calcularDates.error", 
+							new Object[] {sdf.format(dataInici), sdf.format(dataFi), e.getMessage()});
+			logger.error(errMsg, e);
+			MissatgesHelper.error(
+					request, 
+					errMsg);
+		}
+		return "redirect:/historic";
+	}
 	
 	private JsonDades transformarDadesJson(HttpServletRequest request, HistoricDadesDto dades) {
 		

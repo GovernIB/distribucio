@@ -98,6 +98,41 @@ public class HistoricHelper {
 	    this.calcularDadesAnotacionsUO(data, entitats, unitats, usuarisUo, usuarisEntitat);
 	    this.calcularDadesEstats(data, entitats, unitats);
 	}
+	
+	/** Recalcula les dades totals per un dia a partir de les dades del dia següent o del mes següent.
+	 * @param  
+	 */
+	@Transactional
+	public void recalcularTotals(Date data) {
+		
+		logger.debug("Recalculant els totals de les dades històriques per la data " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.sss").format(data));
+    	
+		// Treu l'hora al dia
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(data);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+	    data = calendar.getTime();
+	    
+	    // Recalcula els totals.
+	    calendar.add(Calendar.DATE, 1);
+	    Date diaSeguent = calendar.getTime();
+	    calendar.add(Calendar.DATE, -1);
+	    calendar.add(Calendar.MONTH, 1);
+	    Date mesSeguent = calendar.getTime();
+	    
+	    this.historicAnotacioRepository.recalcularTotals(
+	    		data,
+	    		diaSeguent,
+	    		mesSeguent);
+	    this.historicEstatRepository.recalcularTotals(
+	    		data,
+	    		diaSeguent,
+	    		mesSeguent);
+	}
+
 
 	/** Esborra les dades existents del dia, calcula les dades del dia per UO i entitat
 	 * i esborra i calcula dades mensuals per anotacions per UO.
@@ -206,7 +241,7 @@ public class HistoricHelper {
     		anotacioEntitat.setTipus(HistoricTipusEnumDto.DIARI);
     		anotacioEntitat.setData(data);
     		anotacioEntitat.setAnotacions((Long) dadesEntitatAnotacions[1]); 
-    		anotacioEntitat.setAnotacionsTotal(((Double) dadesEntitatAnotacions[2]).longValue()); 
+    		anotacioEntitat.setAnotacionsTotal((Long) dadesEntitatAnotacions[2]); 
     		anotacioEntitat.setReenviaments((Long) dadesEntitatAnotacions[3]); 
     		anotacioEntitat.setEmails((Long) dadesEntitatAnotacions[4]); 
     		anotacioEntitat.setJustificants((Long) dadesEntitatAnotacions[5]); 
@@ -323,9 +358,9 @@ public class HistoricHelper {
 			
 			historicEstatMes.setEstat((RegistreProcesEstatEnum) mesEstat[2]);
 			historicEstatMes.setCorrecte((Long) mesEstat[3]);
-			historicEstatMes.setCorrecteTotal(((Double) mesEstat[4]).longValue());
+			historicEstatMes.setCorrecteTotal((Long) mesEstat[4]);
 			historicEstatMes.setError((Long) mesEstat[5]);
-			historicEstatMes.setErrorTotal(((Double) mesEstat[6]).longValue());
+			historicEstatMes.setErrorTotal((Long) mesEstat[6]);
 	    	
 	    	historicEstatRepository.save(historicEstatMes);
 	    }

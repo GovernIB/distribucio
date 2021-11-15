@@ -53,6 +53,7 @@ public interface HistoricBustiaRepository extends JpaRepository<HistoricBustiaEn
 			"from HistoricBustiaEntity " +
 			"where data >= :mesInici " +
 			"		and  data < :mesFi " +
+			"		and tipus = 'DIARI' " +
 			"group by entitat.id, unitat.id, bustiaId, nom"
 	)
 	public List<Object[]> getDadesPerMes(

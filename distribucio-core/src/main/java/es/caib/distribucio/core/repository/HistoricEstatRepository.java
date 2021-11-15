@@ -62,6 +62,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			"		sum(total) " +
 			"from HistoricEstatEntity " +
 			"where data = :data " +
+			"		and tipus = 'DIARI' " +
 			"group by entitat.id, estat"
 	)
 	public List<Object[]> getDadesPerEntitat(
@@ -72,13 +73,14 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			"		unitat.id, " + 
 			"		estat, " + 
 			"		sum(correcte), " +
-			"		avg(correcteTotal), " +
+			"		max(correcteTotal), " +
 			"		sum(error), " +
-			"		avg(errorTotal), " +
+			"		max(errorTotal), " +
 			"		sum(total) " +
 			"from HistoricEstatEntity " +
 			"where data >= :mesInici " +
 			"		and  data < :mesFi " +
+			"		and tipus = 'DIARI' " +
 			"group by entitat.id, unitat.id, estat"
 	)
 	public List<Object[]> getDadesPerMes(
@@ -103,5 +105,45 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			@Param("dataInici") Date dataInici,
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi);
+
+	/** Posa el total com la resta del total del dia o mes seguent menys els nous.*/
+	@Query("update HistoricEstatEntity e " +
+			"set e.correcteTotal = coalesce (" +
+			"	(	select eSeguent.correcteTotal - eSeguent.correcte" +
+			"		from HistoricEstatEntity eSeguent " +
+			"		where e.entitat = eSeguent.entitat " +
+			"				and ((e.unitat is null and eSeguent.unitat is null) or (e.unitat = eSeguent.unitat)) " +
+			"				and e.estat = eSeguent.estat " +
+			"				and e.tipus = eSeguent.tipus" +
+			"				and ((e.tipus = 'DIARI' and eSeguent.data = :diaSeguent) " +
+			"						or (e.tipus = 'MENSUAL' and eSeguent.data = :mesSeguent))" +
+			"	), correcteTotal), " +
+			"e.errorTotal = coalesce (" +
+			"	(	select eSeguent.errorTotal - eSeguent.error " +
+			"		from HistoricEstatEntity eSeguent " +
+			"		where e.entitat = eSeguent.entitat " +
+			"				and ((e.unitat is null and eSeguent.unitat is null) or (e.unitat = eSeguent.unitat)) " +
+			"				and e.estat = eSeguent.estat " +
+			"				and e.tipus = eSeguent.tipus " +
+			"				and ((e.tipus = 'DIARI' and eSeguent.data = :diaSeguent) " +
+			"						or (e.tipus = 'MENSUAL' and eSeguent.data = :mesSeguent))" +
+			"	), errorTotal), " +
+			"e.total = coalesce (" +
+			"	(	select eSeguent.total - eSeguent.error - eSeguent.correcte " +
+			"		from HistoricEstatEntity eSeguent " +
+			"		where e.entitat = eSeguent.entitat " +
+			"				and ((e.unitat is null and eSeguent.unitat is null) or (e.unitat = eSeguent.unitat)) " +
+			"				and e.estat = eSeguent.estat " +
+			"				and e.tipus = eSeguent.tipus " +
+			"				and ((e.tipus = 'DIARI' and eSeguent.data = :diaSeguent) " +
+			"						or (e.tipus = 'MENSUAL' and eSeguent.data = :mesSeguent))" +
+			"	), total) " +
+			"where e.data = :data ")
+	@Modifying
+	public void recalcularTotals(
+			@Param("data") Date data,
+			@Param("diaSeguent") Date diaSeguent,
+			@Param("mesSeguent") Date mesSeguent);
+
 
 }
