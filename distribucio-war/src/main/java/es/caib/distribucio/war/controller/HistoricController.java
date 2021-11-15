@@ -82,7 +82,6 @@ public class HistoricController extends BaseAdminController {
 		getEntitatActualComprovantPermisos(request);
 		HistoricFiltreCommand historicFiltreCommand = getFiltreCommand(request);
 		model.addAttribute(historicFiltreCommand);
-//		model.addAttribute("historicFiltreCommand", historicFiltreCommand);
 		model.addAttribute("showDadesUO", false);
 		model.addAttribute("showDadesEstat", false);
 		model.addAttribute("showDadesBusties", false);
@@ -209,17 +208,18 @@ public class HistoricController extends BaseAdminController {
 		}
 
 		// Dades estat
+		Map<RegistreProcesEstatEnum, String> estats = getEstatLiterals(request); 
 		Map<String, List<JsonDadesEstat>> resultsEstat = new HashMap<>();
 		if (dades.getDadesEstats() != null) {
 			for (HistoricEstatDto estat : dades.getDadesEstats()) {
-				List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(getEstatNom(request, estat.getEstat()));
+				List<JsonDadesEstat> lrespuestaJson = resultsEstat.get(estats.get(estat.getEstat()));
 				if (lrespuestaJson == null) {
 					lrespuestaJson = new ArrayList<JsonDadesEstat>();
-					resultsEstat.put(getEstatNom(request, estat.getEstat()), lrespuestaJson);
+					resultsEstat.put(estats.get(estat.getEstat()), lrespuestaJson);
 				}
 				lrespuestaJson.add(new JsonDadesEstat(
 						estat.getData(),
-						getEstatNom(request, estat.getEstat()),
+						estats.get(estat.getEstat()),
 						estat.getCorrecte(),
 						estat.getCorrecteTotal(),
 						estat.getError(),
@@ -426,6 +426,7 @@ public class HistoricController extends BaseAdminController {
 					wb,
 					sheet);
 			int rowNum = 1;
+			Map<RegistreProcesEstatEnum, String> estats = getEstatLiterals(request);
 			for (HistoricEstatDto estat : dades.getDadesEstats()) {
 				try {
 					HSSFRow xlsRow = sheet.createRow(rowNum++);
@@ -435,7 +436,7 @@ public class HistoricController extends BaseAdminController {
 					cellEstatData.setCellStyle(dataStyle);
 					
 					HSSFCell cellEstat = xlsRow.createCell(1);
-					cellEstat.setCellValue(getEstatNom(request, estat.getEstat()));
+					cellEstat.setCellValue(estats.get(estat.getEstat()));
 					cellEstat.setCellStyle(defaultStyle);
 
 					HSSFCell cellAnotacionsCorrectes = xlsRow.createCell(2);
@@ -693,31 +694,16 @@ public class HistoricController extends BaseAdminController {
 	private byte[] dadesToOdt(HttpServletRequest request, HistoricDadesDto dades) throws Exception {
 		Locale locale = new RequestContext(request).getLocale();
 
-
 		// 1) Load ODT file and set Velocity template engine and cache it to the registry					
     	InputStream in= this.getClass().getResourceAsStream("/plantilles/historic_" + locale.getLanguage() + ".odt");
     	IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,TemplateEngineKind.Velocity);
 
     	// 2) Create Java model context 
-//		FieldsMetadata metadata = new FieldsMetadata();
-//		metadata.setTemplateEngineKind("Velocity");
-//		metadata.addFieldAsList("dades.dadesAnotacions.data");
-//		metadata.addFieldAsList("dades.dadesAnotacions.unitat.codi");
-//		metadata.addFieldAsList("dades.dadesAnotacions.unitat.nom");
-//		metadata.addFieldAsList("dades.dadesAnotacions.anotacions");
-//		metadata.addFieldAsList("dades.dadesAnotacions.anotacionsTotal");
-//		metadata.addFieldAsList("dades.dadesAnotacions.reenviaments");
-//		metadata.addFieldAsList("dades.dadesAnotacions.emails");
-//		metadata.addFieldAsList("dades.dadesAnotacions.justificants");
-//		metadata.addFieldAsList("dades.dadesAnotacions.annexos");
-//		metadata.addFieldAsList("dades.dadesAnotacions.busties");
-//		metadata.addFieldAsList("dades.dadesAnotacions.usuaris");
-//		report.setFieldsMetadata(metadata);
-    	
     	IContext context = report.createContext();
 		context.put("data", new Date());
 		context.put("dades", dades);
 		context.put("dateFormatter", new DateTool());
+		context.put("estats", getEstatLiterals(request));
 
     	// 3) Set PDF as format converter
     	//Options options = Options.getTo(ConverterTypeTo.PDF);
@@ -730,40 +716,13 @@ public class HistoricController extends BaseAdminController {
     	return bos.toByteArray();
 
     }
-
-	private String getEstatNom(HttpServletRequest request, RegistreProcesEstatEnum estat) {
-		String estatNom = ""; 
-		switch(estat) {
-			case ARXIU_PENDENT:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.ARXIU_PENDENT");
-				break;
-			case REGLA_PENDENT:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.REGLA_PENDENT");
-				break;
-			case BUSTIA_PENDENT:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BUSTIA_PENDENT");
-				break;
-			case BUSTIA_PROCESSADA:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BUSTIA_PROCESSADA");
-				break;
-			case BACK_PENDENT:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_PENDENT");
-				break;
-			case BACK_REBUDA:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_REBUDA");
-				break;
-			case BACK_PROCESSADA:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_PROCESSADA");
-				break;
-			case BACK_REBUTJADA:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_REBUTJADA");
-				break;
-			case BACK_ERROR:
-				estatNom = this.getMessage(request, "registre.proces.estat.enum.BACK_ERROR");
-				break;
-
+	
+	private Map<RegistreProcesEstatEnum, String> getEstatLiterals(HttpServletRequest request) {
+		Map<RegistreProcesEstatEnum, String> estats = new HashMap<>();
+		for (RegistreProcesEstatEnum estat : RegistreProcesEstatEnum.values()) {
+			estats.put(estat, this.getMessage(request, "registre.proces.estat.enum." + estat.toString()));
 		}
-		return estatNom;
+		return estats;
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(HistoricController.class);
