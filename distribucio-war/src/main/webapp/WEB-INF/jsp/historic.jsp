@@ -64,7 +64,7 @@
 	var hiHaDadesEstat = false;
 	var hiHaDadesBustia = false;
 	var hiHaDades = false;
-	var graficoOTaulaValue = 'mostraGrafics';
+	var graficoOTaulaValue = 'mostraTaules';
 	
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
@@ -416,7 +416,9 @@
 			 event.preventDefault();
 			 window.location.href = $(this).attr('href') + "?format=" + $('#exportFormat').val();
 		});
-
+		
+		$('#btn-filtrar-filtre').click();
+		
 	}); // FIN $(document).ready
 	
 	function tratarDadesUo(json) {
@@ -887,12 +889,12 @@
 		<div class="row form-filtre-visualitzacio">
 			<div class="col-md-2">
 				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-default form-check-label active"> 
-						<input type="radio" value="mostraGrafics" name="graficsOTaula" checked="checked">
+					<label class="btn btn-default form-check-label"> 
+						<input type="radio" value="mostraGrafics" name="graficsOTaula">
 						<i class="fa fa-bar-chart" aria-hidden="true"></i> <spring:message code="historic.filtre.mostraGrafics"/>
 					</label> 
-					<label class="btn btn-default form-check-label"> 
-						<input type="radio" value="mostraTaules" name="graficsOTaula">
+					<label class="btn btn-default form-check-label active"> 
+						<input type="radio" value="mostraTaules" name="graficsOTaula" checked="checked">
 						<i class="fa fa-table" aria-hidden="true"></i> <spring:message code="historic.filtre.mostraTaules"/>
 					</label> 
 				</div>
