@@ -53,6 +53,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -433,6 +434,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.isNomesAmbErrors(),
 					unitat == null,
 					unitat,
+					filtre.getSobreescriure() == null,
+					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -1838,6 +1841,25 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return arxiuDetall;
 	}
+	
+	@Transactional
+	@Override
+	public void marcarSobreescriure(
+			Long entitatId,
+			Long registreId) {
+		
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		registre.updateSobreescriure(true);
+	}
+	
+	
+	
 
 	@Override
 	@Transactional

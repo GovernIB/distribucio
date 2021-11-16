@@ -910,7 +910,7 @@ public class BustiaServiceImpl implements BustiaService {
 				RegistreTipusEnum.ENTRADA.getValor(),
 				anotacio.getNumero(),
 				anotacio.getData());
-		if (registreRepetit != null) {
+		if (registreRepetit != null && !registreRepetit.isSobreescriure()) {
 			throw new ValidationException(
 					"Aquesta anotació ja ha estat donada d'alta a l'aplicació (" +
 					"entitatCodi=" + anotacio.getEntitatCodi() + ", " +

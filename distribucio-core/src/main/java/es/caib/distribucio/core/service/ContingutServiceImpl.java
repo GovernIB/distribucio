@@ -539,6 +539,7 @@ public class ContingutServiceImpl implements ContingutService {
 		
 		if (registre != null) {
 			registre.setProces(RegistreProcesEstatEnum.BUSTIA_PROCESSADA);
+			registre.updateSobreescriure(false);
 		}
 		
 		if (contingut.getPare() != null) {

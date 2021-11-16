@@ -385,6 +385,97 @@ public class RegistreAdminController extends BaseAdminController {
 	}
 	
 	
+	@RequestMapping(value = "/{registreId}/marcarSobreescriure", method = RequestMethod.GET)
+	public String marcarSobreescriure(
+			HttpServletRequest request,
+			@PathVariable Long registreId) {
+		
+		try {
+			registreService.marcarSobreescriure(getEntitatActualComprovantPermisos(request).getId(), registreId);
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../registreAdmin",
+					"registre.admin.controller.marcar.sobreescriure.ok");
+		} catch (Exception e) {
+			return getAjaxControllerReturnValueError(
+					request,
+					"redirect:../../registreAdmin",
+					"registre.admin.controller.marcar.sobreescriure.error",
+					new Object[] {ExceptionHelper.getRootCauseOrItself(e).getMessage()});
+		}
+
+	}
+	
+	
+	
+	@RequestMapping(value = "/marcarSobreescriureMultiple", method = RequestMethod.GET)
+	public String marcarSobreescriure(
+			HttpServletRequest request,
+			Model model) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio != null && !seleccio.isEmpty()) {
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			
+			RegistreDto registreDto = null;
+			for (Long registreId : seleccioList) {
+				registreDto = null;
+				try {
+					logger.debug("Marcant per a sobreescriure anotació amb id " + registreId);
+					registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
+
+					if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat())) {
+
+						registreService.marcarSobreescriure(entitatActual.getId(), registreId);
+						correctes++;
+
+					} else {
+						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.");
+						estatErroni++;
+					}
+				} catch(Exception e) {
+					logger.error("Error marcant per a sobreescriure l'anotació amb id " + registreId + ": " + e.getMessage() , e);
+					String errMsg = getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.error", new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), ExceptionHelper.getRootCauseOrItself(e).getMessage()});
+					MissatgesHelper.error(request, errMsg);
+					errors++;
+				}
+			}
+			
+			if (correctes > 0){
+				MissatgesHelper.success(request,
+						getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request,
+						getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"registre.admin.controller.marcar.sobreescriure.massiva.estatErroni", new Object[]{estatErroni}));
+			}
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"registre.admin.controller.massiva.cap"));
+		}
+		return "redirect:/registreAdmin";
+	}
+	
+
+	
+	
+	
 	/** Mèdode per reprocessar una selecció d'anotacions de registre des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request

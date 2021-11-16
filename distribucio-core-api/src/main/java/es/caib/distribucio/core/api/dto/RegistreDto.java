@@ -101,7 +101,11 @@ public class RegistreDto extends ContingutDto {
 	
 	private UsuariDto agafatPer;
 	
+
 	private boolean reactivat;
+
+	private boolean sobreescriure;
+
 	
 	public boolean isAgafat() {
 		return agafatPer != null;
@@ -595,6 +599,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setJustificantDescarregat(boolean justificantDescarregat) {
 		this.justificantDescarregat = justificantDescarregat;
+	}
+	public boolean isSobreescriure() {
+		return sobreescriure;
+	}
+	public void setSobreescriure(boolean sobreescriure) {
+		this.sobreescriure = sobreescriure;
 	}
 	
 }

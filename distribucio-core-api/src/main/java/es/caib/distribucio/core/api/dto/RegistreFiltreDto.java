@@ -34,6 +34,8 @@ public class RegistreFiltreDto implements Serializable {
 
 	private String backCodi;
 
+	private RegistreMarcatPerSobreescriureEnumDto sobreescriure;
+	
 	// Filtre per administradors
 	/** Estat específic. */
 	private RegistreProcesEstatEnum estat;
@@ -155,6 +157,12 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setMostrarInactivesOrigen(boolean mostrarInactivesOrigen) {
 		this.mostrarInnactivesOrigen = mostrarInactivesOrigen;
+	}
+	public RegistreMarcatPerSobreescriureEnumDto getSobreescriure() {
+		return sobreescriure;
+	}
+	public void setSobreescriure(RegistreMarcatPerSobreescriureEnumDto sobreescriure) {
+		this.sobreescriure = sobreescriure;
 	}
 	@Override
 	public String toString() {

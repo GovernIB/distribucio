@@ -231,8 +231,12 @@ public class RegistreEntity extends ContingutEntity {
 	@ForeignKey(name = "dis_agafatper_registre_fk")
 	protected UsuariEntity agafatPer;
 	
+
 	@Column(name = "reactivat")
 	private boolean reactivat;
+
+	@Column(name = "sobreescriure")
+	private boolean sobreescriure;
 	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
@@ -512,6 +516,8 @@ public class RegistreEntity extends ContingutEntity {
 		}
 	}
 	
+
+	
 	
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
@@ -559,6 +565,8 @@ public class RegistreEntity extends ContingutEntity {
 		this.backObservacions = backObservacions;
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
+	
+	
 	public void updateProcesSistra(RegistreProcesEstatSistraEnum procesEstatSistra) {
 		this.procesEstatSistra = procesEstatSistra;
 	}
@@ -583,7 +591,12 @@ public class RegistreEntity extends ContingutEntity {
 	public void updatePresencial(Boolean presencial) {
 		this.presencial = presencial;
 	}
-
+	public boolean isSobreescriure() {
+		return sobreescriure;
+	}
+	public void updateSobreescriure(boolean sobreescriure) {
+		this.sobreescriure = sobreescriure;
+	}
 	public static Builder getBuilder(
 			EntitatEntity entitat,
 			RegistreTipusEnum tipus,
@@ -810,6 +823,114 @@ public class RegistreEntity extends ContingutEntity {
 			return built;
 		}
 	}
+	
+	public void override(
+			EntitatEntity entitat,
+			RegistreTipusEnum tipus,
+			String unitatAdministrativa,
+			String unitatdAministrativaDescripcio,
+			String numero,
+			Date data,
+			Integer numeroCopia,
+			String identificador,
+			String extracte,
+			String oficinaCodi,
+			String llibreCodi,
+			String assumpteTipusCodi,
+			String idiomaCodi,
+			RegistreProcesEstatEnum procesEstat,
+			ContingutEntity pare,
+			String entitatCodi,
+			String entitatDescripcio,
+			String oficinaDescripcio,
+			String llibreDescripcio,
+			String assumpteTipusDescripcio,
+			String assumpteCodi,
+			String assumpteDescripcio,
+			String procedimentCodi,
+			String referencia,
+			String expedientNumero,
+			String numeroOrigen,
+			String idiomaDescripcio,
+			String transportTipusCodi,
+			String transportTipusDescripcio,
+			String transportNumero,
+			String usuariCodi,
+			String usuariNom,
+			String usuariContacte,
+			String aplicacioCodi,
+			String aplicacioVersio,
+			String documentacioFisicaCodi,
+			String documentacioFisicaDescripcio,
+			String observacions,
+			String exposa,
+			Date dataOrigen,
+			String oficinaOrigenCodi,
+			String oficinaOrigenDescripcio,
+			String justificantArxiuUuid) {
+
+		// Nom del contingut
+		this.nom = numero;
+		if (extracte != null) {
+			this.nom += " - " + extracte;
+		}
+		if (numeroCopia != null && numeroCopia > 0)
+			this.nom += " (" + numeroCopia + ")";
+		this.entitat = entitat;
+		this.registreTipus = tipus.getValor();
+		this.unitatAdministrativa = unitatAdministrativa;
+		this.unitatAdministrativaDescripcio = unitatdAministrativaDescripcio;
+		this.numero = numero;
+		this.data = data;
+		this.numeroCopia = numeroCopia;
+		this.identificador = identificador;
+		this.extracte = extracte;
+		this.oficinaCodi = oficinaCodi;
+		this.llibreCodi = llibreCodi;
+		this.assumpteTipusCodi = assumpteTipusCodi;
+		this.idiomaCodi = idiomaCodi;
+		this.procesEstat = procesEstat;
+		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
+		this.procesIntents = 0;
+		this.pare = pare;
+		this.tipus = ContingutTipusEnumDto.REGISTRE;
+		this.procesData = new Date();
+		this.procesIntents = 0;
+		this.arxiuTancat = false;
+		this.arxiuTancatError = false;
+		
+		this.entitatCodi = entitatCodi;
+		this.entitatDescripcio = entitatDescripcio;
+		this.oficinaDescripcio = oficinaDescripcio;
+		this.llibreDescripcio = llibreDescripcio;
+		this.assumpteTipusDescripcio = assumpteTipusDescripcio;
+		this.assumpteCodi = assumpteCodi;
+		this.assumpteDescripcio = assumpteDescripcio;
+		this.procedimentCodi = procedimentCodi;
+		this.referencia = referencia;
+		this.expedientNumero = expedientNumero;
+		this.numeroOrigen = numeroOrigen;
+		this.idiomaDescripcio = idiomaDescripcio;
+		this.transportTipusCodi = transportTipusCodi;
+		this.transportTipusDescripcio = transportTipusDescripcio;
+		this.transportNumero = transportNumero;
+		this.usuariCodi = usuariCodi;
+		this.usuariNom = usuariNom;
+		this.usuariContacte = usuariContacte;
+		this.aplicacioCodi = aplicacioCodi;
+		this.aplicacioVersio = aplicacioVersio;
+		this.documentacioFisicaCodi = documentacioFisicaCodi;
+		this.documentacioFisicaDescripcio = documentacioFisicaDescripcio;
+		this.observacions = observacions;
+		this.exposa = exposa;
+		this.dataOrigen = dataOrigen;
+		this.oficinaOrigenCodi = oficinaOrigenCodi;
+		this.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
+		this.justificantArxiuUuid = justificantArxiuUuid;
+		this.justificant = null;
+		this.sobreescriure = false;
+	}
+	
 
 	@Override
 	public int hashCode() {

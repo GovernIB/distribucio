@@ -202,7 +202,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"			where " +
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-			"			) > 0 ) ")
+			"			) > 0 ) " + 
+			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " )
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -234,6 +235,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
+			@Param("esNullSobreescriure") boolean esNullSobreescriure,
+			@Param("sobreescriure") Boolean sobreescriure,
 			Pageable pageable);
 	
 	
