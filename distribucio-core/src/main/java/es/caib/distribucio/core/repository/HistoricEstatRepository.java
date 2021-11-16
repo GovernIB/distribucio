@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.historic.HistoricEstatDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
 import es.caib.distribucio.core.entity.HistoricEstatEntity;
 
@@ -76,7 +77,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			"		max(correcteTotal), " +
 			"		sum(error), " +
 			"		max(errorTotal), " +
-			"		sum(total) " +
+			"		max(total) " +
 			"from HistoricEstatEntity " +
 			"where data >= :mesInici " +
 			"		and  data < :mesFi " +
@@ -106,6 +107,37 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi);
 
+	/** Consulta per retornar les dades agregades per estat sense tenir
+	 * en compte la UO.	 */
+	@Query(	"select new es.caib.distribucio.core.api.dto.historic.HistoricEstatDto( " +
+			"			data, " + 
+			"			tipus, " + 
+			"			estat, " + 
+			"			sum(correcte), " + 
+			"			sum(correcteTotal), " + 
+			"			sum(error), " + 
+			"			sum(errorTotal), " + 
+			"			sum(total)) " +
+			"from HistoricEstatEntity " +
+			"where entitat.id = :entitatId " +
+			"		and ((:dadesEntitat = true and unitat is null) " +
+			"            or (unitat.id in (:unitatsIds))) " +
+			"		and tipus = :tipus " +
+			"		and (:esNullDataInici = true or data >= :dataInici) " +
+			"		and (:esNullDataFi = true or data <= :dataFi) " +
+			"group by data, tipus, estat " +
+			 "order by data asc ")
+	public List<HistoricEstatDto> findAgregatsByFiltre (
+			@Param("entitatId") Long entitatId, 
+			@Param("dadesEntitat") boolean dadesEntitat, 
+			@Param("unitatsIds") List<Long> unitatsIds, 
+			@Param("tipus") HistoricTipusEnumDto tipus, 
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi);
+
+	
 	/** Posa el total com la resta del total del dia o mes seguent menys els nous.*/
 	@Query("update HistoricEstatEntity e " +
 			"set e.correcteTotal = coalesce (" +
@@ -144,6 +176,5 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			@Param("data") Date data,
 			@Param("diaSeguent") Date diaSeguent,
 			@Param("mesSeguent") Date mesSeguent);
-
 
 }

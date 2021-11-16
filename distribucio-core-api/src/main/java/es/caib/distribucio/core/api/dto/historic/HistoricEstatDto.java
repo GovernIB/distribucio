@@ -4,15 +4,10 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 
 /**
@@ -23,14 +18,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 @XmlRootElement(name = "dadaEstat")
 @XmlAccessorType (XmlAccessType.FIELD)
 public class HistoricEstatDto {
-
-    @JsonIgnore
-	@XmlTransient
-	private EntitatDto entitat;
-    @JsonIgnore
-	@XmlTransient
-	private UnitatOrganitzativaDto unitat;
-
+	
 	private HistoricTipusEnumDto tipus;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="Europe/Madrid")
 	private Date data;
@@ -42,26 +30,29 @@ public class HistoricEstatDto {
 	private Long errorTotal;
 	private Long total;
 	
-	public EntitatDto getEntitat() {
-		return entitat;
+	public HistoricEstatDto() {
+		
 	}
-	public void setEntitat(EntitatDto entitat) {
-		this.entitat = entitat;
+	/** Constructor per la consulta d'agregats. */
+	public HistoricEstatDto(
+			Date data,
+			HistoricTipusEnumDto tipus,
+			RegistreProcesEstatEnum estat,
+			Long correcte,
+			Long correcteTotal,
+			Long error,
+			Long errorTotal,
+			Long total) {
+		this.setData(data);
+		this.setTipus(tipus);
+		this.setEstat(estat);
+		this.setCorrecte(correcte);
+		this.setCorrecteTotal(correcteTotal);
+		this.setError(error);
+		this.setErrorTotal(errorTotal);
+		this.setTotal(total);
 	}
-	public UnitatOrganitzativaDto getUnitat() {
-		return unitat;
-	}
-	@XmlElement(name = "unitatCodi")
-	public String getUnitatCodi() {
-		return this.unitat != null ? this.unitat.getCodi() : null;
-	}
-	@XmlElement(name = "unitatNom")
-	public String getUnitatNom() {
-		return this.unitat != null ? this.unitat.getNom() : null;
-	}
-	public void setUnitat(UnitatOrganitzativaDto unitat) {
-		this.unitat = unitat;
-	}
+	
 	public HistoricTipusEnumDto getTipus() {
 		return tipus;
 	}

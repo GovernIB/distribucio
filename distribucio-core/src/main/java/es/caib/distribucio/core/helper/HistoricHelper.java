@@ -25,7 +25,6 @@ import es.caib.distribucio.core.api.dto.historic.HistoricAnotacioDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricBustiaDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricDadesMostrarEnumDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricEstatDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -361,6 +360,7 @@ public class HistoricHelper {
 			historicEstatMes.setCorrecteTotal((Long) mesEstat[4]);
 			historicEstatMes.setError((Long) mesEstat[5]);
 			historicEstatMes.setErrorTotal((Long) mesEstat[6]);
+			historicEstatMes.setTotal((long) mesEstat[7]);
 	    	
 	    	historicEstatRepository.save(historicEstatMes);
 	    }
@@ -557,8 +557,7 @@ public class HistoricHelper {
 		}
 		if (dadesMostrar.contains(HistoricDadesMostrarEnumDto.ESTAT)) {
 			dades.setDadesEstats(
-					conversioTipusHelper.convertirList(
-							historicEstatRepository.findByFiltre(
+							historicEstatRepository.findAgregatsByFiltre(
 									entitatId,
 									dadesEntitat,
 									unitatsIds,
@@ -566,8 +565,7 @@ public class HistoricHelper {
 									dataInici == null,
 									dataInici,
 									dataFi == null,
-									dataFi), 
-							HistoricEstatDto.class)					
+									dataFi)
 				);
 		}
 		if (dadesMostrar.contains(HistoricDadesMostrarEnumDto.BUSTIES)) {
@@ -594,10 +592,6 @@ public class HistoricHelper {
 			if (dades.getDadesAnotacions() != null) {
 				for  (HistoricAnotacioDto anotacio : dades.getDadesAnotacions())
 					anotacio.setUnitat(unitat);
-			}
-			if (dades.getDadesEstats() != null) {
-				for  (HistoricEstatDto estat : dades.getDadesEstats())
-					estat.setUnitat(unitat);
 			}
 			// Per les bústies no cal fer res, venen informades correctament
 		}
