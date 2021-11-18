@@ -56,7 +56,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova 0.9.38 annex pdf perfil PADES " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -70,7 +70,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 3;
+	private static final int N_ANNEXOS = 1;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false;
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false;
@@ -173,7 +173,7 @@ public class BustiaV1Test {
 			            firma.setPerfil("BES");
 			            firmes.add(firma);
 			            annex = crearAnnex(
-				        		"Annex222" + j,
+				        		"Annex signat XADES" + j,
 				        		//"annex.pdf",
 				        		"annex_firmat_xades.xsig",
 				        		"application/xsig",
@@ -199,7 +199,7 @@ public class BustiaV1Test {
 						
 				        annex = crearAnnex(
 				        		"Annex" + j,
-				        		"annex.pdf",
+				        		"annex signat CADES " + j,
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
@@ -221,7 +221,7 @@ public class BustiaV1Test {
 			            firma.setPerfil("EPES");
 			            firmes.add(firma);
 			            annex = crearAnnex(
-				        		"Annex222" + j,
+				        		"Annex signat PAdES " + j,
 				        		//"annex.pdf",
 				        		"annex_firmat_pades.pdf",
 				        		"application/pdf",
@@ -239,7 +239,7 @@ public class BustiaV1Test {
 		        } else {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
-				        		"Annex" + j,
+				        		"Annex " + j,
 				        		"annex.pdf",
 				        		"application/pdf",
 				        		null,
@@ -251,7 +251,7 @@ public class BustiaV1Test {
 				        		firmes);
 			        } else {
 			        	annex = crearAnnex(
-				        		"Annex" + j,
+				        		"Annex DOCX" + j,
 				        		"annex.docx",
 				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 				        		null,

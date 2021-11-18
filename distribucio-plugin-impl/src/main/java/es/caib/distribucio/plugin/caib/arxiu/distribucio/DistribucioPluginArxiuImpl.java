@@ -754,6 +754,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return expedient;
 	}
 
+	/** Llistat de firmes attached */
+	private static List<FirmaTipus> TIPUS_FIRMES_ATTACHED = Arrays.asList(FirmaTipus.CADES_ATT, FirmaTipus.PADES, FirmaTipus.XADES_ENV);
+
 	private Document toArxiuDocument(
 			String identificador,
 			String nom,
@@ -870,116 +873,79 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			break;
 		}
 		metadades.setTipusDocumental(tipusDocumental);
-		DocumentExtensio extensio = null;
+		
+		// Contingut i firmes
 		DocumentContingut contingut = null;
-		if (fitxer != null) {
-			String fitxerExtensio = fitxer.getExtensio();
-			String extensioAmbPunt = (fitxerExtensio.startsWith(".")) ? fitxerExtensio.toLowerCase() : "." + fitxerExtensio.toLowerCase();
-			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-			if (fitxer.getContingut() != null) {
+		boolean documentAmbFirma = firmes != null && firmes.size() > 0;
+		boolean firmaSeparada = firmes != null 
+								&& firmes.size() > 0 
+								&& firmes.get(0).getTipus() != null
+								&& !TIPUS_FIRMES_ATTACHED.contains(FirmaTipus.valueOf(firmes.get(0).getTipus().name()));
+
+
+		// Si no està firmat posa el contingut on toca
+		if (!documentAmbFirma && fitxer != null) {
+			// Sense firma
+			contingut = new DocumentContingut();
+			contingut.setArxiuNom(fitxer.getNom());
+			contingut.setContingut(fitxer.getContingut());
+			contingut.setTipusMime(fitxer.getContentType());
+			document.setContingut(contingut);
+		} else {
+			// Amb firma
+			if (document.getFirmes() == null) {
+				document.setFirmes(new ArrayList<Firma>());
+			}			
+			// Informa les firmes
+			ArxiuFirmaDto primeraFirma = null;
+			if (documentAmbFirma) {
+				for (ArxiuFirmaDto firmaDto: firmes) {
+					Firma firma = new Firma();
+					firma.setFitxerNom(firmaDto.getFitxerNom());
+					firma.setContingut(firmaDto.getContingut());
+					if (firmaDto.getContingut() != null)
+						firma.setTamany(firmaDto.getContingut().length);
+					firma.setTipusMime(firmaDto.getTipusMime());
+					setFirmaTipusPerfil(firma, firmaDto);					
+					firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
+					document.getFirmes().add(firma);
+				}
+				primeraFirma = firmes.get(0);
+			}
+
+			if (!firmaSeparada) {
+				// attached
+				Firma firma;
+				if (documentAmbFirma) {
+					firma = document.getFirmes().get(0);
+				} else {
+					firma = new Firma();
+					document.getFirmes().add(firma);
+				}
+				if (fitxer != null) {
+					firma.setFitxerNom(fitxer.getNom());
+					firma.setContingut(fitxer.getContingut());
+					firma.setTipusMime(fitxer.getContentType());
+					if (primeraFirma != null) {
+						setFirmaTipusPerfil(firma, primeraFirma);
+						firma.setContingut(primeraFirma.getContingut());
+						firma.setCsvRegulacio(primeraFirma.getCsvRegulacio());
+					}
+				}
+			} else {
+				// detached
 				contingut = new DocumentContingut();
 				contingut.setArxiuNom(fitxer.getNom());
 				contingut.setContingut(fitxer.getContingut());
 				contingut.setTipusMime(fitxer.getContentType());
+				document.setContingut(contingut);
 			}
 		}
-		if (firmes != null && firmes.size() > 0) {
-			if (document.getFirmes() == null) {
-				document.setFirmes(new ArrayList<Firma>());
-			}
-			for (ArxiuFirmaDto firmaDto: firmes) {
-				Firma firma = new Firma();
-				firma.setContingut(firmaDto.getContingut());
-				firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
-				firma.setFitxerNom(firmaDto.getFitxerNom());
-				if (firmaDto.getContingut() != null)
-					firma.setTamany(firmaDto.getContingut().length);
-
-				if (firmaDto.getPerfil() != null) {
-					switch(firmaDto.getPerfil()) {
-					case BES:
-						firma.setPerfil(FirmaPerfil.BES);
-						break;
-					case EPES:
-						firma.setPerfil(FirmaPerfil.EPES);
-						break;
-					case LTV:
-						firma.setPerfil(FirmaPerfil.LTV);
-						break;
-					case T:
-						firma.setPerfil(FirmaPerfil.T);
-						break;
-					case C:
-						firma.setPerfil(FirmaPerfil.C);
-						break;
-					case X:
-						firma.setPerfil(FirmaPerfil.X);
-						break;
-					case XL:
-						firma.setPerfil(FirmaPerfil.XL);
-						break;
-					case A:
-						firma.setPerfil(FirmaPerfil.A);
-						break;
-					case BASIC:
-						firma.setPerfil(FirmaPerfil.BASIC);
-						break;
-					case BASELINE_B_LEVEL:
-						firma.setPerfil(FirmaPerfil.BASELINE_B_LEVEL);
-						break;
-					case BASELINE_T_LEVEL:
-						firma.setPerfil(FirmaPerfil.BASELINE_T_LEVEL);
-						break;
-					case BASELINE_LT_LEVEL:
-						firma.setPerfil(FirmaPerfil.BASELINE_LT_LEVEL);
-						break;
-					case BASELINE_LTA_LEVEL:
-						firma.setPerfil(FirmaPerfil.BASELINE_LTA_LEVEL);
-						break;
-					case BASELINE_T:
-						firma.setPerfil(FirmaPerfil.BASELINE_T);
-						break;
-					case LTA:
-						firma.setPerfil(FirmaPerfil.LTA);
-						break;
-					default:
-						break;
-					}
-				}
-				if (firmaDto.getTipus() != null) {
-					switch(firmaDto.getTipus()) {
-					case CSV:
-						firma.setTipus(FirmaTipus.CSV);
-						break;
-					case XADES_DET:
-						firma.setTipus(FirmaTipus.XADES_DET);
-						break;
-					case XADES_ENV:
-						firma.setTipus(FirmaTipus.XADES_ENV);
-						break;
-					case CADES_DET:
-						firma.setTipus(FirmaTipus.CADES_DET);
-						break;
-					case CADES_ATT:
-						firma.setTipus(FirmaTipus.CADES_ATT);
-						break;
-					case PADES:
-						firma.setTipus(FirmaTipus.PADES);
-						break;
-					case SMIME:
-						firma.setTipus(FirmaTipus.SMIME);
-						break;
-					case ODT:
-						firma.setTipus(FirmaTipus.ODT);
-						break;
-					case OOXML:
-						firma.setTipus(FirmaTipus.OOXML);
-						break;
-					}
-				}
-				firma.setTipusMime(firmaDto.getTipusMime());
-				document.getFirmes().add(firma);
-			}
+		
+		DocumentExtensio extensio = null;
+		if (fitxer != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
 		}
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
@@ -1108,8 +1074,6 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		metaDadesAddicionals.put("eni:codigo_oficina_registro", documentEniRegistrableDto.getOficinaCodi());
 		metaDadesAddicionals.put("eni:tipo_asiento_registral", new Integer("0"));
 		
-		
-		
 		if (metaDades != null && !metaDades.isEmpty()) {
 			Map<String, String> metaDadesMap;
 			try {
@@ -1124,11 +1088,6 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				throw new RuntimeException(e);
 			}
 		}
-		
-
-
-
-		
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	
 		document.setMetadades(metadades);
@@ -1136,6 +1095,93 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		document.setEstat(estat);
 		return document;
 	}
+
+	private void setFirmaTipusPerfil(
+			Firma firma,
+			ArxiuFirmaDto arxiuFirmaDto) {
+		if (arxiuFirmaDto.getTipus() != null) {
+			switch(arxiuFirmaDto.getTipus()) {
+			case CSV:
+				firma.setTipus(FirmaTipus.CSV);
+				break;
+			case XADES_DET:
+				firma.setTipus(FirmaTipus.XADES_DET);
+				break;
+			case XADES_ENV:
+				firma.setTipus(FirmaTipus.XADES_ENV);
+				break;
+			case CADES_DET:
+				firma.setTipus(FirmaTipus.CADES_DET);
+				break;
+			case CADES_ATT:
+				firma.setTipus(FirmaTipus.CADES_ATT);
+				break;
+			case PADES:
+				firma.setTipus(FirmaTipus.PADES);
+				break;
+			case SMIME:
+				firma.setTipus(FirmaTipus.SMIME);
+				break;
+			case ODT:
+				firma.setTipus(FirmaTipus.ODT);
+				break;
+			case OOXML:
+				firma.setTipus(FirmaTipus.OOXML);
+				break;
+			}
+		}
+		if (arxiuFirmaDto.getPerfil() != null) {
+			switch(arxiuFirmaDto.getPerfil()) {
+			case BES:
+				firma.setPerfil(FirmaPerfil.BES);
+				break;
+			case EPES:
+				firma.setPerfil(FirmaPerfil.EPES);
+				break;
+			case LTV:
+				firma.setPerfil(FirmaPerfil.LTV);
+				break;
+			case T:
+				firma.setPerfil(FirmaPerfil.T);
+				break;
+			case C:
+				firma.setPerfil(FirmaPerfil.C);
+				break;
+			case X:
+				firma.setPerfil(FirmaPerfil.X);
+				break;
+			case XL:
+				firma.setPerfil(FirmaPerfil.XL);
+				break;
+			case A:
+				firma.setPerfil(FirmaPerfil.A);
+				break;
+			case BASELINE_B_LEVEL:
+				firma.setPerfil(FirmaPerfil.BASELINE_B_LEVEL);
+				break;
+			case BASELINE_LTA_LEVEL:
+				firma.setPerfil(FirmaPerfil.BASELINE_LTA_LEVEL);
+				break;
+			case BASELINE_LT_LEVEL:
+				firma.setPerfil(FirmaPerfil.BASELINE_LT_LEVEL);
+				break;
+			case BASELINE_T:
+				firma.setPerfil(FirmaPerfil.BASELINE_T);
+				break;
+			case BASELINE_T_LEVEL:
+				firma.setPerfil(FirmaPerfil.BASELINE_T_LEVEL);
+				break;
+			case BASIC:
+				firma.setPerfil(FirmaPerfil.BASIC);
+				break;
+			case LTA:
+				firma.setPerfil(FirmaPerfil.LTA);
+				break;
+			}
+		}
+	}
+
+
 
 	private void integracioAddAccioOk(
 			String integracioCodi,

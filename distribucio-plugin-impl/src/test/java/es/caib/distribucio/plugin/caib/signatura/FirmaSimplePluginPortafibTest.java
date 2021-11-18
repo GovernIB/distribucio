@@ -33,9 +33,9 @@ public class FirmaSimplePluginPortafibTest {
 	private static final String ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
 	private static final String USERNAME = "$distribucio_portafib";
 	private static final String PASSWORD = "distribucio_portafib";
-	private static final String PERFIL = "CADES_DETACHED";
+	//private static final String PERFIL = "CADES_DETACHED";
 	//private static final String PERFIL = "FIRMAAPISIMPLE";
-	
+	private static final String PERFIL = "PADES";
 
 	private SignaturaPlugin plugin;
 
