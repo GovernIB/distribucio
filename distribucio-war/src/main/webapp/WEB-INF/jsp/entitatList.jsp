@@ -22,7 +22,7 @@
 				<th data-col-name="id" data-visible="false" width="4%">#</th>
 				<th data-col-name="codi"><spring:message code="entitat.list.columna.codi"/></th>
 				<th data-col-name="nom"><spring:message code="entitat.list.columna.nom"/></th>
-				<th data-col-name="cif"><spring:message code="entitat.list.columna.cif"/></th>
+				<th data-col-name="codiDir3"><spring:message code="entitat.list.columna.codiDir3"/></th>
 				<th data-col-name="activa" data-template="#cellActivaTemplate">
 					<spring:message code="entitat.list.columna.activa"/>
 					<script id="cellActivaTemplate" type="text/x-jsrender">
