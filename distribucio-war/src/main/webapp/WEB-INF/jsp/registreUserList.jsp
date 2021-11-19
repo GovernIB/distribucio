@@ -190,23 +190,25 @@ $(document).ready(function() {
 		
 		//Llegenda paginador
 		var $paginador = $('.dataTables_length');
-		if ($paginador.find('.llegenda_paginador').length == 0 && ${isEnviarConeixementActiu}) {
+		if ($paginador.find('.llegenda_paginador').length == 0) {
 			var $paginador_container = $paginador.closest('.row');
 			$paginador_container.find('div:first').addClass('col-md-6').removeClass('col-md-3');
 			$paginador_container.find('div:nth-child(2)').addClass('col-md-6').removeClass('col-md-9');
 			var llegenda = '<div class="llegenda_paginador">\
 								<div class="item_llegenda">\
 									<span><spring:message code="contingut.enviar.info.llegenda"/>:</span>\
-								</div>\
-								<div class="item_llegenda lleganda_tramitacio">\
-									<span class="item_color"></span>\
-									<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
-								</div>\
-								<div class="item_llegenda llegenda_coneixement">\
-									<span class="item_color"></span>\
-									<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
-								</div>\
-								<div class="item_llegenda llegenda_reactivat">\
+								</div>';
+								if (${isEnviarConeixementActiu} ) {
+									llegenda += '<div class="item_llegenda lleganda_tramitacio">\
+													<span class="item_color"></span>\
+													<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
+												</div>\
+												<div class="item_llegenda llegenda_coneixement">\
+													<span class="item_color"></span>\
+													<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
+												</div>';
+								}
+								llegenda += '<div class="item_llegenda llegenda_reactivat">\
 									<span class="item_color"></span>\
 									<span><spring:message code="contingut.enviar.info.llegenda.reactivat"/></span>\
 								</div>\
