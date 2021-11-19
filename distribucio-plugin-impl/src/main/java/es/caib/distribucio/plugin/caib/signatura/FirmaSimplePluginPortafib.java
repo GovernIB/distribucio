@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.fundaciobit.apisib.apifirmasimple.v1.ApiFirmaEnServidorSimple;
 import org.fundaciobit.apisib.apifirmasimple.v1.beans.FirmaSimpleAvailableProfile;
 import org.fundaciobit.apisib.apifirmasimple.v1.beans.FirmaSimpleCommonInfo;
@@ -115,6 +116,9 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 
 		String languageUI = "ca";
 		String username = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "username", null);
+		if (username != null &&  username.trim().isEmpty()) {
+			username = null;
+		}
 		String administrationID = null;
 		String signerEmail = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "signerEmail", "suport@caib.es");
 

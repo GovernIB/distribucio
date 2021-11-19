@@ -30,12 +30,14 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class FirmaSimplePluginPortafibTest {
 
-	private static final String ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
-	private static final String USERNAME = "$distribucio_portafib";
-	private static final String PASSWORD = "distribucio_portafib";
+	private static final String API_ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
+	private static final String API_USERNAME = "$distribucio_portafib";
+	private static final String API_PASSWORD = "distribucio_portafib";
 	//private static final String PERFIL = "CADES_DETACHED";
 	//private static final String PERFIL = "FIRMAAPISIMPLE";
 	private static final String PERFIL = "PADES";
+	// Nom del certificat emprat per @firma per firmar
+	private static final String USERNAME = "afirmades-firma";
 
 	private SignaturaPlugin plugin;
 
@@ -70,16 +72,19 @@ public class FirmaSimplePluginPortafibTest {
 		PropertiesHelper.getProperties().setLlegirSystem(false);
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.endpoint",
-				ENDPOINT_ADDRESS);
+				API_ENDPOINT_ADDRESS);
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.username",
-				USERNAME);
+				API_USERNAME);
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.password",
-				PASSWORD);
+				API_PASSWORD);
 		System.setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil",
 				PERFIL);
+		PropertiesHelper.getProperties().setProperty(
+				"es.caib.distribucio.plugin.signatura.portafib.username",
+				USERNAME);
 		plugin = new FirmaSimplePluginPortafib();
 	}
 
