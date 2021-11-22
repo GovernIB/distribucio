@@ -27,6 +27,7 @@ public enum LogTipusEnumDto {
 	BACK_ERROR,
 	AGAFAR,
 	ALLIBERAR,
-	DUPLICITAT
+	DUPLICITAT,
+	SOBREESCRIURE
 	
 }

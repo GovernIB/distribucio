@@ -928,6 +928,7 @@ public class RegistreEntity extends ContingutEntity {
 		this.oficinaOrigenDescripcio = oficinaOrigenDescripcio;
 		this.justificantArxiuUuid = justificantArxiuUuid;
 		this.justificant = null;
+		this.procesError = null;
 		this.sobreescriure = false;
 	}
 	

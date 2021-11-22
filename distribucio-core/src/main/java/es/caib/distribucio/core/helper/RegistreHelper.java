@@ -292,6 +292,17 @@ public class RegistreHelper {
 			registreRepository.save(registreRepetit);
 			registre = registreRepetit;
 			
+			
+			List<String> params = new ArrayList<>();
+			params.add(registre.getNom());
+			params.add(null);
+			
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.SOBREESCRIURE,
+					params,
+					false);
+			
 		} else {
 
 
