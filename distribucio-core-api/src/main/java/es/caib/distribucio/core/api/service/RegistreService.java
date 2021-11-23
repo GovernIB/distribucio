@@ -399,4 +399,12 @@ public interface RegistreService {
 	public void marcarSobreescriure(
 			Long entitatId,
 			Long registreId);
+			
+
+	@PreAuthorize("hasRole('tothom')")
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text,
+			String rolActual);			
 }

@@ -336,4 +336,18 @@ public class RegistreServiceBean implements RegistreService {
 				registreId);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text,
+			String rolActual) {
+		return delegate.marcarPendent(
+				entitatId,
+				registreId,
+				text,
+				rolActual);
+	}
+
 }

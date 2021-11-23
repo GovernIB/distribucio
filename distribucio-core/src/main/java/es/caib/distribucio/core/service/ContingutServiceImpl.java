@@ -32,11 +32,9 @@ import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
-import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
-import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -448,65 +446,10 @@ public class ContingutServiceImpl implements ContingutService {
 			Long entitatId,
 			Long contingutId,
 			String text) {
-		logger.debug("Obtenint els comentaris pel contingut de bustia ("
-				+ "entitatId=" + entitatId + ", "
-				+ "nodeId=" + contingutId + ")");
-		RespostaPublicacioComentariDto resposta = new RespostaPublicacioComentariDto();
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+		return contingutHelper.publicarComentariPerContingut(
 				entitatId,
-				false,
-				false,
-				true);
-		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
-				entitat,
 				contingutId,
-				null);
-		// Comprova que l'usuari tengui accés al contingut
-		contingutHelper.comprovarPermisosPathContingut(
-				contingut,
-				false,
-				false,
-				false,
-				true);
-		//truncam a 1024 caracters
-		if (text.length() > 1024)
-			text = text.substring(0, 1024);
-		String origianlText = text;
-		String[] textArr = text.split(" ");
-		for (String paraula: textArr) {
-			if (paraula.startsWith("@")) {
-				String codiUsuari = paraula.substring(paraula.indexOf("@") + 1, paraula.length());
-				UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();
-				UsuariEntity usuariMencionat = usuariRepository.findByCodi(codiUsuari);
-				if (usuariMencionat == null) {
-					resposta.getErrorsDescripcio().add(
-							messageHelper.getMessage(
-									"registre.anotacio.publicar.comentari.error.notfound", 
-									new Object[] {codiUsuari}));
-				} else if (usuariMencionat != null && usuariMencionat.getEmail() == null) {
-					resposta.getErrorsDescripcio().add(
-							messageHelper.getMessage(
-									"registre.anotacio.publicar.comentari.error.email", 
-									new Object[] {codiUsuari}));
-				} else {
-					emailHelper.sendEmailAvisMencionatComentari(
-						usuariMencionat.getEmail(),
-						usuariActual, 
-						contingut, 
-						origianlText);
-				}
-				text = text.replace(paraula, "<span class='codi_usuari'>" + paraula + "</span>");
-			}
-		}
-		if (!resposta.getErrorsDescripcio().isEmpty()) {
-			resposta.setError(true);
-		}
-		ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(
-				contingut, 
-				text).build();
-		contingutComentariRepository.save(comentari);
-		resposta.setPublicat(true);
-		return resposta;
+				text);
 	}
 
 	@Transactional
@@ -580,6 +523,8 @@ public class ContingutServiceImpl implements ContingutService {
 				contingutId,
 				text).isPublicat();
 	}
+	
+
 
 	@Transactional
 	@Override

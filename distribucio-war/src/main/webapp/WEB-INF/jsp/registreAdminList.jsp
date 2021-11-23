@@ -339,6 +339,9 @@ $(document).ready(function() {
 					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false">
 						<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
 					</a></li>
+					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<spring:message code="registre.user.accio.marcar.pendent"/>
+					</a></li>					
 				</ul>
 			</div>
 		</div>
@@ -510,6 +513,9 @@ $(document).ready(function() {
 										<li><a href="./registreAdmin/{{:id}}/marcarSobreescriure"><span class="fa fa-history"></span>&nbsp;&nbsp;<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/>...</a></li>
 									{{/if}}	
 								{{/if}}			
+								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
+									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
+								{{/if}}
 								<li>
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>

@@ -409,6 +409,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						<li><a href="registreUser/marcarProcessatMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.marcar.processat"/>
 						</a></li>
+						<li><a href="registreUser/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<spring:message code="registre.user.accio.marcar.pendent"/>
+						</a></li>
 						<li><a href="registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 						</a></li>
@@ -591,6 +594,10 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_processar_{{:id}} hidden"{{/if}} {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 								{{/if}}		
+
+								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
+									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
+								{{/if}}	
 								<li>
 									{{!-- DESCARREGAR ZIP ---}}
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">

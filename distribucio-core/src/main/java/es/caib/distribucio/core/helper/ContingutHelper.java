@@ -35,6 +35,7 @@ import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
@@ -63,6 +64,7 @@ import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.UsuariRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -112,6 +114,12 @@ public class ContingutHelper {
 	private ConfigHelper configHelper;
 	@Autowired
 	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
+	@Resource
+	private EmailHelper emailHelper;
+	@Resource
+	private MessageHelper messageHelper;
+	@Resource
+	private UsuariRepository usuariRepository;
 	
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -985,6 +993,76 @@ public class ContingutHelper {
 		}
 		return interessatCopiaEntity;
 	}
+
+	
+	
+
+	public RespostaPublicacioComentariDto publicarComentariPerContingut(
+			Long entitatId,
+			Long contingutId,
+			String text) {
+		logger.debug("Obtenint els comentaris pel contingut de bustia ("
+				+ "entitatId=" + entitatId + ", "
+				+ "nodeId=" + contingutId + ")");
+		RespostaPublicacioComentariDto resposta = new RespostaPublicacioComentariDto();
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		ContingutEntity contingut = entityComprovarHelper.comprovarContingut(
+				entitat,
+				contingutId,
+				null);
+		// Comprova que l'usuari tengui accés al contingut
+		comprovarPermisosPathContingut(
+				contingut,
+				false,
+				false,
+				false,
+				true);
+		//truncam a 1024 caracters
+		if (text.length() > 1024)
+			text = text.substring(0, 1024);
+		String origianlText = text;
+		String[] textArr = text.split(" ");
+		for (String paraula: textArr) {
+			if (paraula.startsWith("@")) {
+				String codiUsuari = paraula.substring(paraula.indexOf("@") + 1, paraula.length());
+				UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();
+				UsuariEntity usuariMencionat = usuariRepository.findByCodi(codiUsuari);
+				if (usuariMencionat == null) {
+					resposta.getErrorsDescripcio().add(
+							messageHelper.getMessage(
+									"registre.anotacio.publicar.comentari.error.notfound", 
+									new Object[] {codiUsuari}));
+				} else if (usuariMencionat != null && usuariMencionat.getEmail() == null) {
+					resposta.getErrorsDescripcio().add(
+							messageHelper.getMessage(
+									"registre.anotacio.publicar.comentari.error.email", 
+									new Object[] {codiUsuari}));
+				} else {
+					emailHelper.sendEmailAvisMencionatComentari(
+						usuariMencionat.getEmail(),
+						usuariActual, 
+						contingut, 
+						origianlText);
+				}
+				text = text.replace(paraula, "<span class='codi_usuari'>" + paraula + "</span>");
+			}
+		}
+		if (!resposta.getErrorsDescripcio().isEmpty()) {
+			resposta.setError(true);
+		}
+		ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(
+				contingut, 
+				text).build();
+		contingutComentariRepository.save(comentari);
+		resposta.setPublicat(true);
+		return resposta;
+	}
+	
+	
 
 	private List<ContingutEntity> getPathContingut(
 			ContingutEntity contingut,

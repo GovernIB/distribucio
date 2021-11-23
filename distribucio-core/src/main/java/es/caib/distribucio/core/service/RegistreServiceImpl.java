@@ -1407,6 +1407,58 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
+	
+	
+	@Transactional
+	@Override
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text, 
+			String rolActual) {
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), !rolActual.equals("DIS_ADMIN"));
+
+		registre.setProces(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+
+		// if expedient is not already closed in arxiu avoid closing it
+		if (!registre.getArxiuTancat() && registre.getDataTancament() != null) {
+			registre.updateDataTancament(null);
+		}
+		// if expedient is already closed in arxiu reopen it
+		if (registre.getArxiuTancat()) {
+			pluginHelper.arxiuExpedientReobrir(registre);
+		}
+		
+		if (registre.getPare() != null) {
+			// Marca per desalojar la cache de la bustia
+			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
+		}
+
+		List<String> params = new ArrayList<>();
+		params.add(registre.getNom());
+		params.add(null);
+		contingutLogHelper.log(
+				registre,
+				LogTipusEnumDto.MARCAMENT_PENDENT,
+				params,
+				false);
+		return contingutHelper.publicarComentariPerContingut(
+				entitatId,
+				registreId,
+				text).isPublicat();
+	}
+	
+	
+	
+	
 
 	@Transactional(readOnly = true)
 	@Override

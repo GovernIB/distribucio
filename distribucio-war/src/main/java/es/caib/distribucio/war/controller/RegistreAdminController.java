@@ -47,12 +47,14 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -569,6 +571,110 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return "redirect:/registreAdmin";
 	}
+	
+	
+	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
+	public String marcarPendentMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		MarcarProcessatCommand command = new MarcarProcessatCommand();
+		model.addAttribute(command);
+		return "registreUserMarcarPendent";
+	}
+
+	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.POST)
+	public String marcarPendentMultiplePost(
+			HttpServletRequest request,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
+		if (bindingResult.hasErrors()) {
+			return "registreUserMarcarPendent";
+		}
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		
+		if (seleccio != null && !seleccio.isEmpty()) {
+			
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			
+			for (Long registreId : seleccioList) {
+					RegistreDto registreDto = registreService.findOne(
+							entitatActual.getId(), 
+							registreId, 
+							false,
+							RolHelper.getRolActual(request));
+					if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
+						
+						boolean processatOk = true;
+						try {
+							registreService.marcarPendent(
+									entitatActual.getId(), 
+									registreId,
+									"<span class='label label-default'>" + 
+									getMessage(
+											request, 
+											"registre.user.controller.accio.marcat.pendent") + 
+									"</span> " + command.getMotiu(), 
+									rolActual);
+							
+		
+						} catch (Exception e) {
+							MissatgesHelper.error(
+									request,
+									getMessage(
+											request, 
+											"registre.user.controller.marcar.pendent.massiva.error",
+											new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+							
+							processatOk = false;
+							logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+						}
+						
+						if (processatOk)
+							correctes++;
+						else
+							errors++;
+					} 
+					else {
+						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
+						estatErroni++;
+					}
+			}
+			
+			if (correctes > 0){
+				MissatgesHelper.success(request,
+						getMessage(request, "registre.user.controller.marcar.pendent.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request,
+						getMessage(request, "registre.user.controller.marcar.pendent.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"registre.user.controller.marcar.pendent.massiva.estatErroni", new Object[]{estatErroni}));
+			}
+
+			
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
+	}	
 	
 	
 
