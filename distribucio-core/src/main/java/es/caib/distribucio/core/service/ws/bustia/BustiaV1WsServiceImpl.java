@@ -21,6 +21,7 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
@@ -29,6 +30,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
+import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
 import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
 import es.caib.plugins.arxiu.api.DocumentTipus;
@@ -56,6 +58,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private IntegracioHelper integracioHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
+	@Resource
+	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
 	@Override
 	public void enviarAnotacioRegistreEntrada(
@@ -65,7 +69,15 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
 		Timer.Context context = timer.time();
+		String entitatOArrel;
 		
+		if (entitat == null || entitat.isEmpty()) {
+			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
+			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
+			registreEntrada.setEntitatCodi(entitatOArrel);
+		} else {
+			entitatOArrel = entitat;
+		}
 
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
 		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;
@@ -83,7 +95,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		}
 		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("entitat", entitat);
+		accioParams.put("entitat", entitatOArrel);
 		accioParams.put("unitatAdministrativa", unitatAdministrativa);
 		accioParams.put("numero", registreEntradaNumero);
 		accioParams.put("extracte", registreEntradaExtracte);
@@ -93,7 +105,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		try {
 			logger.debug(
 					"Nou registre d'entrada rebut en el servei web de bústia (" +
-					"entitat=" + entitat + ", " +
+					"entitat=" + entitatOArrel + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
 					"numero=" + registreEntradaNumero + ", " +
 					"extracte=" + registreEntradaExtracte + ", " +
@@ -116,7 +128,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			Timer.Context contextregistreAnotacioCrearIProcessar = timerregistreAnotacioCrearIProcessar.time();
 			synchronized(SemaphoreDto.getSemaphore()) {
 				exception = bustiaService.registreAnotacioCrearIProcessar(
-						entitat,
+						entitatOArrel,
 						registreTipus,
 						unitatAdministrativa,
 						registreEntrada);
@@ -139,7 +151,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		} catch (Exception ex) {
 			logger.error(
 					"Error al processar nou registre d'entrada en el servei web de bústia (" +
-					"entitat=" + entitat + ", " +
+					"entitat=" + entitatOArrel + ", " +
 					"unitatAdministrativa=" + unitatAdministrativa + ", " +
 					"numero=" + registreEntradaNumero + ", " +
 					"extracte=" + registreEntradaExtracte + ", " +
