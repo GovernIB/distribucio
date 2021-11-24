@@ -1432,10 +1432,6 @@ public class RegistreServiceImpl implements RegistreService {
 		if (!registre.getArxiuTancat() && registre.getDataTancament() != null) {
 			registre.updateDataTancament(null);
 		}
-		// if expedient is already closed in arxiu reopen it
-		if (registre.getArxiuTancat()) {
-			pluginHelper.arxiuExpedientReobrir(registre);
-		}
 		
 		if (registre.getPare() != null) {
 			// Marca per desalojar la cache de la bustia

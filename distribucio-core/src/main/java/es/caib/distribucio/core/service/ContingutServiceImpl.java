@@ -496,7 +496,7 @@ public class ContingutServiceImpl implements ContingutService {
 		}
 		// Si el contingut és una anotació de registre s'ha de 
 		// tancar l'expedient temporal 
-		if (registre != null) {
+		if (registre != null && !registre.getArxiuTancat()) {
 			if (registre.getExpedientArxiuUuid() == null || registresAmbMateixUuid <= 1) {
 				if (registre.getAnnexos() != null && registre.getAnnexos().size() > 0) {
 					int dies = getPropertyExpedientDiesTancament();
