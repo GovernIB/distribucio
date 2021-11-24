@@ -485,7 +485,24 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</script>
 				</th>						
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
+
+				<th data-col-name="darrerMovimentUsuari.nom" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+					<spring:message code="bustia.pendent.columna.remitent"/>
+					<script id="darrerMovimentTemplate" type="text/x-jsrender">
+ 						{{if darrerMovimentOrigenUoAndBustia}}
+ 							<div align="left">
+								/<span class="fa fa-sitemap" title="{{:darrerMovimentOrigenUoAndBustia}}"/>/<span class="fa fa-inbox" title="{{:darrerMovimentOrigenUoAndBustia}}"/>
+ 							</div>
+							<div align="left">
+								{{:darrerMovimentUsuari.nom}}
+							</div>
+ 						{{else}}
+ 							<span class="fa fa-home" title=""/>
+ 							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
+ 						{{/if}}
+					</script>
+				</th>
+
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
@@ -623,6 +640,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="reintentsEsgotat" data-visible="false"></th>
 				<th data-col-name="procesIntents" data-visible="false"></th>
 				<th data-col-name="maxReintents" data-visible="false"></th>
+				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 			</tr>
 		</thead>
 	</table>

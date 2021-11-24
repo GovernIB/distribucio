@@ -29,6 +29,8 @@ public abstract class ContingutDto extends AuditoriaDto {
 	protected Date darrerMovimentData;
 	protected UsuariDto darrerMovimentUsuari;
 	protected String darrerMovimentComentari;
+	protected String darrerMovimentOrigenUo;
+	protected String darrerMovimentOrigenBustia;
 
 	protected boolean perConvertirJson;
 	protected boolean perConeixement;
@@ -109,6 +111,26 @@ public abstract class ContingutDto extends AuditoriaDto {
 	}
 	public void setDarrerMovimentComentari(String darrerMovimentComentari) {
 		this.darrerMovimentComentari = darrerMovimentComentari;
+	}
+	public String getDarrerMovimentOrigenUo() {
+		return darrerMovimentOrigenUo;
+	}
+	public void setDarrerMovimentOrigenUo(String darrerMovimentOrigenUo) {
+		this.darrerMovimentOrigenUo = darrerMovimentOrigenUo;
+	}
+	public String getDarrerMovimentOrigenBustia() {
+		return darrerMovimentOrigenBustia;
+	}
+	public void setDarrerMovimentOrigenBustia(String darrerMovimentOrigenBustia) {
+		this.darrerMovimentOrigenBustia = darrerMovimentOrigenBustia;
+	}
+	public String getDarrerMovimentOrigenUoAndBustia() {
+		if (this.darrerMovimentOrigenUo != null && !this.darrerMovimentOrigenUo.isEmpty()
+				&& this.darrerMovimentOrigenBustia != null && !this.darrerMovimentOrigenBustia.isEmpty())
+			return this.darrerMovimentOrigenUo + " / " + this.darrerMovimentOrigenBustia;
+		else 
+			return null;
+		
 	}
 	public boolean isPerConvertirJson() {
 		return perConvertirJson;

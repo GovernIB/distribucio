@@ -265,7 +265,12 @@ public class ContingutHelper {
 								darrerMoviment.getRemitent(),
 								UsuariDto.class));
 				contingutDto.setDarrerMovimentData(darrerMoviment.getCreatedDate().toDate());
-				contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());
+				contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());       
+				if (darrerMoviment.getOrigenId() != null) { // és un reenviament
+					BustiaEntity bustia = bustiaRepository.findOne(darrerMoviment.getOrigenId());
+					contingutDto.setDarrerMovimentOrigenUo(bustia.getUnitatOrganitzativa().getCodiAndNom());
+					contingutDto.setDarrerMovimentOrigenBustia(bustia.getNom());
+				}
 			}
 			// AUDITORIA
 			contingutDto.setCreatedBy(
