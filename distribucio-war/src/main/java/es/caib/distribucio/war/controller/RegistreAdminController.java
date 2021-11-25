@@ -436,7 +436,7 @@ public class RegistreAdminController extends BaseAdminController {
 					logger.debug("Marcant per a sobreescriure anotació amb id " + registreId);
 					registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
 
-					if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat())) {
+					if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
 
 						registreService.marcarSobreescriure(entitatActual.getId(), registreId);
 						correctes++;

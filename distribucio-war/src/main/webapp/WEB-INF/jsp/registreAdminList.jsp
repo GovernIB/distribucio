@@ -356,7 +356,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="13"
+		data-default-order="14"
 		data-default-dir="desc"
 		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
@@ -372,6 +372,7 @@ $(document).ready(function() {
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="sobreescriure" data-visible="false">
+				<th data-col-name="arxiuTancat" data-visible="false">
 				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
@@ -526,7 +527,7 @@ $(document).ready(function() {
 								<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
-									{{if !sobreescriure}}
+									{{if !sobreescriure && !arxiuTancat}}
 										<li><a href="./registreAdmin/{{:id}}/marcarSobreescriure"><span class="fa fa-history"></span>&nbsp;&nbsp;<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/>...</a></li>
 									{{/if}}	
 								{{/if}}			
