@@ -158,6 +158,7 @@ public class BustiaV1Test {
 	        anotacio.setUsuariCodi(USUARI_CODI);
 	        anotacio.setUsuariNom(USUARI_NOM);
 	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+	        //anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar(2021, 11, 28, 16, 31, 00))); //per sobreescriure
 	        anotacio.setExtracte(EXTRACTE + " " + i);
 	        anotacio.setEntitatCodi(ENTITAT_CODI);
 	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
@@ -166,6 +167,7 @@ public class BustiaV1Test {
 	        anotacio.setLlibreCodi(LLIBRE_CODI);
 	        anotacio.setLlibreDescripcio(LLIBRE_DESC);
 	        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
+	        //anotacio.setNumero("L" + LLIBRE_CODI + "E" + "NUMERO" + "/" + Calendar.getInstance().get(Calendar.YEAR)); //per sobreescriure
 	        anotacio.setIdiomaCodi(IDIOMA_CODI);
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);
