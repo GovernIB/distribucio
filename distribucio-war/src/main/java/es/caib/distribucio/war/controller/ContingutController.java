@@ -573,6 +573,9 @@ public class ContingutController extends BaseUserController {
 		case MARCAMENT_PROCESSAT:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.marcamentProcessat", new Object[] {usuari}));
 			break;
+		case MARCAMENT_PENDENT:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.marcamentPendent", new Object[] {usuari}));
+			break;			
 		case DISTRIBUCIO:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.distribucio"));
 			break;
