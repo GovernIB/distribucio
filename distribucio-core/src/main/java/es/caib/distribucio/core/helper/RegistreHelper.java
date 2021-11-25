@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -63,6 +64,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -128,6 +130,8 @@ public class RegistreHelper {
 	private UsuariHelper usuariHelper;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private ContingutHelper contingutHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -197,6 +201,9 @@ public class RegistreHelper {
 			ReglaEntity regla,
 			RegistreProcesEstatEnum estat) {
 		
+		
+		
+		
 		final Timer timerfindPerEntitatAndCodi = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.findPerEntitatAndCodi"));
 		Timer.Context contextfindPerEntitatAndCodi = timerfindPerEntitatAndCodi.time();
 		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
@@ -210,70 +217,161 @@ public class RegistreHelper {
 		if (registreAnotacio.getJustificant() != null) {
 			justificantArxiuUuid = registreAnotacio.getJustificant().getFitxerArxiuUuid();
 		}
-		// save annotacio in db
-		RegistreEntity registreEntity = RegistreEntity.getBuilder(
-				entitat,
-				tipus,
-				unitatOrganitzativaCodi,
-				unitat != null ? unitat.getDenominacio() : null,
-				registreAnotacio.getNumero(),
-				registreAnotacio.getData(),
-				0, // número de còpia
-				registreAnotacio.getIdentificador(),
-				registreAnotacio.getExtracte(),
-				registreAnotacio.getOficinaCodi(),
+		
+		
+		RegistreEntity registre = null;
+		RegistreEntity registreRepetit = registreRepository.findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
+				registreAnotacio.getEntitatCodi(),
 				registreAnotacio.getLlibreCodi(),
-				registreAnotacio.getAssumpteTipusCodi(),
-				registreAnotacio.getIdiomaCodi(),
-				estat,
-				null).
-		entitatCodi(registreAnotacio.getEntitatCodi()).
-		entitatDescripcio(registreAnotacio.getEntitatDescripcio()).
-		oficinaDescripcio(registreAnotacio.getOficinaDescripcio()).
-		llibreDescripcio(registreAnotacio.getLlibreDescripcio()).
-		assumpteTipusDescripcio(registreAnotacio.getAssumpteTipusDescripcio()).
-		assumpteCodi(registreAnotacio.getAssumpteCodi()).
-		assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
-		procedimentCodi(registreAnotacio.getProcedimentCodi()).
-		referencia(registreAnotacio.getReferencia()).
-		expedientNumero(registreAnotacio.getExpedientNumero()).
-		numeroOrigen(registreAnotacio.getNumeroOrigen()).
-		idiomaDescripcio(registreAnotacio.getIdiomaDescripcio()).
-		transportTipusCodi(registreAnotacio.getTransportTipusCodi()).
-		transportTipusDescripcio(registreAnotacio.getTransportTipusDescripcio()).
-		transportNumero(registreAnotacio.getTransportNumero()).
-		usuariCodi(registreAnotacio.getUsuariCodi()).
-		usuariNom(registreAnotacio.getUsuariNom()).
-		usuariContacte(registreAnotacio.getUsuariContacte()).
-		aplicacioCodi(registreAnotacio.getAplicacioCodi()).
-		aplicacioVersio(registreAnotacio.getAplicacioVersio()).
-		documentacioFisicaCodi(registreAnotacio.getDocumentacioFisicaCodi()).
-		documentacioFisicaDescripcio(registreAnotacio.getDocumentacioFisicaDescripcio()).
-		observacions(registreAnotacio.getObservacions()).
-		exposa(registreAnotacio.getExposa()).
-		solicita(registreAnotacio.getSolicita()).
-		regla(regla).
-		oficinaOrigen(
-				registreAnotacio.getDataOrigen(),
-				registreAnotacio.getOficinaOrigenCodi(),
-				registreAnotacio.getOficinaOrigenDescripcio()).
-		justificantArxiuUuid(justificantArxiuUuid).
-		presencial(registreAnotacio.isPresencial()).
-		build();
-		registreRepository.saveAndFlush(registreEntity);
+				RegistreTipusEnum.ENTRADA.getValor(),
+				registreAnotacio.getNumero(),
+				registreAnotacio.getData());
 		
-		contextsaveRegistre.stop();
-		
+		if (registreRepetit != null) {
+			
+			registreRepetit.override(
+					entitat,
+					tipus,
+					unitatOrganitzativaCodi,
+					unitat != null ? unitat.getDenominacio() : null,
+					registreAnotacio.getNumero(),
+					registreAnotacio.getData(),
+					0,
+					registreAnotacio.getIdentificador(),
+					registreAnotacio.getExtracte(),
+					registreAnotacio.getOficinaCodi(),
+					registreAnotacio.getLlibreCodi(),
+					registreAnotacio.getAssumpteTipusCodi(),
+					registreAnotacio.getIdiomaCodi(),
+					estat,
+					null,
+					registreAnotacio.getEntitatCodi(),
+					registreAnotacio.getEntitatDescripcio(),
+					registreAnotacio.getOficinaDescripcio(),
+					registreAnotacio.getLlibreDescripcio(),
+					registreAnotacio.getAssumpteTipusDescripcio(),
+					registreAnotacio.getAssumpteCodi(),
+					registreAnotacio.getAssumpteDescripcio(),
+					registreAnotacio.getProcedimentCodi(),
+					registreAnotacio.getReferencia(),
+					registreAnotacio.getExpedientNumero(),
+					registreAnotacio.getNumeroOrigen(),
+					registreAnotacio.getIdiomaDescripcio(),
+					registreAnotacio.getTransportTipusCodi(),
+					registreAnotacio.getTransportTipusDescripcio(),
+					registreAnotacio.getTransportNumero(),
+					registreAnotacio.getUsuariCodi(),
+					registreAnotacio.getUsuariNom(),
+					registreAnotacio.getUsuariContacte(),
+					registreAnotacio.getAplicacioCodi(),
+					registreAnotacio.getAplicacioVersio(),
+					registreAnotacio.getDocumentacioFisicaCodi(),
+					registreAnotacio.getDocumentacioFisicaDescripcio(),
+					registreAnotacio.getObservacions(),
+					registreAnotacio.getExposa(),
+					registreAnotacio.getDataOrigen(),
+					registreAnotacio.getOficinaOrigenCodi(),
+					registreAnotacio.getOficinaOrigenDescripcio(),
+					null);
+			
+			registreRepetit.updateJustificant(null);
+			
+			for (Iterator<RegistreAnnexEntity> iterator = registreRepetit.getAnnexos().iterator(); iterator.hasNext();) {
+				RegistreAnnexEntity annex = iterator.next();
+			    iterator.remove();
+				registreAnnexRepository.delete(annex);
+			}
+			registreRepository.save(registreRepetit);
+			
+			
+			for (Iterator<RegistreInteressatEntity> iterator = registreRepetit.getInteressats().iterator(); iterator.hasNext();) {
+				RegistreInteressatEntity interessat = iterator.next();
+			    iterator.remove();
+			    registreInteressatRepository.delete(interessat);
+			}
+			registreRepository.save(registreRepetit);
+			registre = registreRepetit;
+			
+			
+			List<String> params = new ArrayList<>();
+			params.add(registre.getNom());
+			params.add(null);
+			
+			contingutLogHelper.log(
+					registre,
+					LogTipusEnumDto.SOBREESCRIURE,
+					params,
+					false);
+			
+		} else {
+
+
+			// save annotacio in db
+			RegistreEntity registreEntity = RegistreEntity.getBuilder(
+					entitat,
+					tipus,
+					unitatOrganitzativaCodi,
+					unitat != null ? unitat.getDenominacio() : null,
+					registreAnotacio.getNumero(),
+					registreAnotacio.getData(),
+					0, // número de còpia
+					registreAnotacio.getIdentificador(),
+					registreAnotacio.getExtracte(),
+					registreAnotacio.getOficinaCodi(),
+					registreAnotacio.getLlibreCodi(),
+					registreAnotacio.getAssumpteTipusCodi(),
+					registreAnotacio.getIdiomaCodi(),
+					estat,
+					null).
+			entitatCodi(registreAnotacio.getEntitatCodi()).
+			entitatDescripcio(registreAnotacio.getEntitatDescripcio()).
+			oficinaDescripcio(registreAnotacio.getOficinaDescripcio()).
+			llibreDescripcio(registreAnotacio.getLlibreDescripcio()).
+			assumpteTipusDescripcio(registreAnotacio.getAssumpteTipusDescripcio()).
+			assumpteCodi(registreAnotacio.getAssumpteCodi()).
+			assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
+			procedimentCodi(registreAnotacio.getProcedimentCodi()).
+			referencia(registreAnotacio.getReferencia()).
+			expedientNumero(registreAnotacio.getExpedientNumero()).
+			numeroOrigen(registreAnotacio.getNumeroOrigen()).
+			idiomaDescripcio(registreAnotacio.getIdiomaDescripcio()).
+			transportTipusCodi(registreAnotacio.getTransportTipusCodi()).
+			transportTipusDescripcio(registreAnotacio.getTransportTipusDescripcio()).
+			transportNumero(registreAnotacio.getTransportNumero()).
+			usuariCodi(registreAnotacio.getUsuariCodi()).
+			usuariNom(registreAnotacio.getUsuariNom()).
+			usuariContacte(registreAnotacio.getUsuariContacte()).
+			aplicacioCodi(registreAnotacio.getAplicacioCodi()).
+			aplicacioVersio(registreAnotacio.getAplicacioVersio()).
+			documentacioFisicaCodi(registreAnotacio.getDocumentacioFisicaCodi()).
+			documentacioFisicaDescripcio(registreAnotacio.getDocumentacioFisicaDescripcio()).
+			observacions(registreAnotacio.getObservacions()).
+			exposa(registreAnotacio.getExposa()).
+			solicita(registreAnotacio.getSolicita()).
+			regla(regla).
+			oficinaOrigen(
+					registreAnotacio.getDataOrigen(),
+					registreAnotacio.getOficinaOrigenCodi(),
+					registreAnotacio.getOficinaOrigenDescripcio()).
+			justificantArxiuUuid(justificantArxiuUuid).
+			presencial(registreAnotacio.isPresencial()).
+			build();
+			registreRepository.saveAndFlush(registreEntity);
+			
+			contextsaveRegistre.stop();
+			
+			registre = registreEntity;
+		}
 		
 		final Timer timersaveInteressats = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveInteressats"));
 		Timer.Context contextsaveInteressats = timersaveInteressats.time();
 		// save interessats in db
 		if (registreAnotacio.getInteressats() != null) { 
 			for (RegistreInteressat registreInteressat: registreAnotacio.getInteressats()) {
-				registreEntity.getInteressats().add(
+				registre.getInteressats().add(
 						crearInteressatEntity(
 								registreInteressat,
-								registreEntity));
+								registre));
 			}
 		}
 		contextsaveInteressats.stop();
@@ -281,22 +379,26 @@ public class RegistreHelper {
 		
 		final Timer timersaveAnnexos = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveAnnexos"));
 		Timer.Context contextsaveAnnexos = timersaveAnnexos.time();
-		
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
 		if (registreAnotacio.getAnnexos() != null) { 
 			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
-				registreEntity.getAnnexos().add(
+				registre.getAnnexos().add(
 						crearAnnexEntity(
 								registreAnnex,
-								registreEntity));
+								registre));
 			}
 		}
-		
 		contextsaveAnnexos.stop();
-		
-		
-		return registreEntity;
+		return registre;
+
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	public void bloquejar(RegistreEntity registreEntity, String usuariCodi) {
 		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
@@ -1156,6 +1258,15 @@ public class RegistreHelper {
 					RegistreEntity.class,
 					"L'anotació està bloquejada per un usuari (codiUsuari=" + agafatPer.getCodi() + "). Prova d'alliberar-la abans de realitzar una acció.");
 		}
+	}
+	
+	public void esborrarRegistre(RegistreEntity registre) {
+		ContingutEntity contingut = (ContingutEntity)registre;
+		contingutHelper.esborrarComentarisRegistre(contingut);
+		contingutLogHelper.esborrarConstraintsLogsMovimentsRegistre(contingut);
+		contingutHelper.esborrarEmailsPendentsRegistre(contingut);
+		contingutHelper.esborrarMovimentsRegistre(contingut);
+		registreRepository.delete(registre);
 	}
 	
 	private RegistreInteressat fromInteressatEntity(

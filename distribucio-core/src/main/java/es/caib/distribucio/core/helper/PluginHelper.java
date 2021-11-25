@@ -432,6 +432,44 @@ public class PluginHelper {
 		}
 	}
 	
+	public void arxiuExpedientReobrir(
+			RegistreEntity registre) {
+		String accioDescripcio = "Reobrir l'expedient a l'Arxiu";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
+		accioParams.put("expedientNumero", registre.getExpedientNumero());
+		accioParams.put("registreNom", registre.getNom());
+		accioParams.put("registreNumero", registre.getNumero());
+		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
+		long t0 = System.currentTimeMillis();
+		try {			
+			getArxiuPlugin().expedientReobrir(
+					registre.getExpedientArxiuUuid());
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al reobrir expedient";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_ARXIU,
+					accioDescripcio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	
 	public void arxiuExpedientTancar(
 			RegistreEntity registre) {
 		String accioDescripcio = "Tancar l'expedient a l'Arxiu";

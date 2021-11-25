@@ -21,6 +21,7 @@ import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
@@ -66,6 +67,9 @@ public class EmailHelper {
 	private PermisosHelper permisosHelper;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private MessageHelper messageHelper;
+	
 
 	public void createEmailsPendingToSend(
 			BustiaEntity bustia,
@@ -279,7 +283,105 @@ public class EmailHelper {
 		mailSender.send(missatge);		
 	}
 
+	/**
+	 * Avisa de la reactivació d'una anotació processada
+	 * 
+	 * @param registrePerReenviar
+	 * 			El registre a reactivar/sobresciure amb el nou contingut (comentari, remitent)
+	 * @param contingutMoviment
+	 * 			El darrer moviment que correspon amb el registre a reactivar
+	 * @param procesEstatActual
+	 * 			El nou estat del registre
+	 * @param procesEstatAnterior
+	 * 			L'estat anterior del registre
+	 */
+	public void sendEmailReactivacioAnotacio(
+			RegistreEntity registrePerReenviar,
+			ContingutMovimentEntity contingutMoviment,
+			RegistreProcesEstatEnum procesEstatActual,
+			RegistreProcesEstatEnum procesEstatAnterior) {
+		logger.trace("Enviament email avís reactivació anotació");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
+		BustiaEntity bustia = null;
+		ContingutEntity pare = registrePerReenviar.getPare();
+		if (pare != null && pare instanceof BustiaEntity)
+			bustia = (BustiaEntity) pare;
+		
+		List<UsuariDto> destinataris = obtenirCodiDestinatarisPerEmail(bustia);
+		
+		if (appBaseUrl != null) {
+			for (UsuariDto usuariDto : destinataris) {
+				String emailDestinatari = usuariDto.getEmail();
+				if (emailDestinatari != null) {
+				SimpleMailMessage missatge = new SimpleMailMessage();
+					missatge.setTo(emailDestinatari);
+					missatge.setFrom(getRemitent());
+					missatge.setSubject(PREFIX_DISTRIBUCIO + " L'anotació " + registrePerReenviar.getNom() + " ha canviat d'estat.");
+					EntitatEntity entitat = registrePerReenviar.getEntitat();
+					missatge.setText(
+							"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+							"\tNom anotació: " + (contingutMoviment != null ? registrePerReenviar.getNom() : "") + "\n" +
+							(bustia != null ? "\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, registrePerReenviar, entitat) + "\n" : "") +
+							"\tEstat anterior: " + messageHelper.getMessage("registre.proces.estat.enum." + procesEstatAnterior) + "\n" + 
+							"\tNou estat: " + messageHelper.getMessage("registre.proces.estat.enum." + procesEstatActual) + "\n");
+					
+					mailSender.send(missatge);
+				}
+			}
+		} else {
+			throw new RuntimeException("Falta configurar la propietat base url per l'enviament de correus es.caib.distribucio.app.base.url");
+		}
+	}
 
+	/**
+	 * Avisa de la duplicitat dels registres i les vegades que arriba per duplicat
+	 * 
+	 * @param contingutMoviments
+	 * 			Moviments duplicats
+	 * @param bustia 
+	 * 			Bústia on arriben les anotacions duplicades
+	 * 
+	 */
+	public void sendEmailDuplicacioAnotacio(List<ContingutMovimentEntity> contingutMoviments, BustiaEntity bustia) {
+		logger.trace("Enviament email avís duplicitat anotació");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
+		if (appBaseUrl != null && !contingutMoviments.isEmpty()) {
+			List<UsuariDto> destinataris = obtenirCodiDestinatarisPerEmail(bustia);
+			if (!destinataris.isEmpty()) {
+				for (UsuariDto usuariDto : destinataris) {
+					SimpleMailMessage missatge = new SimpleMailMessage();
+					missatge.setSubject(PREFIX_DISTRIBUCIO + " S'han rebut anotacions duplicades de la bústia: " + bustia.getNom());
+					missatge.setText("Les següents anotacions han estat modificades amb un nou contingut: \n\n");
+					for (ContingutMovimentEntity contingutMoviment : contingutMoviments) {
+						BustiaEntity bustiaMoviment = null;
+						RegistreEntity registrePerReenviar = (RegistreEntity) contingutMoviment.getContingut();
+						ContingutEntity pare = registrePerReenviar.getPare();
+						if (pare != null && pare instanceof BustiaEntity)
+							bustiaMoviment = (BustiaEntity) pare;
+					
+							String emailDestinatari = usuariDto.getEmail();
+							if (emailDestinatari != null) {
+								missatge.setTo(emailDestinatari);
+								missatge.setFrom(getRemitent());
+								EntitatEntity entitat = registrePerReenviar.getEntitat();
+								missatge.setText(
+										missatge.getText() + 
+										"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+										"\tNom anotació: " + (contingutMoviment != null ? registrePerReenviar.getNom() : "") + "\n" +
+										(bustiaMoviment != null ? "\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustiaMoviment, registrePerReenviar, entitat) + "\n" : "") +
+										"\tEstat: " + messageHelper.getMessage("registre.proces.estat.enum." + registrePerReenviar.getProcesEstat()) + "\n" + 
+										"\tNº duplicat: " + contingutMoviment.getNumDuplicat() + "\n" +
+										"\t-------------------------------------------------------\n");
+							}
+					}
+					mailSender.send(missatge);
+				}
+			}
+		} else {
+			throw new RuntimeException("Falta configurar la propietat base url per l'enviament de correus es.caib.distribucio.app.base.url");
+		}
+	}
+	
 	/** Mètode per construir un enllaç per accedir directament al contingut. L'enllaç és del tipus "http://localhost:8080/distribucio/registreUser/bustia/642/registre/2669"
 	 * 
 	 * @param appBaseUrl

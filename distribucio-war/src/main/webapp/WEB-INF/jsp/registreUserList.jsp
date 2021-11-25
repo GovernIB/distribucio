@@ -67,24 +67,23 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 	display: flex;
 	align-items: center;
 }
-
 .item_llegenda span:nth-child(2){
 	margin-left: 4px;
 }
-
-.llegenda_coneixement span:nth-child(1), .lleganda_tramitacio span:nth-child(1){
-	display: block;
+.item_color {
 	width: 10px;
 	height: 10px;
 }
-
-.llegenda_coneixement span:nth-child(1){
+.llegenda_coneixement .item_color{
 	background-color: #5bc0de;
 }
-
-.lleganda_tramitacio span:nth-child(1){
+.lleganda_tramitacio .item_color{
 	background-color: #f99957;
 }
+.llegenda_reactivat .item_color{
+	background-color: #c3c2c1;
+}
+
 div.extracteColumn {
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -181,26 +180,37 @@ $(document).ready(function() {
 						$(this).find("td:eq(0)").css('background-color', '#ff9c59');
 					}
 				}
+				
+				var isReactivat = $('#taulaDades').dataTable().api().row($(this)).data()['reactivat'];
+				if (isReactivat) {
+					$(this).css('background-color', '#c3c2c1');
+				}
 			}
 		});
 		
 		//Llegenda paginador
 		var $paginador = $('.dataTables_length');
-		if ($paginador.find('.llegenda_paginador').length == 0 && ${isEnviarConeixementActiu}) {
+		if ($paginador.find('.llegenda_paginador').length == 0) {
 			var $paginador_container = $paginador.closest('.row');
 			$paginador_container.find('div:first').addClass('col-md-6').removeClass('col-md-3');
 			$paginador_container.find('div:nth-child(2)').addClass('col-md-6').removeClass('col-md-9');
 			var llegenda = '<div class="llegenda_paginador">\
 								<div class="item_llegenda">\
 									<span><spring:message code="contingut.enviar.info.llegenda"/>:</span>\
-								</div>\
-								<div class="item_llegenda lleganda_tramitacio">\
-									<span></span>\
-									<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
-								</div>\
-								<div class="item_llegenda llegenda_coneixement">\
-									<span></span>\
-									<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
+								</div>';
+								if (${isEnviarConeixementActiu} ) {
+									llegenda += '<div class="item_llegenda lleganda_tramitacio">\
+													<span class="item_color"></span>\
+													<span><spring:message code="contingut.enviar.info.llegenda.processar"/></span>\
+												</div>\
+												<div class="item_llegenda llegenda_coneixement">\
+													<span class="item_color"></span>\
+													<span><spring:message code="contingut.enviar.info.llegenda.coneixement"/></span>\
+												</div>';
+								}
+								llegenda += '<div class="item_llegenda llegenda_reactivat">\
+									<span class="item_color"></span>\
+									<span><spring:message code="contingut.enviar.info.llegenda.reactivat"/></span>\
 								</div>\
 							</div>';
 			$paginador.append(llegenda);
@@ -399,6 +409,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						<li><a href="registreUser/marcarProcessatMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.marcar.processat"/>
 						</a></li>
+						<li><a href="registreUser/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<spring:message code="registre.user.accio.marcar.pendent"/>
+						</a></li>
 						<li><a href="registreUser/enviarViaEmailMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 						</a></li>
@@ -419,7 +432,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="15"
+		data-default-order="16"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -434,6 +447,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="perConeixement"  data-visible="false">
+				<th data-col-name="reactivat"  data-visible="false">
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false">#</th>
@@ -471,7 +485,24 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</script>
 				</th>						
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
+
+				<th data-col-name="darrerMovimentUsuari.nom" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+					<spring:message code="bustia.pendent.columna.remitent"/>
+					<script id="darrerMovimentTemplate" type="text/x-jsrender">
+ 						{{if darrerMovimentOrigenUoAndBustia}}
+ 							<div align="left">
+								/<span class="fa fa-sitemap" title="{{:darrerMovimentOrigenUoAndBustia}}"/>/<span class="fa fa-inbox" title="{{:darrerMovimentOrigenUoAndBustia}}"/>
+ 							</div>
+							<div align="left">
+								{{:darrerMovimentUsuari.nom}}
+							</div>
+ 						{{else}}
+ 							<span class="fa fa-home" title=""/>
+ 							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
+ 						{{/if}}
+					</script>
+				</th>
+
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
@@ -580,6 +611,10 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_processar_{{:id}} hidden"{{/if}} {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 								{{/if}}		
+
+								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
+									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
+								{{/if}}	
 								<li>
 									{{!-- DESCARREGAR ZIP ---}}
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
@@ -605,6 +640,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="reintentsEsgotat" data-visible="false"></th>
 				<th data-col-name="procesIntents" data-visible="false"></th>
 				<th data-col-name="maxReintents" data-visible="false"></th>
+				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 			</tr>
 		</thead>
 	</table>

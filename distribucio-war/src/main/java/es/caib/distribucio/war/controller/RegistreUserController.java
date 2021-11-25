@@ -1026,10 +1026,11 @@ public class RegistreUserController extends BaseUserController {
 			boolean isNotAvanzarAndLastRegistre = Boolean.parseBoolean(avanzarPagina) && (registreTotal != null && registreNumero == registreTotal);
 			boolean isAvanzarAndWithoutFilter = filtre.getBustia() == null && Boolean.parseBoolean(avanzarPagina);
 			boolean isAvanzarWithFilterAndNotLastRegistre = filtre.getBustia() != null && (registreTotal != null && registreNumero != (registreTotal-1)) && Boolean.parseBoolean(avanzarPagina); // si està filtrat i és la penúltima pàgina
+			String isVistaMoviments = destiLogic != null ? "true" : "false";
 			
-			if (registreNumero != null && (isAvanzarAndWithoutFilter || isAvanzarWithFilterAndNotLastRegistre) || isNotAvanzarAndLastRegistre || isNotAvanzarAndNotLastRegistre) {
+ 			if (registreNumero != null && (isAvanzarAndWithoutFilter || isAvanzarWithFilterAndNotLastRegistre) || isNotAvanzarAndLastRegistre || isNotAvanzarAndNotLastRegistre) {
 				// si params is empty tanca la modal
-				command.setParams(new String [] {String.valueOf(registreNumero), ordreColumn, ordreDir, avanzarPagina});
+				command.setParams(new String [] {String.valueOf(registreNumero), ordreColumn, ordreDir, avanzarPagina, isVistaMoviments});
 			}
 			model.addAttribute(command);
 			model.addAttribute("maxLevel", getMaxLevelArbre());
@@ -1147,7 +1148,7 @@ public class RegistreUserController extends BaseUserController {
 						getMessage(
 								request,
 								"bustia.controller.pendent.contingut.reenviat.ok"));
-				return "redirect:/registreUser/navega/" + command.getParams()[0] + "?ordreColumn=" + command.getParams()[1] + "&ordreDir=" + command.getParams()[2] + "&isVistaMoviments=" + command.getParams()[3];
+				return "redirect:/registreUser/navega/" + command.getParams()[0] + "?ordreColumn=" + command.getParams()[1] + "&ordreDir=" + command.getParams()[2] + "&isVistaMoviments=" + command.getParams()[4];
 			}
 
 		} catch (Exception e) {
@@ -1382,6 +1383,158 @@ public class RegistreUserController extends BaseUserController {
 
 		return "redirect:../../modal/registreUser/registre/" + registreId;
 	}
+	
+	@RequestMapping(value = "/{registreId}/marcarPendent", method = RequestMethod.GET)
+	public String marcarPendentGet(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		MarcarProcessatCommand command = new MarcarProcessatCommand();
+		model.addAttribute(command);
+		return "registreUserMarcarPendent";
+	}
+
+	@RequestMapping(value = "/{registreId}/marcarPendent", method = RequestMethod.POST)
+	public String marcarPendentPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
+		if (bindingResult.hasErrors()) {
+			return "registreUserMarcarPendent";
+		}
+		try {
+			registreService.marcarPendent(
+					entitatActual.getId(), 
+					registreId,
+					"<span class='label label-default'>" + 
+					getMessage(
+							request, 
+							"registre.user.controller.accio.marcat.pendent") + 
+					"</span> " + command.getMotiu(), 
+					rolActual);
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:/registreUser/registre/" + registreId,
+					"registre.user.controller.accio.marcat.pendent.ok");
+		} catch (RuntimeException re) {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"registre.user.controller.marcat.pendent.error",
+							new Object[] {re.getMessage()}));			
+			return "registreUserMarcarPendent";
+		}
+	}
+	
+	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
+	public String marcarPendentMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		getEntitatActualComprovantPermisos(request);
+		MarcarProcessatCommand command = new MarcarProcessatCommand();
+		model.addAttribute(command);
+		return "registreUserMarcarPendent";
+	}
+
+	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.POST)
+	public String marcarPendentMultiplePost(
+			HttpServletRequest request,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		String rolActual = RolHelper.getRolActual(request);
+		if (bindingResult.hasErrors()) {
+			return "registreUserMarcarPendent";
+		}
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		
+		if (seleccio != null && !seleccio.isEmpty()) {
+			
+			List<Long> seleccioList = new ArrayList<Long>();
+			seleccioList.addAll(seleccio);
+			
+			int errors = 0;
+			int correctes = 0;
+			int estatErroni = 0;
+			
+			for (Long registreId : seleccioList) {
+					RegistreDto registreDto = registreService.findOne(
+							entitatActual.getId(), 
+							registreId, 
+							false,
+							RolHelper.getRolActual(request));
+					if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
+						
+						boolean processatOk = true;
+						try {
+							registreService.marcarPendent(
+									entitatActual.getId(), 
+									registreId,
+									"<span class='label label-default'>" + 
+									getMessage(
+											request, 
+											"registre.user.controller.accio.marcat.pendent") + 
+									"</span> " + command.getMotiu(), 
+									rolActual);
+							
+		
+						} catch (Exception e) {
+							MissatgesHelper.error(
+									request,
+									getMessage(
+											request, 
+											"registre.user.controller.marcar.pendent.massiva.error",
+											new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
+							
+							processatOk = false;
+							logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
+						}
+						
+						if (processatOk)
+							correctes++;
+						else
+							errors++;
+					} 
+					else {
+						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
+						estatErroni++;
+					}
+			}
+			
+			if (correctes > 0){
+				MissatgesHelper.success(request,
+						getMessage(request, "registre.user.controller.marcar.pendent.massiva.correctes", new Object[]{correctes}));
+			} 
+			if (errors > 0) {
+				MissatgesHelper.error(request,
+						getMessage(request, "registre.user.controller.marcar.pendent.massiva.errors", new Object[]{errors}));
+			} 
+			if (estatErroni > 0) {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"registre.user.controller.marcar.pendent.massiva.estatErroni", new Object[]{estatErroni}));
+			}
+
+			
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"registre.user.controller.massiva.cap"));
+		}
+		
+		return modalUrlTancar();
+	}	
+	
 
 	@RequestMapping(value = "/pendent/{contingutId}/marcarProcessat", method = RequestMethod.GET)
 	public String bustiaMarcarProcessatGet(

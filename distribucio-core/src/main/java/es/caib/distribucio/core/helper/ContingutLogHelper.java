@@ -238,7 +238,20 @@ public class ContingutLogHelper {
 		return dtos;
 	}
 
-
+	public void esborrarConstraintsLogsMovimentsRegistre(ContingutEntity contingut) {
+		List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateAsc(contingut);
+		
+		List<ContingutLogEntity> logsFills = contingutLogRepository.findByPareInOrderByCreatedDateAsc(logs);
+		for (ContingutLogEntity logFill: logsFills) {
+			logFill.updatePare(null);
+		}
+		
+		List<ContingutMovimentEntity> moviments = contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
+		List<ContingutLogEntity> logsMoviments = contingutLogRepository.findByContingutMovimentInOrderByCreatedDateAsc(moviments);
+		for (ContingutLogEntity logMoviment: logsMoviments) {
+			logMoviment.updateContingutMoviment(null);
+		}
+	}
 
 	private ContingutLogEntity log(
 			ContingutEntity contingut,

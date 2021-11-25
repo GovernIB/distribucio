@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -37,6 +38,8 @@ public class RegistreFiltreCommand {
 	
 	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 	private String backCodi;
+	
+	private RegistreMarcatPerSobreescriureEnumDto sobreescriure;
 
 	// Filtre per administradors
 	/** Estat específic. */
@@ -177,6 +180,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setMostrarInactivesOrigen(boolean mostrarInactivesOrigen) {
 		this.mostrarInactivesOrigen = mostrarInactivesOrigen;
+	}
+	public RegistreMarcatPerSobreescriureEnumDto getSobreescriure() {
+		return sobreescriure;
+	}
+	public void setSobreescriure(RegistreMarcatPerSobreescriureEnumDto sobreescriure) {
+		this.sobreescriure = sobreescriure;
 	}
 	
 }

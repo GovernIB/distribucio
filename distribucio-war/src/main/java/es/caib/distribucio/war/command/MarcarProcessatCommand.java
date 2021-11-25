@@ -6,11 +6,7 @@ package es.caib.distribucio.war.command;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
-/**
- * Command per a copiar, moure o enviar contenidors.
- * 
- * @author Limit Tecnologies <limit@limit.es>
- */
+
 public class MarcarProcessatCommand {
 
 	@NotBlank

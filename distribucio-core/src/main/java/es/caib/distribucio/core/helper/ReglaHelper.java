@@ -70,7 +70,9 @@ public class ReglaHelper {
 	@Resource
 	private AlertaHelper alertaHelper;
 	@Autowired
-	private GestioDocumentalHelper gestioDocumentalHelper;		
+	private GestioDocumentalHelper gestioDocumentalHelper;	
+	@Autowired
+	private ConfigHelper configHelper;
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
@@ -200,6 +202,27 @@ public class ReglaHelper {
 		
 	}
 	
+	public boolean isAnotacioReactivada(RegistreEntity registre) {
+		return registre.isReactivat();
+	}
+	
+	public boolean isAnotacioDuplicada(RegistreEntity registre) {
+		boolean anotacioDuplicada = false;
+		ContingutMovimentEntity darrerMoviment = registre.getDarrerMoviment();
+		if (darrerMoviment != null) {
+			anotacioDuplicada = darrerMoviment.getNumDuplicat() > 1;
+		}
+		return anotacioDuplicada;
+	}
+	
+	public boolean isAnotacioPerConeixement(RegistreEntity registre) {
+		boolean isPerConeixement = false;
+		ContingutMovimentEntity darrerMoviment = registre.getDarrerMoviment();
+		if (darrerMoviment != null) {
+			isPerConeixement = darrerMoviment.isPerConeixement();
+		}
+		return isPerConeixement;
+	}
 	
 	public void aplicarSimulation(
 			EntitatEntity entitatEntity,
@@ -285,6 +308,9 @@ public class ReglaHelper {
 		
 
 		boolean alreadySavedInArxiu = isAnotacioAlreadySavedInArxiu(registre);
+		boolean reactivada = isAnotacioReactivada(registre);
+		boolean isPerConeixement = isAnotacioPerConeixement(registre);
+		boolean anotacioDuplicada = isAnotacioDuplicada(registre);
 		
 		String error = null;
 		try {
@@ -293,40 +319,41 @@ public class ReglaHelper {
 			case BACKOFFICE: // ############################### BACKOFFICE ###############################
 				
 				if (alreadySavedInArxiu) {
-					if (regla.getBackofficeDesti() == null) {
-						throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
-					}
-					
-					registre.updateProcesBackPendent();
-					registre.updateBackPendentData(new Date());
-					// Informa del codi del backoffice que processarà l'anotació
-					registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
-					// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
-					
-					
-					// ------ log and evict -----------
-					List<String> params = new ArrayList<>();
-					params.add(regla.getNom());
-					params.add(regla.getTipus().toString());
-					contingutLogHelper.log(
-							registre,
-							LogTipusEnumDto.REGLA_APLICAR,
-							params,
-							false);
-
-					BustiaEntity pendentBustia = null;
-					ContingutEntity pare = registre.getPare();
-					if (HibernateHelper.isProxy(pare))
-						pare = HibernateHelper.deproxy(pare);
-					if (pare instanceof BustiaEntity) {
-						pendentBustia = (BustiaEntity) pare;
-						if (pendentBustia != null) {
-							bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-									regla.getEntitat(),
-									pendentBustia);
+					if ((isPermesSobreescriureAnotacions() && !reactivada && !isPerConeixement && !anotacioDuplicada) || !isPermesSobreescriureAnotacions()) {
+						if (regla.getBackofficeDesti() == null) {
+							throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
+						}
+						
+						registre.updateProcesBackPendent();
+						registre.updateBackPendentData(new Date());
+						// Informa del codi del backoffice que processarà l'anotació
+						registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+						// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
+						
+						
+						// ------ log and evict -----------
+						List<String> params = new ArrayList<>();
+						params.add(regla.getNom());
+						params.add(regla.getTipus().toString());
+						contingutLogHelper.log(
+								registre,
+								LogTipusEnumDto.REGLA_APLICAR,
+								params,
+								false);
+	
+						BustiaEntity pendentBustia = null;
+						ContingutEntity pare = registre.getPare();
+						if (HibernateHelper.isProxy(pare))
+							pare = HibernateHelper.deproxy(pare);
+						if (pare instanceof BustiaEntity) {
+							pendentBustia = (BustiaEntity) pare;
+							if (pendentBustia != null) {
+								bustiaHelper.evictCountElementsPendentsBustiesUsuari(
+										regla.getEntitat(),
+										pendentBustia);
+							}
 						}
 					}
-					
 				} else {
 					registre.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 				}
@@ -484,6 +511,10 @@ public class ReglaHelper {
 					"Error processant l'annex per l'anotació amb regla backoffice SISTRA " + annex.getFitxerNom(),
 					e);
 		}
+	}
+	
+	private boolean isPermesSobreescriureAnotacions() {
+		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaHelper.class);

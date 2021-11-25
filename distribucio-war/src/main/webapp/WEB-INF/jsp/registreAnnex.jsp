@@ -88,6 +88,102 @@
 					<c:when test="${metaDada.key=='eni:profundidad_color'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.profundidad_color"/>
 					</c:when>
+					<c:when test="${metaDada.key=='cm:title'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.titol"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:idioma'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.idioma"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:descripcion'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.descripcio"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:app_tramite_doc'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.appTramitDoc"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:organo'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.organ"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:origen'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.origen"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:estado_elaboracion'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.estatElaboracio"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:tipo_doc_ENI'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.tipusDocEni"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:cod_clasificacion'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.codiClassificacio"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:csv'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.csv"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:def_csv'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.defCsv"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:id'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.id"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:id_origen'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.idOrigen"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:fecha_inicio'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.dataInici"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:nombre_formato'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.nomFormat"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:extension_formato'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.extensioFormat"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:tamano_logico'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.midaLogica"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:termino_punto_acceso'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.termePuntAcces"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:id_punto_acceso'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.idPuntAcces"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:esquema_punto_acceso'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.esquemaPuntAcces"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:soporte'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.suport"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:loc_archivo_central'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.locArxiuCentral"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:loc_archivo_general'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.arxiuGeneral"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:unidades'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.unitats"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:subtipo_doc'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.subtipusDoc"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:tipo_asiento_registral'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.tipusAsientoRegistral"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:codigo_oficina_registro'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.codiOficinaRegistre"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:fecha_asiento_registral'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.dataAsientoRegistral"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:numero_asiento_registral'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.numAsientoRegistral"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:tipoFirma'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.tipusFirma"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:perfil_firma'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.perfilFirma"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:fecha_sellado'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.dataSegellat"/>
+					</c:when>
 					<c:otherwise>
 						${fn:toUpperCase(metaDada.key)}
 					</c:otherwise>

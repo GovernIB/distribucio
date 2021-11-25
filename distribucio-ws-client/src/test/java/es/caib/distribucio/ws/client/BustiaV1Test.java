@@ -77,8 +77,40 @@ public class BustiaV1Test {
 	
 	
 	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
+		put("cm:title", "Títol de l'annex");
+	    put("eni:idioma", "ca");
+	    put("eni:descripcion", "Descripció de l'annex");
 	    put("eni:resolucion", "12");
 	    put("eni:profundidad_color", "6400");
+//	    put("eni:app_tramite_doc", "app tramite doc valor");
+//	    put("eni:organo", "Òrgan valor");
+//	    put("eni:origen", "Origen valor");
+//		put("eni:estado_elaboracion", "Estat elaboració valor");
+//		put("eni:tipo_doc_ENI", "Tipus doc ENI valor");
+//		put("eni:cod_clasificacion", "Codi classificació valor");
+//		put("eni:csv", "Csv valor");
+//		put("eni:def_csv", "Def csv valor");
+//		put("eni:id", "id valor");
+//		put("eni:id_origen", "id origen");
+//		put("eni:fecha_inicio", "20/11/2021");
+//		put("eni:nombre_formato", "Nom formato valor");
+//		put("eni:extension_formato", "Extensió format valor");
+//		put("eni:tamano_logico", "Mida lógica valor");
+//		put("eni:termino_punto_acceso", "Terme punt accés valor");
+//		put("eni:id_punto_acceso", "Id punt accés valor");
+//		put("eni:esquema_punto_acceso", "Esquema punt accés valor");
+//		put("eni:soporte", "Soporte valor");
+//		put("eni:loc_archivo_central", "Loc arxiu central valor");
+//		put("eni:loc_archivo_general", "Loc arxiu general valor");
+//		put("eni:unidades", "Unitats valor");
+//		put("eni:subtipo_doc", "Subtipus doc valor");
+//		put("eni:tipo_asiento_registral", "Tipus asiento registral valor");
+//		put("eni:codigo_oficina_registro", "Codi oficina registre valor");
+//		put("eni:fecha_asiento_registral", "20/11/2021");
+//		put("eni:numero_asiento_registral", "Nombre asiento registral");
+//		put("eni:tipoFirma", "TD04");
+//		put("eni:perfil_firma", "PADES");
+//		put("eni:fecha_sellado", "20/11/2021");
 	}};
 
 	
@@ -126,6 +158,7 @@ public class BustiaV1Test {
 	        anotacio.setUsuariCodi(USUARI_CODI);
 	        anotacio.setUsuariNom(USUARI_NOM);
 	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+	        //anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar(2021, 11, 28, 16, 31, 00))); //per sobreescriure
 	        anotacio.setExtracte(EXTRACTE + " " + i);
 	        anotacio.setEntitatCodi(ENTITAT_CODI);
 	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
@@ -134,6 +167,7 @@ public class BustiaV1Test {
 	        anotacio.setLlibreCodi(LLIBRE_CODI);
 	        anotacio.setLlibreDescripcio(LLIBRE_DESC);
 	        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
+	        //anotacio.setNumero("L" + LLIBRE_CODI + "E" + "NUMERO" + "/" + Calendar.getInstance().get(Calendar.YEAR)); //per sobreescriure
 	        anotacio.setIdiomaCodi(IDIOMA_CODI);
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);

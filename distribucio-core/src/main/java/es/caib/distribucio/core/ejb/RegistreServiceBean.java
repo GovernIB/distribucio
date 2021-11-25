@@ -326,4 +326,28 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.getPathContingut(entitatId, bustiaId);
 	}
 
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void marcarSobreescriure(
+			Long entitatId,
+			Long registreId) {
+		delegate.marcarSobreescriure(
+				entitatId, 
+				registreId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text,
+			String rolActual) {
+		return delegate.marcarPendent(
+				entitatId,
+				registreId,
+				text,
+				rolActual);
+	}
+
 }

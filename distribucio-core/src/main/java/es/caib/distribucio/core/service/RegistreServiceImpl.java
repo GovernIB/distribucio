@@ -53,6 +53,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -433,6 +434,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.isNomesAmbErrors(),
 					unitat == null,
 					unitat,
+					filtre.getSobreescriure() == null,
+					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -1404,6 +1407,54 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
+	
+	
+	@Transactional
+	@Override
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text, 
+			String rolActual) {
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), !rolActual.equals("DIS_ADMIN"));
+
+		registre.setProces(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+
+		// if expedient is not already closed in arxiu avoid closing it
+		if (!registre.getArxiuTancat() && registre.getDataTancament() != null) {
+			registre.updateDataTancament(null);
+		}
+		
+		if (registre.getPare() != null) {
+			// Marca per desalojar la cache de la bustia
+			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
+		}
+
+		List<String> params = new ArrayList<>();
+		params.add(registre.getNom());
+		params.add(null);
+		contingutLogHelper.log(
+				registre,
+				LogTipusEnumDto.MARCAMENT_PENDENT,
+				params,
+				false);
+		return contingutHelper.publicarComentariPerContingut(
+				entitatId,
+				registreId,
+				text).isPublicat();
+	}
+	
+	
+	
+	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -1838,6 +1889,25 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return arxiuDetall;
 	}
+	
+	@Transactional
+	@Override
+	public void marcarSobreescriure(
+			Long entitatId,
+			Long registreId) {
+		
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		registre.updateSobreescriure(true);
+	}
+	
+	
+	
 
 	@Override
 	@Transactional

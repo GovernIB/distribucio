@@ -389,19 +389,22 @@ public interface RegistreService {
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) throws NotFoundException;
 	
-	/**
-	 * Consulta la path d'un registre
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param bustiaId
-	 * 			  Id de la bústia.
-	 * @return La path de la bústia.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<ContingutDto> getPathContingut(
 			Long entitatId,
 			Long bustiaId) throws NotFoundException;
+	
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public void marcarSobreescriure(
+			Long entitatId,
+			Long registreId);
+			
+
+	@PreAuthorize("hasRole('tothom')")
+	public boolean marcarPendent(
+			Long entitatId,
+			Long registreId,
+			String text,
+			String rolActual);			
 }

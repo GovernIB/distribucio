@@ -309,7 +309,11 @@ $(document).ready(function() {
 					</div>
 				</div>
 			</div>
-			
+			<div class="col-md-2">
+				<dis:inputSelect name="sobreescriure" netejar="false" optionEnum="RegistreMarcatPerSobreescriureEnumDto" placeholderKey="registre.admin.list.filtre.sobreescriure" emptyOption="true" inline="true"/>
+			</div>			
+		</div>
+		<div class="row">				
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -326,11 +330,19 @@ $(document).ready(function() {
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
-				<div class="btn-group">
-					<a href="registreAdmin/reintentarProcessamentMultiple" class="btn btn-default processarBtn" aria-haspopup="true" aria-expanded="false">
-  						<span id="seleccioCount" class="badge">${fn:length(seleccio)}</span> <spring:message code="registre.detalls.accio.reintentar"/></span>
-					</a>
-				</div>
+
+				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false">
+						<spring:message code="registre.detalls.accio.reintentar"/></span>
+					</a></li>
+					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false">
+						<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
+					</a></li>
+					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<spring:message code="registre.user.accio.marcar.pendent"/>
+					</a></li>					
+				</ul>
 			</div>
 		</div>
 	</script>	
@@ -344,7 +356,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="12"
+		data-default-order="14"
 		data-default-dir="desc"
 		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
@@ -359,6 +371,8 @@ $(document).ready(function() {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
+				<th data-col-name="sobreescriure" data-visible="false">
+				<th data-col-name="arxiuTancat" data-visible="false">
 				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
@@ -393,11 +407,31 @@ $(document).ready(function() {
 					</script>
 				</th>						
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				
+				<th data-col-name="darrerMovimentUsuari.nom" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+					<spring:message code="bustia.pendent.columna.remitent"/>
+					<script id="darrerMovimentTemplate" type="text/x-jsrender">
+ 						{{if darrerMovimentOrigenUoAndBustia}}
+ 							<div align="left">
+								/<span class="fa fa-sitemap" title="{{:darrerMovimentOrigenUoAndBustia}}"/>/<span class="fa fa-inbox" title="{{:darrerMovimentOrigenUoAndBustia}}"/>
+ 							</div>
+							<div align="left">
+								{{:darrerMovimentUsuari.nom}}
+							</div>
+ 						{{else}}
+ 							<span class="fa fa-home" title=""/>
+ 							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
+ 						{{/if}}
+					</script>
+				</th>
+				
 				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
+						{{if sobreescriure}}
+							<span class="fa fa-history" title="<spring:message code="registre.admin.list.icon.marcat.sobreescriure"/>"></span>
+						{{/if}}
 						{{if enviatPerEmail}}
 							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
 							{{for enviamentsPerEmail}} {{>}} 
@@ -426,6 +460,7 @@ $(document).ready(function() {
 						{{else procesEstat == 'BACK_ERROR'}}
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
 						{{/if}}
+
 					</script>
 
 				</th>
@@ -492,7 +527,13 @@ $(document).ready(function() {
 								<li><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat))}} class="disabled" {{/if}}><a {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									{{if !sobreescriure && !arxiuTancat}}
+										<li><a href="./registreAdmin/{{:id}}/marcarSobreescriure"><span class="fa fa-history"></span>&nbsp;&nbsp;<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/>...</a></li>
+									{{/if}}	
 								{{/if}}			
+								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
+									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
+								{{/if}}
 								<li>
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
@@ -506,6 +547,8 @@ $(document).ready(function() {
 				<th data-col-name="reintentsEsgotat" data-visible="false"></th>
 				<th data-col-name="procesIntents" data-visible="false"></th>
 				<th data-col-name="maxReintents" data-visible="false"></th>
+				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 			</tr>
 		</thead>
 	</table>
