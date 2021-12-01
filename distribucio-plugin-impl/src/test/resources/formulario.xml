@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:FORMULARIO accion="accion" xmlns:ns2="urn:es:caib:sistra2:xml:formulario:v1:model">
+	<CAMPO id="PREU" tipus="simple">
+		<VALOR>1.234.567,123</VALOR>
+	</CAMPO>
+	<CAMPO id="SISTRA2" tipo="simple">
+		<VALOR>text</VALOR>
+	</CAMPO>
+	<CAMPO id="SISTRA2_SELECCION" tipo="compuesto">
+		<VALOR codigo="prova">Prueba</VALOR>
+	</CAMPO>
+	<CAMPO id="campo_0">
+		<VALOR codigo="cod_0">valor_i</VALOR>
+		<VALOR codigo="cod_0">valor_i</VALOR>
+	</CAMPO>
+	<CAMPO id="campo_1">
+		<VALOR codigo="cod_1">valor_i</VALOR>
+		<VALOR codigo="cod_1">valor_i</VALOR>
+	</CAMPO>	
+</ns2:FORMULARIO>

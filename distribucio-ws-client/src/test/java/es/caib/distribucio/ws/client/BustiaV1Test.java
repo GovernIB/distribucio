@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova XML firmat XADES_ATTACHED " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -69,10 +69,12 @@ public class BustiaV1Test {
 
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = false;
-	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false;
-	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false;
-	private static final boolean TEST_ANNEX_PDF = true;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
+	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = true; //TF03 - XAdES enveloped signature  
+	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
+	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false;
+	private static final boolean TEST_ANNEX_PDF = false;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
@@ -141,7 +143,7 @@ public class BustiaV1Test {
 	}
 
 	@Test
-	public void test() throws DatatypeConfigurationException, IOException {
+	public void test() throws Exception {
 		RegistreAnotacio anotacio; 
 		int nAnotacions = N_ANOTACIONS;
 		for (int i=1; i<=nAnotacions; i++) {
@@ -157,8 +159,11 @@ public class BustiaV1Test {
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);
 	        anotacio.setUsuariCodi(USUARI_CODI);
 	        anotacio.setUsuariNom(USUARI_NOM);
-	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
 	        //anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar(2021, 11, 28, 16, 31, 00))); //per sobreescriure
+	        GregorianCalendar calendar = new GregorianCalendar();
+	        //calendar.setTime(new SimpleDateFormat("dd-MM-yyyy").parse("29-11-2021"));
+	        calendar.setTime(new Date());
+	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
 	        anotacio.setExtracte(EXTRACTE + " " + i);
 	        anotacio.setEntitatCodi(ENTITAT_CODI);
 	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
@@ -167,7 +172,6 @@ public class BustiaV1Test {
 	        anotacio.setLlibreCodi(LLIBRE_CODI);
 	        anotacio.setLlibreDescripcio(LLIBRE_DESC);
 	        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
-	        //anotacio.setNumero("L" + LLIBRE_CODI + "E" + "NUMERO" + "/" + Calendar.getInstance().get(Calendar.YEAR)); //per sobreescriure
 	        anotacio.setIdiomaCodi(IDIOMA_CODI);
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);
@@ -195,22 +199,21 @@ public class BustiaV1Test {
 	        for (int j=1; j<=nAnnexos; j++) {
 		        if (TEST_ANNEX_FIRMAT ) {
 		        	
-		        	if (TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED) {
+		        	if (TEST_ANNEX_FIRMAT_XADES_ENVELOPED) {
 		        		
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
 			            firma.setTipusMime("application/xsig");
 			            firma.setContingut(null);
-			            firma.setTipus("TF02");
+			            firma.setTipus("TF03");
 			            firma.setPerfil("BES");
 			            firmes.add(firma);
 			            annex = crearAnnex(
-				        		"Annex signat XADES" + j,
-				        		//"annex.pdf",
+				        		"Annex signat XADES enveloped" + j,
 				        		"annex_firmat_xades.xsig",
 				        		"application/xsig",
 				        		null,
-				        		getContingutWithFirmaXadesInternallyDettached(),
+				        		getContingutWithFirmaXadesEnveloped(),
 				        		"0",
 				        		"EE01",
 				        		"TD01",
@@ -231,7 +234,7 @@ public class BustiaV1Test {
 						
 				        annex = crearAnnex(
 				        		"Annex" + j,
-				        		"annex signat CADES " + j,
+				        		"annex signat CADES TF04 " + j,
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
@@ -241,7 +244,30 @@ public class BustiaV1Test {
 				        		"01",
 				        		firmes);
 
-					} else {
+		        	} else if (TEST_ANNEX_FIRMA_CADES_ATTACHED) {
+		        		
+			        	firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setFitxerNom("firma_cades_atttached.csig");
+			            firma.setTipusMime("application/csig");
+			            firma.setContingut(
+			            		IOUtils.toByteArray(getContingutFirmaCadesAttached()));
+			            firma.setTipus("TF05");
+			            firma.setPerfil("BES");
+			            firmes.add(firma);
+						
+				        annex = crearAnnex(
+				        		"Annex" + j,
+				        		"annex signat CADES TF05.pdf",
+				        		"application/pdf",
+				        		null,
+				        		getContingutAnnexSenseFirmaPdf(),
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+				    } else {
 						
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
@@ -254,8 +280,7 @@ public class BustiaV1Test {
 			            firmes.add(firma);
 			            annex = crearAnnex(
 				        		"Annex signat PAdES " + j,
-				        		//"annex.pdf",
-				        		"annex_firmat_pades.pdf",
+				        		"annex_firmat.pdf",
 				        		"application/pdf",
 				        		null,
 				        		null,
@@ -282,12 +307,23 @@ public class BustiaV1Test {
 				        		"01",
 				        		firmes);
 			        } else {
+//			        	annex = crearAnnex(
+//				        		"Annex DOCX " + j,
+//				        		"annex.docx",
+//				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+//				        		null,
+//				        		getContingutAnnexSenseFirmaDocx(),
+//				        		"0",
+//				        		"EE01",
+//				        		"TD01",
+//				        		"01",
+//				        		firmes);
 			        	annex = crearAnnex(
-				        		"Annex DOCX " + j,
-				        		"annex.docx",
-				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+				        		"Annex XML " + j,
+				        		"annex.xml",
+				        		"application/xml",
 				        		null,
-				        		getContingutAnnexSenseFirmaDocx(),
+				        		getContingutAltre("formulario.xml"),
 				        		"0",
 				        		"EE01",
 				        		"TD01",
@@ -497,7 +533,14 @@ public class BustiaV1Test {
 		return is;
 	}
 	
-	private InputStream getContingutWithFirmaXadesInternallyDettached() {
+	private InputStream getContingutFirmaCadesAttached() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/firma_cades_attached.csig");
+		return is;
+	}
+
+	/** TF02 - XAdES internally detached signature */
+	private InputStream getContingutWithFirmaXadesEnveloped() {
 		InputStream is = getClass().getResourceAsStream(
         		"/formulario.xml_signed.xsig");
 		return is;

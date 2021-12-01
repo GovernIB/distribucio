@@ -6,9 +6,11 @@ package es.caib.distribucio.plugin.caib.signatura;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.text.DecimalFormat;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -33,9 +35,11 @@ public class FirmaSimplePluginPortafibTest {
 	private static final String API_ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
 	private static final String API_USERNAME = "$distribucio_portafib";
 	private static final String API_PASSWORD = "distribucio_portafib";
-	//private static final String PERFIL = "CADES_DETACHED";
 	//private static final String PERFIL = "FIRMAAPISIMPLE";
-	private static final String PERFIL = "PADES";
+	//private static final String PERFIL = "CADES_DETACHED";
+	private static final String PERFIL = "XADES_DETACHED"; //TF02
+	//private static final String PERFIL = "CADES_ATTACHED"; //TF05
+	//private static final String PERFIL = "PADES"; //TF06
 	// Nom del certificat emprat per @firma per firmar
 	private static final String USERNAME = "afirmades-firma";
 
@@ -108,6 +112,11 @@ public class FirmaSimplePluginPortafibTest {
 			System.out.println("contingut: " + resposta.getContingut().length + " b");
 			System.out.println("tipus: " + resposta.getTipusFirmaEni());
 			System.out.println("perfil: " + resposta.getPerfilFirmaEni());
+			
+			// Per guardar la resposta en un arxiu
+			//Path path = Paths.get("/tmp/annex_signat_TF05.csig");
+			//Files.write(path, resposta.getContingut());
+
 		} catch(Exception e) {
 			fail("Error capturat: " + e.getClass() + ": " + e.getMessage());
 			e.printStackTrace(System.err);

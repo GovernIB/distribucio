@@ -874,76 +874,54 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		metadades.setTipusDocumental(tipusDocumental);
 		
-		// Contingut i firmes
-		DocumentContingut contingut = null;
-		boolean documentAmbFirma = firmes != null && firmes.size() > 0;
-		boolean firmaSeparada = firmes != null 
-								&& firmes.size() > 0 
-								&& firmes.get(0).getTipus() != null
-								&& !TIPUS_FIRMES_ATTACHED.contains(FirmaTipus.valueOf(firmes.get(0).getTipus().name()));
-
-
-		// Si no està firmat posa el contingut on toca
-		if (!documentAmbFirma && fitxer != null) {
-			// Sense firma
-			contingut = new DocumentContingut();
+		// Firmes
+		Firma primeraFirma = null;
+		if (firmes != null && firmes.size() > 0) {
+			document.setFirmes(new ArrayList<Firma>());
+			// Informa les firmes
+			for (ArxiuFirmaDto firmaDto: firmes) {
+				Firma firma = new Firma();
+				firma.setFitxerNom(firmaDto.getFitxerNom());
+				firma.setContingut(firmaDto.getContingut());
+				if (firmaDto.getContingut() != null)
+					firma.setTamany(-1);
+				firma.setTipusMime(firmaDto.getTipusMime());
+				setFirmaTipusPerfil(firma, firmaDto);					
+				firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
+				document.getFirmes().add(firma);
+			}
+			primeraFirma = document.getFirmes().get(0);
+		}
+		// Contingut
+		DocumentContingut contingut = new DocumentContingut();
+		if (fitxer != null) {
 			contingut.setArxiuNom(fitxer.getNom());
 			contingut.setContingut(fitxer.getContingut());
 			contingut.setTipusMime(fitxer.getContentType());
-			document.setContingut(contingut);
-		} else {
-			// Amb firma
-			if (document.getFirmes() == null) {
-				document.setFirmes(new ArrayList<Firma>());
-			}			
-			// Informa les firmes
-			ArxiuFirmaDto primeraFirma = null;
-			if (documentAmbFirma) {
-				for (ArxiuFirmaDto firmaDto: firmes) {
-					Firma firma = new Firma();
-					firma.setFitxerNom(firmaDto.getFitxerNom());
-					firma.setContingut(firmaDto.getContingut());
-					if (firmaDto.getContingut() != null)
-						firma.setTamany(firmaDto.getContingut().length);
-					firma.setTipusMime(firmaDto.getTipusMime());
-					setFirmaTipusPerfil(firma, firmaDto);					
-					firma.setCsvRegulacio(firmaDto.getCsvRegulacio());
-					document.getFirmes().add(firma);
-				}
-				primeraFirma = firmes.get(0);
-			}
+		}
+		
+		if (primeraFirma != null )
+		{
+			// Document firmat
+			if (primeraFirma.getTipus() != null && TIPUS_FIRMES_ATTACHED.contains(FirmaTipus.valueOf(primeraFirma.getTipus().name()))) {
 
-			if (!firmaSeparada) {
-				// attached
-				Firma firma;
-				if (documentAmbFirma) {
-					firma = document.getFirmes().get(0);
-				} else {
-					firma = new Firma();
-					document.getFirmes().add(firma);
-				}
-				if (fitxer != null) {
-					firma.setFitxerNom(fitxer.getNom());
-					firma.setContingut(fitxer.getContingut());
-					firma.setTipusMime(fitxer.getContentType());
-					if (primeraFirma != null) {
-						setFirmaTipusPerfil(firma, primeraFirma);
-						firma.setContingut(primeraFirma.getContingut());
-						firma.setCsvRegulacio(primeraFirma.getCsvRegulacio());
+				// Firma attached
+				if (es.caib.plugins.arxiu.api.FirmaTipus.PADES.equals(primeraFirma.getTipus())) {					
+					// el contingut és null pel cas dels PADES
+					contingut = null;
+					if (fitxer != null) {
+						primeraFirma.setFitxerNom(fitxer.getNom());
+						primeraFirma.setTipusMime(fitxer.getContentType());
 					}
+				} else { // CADES i XADES
+					if (primeraFirma.getContingut() != null)
+						contingut.setContingut(primeraFirma.getContingut());
 				}
-			} else {
-				// detached
-				contingut = new DocumentContingut();
-				contingut.setArxiuNom(fitxer.getNom());
-				contingut.setContingut(fitxer.getContingut());
-				contingut.setTipusMime(fitxer.getContentType());
-				document.setContingut(contingut);
 			}
 		}
 		
 		DocumentExtensio extensio = null;
-		if (fitxer != null) {
+		if (fitxer != null && fitxer.getExtensio() != null) {
 			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
 			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
 		}
@@ -1091,8 +1069,9 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	
 		document.setMetadades(metadades);
-		document.setContingut(contingut);
 		document.setEstat(estat);
+		document.setContingut(contingut);
+
 		return document;
 	}
 

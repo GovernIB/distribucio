@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -987,13 +986,11 @@ public class RegistreHelper {
 					if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
 						RegistreAnnexFirmaEntity firma = firmes.get(firmaIndex);
 						if (pluginHelper.isValidaSignaturaPluginActiu()) {
-							byte[] documentContingut = document.getContingut().getContingut();
+							byte[] documentContingut = document.getContingut() != null? document.getContingut().getContingut() : null;
 							byte[] firmaContingut = arxiuFirma.getContingut();
-							if (	ArxiuFirmaTipusEnumDto.XADES_DET.equals(firma.getTipus()) ||
-									ArxiuFirmaTipusEnumDto.CADES_DET.equals(firma.getTipus())) {
-								firmaContingut = arxiuFirma.getContingut();
+							if ("TF05".equals(firma.getTipus())) { // TF05 CAdDES attached
+								firmaContingut = null;
 							}
-							
 							final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
 							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
 							List<ArxiuFirmaDetallDto> firmaDetalls = pluginHelper.validaSignaturaObtenirDetalls(
