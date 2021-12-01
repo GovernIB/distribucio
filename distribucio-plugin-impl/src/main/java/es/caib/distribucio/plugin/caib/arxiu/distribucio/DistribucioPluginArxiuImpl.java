@@ -906,14 +906,19 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			if (primeraFirma.getTipus() != null && TIPUS_FIRMES_ATTACHED.contains(FirmaTipus.valueOf(primeraFirma.getTipus().name()))) {
 
 				// Firma attached
-				if (es.caib.plugins.arxiu.api.FirmaTipus.PADES.equals(primeraFirma.getTipus())) {					
+				if (es.caib.plugins.arxiu.api.FirmaTipus.PADES.equals(primeraFirma.getTipus())) {
+					// Pot ser que el contingut hagi vingut informat com a contingut i no com a firma
+					if (primeraFirma.getContingut() == null) {
+						primeraFirma.setContingut(contingut.getContingut());
+					}
 					// el contingut és null pel cas dels PADES
 					contingut = null;
 					if (fitxer != null) {
 						primeraFirma.setFitxerNom(fitxer.getNom());
 						primeraFirma.setTipusMime(fitxer.getContentType());
 					}
-				} else { // CADES i XADES
+				} else { 
+					// CADES i XADES
 					if (primeraFirma.getContingut() != null)
 						contingut.setContingut(primeraFirma.getContingut());
 				}

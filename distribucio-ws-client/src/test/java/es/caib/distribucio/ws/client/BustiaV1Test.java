@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova XML firmat XADES_ATTACHED " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta anotació " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -69,12 +69,12 @@ public class BustiaV1Test {
 
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
-	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = true; //TF03 - XAdES enveloped signature  
+	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false;
-	private static final boolean TEST_ANNEX_PDF = false;
+	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
@@ -233,8 +233,8 @@ public class BustiaV1Test {
 			            firmes.add(firma);
 						
 				        annex = crearAnnex(
-				        		"Annex" + j,
-				        		"annex signat CADES TF04 " + j,
+				        		"Annex signat CAdES TF04 " + j,
+				        		"annex.pdf",
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
@@ -275,6 +275,7 @@ public class BustiaV1Test {
 			            firma.setTipusMime("application/pdf");
 			            firma.setContingut(
 			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+//			            firma.setContingut(null);
 			            firma.setTipus("TF06");
 			            firma.setPerfil("EPES");
 			            firmes.add(firma);
@@ -284,15 +285,13 @@ public class BustiaV1Test {
 				        		"application/pdf",
 				        		null,
 				        		null,
+				        		//getContingutAnnexFirmat(),
 				        		"0",
 				        		"EE01",
 				        		"TD01",
 				        		"01",
 				        		firmes);
-						
 					}
-		        	
-
 		        } else {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
