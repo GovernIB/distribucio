@@ -837,7 +837,7 @@ public class RegistreUserController extends BaseUserController {
 					registreId, 
 					false,
 					RolHelper.getRolActual(request));
-			if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT) {
+			if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.ARXIU_PENDENT || registreDto.isReintentsEsgotat()) {
 				
 				boolean processatOk = true;
 				try {
@@ -1649,7 +1649,8 @@ public class RegistreUserController extends BaseUserController {
 						registreId, 
 						false,
 						RolHelper.getRolActual(request));
-				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT
+						|| (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())) {
 					
 					boolean processatOk = true;
 					
