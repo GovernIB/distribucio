@@ -874,6 +874,12 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		metadades.setTipusDocumental(tipusDocumental);
 		
+		DocumentExtensio extensio = null;
+		if (fitxer != null && fitxer.getExtensio() != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
+		}
+
 		// Firmes
 		Firma primeraFirma = null;
 		if (firmes != null && firmes.size() > 0) {
@@ -921,15 +927,20 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					// CADES i XADES
 					if (primeraFirma.getContingut() != null)
 						contingut.setContingut(primeraFirma.getContingut());
+
+					if (es.caib.plugins.arxiu.api.FirmaTipus.XADES_ENV.equals(primeraFirma.getTipus())) {
+						if (contingut.getArxiuNom() == null) {
+							contingut.setArxiuNom(primeraFirma.getFitxerNom() != null ? primeraFirma.getFitxerNom() : "firma.xsig");
+						} else if (!contingut.getArxiuNom().toLowerCase().endsWith(".xsig")) {
+							contingut.setArxiuNom(contingut.getArxiuNom() + ".xsig");
+						}
+						extensio = DocumentExtensio.toEnum(".xsig");
+						contingut.setTipusMime("application/xml");
+					}
 				}
 			}
 		}
 		
-		DocumentExtensio extensio = null;
-		if (fitxer != null && fitxer.getExtensio() != null) {
-			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
-			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-		}
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
 			DocumentFormat format = null;

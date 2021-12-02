@@ -268,8 +268,13 @@ public class ContingutHelper {
 				contingutDto.setDarrerMovimentComentari(darrerMoviment.getComentari());       
 				if (darrerMoviment.getOrigenId() != null) { // és un reenviament
 					BustiaEntity bustia = bustiaRepository.findOne(darrerMoviment.getOrigenId());
-					contingutDto.setDarrerMovimentOrigenUo(bustia.getUnitatOrganitzativa().getCodiAndNom());
-					contingutDto.setDarrerMovimentOrigenBustia(bustia.getNom());
+					if (bustia != null) {
+						contingutDto.setDarrerMovimentOrigenUo(bustia.getUnitatOrganitzativa().getCodiAndNom());
+						contingutDto.setDarrerMovimentOrigenBustia(bustia.getNom());	
+					} else {
+						contingutDto.setDarrerMovimentOrigenUo("-");
+						contingutDto.setDarrerMovimentOrigenBustia(darrerMoviment.getOrigenNom() + " [" + messageHelper.getMessage("registre.anotacio.darrer.moviment.bustia.esborrada") + "]");
+					}
 				}
 			}
 			// AUDITORIA

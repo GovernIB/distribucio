@@ -77,6 +77,17 @@
 		</td>
 	</tr>
 	
+	<c:if test="${not empty annex.firmaCsv}">
+		<tr>
+			<td><strong><spring:message code="registre.annex.detalls.camp.firmaCsv"/></strong></td>
+			<td>
+				${annex.firmaCsv}
+				<c:if test="${not empty concsvBaseUrl}">
+					<a href="${concsvBaseUrl}/view.xhtml?hash=${annex.firmaCsv}" target="_blank" title="<spring:message code="registre.annex.detalls.camp.firmaCsv.consv"/>"><span class="fa fa-external-link"></span></a>
+				</c:if>			
+			</td>
+		</tr>
+	</c:if>
 	
 	<c:forEach var="metaDada" items="${annex.metaDadesMap}">
 		<tr>

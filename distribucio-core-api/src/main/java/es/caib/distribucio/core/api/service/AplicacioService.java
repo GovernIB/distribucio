@@ -9,7 +9,6 @@ import java.util.Properties;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;

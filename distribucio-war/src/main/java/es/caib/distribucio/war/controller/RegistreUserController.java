@@ -55,6 +55,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.AlertaService;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
@@ -95,6 +96,8 @@ public class RegistreUserController extends BaseUserController {
 	private AlertaService alertaService;
 	@Autowired
 	private AplicacioService aplicacioService;	
+	@Autowired
+	private ConfigService configService;	
 	
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -504,6 +507,7 @@ public class RegistreUserController extends BaseUserController {
 							annexId,
 							isVistaMoviments));
 			model.addAttribute("registreId", registreId);
+			model.addAttribute("concsvBaseUrl", configService.getConcsvBaseUrl());
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de l'annex", ex);
 			model.addAttribute("missatgeError", ex.getMessage());

@@ -40,4 +40,9 @@ public class ConfigServiceBean implements ConfigService {
 	public void synchronize() {
 		delegate.synchronize();
 	}
+	@Override
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	public String getConcsvBaseUrl() {
+		return delegate.getConcsvBaseUrl();
+	}
 }

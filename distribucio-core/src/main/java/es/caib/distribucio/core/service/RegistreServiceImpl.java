@@ -1621,7 +1621,11 @@ public class RegistreServiceImpl implements RegistreService {
 						try {
 							fitxer = this.getAnnexFitxer(annex.getId());
 							if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId()) {
-								nom = annex.getTitol() + " - " + fitxer.getNom();
+								if (fitxer.getNom().startsWith(annex.getTitol())) {
+									nom = fitxer.getNom();
+								} else {
+									nom = annex.getTitol() + " - " + fitxer.getNom();
+								}
 							} else {
 								nom = fitxer.getNom();
 							}

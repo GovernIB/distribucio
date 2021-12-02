@@ -81,7 +81,8 @@ CREATE TABLE DIS_CONT_MOV
   CREATEDBY_CODI       character varying(64),
   LASTMODIFIEDBY_CODI  character varying(64),
   ORIGEN_NOM character varying(1024),
-  DESTI_NOM character varying(1024)
+  DESTI_NOM character varying(1024),
+  NUM_DUPLICAT         integer
 );
 
 
@@ -202,7 +203,9 @@ CREATE TABLE DIS_REGISTRE
   JUSTIFICANT_ID BIGINT,
   ENVIAT_PER_EMAIL BOOLEAN DEFAULT FALSE,
   PENDENT          BOOLEAN DEFAULT TRUE	NOT NULL,
-  AGAFAT_PER 		character varying(64)
+  AGAFAT_PER 		character varying(64),
+  SOBREESCRIURE           boolean default false,
+  REACTIVAT               boolean default false
 );
 
 
