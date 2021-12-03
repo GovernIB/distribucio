@@ -43,18 +43,18 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 PRE
-	private static final String UNITAT_ADM_CODI = "A04018961"; //A04026923 DEV | A04032369 PRE
+	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV | A04019281 PRE
+	private static final String UNITAT_ADM_CODI = "A04026923"; //A04026923 DEV | A04032369 PRE
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = "1234"; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova backoffice " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova backoffice amb annex PDF, documents tècnic XML amb perfil FIRMAAPISIMPLE3 " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -73,7 +73,7 @@ public class BustiaV1Test {
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = true; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
-	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false;
+	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
@@ -261,7 +261,7 @@ public class BustiaV1Test {
 				        		"annex signat CADES TF05.pdf",
 				        		"application/pdf",
 				        		null,
-				        		getContingutAnnexSenseFirmaPdf(),
+				        		null,
 				        		"0",
 				        		"EE01",
 				        		"TD01",

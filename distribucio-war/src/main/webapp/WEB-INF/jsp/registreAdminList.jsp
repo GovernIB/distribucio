@@ -408,19 +408,23 @@ $(document).ready(function() {
 				</th>						
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
-				<th data-col-name="darrerMovimentUsuari.nom" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
- 						{{if darrerMovimentOrigenUoAndBustia}}
- 							<div align="left">
-								/<span class="fa fa-sitemap" title="{{:darrerMovimentOrigenUoAndBustia}}"/>/<span class="fa fa-inbox" title="{{:darrerMovimentOrigenUoAndBustia}}"/>
- 							</div>
-							<div align="left">
-								{{:darrerMovimentUsuari.nom}}
-							</div>
+						{{if darrerMovimentUsuari}}
+	 						{{if darrerMovimentOrigenUoAndBustia}}
+ 								<div align="left">
+									/<span class="fa fa-sitemap" title="{{:darrerMovimentOrigenUoAndBustia}}"></span>/<span class="fa fa-inbox" title="{{:darrerMovimentOrigenUoAndBustia}}"></span>
+								</div>
+ 								<div align="left">
+									{{:darrerMovimentUsuari.nom}}
+								</div>
+ 							{{else}}
+ 								<span class="fa fa-home" title=""></span>
+ 								{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
+	 						{{/if}}
  						{{else}}
- 							<span class="fa fa-home" title=""/>
- 							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
+							<span class="fa fa-ban" title="<spring:message code="bustia.pendent.columna.remitent.buit"/>"></span>
  						{{/if}}
 					</script>
 				</th>
