@@ -20,3 +20,6 @@ UPDATE DIS_CONT_MOV MOV
 ); 
 
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12','0','BOOL',null,null);
+
+-- Propietat per configurar via web els dies abans de tancar a l'Arxiu una anotació processada
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tancament.expedient.dies',1825,'Interval de dies que han de passar per efectura el tencament de l''expedient a l''arxiu després de marcar l''anotació com a processada','SCHEDULLED_TANCAR','1','0','INT',null,null);
