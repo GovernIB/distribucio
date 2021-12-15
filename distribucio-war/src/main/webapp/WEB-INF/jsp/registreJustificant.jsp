@@ -10,7 +10,7 @@
 <table class="table table-bordered">
 <tbody>
 	<tr>
-		<td><strong><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></strong></td>
+		<td style="width:30%"><strong><spring:message code="registre.annex.detalls.camp.eni.data.captura"/></strong></td>
 		<td><c:if test="${not empty justificant.dataCaptura}"><fmt:formatDate value="${justificant.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>
 	</tr>
 	<tr>

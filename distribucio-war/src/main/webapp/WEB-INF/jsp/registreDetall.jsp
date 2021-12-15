@@ -914,7 +914,7 @@ li[id^="anotacio_"] {
 			<table class="table table-bordered">
 			<tbody>
 				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.tipus"/></strong></td>
+					<td style="width:30%"><strong><spring:message code="registre.detalls.camp.tipus"/></strong></td>
 					<td><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></td>
 				</tr>
 				<c:if test="${isRolActualAdministrador}">
@@ -1075,7 +1075,7 @@ li[id^="anotacio_"] {
 					<tbody>
 						<c:if test="${not empty registre.entitatCodi}">
 							<tr>
-								<td><strong><spring:message code="registre.detalls.camp.entitat"/></strong></td>
+								<td style="width:30%"><strong><spring:message code="registre.detalls.camp.entitat"/></strong></td>
 								<td>${registre.entitatDescripcio} (${registre.entitatCodi})</td>
 							</tr>
 						</c:if>
