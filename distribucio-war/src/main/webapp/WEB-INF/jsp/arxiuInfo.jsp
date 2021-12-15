@@ -9,7 +9,7 @@
 <table class="table table-striped table-bordered">
 	<tbody>
 		<tr>
-			<td><strong><spring:message code="arxiu.metadades.nti.camp.identificador"/></strong></td>
+			<td style="width:20%"><strong><spring:message code="arxiu.metadades.nti.camp.identificador"/></strong></td>
 			<td>${arxiuDetall.identificador}</td>
 		</tr>
 		<tr>
