@@ -31,7 +31,7 @@
 		<tbody>
 			<c:if test="${not empty arxiuDetall.contingutTipusMime}">
 				<tr>
-					<td><strong><spring:message code="arxiu.metadades.nti.camp.contingut.tipus.mime"/></strong></td>
+					<td style="width:20%"><strong><spring:message code="arxiu.metadades.nti.camp.contingut.tipus.mime"/></strong></td>
 					<td>${arxiuDetall.contingutTipusMime}</td>
 				</tr>
 			</c:if>
@@ -51,7 +51,7 @@
 		<table class="table table-striped table-bordered">
 		<tbody>
 			<tr>
-				<td><strong><spring:message code="arxiu.metadades.nti.camp.eni.versio"/></strong></td>
+				<td style="width:20%"><strong><spring:message code="arxiu.metadades.nti.camp.eni.versio"/></strong></td>
 				<td>${arxiuDetall.eniVersio}</td>
 			</tr>
 			<tr>
