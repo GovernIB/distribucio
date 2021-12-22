@@ -33,15 +33,18 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
 public class FirmaSimplePluginPortafibTest {
 
 	private static final String API_ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
+	//private static final String API_ENDPOINT_ADDRESS = "https://proves.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";	
 	private static final String API_USERNAME = "$distribucio_portafib";
 	private static final String API_PASSWORD = "distribucio_portafib";
 	//private static final String PERFIL = "FIRMAAPISIMPLE";
 	//private static final String PERFIL = "CADES_DETACHED";
-	private static final String PERFIL = "XADES_DETACHED"; //TF02
-	//private static final String PERFIL = "CADES_ATTACHED"; //TF05
+	//private static final String PERFIL = "XADES_DETACHED"; //TF02
+	private static final String PERFIL = "CADES_ATTACHED"; //TF05
 	//private static final String PERFIL = "PADES"; //TF06
+	//private static final String PERFIL = "FIRMAAPISIMPLE"; //TF02
 	// Nom del certificat emprat per @firma per firmar
 	private static final String USERNAME = "afirmades-firma";
+	//private static final String USERNAME = "preprod-dgmad";
 
 	private SignaturaPlugin plugin;
 

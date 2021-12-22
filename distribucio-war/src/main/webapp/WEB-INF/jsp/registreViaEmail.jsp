@@ -5,21 +5,46 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="bustia.pendent.contingut.enviarViaEmail.titol"/></c:set>
+<c:set var="multiple">${registres != null}</c:set>
+<c:set var="nRegistres">${multiple ? fn:length(registres) : 0 }</c:set>
+<c:set var="titol">
+	<c:choose>
+		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="registre.user.marcar.pendent.titol.multiple"/></c:when>
+		<c:otherwise><spring:message code="bustia.pendent.contingut.enviarViaEmail.titol"/></c:otherwise>
+	</c:choose>
+</c:set>
 <html>
 <head>
 	<title>${titol}</title>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script>
+
+	var multiple = ${registres != null};
+
 	$(document).ready(function() {
 		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+		$("button[name='btnEnviarViaEmailSubmit']").click(function(){
+			if (multiple) {
+				processaAnotacions();
+			}
+	    });
 	});
 </script>
 </head>
 <body>
+
+	<c:if test="${registres != null}">
+		<dis:processamentMultiple 
+			registres="${registres}"
+			btnSubmit="button[name='btnEnviarViaEmailSubmit']"
+			form="#registreEnviarViaEmailCommand"
+			postUrl="/registreUser/enviarViaEmailAjax/"></dis:processamentMultiple>
+	</c:if>
+
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
 		<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
 		<c:if test="${isVistaMoviments}">
@@ -35,7 +60,7 @@
   		</div>		
 		<dis:inputTextarea name="motiu" textKey="bustia.pendent.contingut.enviarViaEmail.motiu"/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.enviar"/></button>
+			<button name="btnEnviarViaEmailSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 

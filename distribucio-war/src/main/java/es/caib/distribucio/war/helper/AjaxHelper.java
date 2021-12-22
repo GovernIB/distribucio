@@ -67,8 +67,13 @@ public class AjaxHelper {
 	public static AjaxFormResponse generarAjaxFormOk() {
 		return new AjaxFormResponse(null);
 	}
-
-
+	
+	public static AjaxFormResponse generarAjaxError(String missatge) {
+		AjaxFormResponse response = new AjaxFormResponse(null);
+		response.setMissatge(missatge);
+		response.setEstat(AjaxFormEstatEnum.ERROR);
+		return response;
+	}
 
 	private static boolean isRequestPathAjax(
 			HttpServletRequest request) {
@@ -101,6 +106,7 @@ public class AjaxHelper {
 	}
 
 	public static class AjaxFormResponse {
+		private String missatge;
 		private Object objecte;
 		private AjaxFormEstatEnum estat;
 		private List<AjaxFormError> errorsGlobals;
@@ -150,6 +156,9 @@ public class AjaxHelper {
 		public List<AjaxFormError> getErrorsCamps() {
 			return errorsCamps;
 		}
+		public void setEstat(AjaxFormEstatEnum estat) {
+			this.estat = estat;;
+		}
 		public boolean isEstatOk() {
 			return estat.equals(AjaxFormEstatEnum.OK);
 		}
@@ -161,6 +170,12 @@ public class AjaxHelper {
 		}
 		public boolean isErrorsCamps() {
 			return errorsCamps != null;
+		}
+		public void setMissatge(String missatge) {
+			this.missatge = missatge;
+		}
+		public String getMissatge() {
+			return this.missatge;
 		}
 	}
 
@@ -183,5 +198,4 @@ public class AjaxHelper {
 		OK,
 		ERROR
 	}
-
 }

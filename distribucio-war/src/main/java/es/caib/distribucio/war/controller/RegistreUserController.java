@@ -65,6 +65,8 @@ import es.caib.distribucio.war.command.RegistreClassificarCommand.Classificar;
 import es.caib.distribucio.war.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
+import es.caib.distribucio.war.helper.AjaxHelper;
+import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
@@ -770,9 +772,68 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		RegistreEnviarViaEmailCommand command = new RegistreEnviarViaEmailCommand();
-		model.addAttribute(command);
+		model.addAttribute("registreEnviarViaEmailCommand", command);
 		model.addAttribute("isVistaMoviments", isVistaMoviments);
+		
+		List<RegistreDto> registres;
+		if (isVistaMoviments) {
+			Set<Long> seleccio = new HashSet<Long>();
+//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			List<String> seleccioMoviments = (List<String>)RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+				for (String idVistaMoviment: seleccioMoviments) {
+					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
+				}
+			}
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			registres = registreService.findMultiple(
+					entitatActual.getId(),
+					new ArrayList<Long>(seleccio));
+
+		} else {
+			registres = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
+		}
+		model.addAttribute("registres", registres);
 		return "registreViaEmail";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/enviarViaEmailAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse enviarViaEmailAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
+			@Valid RegistreEnviarViaEmailCommand command,
+			BindingResult bindingResult) {
+		AjaxFormResponse response;
+		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
+		}
+
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			bustiaService.registreAnotacioEnviarPerEmail(
+					entitatActual.getId(),
+					registreId,
+					adreces, 
+					command.getMotiu(),
+					isVistaMoviments,
+					RolHelper.getRolActual(request));
+			response = AjaxHelper.generarAjaxFormOk();
+
+		} catch (Exception exception) {
+			response = AjaxHelper.generarAjaxError(
+					getMessage(
+						request, 
+						"bustia.controller.pendent.contingut.enviat.email.ko",
+						new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+		}
+		return response;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1179,7 +1240,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-			omplirModelPerReenviarMultiple(entitatActual, model);
+			omplirModelPerReenviarMultiple(request, entitatActual, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 
 			model.addAttribute(command);
@@ -1202,6 +1263,46 @@ public class RegistreUserController extends BaseUserController {
 
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/registreReenviarAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse registreReenviarAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@Valid ContingutReenviarCommand command,
+			BindingResult bindingResult) {
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
+		}
+		if (command.getDestins() == null || command.getDestins().length <= 0) {
+			response = AjaxHelper.generarAjaxError(getMessage(
+					request, 	
+					"registre.user.controller.massiva.no.desti"));
+			return response;
+		}
+
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			bustiaService.registreReenviar(
+					entitatActual.getId(),
+					command.getDestins(),
+					registreId,
+					command.isDeixarCopia(),
+					command.getComentariEnviar(),
+					command.getPerConeixement(),
+					null);
+			response = AjaxHelper.generarAjaxFormOk();
+		} catch (Exception exception) {
+			response = AjaxHelper.generarAjaxError(
+					getMessage(
+						request, 
+						"registre.user.controller.reenviar.massiva.error",
+						new Object[] {String.valueOf(registreId), exception.getMessage()}));
+		}
+		return response;
+	}
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/registreReenviarMultiple", method = RequestMethod.POST)
@@ -1213,7 +1314,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 			if (bindingResult.hasErrors()) {
-				omplirModelPerReenviarMultiple(entitatActual, model);
+				omplirModelPerReenviarMultiple(request, entitatActual, model);
 				return "registreReenviarForm";
 			}
 			if (command.getDestins() == null || command.getDestins().length <= 0) {
@@ -1395,7 +1496,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute(command);
+		model.addAttribute("marcarPendentCommand", command);
 		return "registreUserMarcarPendent";
 	}
 
@@ -1442,9 +1543,49 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute(command);
+		model.addAttribute("marcarPendentCommand", command);
+		model.addAttribute("registres", this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO));
 		return "registreUserMarcarPendent";
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/marcarPendentAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse marcarPendentAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult) {
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
+		}
+		
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			String rolActual = RolHelper.getRolActual(request);
+			registreService.marcarPendent(
+					entitatActual.getId(), 
+					registreId,
+					"<span class='label label-default'>" + 
+					getMessage(
+							request, 
+							"registre.user.controller.accio.marcat.pendent") + 
+					"</span> " + command.getMotiu(), 
+					rolActual);
+			response = AjaxHelper.generarAjaxFormOk();
+
+		} catch (Exception exception) {
+			response = AjaxHelper.generarAjaxError(
+					getMessage(
+						request, 
+						"registre.user.controller.marcat.pendent.error",
+						new Object[] {exception.getMessage()}));
+		}
+		return response;
+	}
+
 
 	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.POST)
 	public String marcarPendentMultiplePost(
@@ -1547,7 +1688,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute(command);
+		model.addAttribute("marcarProcessatCommand", command);
 		return "registreUserMarcarProcessat";
 	}
 
@@ -1595,10 +1736,50 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		getEntitatActualComprovantPermisos(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute(command);
+		model.addAttribute("marcarProcessatCommand", command);
+		model.addAttribute("registres", this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO));
+		
 		return "registreUserMarcarProcessat";
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/marcarProcessatAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse marcarProcessatAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@Valid MarcarProcessatCommand command,
+			BindingResult bindingResult) {
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
+		}
+
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			String rolActual = RolHelper.getRolActual(request);
+			contingutService.marcarProcessat(
+					entitatActual.getId(), 
+					registreId,
+					"<span class='label label-default'>" + 
+					getMessage(
+							request, 
+							"bustia.pendent.accio.marcat.processat") + 
+					"</span> " + command.getMotiu(), 
+					rolActual);
+			response = AjaxHelper.generarAjaxFormOk();
+
+		} catch (Exception exception) {
+			response = AjaxHelper.generarAjaxError(
+					getMessage(
+						request, 
+						"bustia.pendent.accio.marcar.processat.error",
+						new Object[] {exception.getMessage()}));
+		}
+		return response;
+	}
+	
 	@RequestMapping(value = "/marcarProcessatMultiple", method = RequestMethod.POST)
 	public String marcarProcessatMultiplePost(
 			HttpServletRequest request,
@@ -1608,9 +1789,9 @@ public class RegistreUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		String rolActual = RolHelper.getRolActual(request);
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("registres", this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO));
 			return "registreUserMarcarProcessat";
 		}
-		
 		
 		@SuppressWarnings("unchecked")
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
@@ -2095,6 +2276,7 @@ public class RegistreUserController extends BaseUserController {
 	}
 	
 	private void omplirModelPerReenviarMultiple(
+			HttpServletRequest request, 
 			EntitatDto entitatActual,
 			Model model) {
 
@@ -2127,6 +2309,7 @@ public class RegistreUserController extends BaseUserController {
 						true,
 						false,
 						true));
+		model.addAttribute("registres", this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO));
 	}
 
 	private int getMaxLevelArbre() {
@@ -2216,5 +2399,28 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return mateixPare;
 	}
+	
+	/** Mètode per consultar els registres seleccionats pel processament múltiple.
+	 * @param request Request
+	 * @param sessionName Objecte de sessió que conté la selecció
+	 * @return
+	 */
+	private List<RegistreDto> getRegistresSeleccionats(HttpServletRequest request, String sessionName) {
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				sessionName);
+		List<RegistreDto> registres;
+		if (seleccio != null) {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			registres = registreService.findMultiple(
+					entitatActual.getId(),
+					new ArrayList<Long>(seleccio));
+		} else {
+			registres = new ArrayList<>();
+		}
+		return registres;
+
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreUserController.class);
 }

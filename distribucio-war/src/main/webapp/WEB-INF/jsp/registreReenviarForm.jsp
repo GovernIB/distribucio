@@ -5,10 +5,18 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<c:set var="titol"><spring:message code="bustia.pendent.registre.reenviar.titol"/></c:set>
+<c:set var="multiple">${registres != null}</c:set>
+<c:set var="nRegistres">${multiple ? fn:length(registres) : 0 }</c:set>
+<c:set var="titol">
+	<c:choose>
+		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="bustia.pendent.registre.reenviar.titol.multiple"/></c:when>
+		<c:otherwise><spring:message code="bustia.pendent.registre.reenviar.titol"/></c:otherwise>
+	</c:choose>
+</c:set>
 <html>
 <head>
 	<title>${titol}</title>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead titol="${titol}"/>
 	<%--
 	<link href="<c:url value="/css/jstree.min.css"/>" rel="stylesheet">
@@ -244,6 +252,7 @@
 		}
 	</style>
 	<script type="text/javascript">
+		var multiple = ${registres != null};
 		var idsBustiesFavorits = [];
 		var idsPerConeixement = [];
 		$(document).ready(function() {
@@ -328,6 +337,11 @@
 				}
 			});
 			favoritsCheckbox.trigger('change');
+			$("button[name='btnReenviarSubmit']").click(function(){
+				if (multiple) {
+					processaAnotacions();
+				}
+		    });
 		});
 
 		var unitats = [];
@@ -707,6 +721,14 @@
 	</script>
 </head>
 <body>
+	<c:if test="${registres != null}">
+		<dis:processamentMultiple 
+			registres="${registres}"
+			btnSubmit="button[name='btnReenviarSubmit']"
+			form="#contingutReenviarCommand"
+			postUrl="/registreUser/registreReenviarAjax/"></dis:processamentMultiple>
+	</c:if>
+
 	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand" onsubmit="updateConeixement()">
 		<form:hidden path="params"/>
 	    <%--<c:choose>
@@ -809,7 +831,7 @@
 		</c:choose>
 	     --%>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
+			<button name="btnReenviarSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
