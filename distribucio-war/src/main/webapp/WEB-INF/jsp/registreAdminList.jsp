@@ -333,14 +333,14 @@ $(document).ready(function() {
 
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu">
-					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false">
-						<spring:message code="registre.detalls.accio.reintentar"/></span>
+					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
 					</a></li>
-					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false">
-						<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
+					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
 					</a></li>
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
-						<spring:message code="registre.user.accio.marcar.pendent"/>
+						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>					
 				</ul>
 			</div>

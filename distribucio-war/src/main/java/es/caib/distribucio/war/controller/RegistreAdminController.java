@@ -49,12 +49,13 @@ import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
+import es.caib.distribucio.war.helper.AjaxHelper;
+import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -408,275 +409,183 @@ public class RegistreAdminController extends BaseAdminController {
 
 	}
 	
-	
-	
+
 	@RequestMapping(value = "/marcarSobreescriureMultiple", method = RequestMethod.GET)
-	public String marcarSobreescriure(
+	public String marcarSobreescriureMultipleGet(
 			HttpServletRequest request,
 			Model model) {
-		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
-		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO);
-		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
-			RegistreDto registreDto = null;
-			for (Long registreId : seleccioList) {
-				registreDto = null;
-				try {
-					logger.debug("Marcant per a sobreescriure anotació amb id " + registreId);
-					registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
-
-					if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
-
-						registreService.marcarSobreescriure(entitatActual.getId(), registreId);
-						correctes++;
-
-					} else {
-						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.");
-						estatErroni++;
-					}
-				} catch(Exception e) {
-					logger.error("Error marcant per a sobreescriure l'anotació amb id " + registreId + ": " + e.getMessage() , e);
-					String errMsg = getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.error", new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), ExceptionHelper.getRootCauseOrItself(e).getMessage()});
-					MissatgesHelper.error(request, errMsg);
-					errors++;
-				}
-			}
-			
-			if (correctes > 0){
-				MissatgesHelper.success(request,
-						getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request,
-						getMessage(request, "registre.admin.controller.marcar.sobreescriure.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request,
-						getMessage(request,
-								"registre.admin.controller.marcar.sobreescriure.massiva.estatErroni", new Object[]{estatErroni}));
-			}
-		} else {
-			MissatgesHelper.error(request,
-					getMessage(request,
-							"registre.admin.controller.massiva.cap"));
-		}
-		return "redirect:/registreAdmin";
+		Object command = new Object();
+		model.addAttribute("marcarSobreescriureCommand", command);
+		model.addAttribute("registres",
+				registreService.findMultiple(
+						getEntitatActualComprovantPermisos(request).getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+		return "marcarSobreescriure";
 	}
 	
-
 	
-	
-	
-	/** Mèdode per reprocessar una selecció d'anotacions de registre des del llistat d'anotacions
+	/** Mèdode per marcar per sobreescriure una anotació de registre via ajax des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
-	public String reintentarProcessamentMultiple(
+	@ResponseBody
+	@RequestMapping(value = "/marcarSobreescriureAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse marcarSobreescriureAjaxPost(
 			HttpServletRequest request,
-			Model model) {
+			@PathVariable Long registreId,
+			@Valid Object command,
+			BindingResult bindingResult) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		
-		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO);
-		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			boolean processatOk;
-			// Reintenta el processament de les anotacions seleccionades
-			ContingutDto contingutDto;
-			for (Long registreId : seleccioList) {
-				contingutDto = null;
-				try {
-					logger.debug("Reprocessar anotació amb id " + registreId);
-					contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-					RegistreDto registreDto = (RegistreDto) contingutDto;
-					if (registreDto.getPare() == null) {
-						// Restaura la bústia per defecte i la la regla aplicable si s'escau
-						processatOk = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
-								registreId);
-						contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-					} 
-					else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
-					{
-						if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
-							|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
-						{
-							// Pendent de processament d'arxiu o regla
-							processatOk = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
-									registreId);
-							
-						} else {
-							// Pendent d'enviar a backoffice
-							processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
-									registreId);
-						}
-						if (processatOk)
-							correctes++;
-						else
-							errors++;
-						logger.debug("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha processat " + (processatOk ? "correctament" : "amb error"));
-					} 
-					else {
-						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.");
-						estatErroni++;
-					}
-				} catch(Exception e) {
-					logger.error("Error incontrolat reprocessant l'anotació amb id " + registreId + ": " + e.getMessage() , e);
-					String errMsg = getMessage(request, 
-												"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
-												new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
-					MissatgesHelper.error(request, errMsg);
-					errors++;
-				}
-			}
-			
-			if (correctes > 0){
-				MissatgesHelper.success(request,
-						getMessage(request, "contingut.admin.controller.registre.reintentat.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request,
-						getMessage(request, "contingut.admin.controller.registre.reintentat.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.massiva.estatErroni", new Object[]{estatErroni}));
-			}
-		} else {
-			MissatgesHelper.error(request,
-					getMessage(request,
-							"contingut.admin.controller.registre.reintentat.massiva.cap"));
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
 		}
-		return "redirect:/registreAdmin";
+		
+		boolean correcte = false;
+		String missatge = null;
+		RegistreDto registreDto = null;
+		try {
+			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);			
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisos(request);
+			
+			registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
+
+			if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
+				registreService.marcarSobreescriure(entitatActual.getId(), registreId);
+				missatge = "Anotació amb id " + registreId + " marcada per sobreescriure correctament";
+				correcte = true;
+			} else {
+				missatge = "L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.";
+				correcte = false;
+			}
+			if (correcte) {
+				response = AjaxHelper.generarAjaxFormOk();
+				response.setMissatge(missatge.toString());
+			} else {
+				response = AjaxHelper.generarAjaxError(missatge.toString());
+			}
+			logger.debug(missatge);
+		} catch(Exception e) {
+			logger.error("Error incontrolat marcant per sobreescriure l'anotació amb id " + registreId + ": " + e.getMessage() , e);
+			String errMsg = getMessage(request, 
+										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
+										new Object[] {(registreDto != null ? registreDto.getIdentificador() : String.valueOf(registreId)), e.getMessage()});
+			response = AjaxHelper.generarAjaxError(errMsg);
+		}
+		return response;
 	}
 	
+	
+	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
+	public String reintentarProcessamentMultipleGet(
+			HttpServletRequest request,
+			Model model) {
+		Object command = new Object();
+		model.addAttribute("reintentarProcessamentCommand", command);
+		model.addAttribute("registres",
+				registreService.findMultiple(
+						getEntitatActualComprovantPermisos(request).getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+		return "reintentarProcessamentMultiple";
+	}
+	
+	
+	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
+	 * de l'administrador.
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/reintentarProcessamentAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse reintentarProcessamentAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@Valid Object command,
+			BindingResult bindingResult) {
+		
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
+		}
+		
+		boolean correcte = false;
+		String missatge = null;
+		ContingutDto contingutDto = null;
+		RegistreDto registreDto = null;;
+		try {
+			logger.debug("Reprocessar anotació amb id " + registreId);
+			
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisos(request);
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			registreDto = (RegistreDto) contingutDto;
+			if (registreDto.getPare() == null) {
+				// Restaura la bústia per defecte i la la regla aplicable si s'escau
+				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
+						registreId);
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
+			} 
+			else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
+			{
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
+					|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
+				{
+					// Pendent de processament d'arxiu o regla
+					correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
+							registreId);
+					missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
+				} else {
+					// Pendent d'enviar a backoffice
+					correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
+							registreId);
+					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+				}
+			} 
+			else 
+			{
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.estat.no.reprocessable");
+				correcte = false;
+			}
+		} catch(Exception e) {
+			logger.error("Error incontrolat reprocessant l'anotació amb id " + registreId + ": " + e.getMessage() , e);
+			String errMsg = getMessage(request, 
+										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
+										new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+			response = AjaxHelper.generarAjaxError(errMsg);
+		}
+		
+		if (correcte) {
+			response = AjaxHelper.generarAjaxFormOk();
+			response.setMissatge(getMessage(request, missatge.toString()));
+		} else {
+			response = AjaxHelper.generarAjaxError(missatge.toString());
+		}
+		
+		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha processat " + (correcte ? "correctament" : "amb error"));
+
+		return response;
+	}
 	
 	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
 	public String marcarPendentMultipleGet(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute(command);
-		return "registreUserMarcarPendent";
+		model.addAttribute("marcarPendentCommand", command);
+		model.addAttribute("registres", 
+				registreService.findMultiple(
+						getEntitatActualComprovantPermisos(request).getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+	return "registreUserMarcarPendent";
 	}
 
-	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.POST)
-	public String marcarPendentMultiplePost(
-			HttpServletRequest request,
-			@Valid MarcarProcessatCommand command,
-			BindingResult bindingResult,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
-		String rolActual = RolHelper.getRolActual(request);
-		if (bindingResult.hasErrors()) {
-			return "registreUserMarcarPendent";
-		}
-		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO);
-		
-		if (seleccio != null && !seleccio.isEmpty()) {
-			
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			
-			int errors = 0;
-			int correctes = 0;
-			int estatErroni = 0;
-			
-			for (Long registreId : seleccioList) {
-					RegistreDto registreDto = registreService.findOne(
-							entitatActual.getId(), 
-							registreId, 
-							false,
-							RolHelper.getRolActual(request));
-					if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
-						
-						boolean processatOk = true;
-						try {
-							registreService.marcarPendent(
-									entitatActual.getId(), 
-									registreId,
-									"<span class='label label-default'>" + 
-									getMessage(
-											request, 
-											"registre.user.controller.accio.marcat.pendent") + 
-									"</span> " + command.getMotiu(), 
-									rolActual);
-							
-		
-						} catch (Exception e) {
-							MissatgesHelper.error(
-									request,
-									getMessage(
-											request, 
-											"registre.user.controller.marcar.pendent.massiva.error",
-											new Object[] {(registreDto != null ? registreDto.getNom() : String.valueOf(registreId)), e.getMessage()}));
-							
-							processatOk = false;
-							logger.error("L'anotació amb id " + registreId + " " + registreDto.getNom() + " s'ha marcat com a processat amb error", e);
-						}
-						
-						if (processatOk)
-							correctes++;
-						else
-							errors++;
-					} 
-					else {
-						logger.debug("L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es marcarà com processat.");
-						estatErroni++;
-					}
-			}
-			
-			if (correctes > 0){
-				MissatgesHelper.success(request,
-						getMessage(request, "registre.user.controller.marcar.pendent.massiva.correctes", new Object[]{correctes}));
-			} 
-			if (errors > 0) {
-				MissatgesHelper.error(request,
-						getMessage(request, "registre.user.controller.marcar.pendent.massiva.errors", new Object[]{errors}));
-			} 
-			if (estatErroni > 0) {
-				MissatgesHelper.warning(request,
-						getMessage(request,
-								"registre.user.controller.marcar.pendent.massiva.estatErroni", new Object[]{estatErroni}));
-			}
-
-			
-		} else {
-			MissatgesHelper.error(request,
-					getMessage(request,
-							"registre.user.controller.massiva.cap"));
-		}
-		
-		return modalUrlTancar();
-	}	
-	
-	
 
 	@RequestMapping(value = "/ajaxBustia/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody

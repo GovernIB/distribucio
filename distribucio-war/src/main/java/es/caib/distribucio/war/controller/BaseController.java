@@ -4,6 +4,9 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +19,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.support.RequestContext;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.war.helper.AjaxHelper;
+import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.ModalHelper;
+import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
  * Controlador base que implementa funcionalitats comunes.
@@ -242,5 +248,58 @@ public class BaseController implements MessageSourceAware {
         StringTrimmerEditor stringtrimmer = new StringTrimmerEditor(true);
         binder.registerCustomEditor(String.class, stringtrimmer);
     }
+
+//	/** Mètode per consultar els registres seleccionats pel processament múltiple.
+//	 * @param request Request
+//	 * @param sessionName Objecte de sessió que conté la selecció
+//	 * @return
+//	 */
+//	protected List<RegistreDto> getRegistresSeleccionats(HttpServletRequest request, String sessionName) {
+//		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+//				request,
+//				sessionName);
+//		List<RegistreDto> registres;
+//		if (seleccio != null) {
+//			EntitatDto entitatActual = this.getentitat getEntitatActualComprovantPermisos(request);
+//			registres = registreService.findMultiple(
+//					entitatActual.getId(),
+//					new ArrayList<Long>(seleccio));
+//		} else {
+//			registres = new ArrayList<>();
+//		}
+//		return registres;
+//
+//	}
+
+	/** Mètode per consultar els registres seleccionats pel processament múltiple.
+	 * @param request Request
+	 * @param sessionName Objecte de sessió que conté la selecció
+	 * @return
+	 */
+	protected List<Long> getRegistresSeleccionats(HttpServletRequest request, String sessionName) {
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				sessionName);
+		List<Long> registres;
+		if (seleccio != null) {
+			registres = new ArrayList<Long>(seleccio);
+		} else {
+			registres = new ArrayList<Long>();
+		}
+		return registres;
+
+	}
+
+	
+	public EntitatDto getEntitatActual(
+			HttpServletRequest request) {
+		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
+		if (entitat == null)
+			throw new SecurityException("No te cap entitat assignada");
+		if (!entitat.isUsuariActualAdministration())
+			throw new SecurityException("No te permisos per accedir a aquesta entitat com a administrador");
+		return entitat;
+	}
+
 
 }

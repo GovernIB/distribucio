@@ -17,6 +17,27 @@ function webutilClearMissatges(divMissatges) {
 function webutilRefreshMissatges() {
 	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
 }
+function webutilMissatgeError(missatge, divMissatges) {
+	if (!divMissatges) {
+		divMissatges = '#contingut-missatges';		
+	}
+	var $div = $('<div>', {'class': 'alert alert-danger'});
+	$div.html('<span class="fa fa-warning"></span>&nbsp;<button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>');
+	$div.append(missatge);	
+	$(divMissatges).append($div);
+	return $div;
+}
+function webutilMissatgeWarning(missatge, divMissatges) {
+	if (!divMissatges) {
+		divMissatges = '#contingut-missatges';		
+	}
+	var $div = $('<div>', {'class': 'alert alert-warning'});
+	$div.html('<span class="fa fa-warning"></span>&nbsp;<button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>');
+	$div.append(missatge);	
+	$(divMissatges).append($div);
+	return $div;
+}
+
 
 function removeA(arr) {
     var what, a = arguments, L = a.length, ax;

@@ -265,6 +265,11 @@ public class RegistreServiceImpl implements RegistreService {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "multipleRegistreIds=" + multipleRegistreIds + ")");
+		
+		if (multipleRegistreIds == null || multipleRegistreIds.isEmpty()) {
+			return new ArrayList<RegistreDto>();
+		}
+		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,

@@ -37,8 +37,8 @@ public class FirmaSimplePluginPortafibTest {
 	private static final String API_USERNAME = "$distribucio_portafib";
 	private static final String API_PASSWORD = "distribucio_portafib";
 	//private static final String PERFIL = "FIRMAAPISIMPLE";
-	//private static final String PERFIL = "CADES_DETACHED";
 	//private static final String PERFIL = "XADES_DETACHED"; //TF02
+	//private static final String PERFIL = "CADES_DETACHED"; //TF04
 	private static final String PERFIL = "CADES_ATTACHED"; //TF05
 	//private static final String PERFIL = "PADES"; //TF06
 	//private static final String PERFIL = "FIRMAAPISIMPLE"; //TF02

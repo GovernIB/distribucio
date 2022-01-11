@@ -6,7 +6,6 @@ package es.caib.distribucio.war.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.war.helper.EntitatHelper;
 
 
 /**
@@ -19,9 +18,7 @@ public class BaseAdminController extends BaseController {
 
 	public EntitatDto getEntitatActualComprovantPermisos(
 			HttpServletRequest request) {
-		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
-		if (entitat == null)
-			throw new SecurityException("No te cap entitat assignada");
+		EntitatDto entitat = this.getEntitatActual(request);
 		if (!entitat.isUsuariActualAdministration())
 			throw new SecurityException("No te permisos per accedir a aquesta entitat com a administrador");
 		return entitat;
