@@ -63,7 +63,7 @@ public class ConfigHelper {
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {
-			return null;
+			return getJBossProperty(key);
 		}
 	}
     
