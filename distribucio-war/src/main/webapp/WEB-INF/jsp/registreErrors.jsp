@@ -7,6 +7,7 @@
 <c:choose>
 	<c:when test="${contingut.expedient}"><c:set var="titol"><spring:message code="contingut.errors.titol.expedient"/></c:set></c:when>
 	<c:when test="${contingut.document}"><c:set var="titol"><spring:message code="contingut.errors.titol.document"/></c:set></c:when>
+	<c:otherwise><c:set var="titol"><spring:message code="bustia.pendent.accio.llistat.alertes"></spring:message></c:set></c:otherwise>
 </c:choose>
 <html>
 <head>

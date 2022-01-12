@@ -373,16 +373,7 @@ $(document).ready(function() {
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="sobreescriure" data-visible="false">
 				<th data-col-name="arxiuTancat" data-visible="false">
-				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
-					<spring:message code="bustia.pendent.columna.numero"/>
-					<script id="contingutTemplate" type="text/x-jsrender">
-						<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>
-						{{:numero}}
-						{{if alerta}}
-							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
-						{{/if}}
-					</script>
-				</th>			
+				<th data-col-name="numero" width="10%"><spring:message code="bustia.pendent.columna.numero"/></th>			
 				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
 					<script id="extracteTemplate" type="text/x-jsrender">
@@ -469,9 +460,12 @@ $(document).ready(function() {
 
 				</th>
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
-					<spring:message code="comu.error"/>
+					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
+						{{if alerta}}
+							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
+						{{/if}}
 						{{if procesError != null}}
 							{{if procesEstat == 'ARXIU_PENDENT'}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"></span>
@@ -524,6 +518,9 @@ $(document).ready(function() {
 								<li><a id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
 								<li><a href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
+								{{if alerta}}
+									<li><a href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-sticky-note-o"></span>&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
+								{{/if}}
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
