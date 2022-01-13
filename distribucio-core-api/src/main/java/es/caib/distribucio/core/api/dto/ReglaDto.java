@@ -37,6 +37,9 @@ public class ReglaDto extends AuditoriaDto {
 	
 	private int ordre;
 	private boolean activa;
+	
+	private Long entitatId;
+	private String entitatNom;
 
 
 	
@@ -145,6 +148,18 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setUnitatDestiNom(String unitatDestiNom) {
 		this.unitatDestiNom = unitatDestiNom;
+	}
+	public Long getEntitatId() {
+		return entitatId;
+	}
+	public void setEntitatId(Long entitatId) {
+		this.entitatId = entitatId;
+	}
+	public String getEntitatNom() {
+		return entitatNom;
+	}
+	public void setEntitatNom(String entitatNom) {
+		this.entitatNom = entitatNom;
 	}
 	
 }

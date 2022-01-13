@@ -201,7 +201,14 @@ $(document).ready(function() {
 				suggestValue="id"
 				suggestText="codiAndNom"
 				optionTemplateFunction="formatSelectUnitat"/>
-			<dis:inputSelect name="bustiaFiltreId" textKey="regla.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
+			<dis:inputSelect name="bustiaFiltreId" 
+				textKey="regla.form.camp.bustia" 
+				optionItems="${busties}" 
+				optionValueAttribute="id" 
+				optionTextAttribute="nom" 
+				emptyOption="true"
+				netejar="true"
+				optionMinimumResultsForSearch="0"/>
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			

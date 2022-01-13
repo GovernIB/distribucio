@@ -14,15 +14,16 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.war.command.ReglaCommand;
+import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MessageHelper;
 
 /**
- * Constraint de validació que controla que no es repeteixi
- * el codi d'entitat.
+ * Constraint de validació per a les regles de Distribucio.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -44,6 +45,8 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 	@Override
 	public boolean isValid(final ReglaCommand command, final ConstraintValidatorContext context) {
 		boolean valid = true;
+		
+		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		
 		// Comprova que almenys un camp del firtre esta informat
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
@@ -112,7 +115,12 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 						StringBuilder reglesNoms = new StringBuilder("");
 						for(ReglaDto regla : mapa.get(codiProcediment)) {
 							if (!regla.getId().equals(command.getId())) {
-								reglesNoms.append(regla.getNom() + ", " );
+								
+								reglesNoms.append(regla.getNom());
+								if (!regla.getEntitatId().equals(entitatActual.getId())) {
+									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+								}
+								reglesNoms.append(", ");
 							}
 						}
 						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {

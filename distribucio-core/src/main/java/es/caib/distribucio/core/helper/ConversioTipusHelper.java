@@ -67,6 +67,8 @@ public class ConversioTipusHelper {
 				.field("bustiaDesti.nom", "bustiaDestiNom")
 				.field("unitatDesti.codiAndNom", "unitatDestiNom")
 				.field("bustiaFiltre.nom", "bustiaFiltreNom")
+				.field("entitat.id", "entitatId")
+				.field("entitat.nom", "entitatNom")
 				.byDefault().toClassMap());
 		
 		mapperFactory.getConverterFactory().registerConverter(
@@ -122,10 +124,6 @@ public class ConversioTipusHelper {
 							}
 						}
 
-
-		
-						
-						
 						return target;
 					}
 				});
