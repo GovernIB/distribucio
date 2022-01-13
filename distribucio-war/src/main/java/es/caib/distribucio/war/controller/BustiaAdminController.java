@@ -233,7 +233,7 @@ public class BustiaAdminController extends BaseAdminController {
 			model.addAttribute("bustiesOfOldUnitatWithoutCurrent", bustiesOfOldUnitatWithoutCurrent);
 			model.addAttribute(bustia);	
 		
-			model.addAttribute("usuaris", bustiaService.getUsersPermittedForBustia(bustiaId));
+			model.addAttribute("usuaris", bustiaService.getUsuarisPerBustia(bustiaId));
 		}
 		
 		BustiaCommand command = null;

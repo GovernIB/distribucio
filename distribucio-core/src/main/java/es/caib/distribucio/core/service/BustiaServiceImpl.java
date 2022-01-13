@@ -332,12 +332,17 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId){
-		BustiaEntity bustiaEntity =  bustiaRepository.findOne(bustiaId);
-		return contingutHelper.findUsuarisAmbPermisReadPerContenidor(bustiaEntity);
+	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId){
+		return new ArrayList<>((Set<UsuariPermisDto>) this.getUsuarisPerBustia(bustiaId, true, true));
 	}
 			
+	@Override
+	public Map<String, UsuariPermisDto> getUsuarisPerBustia(Long bustiaId, boolean directe, boolean perRol){
+		BustiaEntity bustiaEntity =  bustiaRepository.findOne(bustiaId);
+		return contingutHelper.findUsuarisAmbPermisReadPerContenidor(bustiaEntity, directe, perRol);
+	}
 	
 
 	/** Mètode per trobar una bústia per defecte alternativa a la bústia pasada com a paràmetre.

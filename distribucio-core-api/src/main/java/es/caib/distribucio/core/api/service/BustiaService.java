@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -347,9 +348,14 @@ public interface BustiaService {
 			long destiId, 
 			String comentari);
 
-	List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId);
+	@PreAuthorize("hasRole('tothom')")
+	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId);
 
-	List<BustiaDto> findAmbUnitatId(Long entitatId,
+	@PreAuthorize("hasRole('tothom')")
+	public Map<String, UsuariPermisDto> getUsuarisPerBustia(Long bustiaId, boolean directe, boolean perRol);
+
+	@PreAuthorize("hasRole('tothom')")
+	public List<BustiaDto> findAmbUnitatId(Long entitatId,
 			Long unitatId);
 
 	/** Consulta les unitats organitzatives que són superiors per unitats amb bústies.

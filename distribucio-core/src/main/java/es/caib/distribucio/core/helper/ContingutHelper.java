@@ -6,9 +6,11 @@ package es.caib.distribucio.core.helper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -581,54 +583,57 @@ public class ContingutHelper {
 		return usuaris;
 	}
 	
-	public List<UsuariPermisDto> findUsuarisAmbPermisReadPerContenidor(
-			ContingutEntity contingut) {
+	/** Retorna una llista d'usuaris amb permís de lectura sobre el contenidor
+	 * 
+	 * @param contingut Contingut pel qual han de tenir permís.
+	 * @param directe Incloure usuaris amb permís directe.
+	 * @param perRol Incloure usuaris amb permís per rol.
+	 * @return Retorna un map de codis d'usuaris i dades d'usuaris.
+	 */
+	public Map<String, UsuariPermisDto> findUsuarisAmbPermisReadPerContenidor(
+			ContingutEntity contingut, boolean directe, boolean perRol) {
+
 		List<PermisDto> permisos = new ArrayList<PermisDto>();
 		if (contingut instanceof BustiaEntity) {
 			permisos = permisosHelper.findPermisos(contingut.getId(),
 					BustiaEntity.class);
 		}
-		List<UsuariPermisDto> usuaris = new ArrayList<UsuariPermisDto>();
+		
+		Map<String, UsuariPermisDto> usuaris = new HashMap<>();
 		for (PermisDto permis : permisos) {
 			switch (permis.getPrincipalTipus()) {
 			case USUARI:
-				UsuariPermisDto usuariUserPermisDto = null;
-				for (UsuariPermisDto usuari : usuaris) {
-					if (usuari.getCodi().equals(permis.getPrincipalNom())) {
-						usuariUserPermisDto = usuari;
-					}
-				}
-				if (usuariUserPermisDto != null) { // if already exists
-					usuariUserPermisDto.setHasUsuariPermission(true);
-				} else { // if doesnt exists
-					DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
-					if (dadesUsuari != null) {
-						usuariUserPermisDto = new UsuariPermisDto();
-						usuariUserPermisDto.setCodi(permis.getPrincipalNom());
-						usuariUserPermisDto.setNom(dadesUsuari.getNom());
+				if (directe) {
+					UsuariPermisDto usuariUserPermisDto = usuaris.get(permis.getPrincipalNom());
+					if (usuariUserPermisDto != null) { // if already exists
 						usuariUserPermisDto.setHasUsuariPermission(true);
-						usuaris.add(usuariUserPermisDto);
+					} else { // if doesnt exists
+						DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
+						if (dadesUsuari != null) {
+							usuariUserPermisDto = new UsuariPermisDto();
+							usuariUserPermisDto.setCodi(permis.getPrincipalNom());
+							usuariUserPermisDto.setNom(dadesUsuari.getNom());
+							usuariUserPermisDto.setHasUsuariPermission(true);
+							usuaris.put(permis.getPrincipalNom(), usuariUserPermisDto);
+						}
 					}
 				}
 				break;
 			case ROL:
-				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(permis.getPrincipalNom());
-				if (usuarisGrup != null) {
-					for (DadesUsuari usuariGrup : usuarisGrup) {
-						UsuariPermisDto usuariRolPermisDto = null;
-						for (UsuariPermisDto usuari : usuaris) {
-							if (usuari.getCodi().equals(usuariGrup.getCodi())) {
-								usuariRolPermisDto = usuari;
+				if (perRol) {
+					List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(permis.getPrincipalNom());
+					if (usuarisGrup != null) {
+						for (DadesUsuari usuariGrup : usuarisGrup) {
+							UsuariPermisDto usuariRolPermisDto = usuaris.get(usuariGrup.getCodi());
+							if (usuariRolPermisDto != null) { // if already exists
+								usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+							} else { // if doesnt exists
+								usuariRolPermisDto = new UsuariPermisDto();
+								usuariRolPermisDto.setCodi(usuariGrup.getCodi());
+								usuariRolPermisDto.setNom(usuariGrup.getNom());
+								usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+								usuaris.put(permis.getPrincipalNom(), usuariRolPermisDto);
 							}
-						}
-						if (usuariRolPermisDto != null) { // if already exists
-							usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
-						} else { // if doesnt exists
-							usuariRolPermisDto = new UsuariPermisDto();
-							usuariRolPermisDto.setCodi(usuariGrup.getCodi());
-							usuariRolPermisDto.setNom(usuariGrup.getNom());
-							usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
-							usuaris.add(usuariRolPermisDto);
 						}
 					}
 				}

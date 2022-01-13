@@ -92,7 +92,7 @@ public class BustiaHelper {
 		for (BustiaDto bustiaDto : busties) {
 			try {
 				
-				List<UsuariPermisDto> usuaris =  bustiaService.getUsersPermittedForBustia(bustiaDto.getId());
+				List<UsuariPermisDto> usuaris =  bustiaService.getUsuarisPerBustia(bustiaDto.getId());
 				
 				for (UsuariPermisDto usuariPermisDto : usuaris) {
 					HSSFRow xlsRow = sheet.createRow(rowNum++);

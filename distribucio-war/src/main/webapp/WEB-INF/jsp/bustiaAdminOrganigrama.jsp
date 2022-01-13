@@ -419,6 +419,7 @@
 										<tr>
 											<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
 											<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
+											<th data-col-name="principalDescripcio"><spring:message code="entitat.permis.columna.descripcio"/></th>
 											<th data-col-name="read" data-template="#cellReadTemplate">
 												<spring:message code="bustia.permis.columna.acces"/>
 												<script id="cellReadTemplate" type="text/x-jsrender">

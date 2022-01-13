@@ -2,6 +2,7 @@ package es.caib.distribucio.war.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PermisDto;
+import es.caib.distribucio.core.api.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
@@ -299,7 +303,20 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 		bustia = bustiaService.findById(
 					entitatActual.getId(),
 					bustiaId);
-			
+
+		// Completa la informació dels permisos amb el nom complet per usuaris
+		if (bustia.getPermisos() != null) {
+			for (PermisDto permis : bustia.getPermisos()) {
+				Map<String, UsuariPermisDto> usuarisBustia = bustiaService.getUsuarisPerBustia(bustiaId, true, false);		
+				if (PrincipalTipusEnumDto.USUARI.equals(permis.getPrincipalTipus())) {
+					UsuariPermisDto usuari = usuarisBustia.get(permis.getPrincipalNom());
+					if (usuari != null) {
+						permis.setPrincipalDescripcio(usuari.getNom());	
+					}
+				}
+			}
+		}
+
 		// setting last historicos to the unitat of this bustia
 		bustia.setUnitatOrganitzativa(unitatService.getLastHistoricos(bustia.getUnitatOrganitzativa()));
 

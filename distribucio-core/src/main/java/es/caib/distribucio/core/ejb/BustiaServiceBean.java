@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -252,8 +253,14 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<UsuariPermisDto> getUsersPermittedForBustia(Long bustiaId) {
-		return delegate.getUsersPermittedForBustia(bustiaId);
+	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId) {
+		return delegate.getUsuarisPerBustia(bustiaId);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public Map<String, UsuariPermisDto> getUsuarisPerBustia(Long bustiaId, boolean directe, boolean perRol) {
+		return delegate.getUsuarisPerBustia(bustiaId, directe, perRol);
 	}
 
 	@Override

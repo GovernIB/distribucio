@@ -1868,7 +1868,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		return bustiaService.getUsersPermittedForBustia(bustiaId);
+		return bustiaService.getUsuarisPerBustia(bustiaId);
 	}
 	
 	private void resetFiltreBustia(
