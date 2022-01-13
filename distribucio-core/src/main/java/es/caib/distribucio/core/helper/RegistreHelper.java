@@ -16,11 +16,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1416,6 +1418,13 @@ public class RegistreHelper {
 			}
 		}
 
+		// Assegura que l'annex tingui tipus MIME i si és un .pdf sigui application/pdf
+		String tipusMime = registreAnnex.getFitxerTipusMime();
+		if ("pdf".equals(FilenameUtils.getExtension(registreAnnex.getFitxerNom().toLowerCase()))) {
+			tipusMime = "appication/pdf";
+		} else if (tipusMime == null || tipusMime.trim().isEmpty()) {
+			tipusMime = new MimetypesFileTypeMap().getContentType(registreAnnex.getFitxerNom());
+		}
 		
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
 				registreAnnex.getTitol(),
@@ -1427,7 +1436,7 @@ public class RegistreHelper {
 				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(registreAnnex.getEniTipusDocumental()),
 				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(registreAnnex.getSicresTipusDocument()),
 				registre).
-				fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
+				fitxerTipusMime(tipusMime).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
 				observacions(registreAnnex.getObservacions()).

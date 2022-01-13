@@ -210,6 +210,10 @@
 	
 	
 	<tr>
+		<td><strong><spring:message code="registre.annex.detalls.camp.tipus.mime"/></strong></td>
+		<td><c:if test="${not empty annex.fitxerTipusMime}">${annex.fitxerTipusMime}</c:if></td>
+	</tr>
+	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
 

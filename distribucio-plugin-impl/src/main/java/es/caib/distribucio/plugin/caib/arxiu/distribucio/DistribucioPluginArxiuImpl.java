@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -555,6 +559,14 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		accioParams.put("motiu", motiu);
 		long t0 = System.currentTimeMillis();
 		try {
+			// Assegura que l'annex tingui tipus MIME i si és un .pdf sigui application/pdf
+			String mime = annex.getFitxerTipusMime();
+			if ("pdf".equals(FilenameUtils.getExtension(annex.getFitxerNom().toLowerCase()))) {
+				mime = "appication/pdf";
+			} else if (mime == null || mime.trim().isEmpty()) {
+				mime = new MimetypesFileTypeMap().getContentType(annex.getFitxerNom());
+			}
+			accioParams.put("tipusMime", mime);
 			
 			String tipusDocumental = annex.getNtiTipusDocument() != null ? RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor() : null;
 			
@@ -563,7 +575,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					annex.getFitxerNom(),
 					motiu,
 					annexContingut, 
-					annex.getFitxerTipusMime(),
+					mime,
 					tipusDocumental);
 			
 			accioParams.put("resposta", "tipus: " + signatura.getTipusFirmaEni() + 
