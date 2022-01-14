@@ -30,6 +30,7 @@ import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
@@ -304,6 +305,67 @@ public class ReglaServiceImpl implements ReglaService {
 				regla,
 				posicio);
 		return toReglaDto(regla);
+	}
+	
+	@Override
+	@Transactional
+	public List<String> aplicarManualment(
+			Long entitatId,
+			Long reglaId) {
+		logger.debug("Aplicant la regla manualment ("
+				+ "entitatId=" + entitatId + ", "
+				+ "reglaId=" + reglaId + ")");
+		
+		List<String> numerosRegistres = new ArrayList<>();
+
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
+				entitat,
+				reglaId);
+		
+		List<String> codisProcediments;
+		if(regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
+			codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+		} else {
+			codisProcediments = new ArrayList<>();
+			codisProcediments.add("-");
+		}
+		
+		List<Long> bustiesUnitatOrganitzativaIds;
+		if (regla.getUnitatOrganitzativaFiltre() != null) {
+			bustiesUnitatOrganitzativaIds = new ArrayList<>();
+			for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
+				bustiesUnitatOrganitzativaIds.add(bustia.getId());
+			}
+		} else {
+			bustiesUnitatOrganitzativaIds = Arrays.asList(new Long[] {0L});
+		}
+		
+		for(RegistreEntity registre : reglaRepository.findRegistres(
+				entitat, 
+				regla.getUnitatOrganitzativaFiltre() == null, 
+				bustiesUnitatOrganitzativaIds,
+				regla.getBustiaFiltre() == null, 
+				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
+				regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(), 
+				codisProcediments, 
+				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(), 
+				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
+						regla.getAssumpteCodiFiltre() : "-")) {
+			
+			// S'assigna la regla per a que es processi en segon pla
+			registre.updateRegla(regla);
+
+			numerosRegistres.add( registre.getNumero());
+			logger.debug("Regla " + regla.getId() + " \"" + regla.getNom() + "\" aplicada manualment a l'anotació " + registre.getNumero());
+		}
+
+		return numerosRegistres;
 	}
 
 	@Override

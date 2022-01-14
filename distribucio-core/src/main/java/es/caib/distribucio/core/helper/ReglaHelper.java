@@ -416,18 +416,9 @@ public class ReglaHelper {
 								pendentBustia);
 					}
 				}
-				
-				
-				
-				
 				break;
-
 			}
-			
 
-			
-
-			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
 			reglesApplied.add(regla);
 			ContingutEntity pare = registre.getPare();

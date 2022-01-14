@@ -15,6 +15,7 @@ import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
@@ -98,6 +99,38 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre, 
 			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
 
+	/** Mètode per trobar els registres als quals se'ls pot aplicar la regla manualment
+	 * a l'acció de l'administrador d'aplicar la regla manualment.
+	 * 
+	 * @param entitat
+	 * @param b
+	 * @param procedimentCodiFiltre
+	 * @param c
+	 * @param assumpteCodiFiltre
+	 * @param string 
+	 * @return
+	 */
+	@Query(	"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
+			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
+			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " + 
+			"and (:procedimentsCodisFiltreIsEmpty = true or r.procedimentCodi in (:procedimentsCodisFiltre)) " +
+			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " + 
+			"order by r.identificador asc")
+	List<RegistreEntity> findRegistres(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("unitatOrganitzativaFiltreIsNull") boolean unitatOrganitzativaFiltreIsNull,
+			@Param("bustiesUnitatOrganitzativaIds") List<Long> bustiesUnitatOrganitzativaIds,
+			@Param("bustiaFiltreIsNull") boolean bustiaFiltreIsNull,
+			@Param("bustiaFiltreId") Long bustiaFiltreId,
+			@Param("procedimentsCodisFiltreIsEmpty") boolean procedimentsCodisFiltreIsEmpty,
+			@Param("procedimentsCodisFiltre") List<String> procedimentsCodisFiltre,
+			@Param("assumpteCodiFiltreIsNull") boolean assumpteCodiFiltreIsNull,
+			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
+	
 	/** Consulta las reglas de tipo BACKOFFICE para el codi procediment dado */
 	@Query(	"from " +
 			"    ReglaEntity r " +

@@ -140,6 +140,22 @@ public interface ReglaService {
 			Long reglaId,
 			int posicio) throws NotFoundException;
 
+	/** 
+	 * Mètode per aplicar manualment una regal. Avalua les anotacions pendents de bústia
+	 * sense regla assignada i en cas de complir amb les condicions assigna la regla per a que
+	 * s'apliqui en segon pla.
+	 * 
+	 * @param entitatId
+	 * @param reglaId
+	 * 
+	 * @return Retorna la llista dels números dels registres als quals s'ha assignat la regla per a que se'ls apliqui.
+	 * 
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public List<String> aplicarManualment(
+			Long entitatId, 
+			Long reglaId);
+
 	/**
 	 * Consulta una regla donat el seu id.
 	 * 
@@ -184,4 +200,5 @@ public interface ReglaService {
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
+
 }

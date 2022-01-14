@@ -9,6 +9,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -362,6 +364,47 @@ public class ReglaController  extends BaseAdminController {
 		}
 	}
 	
+	/** Mètode per aplicar una regla manualment. S'avaluen els registres pendents de bústia
+	 * sense regla assignada i se'ls assigna la regla a aquells que coincideixin amb el filtre.
+	 * 
+	 * @param request
+	 * @param reglaId
+	 * @return
+	 */
+	@RequestMapping(value = "/{reglaId}/aplicar", method = RequestMethod.GET)
+	public String aplicar(
+			HttpServletRequest request,
+			@PathVariable Long reglaId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		try {
+			List<String> registres = reglaService.aplicarManualment(
+				entitatActual.getId(),
+				reglaId);
+			StringBuilder numeros = new StringBuilder();
+			for (int i = 0; i < registres.size(); i ++) {
+				numeros.append(registres.get(i));
+				if (i < registres.size() - 1) {
+					numeros.append(", ");
+				}
+			}
+			
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../regla",
+					"regla.controller.aplicada.ok", new Object[] {registres.size(), numeros});
+			
+		} catch(Exception e) {
+			
+			String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {e.getMessage()});
+			logger.error(errMsg, e);
+			return getAjaxControllerReturnValueError(
+					request,
+					"redirect:../../regla",
+					"regla.controller.aplicada.error", new Object[] {e.getMessage()});			
+		}
+	}
+
+	
 
 
 	private void emplenarModelFormulari(
@@ -385,4 +428,5 @@ public class ReglaController  extends BaseAdminController {
 		
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(ReglaController.class);
 }
