@@ -108,7 +108,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		UsuariDto usuari = aplicacioService.getUsuariActual();
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		resetFiltreBustia(request, filtreCommand);
 //		###
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
@@ -152,7 +152,7 @@ public class RegistreUserController extends BaseUserController {
 	@ResponseBody
 	public DatatablesResponse registreUserDatatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = null;
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
@@ -214,7 +214,7 @@ public class RegistreUserController extends BaseUserController {
 	@ResponseBody
 	public DatatablesResponse registreUserMovimentsDatatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
 				entitatActual.getId(), 
@@ -259,7 +259,7 @@ public class RegistreUserController extends BaseUserController {
 				seleccio.add(id);
 			}
 		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesUsuari = null;
 			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
@@ -310,7 +310,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactivesOrigen,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
 		List<BustiaDto> bustiesOrigen = bustiaService.consultaBustiesOrigen(
 				entitatActual.getId(), 
@@ -373,7 +373,7 @@ public class RegistreUserController extends BaseUserController {
 			String ordreColumn,
 			String ordreDir,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
 		try {
 			RegistreDto registre = registreService.findOne(
@@ -454,7 +454,7 @@ public class RegistreUserController extends BaseUserController {
 					ordreColumn,
 					"asc".equals(ordreDir) ? OrdreDireccioDto.ASCENDENT : OrdreDireccioDto.DESCENDENT);
 			// Consulta la pàgina amb el registre anterior, actual i final
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
 			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
@@ -500,7 +500,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			model.addAttribute(
 					"annex",
 					registreService.getAnnexSenseFirmes(
@@ -527,7 +527,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			model.addAttribute(
 					"annex",
 					registreService.getAnnexAmbFirmes(
@@ -560,7 +560,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		RegistreAnnexDto annexFirmes = new RegistreAnnexDto();
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			annexFirmes = registreService.getAnnexAmbFirmes(
 							entitatActual.getId(),
 							registreId,
@@ -602,7 +602,7 @@ public class RegistreUserController extends BaseUserController {
 				seleccio.add(id);
 			}
 		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesUsuari = null;
 			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
@@ -705,7 +705,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long arxiuId,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisUsuari(request);
 		RequestSessionHelper.esborrarObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
@@ -731,7 +731,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			BindingResult bindingResult,
 			Model model)  {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 
 		// Valida les adreces
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
@@ -796,7 +796,7 @@ public class RegistreUserController extends BaseUserController {
 					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
 				}
 			}
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			registres = registreService.findMultiple(
 					entitatActual.getId(),
 					new ArrayList<Long>(seleccio));
@@ -827,7 +827,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					registreId,
@@ -853,7 +853,7 @@ public class RegistreUserController extends BaseUserController {
 	public String enviarIProcessarMultipleGet(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
 		model.addAttribute("registres", 
 				registreService.findMultiple(
@@ -880,7 +880,7 @@ public class RegistreUserController extends BaseUserController {
 		// Valida les adreces
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
 		// Valida l'estat del registre per enviar i marcar com a processat
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreDto registreDto = registreService.findOne(
 				entitatActual.getId(), 
 				registreId, 
@@ -1076,7 +1076,7 @@ public class RegistreUserController extends BaseUserController {
 			Long destiLogic,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			omplirModelPerReenviar(entitatActual, registreId, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			RegistreFiltreCommand filtre = getFiltreCommand(request);
@@ -1155,7 +1155,7 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			if (bindingResult.hasErrors()) {
 				omplirModelPerReenviar(
 						entitatActual,
@@ -1233,7 +1233,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			omplirModelPerReenviarMultiple(request, entitatActual, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 
@@ -1278,7 +1278,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			bustiaService.registreReenviar(
 					entitatActual.getId(),
 					command.getDestins(),
@@ -1304,7 +1304,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				registreId);
@@ -1328,7 +1328,7 @@ public class RegistreUserController extends BaseUserController {
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 					registreId);
 			if (processatOk) {
@@ -1351,7 +1351,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisUsuari(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
 		model.addAttribute("marcarPendentCommand", command);
 		return "registreUserMarcarPendent";
@@ -1364,7 +1364,7 @@ public class RegistreUserController extends BaseUserController {
 			@Valid MarcarProcessatCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		String rolActual = RolHelper.getRolActual(request);
 		if (bindingResult.hasErrors()) {
 			return "registreUserMarcarPendent";
@@ -1402,7 +1402,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("marcarPendentCommand", command);
 		model.addAttribute("registres", 
 				registreService.findMultiple(
-						getEntitatActualComprovantPermisos(request).getId(),
+						getEntitatActualComprovantPermisUsuari(request).getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
 		return "registreUserMarcarPendent";
 	}
@@ -1422,7 +1422,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			String rolActual = RolHelper.getRolActual(request);
 			registreService.marcarPendent(
 					entitatActual.getId(), 
@@ -1451,7 +1451,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisUsuari(request);
 		MarcarProcessatCommand command = new MarcarProcessatCommand();
 		model.addAttribute("marcarProcessatCommand", command);
 		return "registreUserMarcarProcessat";
@@ -1464,7 +1464,7 @@ public class RegistreUserController extends BaseUserController {
 			@Valid MarcarProcessatCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		String rolActual = RolHelper.getRolActual(request);
 		if (bindingResult.hasErrors()) {
 			return "registreUserMarcarProcessat";
@@ -1503,7 +1503,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("marcarProcessatCommand", command);
 		model.addAttribute("registres", 
 				registreService.findMultiple(
-						getEntitatActualComprovantPermisos(request).getId(),
+						getEntitatActualComprovantPermisUsuari(request).getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
 		
 		return "registreUserMarcarProcessat";
@@ -1524,7 +1524,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			String rolActual = RolHelper.getRolActual(request);
 			contingutService.marcarProcessat(
 					entitatActual.getId(), 
@@ -1596,7 +1596,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 	
@@ -1607,7 +1607,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return bustiaService.findBustiesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 
@@ -1642,7 +1642,7 @@ public class RegistreUserController extends BaseUserController {
 			@Validated(Classificar.class) RegistreClassificarCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		if (bindingResult.hasErrors()) {
 			emplenarModelClassificar(
 					request,
@@ -1732,7 +1732,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			@PathVariable String codiProcediment,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
@@ -1747,7 +1747,7 @@ public class RegistreUserController extends BaseUserController {
 	public void addBustiaToFavorits(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		bustiaService.addToFavorits(entitatActual.getId(), bustiaId);
 	}
 	
@@ -1756,7 +1756,7 @@ public class RegistreUserController extends BaseUserController {
 	public void removeBustiaFromFavorits(
 			HttpServletRequest request,
 			@PathVariable Long id) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		bustiaService.removeFromFavorits(entitatActual.getId(), id);
 	}
 	
@@ -1764,7 +1764,7 @@ public class RegistreUserController extends BaseUserController {
 	@ResponseBody
 	public DatatablesResponse registreUserFavoritsDatatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				bustiaService.getBustiesFavoritsUsuariActual(
@@ -1778,7 +1778,7 @@ public class RegistreUserController extends BaseUserController {
 	@ResponseBody
 	public List<Long> registreUserFavoritsList(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
 		List<Long> idsBustiesFavorits = bustiaService.getIdsBustiesFavoritsUsuariActual(entitatActual.getId());
 		return idsBustiesFavorits;
@@ -1789,7 +1789,7 @@ public class RegistreUserController extends BaseUserController {
 	public boolean checkIfExists(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return bustiaService.checkIfFavoritExists(entitatActual.getId(), bustiaId);
 	}
 	
@@ -1809,7 +1809,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		model.addAttribute("mantenirPaginacio", true);
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		try {
 			registreService.bloquejar(
 					entitatActual.getId(),
@@ -1836,7 +1836,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		model.addAttribute("mantenirPaginacio", true);
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		try {
 			registreService.alliberar(
 					entitatActual.getId(),
@@ -2017,7 +2017,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreDto registre = registreService.findOne(
 				entitatActual.getId(),
 				registreId,
@@ -2035,7 +2035,7 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			List<Long> multipleRegistreIds,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		List<RegistreDto> registres = registreService.findMultiple(
 				entitatActual.getId(),
 				multipleRegistreIds);

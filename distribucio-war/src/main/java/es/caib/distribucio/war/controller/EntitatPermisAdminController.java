@@ -43,7 +43,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 	public String permis(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisAdmin(request);
 		return "adminPermis";
 	}
 	@RequestMapping(value = "datatable", method = RequestMethod.GET)
@@ -51,7 +51,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				entitatService.findPermisAdmin(entitatActual.getId()),
@@ -70,7 +70,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		PermisDto permis = null;
 		if (permisId != null) {
 			List<PermisDto> permisos = entitatService.findPermisAdmin(
@@ -95,7 +95,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 			@Valid PermisCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		if (bindingResult.hasErrors()) {
 			return "adminPermisForm";
 		}
@@ -113,7 +113,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		entitatService.deletePermisAdmin(
 				entitatActual.getId(),
 				permisId);

@@ -85,7 +85,7 @@ public class RegistreAdminController extends BaseAdminController {
 	public String registreAdminGet(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
@@ -123,7 +123,7 @@ public class RegistreAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 				
 		return DatatablesHelper.getDatatableResponse(
@@ -156,7 +156,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
@@ -224,7 +224,7 @@ public class RegistreAdminController extends BaseAdminController {
 					ordreColumn,
 					"asc".equals(ordreDir) ? OrdreDireccioDto.ASCENDENT : OrdreDireccioDto.DESCENDENT);
 			// Consulta la pàgina amb el registre anterior, actual i final
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
 			PaginaDto<ContingutDto> pagina = 
@@ -270,7 +270,7 @@ public class RegistreAdminController extends BaseAdminController {
 				seleccio.add(id);
 			}
 		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);			
 			seleccio.addAll(
 					registreService.findRegistreIds(
@@ -317,7 +317,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			@RequestParam(required = false) Long unitatId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
 		filtre.setActiva(!mostrarInactives);
 		filtre.setUnitatIdFiltre(unitatId);
@@ -340,7 +340,7 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
 				registreId);
@@ -367,7 +367,7 @@ public class RegistreAdminController extends BaseAdminController {
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 					registreId);
 			if (processatOk) {
@@ -394,7 +394,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId) {
 		
 		try {
-			registreService.marcarSobreescriure(getEntitatActualComprovantPermisos(request).getId(), registreId);
+			registreService.marcarSobreescriure(getEntitatActualComprovantPermisAdmin(request).getId(), registreId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../registreAdmin",
@@ -418,7 +418,7 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("marcarSobreescriureCommand", command);
 		model.addAttribute("registres",
 				registreService.findMultiple(
-						getEntitatActualComprovantPermisos(request).getId(),
+						getEntitatActualComprovantPermisAdmin(request).getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
 		return "marcarSobreescriure";
 	}
@@ -450,7 +450,7 @@ public class RegistreAdminController extends BaseAdminController {
 		RegistreDto registreDto = null;
 		try {
 			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);			
-			EntitatDto entitatActual = this.getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			
 			registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
 
@@ -488,7 +488,7 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("reintentarProcessamentCommand", command);
 		model.addAttribute("registres",
 				registreService.findMultiple(
-						getEntitatActualComprovantPermisos(request).getId(),
+						getEntitatActualComprovantPermisAdmin(request).getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
 		return "reintentarProcessamentMultiple";
 	}
@@ -522,7 +522,7 @@ public class RegistreAdminController extends BaseAdminController {
 		try {
 			logger.debug("Reprocessar anotació amb id " + registreId);
 			
-			EntitatDto entitatActual = this.getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 			registreDto = (RegistreDto) contingutDto;
 			if (registreDto.getPare() == null) {
@@ -581,7 +581,7 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("marcarPendentCommand", command);
 		model.addAttribute("registres", 
 				registreService.findMultiple(
-						getEntitatActualComprovantPermisos(request).getId(),
+						getEntitatActualComprovantPermisAdmin(request).getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
 	return "registreUserMarcarPendent";
 	}
@@ -593,7 +593,7 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		return bustiaService.findById(
 				entitatActual.getId(),
 				Long.parseLong(bustiaId));
@@ -606,7 +606,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable String unitatCodi,
 			@PathVariable String text,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		UnitatOrganitzativaDto unitatOrganitzativa = null;
 		if (unitatCodi != null && !"null".equalsIgnoreCase(unitatCodi)) {
 			unitatOrganitzativa = unitatOrganitzativaService.findByCodi(unitatCodi);

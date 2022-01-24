@@ -80,7 +80,7 @@ public class ContingutController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreAnnexDto justificant = registreService.getRegistreJustificant(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"justificant",
@@ -101,7 +101,7 @@ public class ContingutController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreDto registre = registreService.findOne(entitatActual.getId(), registreId, isVistaMoviments);
 			model.addAttribute(
 					"registre", 
@@ -123,7 +123,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		registreService.marcarLlegida(
 				entitatActual.getId(),
 				registreId);
@@ -234,7 +234,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId) throws IOException {
 		String rolActual = RolHelper.getRolActual(request);
 		try {
-			getEntitatActualComprovantPermisos(request);
+			getEntitatActualComprovantPermisUsuari(request);
 			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
 			writeFileToResponse(
 					fitxer.getNom(),
@@ -260,7 +260,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
@@ -302,7 +302,7 @@ public class ContingutController extends BaseUserController {
 			Long registreId,
 			Model model,
 			boolean isVistaMoviments) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		String rolActual = RolHelper.getRolActual(request);
 		
 		model.addAttribute(
@@ -388,7 +388,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long contingutLogId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return contingutService.findLogDetallsPerContingutUser(
 				entitatActual.getId(),
 				bustiaId,
@@ -412,7 +412,7 @@ public class ContingutController extends BaseUserController {
 			Date data = new Date();
 			
 			// Recupera la informació
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			ContingutDto contingut = contingutService.findAmbIdUser(
 							entitatActual.getId(),
 							contingutId,
@@ -462,7 +462,7 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		return contingutService.hasPermisSobreBustia(
 				entitatActual.getId(), 
 				bustiaId);
@@ -647,7 +647,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		String rolActual = RolHelper.getRolActual(request);
 		model.addAttribute(
 				"contingut",
@@ -678,7 +678,7 @@ public class ContingutController extends BaseUserController {
 			@RequestParam String text,
 			Model model) {
 		RespostaPublicacioComentariDto resposta = new RespostaPublicacioComentariDto();
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		if (text != null && !text.isEmpty()) {
 			resposta = contingutService.publicarComentariPerContingut(entitatActual.getId(), registreId, text);
 		}

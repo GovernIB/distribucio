@@ -70,7 +70,7 @@ public class BustiaAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
@@ -114,7 +114,7 @@ public class BustiaAdminController extends BaseAdminController {
 			Model model) {
 		String isOrganigrama = request.getParameter("isOrganigrama");
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			if (bindingResult.hasErrors()) {
 				return "bustiaAdminForm";
 			}
@@ -155,7 +155,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaDto bustia = null;
 		if (bustiaId != null){
 			
@@ -188,7 +188,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
 		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
@@ -210,7 +210,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaDto bustia = null;
 		if (bustiaId != null){
 			
@@ -257,7 +257,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		omplirModelPerMoureAnotacions(
 				entitatActual,
 				bustiaId,
@@ -284,7 +284,7 @@ public class BustiaAdminController extends BaseAdminController {
 			@Valid MoureAnotacionsCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		// Valida que el destí no sigui igual que l'origen.
 		if (bustiaId.equals(command.getDestiId())) {
 			bindingResult.rejectValue(
@@ -357,7 +357,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.updateActiva(
 					entitatActual.getId(),
 					bustiaId,
@@ -379,7 +379,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.updateActiva(
 					entitatActual.getId(),
 					bustiaId,
@@ -402,7 +402,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.marcarPerDefecte(
 					entitatActual.getId(),
 					bustiaId);
@@ -423,7 +423,7 @@ public class BustiaAdminController extends BaseAdminController {
 	public String delete(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			bustiaService.delete(
 					entitatActual.getId(),

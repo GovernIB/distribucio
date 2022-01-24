@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.war.controller;
 
-import java.util.List;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +21,6 @@ import es.caib.distribucio.core.api.dto.IdiomaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.war.command.UsuariCommand;
 import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.SessioHelper;
@@ -39,8 +36,6 @@ public class UsuariController  extends BaseAdminController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
-	@Autowired
-	private BustiaService bustiaService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -71,7 +66,7 @@ public class UsuariController  extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		UsuariDto usuari = aplicacioService.getUsuariActual();
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = this.getEntitatActual(request);
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		
 		model.addAttribute(UsuariCommand.asCommand(usuari));
@@ -90,10 +85,10 @@ public class UsuariController  extends BaseAdminController {
 			@Valid UsuariCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		if (bindingResult.hasErrors()) {
 			return "usuariForm";
 		}
+		EntitatDto entitatActual = getEntitatActual(request);
 		UsuariDto usuari = aplicacioService.updateUsuariActual(UsuariCommand.asDto(command), entitatActual.getId());
 		SessioHelper.setUsuariActual(request, usuari);
 		

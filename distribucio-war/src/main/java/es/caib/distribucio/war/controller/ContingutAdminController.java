@@ -51,7 +51,7 @@ public class ContingutAdminController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisAdmin(request);
 		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(
 				filtreCommand);
@@ -84,7 +84,7 @@ public class ContingutAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		ContingutFiltreCommand filtreCommand = getFiltreCommand(request);
 
 		return DatatablesHelper.getDatatableResponse(
@@ -101,7 +101,7 @@ public class ContingutAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		ContingutDto contingutDto = contingutService.findAmbIdAdmin(
 				entitatActual.getId(),
@@ -143,7 +143,7 @@ public class ContingutAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long contingutId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		model.addAttribute(
 				"isPanelUser",
 				false);
@@ -175,7 +175,7 @@ public class ContingutAdminController extends BaseAdminController {
 			@PathVariable Long contingutId,
 			@PathVariable Long contingutLogId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		return contingutService.findLogDetallsPerContingutUser(
 				entitatActual.getId(),
 				contingutId,

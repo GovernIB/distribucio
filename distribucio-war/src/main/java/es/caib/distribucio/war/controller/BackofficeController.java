@@ -36,7 +36,7 @@ public class BackofficeController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisAdmin(request);
 		return "backofficeList";
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -44,7 +44,7 @@ public class BackofficeController extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				backofficeService.findByEntitatPaginat(
@@ -66,7 +66,7 @@ public class BackofficeController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long backofficeId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BackofficeDto backoffice = null;
 		if (backofficeId != null)
 			backoffice = backofficeService.findById(
@@ -89,7 +89,7 @@ public class BackofficeController extends BaseAdminController {
 			@Valid BackofficeCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		if (bindingResult.hasErrors()) {
 			return "backofficeForm";
 		}
@@ -125,7 +125,7 @@ public class BackofficeController extends BaseAdminController {
 	public String delete(
 			HttpServletRequest request,
 			@PathVariable Long backofficeId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			backofficeService.delete(
 					entitatActual.getId(),

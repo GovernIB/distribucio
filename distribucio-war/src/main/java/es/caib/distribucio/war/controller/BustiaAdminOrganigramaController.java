@@ -75,7 +75,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			BindingResult bindingResult,
 			Model model,
 			@RequestParam(value = "accio", required = false) String accio) {
-		getEntitatActualComprovantPermisos(request);
+		getEntitatActualComprovantPermisAdmin(request);
 		if ("netejar".equals(accio)) {
 			RequestSessionHelper.esborrarObjecteSessio(
 					request,
@@ -97,7 +97,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
@@ -115,7 +115,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	public List<BustiaDto> findAllAmbEntitat(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		return bustiaService.findAmbEntitat(
 				entitatActual.getId());
 	}
@@ -141,7 +141,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.updateActiva(
 					entitatActual.getId(),
 					bustiaId,
@@ -165,7 +165,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.updateActiva(
 					entitatActual.getId(),
 					bustiaId,
@@ -191,7 +191,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			BindingResult bindingResult,
 			Model model) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			if (bindingResult.hasErrors()) {
 				omplirModel(request, model);
 				List<String> errorMsgs = new ArrayList<>();
@@ -232,7 +232,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	public String delete(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			bustiaService.delete(
 					entitatActual.getId(),
@@ -256,7 +256,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId) {
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			bustiaService.marcarPerDefecte(
 					entitatActual.getId(),
 					bustiaId);
@@ -279,7 +279,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		BustiaCommand command = new BustiaCommand();
 		command.setEntitatId(entitatActual.getId());
@@ -297,7 +297,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaDto bustia = null;
 
 		bustia = bustiaService.findById(
@@ -329,7 +329,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaDto bustia = null;
 
 		bustia = bustiaService.findById(
@@ -354,7 +354,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	private void omplirModel(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		

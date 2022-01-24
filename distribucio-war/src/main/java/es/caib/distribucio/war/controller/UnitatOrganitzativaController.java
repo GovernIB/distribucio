@@ -69,7 +69,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			Model model) {
 		
 	
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		
 		MultiMap splitMap = new MultiHashMap();
@@ -196,7 +196,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	public String synchronizePost(
 			HttpServletRequest request) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		unitatOrganitzativaService.synchronize(entitatActual.getId());
 
 		return getModalControllerReturnValueSuccess(
@@ -213,7 +213,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
@@ -255,7 +255,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request,
 			@PathVariable Long unitatId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		UnitatOrganitzativaDto unitat = null;
 		if (unitatId != null)
 			unitat = unitatOrganitzativaService.findById(
@@ -278,7 +278,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
 
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		UnitatOrganitzativaFiltreCommand unitatOrganitzativaFiltreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,

@@ -46,7 +46,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		model.addAttribute(
 				"bustia",
 				bustiaService.findById(entitatActual.getId(), bustiaId));
@@ -58,7 +58,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		List<PermisDto> permisos = bustiaService.findById(entitatActual.getId(), bustiaId).getPermisos();
 		// Completa la informació dels permisos amb el nom complet per usuaris
 		Map<String, UsuariPermisDto> usuarisBustia = bustiaService.getUsuarisPerBustia(bustiaId, true, false);
@@ -92,7 +92,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BustiaDto bustia = bustiaService.findById(entitatActual.getId(), bustiaId);
 		model.addAttribute("bustia", bustia);
 		PermisDto permis = null;
@@ -118,7 +118,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			@Valid PermisCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"bustia",
@@ -141,7 +141,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		bustiaService.deletePermis(
 				entitatActual.getId(),
 				bustiaId,

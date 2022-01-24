@@ -295,9 +295,9 @@ public class BaseController implements MessageSourceAware {
 			HttpServletRequest request) {
 		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 		if (entitat == null)
-			throw new SecurityException("No te cap entitat assignada");
-		if (!entitat.isUsuariActualAdministration())
-			throw new SecurityException("No te permisos per accedir a aquesta entitat com a administrador");
+			throw new SecurityException(getMessage(request, "entitat.actual.error.no.assignada"));
+		if (!entitat.isUsuariActualRead() && !entitat.isUsuariActualAdministration())
+			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.acces"));
 		return entitat;
 	}
 

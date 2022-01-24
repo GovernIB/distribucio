@@ -16,11 +16,11 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
  */
 public class BaseUserController extends BaseController {
 
-	public EntitatDto getEntitatActualComprovantPermisos(
+	public EntitatDto getEntitatActualComprovantPermisUsuari(
 			HttpServletRequest request) {
 		EntitatDto entitat = this.getEntitatActual(request);
 		if (!entitat.isUsuariActualRead())
-			throw new SecurityException("No te permisos per accedir a aquesta entitat com a usuari");
+			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.usuari"));
 		return entitat;
 	}
 

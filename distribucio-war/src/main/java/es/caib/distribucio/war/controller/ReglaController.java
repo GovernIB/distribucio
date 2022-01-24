@@ -64,7 +64,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		model.addAttribute(
 				"reglaTipusEnumOptions",
@@ -86,7 +86,7 @@ public class ReglaController  extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		ReglaFiltreCommand reglaFiltreCommand = getFiltreCommand(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
@@ -151,7 +151,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		ReglaDto regla = null;
 		if (reglaId != null) {
 			regla = reglaService.findOne(
@@ -197,7 +197,7 @@ public class ReglaController  extends BaseAdminController {
 			@Validated(CreateUpdate.class) ReglaCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		if (bindingResult.hasErrors()) {
 			emplenarModelFormulari(
 					request,
@@ -230,7 +230,7 @@ public class ReglaController  extends BaseAdminController {
 	public String simular(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		RegistreSimulatCommand command = new RegistreSimulatCommand();
 		model.addAttribute(command);
@@ -250,7 +250,7 @@ public class ReglaController  extends BaseAdminController {
 			@Validated RegistreSimulatCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		model.addAttribute(
 				"busties",
@@ -274,7 +274,7 @@ public class ReglaController  extends BaseAdminController {
 	public String enable(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
@@ -288,7 +288,7 @@ public class ReglaController  extends BaseAdminController {
 	public String disable(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
@@ -303,7 +303,7 @@ public class ReglaController  extends BaseAdminController {
 	public String up(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		reglaService.moveUp(
 				entitatActual.getId(),
 				reglaId);
@@ -316,7 +316,7 @@ public class ReglaController  extends BaseAdminController {
 	public String down(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		reglaService.moveDown(
 				entitatActual.getId(),
 				reglaId);
@@ -331,7 +331,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId,
 			@PathVariable int posicio) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		reglaService.moveTo(
 				entitatActual.getId(),
 				reglaId,
@@ -345,7 +345,7 @@ public class ReglaController  extends BaseAdminController {
 	public String delete(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		try {
 			reglaService.delete(
@@ -375,7 +375,7 @@ public class ReglaController  extends BaseAdminController {
 	public String aplicar(
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			List<String> registres = reglaService.aplicarManualment(
 				entitatActual.getId(),
@@ -415,7 +415,7 @@ public class ReglaController  extends BaseAdminController {
 				EnumHelper.getOptionsForEnum(
 						ReglaTipusEnumDto.class,
 						"regla.tipus.enum."));
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		model.addAttribute(
 				"busties",
 			bustiaService.findActivesAmbEntitat(

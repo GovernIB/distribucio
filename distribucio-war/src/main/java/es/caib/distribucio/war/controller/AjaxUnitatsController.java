@@ -58,7 +58,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, false);
 		
@@ -78,7 +78,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndCodiUnitatSuperiorAndFiltre(entitatActual.getCodi(), 
 				codiUnitatSuperior, decodedToUTF8, true, false);
@@ -98,7 +98,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, true);
 		
@@ -135,7 +135,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		List<UnitatOrganitzativaDto> unitatsEntitat = bustiaService.findUnitatsSuperiors(entitatActual.getId(), decodedToUTF8);
 				
@@ -154,7 +154,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false, false);
 		
