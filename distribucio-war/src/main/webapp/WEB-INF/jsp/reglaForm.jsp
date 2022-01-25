@@ -201,11 +201,13 @@ $(document).ready(function() {
 				suggestValue="id"
 				suggestText="codiAndNom"
 				optionTemplateFunction="formatSelectUnitat"/>
-			<dis:inputSelect name="bustiaFiltreId" 
+			<dis:inputSelect 
+				name="bustiaFiltreId" 
 				textKey="regla.form.camp.bustia" 
 				optionItems="${busties}" 
 				optionValueAttribute="id" 
 				optionTextAttribute="nom" 
+				placeholderKey="bustia.form.camp.bustia"
 				emptyOption="true"
 				netejar="true"
 				optionMinimumResultsForSearch="0"/>

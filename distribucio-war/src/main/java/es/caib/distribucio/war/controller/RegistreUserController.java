@@ -836,7 +836,7 @@ public class RegistreUserController extends BaseUserController {
 					isVistaMoviments,
 					RolHelper.getRolActual(request));
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(getMessage(request, getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok")));
+			response.setMissatge(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
 		} catch (Exception exception) {
 			response = AjaxHelper.generarAjaxError(
 					getMessage(
@@ -1288,7 +1288,7 @@ public class RegistreUserController extends BaseUserController {
 					command.getPerConeixement(),
 					null);
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(getMessage(request, getMessage(request, "bustia.controller.pendent.contingut.reenviat.ok")));
+			response.setMissatge(getMessage(request, "bustia.controller.pendent.contingut.reenviat.ok"));
 		} catch (Exception exception) {
 			response = AjaxHelper.generarAjaxError(
 					getMessage(
@@ -1536,7 +1536,7 @@ public class RegistreUserController extends BaseUserController {
 					"</span> " + command.getMotiu(), 
 					rolActual);
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(getMessage(request, getMessage(request, "bustia.controller.pendent.contingut.marcat.processat.ok")));
+			response.setMissatge(getMessage(request, "bustia.controller.pendent.contingut.marcat.processat.ok"));
 		} catch (Exception exception) {
 			response = AjaxHelper.generarAjaxError(
 					getMessage(

@@ -335,7 +335,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId){
-		return new ArrayList<>((Set<UsuariPermisDto>) this.getUsuarisPerBustia(bustiaId, true, true));
+		return new ArrayList<>(this.getUsuarisPerBustia(bustiaId, true, true).values());
 	}
 			
 	@Override

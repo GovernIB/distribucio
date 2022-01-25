@@ -33,7 +33,7 @@
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<version.revision>40</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2022.01.21 12:00h</version.date>
+		<version.date>2022.01.25 11:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-core</module>
