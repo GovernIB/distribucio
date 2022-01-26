@@ -26,7 +26,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ForeignKey;
@@ -41,16 +40,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_contingut",
-		uniqueConstraints = {
-				@UniqueConstraint(
-						name = "dis_contingut_mult_uk",
-						columnNames = {
-								"nom",
-								"tipus",
-								"pare_id",
-								"entitat_id",
-								"esborrat"})})
+@Table(	name = "dis_contingut")
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class ContingutEntity extends DistribucioAuditable<Long> {

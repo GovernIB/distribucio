@@ -398,7 +398,8 @@ public class RegistreAdminController extends BaseAdminController {
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../registreAdmin",
-					"registre.admin.controller.marcar.sobreescriure.ok");
+					"registre.admin.controller.marcar.sobreescriure.ok",
+					new Object[] {registreId});
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueError(
 					request,
@@ -456,10 +457,10 @@ public class RegistreAdminController extends BaseAdminController {
 
 			if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
 				registreService.marcarSobreescriure(entitatActual.getId(), registreId);
-				missatge = "Anotació amb id " + registreId + " marcada per sobreescriure correctament";
+				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.ok", new Object[] {registreId});
 				correcte = true;
 			} else {
-				missatge = "L'estat de l'anotació amb id " + registreId + " és " + registreDto.getProcesEstat() + " i no es reprocessarà.";
+				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.estat.error", new Object[] {registreId, registreDto.getProcesEstat()});
 				correcte = false;
 			}
 			if (correcte) {
