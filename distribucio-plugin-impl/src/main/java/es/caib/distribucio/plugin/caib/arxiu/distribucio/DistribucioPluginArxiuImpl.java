@@ -562,7 +562,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			// Assegura que l'annex tingui tipus MIME i si és un .pdf sigui application/pdf
 			String mime = annex.getFitxerTipusMime();
 			if ("pdf".equals(FilenameUtils.getExtension(annex.getFitxerNom().toLowerCase()))) {
-				mime = "appication/pdf";
+				mime = "application/pdf";
 			} else if (mime == null || mime.trim().isEmpty()) {
 				mime = new MimetypesFileTypeMap().getContentType(annex.getFitxerNom());
 			}

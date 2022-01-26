@@ -1421,7 +1421,7 @@ public class RegistreHelper {
 		// Assegura que l'annex tingui tipus MIME i si és un .pdf sigui application/pdf
 		String tipusMime = registreAnnex.getFitxerTipusMime();
 		if ("pdf".equals(FilenameUtils.getExtension(registreAnnex.getFitxerNom().toLowerCase()))) {
-			tipusMime = "appication/pdf";
+			tipusMime = "application/pdf";
 		} else if (tipusMime == null || tipusMime.trim().isEmpty()) {
 			tipusMime = new MimetypesFileTypeMap().getContentType(registreAnnex.getFitxerNom());
 		}
