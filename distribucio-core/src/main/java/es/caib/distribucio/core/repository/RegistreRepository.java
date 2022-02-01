@@ -173,7 +173,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findByPareInAndIdIn(
 			List<? extends ContingutEntity> pares,
 			List<Long> ids);
-	
+
+	List<RegistreEntity> findByIdIn(
+			List<Long> ids);
+
 	/** Consulta pel datatable del registre user */
 	@Query(	"select r " +
 			"from " +

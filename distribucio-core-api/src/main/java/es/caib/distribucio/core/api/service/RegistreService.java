@@ -79,6 +79,8 @@ public interface RegistreService {
 	 *            Atribut id de l'entitat.
 	 * @param multipleRegistreIds
 	 *            Atributs id del les anotacions que que es volen consultar.
+	 * @param isAdmin 
+	 * 			  Indica si l'usuari és administrador o no. Si no ho és filtrarà per les seves bústies.
 	 * @return els detalls de l'anotació.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -86,7 +88,8 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
-			List<Long> multipleRegistreIds) throws NotFoundException;
+			List<Long> multipleRegistreIds,
+			boolean isAdmin) throws NotFoundException;
 	
 	/**
 	 * Consulta el registre

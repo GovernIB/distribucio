@@ -420,7 +420,8 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("registres",
 				registreService.findMultiple(
 						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						true));
 		return "marcarSobreescriure";
 	}
 	
@@ -490,7 +491,8 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("registres",
 				registreService.findMultiple(
 						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						true));
 		return "reintentarProcessamentMultiple";
 	}
 	
@@ -583,7 +585,8 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						true));
 	return "registreUserMarcarPendent";
 	}
 

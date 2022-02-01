@@ -799,12 +799,14 @@ public class RegistreUserController extends BaseUserController {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			registres = registreService.findMultiple(
 					entitatActual.getId(),
-					new ArrayList<Long>(seleccio));
+					new ArrayList<Long>(seleccio),
+					false);
 
 		} else {
 			registres = registreService.findMultiple(
 							getEntitatActual(request).getId(),
-							this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO));
+							this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+							false);
 		}
 		model.addAttribute("registres", registres);
 		return "registreViaEmail";
@@ -858,7 +860,8 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
 		model.addAttribute(command);
 		return "registreUserEnviarIProcessar";
 	}
@@ -1403,7 +1406,8 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						getEntitatActualComprovantPermisUsuari(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
 		return "registreUserMarcarPendent";
 	}
 	
@@ -1504,7 +1508,8 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						getEntitatActualComprovantPermisUsuari(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
 		
 		return "registreUserMarcarProcessat";
 	}
@@ -1972,7 +1977,8 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO)));
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
 	}
 
 	private int getMaxLevelArbre() {
@@ -2038,7 +2044,8 @@ public class RegistreUserController extends BaseUserController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		List<RegistreDto> registres = registreService.findMultiple(
 				entitatActual.getId(),
-				multipleRegistreIds);
+				multipleRegistreIds,
+				false);
 		model.addAttribute("registres", registres);
 		boolean mateixPare = true;
 		Long bustiaIdActual = null;

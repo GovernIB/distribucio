@@ -261,10 +261,12 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
-			List<Long> multipleRegistreIds) {
+			List<Long> multipleRegistreIds,
+			boolean isAdmin) {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
-				+ "multipleRegistreIds=" + multipleRegistreIds + ")");
+				+ "multipleRegistreIds=" + multipleRegistreIds
+				+ "isAdmin=" + isAdmin + " )");
 		
 		if (multipleRegistreIds == null || multipleRegistreIds.isEmpty()) {
 			return new ArrayList<RegistreDto>();
@@ -272,25 +274,35 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
-				true,
 				false,
-				false);
-		List<BustiaEntity> bustiesPermeses = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		permisosHelper.filterGrantedAll(
-				bustiesPermeses,
-				new ObjectIdentifierExtractor<BustiaEntity>() {
-					@Override
-					public Long getObjectIdentifier(BustiaEntity bustia) {
-						return bustia.getId();
-					}
-				},
-				BustiaEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		List<RegistreEntity> registres = registreRepository.findByPareInAndIdIn(
-				bustiesPermeses,
-				multipleRegistreIds);
+				false,
+				true);
+		
+		List<RegistreEntity> registres;
+		if (!isAdmin) {
+			List<BustiaEntity> bustiesPermeses = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			permisosHelper.filterGrantedAll(
+					bustiesPermeses,
+					new ObjectIdentifierExtractor<BustiaEntity>() {
+						@Override
+						public Long getObjectIdentifier(BustiaEntity bustia) {
+							return bustia.getId();
+						}
+					},
+					BustiaEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			if (bustiesPermeses == null || bustiesPermeses.isEmpty()) {
+				return new ArrayList<RegistreDto>();
+			}
+			registres = registreRepository.findByPareInAndIdIn(
+					bustiesPermeses,
+					multipleRegistreIds);
+		} else {
+			registres = registreRepository.findByIdIn(multipleRegistreIds);
+		}
+
 		List<RegistreDto> resposta = new ArrayList<RegistreDto>();
 		for (RegistreEntity registre: registres) {
 			resposta.add((RegistreDto)contingutHelper.toContingutDto(

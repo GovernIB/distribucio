@@ -72,11 +72,13 @@ public class RegistreServiceBean implements RegistreService {
 	@Override
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
-			List<Long> multipleRegistreIds)
+			List<Long> multipleRegistreIds,
+			boolean isAdmin)
 			throws NotFoundException {
 		return delegate.findMultiple(
 				entitatId,
-				multipleRegistreIds);
+				multipleRegistreIds,
+				isAdmin);
 	}
 	
 	@Override
