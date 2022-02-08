@@ -69,7 +69,8 @@ public class EmailHelper {
 	private ConfigHelper configHelper;
 	@Autowired
 	private MessageHelper messageHelper;
-	
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 
 	public void createEmailsPendingToSend(
 			BustiaEntity bustia,
@@ -81,9 +82,16 @@ public class EmailHelper {
 				"bustiaId=" + (bustia != null ? bustia.getId() : "") + "" +
 				", contingutId=" + (contingut != null ? contingut.getId() : "") +
 				", contenidorMovimentId=" + (contenidorMoviment != null ? contenidorMoviment.getId() : "null") +
-				", destinataris={");
-		for (UsuariDto destinatari : destinataris)
-			sb.append(destinatari.getCodi() + " " + destinatari.getEmail()).append(", ");
+				", destinataris={");		
+		for (UsuariDto destinatari : destinataris) {
+			String emailToSend;			
+			if ((destinatari.getEmailAlternatiu()!=null)&&(!destinatari.getEmailAlternatiu().equals(""))) {
+				emailToSend = destinatari.getEmailAlternatiu();
+			} else {
+				emailToSend = destinatari.getEmail();
+			}
+			sb.append(destinatari.getCodi() + " " + emailToSend).append(", ");
+		}
 		sb.append("})");
 		logger.debug(sb.toString());
 
@@ -114,9 +122,15 @@ public class EmailHelper {
 																	bustia.getUnitatOrganitzativa().getCodi());			
 			List<ContingutMovimentEmailEntity> movEmails = new ArrayList<ContingutMovimentEmailEntity>();
 			for (UsuariDto destinatari: destinataris) {
+				String emailToSend;
+				if ((destinatari.getEmailAlternatiu()!=null)&&(!destinatari.getEmailAlternatiu().equals(""))) {
+					emailToSend = destinatari.getEmailAlternatiu();
+				} else {
+					emailToSend = destinatari.getEmail();
+				}
 				ContingutMovimentEmailEntity contingutMovimentEmail = ContingutMovimentEmailEntity.getBuilder(
 						destinatari.getCodi(), 
-						destinatari.getEmail(),
+						emailToSend,
 						destinatari.getRebreEmailsAgrupats(),
 						bustia, 
 						contenidorMoviment, 
@@ -409,12 +423,25 @@ public class EmailHelper {
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
 			if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
 				UsuariEntity user = usuariRepository.findOne(usuari);
-				if (user == null || user.isRebreEmailsBustia()) {
-					UsuariDto u = new UsuariDto();
+				UsuariDto u = new UsuariDto();				
+				if (user!=null) {
+					if (user.isRebreEmailsBustia()) {
+						u = conversioTipusHelper.convertir(user,UsuariDto.class);						
+						if ((user.getEmailAlternatiu()!=null)&&(!user.getEmailAlternatiu().equals(""))) {
+							u.setEmailAlternatiu(user.getEmailAlternatiu());
+						} else {
+							u.setEmailAlternatiu(dadesUsuari.getEmail());
+						}
+						u.setRebreEmailsAgrupats(user.isRebreEmailsAgrupats());
+						destinataris.add(u);
+					}					
+				} else {
+					u = new UsuariDto();
 					u.setCodi(usuari);
 					u.setEmail(dadesUsuari.getEmail());
-					u.setRebreEmailsAgrupats(user == null ? true : user.isRebreEmailsAgrupats());
-					destinataris.add(u);
+					u.setEmailAlternatiu(dadesUsuari.getEmail());
+					u.setRebreEmailsAgrupats(true);								
+					destinataris.add(u);					
 				}
 			}
 		}

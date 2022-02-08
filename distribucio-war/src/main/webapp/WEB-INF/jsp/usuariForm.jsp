@@ -48,12 +48,12 @@ $(document).ready(function() {
 		<dis:inputText name="nom" textKey="usuari.form.camp.nom" disabled="true"/>
 		<dis:inputText name="nif" textKey="usuari.form.camp.nif" disabled="true"/>
 		<dis:inputText name="email" textKey="usuari.form.camp.email" disabled="true"/>
+		<dis:inputText name="emailAlternatiu" textKey="usuari.form.camp.email.alternatiu" />
 		<dis:inputSelect name="rols" textKey="usuari.form.camp.rols" optionItems="${usuariCommand.rols}" disabled="true"/>
 		<dis:inputCheckbox name="rebreEmailsBustia" textKey="usuari.form.camp.rebre.emails.bustia"/>
 		<dis:inputCheckbox name="rebreEmailsAgrupats" textKey="usuari.form.camp.rebre.emails.agrupats"/>
 		<dis:inputSelect name="idioma" optionItems="${idiomaEnumOptions}" textKey="usuari.form.camp.idioma" optionValueAttribute="value" optionTextKeyAttribute="text" disabled="false"/>
-		<dis:inputSelect name="bustiaPerDefecte" optionItems="${replacedByJquery}" textKey="bustia.list.filtre.bustia"/>
-							
+		<dis:inputSelect name="bustiaPerDefecte" optionItems="${replacedByJquery}" textKey="bustia.list.filtre.bustia"/>							
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/usuari/configuracio"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

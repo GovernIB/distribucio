@@ -19,6 +19,7 @@ CREATE TABLE DIS_USUARI
   NIF           		character varying(9),
   NOM           		character varying(200),
   EMAIL         		character varying(200),
+  EMAIL_ALTERNATIU 		character varying(200),  
   IDIOMA 				character varying(2)  DEFAULT 'CA' NOT NULL,
   REBRE_EMAILS  		boolean,
   EMAILS_AGRUPATS		boolean,

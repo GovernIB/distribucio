@@ -116,6 +116,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 								dadesUsuari.getNom(),
 								dadesUsuari.getNif(),
 								dadesUsuari.getEmail(),
+								null,
 								idioma).build());
 			} else {
 				throw new NotFoundException(
@@ -158,6 +159,9 @@ public class AplicacioServiceImpl implements AplicacioService {
 				false, 
 				false);
 		UsuariEntity usuari = usuariRepository.findOne(dto.getCodi());
+		
+		usuari.updateEmailAlternatiu(dto.getEmailAlternatiu());
+		
 		usuari.update(
 				dto.getRebreEmailsBustia(), 
 				dto.getRebreEmailsAgrupats(),

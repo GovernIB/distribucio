@@ -17,6 +17,7 @@ public class UsuariDto implements Serializable {
 	private String nom;
 	private String nif;
 	private String email;
+	private String emailAlternatiu;	
 	private String idioma;
 	private String[] rols;
 	private Boolean rebreEmailsBustia;
@@ -47,6 +48,12 @@ public class UsuariDto implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public String getEmailAlternatiu() {
+		return emailAlternatiu;
+	}
+	public void setEmailAlternatiu(String emailAlternatiu) {
+		this.emailAlternatiu = emailAlternatiu;
 	}
 	public String getIdioma() {
 		return idioma;

@@ -99,6 +99,7 @@ public class UsuariHelper {
 							auth.getName(),
 							auth.getName(),
 							"00000000X",
+							auth.getName() + "@" + "caib.es",
 							auth.getName() + "@" + "caib.es", 
 							idioma).build());
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
@@ -131,6 +132,7 @@ public class UsuariHelper {
 							codi,
 							codi,
 							"00000000X",
+							codi + "@" + "caib.es",
 							codi + "@" + "caib.es", 
 							idioma).build());
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(codi);

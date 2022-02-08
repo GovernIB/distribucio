@@ -22,6 +22,7 @@ public class UsuariCommand implements Serializable {
 	private String nom;
 	private String nif;
 	private String email;
+	private String emailAlternatiu;	
 	private String[] rols;
 	private String idioma;
 	private Boolean rebreEmailsBustia;
@@ -51,6 +52,12 @@ public class UsuariCommand implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public String getEmailAlternatiu() {
+		return emailAlternatiu;
+	}
+	public void setEmailAlternatiu(String emailAlternatiu) {
+		this.emailAlternatiu = emailAlternatiu;
 	}
 	public String[] getRols() {
 		return rols;
