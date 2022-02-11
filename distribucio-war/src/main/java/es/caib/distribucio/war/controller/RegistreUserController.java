@@ -1346,7 +1346,7 @@ public class RegistreUserController extends BaseUserController {
 								null));
 			}
 
-		return "redirect:../../modal/registreUser/registre/" + registreId;
+		return "redirect:/modal/registreAdmin/" + registreId + "/detall";
 	}
 	
 	@RequestMapping(value = "/{registreId}/marcarPendent", method = RequestMethod.GET)

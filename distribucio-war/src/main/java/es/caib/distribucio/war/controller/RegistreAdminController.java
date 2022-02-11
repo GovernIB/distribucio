@@ -384,7 +384,8 @@ public class RegistreAdminController extends BaseAdminController {
 
 
 
-		return "redirect:../../" + registreId + "/detall";
+//		return "redirect:../../" + registreId + "/detall";
+			return "redirect:" + request.getHeader("referer");
 	}
 	
 	

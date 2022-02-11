@@ -1372,7 +1372,7 @@ li[id^="anotacio_"] {
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 				
 			    <c:if test="${isRolActualAdministrador == true && (registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR')}">
-					<a href="<c:url value="/registreUser/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+					<a href="<c:url value="/registreAdmin/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
 				<div class="processamentInfo">
 					<dl class="dl-horizontal">
