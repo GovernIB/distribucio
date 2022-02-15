@@ -144,7 +144,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable String tipus) throws Exception {
 		FitxerDto fitxer = new FitxerDto();
 		try {
-			fitxer = registreService.getAnnexFitxer(annexId);
+			fitxer = registreService.getAnnexFitxer(annexId, true);
 		} catch (Exception ex) {
 			fitxer.setError(true);
 			fitxer.setErrorMsg(ex.getMessage());
@@ -163,7 +163,21 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long annexId,
 			@PathVariable String tipus) throws IOException {
 		try {
-			FitxerDto fitxer = registreService.getAnnexFitxer(annexId);
+			
+			boolean ambVersioImprimible;
+			switch (tipus) {
+				case "DOCUMENT_ORIGINAL":
+					ambVersioImprimible = false;
+					break;
+				case "DOCUMENT": 
+					ambVersioImprimible = true;
+					break;				
+				default:
+					ambVersioImprimible = true;
+					break;				
+			}
+			
+			FitxerDto fitxer = registreService.getAnnexFitxer(annexId, ambVersioImprimible);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -181,6 +195,9 @@ public class ContingutController extends BaseUserController {
 		}
 		return null;
 	}
+	
+	//TODO: posar el mètode per descarregar l'original
+	
 
 	@RequestMapping(value = {	"/contingut/{contingutId}/registre/{registreId}/justificant", // URL antiga
 								"/contingut/registre/{registreId}/justificant"}, 

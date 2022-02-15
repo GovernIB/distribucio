@@ -1476,7 +1476,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getAnnexFitxer(
-			Long annexId) {
+			Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
 		FitxerDto fitxerDto = new FitxerDto();
 		Document document = null;
@@ -1484,7 +1484,8 @@ public class RegistreServiceImpl implements RegistreService {
 		// if annex is already created in arxiu take content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
-			document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, true);
+			//TODO: si passes imprimible = false descarrega l'original.
+			document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, ambVersioImprimible);
 			if (document != null) {
 				DocumentContingut documentContingut = document.getContingut();
 				if (documentContingut != null) {
@@ -1636,7 +1637,7 @@ public class RegistreServiceImpl implements RegistreService {
 						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
 					{
 						try {
-							fitxer = this.getAnnexFitxer(annex.getId());
+							fitxer = this.getAnnexFitxer(annex.getId(), true);
 							if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId()) {
 								if (fitxer.getNom().startsWith(annex.getTitol())) {
 									nom = fitxer.getNom();

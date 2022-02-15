@@ -220,9 +220,9 @@
 			${annex.fitxerNom} (<span title="${annex.fitxerTamany} bytes">${annex.fitxerTamanyStr}</span>)
 		
 			<c:if test="${not empty concsvBaseUrl}">
-				<a href="${concsvBaseUrl}/view.xhtml?hash=${annex.firmaCsv}" target="_blank" title="<spring:message code="registre.annex.detalls.camp.firmaCsv.consv"/>"  class="btn btn-default btn-sm pull-right arxiu-download">
+				<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT_ORIGINAL"/>" class="btn btn-default btn-sm pull-right arxiu-download">
 					<spring:message code="registre.annex.descarregar.original"/>
-					<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>					
+					<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
 				</a>				
 			</c:if>			
 			<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">

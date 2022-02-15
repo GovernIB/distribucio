@@ -170,7 +170,9 @@ public interface RegistreService {
 	
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getAnnexFitxer(
-			Long annexId) throws NotFoundException;
+			Long annexId, boolean ambVersioImprimible) throws NotFoundException;
+	
+	//TODO: mètode per descarregar l'original
 	
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getJustificant(
