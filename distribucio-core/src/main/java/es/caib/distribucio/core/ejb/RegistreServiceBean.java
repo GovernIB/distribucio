@@ -147,8 +147,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public FitxerDto getAnnexFitxer(Long annexId) throws NotFoundException {
-		return delegate.getAnnexFitxer(annexId, true);
+	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) throws NotFoundException {
+		return delegate.getAnnexFitxer(annexId, ambVersioImprimible);
 	}
 	
 	@Override
