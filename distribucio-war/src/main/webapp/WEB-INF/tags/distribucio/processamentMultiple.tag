@@ -6,6 +6,7 @@
 <%@ attribute name="start" required="false" rtexprvalue="true" type="java.lang.Boolean"%>
 <%@ attribute name="form" required="true" rtexprvalue="true"%>
 <%@ attribute name="btnSubmit" required="true" rtexprvalue="true"%>
+<%@ attribute name="btnTancar" required="false" rtexprvalue="true"%>
 <%@ attribute name="postUrl" required="true" rtexprvalue="true"%>
 
 <c:set var="nRegistres">${fn:length(registres)}</c:set>
@@ -107,12 +108,13 @@
 	}
 	
 	async function processaAnotacionsAsync() {
-				
+		
 		$('${form}').webutilNetejarErrorsCamps();
 		$spin = $('<span>&nbsp;<span class="fa fa-spinner fa-spin"></span></span>');
 		$btnSubmit = $("${btnSubmit}", window.parent.document);
+		$btnTancar = $("${btnTancar}", window.parent.document);
 		$btnSubmit.attr('disabled', true).append($spin);
-
+		
 		// Obté la llista d'identificadors com un array
 		var registresPendentsIds = [];
 		$('.registreTr').not('.processat').each(function(){
@@ -154,6 +156,13 @@
 		$('#cancelarBtn').css('visibility', 'hidden');
 	
 		$spin.remove();
+		
+// 		$('div.modal-backdrop',window.parent.document).remove();
+// 		$('div.modal',window.parent.document).remove();		
+		
+		if (correctes == registresPendentsIds.length) {
+			window.location = webutilModalTancarPath();
+		}
 	}
 	
 	function processarAnotacioAsync(registreId) {
