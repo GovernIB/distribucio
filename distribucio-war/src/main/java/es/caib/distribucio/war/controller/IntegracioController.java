@@ -48,6 +48,7 @@ public class IntegracioController extends BaseUserController {
 			Model model) {
 		return getAmbCodi(request, null, model);
 	}
+	
 	@RequestMapping(value = "/{codi}", method = RequestMethod.GET)
 	public String getAmbCodi(
 			HttpServletRequest request,
@@ -92,6 +93,7 @@ public class IntegracioController extends BaseUserController {
 				RequestSessionHelper.obtenirObjecteSessio(
 						request,
 						SESSION_ATTRIBUTE_FILTRE));
+		
 		return "integracioList";
 	}
 

@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Resource;
@@ -43,11 +45,13 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
+import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
@@ -133,6 +137,8 @@ public class RegistreHelper {
 	private ConfigHelper configHelper;
 	@Autowired
 	private ContingutHelper contingutHelper;
+	@Autowired
+	private IntegracioHelper integracioHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -1118,33 +1124,47 @@ public class RegistreHelper {
 	// sends ids of anotacions to backoffice
 	@Transactional(readOnly = true)
 	public Exception enviarIdsAnotacionsBackoffice(List<Long> pendentsIdsGroupedByRegla) {
+		
+		List <RegistreEntity> pendentsByRegla = new ArrayList<>();		
+		Map<String, String> accioParams = new HashMap<String, String>();		
 
-		Exception throwable = null;
-		List <RegistreEntity> pendentsByRegla = new ArrayList<>();
-		try {
+		for(Long id: pendentsIdsGroupedByRegla){
+			RegistreEntity pendent = registreRepository.findOne(id);
+			pendentsByRegla.add(pendent);
+		}
 
-			for(Long id: pendentsIdsGroupedByRegla){
-				RegistreEntity pendent = registreRepository.findOne(id);
-				pendentsByRegla.add(pendent);
-			}
-
-			String clauSecreta = configHelper.getConfig(
-					"es.caib.distribucio.backoffice.integracio.clau");
-			if (clauSecreta == null) {
-				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
-			}
-
-			List<AnotacioRegistreId> ids = new ArrayList<>();
-			for (RegistreEntity pendent : pendentsByRegla) {
-
-				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-				anotacioRegistreId.setIndetificador(pendent.getNumero());
+		String clauSecreta = configHelper.getConfig(
+				"es.caib.distribucio.backoffice.integracio.clau");
+		if (clauSecreta == null) {
+			throw new RuntimeException("Clau secreta no especificada al fitxer de propietats");
+		}
+		
+		long t0 = System.currentTimeMillis();
+		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
+		String accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi();
+		List<AnotacioRegistreId> ids = new ArrayList<>();
+		for (RegistreEntity pendent : pendentsByRegla) {
+			
+			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+			anotacioRegistreId.setIndetificador(pendent.getNumero());			
+			
+			try {
 				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero(),
 						clauSecreta));
-				ids.add(anotacioRegistreId);
-
+			} catch (Exception ex) {
+				String errorDescripcio = "Error enviant anotacions al backoffice";
+				accioParams = identificadorsToHashMap(ids);
+				accioParams.put("Backoffice", backofficeDesti.getCodi());
+				afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, accioParams, t0, ex);				
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_BACKOFFICE,
+						errorDescripcio,
+						ex);
 			}
-			BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
+			ids.add(anotacioRegistreId);
+		}		
+		
+		try {			
 			String usuari = backofficeDesti.getUsuari();
 			String contrasenya = backofficeDesti.getContrasenya();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
@@ -1153,6 +1173,7 @@ public class RegistreHelper {
 			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
 				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
+			
 			logger.trace(">>> Abans de crear backoffice WS");
 			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 					getClass().getResource(
@@ -1164,17 +1185,51 @@ public class RegistreHelper {
 					usuari,
 					contrasenya,
 					null,
-					BackofficeWsService.class);
+					BackofficeWsService.class);			
 			
-			logger.trace(">>> Abans de cridar backoffice WS");
-			backofficeClient.comunicarAnotacionsPendents(ids);
+			logger.trace(">>> Abans de cridar backoffice WS");			
+			backofficeClient.comunicarAnotacionsPendents(ids);		
+			
+			integracioHelper.addAccioOk (
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					identificadorsToHashMap(ids),
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0
+			);			
 			logger.trace(">>> Despres de cridar backoffice WS");			
 			return null;
+			
 		} catch (Exception ex) {
-			logger.error("Error enviant anotacions al backoffice", ex);
-			throwable = ex;
-			return throwable;
+			String errorDescripcio = "Error enviant anotacions al backoffice";			
+			accioParams = identificadorsToHashMap(ids);
+			accioParams.put("Backoffice", backofficeDesti.getCodi());
+			afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, accioParams, t0, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					errorDescripcio,
+					ex);
 		}
+	}
+	
+	private void afegirAccioErrorBackOffice(String accioDescripcio, String errorDescripcio, Map<String, String> accioParams, long tInit, Exception ex) {
+		integracioHelper.addAccioError(
+				IntegracioHelper.INTCODI_BACKOFFICE,
+				accioDescripcio,
+				accioParams,
+				IntegracioAccioTipusEnumDto.ENVIAMENT,
+				System.currentTimeMillis() - tInit,
+				errorDescripcio,
+				ex);
+	}
+	
+	private Map<String, String> identificadorsToHashMap(List<AnotacioRegistreId> ids) {
+		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		for (AnotacioRegistreId anotacioRegistreId:ids) {
+			accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
+		}	
+		return accioParams;
 	}
 	
 	public int getGuardarAnnexosMaxReintentsProperty() {

@@ -51,6 +51,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_BUSTIAWS = "BUSTIAWS";
 	public static final String INTCODI_PROCEDIMENT = "PROCEDIMENT";
 	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
+	public static final String INTCODI_BACKOFFICE = "BACKOFFICE";
 
 	private Map<String, LinkedList<IntegracioAccioDto>> accionsIntegracio = Collections.synchronizedMap(new HashMap<String, LinkedList<IntegracioAccioDto>>());
 	private Map<String, Integer> maxAccionsIntegracio = new HashMap<String, Integer>();
@@ -94,6 +95,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_DISTRIBUCIO));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_BACKOFFICE));
 		return integracions;
 	}
 
@@ -259,6 +263,8 @@ public class IntegracioHelper {
 			integracio.setNom("Procediments");
 		} else if (INTCODI_DISTRIBUCIO.equals(codi)) {
 			integracio.setNom("Distribució");
+		} else if (INTCODI_BACKOFFICE.equals(codi)) {
+			integracio.setNom("Backoffice");
 		}
 		return integracio;
 	}
