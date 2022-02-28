@@ -53,6 +53,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    r.entitat = :entitat " +
 			"and (:esNullFiltreUnitat = true or r.unitatOrganitzativaFiltre = :unitatOrganitzativaFiltre) " +
 			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
+			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " + 
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " + 			
 			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice)")
 	Page<ReglaEntity> findByFiltrePaginat(
@@ -61,6 +62,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("unitatOrganitzativaFiltre") UnitatOrganitzativaEntity unitatOrganitzativaFiltre, 
 			@Param("esNullFiltreNom") boolean esNullFiltreNom,
 			@Param("filtreNom") String filtreNom,
+			@Param("esNullFiltreCodiSIA") boolean esNullFiltreCodiSIA,
+			@Param("filtreCodiSIA") String filtreCodiSIA,
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,			
 			@Param("esNullBackoffice") boolean esNullBackoffice,

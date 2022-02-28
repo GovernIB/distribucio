@@ -20,6 +20,7 @@ public class ReglaFiltreDto implements Serializable {
 	private Long unitatId;
 	private ReglaTipusEnumDto tipus;
 	private Long backofficeId;
+	private String codiSIA;
 
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -45,6 +46,12 @@ public class ReglaFiltreDto implements Serializable {
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+	public String getCodiSIA() {
+		return codiSIA;
+	}
+	public void setCodiSIA(String codiSIA) {
+		this.codiSIA = codiSIA;
 	}
 	public Long getBackofficeId() {
 		return backofficeId;

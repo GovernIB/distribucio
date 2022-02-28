@@ -96,12 +96,15 @@
 	
 	<form:form action="" method="post" cssClass="well" commandName="reglaFiltreCommand">
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
 			</div>			
+			<div class="col-md-3">
+				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
+			</div>
 			<div class="col-md-2">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>

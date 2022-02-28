@@ -437,6 +437,8 @@ public class ReglaServiceImpl implements ReglaService {
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom() != null ? filtre.getNom() : "",
+						filtre.getCodiSIA() == null || filtre.getCodiSIA().isEmpty(), 
+						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						backoffice == null ,

@@ -79,7 +79,6 @@ public class ReglaController  extends BaseAdminController {
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
-		
 		return "reglaList";
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
