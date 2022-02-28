@@ -693,6 +693,7 @@ public class RegistreUserController extends BaseUserController {
 			Model model) throws IOException {
 		
 		model.addAttribute("numberThreads", registreService.getNumberThreads());
+		model.addAttribute("expInactivitat", aplicacioService.propertyFindByNom("es.caib.distribucio.tasca.guardar.annexos.innectivitat.cron"));
 
 		return "histogramPendents";
 	}

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Override
 	public void guardarAnotacionsPendentsEnArxiu() {
 
+		// Comprova si la data actual es troba dins del període d'innactivitat
+		if (this.isGuardarAnotacionsPendentsEnArxiuInactive()) {
+			logger.trace("Tasca guardar anotacions pendents arxiu dins del període d'innactivitat, no s'executarà");
+			return;
+		}
+		
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
 			int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
@@ -103,6 +110,36 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 	
+	/** Comprova si està informada la propietat de periode innactiu de la tasca 
+	 * i si  es troba dins del període d'innactivitat definit per l'expressió
+	 * 'cron' de la propietat <code>es.caib.distribucio.tasca.guardar.annexos.innectivitat.cron</code>.
+	 * 
+	 * @return True si es determina que la següent execucio es troba dins del període
+	 * d'innactivitat.
+	 * 
+	 */
+	private boolean isGuardarAnotacionsPendentsEnArxiuInactive() {
+		boolean innactiva = false;
+    	String expInnactivitat = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.innectivitat.cron");
+    	if (expInnactivitat != null) {
+    		Date now = new Date();
+    		CronSequenceGenerator cronGen;
+    		Date nextSecond;
+    		try {
+    			// Calcula quin seria el segon de la propera exeució
+    			// Propera execució per cada segon
+    			cronGen = new CronSequenceGenerator("* * * * * *");
+    			nextSecond = cronGen.next(now);
+    			cronGen = new CronSequenceGenerator(expInnactivitat);
+    			Date nextInnactiu = cronGen.next(now);
+    			innactiva = (nextInnactiu.getTime() <= nextSecond.getTime());
+    		} catch(Exception e) {
+    			logger.error("Error comprovant el període d'innactivitat per guardar anotacions pendents d'Arxiu: " + e.getMessage(), e);
+    		}
+    	}
+    	return innactiva;
+    }
+
 	@Override
 	@Scheduled(fixedDelayString = "60000")
 	public void addNewEntryToHistogram() {

@@ -45,4 +45,9 @@ public class ConfigServiceBean implements ConfigService {
 	public String getConcsvBaseUrl() {
 		return delegate.getConcsvBaseUrl();
 	}
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public ConfigDto findByKey(String key) {
+		return delegate.findByKey(key);
+	}
 }

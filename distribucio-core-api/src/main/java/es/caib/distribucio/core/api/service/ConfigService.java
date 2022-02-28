@@ -33,6 +33,9 @@ public interface ConfigService {
 	
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public String getConcsvBaseUrl() ;
+
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public ConfigDto findByKey(String key);
 	
 
 }

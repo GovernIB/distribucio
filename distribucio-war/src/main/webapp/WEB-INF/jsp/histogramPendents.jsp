@@ -119,14 +119,28 @@ function buildChartEntitat(chart) {
 <body>
 
 	<h3><spring:message code="histogram.pendents.ultim.titol"/></h3>
-	<dl class="dl-horizontal">
-		<dt><spring:message code="histogram.pendents.ultim.data.consulta"/></dt>
-		<dd id="dataConsulta"></dd>
-		<dt><spring:message code="histogram.pendents.ultim.numero.threads"/></dt>
-		<dd>${numberThreads}</dd>
-		<dt><spring:message code="histogram.pendents.ultim.numero.pendents"/></dt>
-		<dd id="numeroPendents"></dd>
-	</dl>
+	<div class="row">
+		<div class="col-sm-4">
+			<dl class="dl-horizontal">
+				<dt><spring:message code="histogram.pendents.ultim.data.consulta"/></dt>
+				<dd id="dataConsulta"></dd>
+			</dl>
+		</div>
+		<div class="col-sm-4">
+			<dl class="dl-horizontal">
+				<dt><spring:message code="histogram.pendents.ultim.numero.threads"/></dt>
+				<dd>${numberThreads}</dd>
+				<dt><spring:message code="histogram.pendents.ultim.numero.pendents"/></dt>
+				<dd id="numeroPendents"></dd>
+			</dl>
+		</div>
+		<div class="col-sm-4">
+			<dl class="dl-horizontal">
+				<dt><spring:message code="histogram.pendents.expressio.innactivitat"/></dt>
+				<dd>${expInactivitat ? expInactivitat : '-'}</dd>
+			</dl>
+		</div>
+	</div>
 	<h3><spring:message code="histogram.pendents.ultim.histograma"/></h3>
 	
 	<canvas id="chartEntitat" width="400" height="100"></canvas>

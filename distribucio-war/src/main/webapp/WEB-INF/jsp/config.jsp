@@ -55,9 +55,13 @@ $(document).ready(function() {
 	$(".form-update-config").submit(function(e) {
 	    e.preventDefault();
 	    let formData = new FormData(this);
+	    let key = $('input[name=key]', this).val();
 	
 	    $(this).find('button').find('i').removeClass();
 	    $(this).find('button').find('i').addClass('fa fa-circle-o-notch fa-spin');
+	    $(this).find('.info-block').empty();
+	    $(this).find('.form-group').removeClass('has-success');
+	    $(this).find('.form-group').removeClass('has-error');
 
 	    $.ajax({
 	        url: '<c:url value="/config/update"/>',
@@ -67,17 +71,26 @@ $(document).ready(function() {
 	        enctype: 'multipart/form-data',
 	        data: formData,
 	        success: function(json) {
-	
-	            if (json.error) {
-					$('#contingut-missatges').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + json.errorMsg + '</div>');
+	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            if (json.error == true) {
+		              $formElement.find('.info-block').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + json.errorMsg + '</div>');
+		              $formElement.addClass('has-error');
 				} else {
-		              var $formElement = $('span:contains("' + json.data + '")').parent().parent();
-		              $formElement.find('button').find('i').removeClass();
-		              $formElement.find('button').find('i').addClass('fa fa-edit');
-		              $formElement.find('button').blur();
 		              $formElement.find('.info-block').append('<div class="alert alert-success"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + "La propietat s'ha editat correctament" + '</div>');
 		              $formElement.addClass('has-success');
 				}
+	        },
+	        error: function(xhr, ajaxOptions, thrownError) {
+	        	console.error("Error no controlat: " + xhr );
+	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            $formElement.find('.info-block').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>Error: ' + xhr.status + ' ' + xhr.responseText + '</div>');
+	            $formElement.addClass('has-error');
+	        },
+	        complete: function() {
+	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            $formElement.find('button').find('i').removeClass();
+	            $formElement.find('button').find('i').addClass('fa fa-edit');
+	            $formElement.find('button').blur();
 	        }
 	    });
 	});

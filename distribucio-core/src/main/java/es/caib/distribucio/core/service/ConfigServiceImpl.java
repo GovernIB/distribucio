@@ -83,4 +83,11 @@ public class ConfigServiceImpl implements ConfigService {
 	public String getConcsvBaseUrl() {
 		return configHelper.getConfig("es.caib.distribucio.concsv.base.url");
 	}
+
+	@Override
+    @Transactional(readOnly=true)
+	public ConfigDto findByKey(String key) {
+        ConfigEntity configEntity = configRepository.findOne(key);
+        return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
+	}
 }
