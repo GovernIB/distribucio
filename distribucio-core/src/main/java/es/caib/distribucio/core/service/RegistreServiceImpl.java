@@ -2465,10 +2465,11 @@ public class RegistreServiceImpl implements RegistreService {
 		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	
+	/** Número de dies per programar el tancament de l'expedient a l'Arxiu, per defecte 4 anys (1461 dies). */
 	private int getPropertyExpedientDiesTancament() {
 		String numDies = configHelper.getConfig(
 				"es.caib.distribucio.tancament.expedient.dies",
-				"30");
+				"1461");
 		return Integer.parseInt(numDies);
 	}
 
