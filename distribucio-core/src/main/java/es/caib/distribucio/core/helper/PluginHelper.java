@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -46,6 +47,7 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
 /**
@@ -533,7 +535,7 @@ public class PluginHelper {
 		try {
 			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
 			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_ARXIU,
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
@@ -542,7 +544,7 @@ public class PluginHelper {
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_ARXIU,
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
@@ -555,6 +557,29 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public FitxerDto arxiuDocumentImprimible(String fitxerArxiuUuid) {
+		
+		FitxerDto fitxerDto = new FitxerDto();
+		
+		try {
+			DocumentContingut documentImprimible = getDistribucioPlugin().documentImprimible(fitxerArxiuUuid);
+			if (documentImprimible != null) {
+				fitxerDto.setNom(documentImprimible.getArxiuNom());
+				fitxerDto.setContentType(documentImprimible.getTipusMime());
+				fitxerDto.setContingut(documentImprimible.getContingut());
+				fitxerDto.setTamany(documentImprimible.getContingut().length);
+			}
+		} catch (Exception e) {
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_ARXIU,
+					"Error consultant el contingut imprimible del document " + fitxerArxiuUuid,
+					e);
+		}
+		
+		return fitxerDto;
+	}
+
 
 	public boolean isValidaSignaturaPluginActiu() {
 		return getValidaSignaturaPlugin() != null;

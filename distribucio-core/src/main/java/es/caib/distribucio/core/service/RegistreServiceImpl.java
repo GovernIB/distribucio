@@ -1479,21 +1479,11 @@ public class RegistreServiceImpl implements RegistreService {
 			Long annexId) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
 		FitxerDto fitxerDto = new FitxerDto();
-		Document document = null;
 		
 		// if annex is already created in arxiu take content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
-			document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, true);
-			if (document != null) {
-				DocumentContingut documentContingut = document.getContingut();
-				if (documentContingut != null) {
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(documentContingut.getTipusMime());
-					fitxerDto.setContingut(documentContingut.getContingut());
-					fitxerDto.setTamany(documentContingut.getContingut().length);
-				}
-			}
+			fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
 
 		// if annex is not yet created in arxiu take content from gestio documental
 		} else {

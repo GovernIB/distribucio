@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -318,6 +317,12 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	}
 	
 	@Override
+	public DocumentContingut documentImprimible(
+			String arxiuUuid) throws SistemaExternException {
+		return this.generarVersioImprimible(arxiuUuid);
+	}
+	
+	@Override
 	public void contenidorEliminar(
 			String idContingut) throws SistemaExternException {
 		String accioDescripcio = "Esborrant expedient";
@@ -611,13 +616,45 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String versio,
 			boolean ambContingut,
 			boolean ambVersioImprimible) throws SistemaExternException {
+		Document documentDetalls = null;
+		if (ambContingut && ambVersioImprimible) {
+			// Consulta els detalls i si està firmat i és pades demana la versió imprimible
+			documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, false);
+			boolean generarVersioImprimible = false;
+			if (documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
+				for (Firma firma : documentDetalls.getFirmes()) {
+					if ((firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET)
+							&& (!(getArxiuPlugin() instanceof ArxiuPluginFilesystem))) {
+						generarVersioImprimible = true;
+					}
+				}
+				if (generarVersioImprimible) {
+					documentDetalls.setContingut(
+							generarVersioImprimible(documentDetalls.getIdentificador()));
+				} else {
+					documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, true);
+				}
+			}
+		} else {
+			// Consulta dels detalls amb o sense contingut
+			documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, ambContingut);
+		}
+		return documentDetalls;
+	}
+
+	/** Obté els detalls del document amb o sense contingut depenent dels paràmetres de a funció. */
+	private Document getDocumentDetalls(
+			String arxiuUuid, 
+			String versio, 
+			boolean ambContingut) throws SistemaExternException {
+		Document documentDetalls = null;
+		
 		String accioDescripcio = "Obtenint detalls del document";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuUuid", arxiuUuid);
 		accioParams.put("versio", versio);
 		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
-		Document documentDetalls = null;
 		try {
 			documentDetalls = getArxiuPlugin().documentDetalls(
 					arxiuUuid,
@@ -645,33 +682,20 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					integracioArxiuCodi,
 					errorDescripcio,
 					ex);
-		}
-		if (ambVersioImprimible && ambContingut && documentDetalls.getFirmes() != null && !documentDetalls.getFirmes().isEmpty()) {
-			boolean generarVersioImprimible = false;
-			
-			for (Firma firma : documentDetalls.getFirmes()) {
-				if (documentDetalls.getContingut().getTipusMime().equals("application/pdf") && (firma.getTipus() == FirmaTipus.PADES || firma.getTipus() == FirmaTipus.CADES_ATT || firma.getTipus() == FirmaTipus.CADES_DET)
-						&& (!(getArxiuPlugin() instanceof ArxiuPluginFilesystem))) {
-					generarVersioImprimible = true;
-				}
-			}
-			if (generarVersioImprimible) {
-				generarVersioImprimible(documentDetalls);
-			}
-		}
+		}	
 		return documentDetalls;
 	}
-
-	private void generarVersioImprimible(
-			Document documentDetalls) throws SistemaExternException {
-		String accioDescripcio = "Generant versió imprimible del document";
+	
+	/** Crida al plugin d'Arxiu per obtenir el contingut de la versió imprimible del document. */
+	private DocumentContingut generarVersioImprimible(
+			String identificadorArxiu) throws SistemaExternException {
+		DocumentContingut documentImprimible = null;
+		String accioDescripcio = "Obtenint la versió imprimible del document";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("identificador", documentDetalls.getIdentificador());
+		accioParams.put("identificador", identificadorArxiu);
 		long t0 = System.currentTimeMillis();
 		try {
-			documentDetalls.setContingut(
-					getArxiuPlugin().documentImprimible(
-							documentDetalls.getIdentificador()));
+			documentImprimible = getArxiuPlugin().documentImprimible(identificadorArxiu);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
 					accioDescripcio,
@@ -691,6 +715,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 					errorDescripcio,
 					ex);
 		}
+		return documentImprimible;
 	}
 
 	private byte[] gestioDocumentalGet(
