@@ -319,7 +319,19 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	@Override
 	public DocumentContingut documentImprimible(
 			String arxiuUuid) throws SistemaExternException {
-		return this.generarVersioImprimible(arxiuUuid);
+		DocumentContingut documentContingut;
+		if (!(this.getArxiuPlugin() instanceof ArxiuPluginFilesystem)) {
+			documentContingut = this.generarVersioImprimible(arxiuUuid);
+		} else {
+			// Plugin Filesystem
+			// El plugin ArxiuPluginFilesystem no té el mètode implementat de versió imp
+			Document document = this.getDocumentDetalls(arxiuUuid, null, true);
+			documentContingut = document.getContingut();
+			if (documentContingut.getArxiuNom() == null) {
+				documentContingut.setArxiuNom(document.getNom());
+			}
+		}
+		return documentContingut;
 	}
 	
 	@Override
