@@ -1402,6 +1402,32 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
 		return exceptionProcessant == null;
 	}
+	
+	@Override
+	@Transactional
+	public boolean processarAnnexosAdmin(
+			Long entitatId,
+			Long registreId) {
+		logger.debug("Intentant desat d'annexos pendents de l'anotació per admins (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
+		
+		if (!usuariHelper.isAdmin())
+			entityComprovarHelper.comprovarBustia(
+				entitat,
+				anotacio.getPareId(),
+				true);
+
+		Exception exceptionProcessant = desarAnnexos(anotacio);
+		return exceptionProcessant == null;
+	}
+
 
 	@Override
 	@Transactional
@@ -2447,6 +2473,21 @@ public class RegistreServiceImpl implements RegistreService {
 					anotacio.getId(),
 					RegistreEntity.class,
 					"L'anotació de registre no es troba en estat pendent");
+		}
+		return exceptionProcessant;
+	}
+	
+
+	private Exception desarAnnexos(RegistreEntity anotacio) {
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat());		
+		Exception exceptionProcessant = null;
+		if (pendentArxiu) {			
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacio.getId());			
+		} else {
+			throw new ValidationException(
+					anotacio.getId(),
+					RegistreEntity.class,
+					"El desat d'annexos no està en estat pendent");
 		}
 		return exceptionProcessant;
 	}

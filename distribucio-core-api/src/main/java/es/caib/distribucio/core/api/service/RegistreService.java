@@ -151,6 +151,22 @@ public interface RegistreService {
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) throws NotFoundException;
+	
+	/**
+	 * Torna a processar un desat de annexos de manera manual.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param registreId
+	 *            Atribut id de l'anotació de registre que es vol desar els seus annexos.
+	 * @return true si s'ha processat sense errors o false en cas contrari.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public boolean processarAnnexosAdmin(
+			Long entitatId,
+			Long registreId) throws NotFoundException;
 
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.

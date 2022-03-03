@@ -37,6 +37,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -164,14 +165,23 @@ public class RegistreAdminController extends BaseAdminController {
 					registreId,
 					true);
 			
-			model.addAttribute(
-					"registre",
-					registreDto);
+			int numeroAnnexosPendentsArxiu = 0;
+			if (registreDto instanceof RegistreDto) {
+				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;				
+				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
+					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
+						numeroAnnexosPendentsArxiu++;
+					}
+				}
+			}
+			
+			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isVistaMoviments", false);
+			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -357,6 +367,33 @@ public class RegistreAdminController extends BaseAdminController {
 					getMessage(
 							request, 
 							"contingut.admin.controller.registre.reintentat.error",
+							null));
+		}
+		return "redirect:../../" + registreId + "/detall";
+	}
+	
+	@RequestMapping(value = "/registre/{registreId}/processarAnnexos", method = RequestMethod.GET)
+	public String processarAnnexos(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		boolean processatOk = registreService.processarAnnexosAdmin(
+				entitatActual.getId(),
+				registreId);
+		if (processatOk) {
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.desat.arxiu.ok",
+							null));
+		} else {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.desat.arxiu.error",
 							null));
 		}
 		return "redirect:../../" + registreId + "/detall";

@@ -134,6 +134,16 @@ public class RegistreServiceBean implements RegistreService {
 				entitatId,
 				registreId);
 	}
+	
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public boolean processarAnnexosAdmin(
+			Long entitatId,
+			Long registreId) {
+		return delegate.processarAnnexosAdmin(
+				entitatId,
+				registreId);
+	}
 
 	@Override
 	@RolesAllowed("tothom")

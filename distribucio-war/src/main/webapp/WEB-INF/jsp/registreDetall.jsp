@@ -1262,6 +1262,26 @@ li[id^="anotacio_"] {
 		<div class="tab-pane" id="annexos" role="tabpanel">
 			<c:choose>
 				<c:when test="${not empty registre.annexos}">
+				
+				
+					<!------ Processar desat d'annexos ------>
+					<c:if test="${numeroAnnexosPendentsArxiu > 0 }">
+						<div class="alert well-sm alert-warning alert-dismissable">
+							<span class="fa fa-exclamation-triangle"></span>							
+							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
+							<c:if test="${isRolActualAdministrador}">
+								<a href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
+							</c:if>
+						</div>
+					</c:if>
+					<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0)}">
+						<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
+				    </c:if>
+				
+				
+				
+				
+				
 					<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
 						<div class="panel panel-default">
 							<div class="panel-heading">
