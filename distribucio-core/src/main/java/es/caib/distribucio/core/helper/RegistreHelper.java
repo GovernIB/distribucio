@@ -42,6 +42,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
@@ -1518,6 +1519,138 @@ public class RegistreHelper {
 	@Transactional
 	public List<RegistreEntity> findPendentsTancarArxiu(Date date) {
 		return registreRepository.findPendentsTancarArxiu(date);
+	}
+
+	@Transactional
+	public FitxerDto getAnnexFitxer(Long annexId) {
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		FitxerDto fitxerDto = new FitxerDto();
+		
+		// if annex is already created in arxiu take content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+			
+			boolean generarVersioImprimible = this.potGenerarVersioImprimible(registreAnnexEntity);			
+			if (generarVersioImprimible) {
+				fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
+			} else {
+				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+				if (document != null) {
+					DocumentContingut documentContingut = document.getContingut();
+					if (documentContingut != null) {
+						fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+						fitxerDto.setContentType(documentContingut.getTipusMime());
+						fitxerDto.setContingut(documentContingut.getContingut());
+						fitxerDto.setTamany(documentContingut.getContingut().length);
+					}
+				}
+			}
+			
+		// if annex is not yet created in arxiu take content from gestio documental
+		} else {
+			
+			// if annex is signed with firma attached, contingut is located either in firma or in annex
+			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
+					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
+				
+				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
+				
+				if (firmaEntity.getGesdocFirmaId() != null) {
+					ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							firmaEntity.getGesdocFirmaId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+							streamAnnexFirma);
+					byte[] firmaContingut = streamAnnexFirma.toByteArray();
+					
+					fitxerDto.setNom(firmaEntity.getFitxerNom());
+					fitxerDto.setContentType(firmaEntity.getTipusMime());
+					fitxerDto.setContingut(firmaContingut);
+					fitxerDto.setTamany(firmaContingut.length);
+				}
+				
+				if (registreAnnexEntity.getGesdocDocumentId() != null) {
+					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							registreAnnexEntity.getGesdocDocumentId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							streamAnnex);
+					byte[] annexContingut = streamAnnex.toByteArray();
+					
+					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+					fitxerDto.setContingut(annexContingut);
+					fitxerDto.setTamany(annexContingut.length);
+				} 
+
+				
+			// if annex not signed or is signed with firma detached contingut is in annex	
+			} else {
+				
+				if (registreAnnexEntity.getGesdocDocumentId() != null) {
+					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							registreAnnexEntity.getGesdocDocumentId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							streamAnnex);
+					byte[] annexContingut = streamAnnex.toByteArray();
+					
+					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+					fitxerDto.setContingut(annexContingut);
+					fitxerDto.setTamany(annexContingut.length);
+					
+				} 
+			}
+		}
+
+		return fitxerDto;
+	}
+	
+	/** Llistat d'extensions convertibles. */
+	private static String[] extensionsConvertiblesPdf = {
+			"pdf", "odt", "sxw", "rtf", "doc", "wpd", "txt", "ods",
+			"sxc", "xls", "csv", "tsv", "odp", "sxi", "ppt"};
+	
+	/** Determina si generar o no la versió imprimible del document. Es demanarà la versió imprimible si està firmat i el format permet 
+	 * la conversió a PDF i si el tipus de firma és TF04, TF05 o TF06.
+	 * 
+	 * @param annex
+	 * @return
+	 */
+	private boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
+		// Si no està firmat no cal la versió imprimible
+		if (annex.getFirmes() == null || annex.getFirmes().isEmpty()) {
+			return false;
+		}
+		// Revisa que sigui convertible
+		boolean convertible = false;
+		String extensio = FilenameUtils.getExtension(annex.getFitxerNom());
+		if (extensio != null) {
+			for (int i = 0; i < extensionsConvertiblesPdf.length; i++) {
+				if (extensio.equalsIgnoreCase(extensionsConvertiblesPdf[i]))
+					convertible = true;
+			}
+		}
+		if (!convertible) {
+			return false;
+		}
+		// Comprova segons el tipus de firma
+		boolean generarVersioImprimible = false;
+		if ((annex.getFitxerNom().toLowerCase().endsWith(".pdf") 
+				|| "application/pdf".equals(annex.getFitxerTipusMime()))
+				&&  annex.getFirmes() != null 
+				&& !annex.getFirmes().isEmpty()) {
+			for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+				if (firma.getTipus() != null ) {
+					if (	   DocumentNtiTipoFirmaEnumDto.TF06.toString().equals(firma.getTipus())
+							|| DocumentNtiTipoFirmaEnumDto.TF05.toString().equals(firma.getTipus())
+							|| DocumentNtiTipoFirmaEnumDto.TF04.toString().equals(firma.getTipus()))
+					generarVersioImprimible = true;
+					break;
+				}
+			}
+		}
+		return generarVersioImprimible;
 	}
 	
 	
