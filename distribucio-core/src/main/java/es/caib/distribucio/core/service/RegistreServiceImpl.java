@@ -1542,7 +1542,10 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return fitxerDto;
 	}
-	
+
+	/** Número de threads d'execució per descarregar els annexos en paral·lel. */
+	private static final int ZIP_N_THREADS = 5;
+
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
 			Long registreId,
@@ -1561,7 +1564,7 @@ public class RegistreServiceImpl implements RegistreService {
 			if (!registre.getAnnexos().isEmpty()) {
 				Set<String> nomsArxius = new HashSet<String>();				
 				
-				ExecutorService executor = Executors.newFixedThreadPool(5);
+				ExecutorService executor = Executors.newFixedThreadPool(RegistreServiceImpl.ZIP_N_THREADS);
 				
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
