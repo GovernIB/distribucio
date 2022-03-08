@@ -507,6 +507,24 @@ li[id^="anotacio_"] {
 							<li class="<c:if test="${isAccioVisible}">hidden opt_classificar_${registre.id} disabled</c:if>"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 						</c:otherwise>
 					</c:choose>
+					
+					
+					<!-- ENVIAR VIA EMAIL -->
+					<c:choose>
+						<c:when test="${registre.procesEstat == 'ARXIU_PENDENT'} && ${!registre.reintentsEsgotat}">
+							<li class="disabled"><a id="accioEnviarEmail" href="#"><span class=""></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/> ...</a></li>
+						</c:when>
+						<c:otherwise>
+							<li class="">
+								<a id="accioEnviarViaEmail" href="../../modal/registreUser/enviarViaEmail/${registre.id}?isVistaMoviments=false" data-toggle="modal">
+									<span class="fa fa-envelope"></span>&nbsp;&nbsp;
+									<spring:message code="bustia.pendent.accio.enviarViaEmail"/> ...
+								</a>
+							</li>
+						</c:otherwise>
+					</c:choose>
+					
+					
 					<%-- REENVIAR --%>
 					<li class="<c:if test="${isAccioVisible}">hidden opt_reenviar_${registre.id}</c:if>"><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
