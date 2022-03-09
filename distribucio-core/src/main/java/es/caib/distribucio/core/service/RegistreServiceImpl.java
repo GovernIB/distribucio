@@ -1543,8 +1543,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return fitxerDto;
 	}
 
-	/** Número de threads d'execució per descarregar els annexos en paral·lel. */
-	private static final int ZIP_N_THREADS = 5;
 
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
@@ -1562,9 +1560,10 @@ public class RegistreServiceImpl implements RegistreService {
 			FitxerDto fitxer = null;
 			// Annexos
 			if (!registre.getAnnexos().isEmpty()) {
-				Set<String> nomsArxius = new HashSet<String>();				
+				Set<String> nomsArxius = new HashSet<String>();
 				
-				ExecutorService executor = Executors.newFixedThreadPool(RegistreServiceImpl.ZIP_N_THREADS);
+				int nThreads = getPropertyZipNumThrads();
+				ExecutorService executor = Executors.newFixedThreadPool(nThreads);
 				
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
@@ -2490,6 +2489,24 @@ public class RegistreServiceImpl implements RegistreService {
 		return Integer.parseInt(numDies);
 	}
 
+	/** Número de threads màxim per a la consulta y generació del .zip de documentació (per defecte 3 i com a mínim 1). */
+	private int getPropertyZipNumThrads() {
+		String numThreads = configHelper.getConfig(
+				"es.caib.distribucio.contingut.generacio.zip.num.threads",
+				"3");
+		int ret = 3;
+		try {
+			ret = Integer.parseInt(numThreads);
+			if (ret < 1) {
+				ret = 1;
+			}
+		} catch(Exception e) {
+			logger.error(
+					"Error interpretant la propietat de número de threads per la descàrrega .zip de la documentació : "
+							+ numThreads + ". Error: " + e.getMessage(),e);
+		}
+		return ret;
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 }
