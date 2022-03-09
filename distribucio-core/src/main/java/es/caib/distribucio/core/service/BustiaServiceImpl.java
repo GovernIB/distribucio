@@ -1237,7 +1237,17 @@ public class BustiaServiceImpl implements BustiaService {
 		missatge.addRecipients(RecipientType.TO,
 				InternetAddress.parse(adresses));
 		helper.setFrom(emailHelper.getRemitent());
-		helper.setSubject("Distribució: " + registre.getNom());
+		
+		
+		String entorn = configHelper.getConfig("es.caib.distribucio.default.user.entorn");
+		
+		if (entorn != null) {
+			helper.setSubject("Distribució - " + entorn + ": " + registre.getNom());
+			
+		}else {
+			helper.setSubject("Distribució: " + registre.getNom());
+		}
+		
 		messageHelper.getMessage("registre.detalls.camp.tipus");
 		
 		helper.setText(plainText, html);

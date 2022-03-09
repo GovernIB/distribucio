@@ -465,6 +465,7 @@ li[id^="anotacio_"] {
 
 </head>
 <body>
+					
 	<dis:blocContenidorPath contingut="${registre}"/>
 	
 	<c:if test="${isContingutAdmin == null}">
@@ -523,7 +524,6 @@ li[id^="anotacio_"] {
 							</li>
 						</c:otherwise>
 					</c:choose>
-					
 					
 					<%-- REENVIAR --%>
 					<li class="<c:if test="${isAccioVisible}">hidden opt_reenviar_${registre.id}</c:if>"><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>

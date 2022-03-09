@@ -58,6 +58,7 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand;
@@ -100,6 +101,8 @@ public class RegistreUserController extends BaseUserController {
 	private AplicacioService aplicacioService;	
 	@Autowired
 	private ConfigService configService;	
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -742,7 +745,12 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		
+		//PROVES
 
+		String entorn = configHelper.getConfig("es.caib.distribucio.default.user.entorn");
+		System.out.println(entorn);
+		
 		// Valida les adreces
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
 		// Valida l'estat del registre
