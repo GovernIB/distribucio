@@ -746,10 +746,6 @@ public class RegistreUserController extends BaseUserController {
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
-		//PROVES
-
-		String entorn = configHelper.getConfig("es.caib.distribucio.default.user.entorn");
-		System.out.println(entorn);
 		
 		// Valida les adreces
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
