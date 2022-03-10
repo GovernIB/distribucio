@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				
 		        executor.shutdown();
 		        while (!executor.isTerminated()) {
+		        	try {
+		        		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+		        	} catch (InterruptedException e) {}
 		        }
 		        long stopTime = new Date().getTime();
 				logger.trace("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");

@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -30,6 +33,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
@@ -1501,88 +1505,10 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public FitxerDto getAnnexFitxer(
-			Long annexId, boolean ambVersioImprimible) {
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
-		FitxerDto fitxerDto = new FitxerDto();
-		Document document = null;
-		
-		// if annex is already created in arxiu take content from arxiu
-		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-			
-			//TODO: si passes imprimible = false descarrega l'original.
-			document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, ambVersioImprimible);
-			if (document != null) {
-				DocumentContingut documentContingut = document.getContingut();
-				if (documentContingut != null) {
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(documentContingut.getTipusMime());
-					fitxerDto.setContingut(documentContingut.getContingut());
-					fitxerDto.setTamany(documentContingut.getContingut().length);
-				}
-			}
-
-		// if annex is not yet created in arxiu take content from gestio documental
-		} else {
-			
-			// if annex is signed with firma attached, contingut is located either in firma or in annex
-			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
-					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
-				
-				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
-				
-				if (firmaEntity.getGesdocFirmaId() != null) {
-					ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							firmaEntity.getGesdocFirmaId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-							streamAnnexFirma);
-					byte[] firmaContingut = streamAnnexFirma.toByteArray();
-					
-					fitxerDto.setNom(firmaEntity.getFitxerNom());
-					fitxerDto.setContentType(firmaEntity.getTipusMime());
-					fitxerDto.setContingut(firmaContingut);
-					fitxerDto.setTamany(firmaContingut.length);
-				}
-				
-				if (registreAnnexEntity.getGesdocDocumentId() != null) {
-					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnexEntity.getGesdocDocumentId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex);
-					byte[] annexContingut = streamAnnex.toByteArray();
-					
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
-					fitxerDto.setContingut(annexContingut);
-					fitxerDto.setTamany(annexContingut.length);
-				} 
-
-				
-			// if annex not signed or is signed with firma detached contingut is in annex	
-			} else {
-				
-				if (registreAnnexEntity.getGesdocDocumentId() != null) {
-					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnexEntity.getGesdocDocumentId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex);
-					byte[] annexContingut = streamAnnex.toByteArray();
-					
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
-					fitxerDto.setContingut(annexContingut);
-					fitxerDto.setTamany(annexContingut.length);
-					
-				} 
-			}
-		}
-
-		return fitxerDto;
+	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
+		return registreHelper.getAnnexFitxer(annexId, ambVersioImprimible);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getAnnexFirmaFitxer(
@@ -1638,7 +1564,8 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return fitxerDto;
 	}
-	
+
+
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
 			Long registreId,
@@ -1648,43 +1575,51 @@ public class RegistreServiceImpl implements RegistreService {
 
 		RegistreEntity registre = registreRepository.findOne(registreId);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ZipOutputStream zos = new ZipOutputStream(baos);
+		ZipOutputStream zos = new ZipOutputStream(baos);		
+		List<String> errors = new ArrayList<String>();	
 		try {
 			String nom;
 			FitxerDto fitxer = null;
 			// Annexos
 			if (!registre.getAnnexos().isEmpty()) {
 				Set<String> nomsArxius = new HashSet<String>();
-				for (RegistreAnnexEntity annex : registre.getAnnexos()) {
-					
+				
+				int nThreads = getPropertyZipNumThrads();
+				ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+				
+				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
+
 					// Filtra documents tècnics si no s'és administrador
 					if (!"tothom".equalsIgnoreCase(rolActual)
 						|| annex.getSicresTipusDocument() == null 
 						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
 					{
-						try {
-							fitxer = this.getAnnexFitxer(annex.getId(), true);
-							if (registre.getJustificant() == null || annex.getId() != registre.getJustificant().getId()) {
-								if (fitxer.getNom().startsWith(annex.getTitol())) {
-									nom = fitxer.getNom();
-								} else {
-									nom = annex.getTitol() + " - " + fitxer.getNom();
-								}
-							} else {
-								nom = fitxer.getNom();
-							}
-							ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
-							entry.setSize(fitxer.getContingut().length);
-							zos.putNextEntry(entry);
-							zos.write(fitxer.getContingut());
-							zos.closeEntry();
-						} catch (Exception e) {
-							String errMsg = "Error afegint l'annex " + annex.getTitol() + " del registre " + registre.getNumero() + " al document zip comprimit: " + e.getMessage();
-							logger.error(errMsg);
-							throw new Exception(errMsg, e);
-						}						
+						Runnable thread = new GetZipDocumentacioThread(
+								registreHelper,
+								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
+								registre.getNumero(),
+								annex.getId(),
+								annex.getTitol(),
+								annex.getFitxerNom(),
+								nomsArxius,
+								zos,
+								executor,
+								errors);
+						executor.execute(thread);
 					}
 				}
+
+				try {Thread.sleep(200);} catch(Exception e) {};				
+		        executor.shutdown();
+		        
+		        while (!executor.isTerminated()) {
+		        	try {
+		        		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+		        	} catch (InterruptedException e) {}
+		        }
+		        if (!errors.isEmpty()) {
+		        	throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+		        }
 			} else {
 				// Justificant en cas de no tenir annexos
 				try {
@@ -1700,20 +1635,99 @@ public class RegistreServiceImpl implements RegistreService {
 					logger.error(errMsg);
 					throw new Exception(errMsg, e);
 				}
-			}
+			}			
+			
 			zos.close();
-
-			zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
-			zip.setContingut(baos.toByteArray());
-			zip.setContentType("application/zip");
+			
+			if (!errors.isEmpty()) {
+				throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+			} else {	
+				zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
+				zip.setContingut(baos.toByteArray());
+				zip.setContentType("application/zip");
+				return zip;
+			}
 
 		} catch (Exception ex) {
 			String errMsg = "Error generant el .zip de documentació pel registre " + registre.getNumero() + " amb ID " + registreId + " : " + ex.getMessage();
 			logger.error(errMsg, ex);
 			throw new Exception(errMsg, ex);
 		}
-		return zip;
 	}
+	
+	/** Classe runable per obtenir el document en un thread diferent i guardar-lo en el zip.
+	 * 
+	 */
+	protected class GetZipDocumentacioThread implements Runnable {
+
+		private Long justificantId;
+		private String registreNumero;
+		private Long annexID;
+		private String annexTitol; 
+		private String annexFitxerNom;
+		private Set<String> nomsArxius;
+		private ZipOutputStream zip;
+		ExecutorService executor;
+		private List<String> errors;		
+		
+		/** Constructor amb els objectes de consulta i el zip per actualitzar. 
+		 * @param registreHelper 
+		 * @param errors 
+		 * @param errors */
+		public GetZipDocumentacioThread(
+				RegistreHelper registreHelper, 
+				Long justificantId, 
+				String registreNumero, 
+				Long annexID,
+				String annexTitol, 
+				String annexFitxerNom, 
+				Set<String> nomsArxius,
+				ZipOutputStream zip, 
+				ExecutorService executor, 
+				List<String> errors) {
+			this.justificantId = justificantId;
+			this.registreNumero = registreNumero;
+			this.annexID = annexID;
+			this.annexTitol = annexTitol;
+			this.annexFitxerNom = annexFitxerNom;
+			this.nomsArxius = nomsArxius;
+			this.zip = zip;
+			this.executor = executor;
+			this.errors = errors;			
+		}
+
+		@Transactional(propagation=Propagation.REQUIRED)
+		@Override
+		public void run() {
+			try {				
+				String nom;
+				FitxerDto fitxer = registreHelper.getAnnexFitxer(annexID, true);
+				String fitxerNom = annexFitxerNom;
+				if (justificantId == null || annexID != justificantId) {
+					if (fitxerNom.startsWith(annexTitol)) {
+						nom = fitxerNom;
+					} else {
+						nom = annexTitol + " - " + fitxerNom;
+					}
+				} else {
+					nom = fitxerNom;
+				}
+				synchronized (nomsArxius) {
+					ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
+					entry.setSize(fitxer.getContingut().length);
+					zip.putNextEntry(entry);
+					zip.write(fitxer.getContingut());
+					zip.closeEntry();
+				}
+			} catch (Throwable  e) {
+				String errMsg = "Error afegint l'annex " + annexTitol + " del registre " + registreNumero + " al document zip comprimit: " + e.getMessage();
+				logger.error(errMsg);				
+				errors.add(errMsg);
+				executor.shutdownNow();				
+			}						
+		}		
+	}
+	
 	private static String revisarContingutNom(String nom) {
 		if (nom == null) {
 			return null;
@@ -1758,7 +1772,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return arxiu;
 	}
 
-
 	@Override
 	@Transactional
 	public RegistreAnnexDto getAnnexAmbFirmes(
@@ -1783,11 +1796,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreHelper.getAnnexAmbFirmes(
 				annexId);
 	}
-
-	
-
-
-	
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -1952,10 +1960,7 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
 		registre.updateSobreescriure(true);
-	}
-	
-	
-	
+	}	
 
 	@Override
 	@Transactional
@@ -2195,11 +2200,7 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 		return annexosPerBackoffice;
-	}
-	
-	
-	
-	
+	}	
 
 	private NtiTipoDocumento toNtiTipoDocumento(RegistreAnnexNtiTipusDocumentEnum registreAnnexNtiTipusDocument){
 		NtiTipoDocumento ntiTipoDocumento = null;
@@ -2517,13 +2518,32 @@ public class RegistreServiceImpl implements RegistreService {
 		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
 	
+	/** Número de dies per programar el tancament de l'expedient a l'Arxiu, per defecte 4 anys (1461 dies). */
 	private int getPropertyExpedientDiesTancament() {
 		String numDies = configHelper.getConfig(
 				"es.caib.distribucio.tancament.expedient.dies",
-				"30");
+				"1461");
 		return Integer.parseInt(numDies);
 	}
 
+	/** Número de threads màxim per a la consulta y generació del .zip de documentació (per defecte 3 i com a mínim 1). */
+	private int getPropertyZipNumThrads() {
+		String numThreads = configHelper.getConfig(
+				"es.caib.distribucio.contingut.generacio.zip.num.threads",
+				"3");
+		int ret = 3;
+		try {
+			ret = Integer.parseInt(numThreads);
+			if (ret < 1) {
+				ret = 1;
+			}
+		} catch(Exception e) {
+			logger.error(
+					"Error interpretant la propietat de número de threads per la descàrrega .zip de la documentació : "
+							+ numThreads + ". Error: " + e.getMessage(),e);
+		}
+		return ret;
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 }

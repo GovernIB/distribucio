@@ -5,6 +5,7 @@ import java.util.Map;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentContingut;
 
 /**
  * Plugin per a la distribució de contingut contra sistemes externs
@@ -69,6 +70,18 @@ public interface DistribucioPlugin {
 			String versio,
 			boolean ambContingut,
 			boolean ambVersioImprimible) throws SistemaExternException;
+	
+	/**
+	 * Obté el contingut imprimible d'un fitxer
+	 * 
+	 * @param arxiuUuid
+	 *            identificador UUID del document creat o enviat previament
+	 * @return DocumentContingut amb el contingut imprimible.
+	 * @throws SistemaExternException
+	 *            Si hi ha hagut algun problema per dur a terme l'acció.
+	 */
+	public DocumentContingut documentImprimible (
+			String arxiuUuid) throws SistemaExternException;
 
 	/**
 	 * Elimina un contenidor creat prèviament a partir del seu UUID
