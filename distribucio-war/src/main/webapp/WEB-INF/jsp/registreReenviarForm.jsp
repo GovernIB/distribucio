@@ -250,6 +250,10 @@
 		.popover {
 			max-width: 100%;
 		}
+		.disabled {
+			pointer-events: none;
+			opacity: 0.4;
+		}
 	</style>
 	<script type="text/javascript">
 		var multiple = ${registres != null};

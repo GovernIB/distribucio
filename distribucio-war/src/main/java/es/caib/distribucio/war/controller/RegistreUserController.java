@@ -58,6 +58,8 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
@@ -1128,6 +1130,13 @@ public class RegistreUserController extends BaseUserController {
 						e.getMessage());
 			}
 		}
+		
+		/*System.out.println("Abans del BustiaHelper!");
+		System.out.println(registreId);
+		BustiaHelper bustiaHelper = new BustiaHelper();
+		BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(null, avanzarPagina);
+		System.out.println(bustiaDesti);*/
+		
 		return "registreReenviarForm";
 	}
 	
