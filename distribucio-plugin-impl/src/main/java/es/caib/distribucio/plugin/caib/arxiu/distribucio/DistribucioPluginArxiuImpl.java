@@ -383,6 +383,15 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	private String replaceIllegalCharacters(String text) {
 		text = text.replace(".", "_");
 		text = text.replace(" ", "_");
+		return removeIllegalCharacters(text);
+	}
+	private String removeIllegalCharacters(String text) {
+		if (text.contains("\n")) {
+			text = text.replace("\n", "");
+		}
+		if (text.contains("\t")) {
+			text = text.replace("\t", "");
+		}
 		return text;
 	}
 
@@ -432,10 +441,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		
 		long t0 = System.currentTimeMillis();
-		try {
-			
+		try {			
 			String annexTitol = replaceIllegalCharacters(annex.getTitol());
-			
 			annexTitol = uniqueNameArxiu(
 					annexTitol,
 					identificadorPare);
@@ -1131,6 +1138,8 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				throw new RuntimeException(e);
 			}
 		}
+		
+		this.revisarCaractersEstranys(metaDadesAddicionals);
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	
 		document.setMetadades(metadades);
@@ -1139,6 +1148,21 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 
 		return document;
 	}
+
+	/** Revisa si cap metadada de tipus String conté caràcters estranys i els elimina.
+	 * 
+	 * @param metaDadesAddicionals
+	 */
+	private void revisarCaractersEstranys(Map<String, Object> metaDadesAddicionals) {
+		for(String key : metaDadesAddicionals.keySet()) {
+			if ((metaDadesAddicionals.get(key) instanceof String)) {
+				metaDadesAddicionals.put(key, this.removeIllegalCharacters((String) metaDadesAddicionals.get(key)));
+			}
+				
+		}
+	}
+
+
 
 	private void setFirmaTipusPerfil(
 			Firma firma,
