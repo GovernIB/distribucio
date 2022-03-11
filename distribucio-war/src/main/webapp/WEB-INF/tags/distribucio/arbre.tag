@@ -54,14 +54,14 @@
 </div>
 <script>
 	window.addEventListener("load", function(event) {
-		const collection = document.getElementsByClassName("jstree-leaf");
-		for (let i = 0; i < collection.length; i++) {
-			var bustia = collection[i].innerText;
+		const bustia_collection = document.getElementsByClassName("jstree-leaf");
+		for (let i = 0; i < bustia_collection.length; i++) {
+			var bustia = bustia_collection[i].innerText;
 			if (bustia.includes("default")) {
-				//collection[i].style.display = "none";
-				collection[i].classList.add("disabled");
+				bustia_collection[i].classList.add("disabled-bustia");
+				bustia_collection[i].setAttribute('title', 'No està permés reenviar a la bústia principal de la entitat');
 			}
-		}
+		}		
 	});
 
 	(function ($) {

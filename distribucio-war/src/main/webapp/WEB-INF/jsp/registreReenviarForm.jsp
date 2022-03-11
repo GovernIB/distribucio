@@ -250,9 +250,12 @@
 		.popover {
 			max-width: 100%;
 		}
-		.disabled {
-			pointer-events: none;
+		.disabled-bustia {
+			cursor: not-allowed;
 			opacity: 0.4;
+		}
+		.disabled-bustia a, .disabled-bustia span {
+			pointer-events: none;
 		}
 	</style>
 	<script type="text/javascript">
