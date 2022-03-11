@@ -1113,7 +1113,10 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
-			model.addAttribute("destiLogic", destiLogic);
+			model.addAttribute("destiLogic", destiLogic);			
+			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.sobreescriure.anotacions.duplicades");
+			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);	
+		
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -1178,6 +1181,8 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual,
 						registreId,
 						model);
+				String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 				return "registreReenviarForm";
 			}
 			if (command.getDestins() == null || command.getDestins().length <= 0) {
@@ -1187,6 +1192,8 @@ public class RegistreUserController extends BaseUserController {
 								request, 	
 								"bustia.pendent.accio.reenviar.no.desti"));
 				model.addAttribute("maxLevel", getMaxLevelArbre());
+				String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 				return "registreReenviarForm";
 			}
 			bustiaService.registreReenviar(
@@ -1255,6 +1262,8 @@ public class RegistreUserController extends BaseUserController {
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 
 			model.addAttribute(command);
+			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
