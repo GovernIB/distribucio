@@ -54,8 +54,7 @@
 </div>
 <script>
 	window.addEventListener("load", function(event) {
-		//alert(${enabledBustiaDefecte});
-		if(${enabledBustiaDefecte == false}) {
+		if(${enabledBustiaDefecte != false}) {
 			const bustia_collection = document.getElementsByClassName("jstree-leaf");
 			for (let i = 0; i < bustia_collection.length; i++) {
 				var bustia = bustia_collection[i].innerText;

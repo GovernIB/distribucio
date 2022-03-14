@@ -1114,7 +1114,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 			model.addAttribute("destiLogic", destiLogic);			
-			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.sobreescriure.anotacions.duplicades");
+			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
 			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);	
 		
 		} catch (Exception e) {
