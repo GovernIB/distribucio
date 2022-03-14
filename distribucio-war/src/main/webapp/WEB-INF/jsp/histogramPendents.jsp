@@ -137,7 +137,7 @@ function buildChartEntitat(chart) {
 		<div class="col-sm-4">
 			<dl class="dl-horizontal">
 				<dt><spring:message code="histogram.pendents.expressio.innactivitat"/></dt>
-				<dd>${expInactivitat ? expInactivitat : '-'}</dd>
+				<dd>${(expInactivitat!=null && expInactivitat!="") ? expInactivitat : '-'}</dd>
 			</dl>
 		</div>
 	</div>
