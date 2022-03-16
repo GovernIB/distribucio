@@ -1,4 +1,4 @@
--- #401
+-- #411 Permetre configurar una adreça de correu electrònic alternativa en el perfil de l'usuari
   
 -- Oracle:
 ALTER TABLE DIS_USUARI
