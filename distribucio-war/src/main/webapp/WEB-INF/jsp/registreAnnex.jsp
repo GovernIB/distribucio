@@ -220,15 +220,24 @@
 			${annex.fitxerNom} (<span title="${annex.fitxerTamany} bytes">${annex.fitxerTamanyStr}</span>)
 		
 			<c:if test="${not empty concsvBaseUrl}">
-				<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT_ORIGINAL"/>" class="btn btn-default btn-sm pull-right arxiu-download">
-					<spring:message code="registre.annex.descarregar.original"/>
-					<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
-				</a>				
+				<a class="btn btn-default btn-sm pull-right arxiu-download"
+					<c:choose>
+					    <c:when test="${annex.fitxerArxiuUuid != null}">
+					    	href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" 
+						</c:when>    
+					    <c:otherwise>
+					        disabled="disabled" title="<spring:message code="registre.annex.descarregar.imprimible.no.disponible"/>"
+					    </c:otherwise>
+					</c:choose>
+				>
+					<spring:message code="registre.annex.descarregar.imprimible"/>
+					<span class="fa fa-print" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
+				</a>
 			</c:if>			
-			<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" class="btn btn-default btn-sm pull-right arxiu-download">
-				<spring:message code="registre.annex.descarregar.imprimible"/>
+			<a href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT_ORIGINAL"/>" class="btn btn-default btn-sm pull-right arxiu-download">
+				<spring:message code="registre.annex.descarregar.original"/>
 				<span class="fa fa-download" title="<spring:message code="registre.annex.detalls.camp.fitxer.descarregar"/>"></span>
-			</a>
+			</a>	
 
 		</td>
 	</tr>
