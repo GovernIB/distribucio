@@ -1469,7 +1469,6 @@ public class RegistreHelper {
 		if (registreAnnex.getMetaDades() != null) {
 			try {
 				metaDades = new ObjectMapper().writeValueAsString(registreAnnex.getMetaDades());
-				metaDades = this.removeIllegalCharacters(metaDades);
 			} catch (JsonProcessingException e) {
 				throw new RuntimeException(e);
 			}
@@ -1484,8 +1483,8 @@ public class RegistreHelper {
 		}
 		
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
-				this.removeIllegalCharacters(registreAnnex.getTitol()),
-				this.removeIllegalCharacters(registreAnnex.getFitxerNom()),
+				registreAnnex.getTitol(),
+				registreAnnex.getFitxerNom(),
 				registreAnnex.getFitxerTamany(),
 				registreAnnex.getFitxerArxiuUuid(),
 				registreAnnex.getEniDataCaptura(),
@@ -1706,21 +1705,5 @@ public class RegistreHelper {
 			}
 		}
 		return generarVersioImprimible;
-	}
-
-	/** Per treure els caràcters invàlids d'un text. */
-	private String removeIllegalCharacters(String text) {
-		if (text == null) {
-			return null;
-		}
-		if (text.contains("\n")) {
-			text = text.replace("\n", "");
-		}
-		if (text.contains("\t")) {
-			text = text.replace("\t", "");
-		}
-		return text;
-	}
-
-	
+	}	
 }

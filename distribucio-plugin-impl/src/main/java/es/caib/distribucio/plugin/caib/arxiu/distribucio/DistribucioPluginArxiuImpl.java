@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -380,10 +381,14 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		this.gesdocAgrupacioFirmes = gesdocAgrupacioFirmes;
 	}
 
-	private String replaceIllegalCharacters(String text) {
-		text = text.replace(".", "_");
-		text = text.replace(" ", "_");
-		return text;
+	private String revisarContingutNom(String nom) {
+		if (nom != null) {
+			String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
+			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
+			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
+		} else {
+			return null;
+		}
 	}
 
 	private String arxiuDocumentAnnexCrear(
@@ -434,16 +439,15 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		long t0 = System.currentTimeMillis();
 		try {
 			
-			String annexTitol = replaceIllegalCharacters(annex.getTitol());
-			
-			annexTitol = uniqueNameArxiu(
-					annexTitol,
+			String nom = this.uniqueNameArxiu(
+					annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
 					identificadorPare);
-			
+						
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
 					toArxiuDocument(
 							null,
-							annexTitol,
+							nom,
+							annex.getTitol(),
 							fitxer,
 							firmes,
 							null,
@@ -483,29 +487,46 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	private String uniqueNameArxiu(
 			String arxiuNom,
 			String identificadorPare) throws ArxiuException, SistemaExternException {
+		
+		// Revisa els caràcters estranys com ho fa el plugin abans comprobar si ja existeix el nom
+		arxiuNom = revisarContingutNom(arxiuNom);
+		
 
 		// geting all docuements of an expedient saved already in arxiu
 		List<ContingutArxiu> continguts = getArxiuPlugin().expedientDetalls(
 				identificadorPare,
 				null).getContinguts();
-		int ocurrences = 0;
 		if (continguts != null) {
 			List<String> nomsExistingInArxiu = new ArrayList<String>();
 			// Itreating over the files and saving their names in a List
 			for (ContingutArxiu contingut : continguts) {
 				nomsExistingInArxiu.add(contingut.getNom().toLowerCase());
 			}
-			// copying the name of the new file we try to store
-			String nName = new String(arxiuNom.toLowerCase());
 			
-			// Checking if the file name exist in the expedient
-			while (nomsExistingInArxiu.indexOf(nName.toLowerCase()) >= 0) {
-				// if it does 'ocurrences' increments
-				ocurrences++;
-				// and the number of ocurences is added to the file name
-				// and it checks again if the new file name exists
-				nName = arxiuNom + " (" + ocurrences + ")";
+			String nName = arxiuNom;
+			int ocurrences = 0;
+			if (arxiuNom.contains(".")) {
+				// Nom amb extensió
+				String name = arxiuNom.substring(0, arxiuNom.lastIndexOf('.'));
+				String extension = arxiuNom.substring(arxiuNom.lastIndexOf('.'));
+				nName = name;
+				while(nomsExistingInArxiu.indexOf((nName + extension).toLowerCase()) >= 0) {
+					ocurrences ++;
+					nName = name + " (" + ocurrences + ")";
+				}
+				nName += extension;
+
+			} else {
+				// Nom sense extensió
+				while (nomsExistingInArxiu.indexOf(nName.toLowerCase()) >= 0) {
+					// if it does 'ocurrences' increments
+					ocurrences++;
+					// and the number of ocurences is added to the file name
+					// and it checks again if the new file name exists
+					nName = arxiuNom + " (" + ocurrences + ")";
+				}
 			}
+						
 			return nName;
 		}
 		return arxiuNom;
@@ -809,6 +830,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	private Document toArxiuDocument(
 			String identificador,
 			String nom,
+			String descripcio,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes, 
 			String ntiIdentificador,
@@ -822,6 +844,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String metaDades) {
 		Document document = new Document();
 		document.setNom(nom);
+		document.setDescripcio(descripcio);
 		document.setIdentificador(identificador);
 		DocumentMetadades metadades = new DocumentMetadades();
 		metadades.setIdentificador(ntiIdentificador);

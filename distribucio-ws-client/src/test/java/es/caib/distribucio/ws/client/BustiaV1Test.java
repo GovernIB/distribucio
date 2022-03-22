@@ -79,11 +79,11 @@ public class BustiaV1Test {
 	
 	
 	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
-		put("cm:title", "Títol de l'annex");
 	    put("eni:idioma", "ca");
 	    put("eni:descripcion", "Descripció de l'annex");
 	    put("eni:resolucion", "12");
 	    put("eni:profundidad_color", "6400");
+//		put("cm:title", "Títol de l'annex");
 //	    put("eni:app_tramite_doc", "app tramite doc valor");
 //	    put("eni:organo", "Òrgan valor");
 //	    put("eni:origen", "Origen valor");
@@ -295,8 +295,8 @@ public class BustiaV1Test {
 		        } else {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
-				        		"Annex " + j,
-				        		"annex.pdf",
+				        		"Annex amb índex " + j,
+				        		"ànnex.pdf",
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
