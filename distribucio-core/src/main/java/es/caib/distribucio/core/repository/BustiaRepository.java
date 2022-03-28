@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -113,4 +114,65 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("perDefecte") boolean perDefecte,
 			@Param("activa") boolean activa,
 			Pageable pageable);
+
+	@Query("from BustiaEntity b "
+			+ "where " + 
+			" (:isNullBustiaId = true or b.id like :bustiaId) " + 
+			"and (:isNullUo = true or b.unitatOrganitzativa.codi like :uo) " + 
+			"and (:isNullUoSuperior = true or b.unitatOrganitzativa.codiUnitatSuperior like :uoSuperior) "
+			)
+	List<BustiaEntity> findBustiesPerDadesObertes(
+			@Param("isNullBustiaId") boolean isNullBustiaId, 
+			@Param("bustiaId") long bustiaId, 
+			@Param("isNullUo") boolean isNullUo, 
+			@Param("uo") String uo, 
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);	
+
+
+	@Query("from BustiaEntity b "
+			+ "where " + 
+			"(:isNullBustiaId = true or b.id like :bustiaId) " + 
+			"and (:isNullUo = true or b.unitatOrganitzativa.codi like :uo) " + 
+			"and (:isNullUoSuperior = true or b.unitatOrganitzativa.codiUnitatSuperior like :uoSuperior) "
+			)
+	List<BustiaEntity> findBustiesUsuarisPerDadesObertes(
+			@Param("isNullBustiaId") boolean isNullBustiaId, 
+			@Param("bustiaId") long bustiaId, 
+			@Param("isNullUo") boolean isNullUo, 
+			@Param("uo") String uo, 
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);
+
+
+	@Query("select b from BustiaEntity b, "
+			+ "UnitatOrganitzativaEntity uo "
+			+ "where "
+			+ "(b.unitatOrganitzativa.id = uo.id) " + 
+			"and (:isNullUoSuperior = true or uo.codi like :uoSuperior) "
+			)
+	List<BustiaEntity> findBustiesPerUnitatSuperior(
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);
+
+
+	@Query("select b from BustiaEntity b, "
+			+ "UnitatOrganitzativaEntity uo "
+			+ "where "
+			+ "(b.unitatOrganitzativa.id = uo.id) " + 
+			"and (:isNullUoSuperior = true or uo.codiUnitatSuperior like :uoSuperior) "
+			)
+	List<BustiaEntity> findBustiesPerCodiUnitatSuperior(
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);
+
+
+	@Query("from BustiaEntity b "
+			+ "where " 
+			+ ":isNullIdUnitatOrganitzativa = true or b.unitatOrganitzativa.id like :idUnitatOrganitzativa"
+			)
+	List<BustiaEntity> findBustiesPerIdUnitatOrganitzativa(
+			@Param("isNullIdUnitatOrganitzativa") boolean isNullIdUnitatOrganitzativa, 
+			@Param("idUnitatOrganitzativa") Long idUnitatOrganitzativa);
+
 }

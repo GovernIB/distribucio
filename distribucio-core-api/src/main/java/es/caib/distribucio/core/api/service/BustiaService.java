@@ -20,6 +20,8 @@ import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
@@ -128,6 +130,39 @@ public interface BustiaService {
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	/**
+	 * Consulta una bústia donat el seu id.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *             Atribut id de la bústia a trobar.
+	 * @return La bústia amb l'id especificat o null si no s'ha trobat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
+	public BustiaDto findById(
+			Long id) throws NotFoundException;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * Consulta les bústies donat el codi de la seva unitat.
@@ -420,5 +455,17 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom')")
 	public List<BustiaDto> findBustiesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
+
+	
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(
+			Long id, String uo, String uoSuperior);
+
+	
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
+			String usuari, Long id, 
+			String uo, String uoSuperior, 
+			boolean rol, boolean permis);
 
 }

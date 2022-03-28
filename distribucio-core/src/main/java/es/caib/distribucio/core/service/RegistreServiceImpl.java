@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.service;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -80,6 +82,7 @@ import es.caib.distribucio.core.api.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.core.api.service.ws.backoffice.Representant;
 import es.caib.distribucio.core.api.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -2523,7 +2526,7 @@ public class RegistreServiceImpl implements RegistreService {
 				"30");
 		return Integer.parseInt(numDies);
 	}
-
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 }
