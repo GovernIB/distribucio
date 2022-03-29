@@ -250,12 +250,26 @@
 		.popover {
 			max-width: 100%;
 		}
+		.disabled-bustia {
+			cursor: not-allowed;
+			opacity: 0.4;
+		}
+		.disabled-bustia a, .disabled-bustia span {
+			pointer-events: none;
+		}
 	</style>
 	<script type="text/javascript">
 		var multiple = ${registres != null};
 		var idsBustiesFavorits = [];
 		var idsPerConeixement = [];
 		$(document).ready(function() {
+			
+			/*if(${enabled_bustia_defecte == 'true'}){
+				alert("si" + ${enabled_bustia_defecte});
+			}else {
+				alert("no" + ${enabled_bustia_defecte});
+			}*/
+			
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 			$('#taula_coneixement').hide();
@@ -717,7 +731,7 @@
 		    });
 			return content;
 		};
-		
+
 	</script>
 </head>
 <body>
@@ -754,7 +768,7 @@
 							fullesAtributId="id" fullesAtributNom="nom" fullesAtributPare="unitatCodi"  fullesAtributInfo="perDefecte" fullesAtributInfoKey="contingut.enviar.info.bustia.defecte" 
 							fullesIcona="fa fa-inbox fa-lg" isArbreSeleccionable="${false}" isFullesSeleccionable="${true}" isOcultarCounts="${true}" isSeleccioMultiple="${true}"
 							readyCallback="readyCallback" isCheckBoxEnabled="${true}" isEnviarConeixementActiu="${isEnviarConeixementActiu}" isFavoritsPermes="${isFavoritsPermes}" labelSize="0"
-							showLabel="false" isMostrarPermisosBustiaPermes="${isMostrarPermisosBustiaPermes}"/>
+							showLabel="false" isMostrarPermisosBustiaPermes="${isMostrarPermisosBustiaPermes}" />
 
 						</div>
 					</div>

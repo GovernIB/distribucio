@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta anotació .doc " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -74,7 +74,7 @@ public class BustiaV1Test {
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
-	private static final boolean TEST_ANNEX_PDF = true;
+	private static final boolean TEST_ANNEX_PDF = false;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
@@ -306,28 +306,28 @@ public class BustiaV1Test {
 				        		"01",
 				        		firmes);
 			        } else {
+			        	annex = crearAnnex(
+				        		"Annex DOCX " + j,
+				        		"annex.docx",
+				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+				        		null,
+				        		getContingutAnnexSenseFirmaDocx(),
+				        		"0",	
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
 //			        	annex = crearAnnex(
-//				        		"Annex DOCX " + j,
-//				        		"annex.docx",
-//				        		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+//				        		"Annex XML " + j,
+//				        		"annex.xml",
+//				        		"application/xml",
 //				        		null,
-//				        		getContingutAnnexSenseFirmaDocx(),
+//				        		getContingutAltre("formulario.xml"),
 //				        		"0",
 //				        		"EE01",
 //				        		"TD01",
 //				        		"01",
 //				        		firmes);
-			        	annex = crearAnnex(
-				        		"Annex XML " + j,
-				        		"annex.xml",
-				        		"application/xml",
-				        		null,
-				        		getContingutAltre("formulario.xml"),
-				        		"0",
-				        		"EE01",
-				        		"TD01",
-				        		"01",
-				        		firmes);
 			        }
 		        }
 		        anotacio.getAnnexos().add(annex);
