@@ -34,5 +34,10 @@ public class DadesUsuariPluginMock implements DadesUsuariPlugin {
 			String grupCodi) throws SistemaExternException {
 		throw new SistemaExternException("Mètode no implementat");
 	}
+	
+	@Override
+	public String getUsuariIntegracio() {
+		return "Mock";
+	}
 
 }

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.caib.integracio.IntegracioPluginImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 
@@ -22,10 +23,6 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlugin {
-
-	
-	
-
 	
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
@@ -87,6 +84,13 @@ public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlu
 	@Override
 	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
 		return new UnitatOrganitzativa("E00003601", "Ministerio de Fomento","EA9999999", "E00003601","V", null);
+	}
+
+
+
+	@Override
+	public String getUsuariIntegracio() {
+		return "Mock";
 	}
 	
 

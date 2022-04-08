@@ -23,6 +23,7 @@ public class IntegracioAccioDto implements Serializable {
 	private IntegracioAccioTipusEnumDto tipus;
 	private long tempsResposta;
 	private IntegracioAccioEstatEnumDto estat;
+	private String usuariIntegracio;
 	private EntitatDto entitat;
 	private String errorDescripcio;
 	private String excepcioMessage;
@@ -77,6 +78,12 @@ public class IntegracioAccioDto implements Serializable {
 	}
 	public void setEstat(IntegracioAccioEstatEnumDto estat) {
 		this.estat = estat;
+	}
+	public String getUsuariIntegracio() {
+		return usuariIntegracio;
+	}
+	public void setUsuariIntegracio(String usuariIntegracio) {
+		this.usuariIntegracio = usuariIntegracio;
 	}
 	public EntitatDto getEntitat() {
 		return entitat;

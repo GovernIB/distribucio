@@ -22,11 +22,13 @@ import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
@@ -58,6 +60,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private IntegracioHelper integracioHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
+	@Autowired
+	private AplicacioService aplicacioService;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
@@ -94,6 +98,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			}
 		}
 		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
 		accioParams.put("unitatAdministrativa", unitatAdministrativa);
@@ -140,6 +145,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_BUSTIAWS,
 						accioDescripcio,
+						usuariIntegracio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.RECEPCIO,
 						System.currentTimeMillis() - t0);
@@ -161,6 +167,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BUSTIAWS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
@@ -383,6 +390,11 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	    return false;
 	}
 
+	private String getUsuariIntegracio() {
+		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
+		return usuariDto.getCodi();
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaV1WsServiceImpl.class);
 
 }

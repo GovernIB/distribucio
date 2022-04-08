@@ -32,6 +32,7 @@ import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
 import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
 import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.caib.integracio.IntegracioPluginImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
@@ -42,7 +43,6 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlugin {
-
 	
 	@Override
 	public UnitatOrganitzativa findUnidad(
@@ -270,6 +270,11 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	private String getServiceCercaUrl() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.unitats.cerca.dir3.service.url");
+	}
+
+	@Override
+	public String getUsuariIntegracio() {
+		return getServiceUsername();
 	}
 
 }

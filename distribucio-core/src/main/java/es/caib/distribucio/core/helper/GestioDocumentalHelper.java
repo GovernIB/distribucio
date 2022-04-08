@@ -18,7 +18,9 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -38,20 +40,20 @@ public class GestioDocumentalHelper {
 	private ConfigHelper configHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
+	@Autowired
+	private AplicacioService aplicacioService;
 	
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
 	public static final String GESDOC_AGRUPACIO_CERTIFICACIONS = "certificacions";
-	public static final String GESDOC_AGRUPACIO_NOTIFICACIONS = "notificacions";
-	
-	
-	
+	public static final String GESDOC_AGRUPACIO_NOTIFICACIONS = "notificacions";	
 	
 	public void gestioDocumentalGet(
 			String id,
 			String agrupacio,
 			OutputStream contingutOut) {
 		String accioDescripcio = "Consultant document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", id);
 		accioParams.put("agrupacio", agrupacio);
@@ -66,6 +68,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -74,6 +77,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -90,6 +94,7 @@ public class GestioDocumentalHelper {
 			String agrupacio,
 			byte[] contingut) {
 		String accioDescripcio = "Creant nou document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariIntegracio();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("agrupacio", agrupacio);
 		int contingutLength = contingut != null ? contingut.length : 0;
@@ -106,6 +111,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -115,6 +121,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -133,6 +140,7 @@ public class GestioDocumentalHelper {
 			String id,
 			String agrupacio) {
 		String accioDescripcio = "Esborrant document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", id);
 		accioParams.put("agrupacio", agrupacio);
@@ -146,6 +154,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -154,6 +163,7 @@ public class GestioDocumentalHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -282,6 +292,10 @@ public class GestioDocumentalHelper {
 				"es.caib.distribucio.plugin.gesdoc.class");
 	}
 	
+	private String getUsuariIntegracio() {
+		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
+		return usuariDto.getCodi();
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(GestioDocumentalHelper.class);
 
