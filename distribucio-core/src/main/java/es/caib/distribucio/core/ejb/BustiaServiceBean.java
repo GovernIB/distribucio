@@ -24,6 +24,8 @@ import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
@@ -90,6 +92,13 @@ public class BustiaServiceBean implements BustiaService {
 			Long id) {
 		return delegate.findById(entitatId, id);
 	}
+	
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "tothom"})
+	public BustiaDto findById(
+			Long id) {
+		return delegate.findById(id);
+	}	
 
 	@Override
 	@RolesAllowed("DIS_ADMIN")
@@ -323,4 +332,17 @@ public class BustiaServiceBean implements BustiaService {
 	public List<BustiaDto> findBustiesPerUsuari(Long entitatId, boolean mostrarInactives) {
 		return delegate.findBustiesPerUsuari(entitatId, mostrarInactives);
 	}
+
+	@Override
+	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN"})
+	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(Long id, String uo, String uoSuperior) {
+		return delegate.findBustiesPerDadesObertes(id, uo, uoSuperior);
+	}
+
+	@Override
+	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(String usuari, Long id, String uo,
+			String uoSuperior, boolean rol, boolean permis) {
+		return delegate.findBustiesUsuarisPerDadesObertes(usuari, id, uo, uoSuperior, rol, permis);
+	}
+	
 }

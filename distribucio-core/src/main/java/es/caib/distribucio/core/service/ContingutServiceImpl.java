@@ -3,12 +3,16 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +31,17 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -50,10 +57,12 @@ import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
+import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
+import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
 
 /**
@@ -103,6 +112,10 @@ public class ContingutServiceImpl implements ContingutService {
 	private RegistreHelper registreHelper;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private BustiaRepository bustiaRepository;	
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
 
 	@Transactional(readOnly = true)
@@ -560,7 +573,155 @@ public class ContingutServiceImpl implements ContingutService {
 				"30");
 		return Integer.parseInt(numDies);
 	}
+	
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<LogsDadesObertesDto> findLogsDetallsPerData(Date dataInici, Date dataFi, String tipus, String usuari,
+			Long anotacioId, String anotacioEstat, Boolean errorEstat, Boolean pendent, Long bustiaOrigen, Long bustiaDesti,
+			String uoOrigen, String uoSuperior, String uoDesti, String uoDestiSuperior) {
+
+
+		List<LogsDadesObertesDto> resultat = new ArrayList<LogsDadesObertesDto>();
+		ContingutTipusEnumDto tipusEnum = null;
+		RegistreProcesEstatEnum anotacioEstatEnum = null;
+		
+		if (tipus != null) {
+			tipus = tipus.toUpperCase();
+			tipusEnum = ContingutTipusEnumDto.valueOf(tipus);
+		}
+		
+		if (anotacioEstat != null) {
+			anotacioEstat = anotacioEstat.toUpperCase();
+			anotacioEstatEnum = RegistreProcesEstatEnum.valueOf(anotacioEstat);
+		}
+		
+		List<ContingutLogEntity> continguts = contingutLogRepository.findLogsPerDadesObertes(
+				dataInici, 
+				dataFi, 
+				tipusEnum == null, 
+				tipusEnum != null ? tipusEnum : tipusEnum,
+				usuari == null || usuari.isEmpty(), 
+				usuari != null && !usuari.isEmpty() ? usuari : "",
+				anotacioId == null, 
+				anotacioId != null ? anotacioId : 0L, 
+				anotacioEstatEnum == null, 
+				anotacioEstatEnum != null ? anotacioEstatEnum : anotacioEstatEnum, 
+				errorEstat == null,
+				errorEstat != null ? errorEstat : errorEstat, 
+				pendent == null, 
+				pendent != null ? pendent : pendent, 
+				bustiaOrigen == null, 
+				bustiaOrigen != null ? bustiaOrigen : 0L, 
+				bustiaDesti == null, 
+				bustiaDesti != null ? bustiaDesti : 0L,
+				uoOrigen == null || uoOrigen.isEmpty(),  
+				uoOrigen != null && !uoOrigen.isEmpty() ? uoOrigen : "", 
+				uoSuperior == null || uoSuperior.isEmpty(), 
+				uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : "", 
+				uoDesti == null || uoDesti.isEmpty(),  
+				uoDesti != null && !uoDesti.isEmpty() ? uoDesti : "", 
+				uoDestiSuperior == null || uoDestiSuperior.isEmpty(), 
+				uoDestiSuperior != null && !uoDestiSuperior.isEmpty() ? uoDestiSuperior : ""
+				);
+		
+		for(ContingutLogEntity contingut : continguts) {
+			LogsDadesObertesDto logDOdto = new LogsDadesObertesDto();
+			RegistreEntity registreEntity = registreRepository.findOne(contingut.getContingut().getId());
+			DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			String strDate = dateFormat.format(contingut.getCreatedDate().toDate());
+			try {
+				logDOdto.setData(strDate);
+			} catch (ParseException e1) {
+				
+				e1.printStackTrace();
+			}
+			logDOdto.setTipus(contingut.getContingut().getTipus().name()); 
+			logDOdto.setTipusDesc(contingut.getTipus().name());
+			
+			try {
+				logDOdto.setUsuari(contingut.getCreatedBy().getCodi());
+			}catch (NullPointerException e) {
+				logDOdto.setUsuari("");
+			}
+			
+			logDOdto.setAnotacioId(contingut.getId()); 
+			logDOdto.setAnotacioEstat(registreEntity.getProcesEstat().toString());
+			logDOdto.setAnotacioEstatDesc(registreEntity.getExtracte()); 
+			logDOdto.setAnotacioError(new Boolean(registreEntity.getArxiuTancatError()).toString());
+			logDOdto.setAnotacioErrorDesc(registreEntity.getProcesError());
+			logDOdto.setPendent(registreEntity.getPendent());			
+			logDOdto.setnAnnexos((long)registreEntity.getAnnexos().size()); 
+			
+			try {
+				logDOdto.setBustiaOrigenId(contingut.getContingutMoviment().getOrigenId());
+				logDOdto.setBustiaOrigenNom(contingut.getContingutMoviment().getOrigenNom());
+			}catch (NullPointerException e) {
+				logDOdto.setBustiaOrigenId((long)0);
+				logDOdto.setBustiaOrigenNom("");
+			}
+			try {
+				logDOdto.setBustiaDestiId(contingut.getContingutMoviment().getDestiId());
+				logDOdto.setBustiaDestiNom(contingut.getContingutMoviment().getDestiNom());
+			}catch (NullPointerException e) {
+				logDOdto.setBustiaDestiId((long)0);
+				logDOdto.setBustiaDestiNom("");
+			}
+			
+			try {
+				BustiaEntity bustiaEntity = bustiaRepository.getOne(contingut.getContingutMoviment().getOrigenId());
+				UnitatOrganitzativaEntity uoEntityOrigen = unitatOrganitzativaRepository.findByCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+				logDOdto.setUoOrigenCodi(uoEntityOrigen.getCodi());
+				logDOdto.setUoOrigenNom(uoEntityOrigen.getDenominacio());
+				logDOdto.setUoSuperirOrigenCodi(uoEntityOrigen.getCodiUnitatSuperior());
+				if (uoEntityOrigen.getCodiUnitatSuperior().contains("A99999") && uoSuperior == null) {
+					uoSuperior = registreEntity.getEntitatCodi();
+				}else if(!uoEntityOrigen.getCodiUnitatSuperior().contains("A99999") && uoSuperior == null) {
+					uoSuperior = uoEntityOrigen.getCodiUnitatSuperior();
+				}
+				UnitatOrganitzativaEntity uoSuperiorEntityOrigen = unitatOrganitzativaRepository.findByCodi(uoSuperior);
+				logDOdto.setUoSuperiorOrigenNom(uoSuperiorEntityOrigen.getDenominacio());
+			
+			} catch (NullPointerException e) {
+				e.getMessage();
+				
+			} catch (EntityNotFoundException e2) {
+				e2.getMessage();			
+			}
+			
+
+			try {
+				BustiaEntity bustiaEntity = bustiaRepository.getOne(contingut.getContingutMoviment().getDestiId());
+				UnitatOrganitzativaEntity uoEntityDesti = unitatOrganitzativaRepository.findByCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+				logDOdto.setUoDestiCodi(uoEntityDesti.getCodi());
+				logDOdto.setUoDestiNom(uoEntityDesti.getDenominacio());
+				logDOdto.setUoSuperiorDestiCodi(uoEntityDesti.getCodiUnitatSuperior());
+				if (uoEntityDesti.getCodiUnitatSuperior().contains("A99999") && uoDestiSuperior == null) {
+					uoDestiSuperior = registreEntity.getEntitatCodi();;
+				}else if (!uoEntityDesti.getCodiUnitatSuperior().contains("A99999") && uoDestiSuperior == null) {
+					uoDestiSuperior = uoEntityDesti.getCodiUnitatSuperior();
+				}
+				UnitatOrganitzativaEntity uoSuperiorEntityDesti = unitatOrganitzativaRepository.findByCodi(uoDestiSuperior);
+				logDOdto.setUoSuperiorDestiNom(uoSuperiorEntityDesti.getDenominacio());
+			
+			} catch (NullPointerException e) {
+				e.getMessage();
+			
+			} catch (EntityNotFoundException e2) {
+				e2.getMessage();		
+			}
+			
+			resultat.add(logDOdto);
+		}
+		
+		return resultat;
+	}
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
+
+
 
 }

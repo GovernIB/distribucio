@@ -55,6 +55,8 @@ import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
@@ -63,6 +65,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
@@ -172,6 +175,9 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Autowired
 	private ConfigHelper configHelper;
+	
+	@Autowired
+	private UnitatOrganitzativaService uoService;
 	
 	@Override
 	@Transactional
@@ -553,6 +559,26 @@ public class BustiaServiceImpl implements BustiaService {
 		return resposta;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public BustiaDto findById(
+			Long id) {
+		logger.trace("Cercant la bústia (" + "id=" + id + ")");
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				id,
+				false);
+		BustiaDto resposta = bustiaHelper.toBustiaDto(
+				bustia,
+				false,
+				false,
+				true);
+		// Ompl els permisos
+		List<BustiaDto> llista = new ArrayList<BustiaDto>();
+		llista.add(resposta);
+		omplirPermisosPerBusties(llista, true);
+		return resposta;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
@@ -2964,6 +2990,370 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	private boolean isPermesSobreescriureAnotacions() {
 		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
 	}
+	
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(
+			Long id, 
+			String uo, 
+			String uoSuperior) {
+
+		List<BustiaDadesObertesDto> resultat = new ArrayList<BustiaDadesObertesDto>();
+
+		if (id == null && uo == null && uoSuperior != null) {			
+			List<BustiaEntity> busties = bustiaRepository.findBustiesPerUnitatSuperior(
+					uoSuperior == null || uoSuperior.isEmpty(),
+					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+					);
+
+			if (busties.isEmpty()) {
+				List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findPerCodiUnitatSuperior(
+						uoSuperior == null || uoSuperior.isEmpty(),
+						uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+						);
+				
+				for (UnitatOrganitzativaEntity u : llistatUO) {
+					uoSuperior = u.getCodi();	
+					List<BustiaEntity> bustiesllistat = bustiaRepository.findBustiesPerCodiUnitatSuperior(
+							uoSuperior == null || uoSuperior.isEmpty(),
+							uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+							);		
+					
+					for (BustiaEntity bustia : bustiesllistat) {
+						BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
+						
+						resultat.add(bustiaDOdto);		
+						
+						UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustia.getUnitatOrganitzativa().getCodi());
+						
+						if (uoInferior.getDenominacio().equals(bustia.getNom())) {
+							List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
+							for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
+								resultat.add(bustiaNivellInferior);
+							}					
+						}
+					}
+				}
+			}else {
+				for (BustiaEntity bustia : busties) {
+					BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
+					
+					resultat.add(bustiaDOdto);		
+					
+					UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustia.getUnitatOrganitzativa().getCodi());
+					
+					if (uoInferior.getDenominacio().equals(bustia.getNom())) {
+						List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
+						for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
+							resultat.add(bustiaNivellInferior);
+						}					
+					}
+				}
+				
+			}
+		  
+		} else {
+			
+			List<BustiaEntity> busties = bustiaRepository.findBustiesPerDadesObertes(
+					id == null,
+					id != null? id : 0L,
+					uo == null || uo.isEmpty(),
+					uo != null && !uo.isEmpty() ? uo : "",
+					uoSuperior == null || uoSuperior.isEmpty(),
+					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : "");
+			
+			for (BustiaEntity bustia : busties ) {
+				BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
+				
+				resultat.add(bustiaDOdto);			
+			}
+		}		
+		
+		return resultat;	
+		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(String usuari, Long id, String uo,
+			String uoSuperior, boolean rol, boolean permis) {
+
+		List<UsuariDadesObertesDto> resultat = new ArrayList<UsuariDadesObertesDto>();
+		
+		if (id == null && uo == null && uoSuperior != null) {
+			List<BustiaEntity> busties = bustiaRepository.findBustiesPerUnitatSuperior(
+					uoSuperior == null || uoSuperior.isEmpty(),
+					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+					);
+
+			if (busties.isEmpty()) {
+				List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findPerCodiUnitatSuperior(
+						uoSuperior == null || uoSuperior.isEmpty(),
+						uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+						);
+				
+				for (UnitatOrganitzativaEntity u : llistatUO) {
+					uoSuperior = u.getCodi();	
+					List<BustiaEntity> bustiesllistat = bustiaRepository.findBustiesPerCodiUnitatSuperior(
+							uoSuperior == null || uoSuperior.isEmpty(),
+							uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
+							);		
+					
+					for (BustiaEntity usuariBustia : bustiesllistat) {
+						List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
+						for (UsuariPermisDto usuariPermis : usuarisPermis) {
+							List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
+							for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
+								resultat.add(usuariDto);								
+							}
+						}	
+						
+						UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(usuariBustia.getUnitatOrganitzativa().getCodi());
+						if (uoInferior.getDenominacio().equals(usuariBustia.getNom())) {
+							List<UsuariDadesObertesDto> bustiesNivellInferior = cercarUsuarisBustiesNivellInferior(uoInferior.getCodi(), usuari, rol, permis);
+							for (UsuariDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
+								resultat.add(bustiaNivellInferior);
+							}					
+						}
+						
+					}	
+				}
+			}else {
+				for (BustiaEntity usuariBustia : busties) {
+					List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
+					for (UsuariPermisDto usuariPermis : usuarisPermis) {
+						List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
+						for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
+							resultat.add(usuariDto);								
+						}
+					}	
+					
+					UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(usuariBustia.getUnitatOrganitzativa().getCodi());
+					if (uoInferior.getDenominacio().equals(usuariBustia.getNom())) {
+						List<UsuariDadesObertesDto> bustiesNivellInferior = cercarUsuarisBustiesNivellInferior(uoInferior.getCodi(), usuari, rol, permis);
+						for (UsuariDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
+							resultat.add(bustiaNivellInferior);
+						}					
+					}
+					
+				}	
+				
+			}			
+			
+		}else {
+			List<BustiaEntity> usuarisBusties = bustiaRepository.findBustiesPerDadesObertes(
+					/*usuari == null || usuari.isEmpty(), 
+					usuari != null && !usuari.isEmpty() ? usuari : "",*/
+					id == null,
+					id != null? id : 0L,
+					uo == null || uo.isEmpty(),
+					uo != null && !uo.isEmpty() ? uo : "",
+					uoSuperior == null || uoSuperior.isEmpty(),
+					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""/*, 
+					rol, 
+					permis*/);
+			
+			for (BustiaEntity usuariBustia : usuarisBusties) {
+				List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
+				for (UsuariPermisDto usuariPermis : usuarisPermis) {
+					List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
+					for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
+						resultat.add(usuariDto);								
+					}
+				}
+				
+			}
+		
+		}		
+
+		return resultat;
+	}
+	
+	private List<BustiaDadesObertesDto> cercarBustiesNivellInferior(String codiUOInferior) {
+		
+		List<BustiaDadesObertesDto> llistatBusties = new ArrayList<BustiaDadesObertesDto>();
+		
+		List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findByCodiUnitatSuperior(
+				codiUOInferior == null || codiUOInferior.isEmpty(),
+				codiUOInferior != null && !codiUOInferior.isEmpty() ? codiUOInferior : ""
+				);
+		for (UnitatOrganitzativaEntity uoe : llistatUO) {
+			Long idBustiaInferior = uoe.getId();
+			List<BustiaEntity> llistatBustiesUnitatInferior = bustiaRepository.findBustiesPerIdUnitatOrganitzativa(
+					idBustiaInferior == null,
+					idBustiaInferior != null? idBustiaInferior : 0L
+					);
+			
+			for (BustiaEntity bustiaInferior : llistatBustiesUnitatInferior) {
+				BustiaDadesObertesDto bustiaDOdtoInferior = new BustiaDadesObertesDto();
+				String codiUOSbustiaInferior = bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior();
+				
+				if (codiUOSbustiaInferior.contains("A999999")) {
+					codiUOSbustiaInferior = bustiaInferior.getEntitat().getCodiDir3();
+				}
+				bustiaDOdtoInferior.setId(bustiaInferior.getId());
+				bustiaDOdtoInferior.setNom(bustiaInferior.getNom());
+				bustiaDOdtoInferior.setUO(bustiaInferior.getUnitatOrganitzativa().getCodi());
+				bustiaDOdtoInferior.setUoNom(bustiaInferior.getUnitatOrganitzativa().getDenominacio());
+				bustiaDOdtoInferior.setUOsuperior(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());	
+				UnitatOrganitzativaDto uoDtoInferior = uoService.findByCodi(codiUOSbustiaInferior);
+				bustiaDOdtoInferior.setUOsuperiorNom(uoDtoInferior.getNom());		
+				
+				llistatBusties.add(bustiaDOdtoInferior);		
+				
+				UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustiaInferior.getUnitatOrganitzativa().getCodi());
+				
+				if (uoInferior.getDenominacio().equals(bustiaInferior.getNom())) {
+					List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
+					for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
+						llistatBusties.add(bustiaNivellInferior);
+					}					
+				}
+			}	
+		}
+		
+		return llistatBusties;	
+	}
+	
+	private List<UsuariDadesObertesDto> cercarUsuarisBustiesNivellInferior(String codiUOInferior, String usuari, boolean rol, boolean permis) {
+
+		List<UsuariDadesObertesDto> llistatBusties = new ArrayList<UsuariDadesObertesDto>();
+		
+		List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findByCodiUnitatSuperior(
+				codiUOInferior == null || codiUOInferior.isEmpty(),
+				codiUOInferior != null && !codiUOInferior.isEmpty() ? codiUOInferior : ""
+				);
+		for (UnitatOrganitzativaEntity uoe : llistatUO) {
+			Long idBustiaInferior = uoe.getId();
+			List<BustiaEntity> llistatBustiesUnitatInferior = bustiaRepository.findBustiesPerIdUnitatOrganitzativa(
+					idBustiaInferior == null,
+					idBustiaInferior != null? idBustiaInferior : 0L
+					);
+			
+			for (BustiaEntity bustiaInferior : llistatBustiesUnitatInferior) {
+				List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(bustiaInferior.getId());
+				for (UsuariPermisDto usuariPermis : usuarisPermis) {
+					UsuariDadesObertesDto usuariDOdto = new UsuariDadesObertesDto();	
+					boolean teRol;
+					if (usuariPermis.getRols().contains(bustiaInferior.getCreatedBy().getRolActual())) {
+						teRol = true;
+					}else {
+						teRol = false;
+					}
+					if (usuari != null && usuari.equals(usuariPermis.getCodi()) || usuari == null) {
+						if (usuariPermis.isHasUsuariPermission() == permis 
+							&& teRol == rol) {
+							usuariDOdto.setUsuari(usuariPermis.getCodi());
+							usuariDOdto.setUsuariNom(usuariPermis.getNom());
+							usuariDOdto.setBustiaId(bustiaInferior.getId());
+							usuariDOdto.setBustiaNom(bustiaInferior.getNom());
+							usuariDOdto.setUo(bustiaInferior.getUnitatOrganitzativa().getCodi());
+							usuariDOdto.setUoNom(bustiaInferior.getUnitatOrganitzativa().getDenominacio());
+							usuariDOdto.setUoSuperior(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());
+							UnitatOrganitzativaDto uoSuperiorEntity = new UnitatOrganitzativaDto();
+							if (bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior().contains("A99999")) {
+								uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustiaInferior.getEntitat().getCodiDir3());
+							} else {
+								uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());
+							}
+							usuariDOdto.setUoSuperiorNom(uoSuperiorEntity.getDenominacio());
+							usuariDOdto.setRol(rol);						
+							usuariDOdto.setPermis(usuariPermis.isHasUsuariPermission());
+					
+							llistatBusties.add(usuariDOdto);	
+							
+						}	
+					}
+				}
+				
+			}
+		}
+		
+		return llistatBusties;	
+	}
+	
+	private BustiaDadesObertesDto adBustiaDto(BustiaEntity bustia) {
+		BustiaDadesObertesDto bustiaDOdto = new BustiaDadesObertesDto();
+		String codiUOsuperior = bustia.getUnitatOrganitzativa().getCodiUnitatSuperior();
+		
+		if (codiUOsuperior.contains("A999999")) {
+			codiUOsuperior = bustia.getEntitat().getCodiDir3();
+		}
+		bustiaDOdto.setId(bustia.getId());
+		bustiaDOdto.setNom(bustia.getNom());
+		bustiaDOdto.setUO(bustia.getUnitatOrganitzativa().getCodi());
+		bustiaDOdto.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
+		bustiaDOdto.setUOsuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());	
+		UnitatOrganitzativaDto uoDtosuperior = uoService.findByCodi(codiUOsuperior);
+		String nomUnitatSuperior = CercarNomUnitatSuperior(uoDtosuperior.getCodi());
+		bustiaDOdto.setUOsuperiorNom(nomUnitatSuperior);
+		
+		return bustiaDOdto;
+	}
+	
+	private List<UsuariDadesObertesDto> adUsuariDto(String usuari, UsuariPermisDto usuariPermis, BustiaEntity usuariBustia, boolean rol, boolean permis) {
+		List<UsuariDadesObertesDto> resultat = new ArrayList<UsuariDadesObertesDto>();
+		UsuariDadesObertesDto usuariDOdto = new UsuariDadesObertesDto();
+		
+		boolean teRol;
+		if (usuariPermis.getRols().contains(usuariBustia.getCreatedBy().getRolActual())) {
+			teRol = true;
+		}else {
+			teRol = false;
+		}
+		if (usuari != null && usuari.equals(usuariPermis.getCodi()) || usuari == null) {
+			
+			if (usuariPermis.isHasUsuariPermission() == permis 
+				&& teRol == rol) {
+				usuariDOdto.setUsuari(usuariPermis.getCodi());
+				usuariDOdto.setUsuariNom(usuariPermis.getNom());
+				usuariDOdto.setBustiaId(usuariBustia.getId());
+				usuariDOdto.setBustiaNom(usuariBustia.getNom());
+				usuariDOdto.setUo(usuariBustia.getUnitatOrganitzativa().getCodi());
+				usuariDOdto.setUoNom(usuariBustia.getUnitatOrganitzativa().getDenominacio());
+				usuariDOdto.setUoSuperior(usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
+				UnitatOrganitzativaDto uoSuperiorEntity = new UnitatOrganitzativaDto();
+				if (usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior().contains("A99999")) {
+					uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(usuariBustia.getEntitat().getCodiDir3());
+				} else {
+					uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
+				}
+				usuariDOdto.setUoSuperiorNom(uoSuperiorEntity.getDenominacio());
+				usuariDOdto.setRol(rol);						
+				usuariDOdto.setPermis(usuariPermis.isHasUsuariPermission());
+		
+				resultat.add(usuariDOdto);		
+				
+			}									
+		}
+		
+		return resultat;
+		
+	}
+	
+	private String CercarNomUnitatSuperior (String codi) {
+		String nomUnitatSuperior = "";
+		boolean continuaCercant = true;
+		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodi(codi);
+		System.out.println();
+		while(continuaCercant) {
+			if (unitatOrganitzativaEntity.getCodiUnitatSuperior().equals(unitatOrganitzativaEntity.getCodiDir3Entitat()) 
+				|| unitatOrganitzativaEntity.getCodiUnitatSuperior().contains("A99999")) {
+				nomUnitatSuperior = unitatOrganitzativaEntity.getDenominacio();
+				continuaCercant = false;
+			}else {
+				String codiSuperior = unitatOrganitzativaEntity.getCodiUnitatSuperior();
+				unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodi(codiSuperior);
+			}
+		}
+		
+		return nomUnitatSuperior;
+	}
+	
+
+	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
 
 }

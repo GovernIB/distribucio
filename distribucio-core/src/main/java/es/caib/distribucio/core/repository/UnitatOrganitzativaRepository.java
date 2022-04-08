@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
@@ -169,5 +170,30 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	List<Long> findUnitatsIdsAmbBustiaPerCodis(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("codisUO") List<String> codisUO);
+	
+	
+
+	
+	/** 
+	 */
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			":isNullUoSuperior = true or uo.codiUnitatSuperior like :uoSuperior ")
+	List<UnitatOrganitzativaEntity> findByCodiUnitatSuperior(
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);
+	
+
+
+
+	@Query("from UnitatOrganitzativaEntity uo "
+			+ "where "
+			+ "(:isNullUoSuperior = true or uo.codiUnitatSuperior like :uoSuperior) "
+			)
+	List<UnitatOrganitzativaEntity> findPerCodiUnitatSuperior(
+			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
+			@Param("uoSuperior") String uoSuperior);
+	
 	
 }

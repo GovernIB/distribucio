@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.caib.distribucio</groupId>
 	<artifactId>distribucio</artifactId>
@@ -38,6 +37,7 @@
 	<modules>
 		<module>distribucio-core</module>
 		<module>distribucio-war</module>
+	    <module>distribucio-api-externa</module>
 		<module>distribucio-core-api</module>
 		<module>distribucio-ear</module>
 		<module>distribucio-lib-common</module>
@@ -45,7 +45,7 @@
 		<module>distribucio-plugin-impl</module>
 		<module>distribucio-ws-client</module>
 		<module>distribucio-backoffice-utils</module>
-	</modules>
+  </modules>
 	<build>
 		<plugins>
 			<plugin>
@@ -109,4 +109,11 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
+		</dependency>
+	</dependencies>
 </project>

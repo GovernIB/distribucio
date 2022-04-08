@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>distribucioapi</display-name>
+  
+  	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/${application.context}</param-value>
+	</context-param>
+  
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+  </welcome-file-list>
+
+	<filter>
+		<filter-name>CharacterEncoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Govern de les Illes Balears</realm-name>
+	</login-config>
+
+
+	<security-role>
+		<role-name>DIS_SUPER</role-name>
+	</security-role>
+	<security-role>
+		<role-name>DIS_ADMIN</role-name>
+	</security-role>
+	<security-role>
+		<role-name>DIS_REPORT</role-name>
+	</security-role>
+	<security-role>
+		<role-name>DIS_BSTWS</role-name>
+	</security-role>
+	<security-role>
+		<role-name>tothom</role-name>
+	</security-role>
+ 
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>All areas</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>DIS_SUPER</role-name>
+			<role-name>DIS_ADMIN</role-name>
+			<role-name>DIS_REPORT</role-name>
+			<role-name>DIS_BSTWS</role-name>
+			<role-name>tothom</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/error</location>
+	</error-page>
+  
+  <servlet>
+        <servlet-name>apiexterna</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>apiexterna</servlet-name>
+	  <url-pattern>/</url-pattern>
+      <url-pattern>/welcome.jsp</url-pattern>
+      <url-pattern>/index.jsp</url-pattern>
+      <url-pattern>/welcome.html</url-pattern>
+      <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+</web-app>
+
+
+ 

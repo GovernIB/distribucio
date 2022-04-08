@@ -62,7 +62,9 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 	/** Mètode del WS que rep les comunicacions d'anotacions pendents. */
 	@Override
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
-
+		System.out.println("SOC L'IMPLEMENTATION!!!!!!!!");
+		int p = 0;
+		String ps = "hola";
 		try {
 			// Client dels serveis web de backoffice per consultar anotacions
 			BackofficeIntegracio backofficeClient = getBackofficeIntegracioServicePort();

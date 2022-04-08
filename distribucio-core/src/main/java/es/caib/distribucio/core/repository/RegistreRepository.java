@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
@@ -303,4 +304,5 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
+	
 }

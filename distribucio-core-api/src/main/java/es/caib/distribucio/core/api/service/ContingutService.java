@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.api.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
 /**
@@ -255,4 +257,33 @@ public interface ContingutService {
 	public boolean hasPermisSobreBustia(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
+	
+	
+	
+	
+	
+	
+	/** 
+	 * 
+	 */
+
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	public List<LogsDadesObertesDto> findLogsDetallsPerData(
+			Date dataInici,
+			Date dataFi, 
+			String tipus, 
+			String usuari, 
+			Long anotacioId, 
+			String anotacioEstat, 
+			Boolean errorEstat, 
+			Boolean pendent, 
+			Long bustiaOrigen, 
+			Long bustiaDesti, 
+			String uoOrigen, 
+			String uoSuperior, 
+			String uoDesti, 
+			String uoDestiSuperior
+			);
+	
+	
 }

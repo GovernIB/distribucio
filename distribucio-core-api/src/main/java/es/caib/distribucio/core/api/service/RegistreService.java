@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.api.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -427,5 +429,6 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
 			String text,
-			String rolActual);			
+			String rolActual);		
+	
 }
