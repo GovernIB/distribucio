@@ -3,14 +3,19 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +26,7 @@ import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
@@ -39,8 +45,9 @@ public class IntegracioController extends BaseUserController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
-
-
+	
+	@Autowired
+	private MonitorIntegracioService monitorIntegracioService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -97,22 +104,38 @@ public class IntegracioController extends BaseUserController {
 		return "integracioList";
 	}
 
+//	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
+//	@ResponseBody
+//	public DatatablesResponse datatable(
+//			HttpServletRequest request) {
+//		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(
+//				request,
+//				SESSION_ATTRIBUTE_FILTRE);
+//		List<IntegracioAccioDto> accions = null;
+//		if (codi != null) {
+//			accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
+//		} else {
+//			accions = new ArrayList<IntegracioAccioDto>();
+//		}
+//		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
+//				request,
+//				accions);
+//		return dtr;
+//	}
+	
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_FILTRE);
-		List<IntegracioAccioDto> accions = null;
-		if (codi != null) {
-			accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
-		} else {
-			accions = new ArrayList<IntegracioAccioDto>();
-		}
+		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(request,SESSION_ATTRIBUTE_FILTRE);
+//		UsuariDto usuariDto = SessioHelper.getUsuariActual(request);		
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				accions);
+				monitorIntegracioService.findPaginat(
+						DatatablesHelper.getPaginacioDtoFromRequest(request),						
+						codi
+				)				
+		);
 		return dtr;
 	}
 
@@ -145,6 +168,15 @@ public class IntegracioController extends BaseUserController {
 					"redirect:../../integracio",
 					"integracio.list.no.existeix");
 		}
+	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(
+	    		Date.class,
+	    		new CustomDateEditor(
+	    				new SimpleDateFormat("dd/MM/yyyy"),
+	    				true));
 	}
 
 }

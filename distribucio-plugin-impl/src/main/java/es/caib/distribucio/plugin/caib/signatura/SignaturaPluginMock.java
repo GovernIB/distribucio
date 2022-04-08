@@ -58,4 +58,9 @@ public class SignaturaPluginMock implements SignaturaPlugin {
 		}		
 		return resposta;
 	}  
+	
+	@Override
+	public String getUsuariIntegracio() {
+		return "Mock";
+	}
 }

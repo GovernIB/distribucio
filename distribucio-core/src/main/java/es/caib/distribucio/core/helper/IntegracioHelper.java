@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
+import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.core.entity.UsuariEntity;
 
 /**
@@ -35,6 +37,9 @@ import es.caib.distribucio.core.entity.UsuariEntity;
  */
 @Component
 public class IntegracioHelper {
+	
+	@Autowired 
+	MonitorIntegracioService monitorIntegracioService;
 	
 	@Resource
 	private UsuariHelper usuariHelper;
@@ -109,6 +114,7 @@ public class IntegracioHelper {
 	public void addAccioOk(
 			String integracioCodi,
 			String descripcio,
+			String usuariIntegracio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta) {
@@ -116,10 +122,12 @@ public class IntegracioHelper {
 		accio.setIntegracio(novaIntegracio(integracioCodi));
 		accio.setData(new Date());
 		accio.setDescripcio(descripcio);
+		accio.setUsuariIntegracio(usuariIntegracio);
 		accio.setParametres(parametres);
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
+		monitorIntegracioService.addAccio(integracioCodi, accio);
 		addAccio(
 				integracioCodi,
 				accio);
@@ -129,6 +137,7 @@ public class IntegracioHelper {
 	public void addAccioError(
 			String integracioCodi,
 			String descripcio,
+			String usuariIntegracio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
@@ -136,6 +145,7 @@ public class IntegracioHelper {
 		addAccioError(
 				integracioCodi,
 				descripcio,
+				usuariIntegracio,
 				parametres,
 				tipus,
 				tempsResposta,
@@ -147,6 +157,7 @@ public class IntegracioHelper {
 	public void addAccioError(
 			String integracioCodi,
 			String descripcio,
+			String usuariIntegracio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
@@ -156,11 +167,12 @@ public class IntegracioHelper {
 		accio.setIntegracio(novaIntegracio(integracioCodi));
 		accio.setData(new Date());
 		accio.setDescripcio(descripcio);
+		accio.setUsuariIntegracio(usuariIntegracio);
 		accio.setParametres(parametres);
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
-		accio.setErrorDescripcio(errorDescripcio);
+		accio.setErrorDescripcio(errorDescripcio);		
 		if (throwable != null){
 			accio.setExcepcioMessage(
 					ExceptionUtils.getMessage(throwable));
@@ -174,6 +186,7 @@ public class IntegracioHelper {
 				+ "integracioCodi=" + integracioCodi + ", "
 				+ "parametres=" + parametres + ", "
 				+ "tipus=" + tipus + ", "
+				+ "usuariIntegracio=" + usuariIntegracio + ", "
 				+ "tempsResposta=" + tempsResposta + ")",
 				throwable);
 	}
@@ -207,6 +220,7 @@ public class IntegracioHelper {
 			String integracioCodi,
 			IntegracioAccioDto accio) {
 		afegirParametreUsuari(accio);
+		//TODO: monitorIntegracioService.addAccio(accio);
 		LinkedList<IntegracioAccioDto> accions = getLlistaAccions(integracioCodi);
 		synchronized(accions) {
 			int max = getMaxAccions(integracioCodi);

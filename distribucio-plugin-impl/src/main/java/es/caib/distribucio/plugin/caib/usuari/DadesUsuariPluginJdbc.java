@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de consulta de dades d'usuaris emprant JDBC.
@@ -122,6 +123,14 @@ public class DadesUsuariPluginJdbc implements DadesUsuariPlugin {
 	}
 	private String getJdbcQueryUsuariGrup() {
 		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
+	}
+	
+	@Override
+	public String getUsuariIntegracio() {
+		String query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query");
+		if (query == null || query.isEmpty())
+			query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi");
+		return query;
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginJdbc.class);
