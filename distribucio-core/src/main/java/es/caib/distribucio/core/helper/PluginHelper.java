@@ -82,6 +82,7 @@ public class PluginHelper {
 			String expedientNumero,
 			String unitatOrganitzativaCodi) {
 		String accioDescripcio = "Creant contenidor per als documents annexos";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
@@ -93,6 +94,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -102,6 +104,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -122,6 +125,7 @@ public class PluginHelper {
 			String uuidExpedient,
 			DocumentEniRegistrableDto documentEniRegistrableDto) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("annexTitol", annex.getTitol());
@@ -145,6 +149,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -154,6 +159,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -169,6 +175,10 @@ public class PluginHelper {
 	public DadesUsuari dadesUsuariFindAmbCodi(
 			String usuariCodi) {
 		String accioDescripcio = "Consulta d'usuari amb codi";
+		
+		DadesUsuariPlugin  dadesUsuariPlugin = this.getDadesUsuariPlugin();
+		String usuariIntegracio = dadesUsuariPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codi", usuariCodi);
 		long t0 = System.currentTimeMillis();
@@ -178,6 +188,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -187,6 +198,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -201,6 +213,10 @@ public class PluginHelper {
 	public List<DadesUsuari> dadesUsuariFindAmbGrup(
 			String grupCodi) {
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
+
+		DadesUsuariPlugin  dadesUsuariPlugin = this.getDadesUsuariPlugin();
+		String usuariIntegracio = dadesUsuariPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("grup", grupCodi);
 		long t0 = System.currentTimeMillis();
@@ -210,6 +226,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -219,6 +236,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -236,6 +254,10 @@ public class PluginHelper {
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) {
 		String accioDescripcio = "Consulta unitat donat un pare"; 
+		
+		UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin = this.getUnitatsOrganitzativesPlugin(); 
+		String usuariIntegracio = unitatsOrganitzativesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
 		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
@@ -248,6 +270,7 @@ public class PluginHelper {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
+						usuariIntegracio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
@@ -257,6 +280,7 @@ public class PluginHelper {
 				integracioHelper.addAccioError(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
+						usuariIntegracio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0,
@@ -270,6 +294,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -287,6 +312,10 @@ public class PluginHelper {
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) {
 		String accioDescripcio = "Consulta llista d'unitats donat un pare";
+		
+		UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin = this.getUnitatsOrganitzativesPlugin(); 
+		String usuariIntegracio = unitatsOrganitzativesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("unitatPare", pareCodi);
 		accioParams.put("fechaActualizacion", fechaActualizacion == null ? null : fechaActualizacion.toString());
@@ -309,6 +338,7 @@ public class PluginHelper {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
+						usuariIntegracio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
@@ -323,6 +353,7 @@ public class PluginHelper {
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
+						usuariIntegracio,
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
@@ -333,6 +364,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -354,6 +386,10 @@ public class PluginHelper {
 			String codiLocalitat, 
 			Boolean esUnitatArrel) {
 		String accioDescripcio = "Consulta d'unitats organitzatives donat un filtre";
+
+		UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin = this.getUnitatsOrganitzativesPlugin(); 
+		String usuariIntegracio = unitatsOrganitzativesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codiUnitat", codiUnitat);
 		accioParams.put("denominacioUnitat", denominacioUnitat);
@@ -378,6 +414,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -387,6 +424,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -406,6 +444,7 @@ public class PluginHelper {
 	public void arxiuExpedientEliminar(
 			String idContingut) {
 		String accioDescripcio = "Eliminació d'un expedient";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("idContingut", idContingut);
 		long t0 = System.currentTimeMillis();
@@ -414,6 +453,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -422,6 +462,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -437,6 +478,7 @@ public class PluginHelper {
 	public void arxiuExpedientReobrir(
 			RegistreEntity registre) {
 		String accioDescripcio = "Reobrir l'expedient a l'Arxiu";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
@@ -451,6 +493,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -459,6 +502,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -475,6 +519,7 @@ public class PluginHelper {
 	public void arxiuExpedientTancar(
 			RegistreEntity registre) {
 		String accioDescripcio = "Tancar l'expedient a l'Arxiu";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
@@ -489,6 +534,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -497,6 +543,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -526,6 +573,7 @@ public class PluginHelper {
 			boolean ambContingut,
 			boolean ambVersioImprimible) {
 		String accioDescripcio = "Consulta d'un document";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("nodeId", arxiuUuid);
 		accioParams.put("arxiuUuidCalculat", arxiuUuid);
@@ -537,6 +585,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -546,6 +595,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -589,6 +639,7 @@ public class PluginHelper {
 			byte[] documentContingut,
 			byte[] firmaContingut) {
 		String accioDescripcio = "Obtenir informació de document firmat";
+		String usuariIntegracio = this.getPropertyUsuariValidacioSignatura();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		long t0 = System.currentTimeMillis();
 		try {
@@ -631,6 +682,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_VALIDASIG,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -640,6 +692,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_VALIDASIG,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
@@ -656,6 +709,10 @@ public class PluginHelper {
 
 	public List<TipusViaDto> dadesExternesTipusViaAll() {
 		String accioDescripcio = "Consulta de tipus de via";
+		
+		DadesExternesPlugin dadesExternesPlugin = this.getDadesExternesPlugin();
+		String usuariIntegracio = dadesExternesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		long t0 = System.currentTimeMillis();
 		try {
@@ -665,6 +722,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0);
@@ -674,6 +732,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
@@ -689,6 +748,10 @@ public class PluginHelper {
 	public List<Provincia> dadesExternesProvinciesFindAmbComunitat(
 			String comunitatCodi) {
 		String accioDescripcio = "Consulta de les províncies d'una comunitat";
+
+		DadesExternesPlugin dadesExternesPlugin = this.getDadesExternesPlugin();
+		String usuariIntegracio = dadesExternesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("comunitatCodi", comunitatCodi);
 		long t0 = System.currentTimeMillis();
@@ -697,6 +760,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					null,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -706,6 +770,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -721,6 +786,10 @@ public class PluginHelper {
 	public List<Municipi> dadesExternesMunicipisFindAmbProvincia(
 			String provinciaCodi) {
 		String accioDescripcio = "Consulta dels municipis d'una província";
+
+		DadesExternesPlugin dadesExternesPlugin = this.getDadesExternesPlugin();
+		String usuariIntegracio = dadesExternesPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("provinciaCodi", provinciaCodi);
 		long t0 = System.currentTimeMillis();
@@ -729,6 +798,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					null,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -738,6 +808,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -753,6 +824,7 @@ public class PluginHelper {
 	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
 			String arxiuUuid) {
 		String accioDescripcio = "Consulta d'un expedient";
+		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", arxiuUuid);
 		long t0 = System.currentTimeMillis();
@@ -761,6 +833,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -770,6 +843,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -785,6 +859,10 @@ public class PluginHelper {
 	public List<Procediment> procedimentFindByCodiDir3(
 			String codiDir3) {
 		String accioDescripcio = "Consulta dels procediments pel codi DIR3";
+
+		ProcedimentPlugin procedimentPlugin = this.getProcedimentPlugin();
+		String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codiDir3", codiDir3);
 		long t0 = System.currentTimeMillis();
@@ -794,6 +872,7 @@ public class PluginHelper {
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
@@ -803,6 +882,7 @@ public class PluginHelper {
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -881,6 +961,7 @@ public class PluginHelper {
 		}
 		return unitatsOrganitzativesPlugin;
 	}
+	
 	private IArxiuPlugin getArxiuPlugin() {
 		loadPluginProperties("ARXIU");
 		if (arxiuPlugin == null) {
@@ -1008,11 +1089,13 @@ public class PluginHelper {
 								public void addAccioOk(
 										String integracioCodi,
 										String descripcio,
+										String usuariIntegracio,
 										Map<String, String> parametres,
 										long tempsResposta) {
 									integracioHelper.addAccioOk(
 											integracioCodi,
 											descripcio,
+											usuariIntegracio,
 											parametres,
 											IntegracioAccioTipusEnumDto.ENVIAMENT,
 											tempsResposta);
@@ -1020,6 +1103,7 @@ public class PluginHelper {
 								public void addAccioError(
 										String integracioCodi,
 										String descripcio,
+										String usuariIntegracio,
 										Map<String, String> parametres,
 										long tempsResposta,
 										String errorDescripcio,
@@ -1027,6 +1111,7 @@ public class PluginHelper {
 									integracioHelper.addAccioError(
 											integracioCodi,
 											descripcio,
+											usuariIntegracio,
 											parametres,
 											IntegracioAccioTipusEnumDto.ENVIAMENT,
 											tempsResposta,
@@ -1071,7 +1156,10 @@ public class PluginHelper {
 			propertiesLoaded.put(codeProperties, false);
 	}
 	
-
+	private String getPropertyUsuariValidacioSignatura() {
+		return configHelper.getConfig(
+				"es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.username","-");
+	}
 	private String getPropertyPluginDadesUsuari() {
 		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.dades.usuari.class");

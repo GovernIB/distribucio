@@ -297,6 +297,10 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
 	}
 
+	public String getUsuariIntegracio() {
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username","-");
+	}
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesExternesPluginDir3.class);
 

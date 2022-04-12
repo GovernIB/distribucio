@@ -405,6 +405,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		}
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("titol", annex.getTitol());
 		if (fitxer != null) {
@@ -463,6 +464,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioAddAccioOk(
 					integracioArxiuCodi,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					System.currentTimeMillis() - t0);
 			return contingutFitxer.getIdentificador();
@@ -471,6 +473,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,

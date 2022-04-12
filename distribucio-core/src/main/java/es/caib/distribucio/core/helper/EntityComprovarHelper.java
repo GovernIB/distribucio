@@ -20,11 +20,13 @@ import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.MonitorIntegracioEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.MonitorIntegracioRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -40,6 +42,8 @@ public class EntityComprovarHelper {
 
 	@Resource
 	private EntitatRepository entitatRepository;
+	@Resource
+	private MonitorIntegracioRepository monitorIntegracioRepository;
 	@Resource
 	private ContingutRepository contingutRepository;
 	@Resource
@@ -118,6 +122,29 @@ public class EntityComprovarHelper {
 		return entitat;
 	}
 
+	public MonitorIntegracioEntity comprovarMonitorIntegracio(
+			Long monitorIntegracioId,
+			boolean comprovarPermisUsuari,
+			boolean comprovarPermisAdmin,
+			boolean comprovarPermisUsuariOrAdmin) throws NotFoundException {
+		
+		final Timer comprovarMonitorIntegracioTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarMonitorIntegracio"));
+		Timer.Context comprovarMonitorIntegracioContext = comprovarMonitorIntegracioTimer.time();
+		
+		MonitorIntegracioEntity monitorIntegracio = monitorIntegracioRepository.findOne(monitorIntegracioId);
+		
+		if (monitorIntegracio == null) {
+			throw new NotFoundException(
+					monitorIntegracioId,
+					MonitorIntegracioEntity.class
+					);
+		}
+		
+		comprovarMonitorIntegracioContext.stop();
+		
+		return monitorIntegracio;
+	}
+			
 	public ContingutEntity comprovarContingut(
 			EntitatEntity entitat,
 			Long id,

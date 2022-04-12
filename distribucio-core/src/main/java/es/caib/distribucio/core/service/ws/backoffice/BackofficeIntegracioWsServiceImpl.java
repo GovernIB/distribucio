@@ -17,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -45,12 +47,17 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	@Resource
 	private RegistreService registreService;
 	
+	@Autowired
+	private AplicacioService aplicacioService;
+	
 	@Override
 	public AnotacioRegistreEntrada consulta(
 		AnotacioRegistreId id) {
 
 		AnotacioRegistreEntrada anotacioRegistreEntrada;
 		String accioDescripcio = "Consulta d'anotació pendent";
+//		String usuariIntegracio = "Obtenir l'usuari integracio";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		
 		accioParams.put("Anotació identificador", id.getIndetificador());
@@ -72,6 +79,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
@@ -89,6 +97,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
@@ -110,6 +119,8 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			String observacions) {
 		
 		String accioDescripcio = "Canvi d'estat";
+//		String usuariIntegracio = "Obtenir l'usuari integracio";
+		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		
 		accioParams.put("Anotació identificador", id.getIndetificador());
@@ -133,6 +144,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
@@ -149,6 +161,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0,
@@ -165,7 +178,10 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 		logger.debug("");
 	}
 
-
+	private String getUsuariIntegracio() {
+		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
+		return usuariDto.getCodi();
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BackofficeIntegracioWsServiceImpl.class);
 
