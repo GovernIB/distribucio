@@ -77,8 +77,8 @@
 				<executions>
 				</executions>
 			</plugin>
+			<!-- Source 
 			<plugin>
-				<!-- Source 
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
@@ -90,8 +90,8 @@
 					</execution>
 				</executions>
 				<version>3.2.1</version>
-				-->
 			</plugin>
+			-->
 			<!-- Javadoc 
 			<plugin>
 				<opId>org.apache.maven.plugins</opId>

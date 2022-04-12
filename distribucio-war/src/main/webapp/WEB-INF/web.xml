@@ -88,6 +88,9 @@
 		<role-name>DIS_ADMIN</role-name>
 	</security-role>
 	<security-role>
+		<role-name>DIS_REGLA</role-name>
+	</security-role>
+	<security-role>
 		<role-name>DIS_BSTWS</role-name>
 	</security-role>
 	<security-role>
@@ -102,6 +105,7 @@
 		<auth-constraint>
 			<role-name>DIS_SUPER</role-name>
 			<role-name>DIS_ADMIN</role-name>
+			<role-name>DIS_REGLA</role-name>
 			<role-name>DIS_BSTWS</role-name>
 			<role-name>tothom</role-name>
 		</auth-constraint>

@@ -33,7 +33,7 @@ public interface ReglaService {
 	 *            Informació de la regla a crear.
 	 * @return La regla creada.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
 	public ReglaDto create(
 			Long entitatId,
 			ReglaDto regla);
