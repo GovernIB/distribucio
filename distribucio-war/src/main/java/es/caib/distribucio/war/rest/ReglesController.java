@@ -57,7 +57,6 @@ public class ReglesController extends BaseUserController {
 	private EntitatRepository entitatRepository;
 
 	
-	//// NOU ROL o DIS_ADMIN
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(
