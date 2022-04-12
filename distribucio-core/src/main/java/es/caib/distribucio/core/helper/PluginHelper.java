@@ -23,6 +23,8 @@ import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
@@ -82,7 +84,7 @@ public class PluginHelper {
 			String expedientNumero,
 			String unitatOrganitzativaCodi) {
 		String accioDescripcio = "Creant contenidor per als documents annexos";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
@@ -125,7 +127,7 @@ public class PluginHelper {
 			String uuidExpedient,
 			DocumentEniRegistrableDto documentEniRegistrableDto) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();		
+		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("annexTitol", annex.getTitol());
@@ -176,8 +178,7 @@ public class PluginHelper {
 			String usuariCodi) {
 		String accioDescripcio = "Consulta d'usuari amb codi";
 		
-		DadesUsuariPlugin  dadesUsuariPlugin = this.getDadesUsuariPlugin();
-		String usuariIntegracio = dadesUsuariPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codi", usuariCodi);
@@ -214,8 +215,7 @@ public class PluginHelper {
 			String grupCodi) {
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
 
-		DadesUsuariPlugin  dadesUsuariPlugin = this.getDadesUsuariPlugin();
-		String usuariIntegracio = dadesUsuariPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("grup", grupCodi);
@@ -444,7 +444,7 @@ public class PluginHelper {
 	public void arxiuExpedientEliminar(
 			String idContingut) {
 		String accioDescripcio = "Eliminació d'un expedient";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("idContingut", idContingut);
 		long t0 = System.currentTimeMillis();
@@ -478,7 +478,7 @@ public class PluginHelper {
 	public void arxiuExpedientReobrir(
 			RegistreEntity registre) {
 		String accioDescripcio = "Reobrir l'expedient a l'Arxiu";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
@@ -519,7 +519,7 @@ public class PluginHelper {
 	public void arxiuExpedientTancar(
 			RegistreEntity registre) {
 		String accioDescripcio = "Tancar l'expedient a l'Arxiu";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
@@ -573,7 +573,7 @@ public class PluginHelper {
 			boolean ambContingut,
 			boolean ambVersioImprimible) {
 		String accioDescripcio = "Consulta d'un document";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("nodeId", arxiuUuid);
 		accioParams.put("arxiuUuidCalculat", arxiuUuid);
@@ -824,7 +824,7 @@ public class PluginHelper {
 	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
 			String arxiuUuid) {
 		String accioDescripcio = "Consulta d'un expedient";
-		String usuariIntegracio = distribucioPlugin.getUsuariIntegracio();
+		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("expedientArxiuUuid", arxiuUuid);
 		long t0 = System.currentTimeMillis();
@@ -1194,6 +1194,12 @@ public class PluginHelper {
 			return pluginClass;
 		}
 	}
+	
+	private String getUsuariAutenticat() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication != null ? authentication.getName() : null;
+	}
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
 }

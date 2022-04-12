@@ -5,7 +5,6 @@ package es.caib.distribucio.plugin.usuari;
 
 import java.util.List;
 
-import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 
@@ -14,7 +13,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface DadesUsuariPlugin extends IntegracioPlugin {
+public interface DadesUsuariPlugin {
 
 	/**
 	 * Retorna la informació d'un usuari donat el codi d'usuari.

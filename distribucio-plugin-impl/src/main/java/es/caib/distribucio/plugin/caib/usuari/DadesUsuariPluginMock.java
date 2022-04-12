@@ -35,9 +35,4 @@ public class DadesUsuariPluginMock implements DadesUsuariPlugin {
 		throw new SistemaExternException("Mètode no implementat");
 	}
 	
-	@Override
-	public String getUsuariIntegracio() {
-		return "Mock";
-	}
-
 }

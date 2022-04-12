@@ -18,7 +18,7 @@
 <script>
 $(document).ready(function() {
     $('#btnRefresh').click(function() {
-    	window.location = '/distribucio/integracio';
+    	$('#missatges-integracions').webutilDatatable('refresh')
     });
 });
 </script>
@@ -52,7 +52,7 @@ $(document).ready(function() {
 			<tr>
 				<th data-col-name="excepcioMessage" data-visible="false"></th>
 				<th data-col-name="excepcioStacktrace" data-visible="false"></th>
-				<th data-col-name="dataEntrada" data-orderable="true" data-converter="date"><spring:message code="integracio.list.columna.data"/></th>				
+				<th data-col-name="data" data-orderable="true" data-converter="datetime" width="150px"><spring:message code="integracio.list.columna.data"/></th>				
 				<th data-col-name="descripcio" data-orderable="true"><spring:message code="integracio.list.columna.descripcio"/></th>
 				<th data-col-name="tipus" data-orderable="true"><spring:message code="integracio.list.columna.tipus"/></th>
 				<th data-col-name="codiUsuari" data-orderable="true"><spring:message code="integracio.list.columna.usuari"/></th>

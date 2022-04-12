@@ -3,22 +3,27 @@
  */
 package es.caib.distribucio.core.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
-import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
  * Classe del model de dades que representa un MonitorIntegracio.
@@ -26,16 +31,16 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name="dis_monitorIntegracio")
+@Table(name="dis_mon_int")
 @EntityListeners(AuditingEntityListener.class)
-public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
+public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 
 	@Column(name = "codi", length = 64, nullable = false, unique = true)
 	private String codi;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "data_entrada", nullable = false)
-	private Date dataEntrada;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data", nullable = false)
+	private Date data;
 	
 	@Column(name = "descripcio", length = 1024)
 	private String descripcio;
@@ -45,7 +50,7 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 	protected IntegracioAccioTipusEnumDto tipus;
 	
 	@Column(name = "temps_resposta")
-	private long tempsResposta;
+	private Long tempsResposta;
 	
 	@Column(name = "estat")
 	@Enumerated(EnumType.STRING)
@@ -53,6 +58,22 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 	
 	@Column(name = "codi_usuari", length = 64, nullable = false)
 	private String codiUsuari;
+	
+	@Column(name = "error_descripcio", length = 1024)
+	private String errorDescripcio;
+	
+	@Column(name = "excepcio_msg", length = 1024)
+	private String excepcioMessage;
+	
+	@Column(name = "excepcio_stacktrace", length = 2048)
+	private String excepcioStacktrace;
+	
+	@OneToMany(
+			mappedBy = "monitorIntegracio",
+			orphanRemoval = true, 
+			cascade={CascadeType.ALL})
+	private List<MonitorIntegracioParamEntity> parametres = new ArrayList<MonitorIntegracioParamEntity>();
+
 
 	public String getCodi() {
 		return codi;
@@ -62,12 +83,12 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 		this.codi = codi;
 	}
 
-	public Date getDataEntrada() {
-		return dataEntrada;
+	public Date getData() {
+		return data;
 	}
 
-	public void setDataEntrada(Date dataEntrada) {
-		this.dataEntrada = dataEntrada;
+	public void setData(Date data) {
+		this.data = data;
 	}
 
 	public String getDescripcio() {
@@ -86,11 +107,11 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 		this.tipus = tipus;
 	}
 
-	public long getTempsResposta() {
+	public Long getTempsResposta() {
 		return tempsResposta;
 	}
 
-	public void setTempsResposta(long tempsResposta) {
+	public void setTempsResposta(Long tempsResposta) {
 		this.tempsResposta = tempsResposta;
 	}
 
@@ -116,14 +137,14 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 
 	public void update(
 			String codi,
-			Date dataEntrada,
+			Date data,
 			String descripcio,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
 			IntegracioAccioEstatEnumDto estat,
 			String codiUsuari) {
 		this.codi = codi;
-		this.dataEntrada = dataEntrada;
+		this.data = data;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
 		this.tempsResposta = tempsResposta;
@@ -154,20 +175,26 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 	 */
 	public static Builder getBuilder(
 			String codi,	
-			Date dataEntrada,
+			Date data,
 			String descripcio,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
 			IntegracioAccioEstatEnumDto estat,
-			String codiUsuari) {
+			String codiUsuari,
+			String errorDescripcio,
+			String excepcioMessage,
+			String excepcioStacktrace) {
 		return new Builder(
 				codi,		
-				dataEntrada,
+				data,
 				descripcio,
 				tipus,
 				tempsResposta,
 				estat,
-				codiUsuari);
+				codiUsuari,
+				errorDescripcio,
+				excepcioMessage,
+				excepcioStacktrace);
 	}
 
 	/**
@@ -179,25 +206,36 @@ public class MonitorIntegracioEntity extends DistribucioAuditable<Long> {
 		MonitorIntegracioEntity built;
 		Builder(
 				String codi,	
-				Date dataEntrada,
+				Date data,
 				String descripcio,
 				IntegracioAccioTipusEnumDto tipus,
 				long tempsResposta,
 				IntegracioAccioEstatEnumDto estat,
-				String codiUsuari) {
+				String codiUsuari,
+				String errorDescripcio,
+				String excepcioMessage,
+				String excepcioStacktrace) {
 			built = new MonitorIntegracioEntity();
-			built.codi = codi;	
-			built.dataEntrada = dataEntrada;
-			built.descripcio = descripcio;
+	        built.codi = StringUtils.abbreviate(codi, 64);
+			built.data = data;
+	        built.descripcio = StringUtils.abbreviate(descripcio, 1024);
 			built.tipus = tipus;
 			built.tempsResposta = tempsResposta;
 			built.estat = estat;
-			built.codiUsuari = codiUsuari;
+	        built.codiUsuari = StringUtils.abbreviate(codiUsuari, 64);
+	        built.errorDescripcio = StringUtils.abbreviate(errorDescripcio, 1024);
+	        built.excepcioMessage = StringUtils.abbreviate(excepcioMessage, 1024);
+	        built.excepcioStacktrace = StringUtils.abbreviate(excepcioStacktrace, 2048);
 		}
 		public MonitorIntegracioEntity build() {
 			return built;
 		}
 	}
+	
+	public List<MonitorIntegracioParamEntity> getParametres() {
+		return parametres;
+	}
+
 
 	@Override
 	public int hashCode() {

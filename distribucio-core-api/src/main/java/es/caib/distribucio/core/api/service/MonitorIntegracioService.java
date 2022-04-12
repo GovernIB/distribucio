@@ -3,9 +3,13 @@
  */
 package es.caib.distribucio.core.api.service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
+import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -19,41 +23,21 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 public interface MonitorIntegracioService {
 
 	/**
+	 * Obté les integracions disponibles.
+	 * 
+	 * @return La llista d'integracions.
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public List<IntegracioDto> integracioFindAll();
+
+	/**
 	 * Crea un nou item monitorIntegracio.
 	 * 
 	 * @param monitorIntegracio
 	 *            Informació de l'item monitorIntegracio a crear.
 	 * @return El/La MonitorIntegracio creat/creada
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio);
-
-	/**
-	 * Actualitza la informació de l'item monitorIntegracio que tengui el mateix
-	 * id que l'especificat per paràmetre.
-	 * 
-	 * @param monitorIntegracio
-	 *            Informació de l'item monitorIntegracio a modificar.
-	 * @return L'item monitorIntegracio modificat
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public MonitorIntegracioDto update(
-			MonitorIntegracioDto monitorIntegracio) throws NotFoundException;
-
-	/**
-	 * Esborra l'item monitorIntegracio amb el mateix id que l'especificat.
-	 * 
-	 * @param id
-	 *            Atribut id de l'item monitorIntegracio a esborrar.
-	 * @return L'item monitorIntegracio esborrat.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public MonitorIntegracioDto delete(
-			Long id) throws NotFoundException;
 
 	/**
 	 * Consulta un/una monitorIntegracio donat el seu id.
@@ -64,19 +48,9 @@ public interface MonitorIntegracioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public MonitorIntegracioDto findById(
 			Long id) throws NotFoundException;
-
-	/**
-	 * Consulta un/una monitorIntegracio donat el seu codi.
-	 * 
-	 * @param codi
-	 *            Atribut codi de l'item monitorIntegracio a trobar.
-	 * @return L'item monitorIntegracio amb el codi especificat o null si no s'ha trobat.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public MonitorIntegracioDto findByCodi(String codi);
 
 	/**
 	 * Llistat amb tots els items monitorIntegracio paginats.
@@ -86,20 +60,14 @@ public interface MonitorIntegracioService {
 	 * @return La pàgina d'items MonitorIntegracio.
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER')")
-	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, String codiMonitor);	
+	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, String codiMonitor);
 
-	/**
-	 * Alta d'un item monitorIntegracio
-	 * 
-	 * @param integracioCodi
-	 * 			Codi de la integració
-	 * 
-	 * @param accio
-	 * 			Accio amb les dades a desar en el MonitorIntegracio
-	 * 
-	 * @return void
-	 *   
-	 */
-	public void addAccio(String integracioCodi, IntegracioAccioDto accio);
+	/** Consulta el número d'errors per integració. */
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public Map<String, Integer> countErrors();
+
+	/** Mètode per esborrar dades anteriors a una data passada per paràmetre */
+	public int esborrarDadesAntigues(Date data);
+
 
 }

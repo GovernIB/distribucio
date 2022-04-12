@@ -3,12 +3,13 @@
  */
 package es.caib.distribucio.core.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -40,17 +41,22 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("filtre") String filtre,
 			@Param("codiMonitor") String codiMonitor,			
 			Pageable pageable);
-	
-//	@Query(	"from " +
-//			"    MonitorIntegracioEntity mon " +
-//			"where " +
-//			"    :esNullFiltre = true " +
-//			" or lower(mon.codi) like lower(:codi) " +			
-//			" or lower(mon.descripcio) like lower('%'||:filtre||'%')) ")
-//	List<MonitorIntegracioEntity> findByFiltrePaginat(
-//			@Param("esNullFiltre") boolean esNullFiltre,
-//			@Param("filtre") String filtre,
-//			@Param("codi") String codi,
-//			Sort sort);
+
+	@Query(	"select mon.codi, count(mon)" +
+			"from MonitorIntegracioEntity mon " +
+			"where mon.estat = 'ERROR' " +
+			"group by mon.codi ")
+	public List<Object[]> countErrorsGroupByCodi();
+
+	/** Esborra les dades anteriors a la data passada per paràmetre. */
+	@Query(	"delete  from MonitorIntegracioEntity mon " +
+			"where mon.data < :data ")
+	@Modifying
+	public void deleteDataBefore(@Param("data") Date data);
+
+	/** Consulta les dades antigues */
+	@Query(	"from MonitorIntegracioEntity mon " +
+			"where mon.data < :data ")
+	public List<MonitorIntegracioEntity> getDadesAntigues(@Param("data") Date data);
 
 }

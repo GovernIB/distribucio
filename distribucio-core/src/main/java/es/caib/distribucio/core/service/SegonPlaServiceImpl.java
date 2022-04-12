@@ -7,7 +7,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
+import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -65,6 +68,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ConfigHelper configHelper;
 	@Autowired
 	private HistoricHelper historicHelper;
+	@Autowired
+	private MonitorIntegracioService monitorIntegracioService;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -154,9 +159,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
 
 	}
-	
 
 	@Override
+	
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();
@@ -430,6 +435,26 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		errorsMassiva.put(execucioMassivaContingutId, out.toString());
 	}
 
+	@Override
+	public void esborrarDadesAntigesMonitorIntegracio() {
+		String diesAntiguitat = configHelper.getConfig("es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.dies", "30");
+		logger.debug("Execució de tasca programada d'esborrar dades del monitor d'integracions mab " + diesAntiguitat + " dies d'antiguitat.");
+		try {
+			int dies = Integer.parseInt(diesAntiguitat);
+			Calendar c = new GregorianCalendar();
+			c.setTime(new Date());
+			c.add(Calendar.DATE, -dies);
+			Date data = c.getTime();
+			int n = monitorIntegracioService.esborrarDadesAntigues(data);
+			if (n > 0) {
+				logger.debug(n + " dades de monitor d'integració antigues esborrades.");
+			}
+		} catch (Exception e) {
+			logger.error("Error en la tasca d'esborrar dades antigues del monitor d'integracions", e);
+		}
+	}
+	
+	
 	private static final Logger logger = LoggerFactory.getLogger(SegonPlaServiceImpl.class);
 
 }

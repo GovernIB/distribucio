@@ -10,8 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
-import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
@@ -102,27 +100,6 @@ public interface AplicacioService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text);
 	
-	/**
-	 * Obté les integracions disponibles.
-	 * 
-	 * @return La llista d'integracions.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public List<IntegracioDto> integracioFindAll();
-
-	/**
-	 * Obté la llista de les darreres accions realitzades a una integració.
-	 * 
-	 * @param codi
-	 *             Codi de la integració.
-	 * @return La llista amb les darreres accions.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat la integració amb el codi especificat.
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(
-			String codi) throws NotFoundException;
-
 	/**
 	 * Emmagatzema una excepció llençada per un servei.
 	 * 

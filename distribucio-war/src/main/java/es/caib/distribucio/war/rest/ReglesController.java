@@ -3,9 +3,10 @@
  */
 package es.caib.distribucio.war.rest;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.ReglaService;
@@ -32,9 +36,6 @@ import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.war.controller.BaseUserController;
 import lombok.extern.slf4j.Slf4j;
-
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * Controlador REST per a les dades obertes.
@@ -86,9 +87,8 @@ public class ReglesController extends BaseUserController {
 		// CREAR Regla AMB TOTES LES VALIDACIONS
 		
 		// Per posar la data a la descripció
-		DateTimeFormatter dateTimeFormater = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-		LocalDateTime localDateTime = LocalDateTime.now();
-		String dataAra = dateTimeFormater.format(localDateTime);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String dataAra = sdf.format(new Date());
 		
 		// Definim els valors que no hi son als paràmetres
 		String nom = "Ripea SIA " + sia;

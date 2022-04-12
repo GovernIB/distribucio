@@ -3,12 +3,14 @@
  */
 package es.caib.distribucio.core.api.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Informació d'una entitat.
+ * Informació d'una entrada al monitor d'integració.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -16,12 +18,17 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 
 	private Long id;
 	private String codi;	
-	private Date dataEntrada;
+	private Date data;
 	private String descripcio;
 	private IntegracioAccioTipusEnumDto tipus;
-	private long tempsResposta;
+	private Long tempsResposta;
 	private IntegracioAccioEstatEnumDto estat;
 	private String codiUsuari;
+	private String errorDescripcio;
+	private String excepcioMessage;
+	private String excepcioStacktrace;
+	
+	private List<MonitorIntegracioParamDto> parametres = new ArrayList<MonitorIntegracioParamDto>();
 
 	public Long getId() {
 		return id;
@@ -39,12 +46,12 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 		this.codi = codi;
 	}
 
-	public Date getDataEntrada() {
-		return dataEntrada;
+	public Date getData() {
+		return data;
 	}
 
-	public void setDataEntrada(Date dataEntrada) {
-		this.dataEntrada = dataEntrada;
+	public void setData(Date data) {
+		this.data = data;
 	}
 	
 	public String getDescripcio() {
@@ -63,11 +70,11 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 		this.tipus = tipus;
 	}
 
-	public long getTempsResposta() {
+	public Long getTempsResposta() {
 		return tempsResposta;
 	}
 
-	public void setTempsResposta(long tempsResposta) {
+	public void setTempsResposta(Long tempsResposta) {
 		this.tempsResposta = tempsResposta;
 	}
 
@@ -86,6 +93,38 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 	public void setCodiUsuari(String codiUsuari) {
 		this.codiUsuari = codiUsuari;
 	}
+	public String getErrorDescripcio() {
+		return errorDescripcio;
+	}
+
+	public void setErrorDescripcio(String errorDescripcio) {
+		this.errorDescripcio = errorDescripcio;
+	}
+
+	public String getExcepcioMessage() {
+		return excepcioMessage;
+	}
+
+	public void setExcepcioMessage(String excepcioMessage) {
+		this.excepcioMessage = excepcioMessage;
+	}
+
+	public String getExcepcioStacktrace() {
+		return excepcioStacktrace;
+	}
+
+	public void setExcepcioStacktrace(String excepcioStacktrace) {
+		this.excepcioStacktrace = excepcioStacktrace;
+	}
+
+	public List<MonitorIntegracioParamDto> getParametres() {
+		return parametres;
+	}
+
+	public void setParametres(List<MonitorIntegracioParamDto> parametres) {
+		this.parametres = parametres;
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

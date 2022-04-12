@@ -49,4 +49,9 @@ public interface SegonPlaService {
 	 * Consulta i guarda les dades històriques del dia
 	 */
 	public void calcularDadesHistoriques();
+
+	/** 
+	 * Esborra les dades antigues del monitor d'integracions
+	 */
+	public void esborrarDadesAntigesMonitorIntegracio();
 }
