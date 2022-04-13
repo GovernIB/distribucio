@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.procediment;
 
 import java.util.List;
 
+import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 /**
@@ -12,7 +13,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface ProcedimentPlugin {
+public interface ProcedimentPlugin extends IntegracioPlugin {
 
 	/**
 	 * Retorna els procediment associats a una unitat organitzativa.

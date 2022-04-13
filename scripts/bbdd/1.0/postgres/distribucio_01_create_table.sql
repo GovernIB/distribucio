@@ -570,3 +570,26 @@ CREATE TABLE DIS_BUSTIA_DEFAULT
     CREATEDDATE             TIMESTAMP WITHOUT TIMEZONE,
     LASTMODIFIEDDATE        TIMESTAMP WITHOUT TIMEZONE
 );
+
+CREATE TABLE DIS_MON_INT
+(	
+   	ID					BIGSERIAL 		NOT NULL,
+	CODI 				character varying(64) 	NOT NULL, 
+	DATA 				timestamp without time zone, 
+	DESCRIPCIO 			character varying(1024), 
+	TIPUS 				character varying(10), 
+	TEMPS_RESPOSTA		BIGSERIAL, 
+	ESTAT				character varying(4),
+	CODI_USUARI			character varying(64),
+	ERROR_DESCRIPCIO	character varying(1024),
+	EXCEPCIO_MSG		character varying(1024),
+	EXCEPCIO_STACKTRACE	character varying(2048)
+);
+
+CREATE TABLE DIS_MON_INT_PARAM
+(	
+   	ID					BIGSERIAL 				NOT NULL, 
+   	MON_INT_ID			BIGSERIAL				NOT NULL,
+	NOM		 			character varying(64) 	NOT NULL,
+	DESCRIPCIO 			character varying(1024)
+);

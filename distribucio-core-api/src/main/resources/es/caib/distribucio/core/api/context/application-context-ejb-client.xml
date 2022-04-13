@@ -73,4 +73,8 @@
 			id="historicService"
 			jndi-name="distribucio/HistoricServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.HistoricService"/>
+	<jee:local-slsb
+			id="monitorIntegracioService"
+			jndi-name="distribucio/MonitorIntegracioServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.MonitorIntegracioService"/>
 </beans>

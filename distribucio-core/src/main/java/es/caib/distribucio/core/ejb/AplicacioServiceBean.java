@@ -15,8 +15,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
-import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 
@@ -83,19 +81,7 @@ public class AplicacioServiceBean implements AplicacioService {
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text) {
 		return delegate.findUsuariAmbCodiAndNom(text);
 	}
-
-	@Override
-	@RolesAllowed({"DIS_SUPER"})
-	public List<IntegracioDto> integracioFindAll() {
-		return delegate.integracioFindAll();
-	}
-
-	@Override
-	@RolesAllowed({"DIS_SUPER"})
-	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
-		return delegate.integracioFindDarreresAccionsByCodi(codi);
-	}
-
+	
 	@Override
 	public void excepcioSave(Throwable exception) {
 		delegate.excepcioSave(exception);

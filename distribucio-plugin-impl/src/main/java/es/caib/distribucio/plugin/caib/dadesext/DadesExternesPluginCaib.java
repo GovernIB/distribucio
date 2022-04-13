@@ -335,5 +335,9 @@ public class DadesExternesPluginCaib implements DadesExternesPlugin {
 			this.nom = nom;
 		}
 	}
+	
+	public String getUsuariIntegracio() {
+		return "Caib";
+	}
 
 }

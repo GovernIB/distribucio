@@ -18,7 +18,7 @@
 <script>
 $(document).ready(function() {
     $('#btnRefresh').click(function() {
-    	window.location = '/distribucio/integracio';
+    	$('#missatges-integracions').webutilDatatable('refresh')
     });
 });
 </script>
@@ -38,19 +38,29 @@ $(document).ready(function() {
 		</c:forEach>
 	</ul>
 	<br/>
-	<table id="missatges-integracions" data-toggle="datatable" data-url="<c:url value="/integracio/datatable"/>" data-search-enabled="false" class="table table-striped table-bordered" style="width:100%">
+	<table
+		id="missatges-integracions"
+		data-toggle="datatable"
+		data-url="<c:url value="/integracio/datatable"/>" 
+		data-search-enabled="true"
+		data-info-type="search"
+		data-default-order="2" 
+		data-default-dir="desc"
+		class="table table-striped table-bordered"
+		style="width:100%">
 		<thead>
 			<tr>
 				<th data-col-name="excepcioMessage" data-visible="false"></th>
 				<th data-col-name="excepcioStacktrace" data-visible="false"></th>
-				<th data-col-name="data" data-orderable="false" data-converter="datetime"><spring:message code="integracio.list.columna.data"/></th>
-				<th data-col-name="descripcio" data-orderable="false"><spring:message code="integracio.list.columna.descripcio"/></th>
-				<th data-col-name="tipus" data-orderable="false"><spring:message code="integracio.list.columna.tipus"/></th>
-				<th data-col-name="tempsResposta" data-template="#cellTempsTemplate" data-orderable="false">
+				<th data-col-name="data" data-orderable="true" data-converter="datetime" width="150px"><spring:message code="integracio.list.columna.data"/></th>				
+				<th data-col-name="descripcio" data-orderable="true"><spring:message code="integracio.list.columna.descripcio"/></th>
+				<th data-col-name="tipus" data-orderable="true"><spring:message code="integracio.list.columna.tipus"/></th>
+				<th data-col-name="codiUsuari" data-orderable="true"><spring:message code="integracio.list.columna.usuari"/></th>
+				<th data-col-name="tempsResposta" data-template="#cellTempsTemplate" data-orderable="true">
 					<spring:message code="integracio.list.columna.temps.resposta"/>
 					<script id="cellTempsTemplate" type="text/x-jsrender">{{:tempsResposta}} ms</script>
 				</th>
-				<th data-col-name="estat" data-template="#cellEstatTemplate" data-orderable="false">
+				<th data-col-name="estat" data-template="#cellEstatTemplate" data-orderable="true">
 					<spring:message code="integracio.list.columna.estat"/>
 					<script id="cellEstatTemplate" type="text/x-jsrender">
 						{{if estat == 'OK'}}

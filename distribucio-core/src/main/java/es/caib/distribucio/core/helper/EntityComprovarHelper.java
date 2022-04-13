@@ -187,59 +187,6 @@ public class EntityComprovarHelper {
 		comprovarBustiaContext.stop();
 		return bustia;
 	}
-	
-	
-	
-	
-	
-	
-
-
-
-	public BustiaEntity comprovarBustia(
-			Long bustiaId,
-			boolean comprovarPermisRead) {
-		final Timer comprovarBustiaTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarBustia"));
-		Timer.Context comprovarBustiaContext = comprovarBustiaTimer.time();
-		
-		BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
-		if (bustia == null) {
-			throw new NotFoundException(
-					bustiaId,
-					BustiaEntity.class);
-		}
-		if (comprovarPermisRead) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			/*cxxxx*/
-			boolean esPermisRead = permisosHelper.isGrantedAll(
-					bustiaId,
-					BustiaEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			if (!esPermisRead) {
-				throw new PermissionDeniedException(
-						bustiaId,
-						BustiaEntity.class,
-						auth.getName(),
-						"READ",
-						bustia.getNom());
-			}
-		}
-		comprovarBustiaContext.stop();
-		return bustia;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	public RegistreEntity comprovarRegistre(
 			Long id,

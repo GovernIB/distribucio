@@ -205,4 +205,9 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(FirmaSimplePluginPortafib.class);
+
+	@Override
+	public String getUsuariIntegracio() {
+		return getPropertyUsername();
+	}
 }

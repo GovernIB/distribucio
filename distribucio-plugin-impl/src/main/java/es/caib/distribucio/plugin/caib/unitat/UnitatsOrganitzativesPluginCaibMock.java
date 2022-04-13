@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.caib.integracio.IntegracioPluginImpl;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 
@@ -98,6 +99,11 @@ public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzative
 		Object obj = ois.readObject();
 		ois.close();
 		return obj;
+	}
+
+	@Override
+	public String getUsuariIntegracio() {
+		return "CaibMock";
 	}
 
 }

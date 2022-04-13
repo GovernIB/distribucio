@@ -94,13 +94,6 @@ public class BustiaServiceBean implements BustiaService {
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "tothom"})
-	public BustiaDto findById(
-			Long id) {
-		return delegate.findById(id);
-	}	
-
-	@Override
 	@RolesAllowed("DIS_ADMIN")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,

@@ -73,4 +73,11 @@ public class SegonPlaServiceBean implements SegonPlaService {
 	public void calcularDadesHistoriques() {
 		delegate.calcularDadesHistoriques();
 	}
+	
+	@Override
+	@RolesAllowed("tothom")
+	public void esborrarDadesAntigesMonitorIntegracio() {
+		delegate.esborrarDadesAntigesMonitorIntegracio();
+	}
+
 }

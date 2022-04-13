@@ -123,7 +123,7 @@ public class DadesUsuariPluginJdbc implements DadesUsuariPlugin {
 	private String getJdbcQueryUsuariGrup() {
 		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
 	}
-
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginJdbc.class);
 
 }

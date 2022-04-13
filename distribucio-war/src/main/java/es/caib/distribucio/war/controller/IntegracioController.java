@@ -3,24 +3,28 @@
  */
 package es.caib.distribucio.war.controller;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
+import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
@@ -36,11 +40,9 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 public class IntegracioController extends BaseUserController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "IntegracioController.session.filtre";
-
+	
 	@Autowired
-	private AplicacioService aplicacioService;
-
-
+	private MonitorIntegracioService monitorIntegracioService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -49,12 +51,25 @@ public class IntegracioController extends BaseUserController {
 		return getAmbCodi(request, null, model);
 	}
 	
+	/** Consulta els diferents integracions i el número d'errors per integració. Si es
+	 * passa un codi llavors el fixa en sessió pel filtre.
+	 * @param request
+	 * @param codi
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/{codi}", method = RequestMethod.GET)
 	public String getAmbCodi(
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
-		List<IntegracioDto> integracions = aplicacioService.integracioFindAll();
+		
+		// Fa una llista de les diferents integracions i els errors actuals
+		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
+		
+		// Consulta el número d'errors per codi d'integracio
+		Map<String, Integer> errors = monitorIntegracioService.countErrors();
+		
 		for (IntegracioDto integracio: integracions) {
 			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {
 				if (integracio.getCodi() == integracioEnum.name()) {
@@ -64,14 +79,9 @@ public class IntegracioController extends BaseUserController {
 									"integracio.list.pipella." + integracio.getCodi()).getText());
 				}
 			}
-			int nErrors = 0;
-			List<IntegracioAccioDto> accions = aplicacioService.integracioFindDarreresAccionsByCodi(integracio.getCodi());
-			for (IntegracioAccioDto integracioAccioDto : accions) {
-				if (integracioAccioDto.getEstat() == IntegracioAccioEstatEnumDto.ERROR) {
-					nErrors++;
-				}
+			if (errors.containsKey(integracio.getCodi())) {
+				integracio.setNumErrors(errors.get(integracio.getCodi()).intValue());
 			}
-			integracio.setNumErrors(nErrors);
 		}
 		
 		model.addAttribute(
@@ -97,22 +107,19 @@ public class IntegracioController extends BaseUserController {
 		return "integracioList";
 	}
 
+	
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_FILTRE);
-		List<IntegracioAccioDto> accions = null;
-		if (codi != null) {
-			accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
-		} else {
-			accions = new ArrayList<IntegracioAccioDto>();
-		}
+		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(request,SESSION_ATTRIBUTE_FILTRE);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				accions);
+				monitorIntegracioService.findPaginat(
+						DatatablesHelper.getPaginacioDtoFromRequest(request),						
+						codi
+				)				
+		);
 		return dtr;
 	}
 
@@ -122,14 +129,7 @@ public class IntegracioController extends BaseUserController {
 			@PathVariable String codi,
 			@PathVariable Long id,
 			Model model) {
-		List<IntegracioAccioDto> accions = aplicacioService.integracioFindDarreresAccionsByCodi(codi);
-		
-		IntegracioAccioDto integracio = null;
-		for (IntegracioAccioDto integracioAccioDto : accions) {
-			if (integracioAccioDto.getId().equals(id)) {
-				integracio = integracioAccioDto;
-			}
-		}
+		MonitorIntegracioDto integracio = monitorIntegracioService.findById(id);
 		if (integracio != null) {
 			model.addAttribute(
 					"integracio",
@@ -145,6 +145,15 @@ public class IntegracioController extends BaseUserController {
 					"redirect:../../integracio",
 					"integracio.list.no.existeix");
 		}
+	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(
+	    		Date.class,
+	    		new CustomDateEditor(
+	    				new SimpleDateFormat("dd/MM/yyyy"),
+	    				true));
 	}
 
 }

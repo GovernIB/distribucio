@@ -558,26 +558,6 @@ public class BustiaServiceImpl implements BustiaService {
 		omplirPermisosPerBusties(llista, true);
 		return resposta;
 	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public BustiaDto findById(
-			Long id) {
-		logger.trace("Cercant la bústia (" + "id=" + id + ")");
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
-				id,
-				false);
-		BustiaDto resposta = bustiaHelper.toBustiaDto(
-				bustia,
-				false,
-				false,
-				true);
-		// Ompl els permisos
-		List<BustiaDto> llista = new ArrayList<BustiaDto>();
-		llista.add(resposta);
-		omplirPermisosPerBusties(llista, true);
-		return resposta;
-	}
 	
 	@Override
 	@Transactional(readOnly = true)

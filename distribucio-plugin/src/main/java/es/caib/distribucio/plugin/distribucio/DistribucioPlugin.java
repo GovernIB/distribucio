@@ -3,6 +3,7 @@ package es.caib.distribucio.plugin.distribucio;
 import java.util.Map;
 
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
@@ -12,7 +13,7 @@ import es.caib.plugins.arxiu.api.DocumentContingut;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface DistribucioPlugin {
+public interface DistribucioPlugin extends IntegracioPlugin {
 
 	/**
 	 * Crea un contenidor de contingut, per exemple un expedient
@@ -112,11 +113,13 @@ public interface DistribucioPlugin {
 		public void addAccioOk(
 				String integracioCodi,
 				String descripcio,
+				String usuariIntegracio,
 				Map<String, String> parametres,
 				long tempsResposta);
 		public void addAccioError(
 				String integracioCodi,
 				String descripcio,
+				String usuariIntegracio,
 				Map<String, String> parametres,
 				long tempsResposta,
 				String errorDescripcio,

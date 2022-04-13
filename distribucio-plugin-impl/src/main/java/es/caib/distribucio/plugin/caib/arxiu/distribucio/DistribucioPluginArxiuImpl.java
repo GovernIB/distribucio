@@ -21,6 +21,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1259,6 +1261,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioManager.addAccioOk(
 					integracioCodi,
 					descripcio,
+					this.getUsuariIntegracio(),
 					parametres,
 					tempsResposta);
 		}
@@ -1274,6 +1277,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioManager.addAccioError(
 					integracioCodi,
 					descripcio,
+					this.getUsuariIntegracio(),
 					parametres,
 					tempsResposta,
 					errorDescripcio,
@@ -1383,6 +1387,14 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return System.getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
 	}
+	
+	@Override
+	public String getUsuariIntegracio() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication != null ? authentication.getName() : null;
+	}
+
 
 	private static final Logger logger = LoggerFactory.getLogger(DistribucioPlugin.class);
+
 }

@@ -124,6 +124,11 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 		}
 	}
 
+	public String getUsuariIntegracio() {
+		return PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio.plugin.procediment.rolsac.service.username","-");		
+	}
+	
 	public static class ProcedimientosResponse {
 		private String numeroElementos;
 		private String status;

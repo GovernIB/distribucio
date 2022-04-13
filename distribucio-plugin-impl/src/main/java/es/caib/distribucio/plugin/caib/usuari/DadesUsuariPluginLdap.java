@@ -189,7 +189,6 @@ public class DadesUsuariPluginLdap implements DadesUsuariPlugin {
 	private String getLdapExcloureMembre() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.dades.usuari.ldap.excloure.membre");
 	}
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginLdap.class);
 
 }

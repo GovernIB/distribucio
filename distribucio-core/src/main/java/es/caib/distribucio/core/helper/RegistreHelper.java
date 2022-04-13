@@ -1191,9 +1191,13 @@ public class RegistreHelper {
 			logger.trace(">>> Abans de cridar backoffice WS");			
 			backofficeClient.comunicarAnotacionsPendents(ids);		
 			
+//			String usuariIntegracio = this.getUsuariIntegracio();
+			String usuariIntegracio = "Implementar getUsuariIntegracio()";
+			
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
+					usuariIntegracio,
 					identificadorsToHashMap(ids),
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0
@@ -1214,9 +1218,13 @@ public class RegistreHelper {
 	}
 	
 	private void afegirAccioErrorBackOffice(String accioDescripcio, String errorDescripcio, Map<String, String> accioParams, long tInit, Exception ex) {
+		
+//		String usuariIntegracio = this.getUsuariIntegracio();
+		String usuariIntegracio = "Implementar getUsuariIntegracio()";
 		integracioHelper.addAccioError(
 				IntegracioHelper.INTCODI_BACKOFFICE,
 				accioDescripcio,
+				usuariIntegracio,
 				accioParams,
 				IntegracioAccioTipusEnumDto.ENVIAMENT,
 				System.currentTimeMillis() - tInit,

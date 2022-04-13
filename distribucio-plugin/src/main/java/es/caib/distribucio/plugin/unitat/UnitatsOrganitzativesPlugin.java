@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.List;
 
+import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 
@@ -15,8 +16,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface UnitatsOrganitzativesPlugin {
-	
+public interface UnitatsOrganitzativesPlugin extends IntegracioPlugin{
 
 	/**
 	 * Retorna la unitat organtizativa donat el pareCodi

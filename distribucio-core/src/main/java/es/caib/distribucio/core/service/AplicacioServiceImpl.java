@@ -20,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioDto;
-import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.AplicacioService;
@@ -35,7 +33,6 @@ import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.ExcepcioLogHelper;
-import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.repository.AclSidRepository;
 import es.caib.distribucio.core.repository.BustiaDefaultRepository;
@@ -63,8 +60,6 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private PluginHelper pluginHelper;
 	@Resource
 	private ConversioTipusHelper conversioTipusHelper;
-	@Resource
-	private IntegracioHelper integracioHelper;
 	@Resource
 	private ExcepcioLogHelper excepcioLogHelper;
 	@Autowired
@@ -217,19 +212,6 @@ public class AplicacioServiceImpl implements AplicacioService {
 		return conversioTipusHelper.convertirList(
 				usuariRepository.findByCodiAndNom(text != null? text : ""),
 				UsuariDto.class);
-	}
-
-	@Override
-	public List<IntegracioDto> integracioFindAll() {
-		logger.trace("Consultant les integracions");
-		return integracioHelper.findAll();
-	}
-
-	@Override
-	public List<IntegracioAccioDto> integracioFindDarreresAccionsByCodi(String codi) {
-		logger.trace("Consultant les darreres accions per a la integració (" +
-				"codi=" + codi + ")");
-		return integracioHelper.findAccionsByIntegracioCodi(codi);
 	}
 
 	@Override

@@ -200,7 +200,29 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         return nextExecution;
                     }
                 }
-        );        
-
+        );
+        
+   	 	// Esborra les dades antigues del monitor d'integracions
+        taskRegistrar.addTriggerTask(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        segonPlaService.esborrarDadesAntigesMonitorIntegracio();
+                    }
+                },
+                new Trigger() {
+                    @Override
+                    public Date nextExecutionTime(TriggerContext triggerContext) {
+                    	
+                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.periode");
+                    	if (value == null) {
+                    		value = new Long("3600000"); // Per defecte un cop cada hora per defecte
+                    	}
+                        PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                        return nextExecution;
+                    }
+                }
+        );
     }
 }
