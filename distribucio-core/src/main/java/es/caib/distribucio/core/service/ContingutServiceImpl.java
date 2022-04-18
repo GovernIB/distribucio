@@ -582,7 +582,7 @@ public class ContingutServiceImpl implements ContingutService {
 			Long anotacioId, String anotacioEstat, Boolean errorEstat, Boolean pendent, Long bustiaOrigen, Long bustiaDesti,
 			String uoOrigen, String uoSuperior, String uoDesti, String uoDestiSuperior) {
 
-
+		
 		List<LogsDadesObertesDto> resultat = new ArrayList<LogsDadesObertesDto>();
 		ContingutTipusEnumDto tipusEnum = null;
 		RegistreProcesEstatEnum anotacioEstatEnum = null;
@@ -645,8 +645,7 @@ public class ContingutServiceImpl implements ContingutService {
 			}catch (NullPointerException e) {
 				logDOdto.setUsuari("");
 			}
-			
-			logDOdto.setAnotacioId(contingut.getId()); 
+			logDOdto.setAnotacioId(contingut.getContingut().getId()); 
 			logDOdto.setAnotacioEstat(registreEntity.getProcesEstat().toString());
 			logDOdto.setAnotacioEstatDesc(registreEntity.getExtracte()); 
 			logDOdto.setAnotacioError(new Boolean(registreEntity.getArxiuTancatError()).toString());
