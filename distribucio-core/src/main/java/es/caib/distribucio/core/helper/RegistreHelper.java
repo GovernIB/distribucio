@@ -1579,7 +1579,6 @@ public class RegistreHelper {
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
-		System.out.println("*********REGISTREANNEXENTITY******\nNOM: " + registreAnnexEntity.getFitxerNom());
 		String titol = registreAnnexEntity.getFitxerNom().replace(".", "_imprimible.");
 		
 		FitxerDto fitxerDto = new FitxerDto();
@@ -1588,7 +1587,21 @@ public class RegistreHelper {
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
 			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
-				fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+				try {
+					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+				}catch (Exception e) {
+					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+					if (document != null) {
+						DocumentContingut documentContingut = document.getContingut();
+						if (documentContingut != null) {
+							fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+							fitxerDto.setContentType(documentContingut.getTipusMime());
+							fitxerDto.setContingut(documentContingut.getContingut());
+							fitxerDto.setTamany(documentContingut.getContingut().length);
+						}
+					}					
+				}
+				
 			} else {
 				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
 				if (document != null) {
