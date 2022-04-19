@@ -146,6 +146,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		return unitatDesti;
 	}
 	public void update(
+			BackofficeEntity backofficeDestiId, 
 			String nom,
 			String descripcio,
 			ReglaTipusEnumDto tipus,
@@ -153,6 +154,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String procedimentCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre) {
+		this.backofficeDesti = backofficeDestiId;
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
