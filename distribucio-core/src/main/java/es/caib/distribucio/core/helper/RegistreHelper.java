@@ -1579,14 +1579,28 @@ public class RegistreHelper {
 
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);		
 		FitxerDto fitxerDto = new FitxerDto();
 		
 		// if annex is already created in arxiu take content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
 			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
-				fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
+				try {
+					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
+				}catch (Exception e) {
+					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+					if (document != null) {
+						DocumentContingut documentContingut = document.getContingut();
+						if (documentContingut != null) {
+							fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+							fitxerDto.setContentType(documentContingut.getTipusMime());
+							fitxerDto.setContingut(documentContingut.getContingut());
+							fitxerDto.setTamany(documentContingut.getContingut().length);
+						}
+					}					
+				}
+				
 			} else {
 				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
 				if (document != null) {
