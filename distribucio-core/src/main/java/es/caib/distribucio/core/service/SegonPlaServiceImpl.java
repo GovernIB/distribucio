@@ -166,38 +166,35 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		
-		logger.trace("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
+		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		
 		int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty();
 		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
 		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date(), maxReintents);
-		List<Long> pendentsIdsGroupedByRegla = new ArrayList<>();
 		if (pendents != null && !pendents.isEmpty()) {
-
-			ReglaEntity previousRegla = pendents.get(0).getRegla();
+			
+			Map<ReglaEntity, List<Long>> pendentsByRegla = new HashMap<ReglaEntity, List<Long>>();
 			for (RegistreEntity pendent : pendents) {
+				if (!pendentsByRegla.containsKey(pendent.getRegla())) {
+					pendentsByRegla.put(pendent.getRegla(), new ArrayList<Long>());
+				}
+				pendentsByRegla.get(pendent.getRegla()).add(pendent.getId());
+			}
+			
+			for (ReglaEntity regla : pendentsByRegla.keySet()) {
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
 				Timer.Context context = timer.time();
-				ReglaEntity currentRegla = pendent.getRegla();
-				// if next group of anotacions is detected
-				if (!currentRegla.equals(previousRegla)) {
-					logger.trace(">>> Enviant grup d'anotacions " + pendentsIdsGroupedByRegla.size());
-					previousRegla = currentRegla;
-					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
-					pendentsIdsGroupedByRegla.clear();
-				}
-				pendentsIdsGroupedByRegla.add(pendent.getId());
-				// if it is last iteration
-				if (pendent.equals(pendents.get(pendents.size() - 1))) {
-					logger.trace(">>> Enviant darrer grup d'anotacions " + pendentsIdsGroupedByRegla.size());
-					registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
+				List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
+				logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom());
+				Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
+				if (t != null) {
+					logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + ": " + t.getMessage());
 				}
 				context.stop();
 			}
 		}
-		
 		long stopTime = new Date().getTime();
-		logger.trace("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
+		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
 	}
 	
 	

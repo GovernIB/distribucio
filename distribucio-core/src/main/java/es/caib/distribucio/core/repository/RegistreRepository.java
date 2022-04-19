@@ -14,7 +14,6 @@ import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
-import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
@@ -72,18 +71,17 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	
 	
-	
+	/** Consulta de les anotacions pendents d'enviar ordenades per regla. */
 	@Query(
-			"from" +
+			"from " +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.regla is not null and r.regla.activa = true " +
+			"    r.regla.activa = true " +
+			"and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"and r.procesIntents < :maxReintents " +
-		    "order by " +
-		    "    r.data desc "
-		    + "group by r.regla.id")
+		    "order by r.regla.id asc ")
 	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
 			@Param("currentDate") Date currentDate,
 			@Param("maxReintents") int maxReintents);

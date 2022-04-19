@@ -1137,13 +1137,15 @@ public class RegistreHelper {
 		String clauSecreta = configHelper.getConfig(
 				"es.caib.distribucio.backoffice.integracio.clau");
 		if (clauSecreta == null) {
-			throw new RuntimeException("Clau secreta no especificada al fitxer de propietats");
+			return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
 		}
 		
 		long t0 = System.currentTimeMillis();
 		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
 		String accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi();
+		accioParams.put("Backoffice", backofficeDesti.getCodi());
 		List<AnotacioRegistreId> ids = new ArrayList<>();
+		String usuari = null;
 		for (RegistreEntity pendent : pendentsByRegla) {
 			
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
@@ -1153,20 +1155,18 @@ public class RegistreHelper {
 				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero(),
 						clauSecreta));
 			} catch (Exception ex) {
-				String errorDescripcio = "Error enviant anotacions al backoffice";
-				accioParams = identificadorsToHashMap(ids);
-				accioParams.put("Backoffice", backofficeDesti.getCodi());
-				afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, accioParams, t0, ex);				
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_BACKOFFICE,
-						errorDescripcio,
+				String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;
+				logger.error(errMsg, ex);
+				return new RuntimeException(
+						errMsg,
 						ex);
 			}
 			ids.add(anotacioRegistreId);
-		}		
-		
+			accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
+		}
+
 		try {			
-			String usuari = backofficeDesti.getUsuari();
+			usuari = backofficeDesti.getUsuari();
 			String contrasenya = backofficeDesti.getContrasenya();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
 				usuari = configHelper.getConfig(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
@@ -1190,15 +1190,12 @@ public class RegistreHelper {
 			
 			logger.trace(">>> Abans de cridar backoffice WS");			
 			backofficeClient.comunicarAnotacionsPendents(ids);		
-			
-//			String usuariIntegracio = this.getUsuariIntegracio();
-			String usuariIntegracio = "Implementar getUsuariIntegracio()";
-			
+						
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
-					usuariIntegracio,
-					identificadorsToHashMap(ids),
+					usuari,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0
 			);			
@@ -1206,41 +1203,28 @@ public class RegistreHelper {
 			return null;
 			
 		} catch (Exception ex) {
-			String errorDescripcio = "Error enviant anotacions al backoffice";			
-			accioParams = identificadorsToHashMap(ids);
-			accioParams.put("Backoffice", backofficeDesti.getCodi());
-			afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, accioParams, t0, ex);
-			throw new SistemaExternException(
+			String errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + backofficeDesti.getNom() + ":" + ex.getMessage();
+			afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, usuari, accioParams, t0, ex);
+			return new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
 					ex);
 		}
 	}
 	
-	private void afegirAccioErrorBackOffice(String accioDescripcio, String errorDescripcio, Map<String, String> accioParams, long tInit, Exception ex) {
+	private void afegirAccioErrorBackOffice(String accioDescripcio, String errorDescripcio, String usuari, Map<String, String> accioParams, long tInit, Exception ex) {
 		
-//		String usuariIntegracio = this.getUsuariIntegracio();
-		String usuariIntegracio = "Implementar getUsuariIntegracio()";
 		integracioHelper.addAccioError(
 				IntegracioHelper.INTCODI_BACKOFFICE,
 				accioDescripcio,
-				usuariIntegracio,
+				usuari,
 				accioParams,
 				IntegracioAccioTipusEnumDto.ENVIAMENT,
 				System.currentTimeMillis() - tInit,
 				errorDescripcio,
 				ex);
 	}
-	
-	private Map<String, String> identificadorsToHashMap(List<AnotacioRegistreId> ids) {
 		
-		Map<String, String> accioParams = new HashMap<String, String>();
-		for (AnotacioRegistreId anotacioRegistreId:ids) {
-			accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
-		}	
-		return accioParams;
-	}
-	
 	public int getGuardarAnnexosMaxReintentsProperty() {
 		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
@@ -1259,7 +1243,11 @@ public class RegistreHelper {
 		}
 	}
 	
-
+	/** Envia les anotacions pendents agrupades per regla/backoffice i actualita l'estat o reintent
+	 * de l'anotació. 
+	 * @param pendentsIdsGroupedByRegla
+	 * @return
+	 */
 	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 
 		Exception throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
@@ -1279,15 +1267,16 @@ public class RegistreHelper {
 		
 		for (RegistreEntity pend : pendentsByRegla) {
 
-			
-			if (throwable == null) {
-				// remove exception message and increment procesIntents
-				pend.updateProces(null,
-						null);
-			} else { // if excepion occured during sending anotacions ids to backoffice
-				// add exception message and increment procesIntents
-				pend.updateProces(null,
-						throwable);
+			if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT)) {
+				if (throwable == null) {
+					// remove exception message and increment procesIntents
+					pend.updateProces(null,
+							null);
+				} else { // if excepion occured during sending anotacions ids to backoffice
+					// add exception message and increment procesIntents
+					pend.updateProces(null,
+							throwable);
+				}				
 			}
 
 			// set delay for another send retry
@@ -1566,7 +1555,7 @@ public class RegistreHelper {
 		return 	registreRepository.findGuardarAnnexPendents(maxReintents);
 	}
 
-	/** Consulta els registres pendents d'enviar al backoffice. */
+	/** Consulta els registres pendents d'enviar al backoffice ordenats per regla. */
 	@Transactional
 	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date, int maxReintents) {
 		return registreRepository.findAmbEstatPendentEnviarBackoffice(date, maxReintents);

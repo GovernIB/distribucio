@@ -168,8 +168,8 @@ public class IntegracioHelper {
 	private List<MonitorIntegracioParamDto> buildParams(Map<String, String> parametres) {
 		List<MonitorIntegracioParamDto> parametresDto = new ArrayList<>();
 		if (parametres != null && !parametres.isEmpty()) {
-			MonitorIntegracioParamDto paramDto = new MonitorIntegracioParamDto();
 			for (String nom : parametres.keySet()) {
+				MonitorIntegracioParamDto paramDto = new MonitorIntegracioParamDto();
 				paramDto.setNom(nom);
 				paramDto.setDescripcio(parametres.get(nom));
 				parametresDto.add(paramDto);

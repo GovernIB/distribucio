@@ -579,7 +579,7 @@ CREATE TABLE DIS_MON_INT
 	DESCRIPCIO 			character varying(1024), 
 	TIPUS 				character varying(10), 
 	TEMPS_RESPOSTA		BIGSERIAL, 
-	ESTAT				character varying(4),
+	ESTAT				character varying(5),
 	CODI_USUARI			character varying(64),
 	ERROR_DESCRIPCIO	character varying(1024),
 	EXCEPCIO_MSG		character varying(1024),

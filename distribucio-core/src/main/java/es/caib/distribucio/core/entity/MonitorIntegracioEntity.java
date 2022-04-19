@@ -131,9 +131,18 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 		this.codiUsuari = codiUsuari;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getErrorDescripcio() {
+		return errorDescripcio;
 	}
+
+	public String getExcepcioMessage() {
+		return excepcioMessage;
+	}
+
+	public String getExcepcioStacktrace() {
+		return excepcioStacktrace;
+	}
+
 
 	public void update(
 			String codi,
