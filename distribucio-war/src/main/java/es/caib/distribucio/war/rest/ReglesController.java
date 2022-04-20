@@ -25,15 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import es.caib.distribucio.core.api.dto.BackofficeDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
+
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.service.BackofficeService;
+import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.api.service.ReglaService;
-import es.caib.distribucio.core.entity.BackofficeEntity;
-import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.ReglaEntity;
-import es.caib.distribucio.core.repository.BackofficeRepository;
-import es.caib.distribucio.core.repository.EntitatRepository;
-import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.war.controller.BaseUserController;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,11 +50,9 @@ public class ReglesController extends BaseUserController {
 	@Autowired
 	private ReglaService reglaService;
 	@Autowired
-	private ReglaRepository reglaRepository;
+	private BackofficeService backofficeService;
 	@Autowired
-	private BackofficeRepository backofficeRepository;
-	@Autowired
-	private EntitatRepository entitatRepository;
+	private EntitatService entitatService;
 
 	
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
@@ -95,22 +92,22 @@ public class ReglesController extends BaseUserController {
 		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
 		
 		// Validar que la entitat existeix
-		EntitatEntity entitatEntity = entitatRepository.findByCodi(entitat);
-		if (entitatEntity == null ) {
+		EntitatDto entitatDto = entitatService.findByCodi(entitat);
+		if (entitatDto == null ) {
 			return new ResponseEntity<String>("No s'ha trobat l'entitat " + entitat, HttpStatus.NOT_FOUND);
 		}
 		
 		// Validar qeu es troba el backoffice
-		BackofficeEntity backofficeEntity = backofficeRepository.findByEntitatAndCodi(entitatEntity, backoffice);
-		if (backofficeEntity == null ) {
+		BackofficeDto backofficeDto = backofficeService.findByCodi(entitatDto.getId(), backoffice);
+		if (backofficeDto == null ) {
 			return new ResponseEntity<String>("No s'ha trobat el backoffice amb codi " + backoffice, HttpStatus.NOT_FOUND);
 		}
 				
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(sia);
-		for (ReglaEntity regla : reglesPerSia) {
-			System.out.println("REGLA: " + regla.getBackofficeDesti().getCodi() + "=>" + regla.getProcedimentCodiFiltre());
-			if (regla.getBackofficeDesti().getCodi().equals(backoffice) && regla.getProcedimentCodiFiltre().equals(sia)  ) {
+		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByProcediment(sia);
+		for (ReglaDto regla : reglesPerSia) {
+			System.out.println("REGLA: " + regla.getBackofficeDestiId() + "=>" + regla.getProcedimentCodiFiltre());
+			if (regla.getBackofficeDestiNom().equals(backoffice) && regla.getProcedimentCodiFiltre().equals(sia)  ) {
 				return new ResponseEntity<String>("Ja existeix una regla per aquest codi SIA " + backoffice, HttpStatus.OK);
 			}
 		}
@@ -121,12 +118,12 @@ public class ReglesController extends BaseUserController {
 		novaReglaDto.setNom(nom);
 		novaReglaDto.setDescripcio(descripcio);
 		novaReglaDto.setTipus(tipus);
-		novaReglaDto.setBackofficeDestiId(backofficeEntity.getId());
+		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
 		novaReglaDto.setProcedimentCodiFiltre(sia);
 		
 		try {
-			reglaService.create(entitatEntity.getId(), novaReglaDto);
+			reglaService.create(entitatDto.getId(), novaReglaDto);
 			return new ResponseEntity<String>("Regla creada correctamet " + backoffice, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<String>("Error inesperat: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

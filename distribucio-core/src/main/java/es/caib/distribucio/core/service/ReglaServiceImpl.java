@@ -606,6 +606,17 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		return dto;
 	}
+	
+	
+	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
+		List<ReglaDto> reglesPerSiaDto = new ArrayList<ReglaDto>();
+		for (ReglaEntity regla : reglesPerSia) {
+			ReglaDto reglaDto = this.findOne(regla.getEntitat().getId(), regla.getId());
+			reglesPerSiaDto.add(reglaDto);
+		}
+		return reglesPerSiaDto;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
 
