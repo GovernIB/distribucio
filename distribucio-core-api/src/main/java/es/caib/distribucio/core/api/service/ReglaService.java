@@ -202,10 +202,6 @@ public interface ReglaService {
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
 	
 	
-	/*
-	 * 
-	 * 
-	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
 }

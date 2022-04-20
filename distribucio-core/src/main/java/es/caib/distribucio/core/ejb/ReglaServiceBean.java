@@ -15,7 +15,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
@@ -177,6 +176,12 @@ public class ReglaServiceBean implements ReglaService {
 	@RolesAllowed("DIS_ADMIN")
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
 		return delegate.findReglesByCodiProcediment(procediments);
+	}
+
+	@Override
+	@RolesAllowed("DIS_REGLA")
+	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
+		return delegate.findReglaBackofficeByProcediment(procedimentCodi);
 	}
 
 }

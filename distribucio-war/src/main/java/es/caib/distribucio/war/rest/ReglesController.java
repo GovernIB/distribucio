@@ -105,8 +105,7 @@ public class ReglesController extends BaseUserController {
 				
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
 		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByProcediment(sia);
-		for (ReglaDto regla : reglesPerSia) {
-			System.out.println("REGLA: " + regla.getBackofficeDestiId() + "=>" + regla.getProcedimentCodiFiltre());
+		for (ReglaDto regla : reglesPerSia) {			
 			if (regla.getBackofficeDestiNom().equals(backoffice) && regla.getProcedimentCodiFiltre().equals(sia)  ) {
 				return new ResponseEntity<String>("Ja existeix una regla per aquest codi SIA " + backoffice, HttpStatus.OK);
 			}
