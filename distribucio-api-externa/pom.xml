@@ -93,16 +93,10 @@
 		<dependency>
 	        <groupId>org.slf4j</groupId>
 	        <artifactId>slf4j-api</artifactId>
-	        <version>1.7.1</version>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
 	    </dependency>
-	
-	    <dependency>
-	        <groupId>org.slf4j</groupId>
-	        <artifactId>slf4j-log4j12</artifactId>
-	        <version>1.7.1</version>
-	    </dependency>
-	    
-	    
+		    
 		<!-- swagger
 		<dependency>
 			<groupId>com.mangofactory</groupId>
