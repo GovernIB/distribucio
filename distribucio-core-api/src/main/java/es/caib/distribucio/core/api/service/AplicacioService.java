@@ -161,7 +161,7 @@ public interface AplicacioService {
 	public Properties propertyFindByPrefix(String prefix);
 
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
-	String propertyFindByNom(String nom);
+	public String propertyFindByNom(String nom);
 	
 	/**
 	 * Obté la bústia per defecte de l'usuari i entitat actuals.

@@ -58,7 +58,6 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreClassificarCommand;
@@ -100,9 +99,7 @@ public class RegistreUserController extends BaseUserController {
 	@Autowired
 	private AplicacioService aplicacioService;	
 	@Autowired
-	private ConfigService configService;	
-	@Autowired
-	private ConfigHelper configHelper;
+	private ConfigService configService;
 	
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -1113,8 +1110,8 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
-			model.addAttribute("destiLogic", destiLogic);			
-			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+			model.addAttribute("destiLogic", destiLogic);
+			String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
 			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);	
 		
 		} catch (Exception e) {
@@ -1181,7 +1178,7 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual,
 						registreId,
 						model);
-				String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+				String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
 				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 				return "registreReenviarForm";
 			}
@@ -1192,7 +1189,7 @@ public class RegistreUserController extends BaseUserController {
 								request, 	
 								"bustia.pendent.accio.reenviar.no.desti"));
 				model.addAttribute("maxLevel", getMaxLevelArbre());
-				String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+				String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
 				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 				return "registreReenviarForm";
 			}
@@ -1262,7 +1259,7 @@ public class RegistreUserController extends BaseUserController {
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 
 			model.addAttribute(command);
-			String enabled_bustia_defecte = configHelper.getConfig("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+			String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
 			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
