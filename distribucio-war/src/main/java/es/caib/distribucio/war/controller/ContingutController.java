@@ -622,6 +622,9 @@ public class ContingutController extends BaseUserController {
 			
 			
 			break;
+		case BACK_COMUNICADA:
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_COMUNICADA"));
+			break;
 		case BACK_REBUDA:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));
 			break;

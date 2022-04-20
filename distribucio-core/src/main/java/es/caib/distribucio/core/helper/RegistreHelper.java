@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1250,14 +1251,15 @@ public class RegistreHelper {
 	 */
 	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 
+		Date dataComunicacio = new Date();
 		Exception throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
-		updateBackEnviarDelayData(pendentsIdsGroupedByRegla, throwable);
+		updateBackEnviarDelayData(pendentsIdsGroupedByRegla, throwable, dataComunicacio);
 		return throwable;
 	}
 	
 	
 	@Transactional()
-	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable) {
+	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable, Date dataComunicacio) {
 	
 		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
 		for (Long id : pendentsIdsGroupedByRegla) {
@@ -1267,16 +1269,18 @@ public class RegistreHelper {
 		
 		for (RegistreEntity pend : pendentsByRegla) {
 
-			if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT)) {
-				if (throwable == null) {
-					// remove exception message and increment procesIntents
-					pend.updateProces(null,
-							null);
-				} else { // if excepion occured during sending anotacions ids to backoffice
-					// add exception message and increment procesIntents
-					pend.updateProces(null,
-							throwable);
-				}				
+			
+			if (throwable == null) {
+				// remove exception message and increment procesIntents
+				pend.updateProces(null, null);
+				// Si estava pendent de comunicar al backoffice actualitza l'estat
+				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT)) {
+					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy").format(dataComunicacio));
+				}
+			} else { // if excepion occured during sending anotacions ids to backoffice
+				// add exception message and increment procesIntents
+				pend.updateProces(null,
+						throwable);
 			}
 
 			// set delay for another send retry

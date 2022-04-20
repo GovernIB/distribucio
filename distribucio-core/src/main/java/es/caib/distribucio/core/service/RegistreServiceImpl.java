@@ -1303,7 +1303,6 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	@Override
-	@Transactional
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId) {

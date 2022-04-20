@@ -106,7 +106,7 @@ tr.clicable {
 				</a>
 			</li>
 		</c:if>
-		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+		<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
 			<li role="presentation">
 				<a href="#processamentBackoffice"  role="tab" data-toggle="tab">
 					<spring:message code="registre.detalls.pipella.proces.backoffice"/>
@@ -553,7 +553,7 @@ tr.clicable {
 		</c:if>
 		
 		
-		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+		<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
 			
 			<!------------------------------ TABPANEL PROCESSAMENT_BACKOFFICE ------------------------------------->
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">

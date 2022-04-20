@@ -602,7 +602,7 @@ li[id^="anotacio_"] {
 				</a>
 			</li>
 		</c:if>
-		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+		<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
 			<li role="presentation">
 				<a href="#processamentBackoffice"  role="tab" data-toggle="tab">
 					<spring:message code="registre.detalls.pipella.proces.backoffice"/>
@@ -1403,13 +1403,13 @@ li[id^="anotacio_"] {
 		</c:if>
 		
 		
-		<c:if test="${registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
+		<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || registre.procesEstat == 'BACK_REBUDA' || registre.procesEstat == 'BACK_PROCESSADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR'}">
 			
 			
 			<!------------------------------ TABPANEL PROCESSAMENT_BACKOFFICE ------------------------------------->
 			<div class="tab-pane" id="processamentBackoffice" role="tabpanel">
 				
-			    <c:if test="${isRolActualAdministrador == true && (registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR')}">
+			    <c:if test="${isRolActualAdministrador == true && (registre.procesEstat == 'BACK_COMUNICADA' || registre.procesEstat == 'BACK_REBUTJADA' || registre.procesEstat == 'BACK_ERROR')}">
 					<a href="<c:url value="/registreAdmin/registre/${registre.id}/reintentarEnviamentBackoffice"/>" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>	
 				<div class="processamentInfo">

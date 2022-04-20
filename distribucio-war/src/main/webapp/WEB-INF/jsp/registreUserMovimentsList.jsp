@@ -490,6 +490,8 @@ $(document).ready(function() {
 							<spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
 						{{else procesEstat == 'BACK_REBUDA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
+						{{else procesEstat == 'BACK_COMUNICADA'}}
+							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
 						{{else procesEstat == 'BACK_PROCESSADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
 						{{else procesEstat == 'BACK_REBUTJADA'}}

@@ -211,9 +211,8 @@ public class ContingutHelper {
 				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
 			}
 			
-			if (registreEntity.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
-				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
-			} else if (registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BUSTIA_PROCESSADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_PENDENT || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_REBUDA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_PROCESSADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_REBUTJADA || registreEntity.getProcesEstat() == RegistreProcesEstatEnum.BACK_ERROR) {
+			if (RegistreProcesEstatEnum.isPendent(registreEntity.getProcesEstat())) {
+			} else {
 				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
 			}
 
@@ -383,9 +382,9 @@ public class ContingutHelper {
 			registreDto.setBustiaActiva(bustia.isActiva());				
 		}
 		RegistreProcesEstatEnum registreEstat = registreMoviment.getProcesEstat();
-		if (registreEstat == RegistreProcesEstatEnum.ARXIU_PENDENT || registreEstat == RegistreProcesEstatEnum.REGLA_PENDENT || registreEstat == RegistreProcesEstatEnum.BUSTIA_PENDENT) {
+		if (RegistreProcesEstatEnum.isPendent(registreEstat)) {
 			registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
-		} else if (registreEstat == RegistreProcesEstatEnum.BUSTIA_PROCESSADA || registreEstat == RegistreProcesEstatEnum.BACK_PENDENT || registreEstat == RegistreProcesEstatEnum.BACK_REBUDA || registreEstat == RegistreProcesEstatEnum.BACK_PROCESSADA || registreEstat == RegistreProcesEstatEnum.BACK_REBUTJADA || registreEstat == RegistreProcesEstatEnum.BACK_ERROR) {
+		} else {
 			registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
 		}
 

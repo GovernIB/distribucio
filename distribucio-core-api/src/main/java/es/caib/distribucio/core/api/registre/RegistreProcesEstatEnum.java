@@ -14,6 +14,7 @@ import java.util.List;
  *   BUSTIA_PENDENT: Pendent a bústia
  *   BUSTIA_PROCESSADA: Distribuït marcant com a processat
  *   BACK_PENDENT: Anotació pendent d’enviar al backoffice
+ *   BACK_COMUNICADA: Anotació comunicada al backoffice
  *	 BACK_REBUDA: Anotació rebuda al backoffice
  *	 BACK_PROCESSADA: Anotació processada correctament pel backoffice
  *	 BACK_REBUTJADA: Anotació rebutjada pel backoffice
@@ -29,6 +30,7 @@ public enum RegistreProcesEstatEnum {
 	BUSTIA_PENDENT,
 	BUSTIA_PROCESSADA,
 	BACK_PENDENT,
+	BACK_COMUNICADA,
 	BACK_REBUDA,
 	BACK_PROCESSADA,
 	BACK_REBUTJADA,
@@ -49,6 +51,7 @@ public enum RegistreProcesEstatEnum {
 	static {
 		estatsProcessats.add(BUSTIA_PROCESSADA);
 		estatsProcessats.add(BACK_PENDENT);
+		estatsProcessats.add(BACK_COMUNICADA);
 		estatsProcessats.add(BACK_REBUDA);
 		estatsProcessats.add(BACK_PROCESSADA);
 
