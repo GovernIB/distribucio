@@ -9,8 +9,6 @@
 				http://www.springframework.org/schema/security
 				http://www.springframework.org/schema/security/spring-security.xsd">
 
-	<sec:http pattern="/rest/notib**" security="none"/>
-	<sec:http pattern="/rest/notib/**" security="none"/>
 	<sec:http create-session="never" use-expressions="true" auto-config="true" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
 
 		<sec:intercept-url pattern="/apiexterna/opendata*" access="hasAnyRole('DIS_ADMIN','DIS_REPORT')"/>

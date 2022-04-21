@@ -29,7 +29,6 @@
 		<sec:intercept-url pattern="/metaCarpeta*" access="hasRole('DIS_ADMIN')"/>
 		<sec:intercept-url pattern="/metaDada*" access="hasRole('DIS_ADMIN')"/>
 		<sec:intercept-url pattern="/*" access="hasRole('tothom')"/>
-		<sec:intercept-url pattern="/apiexterna/opendata*" access="hasRole('DIS_ADMIN')"/>
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
 		<sec:session-management session-fixation-protection="none"/>
