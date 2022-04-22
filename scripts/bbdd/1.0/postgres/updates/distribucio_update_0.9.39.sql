@@ -1,8 +1,5 @@
 -- #389: Afegir funcionalitat per a administradors de poder marcar una anotació o múltiples, com a acció massiva, per que es sobreescriguin al redistribuir l'anotació
-ALTER TABLE DIS_REGISTRE
-ADD (
-    SOBREESCRIURE BOOLEAN DEFAULT FALSE
-);
+ALTER TABLE DIS_REGISTRE ADD SOBREESCRIURE BOOLEAN DEFAULT FALSE;
 
 -- #296 Posar icona/color en els assentaments que estiguin "duplicats" en una bústia 
 ALTER TABLE DIS_REGISTRE ADD REACTIVAT BOOLEAN DEFAULT FALSE;
@@ -19,7 +16,7 @@ UPDATE DIS_CONT_MOV MOV
         	GROUP BY R.NUMERO, M.DESTI_ID
 ); 
 
-Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12','0','BOOL',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12',false,'BOOL',null,null);
 
 -- Propietat per configurar via web els dies abans de tancar a l'Arxiu una anotació processada
-Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tancament.expedient.dies',1825,'Interval de dies que han de passar per efectura el tencament de l''expedient a l''arxiu després de marcar l''anotació com a processada','SCHEDULLED_TANCAR','1','0','INT',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tancament.expedient.dies',1825,'Interval de dies que han de passar per efectura el tencament de l''expedient a l''arxiu després de marcar l''anotació com a processada','SCHEDULLED_TANCAR','1',false,'INT',null,null);

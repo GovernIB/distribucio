@@ -13,7 +13,7 @@ UPDATE DIS_CONT_MOV MOV
         	GROUP BY R.NUMERO, M.DESTI_ID
 ); 
 
-Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12','0','BOOL',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12',false,'BOOL',null,null);
 
 -- Postgresql:
 ALTER TABLE DIS_REGISTRE ADD REACTIVAT BOOLEAN DEFAULT FALSE;
@@ -30,4 +30,4 @@ UPDATE DIS_CONT_MOV MOV
         	GROUP BY R.NUMERO, M.DESTI_ID
 ); 
 
-Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12','0','BOOL',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.sobreescriure.anotacions.duplicades','false','Permetre sobreescriure anotacions duplicades al reenviar','GENERAL','12',false,'BOOL',null,null);

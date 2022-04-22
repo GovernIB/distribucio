@@ -88,12 +88,12 @@ CREATE TABLE DIS_BUSTIA_DEFAULT
     ENTITAT                 INTEGER                 NOT NULL,
     BUSTIA                  INTEGER                 NOT NULL,
     USUARI             CHARACTER VARYING(64)   NOT NULL,
-    CREATEDDATE             TIMESTAMP WITHOUT TIMEZONE,
-    LASTMODIFIEDDATE        TIMESTAMP WITHOUT TIMEZONE
+    CREATEDDATE             TIMESTAMP WITHOUT TIME ZONE,
+    LASTMODIFIEDDATE        TIMESTAMP WITHOUT TIME ZONE
 );
 
 -- PK
-ALTER TABLE ONLY DIS_BUSTIA_DEFAULT ADD (CONSTRAINT DIS_BUSTIA_DEFAULT_PK PRIMARY KEY (ID));
+ALTER TABLE ONLY DIS_BUSTIA_DEFAULT ADD CONSTRAINT DIS_BUSTIA_DEFAULT_PK PRIMARY KEY (ID);
 
 -- FK
 ALTER TABLE ONLY DIS_BUSTIA_DEFAULT 
@@ -115,5 +115,5 @@ WHERE KEY LIKE 'es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil';
 -- Insereix la propietat pel certificat.
 -- es.caib.distribucio.plugin.signatura.portafib.username=afirmades-firma
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) 
-VALUES ('es.caib.distribucio.plugin.signatura.portafib.username',null,'Nom del certificat a utilitzar en la firma. És opcional','SIGNATURA','6','0','TEXT',null,null);
+VALUES ('es.caib.distribucio.plugin.signatura.portafib.username',null,'Nom del certificat a utilitzar en la firma. És opcional','SIGNATURA','6',false,'TEXT',null,null);
 
