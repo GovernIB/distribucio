@@ -27,6 +27,12 @@
 						{{if administration}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
+				<th data-col-name="adminLectura" data-template="#cellAdminLecturaTemplate">
+					<spring:message code="entitat.permis.columna.adminLectura"/>
+					<script id="cellAdminLecturaTemplate" type="text/x-jsrender">
+						{{if adminLectura}}<span class="fa fa-check"></span>{{/if}}
+					</script>
+				</th>
 				<th data-col-name="read" data-template="#cellReadTemplate">
 					<spring:message code="entitat.permis.columna.usuari"/>
 					<script id="cellReadTemplate" type="text/x-jsrender">

@@ -22,6 +22,7 @@ public class PermisDto implements Serializable {
 	private boolean create;
 	private boolean delete;
 	private boolean administration;
+	private boolean adminLectura;
 	
 	/** Per completar informació en els llistats de permisos. */
 	private String principalDescripcio;
@@ -73,6 +74,12 @@ public class PermisDto implements Serializable {
 	}
 	public void setAdministration(boolean administration) {
 		this.administration = administration;
+	}
+	public boolean isAdminLectura() {
+		return adminLectura;
+	}
+	public void setAdminLectura(boolean adminLectura) {
+		this.adminLectura = adminLectura;
 	}
 	public String getPrincipalDescripcio() {
 		return principalDescripcio;

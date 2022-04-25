@@ -1110,7 +1110,7 @@ public class RegistreServiceImpl implements RegistreService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId, 
 				true, 
-				false, 
+				false,
 				false);
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,

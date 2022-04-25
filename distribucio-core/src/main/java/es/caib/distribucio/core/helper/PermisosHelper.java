@@ -289,6 +289,7 @@ public class PermisosHelper {
 			Long objectIdentifier,
 			Class<?> objectClass,
 			PermisDto permis) {
+		System.out.println("PERMÍS: " + permis.getPrincipalNom() + "=>" + permis.isAdminLectura());
 		if (PrincipalTipusEnumDto.USUARI.equals(permis.getPrincipalTipus())) {
 			assignarPermisos(
 					new PrincipalSid(permis.getPrincipalNom()),
@@ -389,6 +390,9 @@ public class PermisosHelper {
 			Serializable objectIdentifier,
 			Permission[] permissions,
 			boolean netejarAbans) {
+		for (Permission p : permissions) {
+			System.out.println("PERMISSION: " + p.getMask() + "=>" + p.getPattern() + "!!!!!!!!!!!!!!!");
+		}
 		ObjectIdentity oid = new ObjectIdentityImpl(objectClass, objectIdentifier);
 		MutableAcl acl = null;
 		try {
@@ -487,6 +491,8 @@ public class PermisosHelper {
 			permissions.add(ExtendedPermission.DELETE);
 		if (permis.isAdministration())
 			permissions.add(ExtendedPermission.ADMINISTRATION);
+		if (permis.isAdminLectura())
+			permissions.add(ExtendedPermission.ADMINLECTURA);
 		return permissions.toArray(new Permission[permissions.size()]);
 	}
 

@@ -25,6 +25,7 @@ public class EntitatDto extends AuditoriaDto {
 	private List<PermisDto> permisos;
 	private boolean usuariActualRead;
 	private boolean usuariActualAdministration;
+	private boolean usuariActualAdministrationRead;
 
 	private byte[] logoCapBytes;
 	private String logoExtension;
@@ -91,6 +92,12 @@ public class EntitatDto extends AuditoriaDto {
 	}
 	public void setUsuariActualAdministration(boolean usuariActualAdministration) {
 		this.usuariActualAdministration = usuariActualAdministration;
+	}
+	public boolean isUsuariActualAdministrationRead() {
+		return usuariActualAdministrationRead;
+	}
+	public void setUsuariActualAdministrationRead(boolean usuariActualAdministrationRead) {
+		this.usuariActualAdministrationRead = usuariActualAdministrationRead;
 	}
 	public byte[] getLogoCapBytes() {
 		return logoCapBytes;

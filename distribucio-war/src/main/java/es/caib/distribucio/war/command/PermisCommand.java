@@ -33,6 +33,7 @@ public class PermisCommand {
 	private boolean create;
 	private boolean delete;
 	private boolean administration;
+	private boolean adminLectura;
 
 	public Long getId() {
 		return id;
@@ -81,6 +82,13 @@ public class PermisCommand {
 	}
 	public void setAdministration(boolean administration) {
 		this.administration = administration;
+	}
+
+	public boolean isAdminLectura() {
+		return adminLectura;
+	}
+	public void setAdminLectura(boolean adminLectura) {
+		this.adminLectura = adminLectura;
 	}
 
 	public static List<PermisCommand> toPermisCommands(

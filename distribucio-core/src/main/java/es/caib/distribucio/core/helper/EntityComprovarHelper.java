@@ -58,7 +58,7 @@ public class EntityComprovarHelper {
 			Long entitatId,
 			boolean comprovarPermisUsuari,
 			boolean comprovarPermisAdmin,
-			boolean comprovarPermisUsuariOrAdmin) throws NotFoundException {
+			boolean comprovarPermisUsuariOrAdmin) throws NotFoundException {		
 		final Timer comprovarEntitatTimer = metricRegistry.timer(MetricRegistry.name(EntityComprovarHelper.class, "comprovarEntitat"));
 		Timer.Context comprovarEntitatContext = comprovarEntitatTimer.time();
 		

@@ -61,6 +61,7 @@
 		<dis:inputSelect name="principalTipus" textKey="entitat.permis.form.camp.tipus" disabled="${not empty permisCommand.id}" optionEnum="PrincipalTipusEnumDto"/>
 		<dis:inputText name="principalNom" textKey="entitat.permis.form.camp.principal" disabled="${not empty permisCommand.id}"/>
 		<dis:inputCheckbox name="administration" textKey="entitat.permis.form.camp.administracio"/>
+		<dis:inputCheckbox name="adminLectura" textKey="entitat.permis.form.camp.adminLectura"/>
 		<dis:inputCheckbox name="read" textKey="entitat.permis.form.camp.usuari"/>
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success submitDialog"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
