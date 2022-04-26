@@ -14,11 +14,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.war.command.ConfigCommand;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.JsonResponse;
@@ -34,13 +38,17 @@ import es.caib.distribucio.war.helper.JsonResponse;
 public class ConfigController extends BaseUserController{
     @Autowired
     private ConfigService configService;
+    @Autowired
+    private EntitatRepository entitatRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(
             HttpServletRequest request,
             Model model) {
         List<ConfigGroupDto> configGroups = configService.findAll();
+        List<EntitatEntity> entitats = entitatRepository.findAll();
         model.addAttribute("config_groups", configGroups);
+        model.addAttribute("entitats", entitats);
         for (ConfigGroupDto cGroup: configGroups) {
             fillFormsModel(cGroup, model);
         }
@@ -54,6 +62,7 @@ public class ConfigController extends BaseUserController{
             Model model,
 			@Valid ConfigCommand configCommand,
 			BindingResult bindingResult) {
+    	System.out.println("PROPIETAT CONFIGURADA: " + configCommand.getKey() + "=>" + configCommand.getValue());
         if (bindingResult.hasErrors()) {
         	StringBuilder errors = new StringBuilder();
         	for(ObjectError error : bindingResult.getAllErrors()) {
@@ -72,6 +81,27 @@ public class ConfigController extends BaseUserController{
         	return new JsonResponse(true, getMessage(request, "config.controller.edit.error") + ": " + ExceptionHelper.getRootCauseOrItself(e).getMessage());
         }
     }
+    
+    
+    
+    @RequestMapping(value="/propietatsEntitat", method = RequestMethod.GET)
+    public String propietatsEntitat(
+    		HttpServletRequest request, 
+    		Model model, 
+    		@RequestParam long idEntitat) {
+    	System.out.println("PROPIETATS PER L'ENTITAT: " + idEntitat);
+        List<ConfigGroupDto> configGroups = configService.findAll();
+        model.addAttribute("config_groups", configGroups);
+        model.addAttribute("idEntitat", idEntitat);
+        for (ConfigGroupDto cGroup: configGroups) {
+            fillFormsModel(cGroup, model);
+        }
+    	
+    	return "config";
+    }
+    
+    
+    
     
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
     public String synchronize(

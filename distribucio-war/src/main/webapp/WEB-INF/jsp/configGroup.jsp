@@ -54,10 +54,26 @@
                         <span class="help-block">${config.key}</span>
                         <span class="info-block"></span>
                     </div>
-                    <div class="col-sm-1">
+                    <div class="/*col-sm-1*/ d-flex">
                         <button class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
                             <i class="fa fa-edit"></i>
                         </button>
+                        <c:if test="${!config.jbossProperty}">
+                        <!-- <a href="/distribucio/config/propietatsEntitat?idEntitat=${idEntitat}" class="btn btn-primary"<c:if test="${config.jbossProperty}"> disabled</c:if> title="Anar a les propietats configurables de l'entitat '${idEntitat}' ">
+                            <i class="fa fa-edit"></i>
+                        </a> -->
+                        							
+						<div class="btn-group">
+							<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle" title="<spring:message code="decorator.menu.config"/> per entitat &nbsp;"><span class="caret caret-white"></span></button>
+							<ul class="dropdown-menu">
+							<c:forEach items="${entitats}" var="entitat" varStatus="status_entitat">
+								<li><a href="<c:url value="/config?idEntitat=${entitat.id}"/>">${entitat.nom} </a></li>
+							</c:forEach>
+							</ul>
+						</div> 
+                        
+                        
+                        </c:if>
                     </div>
                 </div>
             </form:form>
