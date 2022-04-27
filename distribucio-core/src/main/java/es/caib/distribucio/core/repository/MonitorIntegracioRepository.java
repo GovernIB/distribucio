@@ -32,10 +32,10 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"and (" +
 				":esNullFiltre = true " +			
 				" or (" +			
-					" lower(mon.codiUsuari) like lower('%'||:filtre||'%'))" +		
-					" or lower(mon.descripcio) like lower('%'||:filtre||'%'))" +
+					" lower(mon.codiUsuari) like lower('%'||:filtre||'%')" +		
+					" or lower(mon.descripcio) like lower('%'||:filtre||'%')" +
 					") " +
-			") ")
+			"	)")
 	Page<MonitorIntegracioEntity> findByFiltrePaginat(
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,

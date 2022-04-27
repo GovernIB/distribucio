@@ -9,9 +9,24 @@
 				http://www.springframework.org/schema/security
 				http://www.springframework.org/schema/security/spring-security.xsd">
 
+	<sec:http pattern="/api-docs**" security="none"/>
+	<sec:http pattern="/**/api-docs" security="none"/>
+	<sec:http pattern="/js/**" security="none"/>
+	<sec:http pattern="/css/**" security="none"/>
+	<sec:http pattern="/webjars/**" security="none"/>
+	<sec:http pattern="/images/**" security="none"/>
+
 	<sec:http create-session="never" use-expressions="true" auto-config="true" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
 
-		<sec:intercept-url pattern="/apiexterna/opendata*" access="hasAnyRole('DIS_ADMIN','DIS_REPORT')"/>
+		<sec:intercept-url pattern="/api-docs*" access="isAnonymous()"/>
+		<sec:intercept-url pattern="*/api-docs" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/js/**" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/css/**" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/webjars/**" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/images/**" access="isAnonymous()"/>
+
+		<sec:intercept-url pattern="/externa/opendata/*" access="hasAnyRole('DIS_ADMIN','DIS_REPORT')"/>
+		<sec:intercept-url pattern="/*" access="hasRole('tothom')"/>		
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
 		<sec:session-management session-fixation-protection="none"/>

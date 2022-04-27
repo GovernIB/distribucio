@@ -75,6 +75,12 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
+	@RolesAllowed("tothom")
+	public EntitatDto findByCodiDir3(String codiDir3) {
+		return delegate.findByCodiDir3(codiDir3);
+	}
+
+	@Override
 	@RolesAllowed("DIS_SUPER")
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
 		return delegate.findPaginat(paginacioParams);

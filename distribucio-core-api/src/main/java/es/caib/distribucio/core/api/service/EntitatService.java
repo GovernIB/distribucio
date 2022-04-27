@@ -109,6 +109,14 @@ public interface EntitatService {
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public EntitatDto findByCodi(String codi);
 
+
+	/** Cerca l'entitat per codi DIR3
+	 * 
+	 * @param codiDir3
+	 * @return
+	 */
+	public EntitatDto findByCodiDir3(String codiDir3);
+
 	/**
 	 * Llistat amb totes les entitats paginades.
 	 * 

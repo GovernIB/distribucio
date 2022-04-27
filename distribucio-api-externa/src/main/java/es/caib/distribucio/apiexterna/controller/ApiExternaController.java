@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -27,7 +28,6 @@ import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controlador REST per a les dades obertes.
@@ -35,14 +35,20 @@ import lombok.extern.slf4j.Slf4j;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@Slf4j
-@RequestMapping("/apiexterna/opendata")
+@RequestMapping("/externa/opendata")
+@Api(value = "/externa/opendata", description = "API REST de consulta de dades obertes. És necessari tenir el rol DIS_REPORT.")
 public class ApiExternaController {
 
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
 	private ContingutService contingutService;
+
+	@RequestMapping(value = {"", "/apidoc"}, method = RequestMethod.GET)
+	public String documentacio(HttpServletRequest request) {
+		
+		return "apidoc";
+	}
 
 	
 	@RequestMapping(value = "/busties", method = RequestMethod.GET)

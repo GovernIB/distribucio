@@ -201,7 +201,12 @@ public interface ReglaService {
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
 	
-	
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
+	 * de regles.
+	 * 
+	 * @param procedimentCodi
+	 * @return
+	 */
+	@PreAuthorize("hasRole('DIS_REGLA')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
 }

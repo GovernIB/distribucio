@@ -2,11 +2,10 @@ package es.caib.distribucio.core.api.dto.dadesobertes;
 
 import java.io.Serializable;
 
-import es.caib.distribucio.core.api.dto.BustiaContingutDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-
 public class BustiaDadesObertesDto implements Serializable{
 	
+	private static final long serialVersionUID = -5799836924017090551L;
+
 	private Long id;
 	private String nom;
 	private String uo;

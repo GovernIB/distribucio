@@ -360,36 +360,8 @@
 			<version>2.3</version>
 		</dependency>
 		
-		
-		
-		<!-- swagger
-		<dependency>
-			<groupId>com.mangofactory</groupId>
-			<artifactId>swagger-springmvc</artifactId>
-			<version>1.0.2</version>
-	
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-			
-		</dependency> -->
-		
 		<!-- swagger -->
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.22</version>
-			<scope>provided</scope>
-		</dependency>
-		 
-		<dependency>
 			<groupId>com.mangofactory</groupId>
 			<artifactId>swagger-springmvc</artifactId>
 			<version>1.0.2</version>
@@ -404,8 +376,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		
 		
 	</dependencies>
 	<profiles>

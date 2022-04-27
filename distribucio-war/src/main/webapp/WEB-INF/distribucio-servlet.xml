@@ -31,12 +31,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.AplicacioInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -45,12 +49,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.SessioInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -59,11 +67,15 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.LlistaEntitatsInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -72,11 +84,15 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.LlistaRolsInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -85,12 +101,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.ModalInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -99,12 +119,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.NodecoInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -119,6 +143,9 @@
 			<mvc:exclude-mapping path="/**/selection/**"/>
 			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.AjaxInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
@@ -127,12 +154,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
+			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
-			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.ElementsPendentsBustiaInterceptor"/>
 		</mvc:interceptor>	
 		<mvc:interceptor>
@@ -141,12 +172,16 @@
 			<mvc:exclude-mapping path="/css/**"/>
 			<mvc:exclude-mapping path="/fonts/**"/>
 			<mvc:exclude-mapping path="/img/**"/>
+			<mvc:exclude-mapping path="/images/**"/>
 			<mvc:exclude-mapping path="/extensions/**"/>
 			<mvc:exclude-mapping path="/webjars/**"/>
 			<mvc:exclude-mapping path="/**/datatable/**"/>
 			<mvc:exclude-mapping path="/**/selection/**"/>
+			<mvc:exclude-mapping path="/**/rest/notib**"/>
 			<mvc:exclude-mapping path="/**/rest/notib/**"/>
-			<mvc:exclude-mapping path="/**/rest/notib/**"/>
+			<mvc:exclude-mapping path="/**/api/rest/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/**/api-docs/"/>
 			<bean class="es.caib.distribucio.war.interceptor.AvisosInterceptor"/>
 		</mvc:interceptor>		
 	

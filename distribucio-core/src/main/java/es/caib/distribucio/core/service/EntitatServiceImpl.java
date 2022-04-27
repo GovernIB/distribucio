@@ -219,6 +219,19 @@ public class EntitatServiceImpl implements EntitatService {
 
 	@Transactional(readOnly = true)
 	@Override
+	public EntitatDto findByCodiDir3(String codiDir3) {
+		logger.debug("Consulta de l'entitat amb codi DIR3 (" +
+				"codiDir3=" + codiDir3 + ")");
+		EntitatDto entitat = conversioTipusHelper.convertir(
+				entitatRepository.findByCodiDir3(codiDir3),
+				EntitatDto.class);
+		if (entitat != null)
+			permisosEntitatHelper.omplirPermisosPerEntitat(entitat);
+		return entitat;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta de totes les entitats paginades (" +
 				"paginacioParams=" + paginacioParams + ")");

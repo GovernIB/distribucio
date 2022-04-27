@@ -13,7 +13,7 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 
 @Configuration
 @EnableSwagger
-@ComponentScan(basePackages = "es.caib.notib.war.rest")
+@ComponentScan(basePackages = "es.caib.distribucio.war.rest")
 public class SwaggerConfig {
 
 	private SpringSwaggerConfig springSwaggerConfig;
@@ -29,15 +29,13 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .apiVersion("1.0")
                 .ignoredParameterTypes(ResponseEntity.class)
-//                .pathProvider(apiPathProvider())
-                //.includePatterns(".*/api/rest/appinfo", ".*/api/services/*.*", ".*/api/consulta/*/*.*");
-                .includePatterns(".*/api/regles/*.*");
+                .includePatterns(".*/api/rest/regles/add");
     }
  
 	private ApiInfo apiInfo() {
 		ApiInfo apiInfo = new ApiInfo(
-				"API Notificacio",
-				"API de Notificació REST",
+				"API REST Distribucio",
+				"API REST de Distribucio per a la creació automàtica de regles de distribucio a backoffices",
 				"", 	// URL de temes de servei
 				"limit@limit.es",
 				"",		// Llicència

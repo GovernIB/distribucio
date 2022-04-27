@@ -7,10 +7,12 @@
 		<pattern>/nodeco*</pattern>
 		<pattern>/ws*</pattern>
 		<pattern>/webdav*</pattern>
+		<pattern>/api/rest/regles*</pattern>
 	</excludes>
 	<decorator name="senseCapNiPeus" page="senseCapNiPeus.jsp">
 		<pattern>/firmapassarela*</pattern>
 		<pattern>/scanweb*</pattern>
+		<pattern>/api/rest</pattern>
 		<pattern>/error</pattern>
 	</decorator>
 	<decorator name="default" page="default.jsp">

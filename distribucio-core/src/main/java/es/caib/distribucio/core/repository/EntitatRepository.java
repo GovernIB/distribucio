@@ -34,7 +34,7 @@ public interface EntitatRepository extends JpaRepository<EntitatEntity, Long> {
 			"    :esNullFiltre = true " +
 			" or lower(ent.codi) like lower('%'||:filtre||'%') " +
 			" or lower(ent.nom) like lower('%'||:filtre||'%') " +
-			" or lower(ent.cif) like lower('%'||:filtre||'%')) ")
+			" or lower(ent.cif) like lower('%'||:filtre||'%') ")
 	Page<EntitatEntity> findByFiltrePaginat(
 			@Param("esNullFiltre") boolean esNullFiltre,
 			@Param("filtre") String filtre,

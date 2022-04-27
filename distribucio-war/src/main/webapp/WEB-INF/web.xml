@@ -117,8 +117,14 @@
 			<url-pattern>/ws/v1/bustia</url-pattern>
 			<url-pattern>/ws/MCGDws</url-pattern>
 			<url-pattern>/ws/portafibCallback</url-pattern>
-			<url-pattern>/rest/notib</url-pattern>
-			<url-pattern>/rest/notib/notificaCanvi</url-pattern>
+			<url-pattern>/api-docs</url-pattern>
+			<url-pattern>/api-docs/*</url-pattern>
+			<url-pattern>/js/*</url-pattern>
+			<url-pattern>/css/*</url-pattern>
+			<url-pattern>/img/*</url-pattern>
+			<url-pattern>/imgages/*</url-pattern>
+			<url-pattern>/webjars/*</url-pattern>
+			<url-pattern>/images/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 

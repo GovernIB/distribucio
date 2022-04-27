@@ -336,14 +336,14 @@ public class ReglaServiceImpl implements ReglaService {
 			codisProcediments.add("-");
 		}
 		
-		List<Long> bustiesUnitatOrganitzativaIds;
-		if (regla.getUnitatOrganitzativaFiltre() != null) {
-			bustiesUnitatOrganitzativaIds = new ArrayList<>();
+		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
+		if (regla.getUnitatOrganitzativaFiltre() != null) {			
 			for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
 				bustiesUnitatOrganitzativaIds.add(bustia.getId());
 			}
-		} else {
-			bustiesUnitatOrganitzativaIds = Arrays.asList(new Long[] {0L});
+		}
+		if (bustiesUnitatOrganitzativaIds.isEmpty()) {
+			bustiesUnitatOrganitzativaIds.add(0L);
 		}
 		
 		for(RegistreEntity registre : reglaRepository.findRegistres(
@@ -610,12 +610,7 @@ public class ReglaServiceImpl implements ReglaService {
 	
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi) {
 		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
-		List<ReglaDto> reglesPerSiaDto = new ArrayList<ReglaDto>();
-		for (ReglaEntity regla : reglesPerSia) {
-			ReglaDto reglaDto = this.findOne(regla.getEntitat().getId(), regla.getId());
-			reglesPerSiaDto.add(reglaDto);
-		}
-		return reglesPerSiaDto;
+		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
