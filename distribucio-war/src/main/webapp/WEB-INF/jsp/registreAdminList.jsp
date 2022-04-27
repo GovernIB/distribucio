@@ -314,8 +314,13 @@ $(document).ready(function() {
 			</div>			
 		</div>
 		<div class="row">				
-			<div class="col-md-2 pull-right">
+			<div class="col-md-4 pull-right">
 				<div class="pull-right">
+					<!-- <a href="registreAdmin/exportarCSV?llistat=filtre" class="btn btn-success"> -->
+					<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
+						<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
+					</a>
+					<!-- <button id="exportar" type="submit" name="accio" value="exportar" class="btn btn-success"><spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" /></button> -->
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>
@@ -324,6 +329,33 @@ $(document).ready(function() {
 		
 
 	</form:form>
+	
+	<script>
+		function exportarCSV() {
+			var numero = document.getElementById("numero").value;
+			var titol = document.getElementById("titol").value;
+			var numeroOrigen = document.getElementById("numeroOrigen").value;
+			var remitent = document.getElementById("remitent").value;
+			var interessat = document.getElementById("interessat").value;
+			var dataRecepcioInici = document.getElementById("dataRecepcioInici").value;
+			var dataRecepcioFi = document.getElementById("dataRecepcioFi").value;
+			var unitatId = document.getElementById("unitatId").value;
+			var bustia = document.getElementById("bustia").value;
+			var enviatPerEmail = document.getElementById("enviatPerEmail").value;
+			var tipusDocFisica = document.getElementById("tipusDocFisica").value;
+			var backCodi = document.getElementById("backCodi").value;
+			var procesEstatSimple = document.getElementById("procesEstatSimple").value;
+			var estatestat = document.getElementById("estat").value;
+			var sobreescriure = document.getElementById("sobreescriure").value;
+			
+			const FILTRE = [numero, titol, numeroOrigen, remitent, interessat, 
+							dataRecepcioInici, dataRecepcioFi, unitatId, bustia, enviatPerEmail, 
+							tipusDocFisica, backCodi, procesEstatSimple, estatestat, sobreescriure];
+			
+			window.location.href = 'registreAdmin/exportarCSV?llistat=filtre&filtresForm=' + FILTRE;
+		}
+	</script>
+	
 	<script id="botonsTemplate" type="text/x-jsrender">
 	
 		<div class="text-right">
@@ -341,12 +373,14 @@ $(document).ready(function() {
 					</a></li>
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
-					</a></li>					
+					</a></li>	
+					<li><a href="registreAdmin/exportarCSV?llistat=seleccio&filtresForm=">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportarcsv.anotacio"/>
+					</a></li>			
 				</ul>
 			</div>
 		</div>
 	</script>	
-
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
 	<table
