@@ -3,15 +3,12 @@
  */
 package es.caib.distribucio.core.api.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -21,6 +18,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -189,8 +187,6 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getAnnexFitxer(
 			Long annexId, boolean ambVersioImprimible) throws NotFoundException;
-	
-	//TODO: mètode per descarregar l'original
 	
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getJustificant(

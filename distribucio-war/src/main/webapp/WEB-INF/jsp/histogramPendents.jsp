@@ -31,7 +31,7 @@
 function buildChartEntitat(chart) {
 	
     $.getJSON('<c:url value="/registreUser/getHistogramPendents"/> ').done(function(response) {
-    	//console.log(response);
+
     	if (response.length > 0) {
 
     		var darrerData = new Date(response[response.length-1].data).toLocaleTimeString('es-ES', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'});

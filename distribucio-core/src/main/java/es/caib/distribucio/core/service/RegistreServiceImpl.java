@@ -1136,45 +1136,54 @@ public class RegistreServiceImpl implements RegistreService {
 			if (!encryptedIdentificator.equals(id.getClauAcces())) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			}
-			//TODO: en comptes de 1 ha de retornrar una llista i consultar la que està pendent de backoffice
-			List<RegistreEntity> registreEntity = registreRepository.findByNumero(id.getIndetificador());
-			anotacioPerBackoffice.setIdentificador(registreEntity.get(0).getNumero());
-			anotacioPerBackoffice.setData(registreEntity.get(0).getData());
-			anotacioPerBackoffice.setExtracte(registreEntity.get(0).getExtracte());
-			anotacioPerBackoffice.setEntitatCodi(registreEntity.get(0).getEntitatCodi());
-			anotacioPerBackoffice.setEntitatDescripcio(registreEntity.get(0).getEntitatDescripcio());
-			anotacioPerBackoffice.setUsuariCodi(registreEntity.get(0).getUsuariCodi());
-			anotacioPerBackoffice.setUsuariNom(registreEntity.get(0).getUsuariNom());
-			anotacioPerBackoffice.setOficinaCodi(registreEntity.get(0).getOficinaCodi());
-			anotacioPerBackoffice.setOficinaDescripcio(registreEntity.get(0).getOficinaDescripcio());
-			anotacioPerBackoffice.setLlibreCodi(registreEntity.get(0).getLlibreCodi());
-			anotacioPerBackoffice.setLlibreDescripcio(registreEntity.get(0).getLlibreDescripcio());
-			anotacioPerBackoffice.setDocFisicaCodi(registreEntity.get(0).getDocumentacioFisicaCodi());
-			anotacioPerBackoffice.setDocFisicaDescripcio(registreEntity.get(0).getDocumentacioFisicaDescripcio());
-			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.get(0).getAssumpteTipusCodi());
-			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.get(0).getAssumpteTipusDescripcio());
-			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.get(0).getAssumpteCodi());
-			anotacioPerBackoffice.setProcedimentCodi(registreEntity.get(0).getProcedimentCodi());
-			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.get(0).getAssumpteDescripcio());
-			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.get(0).getTransportTipusCodi());
-			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.get(0).getTransportTipusDescripcio());
-			anotacioPerBackoffice.setTransportNumero(registreEntity.get(0).getTransportNumero());
-			anotacioPerBackoffice.setIdiomaCodi(registreEntity.get(0).getIdiomaCodi());
-			anotacioPerBackoffice.setIdomaDescripcio(registreEntity.get(0).getIdiomaDescripcio());
-			anotacioPerBackoffice.setObservacions(registreEntity.get(0).getObservacions());
-			anotacioPerBackoffice.setOrigenRegistreNumero(registreEntity.get(0).getNumeroOrigen());
-			anotacioPerBackoffice.setOrigenData(registreEntity.get(0).getDataOrigen());
-			anotacioPerBackoffice.setAplicacioCodi(registreEntity.get(0).getAplicacioCodi());
-			anotacioPerBackoffice.setAplicacioVersio(registreEntity.get(0).getAplicacioVersio());
-			anotacioPerBackoffice.setRefExterna(registreEntity.get(0).getReferencia());
-			anotacioPerBackoffice.setExpedientNumero(registreEntity.get(0).getExpedientNumero());
-			anotacioPerBackoffice.setExposa(registreEntity.get(0).getExposa());
-			anotacioPerBackoffice.setSolicita(registreEntity.get(0).getSolicita());
-			anotacioPerBackoffice.setDestiCodi(registreEntity.get(0).getUnitatAdministrativa());
-			anotacioPerBackoffice.setDestiDescripcio(registreEntity.get(0).getUnitatAdministrativaDescripcio());
-			anotacioPerBackoffice.setInteressats(toInteressats(registreEntity.get(0).getInteressats()));
-			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.get(0).getId()));
-			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.get(0).getJustificantArxiuUuid());
+			List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
+			if (registres.isEmpty()) {
+				throw new NotFoundException(
+						id.getIndetificador(),
+						RegistreEntity.class);
+			}
+			if (registres.size() > 1) {
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
+			}
+			RegistreEntity registreEntity = registres.get(0);
+
+			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
+			anotacioPerBackoffice.setData(registreEntity.getData());
+			anotacioPerBackoffice.setExtracte(registreEntity.getExtracte());
+			anotacioPerBackoffice.setEntitatCodi(registreEntity.getEntitatCodi());
+			anotacioPerBackoffice.setEntitatDescripcio(registreEntity.getEntitatDescripcio());
+			anotacioPerBackoffice.setUsuariCodi(registreEntity.getUsuariCodi());
+			anotacioPerBackoffice.setUsuariNom(registreEntity.getUsuariNom());
+			anotacioPerBackoffice.setOficinaCodi(registreEntity.getOficinaCodi());
+			anotacioPerBackoffice.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
+			anotacioPerBackoffice.setLlibreCodi(registreEntity.getLlibreCodi());
+			anotacioPerBackoffice.setLlibreDescripcio(registreEntity.getLlibreDescripcio());
+			anotacioPerBackoffice.setDocFisicaCodi(registreEntity.getDocumentacioFisicaCodi());
+			anotacioPerBackoffice.setDocFisicaDescripcio(registreEntity.getDocumentacioFisicaDescripcio());
+			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
+			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
+			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
+			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
+			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
+			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
+			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());
+			anotacioPerBackoffice.setTransportNumero(registreEntity.getTransportNumero());
+			anotacioPerBackoffice.setIdiomaCodi(registreEntity.getIdiomaCodi());
+			anotacioPerBackoffice.setIdomaDescripcio(registreEntity.getIdiomaDescripcio());
+			anotacioPerBackoffice.setObservacions(registreEntity.getObservacions());
+			anotacioPerBackoffice.setOrigenRegistreNumero(registreEntity.getNumeroOrigen());
+			anotacioPerBackoffice.setOrigenData(registreEntity.getDataOrigen());
+			anotacioPerBackoffice.setAplicacioCodi(registreEntity.getAplicacioCodi());
+			anotacioPerBackoffice.setAplicacioVersio(registreEntity.getAplicacioVersio());
+			anotacioPerBackoffice.setRefExterna(registreEntity.getReferencia());
+			anotacioPerBackoffice.setExpedientNumero(registreEntity.getExpedientNumero());
+			anotacioPerBackoffice.setExposa(registreEntity.getExposa());
+			anotacioPerBackoffice.setSolicita(registreEntity.getSolicita());
+			anotacioPerBackoffice.setDestiCodi(registreEntity.getUnitatAdministrativa());
+			anotacioPerBackoffice.setDestiDescripcio(registreEntity.getUnitatAdministrativaDescripcio());
+			anotacioPerBackoffice.setInteressats(toInteressats(registreEntity.getInteressats()));
+			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.getId()));
+			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.getJustificantArxiuUuid());
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
@@ -1198,30 +1207,34 @@ public class RegistreServiceImpl implements RegistreService {
 					clauSecreta);
 			if (!encryptedIdentificator.equals(id.getClauAcces()))
 				throw new RuntimeException("La clau o identificador és incorrecte");
-			List<RegistreEntity> registre = registreRepository.findByNumero(id.getIndetificador());
-			if (registre.get(0) == null) {
+			List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
+			if (registres.isEmpty()) {
 				throw new NotFoundException(
 						id.getIndetificador(),
 						RegistreEntity.class);
-
 			}
+			if (registres.size() > 1) {
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
+			}
+			RegistreEntity registre = registres.get(0);
+
 			switch (estat) {
 			case REBUDA:
-				registre.get(0).updateBackEstat(
+				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_REBUDA,
 						observacions);
-				registre.get(0).updateBackRebudaData(new Date());
+				registre.updateBackRebudaData(new Date());
 				contingutLogHelper.log(
-						registre.get(0),
+						registre,
 						LogTipusEnumDto.BACK_REBUDA,
 						null,
 						false);
 				break;
 			case PROCESSADA:
-				registre.get(0).updateBackEstat(
+				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_PROCESSADA,
 						observacions);
-				registre.get(0).updateBackProcesRebutjErrorData(new Date());
+				registre.updateBackProcesRebutjErrorData(new Date());
 				
 				int dies = getPropertyExpedientDiesTancament();
 				Date ara = new Date();
@@ -1229,32 +1242,32 @@ public class RegistreServiceImpl implements RegistreService {
 				c.setTime(ara);
 				c.add(Calendar.DATE, dies);
 				Date dataTancament = c.getTime();
-				registre.get(0).updateDataTancament(dataTancament);
+				registre.updateDataTancament(dataTancament);
 				
 				contingutLogHelper.log(
-						registre.get(0),
+						registre,
 						LogTipusEnumDto.BACK_PROCESSADA,
 						null,
 						false);
 				break;
 			case REBUTJADA:
-				registre.get(0).updateBackEstat(
+				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_REBUTJADA,
 						observacions);
-				registre.get(0).updateBackProcesRebutjErrorData(new Date());
+				registre.updateBackProcesRebutjErrorData(new Date());
 				contingutLogHelper.log(
-						registre.get(0),
+						registre,
 						LogTipusEnumDto.BACK_REBUTJADA,
 						null,
 						false);				
 				break;
 			case ERROR:
-				registre.get(0).updateBackEstat(
+				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_ERROR,
 						observacions);
-				registre.get(0).updateBackProcesRebutjErrorData(new Date());
+				registre.updateBackProcesRebutjErrorData(new Date());
 				contingutLogHelper.log(
-						registre.get(0),
+						registre,
 						LogTipusEnumDto.BACK_ERROR,
 						null,
 						false);
@@ -1699,15 +1712,12 @@ public class RegistreServiceImpl implements RegistreService {
 		@Transactional(propagation=Propagation.REQUIRED)
 		@Override
 		public void run() {
-			System.out.println("SOC AL RUN!!!!!!!!!!!!!!!!");
 			try {		
 				String nom;
 				FitxerDto fitxer = new FitxerDto();
 				try {
 					fitxer = registreHelper.getAnnexFitxer(annexID, true);
-					System.out.println("SOC AL TRY!!!!!!!!!!!!!!!!!");
 				} catch (Exception e) {
-					System.out.println("SOC AL CATCH!!!!!!!!!!!!!!!!!!");
 					fitxer = registreHelper.getAnnexFitxer(annexID, false);
 				}
 						

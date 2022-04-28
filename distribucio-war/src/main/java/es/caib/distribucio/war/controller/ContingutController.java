@@ -196,9 +196,6 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 	
-	//TODO: posar el mètode per descarregar l'original
-	
-
 	@RequestMapping(value = {	"/contingut/{contingutId}/registre/{registreId}/justificant", // URL antiga
 								"/contingut/registre/{registreId}/justificant"}, 
 					method = RequestMethod.GET)

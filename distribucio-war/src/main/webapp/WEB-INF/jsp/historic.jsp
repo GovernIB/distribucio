@@ -360,14 +360,12 @@
            	$("#taulaEstat").dataTable().fnDestroy();
            	$("#taulaBustia").dataTable().fnDestroy();
 
-           	console.log('Consultant dades');
 			var content = '';
 			$.ajax({
 				type: 'POST',
 		        url: '<c:url value="/historic/JsonDadesHistoric"/>',
 				data: $(this).serialize(),
 		        success: function(json) {	
-		           	console.log('Processant dades');
 		        	if (!jQuery.isEmptyObject(json)) {			        		
 		        		if (!jQuery.isEmptyObject(json.json_dades_uo_map)){
 			        		hiHaDades = true;

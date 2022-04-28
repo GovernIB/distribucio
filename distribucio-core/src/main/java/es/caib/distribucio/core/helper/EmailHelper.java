@@ -42,8 +42,6 @@ import es.caib.distribucio.plugin.usuari.DadesUsuari;
 @Component
 public class EmailHelper {
 
-	private static final String PREFIX_DISTRIBUCIO = "[DISTRIBUCIO]";
-
 	@Resource
 	private UsuariRepository usuariRepository;
 	@Resource
@@ -160,7 +158,7 @@ public class EmailHelper {
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
 		missatge.setFrom(getRemitent());
-		missatge.setSubject(PREFIX_DISTRIBUCIO + " Nous elements rebuts a les bústies");
+		missatge.setSubject(this.getPrefixDistribucio() + " Nous elements rebuts a les bústies");
 		
 		BustiaEntity bustia = null;
 		EntitatEntity entitat = null;
@@ -192,6 +190,17 @@ public class EmailHelper {
 		mailSender.send(missatge);
 	}
 	
+	private String getPrefixDistribucio() {
+		String entorn = configHelper.getConfig("es.caib.distribucio.default.user.entorn");
+		String prefix;
+		if (entorn != null) {
+			prefix = "[DISTRIBUCIO-" + entorn + "]";			
+		}else {
+			prefix = "[DISTRIBUCIO]";
+		}
+		return prefix;
+	}
+
 	/** Envia un email d'avís amb un contingut pendent de notificar per email. Es diferencia del mètode agrupat perquè només envia
 	 * un moviment i canvia l'assumpte i el cos del missatge.
 	 * 
@@ -211,7 +220,7 @@ public class EmailHelper {
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
 		missatge.setFrom(getRemitent());
-		missatge.setSubject(PREFIX_DISTRIBUCIO + " Nou element rebut a la bústia: " + (contingutEmail.getBustia() != null ? contingutEmail.getBustia().getNom() : ""));
+		missatge.setSubject(this.getPrefixDistribucio() + " Nou element rebut a la bústia: " + (contingutEmail.getBustia() != null ? contingutEmail.getBustia().getNom() : ""));
 		BustiaEntity bustia = contingutEmail.getBustia();
 		EntitatEntity entitat = bustia != null ? bustia.getEntitat() : null;
 		ContingutEntity contingut = contingutEmail.getContingut();
@@ -255,7 +264,7 @@ public class EmailHelper {
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setTo(emailDestinatari);
 		missatge.setFrom(getRemitent());
-		missatge.setSubject(PREFIX_DISTRIBUCIO + " Mencionat al comentari d'una anotació [" + contingut.getNom() + "]");
+		missatge.setSubject(this.getPrefixDistribucio() + " Mencionat al comentari d'una anotació [" + contingut.getNom() + "]");
 		EntitatEntity entitat = contingut.getEntitat();
 		missatge.setText(
 				"L'usuari " + usuariActual.getNom() + "(" + usuariActual.getCodi() + ") t'ha mencionat al comentari d'una anotació [" + contingut.getNom() + "]: \n" +
@@ -286,7 +295,7 @@ public class EmailHelper {
 		SimpleMailMessage missatge = new SimpleMailMessage();
 		missatge.setFrom(getRemitent());
 		missatge.setTo(usuariActual.getEmail());
-		missatge.setSubject(PREFIX_DISTRIBUCIO + " Registre alliberat per un altre usuari: [" + registreEntity.getNom() + "]");
+		missatge.setSubject(this.getPrefixDistribucio() + " Registre alliberat per un altre usuari: [" + registreEntity.getNom() + "]");
 		EntitatEntity entitat = registreEntity.getEntitat();
 		missatge.setText("Informació del registre:\n" +
 				"\tEntitat: " + entitat.getNom() + "\n" +
@@ -330,7 +339,7 @@ public class EmailHelper {
 				SimpleMailMessage missatge = new SimpleMailMessage();
 					missatge.setTo(emailDestinatari);
 					missatge.setFrom(getRemitent());
-					missatge.setSubject(PREFIX_DISTRIBUCIO + " L'anotació " + registrePerReenviar.getNom() + " ha canviat d'estat.");
+					missatge.setSubject(this.getPrefixDistribucio() + " L'anotació " + registrePerReenviar.getNom() + " ha canviat d'estat.");
 					EntitatEntity entitat = registrePerReenviar.getEntitat();
 					missatge.setText(
 							"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
@@ -364,7 +373,7 @@ public class EmailHelper {
 			if (!destinataris.isEmpty()) {
 				for (UsuariDto usuariDto : destinataris) {
 					SimpleMailMessage missatge = new SimpleMailMessage();
-					missatge.setSubject(PREFIX_DISTRIBUCIO + " S'han rebut anotacions duplicades de la bústia: " + bustia.getNom());
+					missatge.setSubject(this.getPrefixDistribucio() + " S'han rebut anotacions duplicades de la bústia: " + bustia.getNom());
 					missatge.setText("Les següents anotacions han estat modificades amb un nou contingut: \n\n");
 					for (ContingutMovimentEntity contingutMoviment : contingutMoviments) {
 						BustiaEntity bustiaMoviment = null;

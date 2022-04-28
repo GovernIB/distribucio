@@ -83,12 +83,6 @@ public class IntegracioHelper {
 		return integracions;
 	}
 
-	public List<MonitorIntegracioDto> findAccionsByIntegracioCodi(
-			String integracioCodi) {
-		//TODO implementar
-		return null; //getLlistaAccions(integracioCodi);
-	}
-
 	public void addAccioOk(
 			String integracioCodi,
 			String descripcio,
