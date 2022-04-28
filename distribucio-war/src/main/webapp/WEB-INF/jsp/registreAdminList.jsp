@@ -351,6 +351,7 @@ $(document).ready(function() {
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
 	<table
 		id="taulaDades"
+		data-refresh-tancar="true"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreAdmin/datatable"/>"
 		data-filter="#registreFiltreCommand"
