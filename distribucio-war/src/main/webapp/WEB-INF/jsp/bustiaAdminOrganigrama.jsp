@@ -4,6 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <dis:blocIconaContingutNoms/>
 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -343,7 +351,9 @@
 			<div style="padding-bottom: 10px;">
  				<button class="btn btn-default" onclick="$('#arbreUnitatsOrganitzatives').jstree('open_all');"><span class="fa fa-caret-square-o-down"></span> <spring:message code="unitat.arbre.expandeix"/></button> 
  				<button class="btn btn-default" onclick="$('#arbreUnitatsOrganitzatives').jstree('close_all');"><span class="fa fa-caret-square-o-up"></span> <spring:message code="unitat.arbre.contreu"/></button> 
- 				<a style="float: right;" id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a> 
+ 				<c:if test="${isRolActualAdministrador}">
+ 					<a style="float: right;" id="bustia-boto-nova" class="btn btn-default" href="bustiaAdminOrganigrama/new" data-toggle="modal" data-refresh-pagina="true"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a> 
+				</c:if>
 			</div>
  			
 
@@ -411,9 +421,11 @@
 								<h2><spring:message code="bustia.permis.titol"/><small><%-- ${permis.nom} --%></small></h2>
 							</div>
 							<div class="panel-body">
+							  <c:if test="${isRolActualAdministrador}">
 								<div class="text-right boto-nou-permis-organigrama" data-toggle="botons-titol">
 									<a class="btn btn-default" id="permis-boto-nou" href="" data-toggle="modal" data-datatable-id="permisos"><span class="fa fa-plus"></span>&nbsp;<spring:message code="permis.list.boto.nou.permis"/></a>
 								</div>
+							  </c:if>
 								<table id="permisos" data-toggle="datatable" data-url="<c:url value="/permis/datatable"/>" data-search-enabled="false" data-paging-enabled="false" data-default-order="1" data-default-dir="asc" class="table table-striped table-bordered">
 									<thead>
 										<tr>
@@ -426,6 +438,7 @@
 														{{if read}}<span class="fa fa-check"></span>{{/if}}
 												</script>
 											</th>
+											<c:if test="${isRolActualAdministrador}">
 											<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 												<script id="cellAccionsTemplate" type="text/x-jsrender">
 														<div class="dropdown">
@@ -437,11 +450,13 @@
 														</div>
 												</script>
 											</th>
+											</c:if>
 										</tr>
 									</thead>
 								</table>
 							</div>
 						</div>
+						<c:if test="${isRolActualAdministrador}">
 						<div class="row">
 							<div class="col-md-4">
 								<button id="marcarPerDefecteBtn" type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
@@ -459,7 +474,8 @@
 							<div class="col-md-2">
 								<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 							</div>
-						</div>						
+						</div>	
+						</c:if>					
 					</form:form>
 				</div>
 			</div>

@@ -4,6 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <dis:blocIconaContingutNoms/>
 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 <c:url value="/unitatajax/unitatsWithoutArrel" var="urlConsultaLlistat"/>
@@ -154,7 +162,9 @@
 	<script id="botonsTemplate" type="text/x-jsrender">
 		<div style="float: right">
 			<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
-			<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+			<c:if test="${isRolActualAdministrador}">
+				<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
+			</c:if>
 		</div>
 	</script>
 

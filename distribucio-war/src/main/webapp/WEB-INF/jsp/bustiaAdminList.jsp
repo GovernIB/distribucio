@@ -4,6 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <dis:blocIconaContingutNoms/>
 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -163,6 +171,7 @@
 						<a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/permis" class="btn btn-default"><span class="fa fa-file-alt"></span>&nbsp;<spring:message code="bustia.list.boto.permisos"/>&nbsp;<span class="badge">{{:permisosCount}}</span></a>
 					</script>
 				</th>
+				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -181,10 +190,13 @@
 						</div>
 					</script>
 				</th>
+				</c:if>
 			</tr>
 		</thead>
 	</table>
 	<script id="botonsTemplate" type="text/x-jsrender">
+	<c:if test="${isRolActualAdministrador}">
 		<p style="text-align:right"><a id="bustia-boto-nova" class="btn btn-default" href="${unitatCodiUrlPrefix}bustiaAdmin/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="bustia.list.boto.nova.bustia"/></a></p>
+	</c:if>
 	</script>
 </body>

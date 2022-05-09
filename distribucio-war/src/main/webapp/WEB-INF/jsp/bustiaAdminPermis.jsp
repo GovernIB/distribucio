@@ -3,6 +3,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <html>
 <head>
 	<title><spring:message code="bustia.permis.titol"/></title>
@@ -28,6 +36,7 @@
 						{{if read}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
+				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -39,11 +48,14 @@
 						</div>
 					</script>
 				</th>
+				</c:if>
 			</tr>
 		</thead>
 	</table>
 	<script id="botonsTemplate" type="text/x-jsrender">
+	  <c:if test="${isRolActualAdministrador}">
 		<p style="text-align:right"><a class="btn btn-default" href="../../bustiaAdmin/${bustia.id}/permis/new" data-toggle="modal"><span class="fa fa-plus"></span>&nbsp;<spring:message code="entitat.permis.boto.nou.permis"/></a></p>
+	  </c:if>
 	</script>
 	<a href="<c:url value="/bustiaAdmin"/>" class="btn btn-default pull-right"><span class="fa fa-arrow-left"></span>&nbsp;<spring:message code="comu.boto.tornar"/></a>
 	<div class="clearfix"></div>

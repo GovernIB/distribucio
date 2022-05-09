@@ -499,6 +499,8 @@ li[id^="anotacio_"] {
 			&nbsp;
 			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
 			&nbsp;
+			
+			<c:if test="${isRolActualAdministrador}">
 			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>
@@ -569,6 +571,7 @@ li[id^="anotacio_"] {
 					</c:choose>
 				</c:if>
 			</ul>
+		  </c:if>
 		</div>	
 
 	</c:if>
@@ -1290,7 +1293,7 @@ li[id^="anotacio_"] {
 						<div class="alert well-sm alert-warning alert-dismissable">
 							<span class="fa fa-exclamation-triangle"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
-							<c:if test="${isRolActualAdministrador or isRolActualAdminLectura}">
+							<c:if test="${isRolActualAdministrador}">
 								<a href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
 							</c:if>
 						</div>

@@ -103,21 +103,14 @@ public class RolHelper {
 			rols.add(ROLE_SUPER);
 		}
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
-		System.out.println("ENTITAT ACTUAL: " + entitatActual);
-		System.out.println("USER IN ROLE: " + request.isUserInRole(ROLE_ADMIN_LECTURA));
-		//System.out.println("ROLS USUARI ACTUAL: " + getRolActual(request));
 		if (entitatActual != null) {
-			System.out.println("COMENÇAM!!!!!!");
 			if (entitatActual.isUsuariActualAdministration() && request.isUserInRole(ROLE_ADMIN)) {
-				System.out.println("ADMIN!!!!!!!!!!!!!!!");
 				rols.add(ROLE_ADMIN);
 			}
-			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(ROLE_ADMIN/*_LECTURA*/)) {
-				System.out.println("ADMIN_LECTURA!!!!!!!!!");
+			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(ROLE_ADMIN_LECTURA)) {
 				rols.add(ROLE_ADMIN_LECTURA);
 			}
 			if (entitatActual.isUsuariActualRead() && request.isUserInRole(ROLE_USER)) {
-				System.out.println("USER!!!!!!!!!");
 				rols.add(ROLE_USER);
 			}
 		}

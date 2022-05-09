@@ -4,6 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <dis:blocIconaContingutNoms/>
 <html>
 <head>
@@ -142,12 +150,14 @@
 
 
 	<script id="botonsTemplate" type="text/x-jsrender">
+	  <c:if test="${isRolActualAdministrador}">
 		<p style="text-align:right">
 			<a class="btn btn-default" href="regla/new" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-plus"></span>&nbsp;<spring:message code="regla.list.boto.nova"/></a>
 			<a class="btn btn-primary" href="regla/simular" data-toggle="modal" data-datatable-id="regles"><span class="fa fa-cog"></span>&nbsp;<spring:message code="regla.list.boto.simular"/></a>
 		</p>
+	  </c:if>
 	</script>
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="true"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
+	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="${isRolActualAdministrador}"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
 	data-botons-template="#botonsTemplate">
 
 		<thead>
@@ -200,8 +210,9 @@
 						{{if activa}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
-				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
-					<script id="cellAccionsTemplate" type="text/x-jsrender">
+				<c:if test="${isRolActualAdministrador}">
+					<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
+						<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
@@ -218,7 +229,8 @@
 							</ul>
 						</div>
 					</script>
-				</th>
+					</th>
+				</c:if>
 			</tr>
 		</thead>
 	</table>

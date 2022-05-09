@@ -3,6 +3,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
 <html>
 <head>
 	<title><spring:message code="backoffice.titol"/></title>
@@ -31,9 +39,11 @@
 	
 </head>
 <body>
+  <c:if test="${isRolActualAdministrador}">
 	<div id="nouBoto" style="float: right;">
 		<a class="btn btn-default" href="backoffice/new" data-toggle="modal" data-datatable-id="backoffice"><span class="fa fa-plus"></span>&nbsp;<spring:message code="backoffice.boto.nou"/></a>
 	</div>
+  </c:if>
 	<table 
 		id="backoffice"
 		data-toggle="datatable" 
@@ -45,8 +55,9 @@
 				<th data-col-name="codi" data-orderable="false"><spring:message code="backoffice.list.columna.codi"/></th>
 				<th data-col-name="nom" data-orderable="false"><spring:message code="backoffice.list.columna.nom"/></th>
 				<th data-col-name="url" data-orderable="false"><spring:message code="backoffice.list.columna.url"/></th>
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
-					<script id="cellAccionsTemplate" type="text/x-jsrender">
+  				<c:if test="${isRolActualAdministrador}">
+					<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+						<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
@@ -55,7 +66,8 @@
 							</ul>
 						</div>
 					</script>
-				</th>
+					</th>
+				</c:if>
 			</tr>
 		</thead>
 	</table>

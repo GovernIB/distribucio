@@ -10,6 +10,12 @@ pageContext.setAttribute(
 		es.caib.distribucio.war.helper.EnumHelper.getOptionsForEnum(
 				es.caib.distribucio.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum.class,
 				"contingut.admin.opcions.esborrat.enum."));
+pageContext.setAttribute(
+		"isRolActualAdministrador",
+		es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+pageContext.setAttribute(
+		"isRolActualAdminLectura",
+		es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
 %>
 <dis:blocIconaContingutNoms/>
 <html>
@@ -104,6 +110,7 @@ pageContext.setAttribute(
 						{{/if}}
 					</script>
 				</th>
+				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -119,6 +126,7 @@ pageContext.setAttribute(
 						</div>
 					</script>
 				</th>
+				</c:if>
 			</tr>
 		</thead>
 	</table>

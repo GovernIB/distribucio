@@ -4,6 +4,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+
+<%
+	pageContext.setAttribute(
+			"isRolActualAdministrador",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+%>
+
+
 <c:set var="idioma"><%=org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).getLanguage()%></c:set>
 <dis:blocIconaContingutNoms/>
 <html>
@@ -357,6 +369,7 @@ $(document).ready(function() {
 	</script>
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
+	<c:if test="${isRolActualAdministrador}">
 	
 		<div class="text-right">
 			<div class="btn-group">
@@ -380,6 +393,7 @@ $(document).ready(function() {
 				</ul>
 			</div>
 		</div>
+	</c:if>
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
@@ -546,6 +560,7 @@ $(document).ready(function() {
 
 
 				<th data-col-name="backCodi" data-orderable="true"><spring:message code="contingut.admin.columna.backoffice"/></th>
+				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -581,6 +596,7 @@ $(document).ready(function() {
 
 					</script>
 				</th>
+				</c:if>
 				<th data-col-name="reintentsEsgotat" data-visible="false"></th>
 				<th data-col-name="procesIntents" data-visible="false"></th>
 				<th data-col-name="maxReintents" data-visible="false"></th>
