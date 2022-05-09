@@ -23,5 +23,14 @@ public class BaseAdminController extends BaseController {
 			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
 		return entitat;
 	}
+	
+	public EntitatDto getEntitatActualComprovantPermisAdminLectura(
+			HttpServletRequest request) {
+		EntitatDto entitat = this.getEntitatActual(request);
+		if (!entitat.isUsuariActualAdministration() && !entitat.isUsuariActualAdminLectura())
+			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
+		return entitat;
+	}
+
 
 }

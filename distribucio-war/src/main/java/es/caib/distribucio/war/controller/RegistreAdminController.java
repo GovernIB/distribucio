@@ -96,7 +96,7 @@ public class RegistreAdminController extends BaseAdminController {
 	public String registreAdminGet(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute(filtreCommand);
@@ -134,7 +134,7 @@ public class RegistreAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 				
 		return DatatablesHelper.getDatatableResponse(
@@ -167,7 +167,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		try {
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
@@ -244,7 +244,7 @@ public class RegistreAdminController extends BaseAdminController {
 					ordreColumn,
 					"asc".equals(ordreDir) ? OrdreDireccioDto.ASCENDENT : OrdreDireccioDto.DESCENDENT);
 			// Consulta la pàgina amb el registre anterior, actual i final
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
 			PaginaDto<ContingutDto> pagina = 
@@ -337,7 +337,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			@RequestParam(required = false) Long unitatId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
 		filtre.setActiva(!mostrarInactives);
 		filtre.setUnitatIdFiltre(unitatId);
@@ -645,7 +645,7 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		return bustiaService.findById(
 				entitatActual.getId(),
 				Long.parseLong(bustiaId));
@@ -658,7 +658,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable String unitatCodi,
 			@PathVariable String text,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		UnitatOrganitzativaDto unitatOrganitzativa = null;
 		if (unitatCodi != null && !"null".equalsIgnoreCase(unitatCodi)) {
 			unitatOrganitzativa = unitatOrganitzativaService.findByCodi(unitatCodi);

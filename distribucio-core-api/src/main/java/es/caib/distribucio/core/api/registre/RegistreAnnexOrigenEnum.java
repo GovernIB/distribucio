@@ -16,7 +16,8 @@ import java.util.Map;
 public enum RegistreAnnexOrigenEnum {
 
 	CIUTADA("0"),
-	ADMINISTRACIO("1");
+	ADMINISTRACIO("1"),
+	ADMIN_LECTURA("5");
 
 	private final String valor;
 	private RegistreAnnexOrigenEnum(String valor) {

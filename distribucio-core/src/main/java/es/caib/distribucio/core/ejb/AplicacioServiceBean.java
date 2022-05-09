@@ -34,50 +34,50 @@ public class AplicacioServiceBean implements AplicacioService {
 
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public String getVersioActual() {
 		return delegate.getVersioActual();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public String getVersioData() {
 		return delegate.getVersioData();
 	}
 
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public void processarAutenticacioUsuari() {
 		delegate.processarAutenticacioUsuari();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public UsuariDto getUsuariActual() {
 		return delegate.getUsuariActual();
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public UsuariDto updateUsuariActual(UsuariDto usuari, Long entitatId) {
 		return delegate.updateUsuariActual(usuari, entitatId);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public UsuariDto findUsuariAmbCodi(String codi) {
 		return delegate.findUsuariAmbCodi(codi);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<UsuariDto> findUsuariAmbText(String text) {
 		return delegate.findUsuariAmbText(text);
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text) {
 		return delegate.findUsuariAmbCodiAndNom(text);
 	}
@@ -104,43 +104,43 @@ public class AplicacioServiceBean implements AplicacioService {
 		return delegate.permisosFindRolsDistinctAll();
 	}
 
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public boolean isPluginArxiuActiu() {
 		return delegate.isPluginArxiuActiu();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public String propertyBaseUrl() {
 		return delegate.propertyBaseUrl();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public Properties propertyFindByPrefix(String prefix) {
 		return delegate.propertyFindByPrefix(prefix);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public String propertyPluginPassarelaFirmaIgnorarModalIds() {
 		return delegate.propertyPluginPassarelaFirmaIgnorarModalIds();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public String propertyFindByNom(String nom) {
 		return delegate.propertyFindByNom(nom);
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId) {
 		return delegate.getBustiaPerDefecte(usuari, entitatId);
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public void setRolUsuariActual(String rolActual) {
 		delegate.setRolUsuariActual(rolActual);
 	}

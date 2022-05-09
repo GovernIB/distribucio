@@ -11,5 +11,6 @@ package es.caib.distribucio.core.api.dto;
  */
 public enum NtiOrigenEnumDto {
 	O0, // Ciutadà
-	O1  // Administració
+	O1,  // Administració
+	O5  // Admin lectura
 }

@@ -63,7 +63,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public EntitatDto findById(Long id) {
 		return delegate.findById(id);
 	}
@@ -87,7 +87,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		return delegate.findAccessiblesUsuariActual();
 	}
@@ -118,7 +118,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<PermisDto> findPermisAdmin(Long id) {
 		return delegate.findPermisAdmin(id);
 	}

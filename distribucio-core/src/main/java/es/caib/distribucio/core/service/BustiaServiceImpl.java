@@ -1094,7 +1094,7 @@ public class BustiaServiceImpl implements BustiaService {
 				true,
 				false,
 				false);
-		if (!usuariHelper.isAdmin() && !isVistaMoviments)
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),
@@ -1325,7 +1325,7 @@ public class BustiaServiceImpl implements BustiaService {
 	
 		BustiaEntity bustiaOrigenLogic = null;
 		BustiaEntity bustiaOrigen = null;
-		if (destiLogic == null && !usuariHelper.isAdmin())
+		if (destiLogic == null && !usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
 			bustiaOrigen = entityComprovarHelper.comprovarBustia(
 				entitat,
 				destiLogic != null ? destiLogic : reg.getPareId(),

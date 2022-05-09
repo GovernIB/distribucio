@@ -34,6 +34,9 @@
 			"isRolActualAdministrador",
 			es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
 	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
+	pageContext.setAttribute(
 			"isRolActualUsuari",
 			es.caib.distribucio.war.helper.RolHelper.isRolActualUsuari(request));
 	pageContext.setAttribute(
@@ -242,7 +245,7 @@ body {
 
 									<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
 								</c:when>
-								<c:when test="${isRolActualAdministrador}">
+								<c:when test="${isRolActualAdministrador or isRolActualAdminLectura}">
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.configurar"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">

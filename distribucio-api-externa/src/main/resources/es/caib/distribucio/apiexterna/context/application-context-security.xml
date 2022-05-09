@@ -25,7 +25,7 @@
 		<sec:intercept-url pattern="/webjars/**" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/images/**" access="isAnonymous()"/>
 
-		<sec:intercept-url pattern="/externa/opendata/*" access="hasAnyRole('DIS_ADMIN','DIS_REPORT')"/>
+		<sec:intercept-url pattern="/externa/opendata/*" access="hasAnyRole('DIS_ADMIN', 'DIS_ADMIN_LECTURA', 'DIS_REPORT')"/>
 		<sec:intercept-url pattern="/*" access="hasRole('tothom')"/>		
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
@@ -55,6 +55,7 @@
 							<set>
 								<value>DIS_SUPER</value>
 								<value>DIS_ADMIN</value>
+								<value>DIS_ADMIN_LECTURA</value>
 								<value>DIS_REPORT</value>
 								<value>DIS_USER</value>
 								<value>DIS_BSTWS</value>

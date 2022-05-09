@@ -9,6 +9,9 @@
 	pageContext.setAttribute(
 				"isRolActualAdministrador",
 				es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+			"isRolActualAdminLectura",
+			es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
 %>
 
 
@@ -283,7 +286,7 @@ li[id^="anotacio_"] {
 						params.set("isVistaMoviments", true);
 	    			// Navega al registre
 	    			<c:choose>
-	    				<c:when test="${isRolActualAdministrador}">
+	    				<c:when test="${isRolActualAdministrador or isRolActualAdminLectura}">
 			    			location.href = '<c:url value="/registreAdmin/navega/"/>' + registreNumero  +'?' + params.toString();
 	    				</c:when>
 	    				<c:otherwise>
@@ -622,7 +625,7 @@ li[id^="anotacio_"] {
 					<td><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
 					<td colspan="3">
 						<c:choose>
-							<c:when test="${isRolActualAdministrador}">
+							<c:when test="${isRolActualAdministrador or isRolActualAdminLectura}">
 								${registre.identificador}
 							</c:when>
 							<c:otherwise>
@@ -702,7 +705,7 @@ li[id^="anotacio_"] {
 												</c:otherwise>
 											</c:choose>
 											<td>
-												<c:if test="${interessat.tipus != 'ADMINISTRACIO'}">
+												<c:if test="${interessat.tipus != 'ADMINISTRACIO' or interessat.tipus != 'ADMIN_LECTURA'}">
 													<button type="button" class="btn btn-default desplegable" href="#detalls_resum_interessats_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_interessats_${status.index}">
 														<span class="fa fa-caret-down"></span>
 													</button>
@@ -759,7 +762,7 @@ li[id^="anotacio_"] {
 																			</c:otherwise>
 																		</c:choose>
 																		<td>
-																			<c:if test="${representant.tipus != 'ADMINISTRACIO'}">
+																			<c:if test="${representant.tipus != 'ADMINISTRACIO' or representant.tipus != 'ADMIN_LECTURA'}">
 																				<button type="button" class="btn btn-default desplegable" href="#detalls_resum_${status.index}_rep" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_${status.index}_rep">
 																					<span class="fa fa-caret-down"></span>
 																				</button>
@@ -935,7 +938,7 @@ li[id^="anotacio_"] {
 					<td style="width:30%"><strong><spring:message code="registre.detalls.camp.tipus"/></strong></td>
 					<td><spring:message code="registre.anotacio.tipus.enum.${registre.registreTipus}"/></td>
 				</tr>
-				<c:if test="${isRolActualAdministrador}">
+				<c:if test="${isRolActualAdministrador or isRolActualAdminLectura}">
 					<tr>
 						<td><strong><spring:message code="contingut.admin.info.camp.contingut"/></strong></td>
 						<td>
@@ -948,7 +951,7 @@ li[id^="anotacio_"] {
 					<td><strong><spring:message code="registre.detalls.camp.numero"/></strong></td>
 					<td>
 						<c:choose>
-							<c:when test="${isRolActualAdministrador}">
+							<c:when test="${isRolActualAdministrador or isRolActualAdminLectura}">
 								${registre.identificador}
 							</c:when>
 							<c:otherwise>
@@ -1164,7 +1167,7 @@ li[id^="anotacio_"] {
 											</c:otherwise>
 										</c:choose>
 										<td>
-											<c:if test="${interessat.tipus != 'ADMINISTRACIO'}">
+											<c:if test="${interessat.tipus != 'ADMINISTRACIO' or interessat.tipus != 'ADMIN_LECTURA'}">
 												<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}">
 													<span class="fa fa-caret-down"></span>
 												</button>
@@ -1221,7 +1224,7 @@ li[id^="anotacio_"] {
 																		</c:otherwise>
 																	</c:choose>
 																	<td>
-																		<c:if test="${representant.tipus != 'ADMINISTRACIO'}">
+																		<c:if test="${representant.tipus != 'ADMINISTRACIO' or representant.tipus != 'ADMIN_LECTURA'}">
 																			<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}_rep" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}_rep">
 																				<span class="fa fa-caret-down"></span>
 																			</button>
@@ -1287,7 +1290,7 @@ li[id^="anotacio_"] {
 						<div class="alert well-sm alert-warning alert-dismissable">
 							<span class="fa fa-exclamation-triangle"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
-							<c:if test="${isRolActualAdministrador}">
+							<c:if test="${isRolActualAdministrador or isRolActualAdminLectura}">
 								<a href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
 							</c:if>
 						</div>

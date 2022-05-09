@@ -221,7 +221,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (registre == null)
 			throw new NotFoundException(registreId, RegistreEntity.class);
 		
-		if (!usuariHelper.isAdmin() && !isVistaMoviments)
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 							entitat,
 							registre.getPareId(),
@@ -1303,7 +1303,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.findByEntitatAndId(
 				entitat,
 				registreId);
-		if (!usuariHelper.isAdmin() && !isVistaMoviments)
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 						entitat,
 						registre.getPareId(),
@@ -1412,7 +1412,7 @@ public class RegistreServiceImpl implements RegistreService {
 				true);
 		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
 		
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
 			entityComprovarHelper.comprovarBustia(
 				entitat,
 				anotacio.getPareId(),
@@ -1437,7 +1437,7 @@ public class RegistreServiceImpl implements RegistreService {
 				true);
 		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
 		
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
 			entityComprovarHelper.comprovarBustia(
 				entitat,
 				anotacio.getPareId(),
@@ -1486,7 +1486,11 @@ public class RegistreServiceImpl implements RegistreService {
 				true);
 		
 		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), !rolActual.equals("DIS_ADMIN"));
+		boolean findRol = false;
+		if (!rolActual.equals("DIS_ADMIN") && !rolActual.equals("DIS_ADMIN_LECTURA")) {
+			findRol = true;
+		}
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), findRol /*!rolActual.equals("DIS_ADMIN")*/);
 
 		registre.setProces(RegistreProcesEstatEnum.BUSTIA_PENDENT);
 
@@ -1813,7 +1817,7 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		if (!usuariHelper.isAdmin() && !isVistaMoviments) {
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments) {
 			RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
 			entityComprovarHelper.comprovarBustia(
 					entitat,
@@ -1842,7 +1846,7 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		
 		RegistreEntity registre = registreRepository.findByEntitatAndId(entitat, registreId);
-		if (!usuariHelper.isAdmin() && !isVistaMoviments) {
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments) {
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),
@@ -1896,7 +1900,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				registreId);
 
-		if (!usuariHelper.isAdmin())
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
 			entityComprovarHelper.comprovarBustia(
 						entitat,
 						registre.getPareId(),
@@ -2020,10 +2024,15 @@ public class RegistreServiceImpl implements RegistreService {
 					RegistreEntity.class,
 					"El registre (id=" + registreId + ") no té cap bústia assignada i per tant no es pot recuperar la llista de procediments associats a la bústia per procedir a la classificació.");
 
+		boolean findIsAdmin = false;
+		if (!usuariHelper.equals("DIS_ADMIN") && !usuariHelper.equals("DIS_ADMIN_LECTURA")) {
+			findIsAdmin = true;
+		}
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				registre.getPareId(),
-				!usuariHelper.isAdmin());
+				findIsAdmin
+				/*!usuariHelper.isAdmin()*/);
 		
 		registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
@@ -2083,10 +2092,15 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (bustiaId != null && bustiaId > 0) {
+			boolean findIsAdmin = false;
+			if (!usuariHelper.equals("DIS_ADMIN") && !usuariHelper.equals("DIS_ADMIN_LECTURA")) {
+				findIsAdmin = true;
+			}
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
 															entitat,
 															bustiaId,
-															!usuariHelper.isAdmin());
+															findIsAdmin
+															/*!usuariHelper.isAdmin()*/);
 			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			if (procediments != null) {
 				for (Procediment procediment: procediments) {
@@ -2374,6 +2388,9 @@ public class RegistreServiceImpl implements RegistreService {
 			case ADMINISTRACIO:
 				ntiOrigen = NtiOrigen.ADMINISTRACIO;
 				break;	
+			case ADMIN_LECTURA:
+				ntiOrigen = NtiOrigen.ADMIN_LECTURA;
+				break;	
 			}
 		}	
 		return ntiOrigen;
@@ -2433,6 +2450,9 @@ public class RegistreServiceImpl implements RegistreService {
 		case ADMINISTRACIO:
 			interessatBase.setTipus(InteressatTipus.ADMINISTRACIO);
 			break;
+		case ADMIN_LECTURA:
+			interessatBase.setTipus(InteressatTipus.ADMIN_LECTURA);
+			break;
 		}
 		if (registreInteressatEntity.getDocumentTipus() != null) {
 			switch (registreInteressatEntity.getDocumentTipus()) {
@@ -2476,7 +2496,9 @@ public class RegistreServiceImpl implements RegistreService {
 		interessatBase.setCanal(registreInteressatEntity.getCanalPreferent() != null ? registreInteressatEntity.getCanalPreferent().toString() : null);
 		interessatBase.setObservacions(registreInteressatEntity.getObservacions());
 		
-		if (registreInteressatEntity.getTipus() == RegistreInteressatTipusEnum.ADMINISTRACIO && registreInteressatEntity.getDocumentTipus() == RegistreInteressatDocumentTipusEnum.CODI_ORIGEN) {
+		if (registreInteressatEntity.getTipus() == RegistreInteressatTipusEnum.ADMINISTRACIO 
+			&& registreInteressatEntity.getTipus() == RegistreInteressatTipusEnum.ADMIN_LECTURA 
+			&& registreInteressatEntity.getDocumentTipus() == RegistreInteressatDocumentTipusEnum.CODI_ORIGEN) {
 			interessatBase.setOrganCodi(registreInteressatEntity.getDocumentNum());
 		}
 		

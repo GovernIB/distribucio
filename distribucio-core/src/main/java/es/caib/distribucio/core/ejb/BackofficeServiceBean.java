@@ -58,7 +58,7 @@ public class BackofficeServiceBean implements BackofficeService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public BackofficeDto findById(
 			Long entitatId, 
 			Long id) throws NotFoundException {
@@ -68,7 +68,7 @@ public class BackofficeServiceBean implements BackofficeService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams)
@@ -79,13 +79,13 @@ public class BackofficeServiceBean implements BackofficeService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException {
 		return delegate.findByEntitat(entitatId);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA"})
 	public BackofficeDto findByCodi(
 			Long entitatId,
 			String backofficeCodi) throws NotFoundException {

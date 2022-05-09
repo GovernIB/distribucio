@@ -86,13 +86,20 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) {
 		return delegate.findById(entitatId, id);
 	}
 	
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
+	public BustiaDto findById(
+			Long id) {
+		return delegate.findById(id);
+	}	
+
 	@Override
 	@RolesAllowed("DIS_ADMIN")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
@@ -102,7 +109,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -114,7 +121,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
 		return delegate.findActivesAmbEntitat(entitatId);
@@ -166,7 +173,7 @@ public class BustiaServiceBean implements BustiaService {
 
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,
@@ -198,7 +205,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "tothom"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<BustiaDto> findBustiesPermesesPerUsuari(Long entitatId, boolean mostrarInnactives) {
 		return delegate.findBustiesPermesesPerUsuari(entitatId, mostrarInnactives);
 	}
@@ -266,14 +273,14 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<BustiaDto> findAmbUnitatId(Long entitatId,
 			Long unitatId) {
 		return delegate.findAmbUnitatId(entitatId, unitatId);
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
 		return delegate.findUnitatsSuperiors(entitatId, filtre);
 	}
@@ -327,7 +334,7 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN"})
+	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(Long id, String uo, String uoSuperior) {
 		return delegate.findBustiesPerDadesObertes(id, uo, uoSuperior);
 	}

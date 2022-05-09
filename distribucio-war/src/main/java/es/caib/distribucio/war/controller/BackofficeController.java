@@ -36,7 +36,7 @@ public class BackofficeController extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisAdmin(request);
+		getEntitatActualComprovantPermisAdminLectura(request);
 		return "backofficeList";
 	}
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
@@ -44,7 +44,7 @@ public class BackofficeController extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				backofficeService.findByEntitatPaginat(
@@ -66,7 +66,7 @@ public class BackofficeController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long backofficeId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BackofficeDto backoffice = null;
 		if (backofficeId != null)
 			backoffice = backofficeService.findById(

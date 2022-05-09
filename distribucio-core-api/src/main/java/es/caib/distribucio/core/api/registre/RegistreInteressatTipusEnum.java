@@ -17,7 +17,8 @@ public enum RegistreInteressatTipusEnum {
 
 	PERSONA_FIS("2"),
 	PERSONA_JUR("3"),
-	ADMINISTRACIO("1");
+	ADMINISTRACIO("1"), 
+	ADMIN_LECTURA("5");
 
 	private final String valor;
 	private RegistreInteressatTipusEnum(String valor) {

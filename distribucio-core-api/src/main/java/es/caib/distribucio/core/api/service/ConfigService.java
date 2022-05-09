@@ -36,7 +36,7 @@ public interface ConfigService {
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public void synchronize();
 	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String getConcsvBaseUrl() ;
 
 	@PreAuthorize("hasRole('DIS_SUPER')")

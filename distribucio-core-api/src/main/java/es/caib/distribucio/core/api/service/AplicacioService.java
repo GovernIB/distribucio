@@ -25,7 +25,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La versió actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String getVersioActual();
 
 	/**
@@ -33,7 +33,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La versió actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String getVersioData();
 
 	
@@ -43,7 +43,7 @@ public interface AplicacioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'usuari amb el codi de l'usuari autenticat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public void processarAutenticacioUsuari() throws NotFoundException;
 	
 	/**
@@ -51,7 +51,7 @@ public interface AplicacioService {
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String propertyPluginPassarelaFirmaIgnorarModalIds();
 
 	/**
@@ -59,7 +59,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public UsuariDto getUsuariActual();
 	
 	/**
@@ -67,7 +67,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public UsuariDto updateUsuariActual(UsuariDto asDto, Long entitatId);
 
 	/**
@@ -77,7 +77,7 @@ public interface AplicacioService {
 	 *            Codi de l'usuari a cercar.
 	 * @return L'usuari obtingut o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public UsuariDto findUsuariAmbCodi(String codi);
 
 	/**
@@ -87,7 +87,7 @@ public interface AplicacioService {
 	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public List<UsuariDto> findUsuariAmbText(String text);
 
 	/**
@@ -97,7 +97,7 @@ public interface AplicacioService {
 	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text);
 	
 	/**
@@ -139,7 +139,7 @@ public interface AplicacioService {
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String propertyBaseUrl();
 
 	/**
@@ -147,7 +147,7 @@ public interface AplicacioService {
 	 * 
 	 * @return true si està actiu o false si no ho està.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public boolean isPluginArxiuActiu();
 
 
@@ -157,10 +157,10 @@ public interface AplicacioService {
 	 * 
 	 * @return els valors com a un objecte Properties.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public Properties propertyFindByPrefix(String prefix);
 
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String propertyFindByNom(String nom);
 	
 	/**
@@ -172,7 +172,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La bústia per defecte.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId);
 	
 	/**
@@ -181,7 +181,7 @@ public interface AplicacioService {
 	 * @param rolActual Rol de l'usuari actual.
 	 * 
 	 */	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public void setRolUsuariActual(String rolActual);
 
 }

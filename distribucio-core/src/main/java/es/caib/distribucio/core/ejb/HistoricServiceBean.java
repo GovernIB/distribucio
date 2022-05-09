@@ -27,19 +27,19 @@ public class HistoricServiceBean implements HistoricService {
 	HistoricService delegate;
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public HistoricDadesDto getDadesHistoriques(Long entitatId, HistoricFiltreDto filtre) {
 		return delegate.getDadesHistoriques(entitatId, filtre);
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public void calcularDadesHistoriques(Date data) {
 		delegate.calcularDadesHistoriques(data);		
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public void recalcularTotals(Date data) {
 		delegate.recalcularTotals(data);		
 	}

@@ -62,7 +62,7 @@ public class ContingutServiceBean implements ContingutService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
 			Long contingutId,
@@ -74,7 +74,7 @@ public class ContingutServiceBean implements ContingutService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) {
@@ -102,7 +102,7 @@ public class ContingutServiceBean implements ContingutService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) {
@@ -118,7 +118,7 @@ public class ContingutServiceBean implements ContingutService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
 			ContingutFiltreDto filtre,

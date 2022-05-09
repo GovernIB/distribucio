@@ -8,5 +8,6 @@ package es.caib.distribucio.core.api.service.ws.backoffice;
 public enum InteressatTipus {
 	PERSONA_FISICA,
 	PERSONA_JURIDICA,
-	ADMINISTRACIO
+	ADMINISTRACIO, 
+	ADMIN_LECTURA
 }

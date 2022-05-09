@@ -860,6 +860,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 				metadades.setOrigen(ContingutOrigen.CIUTADA);
 				break;
 			case O1:
+			case O5:
 				metadades.setOrigen(ContingutOrigen.ADMINISTRACIO);
 				break;
 			}

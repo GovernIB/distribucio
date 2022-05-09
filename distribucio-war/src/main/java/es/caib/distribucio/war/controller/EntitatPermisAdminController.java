@@ -43,7 +43,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 	public String permis(
 			HttpServletRequest request,
 			Model model) {
-		getEntitatActualComprovantPermisAdmin(request);
+		getEntitatActualComprovantPermisAdminLectura(request);
 		return "adminPermis";
 	}
 	@RequestMapping(value = "datatable", method = RequestMethod.GET)
@@ -51,7 +51,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				entitatService.findPermisAdmin(entitatActual.getId()),
@@ -70,7 +70,7 @@ public class EntitatPermisAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		PermisDto permis = null;
 		if (permisId != null) {
 			List<PermisDto> permisos = entitatService.findPermisAdmin(

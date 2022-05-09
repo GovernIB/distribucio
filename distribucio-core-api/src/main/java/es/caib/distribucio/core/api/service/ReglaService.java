@@ -165,7 +165,7 @@ public interface ReglaService {
 	 *            Atribut id de la regla a trobar.
 	 * @return La regla amb l'id especificat o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId);
@@ -179,7 +179,7 @@ public interface ReglaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams);
@@ -198,7 +198,7 @@ public interface ReglaService {
 	 * 			List de codis procediment
 	 * @return Map<codiProcediment, List<ReglasExistents>>
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
 	
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació

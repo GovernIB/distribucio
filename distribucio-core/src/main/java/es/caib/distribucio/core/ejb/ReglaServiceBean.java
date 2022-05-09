@@ -122,7 +122,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId) {
@@ -132,7 +132,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) {
@@ -145,7 +145,7 @@ public class ReglaServiceBean implements ReglaService {
 
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi) {
 		return delegate.findByEntitatAndUnitatCodi(
 				entitatId,
@@ -153,7 +153,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
 			Long entitatId,
 			ReglaFiltreDto filtre,
@@ -173,7 +173,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 	
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
 		return delegate.findReglesByCodiProcediment(procediments);
 	}

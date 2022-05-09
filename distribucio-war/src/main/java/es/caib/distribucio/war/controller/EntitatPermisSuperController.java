@@ -62,9 +62,6 @@ public class EntitatPermisSuperController extends BaseController {
 			HttpServletRequest request,
 			@PathVariable Long entitatId) {
 		List<PermisDto> listPermis = entitatService.findPermisSuper(entitatId);
-		for (PermisDto p : listPermis) {
-			System.out.println("ENTITATSERVICE PERMÍS: " + p.isAdministration() + "=>" + p.isAdminLectura());
-		}
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				entitatService.findPermisSuper(entitatId));
@@ -109,7 +106,6 @@ public class EntitatPermisSuperController extends BaseController {
 			@Valid PermisCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		System.out.println("COMMAND: " + command.getPrincipalNom() + "=>" + command.isAdministration() + "=>" + command.isAdminLectura());
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(
 					"entitat",

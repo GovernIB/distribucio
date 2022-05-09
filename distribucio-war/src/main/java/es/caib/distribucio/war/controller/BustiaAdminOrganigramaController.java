@@ -105,7 +105,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
@@ -123,7 +123,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	public List<BustiaDto> findAllAmbEntitat(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		return bustiaService.findAmbEntitat(
 				entitatActual.getId());
 	}
@@ -310,7 +310,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaDto bustia = null;
 
 		bustia = bustiaService.findById(
@@ -342,7 +342,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaDto bustia = null;
 
 		bustia = bustiaService.findById(

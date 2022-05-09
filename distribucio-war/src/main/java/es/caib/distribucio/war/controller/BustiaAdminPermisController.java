@@ -58,7 +58,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<PermisDto> permisos = bustiaService.findById(entitatActual.getId(), bustiaId).getPermisos();
 		// Completa la informació dels permisos amb el nom complet per usuaris
 		Map<String, UsuariPermisDto> usuarisBustia = bustiaService.getUsuarisPerBustia(bustiaId, true, false);
@@ -92,7 +92,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			@PathVariable Long bustiaId,
 			@PathVariable Long permisId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaDto bustia = bustiaService.findById(entitatActual.getId(), bustiaId);
 		model.addAttribute("bustia", bustia);
 		PermisDto permis = null;

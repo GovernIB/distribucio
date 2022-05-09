@@ -53,16 +53,19 @@ public class PermisosEntitatHelper {
 				auth);
 		List<EntitatDto> entitatsAdministracio = new ArrayList<EntitatDto>();
 		entitatsAdministracio.addAll(entitats);
-		permisosHelper.filterGrantedAll(
+		//permisosHelper.filterGrantedAll(
+		permisosHelper.filterGrantedAny(
 				entitatsAdministracio,
 				oie,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION},
+				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
 				auth);
 		for (EntitatDto entitat: entitats) {
 			entitat.setUsuariActualRead(
 					entitatsRead.contains(entitat));
 			entitat.setUsuariActualAdministration(
+					entitatsAdministracio.contains(entitat));
+			entitat.setUsuariActualAdminLectura(
 					entitatsAdministracio.contains(entitat));
 		}
 		// Obté els permisos per a totes les entitats només amb una consulta
@@ -91,6 +94,13 @@ public class PermisosEntitatHelper {
 						entitat.getId(),
 						EntitatEntity.class,
 						new Permission[] {ExtendedPermission.ADMINISTRATION},
+						auth));
+
+		entitat.setUsuariActualAdminLectura(
+				permisosHelper.isGrantedAll(
+						entitat.getId(),
+						EntitatEntity.class,
+						new Permission[] {ExtendedPermission.ADMIN_LECTURA},
 						auth));
 	}
 

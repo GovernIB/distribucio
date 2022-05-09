@@ -84,17 +84,18 @@ public class EntityComprovarHelper {
 			}
 		}
 		if (comprovarPermisAdmin) {
-			boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
-					entitatId,
+			//boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+			boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
+				entitatId,
 					EntitatEntity.class,
-					new Permission[] {ExtendedPermission.ADMINISTRATION},
+					new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
 					auth);
 			if (!esAdministradorEntitat) {
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
 						auth.getName(),
-						"ADMINISTRATION");
+						"ADMINISTRATION || ADMIN_LECTURA");
 			}
 		}
 		if (comprovarPermisUsuariOrAdmin) {
@@ -103,6 +104,7 @@ public class EntityComprovarHelper {
 					EntitatEntity.class,
 					new Permission[] {
 						ExtendedPermission.ADMINISTRATION,
+						ExtendedPermission.ADMIN_LECTURA, 
 						ExtendedPermission.READ},
 					auth);
 			if (!esAdministradorOLectorEntitat) {
@@ -110,7 +112,7 @@ public class EntityComprovarHelper {
 						entitatId,
 						EntitatEntity.class,
 						auth.getName(),
-						"ADMINISTRATION || READ");
+						"ADMINISTRATION || ADMIN_LECTURA || READ");
 			}
 		}
 		

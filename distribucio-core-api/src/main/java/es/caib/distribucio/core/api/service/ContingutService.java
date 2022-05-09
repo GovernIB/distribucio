@@ -67,7 +67,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
 			Long contingutId,
@@ -84,7 +84,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -181,7 +181,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
 			ContingutFiltreDto filtre,
@@ -269,7 +269,7 @@ public interface ContingutService {
 	 * 
 	 */
 
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
 	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
 			Date dataInici,
 			Date dataFi, 

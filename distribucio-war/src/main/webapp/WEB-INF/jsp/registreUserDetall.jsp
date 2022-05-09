@@ -336,7 +336,7 @@ tr.clicable {
 										</c:otherwise>
 									</c:choose>
 									<td>
-										<c:if test="${interessat.tipus != 'ADMINISTRACIO'}">
+										<c:if test="${interessat.tipus != 'ADMINISTRACIO' or interessat.tipu != 'ADMIN_LECTURA'}">
 											<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}">
 												<span class="fa fa-caret-down"></span>
 											</button>
@@ -393,7 +393,7 @@ tr.clicable {
 																	</c:otherwise>
 																</c:choose>
 																<td>
-																	<c:if test="${representant.tipus != 'ADMINISTRACIO'}">
+																	<c:if test="${representant.tipus != 'ADMINISTRACIO' or representant.tipus != 'ADMIN_LECTURA'}">
 																		<button type="button" class="btn btn-default desplegable" href="#detalls_${status.index}_rep" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_${status.index}_rep">
 																			<span class="fa fa-caret-down"></span>
 																		</button>

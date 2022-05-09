@@ -126,11 +126,27 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
 
+	/**
+	 * Consulta una bústia donat el seu id.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *             Atribut id de la bústia a trobar.
+	 * @return La bústia amb l'id especificat o null si no s'ha trobat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	public BustiaDto findById(
+			Long id) throws NotFoundException;
+	
+	
 	/**
 	 * Consulta les bústies donat el codi de la seva unitat.
 	 * 
@@ -142,7 +158,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -156,7 +172,7 @@ public interface BustiaService {
 	 *            El filtre per a la consulta.
 	 * @return Les bústies que coincideixen amb els criteris del filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -171,7 +187,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
 	
@@ -273,7 +289,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,
@@ -366,7 +382,7 @@ public interface BustiaService {
 	 * @param paginacioParams
 	 * @return La pàgina d'unitats organitzatives que compleixen el filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre);
 	
 	@PreAuthorize("hasRole('tothom')")
@@ -424,12 +440,12 @@ public interface BustiaService {
 			Long entitatId, boolean mostrarInactives);
 
 	
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
 	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(
 			Long id, String uo, String uoSuperior);
 
 	
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
+	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari, Long id, 
 			String uo, String uoSuperior, 

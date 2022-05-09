@@ -64,7 +64,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		model.addAttribute(
 				"reglaTipusEnumOptions",
@@ -85,7 +85,7 @@ public class ReglaController  extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		ReglaFiltreCommand reglaFiltreCommand = getFiltreCommand(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
@@ -150,7 +150,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		ReglaDto regla = null;
 		if (reglaId != null) {
 			regla = reglaService.findOne(

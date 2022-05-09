@@ -213,7 +213,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request,
 			Model model) {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
@@ -255,7 +255,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 			HttpServletRequest request,
 			@PathVariable Long unitatId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		UnitatOrganitzativaDto unitat = null;
 		if (unitatId != null)
 			unitat = unitatOrganitzativaService.findById(
@@ -278,7 +278,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
 
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		UnitatOrganitzativaFiltreCommand unitatOrganitzativaFiltreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,

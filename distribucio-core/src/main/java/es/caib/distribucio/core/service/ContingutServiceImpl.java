@@ -145,7 +145,7 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		boolean comprovarPermisLectura = !rolActual.equals("DIS_ADMIN") && !isVistaMoviments;
+		boolean comprovarPermisLectura = !rolActual.equals("DIS_ADMIN") && !rolActual.equals("DIS_ADMIN_LECTURA") && !isVistaMoviments;
 		contingutHelper.comprovarPermisosPathContingut(
 				contingut,
 				comprovarPermisLectura,
@@ -502,13 +502,19 @@ public class ContingutServiceImpl implements ContingutService {
 			registre.updateSobreescriure(false);
 		}
 		
+		boolean findRol = false;
+		if (!rolActual.equals("DIS_ADMIN") && !rolActual.equals("DIS_ADMIN_LECTURA")) {
+			findRol = true;
+		}
+		
 		if (contingut.getPare() != null) {
 			// Marca per evitar la cache de la bustia
 			Long bustiaId = contingut.getPareId();
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
-					!rolActual.equals("DIS_ADMIN"));
+					findRol);
+					//!rolActual.equals("DIS_ADMIN"));
 			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
 		}
 		// Si el contingut és una anotació de registre s'ha de 
@@ -555,7 +561,7 @@ public class ContingutServiceImpl implements ContingutService {
 
 		RegistreEntity registre = registreRepository.findOne(contingutId);
 		try {
-			if (!usuariHelper.isAdmin()) {
+			if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura()) {
 				entityComprovarHelper.comprovarBustia(
 								entitat,
 								registre.getPareId(),

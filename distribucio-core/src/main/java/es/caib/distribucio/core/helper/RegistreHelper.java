@@ -922,7 +922,7 @@ public class RegistreHelper {
 				entitat,
 				registreId);
 
-		if (!usuariHelper.isAdmin() && !isVistaMoviments)
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
 					entitat,
 					registre.getPareId(),

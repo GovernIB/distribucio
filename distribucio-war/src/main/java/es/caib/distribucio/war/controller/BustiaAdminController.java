@@ -70,7 +70,7 @@ public class BustiaAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
 				request,
@@ -155,7 +155,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaDto bustia = null;
 		if (bustiaId != null){
 			
@@ -188,7 +188,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
 		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
@@ -210,7 +210,7 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaDto bustia = null;
 		if (bustiaId != null){
 			

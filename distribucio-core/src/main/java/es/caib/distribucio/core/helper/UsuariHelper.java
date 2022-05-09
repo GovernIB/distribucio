@@ -164,6 +164,21 @@ public class UsuariHelper {
 		}
 		return isAdmin;
 	}
+	
+	
+	/** Mètode públic per consultar si l'usuari actual és administrador d'entitat DIS_ADMIN_LECTURA. */
+	public boolean isAdminLectura() {
+		boolean isAdminLectura = false;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			for (GrantedAuthority ga : auth.getAuthorities())
+				if (ga.getAuthority().equals("DIS_ADMIN_LECTURA")) {
+					isAdminLectura = true;
+					break;
+				}
+		}
+		return isAdminLectura;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(UsuariHelper.class);
 

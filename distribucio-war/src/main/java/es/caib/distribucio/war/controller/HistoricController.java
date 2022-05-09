@@ -81,7 +81,7 @@ public class HistoricController extends BaseAdminController {
 	public String get(HttpServletRequest request, 
 			Model model) {	
 		
-		getEntitatActualComprovantPermisAdmin(request);
+		getEntitatActualComprovantPermisAdminLectura(request);
 		HistoricFiltreCommand historicFiltreCommand = getFiltreCommand(request);
 		model.addAttribute(historicFiltreCommand);
 		model.addAttribute("showDadesUO", false);
@@ -138,7 +138,7 @@ public class HistoricController extends BaseAdminController {
 			BindingResult bindingResult,
 			Model model) {
 
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		if (!bindingResult.hasErrors()) {
 			RequestSessionHelper.actualitzarObjecteSessio(
@@ -284,7 +284,7 @@ public class HistoricController extends BaseAdminController {
 			Model model) throws NoSuchAlgorithmException {	
 
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			HistoricDadesDto dades = historicService.getDadesHistoriques(
 					entitatActual.getId(),
 					this.getFiltreCommand(request).asDto());

@@ -7,5 +7,6 @@ package es.caib.distribucio.core.api.service.ws.backoffice;
  */
 public enum NtiOrigen {
 	CIUTADA,
-	ADMINISTRACIO
+	ADMINISTRACIO, 
+	ADMIN_LECTURA
 }

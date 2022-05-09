@@ -409,7 +409,7 @@ public interface RegistreService {
 			boolean isAdmin) throws NotFoundException;
 	
 
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<ContingutDto> getPathContingut(
 			Long entitatId,
 			Long bustiaId) throws NotFoundException;

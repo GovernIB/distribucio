@@ -91,7 +91,8 @@ public class CacheHelper {
 				EntitatEntity.class,
 				new Permission[] {
 					ExtendedPermission.READ,
-					ExtendedPermission.ADMINISTRATION},
+					ExtendedPermission.ADMINISTRATION,
+					ExtendedPermission.ADMIN_LECTURA}, //
 				auth);
 		List<EntitatDto> resposta = conversioTipusHelper.convertirList(
 				entitats,

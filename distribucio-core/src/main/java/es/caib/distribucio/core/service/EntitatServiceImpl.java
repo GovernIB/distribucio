@@ -340,10 +340,11 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false,
 				false);
-		boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		//boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				id,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION},
+				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
 				auth);
 		if (!esAdministradorEntitat) {
 			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (id=" + id + ", usuari=" + auth.getName() + ")");
@@ -369,10 +370,11 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false,
 				false);
-		boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		//boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				id,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION},
+				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
 				auth);
 		if (!esAdministradorEntitat) {
 			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (id=" + id + ", usuari=" + auth.getName() + ")");
@@ -399,10 +401,11 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false,
 				false);
-		boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		//boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
+		boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				id,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION},
+				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
 				auth);
 		if (!esAdministradorEntitat) {
 			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (" +
