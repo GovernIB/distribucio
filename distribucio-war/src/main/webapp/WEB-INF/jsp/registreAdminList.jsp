@@ -560,7 +560,7 @@ $(document).ready(function() {
 
 
 				<th data-col-name="backCodi" data-orderable="true"><spring:message code="contingut.admin.columna.backoffice"/></th>
-				<c:if test="${isRolActualAdministrador}">
+				
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
@@ -572,6 +572,7 @@ $(document).ready(function() {
 								{{if alerta}}
 									<li><a href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-sticky-note-o"></span>&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
+								<c:if test="${isRolActualAdministrador}">
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
@@ -586,6 +587,7 @@ $(document).ready(function() {
 								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
 									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
 								{{/if}}
+								</c:if>
 								<li>
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
 										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
@@ -596,7 +598,6 @@ $(document).ready(function() {
 
 					</script>
 				</th>
-				</c:if>
 				<th data-col-name="reintentsEsgotat" data-visible="false"></th>
 				<th data-col-name="procesIntents" data-visible="false"></th>
 				<th data-col-name="maxReintents" data-visible="false"></th>

@@ -254,13 +254,17 @@ body {
 											<li class="divider"></li>
 											<li><a href="<c:url value="/regla"/>"><spring:message code="decorator.menu.regles"/></a></li>
 											<li><a href="<c:url value="/backoffice"/>"><spring:message code="decorator.menu.backoffices"/></a></li>
-											<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
+											<c:if test="${isRolActualAdministrador}">
+												<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
+											</c:if>
 										</ul>
 									</div>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
-											<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+											<c:if test="${isRolActualAdministrador}">
+												<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+											</c:if>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 										</ul>
