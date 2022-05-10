@@ -150,7 +150,6 @@ public class ReglaServiceImpl implements ReglaService {
 		}else {
 			backofficeDestiId = backofficeRepository.findOne(reglaDto.getBackofficeDestiId());
 		}
-		System.out.println("REGLADTO: " + backofficeDestiId);
 		reglaEntity.update(
 				backofficeDestiId, 
 				reglaDto.getNom(),

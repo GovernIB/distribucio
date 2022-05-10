@@ -551,6 +551,26 @@ public class BustiaServiceImpl implements BustiaService {
 		omplirPermisosPerBusties(llista, true);
 		return resposta;
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public BustiaDto findById(
+			Long id) {
+		logger.trace("Cercant la bústia (" + "id=" + id + ")");
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				id,
+				false);
+		BustiaDto resposta = bustiaHelper.toBustiaDto(
+				bustia,
+				false,
+				false,
+				true);
+		// Ompl els permisos
+		List<BustiaDto> llista = new ArrayList<BustiaDto>();
+		llista.add(resposta);
+		omplirPermisosPerBusties(llista, true);
+		return resposta;
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -3063,7 +3083,6 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		String nomUnitatSuperior = "";
 		boolean continuaCercant = true;
 		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodi(codi);
-		System.out.println();
 		while(continuaCercant) {
 			if (unitatOrganitzativaEntity.getCodiUnitatSuperior().equals(unitatOrganitzativaEntity.getCodiDir3Entitat()) 
 				|| unitatOrganitzativaEntity.getCodiUnitatSuperior().contains("A99999")) {
@@ -3081,5 +3100,4 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
-
 }
