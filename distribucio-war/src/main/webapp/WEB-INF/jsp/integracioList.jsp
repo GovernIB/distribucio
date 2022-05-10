@@ -18,9 +18,46 @@
 <script>
 $(document).ready(function() {
     $('#btnRefresh').click(function() {
-    	$('#missatges-integracions').webutilDatatable('refresh')
+    	refrescarInformacio();
     });
+    $('#btnDelete').click(function() {
+    	esborrarEntrades();
+    })
 });
+
+function refrescarInformacio() {
+	webutilClearMissatges();
+	$.ajax({
+		url: "<c:url value='/integracio/integracions'/>"
+	}).done(function(data, status){
+		// Refresca la taula
+		$('#missatges-integracions').webutilDatatable('refresh')
+		if (data && Array.isArray(data)) {
+			data.forEach(function(integracio) {
+				$errors = $('#integracioErrors_' + integracio.codi)
+				if (integracio.numErrors > 0) {
+					$errors.html(integracio.numErrors);
+					$errors.show();
+				} else{
+					$errors.hide();
+				}
+			});
+		}
+		// Refresca els missatges
+		webutilRefreshMissatges();
+	});
+}
+
+
+function esborrarEntrades() {
+	webutilClearMissatges();
+	$.ajax({
+		url: "<c:url value='/integracio'/>/${codiActual}/esborrar"
+	}).done(function(){
+		refrescarInformacio()
+	});
+}
+
 </script>
 	
 	
@@ -28,11 +65,14 @@ $(document).ready(function() {
 <body>
 	<ul class="nav nav-tabs" role="tablist">
 		<c:forEach var="integracio" items="${integracions}">
-			<li<c:if test="${integracio.codi == codiActual}"> class="active"</c:if>>
+			<li id="integracioTab_${integracio.codi}"
+				<c:if test="${integracio.codi == codiActual}"> class="active"</c:if>>
 				<a href="<c:url value="/integracio/${integracio.codi}"/>"><spring:message code="${integracio.nom}"/>
-					<c:if test="${integracio.numErrors > 0}">
-						<span id="bustia-pendent-count" class="badge small" style="background-color: #d9534f;">${integracio.numErrors}</span>
-					</c:if>
+				
+					<span id="integracioErrors_${integracio.codi}" 
+						class="badge small" style="background-color: #d9534f; display: ${integracio.numErrors > 0? 'inline' : 'none'}">
+							${integracio.numErrors}
+					</span>
 				</a>
 			</li>
 		</c:forEach>
@@ -72,7 +112,7 @@ $(document).ready(function() {
 				</th>
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<a href="../integracio/${codiActual}/{{:id}}" class="btn btn-default" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a>
+						<a href="<c:url value='/integracio'/>/${codiActual}/{{:id}}" class="btn btn-default" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a>
 					</script>
 				</th>
 			</tr>
@@ -80,5 +120,6 @@ $(document).ready(function() {
 	</table>
 	
 		<button id="btnRefresh" type="button" class="btn btn-info pull-right" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
+		<button id="btnDelete" type="button" class="btn btn-danger pull-left" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></button>
 	
 </body>

@@ -9,10 +9,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -57,10 +59,10 @@ import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.AlertaRepository;
-import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.UsuariRepository;
@@ -73,6 +75,8 @@ import es.caib.distribucio.core.repository.UsuariRepository;
 @Service
 public class ContingutServiceImpl implements ContingutService {
 
+	@Autowired
+	private EntitatRepository entitatRepository;
 	@Resource
 	private UsuariRepository usuariRepository;
 	@Resource
@@ -112,8 +116,6 @@ public class ContingutServiceImpl implements ContingutService {
 	private RegistreHelper registreHelper;
 	@Autowired
 	private ConfigHelper configHelper;
-	@Autowired
-	private BustiaRepository bustiaRepository;	
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
@@ -578,146 +580,198 @@ public class ContingutServiceImpl implements ContingutService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<LogsDadesObertesDto> findLogsDetallsPerData(Date dataInici, Date dataFi, String tipus, String usuari,
-			Long anotacioId, String anotacioEstat, Boolean errorEstat, Boolean pendent, Long bustiaOrigen, Long bustiaDesti,
-			String uoOrigen, String uoSuperior, String uoDesti, String uoDestiSuperior) {
+	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
+			Date dataInici, 
+			Date dataFi, 
+			LogTipusEnumDto tipus, 
+			String usuari,
+			Long anotacioId, 
+			RegistreProcesEstatEnum anotacioEstat, 
+			Boolean errorEstat, 
+			Boolean pendent, 
+			Long bustiaOrigen, 
+			Long bustiaDesti,
+			String uoOrigen, 
+			String uoSuperior, 
+			String uoDesti, 
+			String uoDestiSuperior) {
 
 		
 		List<LogsDadesObertesDto> resultat = new ArrayList<LogsDadesObertesDto>();
-		ContingutTipusEnumDto tipusEnum = null;
-		RegistreProcesEstatEnum anotacioEstatEnum = null;
 		
-		if (tipus != null) {
-			tipus = tipus.toUpperCase();
-			tipusEnum = ContingutTipusEnumDto.valueOf(tipus);
-		}
-		
-		if (anotacioEstat != null) {
-			anotacioEstat = anotacioEstat.toUpperCase();
-			anotacioEstatEnum = RegistreProcesEstatEnum.valueOf(anotacioEstat);
-		}
-		
-		List<ContingutLogEntity> continguts = contingutLogRepository.findLogsPerDadesObertes(
+		// Llistats de UO's superiors
+		List<String> codisUoSuperiorsOrigen = new ArrayList<String>();
+		boolean isCodisUoSuperiorsOrigenEmpty = this.findCodisUosSuperiors(uoOrigen, uoSuperior, codisUoSuperiorsOrigen);
+		List<String> codisUoSuperiorsDesti = new ArrayList<String>();
+		boolean isCodisUoSuperiorsDestiEmpty = this.findCodisUosSuperiors(uoDesti, uoDestiSuperior, codisUoSuperiorsDesti);
+
+		// Consulta les dades
+		// Ojbect[] {ContingutLogEntity log, RegistreEntity registre, BustiaEntity origen, BustiaEntity destí }
+		List<Object[]> logs = contingutLogRepository.findLogsPerDadesObertes(
 				dataInici, 
 				dataFi, 
-				tipusEnum == null, 
-				tipusEnum != null ? tipusEnum : tipusEnum,
+				tipus == null, 
+				tipus != null ? tipus : LogTipusEnumDto.REENVIAMENT,
 				usuari == null || usuari.isEmpty(), 
 				usuari != null && !usuari.isEmpty() ? usuari : "",
 				anotacioId == null, 
 				anotacioId != null ? anotacioId : 0L, 
-				anotacioEstatEnum == null, 
-				anotacioEstatEnum != null ? anotacioEstatEnum : anotacioEstatEnum, 
+				anotacioEstat == null, 
+				anotacioEstat != null ? anotacioEstat : RegistreProcesEstatEnum.ARXIU_PENDENT,
 				errorEstat == null,
-				errorEstat != null ? errorEstat : errorEstat, 
+				errorEstat != null ? errorEstat.booleanValue() : false, 
 				pendent == null, 
-				pendent != null ? pendent : pendent, 
+				pendent != null ? pendent.booleanValue() : false,
 				bustiaOrigen == null, 
 				bustiaOrigen != null ? bustiaOrigen : 0L, 
 				bustiaDesti == null, 
 				bustiaDesti != null ? bustiaDesti : 0L,
 				uoOrigen == null || uoOrigen.isEmpty(),  
 				uoOrigen != null && !uoOrigen.isEmpty() ? uoOrigen : "", 
-				uoSuperior == null || uoSuperior.isEmpty(), 
-				uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : "", 
+				isCodisUoSuperiorsOrigenEmpty, 
+				codisUoSuperiorsOrigen, 
 				uoDesti == null || uoDesti.isEmpty(),  
 				uoDesti != null && !uoDesti.isEmpty() ? uoDesti : "", 
-				uoDestiSuperior == null || uoDestiSuperior.isEmpty(), 
-				uoDestiSuperior != null && !uoDestiSuperior.isEmpty() ? uoDestiSuperior : ""
+				isCodisUoSuperiorsDestiEmpty, 
+				codisUoSuperiorsDesti
 				);
 		
-		for(ContingutLogEntity contingut : continguts) {
-			LogsDadesObertesDto logDOdto = new LogsDadesObertesDto();
-			RegistreEntity registreEntity = registreRepository.findOne(contingut.getContingut().getId());
-			DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-			String strDate = dateFormat.format(contingut.getCreatedDate().toDate());
-			try {
-				logDOdto.setData(strDate);
-			} catch (ParseException e1) {
-				
-				e1.printStackTrace();
-			}
-			logDOdto.setTipus(contingut.getContingut().getTipus().name()); 
-			logDOdto.setTipusDesc(contingut.getTipus().name());
-			
-			try {
-				logDOdto.setUsuari(contingut.getCreatedBy().getCodi());
-			}catch (NullPointerException e) {
-				logDOdto.setUsuari("");
-			}
-			logDOdto.setAnotacioId(contingut.getContingut().getId()); 
-			logDOdto.setAnotacioEstat(registreEntity.getProcesEstat().toString());
-			logDOdto.setAnotacioEstatDesc(registreEntity.getExtracte()); 
-			logDOdto.setAnotacioError(new Boolean(registreEntity.getArxiuTancatError()).toString());
-			logDOdto.setAnotacioErrorDesc(registreEntity.getProcesError());
-			logDOdto.setPendent(registreEntity.getPendent());			
-			logDOdto.setnAnnexos((long)registreEntity.getAnnexos().size()); 
-			
-			try {
-				logDOdto.setBustiaOrigenId(contingut.getContingutMoviment().getOrigenId());
-				logDOdto.setBustiaOrigenNom(contingut.getContingutMoviment().getOrigenNom());
-			}catch (NullPointerException e) {
-				logDOdto.setBustiaOrigenId((long)0);
-				logDOdto.setBustiaOrigenNom("");
-			}
-			try {
-				logDOdto.setBustiaDestiId(contingut.getContingutMoviment().getDestiId());
-				logDOdto.setBustiaDestiNom(contingut.getContingutMoviment().getDestiNom());
-			}catch (NullPointerException e) {
-				logDOdto.setBustiaDestiId((long)0);
-				logDOdto.setBustiaDestiNom("");
-			}
-			
-			try {
-				BustiaEntity bustiaEntity = bustiaRepository.getOne(contingut.getContingutMoviment().getOrigenId());
-				UnitatOrganitzativaEntity uoEntityOrigen = unitatOrganitzativaRepository.findByCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
-				logDOdto.setUoOrigenCodi(uoEntityOrigen.getCodi());
-				logDOdto.setUoOrigenNom(uoEntityOrigen.getDenominacio());
-				logDOdto.setUoSuperirOrigenCodi(uoEntityOrigen.getCodiUnitatSuperior());
-				if (uoEntityOrigen.getCodiUnitatSuperior().contains("A99999") && uoSuperior == null) {
-					uoSuperior = registreEntity.getEntitatCodi();
-				}else if(!uoEntityOrigen.getCodiUnitatSuperior().contains("A99999") && uoSuperior == null) {
-					uoSuperior = uoEntityOrigen.getCodiUnitatSuperior();
-				}
-				UnitatOrganitzativaEntity uoSuperiorEntityOrigen = unitatOrganitzativaRepository.findByCodi(uoSuperior);
-				logDOdto.setUoSuperiorOrigenNom(uoSuperiorEntityOrigen.getDenominacio());
-			
-			} catch (NullPointerException e) {
-				e.getMessage();
-				
-			} catch (EntityNotFoundException e2) {
-				e2.getMessage();			
-			}
-			
+		// Processa el resultat
+		DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		Map<String, UnitatOrganitzativaEntity> uosSuperiors = new HashMap<String, UnitatOrganitzativaEntity>();
+		
+		for (int i=0; i<logs.size(); i++) {
 
+			LogsDadesObertesDto logDto = new LogsDadesObertesDto();
+
+			ContingutLogEntity log = (ContingutLogEntity) logs.get(i)[0];
+			RegistreEntity registre = (RegistreEntity) logs.get(i)[1];
+			BustiaEntity bOrigen = (BustiaEntity) logs.get(i)[2];
+			BustiaEntity bDesti = (BustiaEntity) logs.get(i)[3];
+		
+			
 			try {
-				BustiaEntity bustiaEntity = bustiaRepository.getOne(contingut.getContingutMoviment().getDestiId());
-				UnitatOrganitzativaEntity uoEntityDesti = unitatOrganitzativaRepository.findByCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
-				logDOdto.setUoDestiCodi(uoEntityDesti.getCodi());
-				logDOdto.setUoDestiNom(uoEntityDesti.getDenominacio());
-				logDOdto.setUoSuperiorDestiCodi(uoEntityDesti.getCodiUnitatSuperior());
-				if (uoEntityDesti.getCodiUnitatSuperior().contains("A99999") && uoDestiSuperior == null) {
-					uoDestiSuperior = registreEntity.getEntitatCodi();;
-				}else if (!uoEntityDesti.getCodiUnitatSuperior().contains("A99999") && uoDestiSuperior == null) {
-					uoDestiSuperior = uoEntityDesti.getCodiUnitatSuperior();
-				}
-				UnitatOrganitzativaEntity uoSuperiorEntityDesti = unitatOrganitzativaRepository.findByCodi(uoDestiSuperior);
-				logDOdto.setUoSuperiorDestiNom(uoSuperiorEntityDesti.getDenominacio());
+				logDto.setData(sdf.format(log.getCreatedDate().toDate()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			logDto.setTipus(log.getTipus());
+			logDto.setTipusDesc(messageHelper.getMessage("log.tipus.enum." + log.getTipus()));
+			logDto.setUsuari(log.getCreatedBy() != null ? log.getCreatedBy().getCodi() : null);
+			logDto.setAnotacioId(log.getContingut().getId()); 
+			logDto.setAnotacioNumero(registre.getNumero());
+			logDto.setAnotacioEstat(registre.getProcesEstat());
+			logDto.setAnotacioEstatDesc(messageHelper.getMessage("registre.proces.estat.enum." + registre.getProcesEstat())); 
+			logDto.setAnotacioError(registre.getProcesError() != null);
+			logDto.setAnotacioErrorDesc(registre.getProcesError());
+			logDto.setPendent(registre.getPendent() != null? registre.getPendent().booleanValue() : false);
+			logDto.setnAnnexos((long)registre.getAnnexos().size()); 
 			
-			} catch (NullPointerException e) {
-				e.getMessage();
-			
-			} catch (EntityNotFoundException e2) {
-				e2.getMessage();		
+			ContingutMovimentEntity moviment = log.getContingutMoviment();
+			if (moviment != null) {
+				logDto.setBustiaOrigenId(moviment.getOrigenId());
+				logDto.setBustiaOrigenNom(moviment.getOrigenNom());
+				logDto.setBustiaDestiId(moviment.getDestiId());
+				logDto.setBustiaDestiNom(moviment.getDestiNom());
+			}
+			if (bOrigen != null && bOrigen.getUnitatOrganitzativa() != null) {				
+				logDto.setUoOrigenCodi(bOrigen.getUnitatOrganitzativa().getCodi());
+				logDto.setUoOrigenNom(bOrigen.getUnitatOrganitzativa().getDenominacio());
+				UnitatOrganitzativaEntity uoSuperiorOrigen = this.getUoSuperior(uosSuperiors, bOrigen.getUnitatOrganitzativa());
+				logDto.setUoSuperiorOrigenCodi(uoSuperiorOrigen.getCodi());
+				logDto.setUoSuperiorOrigenNom(uoSuperiorOrigen.getDenominacio());
+			}
+			if (bDesti != null && bDesti.getUnitatOrganitzativa() != null) {				
+				logDto.setUoDestiCodi(bDesti.getUnitatOrganitzativa().getCodi());
+				logDto.setUoDestiNom(bDesti.getUnitatOrganitzativa().getDenominacio());
+				UnitatOrganitzativaEntity uoSuperiorDesti = this.getUoSuperior(uosSuperiors, bDesti.getUnitatOrganitzativa());
+				logDto.setUoSuperiorDestiCodi(uoSuperiorDesti.getCodi());
+				logDto.setUoSuperiorDestiNom(uoSuperiorDesti.getDenominacio());
 			}
 			
-			resultat.add(logDOdto);
+			resultat.add(logDto);
 		}
 		
 		return resultat;
 	}
 	
-	
+	/** Cerca i retorna la UO superior en segon nivell per codi. Usa um Map a mode de cache per la consulta
+	 * 
+	 * @param uosSuperiors Map<codiUo, UnitatOrganitzativaEntity> a mode de cache.
+	 * @param uo Unitat organitzativa actual.
+	 * @return UO superior.
+	 */
+	private UnitatOrganitzativaEntity getUoSuperior(
+			Map<String, UnitatOrganitzativaEntity> uosSuperiors, 
+			UnitatOrganitzativaEntity uo) {
+		
+		UnitatOrganitzativaEntity uoSuperior = uosSuperiors.get(uo.getCodi());
+		if (uoSuperior == null) {
+			// Si és la unitat arrel o el codi de la superior és el codi de l'arrel llavors retorna la mateixa UO, si no crida la funció recursiva
+			if (uo.getCodi().equals(uo.getCodiUnitatArrel()) 
+					|| uo.getCodiUnitatSuperior().equals(uo.getCodiUnitatArrel()))
+			{
+				// Arrel o superior
+				uosSuperiors.put(uo.getCodi(), uo);
+				uoSuperior = uo;
+			}
+			else 
+			{
+				// Cerca recursiva
+				String codiUoSuperior = uo.getCodiUnitatSuperior();
+				UnitatOrganitzativaEntity uoPare = unitatOrganitzativaRepository.findByCodi(codiUoSuperior);
+				if (uoPare != null) {					
+					// Crida recursiva per trobar el pare fins l'arrel que retorna null
+					uoSuperior = getUoSuperior(uosSuperiors, uoPare);
+					if (uoSuperior == null) {
+						uoSuperior = uoPare;
+					}
+					// Afegeix la UO superior al map
+				} else {
+					uoSuperior = uo;
+				}
+				uosSuperiors.put(uo.getCodi(), uoSuperior);
+			}
+		}
+		return uoSuperior;
+	}
+
+	/** Crea un llistat de codis de UOs a partir de l'UO d'origen i de l'arbre d'unitats que pengen
+	 * de la UO superior. Com a mínim posa un element "-" a la llista per evitar errors de consultes.
+	 * 
+	 * @param uoOrigen Si s'informa no cal buscar més, retorna la llista.
+	 * @param uoSuperior Si no s'informa la UO es busca l'arbre a partir de la UO superior.
+	 * @param codisUosSuperiors 
+	 * @return Retorna true si no es troba cap i la llista hauria de ser buida a false i es troben UOs.
+	 */
+	private boolean findCodisUosSuperiors(String uo, String uoSuperior, List<String> codisUosSuperiors) {
+		// Crea la llista d'unitats orgàniques superiors
+		boolean isCodisUoSuperiorsEmpty = false;
+		UnitatOrganitzativaEntity uoEntity = null;
+		if (uo != null && !uo.isEmpty()) {
+			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
+			if (uoEntity != null) {
+				codisUosSuperiors.add(uoEntity.getCodi());
+			}
+		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
+			// Arbre d'unitats superiors
+			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
+			if (uoSuperiorEntity != null) {
+				EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
+				codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior)); 
+			}
+		} else {
+			// no es filtra per UO
+			isCodisUoSuperiorsEmpty = true;
+		}
+		if (codisUosSuperiors.isEmpty()) {
+			// Per a que la consulta no falli
+			codisUosSuperiors.add("-");
+		}
+		return isCodisUoSuperiorsEmpty;
+	}
+
+
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
 

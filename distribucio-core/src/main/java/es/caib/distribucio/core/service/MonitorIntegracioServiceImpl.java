@@ -152,5 +152,17 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		return n;
 	}
 
-
+	@Transactional
+	@Override
+	public int delete(String codi) {
+		logger.debug("Esborrant dades del monitor d'integració per la integració amb codi : " + codi);
+		int n = 0;
+		if (codi != null) {
+			for (MonitorIntegracioEntity monitorIntegracio : monitorIntegracioRepository.findByCodi(codi)) {
+				monitorIntegracioRepository.delete(monitorIntegracio);
+				n++;
+			}
+		}
+		return n;
+	}
 }

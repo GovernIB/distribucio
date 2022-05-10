@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.fundaciobit.apisib.apifirmasimple.v1.ApiFirmaEnServidorSimple;
 import org.fundaciobit.apisib.apifirmasimple.v1.beans.FirmaSimpleAvailableProfile;
 import org.fundaciobit.apisib.apifirmasimple.v1.beans.FirmaSimpleCommonInfo;
@@ -52,7 +51,6 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 				getPropertyUsername(),
 				getPropertyPassword());
 		
-//		FirmaSimpleFile fileToSign = new FirmaSimpleFile(nom, "application/pdf", contingut);
 		FirmaSimpleFile fileToSign = new FirmaSimpleFile(nom, mime, contingut);
 
 		FirmaSimpleSignatureResult result;

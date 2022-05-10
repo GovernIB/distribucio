@@ -2,8 +2,13 @@ package es.caib.distribucio.core.api.dto.dadesobertes;
 
 import java.io.Serializable;
 
+/** Classe per retornar les dades d'usuaris per bústies a l'API REST de dades obertes.
+ *
+ */
 public class UsuariDadesObertesDto implements Serializable{
 	
+	private static final long serialVersionUID = -2771550393162310506L;
+
 	private String usuari;
 	private String usuariNom;
 	private Long bustiaId;

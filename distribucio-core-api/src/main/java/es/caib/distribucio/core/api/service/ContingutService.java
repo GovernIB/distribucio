@@ -14,11 +14,13 @@ import es.caib.distribucio.core.api.dto.ContingutFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 
 /**
  * Declaració dels mètodes per a gestionar continguts.
@@ -268,13 +270,13 @@ public interface ContingutService {
 	 */
 
 	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN')")
-	public List<LogsDadesObertesDto> findLogsDetallsPerData(
+	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
 			Date dataInici,
 			Date dataFi, 
-			String tipus, 
+			LogTipusEnumDto tipus, 
 			String usuari, 
 			Long anotacioId, 
-			String anotacioEstat, 
+			RegistreProcesEstatEnum anotacioEstat, 
 			Boolean errorEstat, 
 			Boolean pendent, 
 			Long bustiaOrigen, 

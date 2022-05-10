@@ -69,5 +69,12 @@ public interface MonitorIntegracioService {
 	/** Mètode per esborrar dades anteriors a una data passada per paràmetre */
 	public int esborrarDadesAntigues(Date data);
 
+	/** Mètode per esborrar dades per a una integració específica.
+	 * 
+	 * @param codi Codi de la integració a esborrar.
+	 * @return Retorna el número de registres esborrats.
+	 */
+	public int delete(String codi);
+
 
 }

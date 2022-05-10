@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,7 @@ import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -65,24 +68,7 @@ public class IntegracioController extends BaseUserController {
 			Model model) {
 		
 		// Fa una llista de les diferents integracions i els errors actuals
-		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
-		
-		// Consulta el número d'errors per codi d'integracio
-		Map<String, Integer> errors = monitorIntegracioService.countErrors();
-		
-		for (IntegracioDto integracio: integracions) {
-			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {
-				if (integracio.getCodi() == integracioEnum.name()) {
-					integracio.setNom(
-							EnumHelper.getOneOptionForEnum(
-									IntegracioEnumDto.class,
-									"integracio.list.pipella." + integracio.getCodi()).getText());
-				}
-			}
-			if (errors.containsKey(integracio.getCodi())) {
-				integracio.setNumErrors(errors.get(integracio.getCodi()).intValue());
-			}
-		}
+		List<IntegracioDto> integracions = this.getIntegracionsIErrors();
 		
 		model.addAttribute(
 				"integracions",
@@ -108,6 +94,32 @@ public class IntegracioController extends BaseUserController {
 	}
 
 	
+	/** Mètode per consultar les integracions i els errors.*/
+	@ResponseBody
+	@RequestMapping(value = "integracions", method = RequestMethod.GET)
+	public List<IntegracioDto> getIntegracionsIErrors() {
+		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
+		
+		// Consulta el número d'errors per codi d'integracio
+		Map<String, Integer> errors = monitorIntegracioService.countErrors();
+		
+		for (IntegracioDto integracio: integracions) {
+			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {
+				if (integracio.getCodi() == integracioEnum.name()) {
+					integracio.setNom(
+							EnumHelper.getOneOptionForEnum(
+									IntegracioEnumDto.class,
+									"integracio.list.pipella." + integracio.getCodi()).getText());
+				}
+			}
+			if (errors.containsKey(integracio.getCodi())) {
+				integracio.setNumErrors(errors.get(integracio.getCodi()).intValue());
+			}
+		}
+		return integracions;
+	}
+	
+
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -146,6 +158,33 @@ public class IntegracioController extends BaseUserController {
 					"integracio.list.no.existeix");
 		}
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/{codi}/esborrar", method = RequestMethod.GET)
+	public int esborrar(
+			HttpServletRequest request,
+			@PathVariable String codi,
+			Model model) {
+		int n = 0;
+		try {
+			n = monitorIntegracioService.delete(codi);			
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"integracio.esborrar.success",
+							new Object[] {n, codi}));
+		} catch (Exception e) {
+			String errMsg = getMessage(
+					request,
+					"integracio.esborrar.error",
+					new Object[] {codi, e.getMessage()});
+			logger.error(errMsg, e);
+			MissatgesHelper.error(request, errMsg);
+		}
+		
+		return n;
+	}
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -156,4 +195,5 @@ public class IntegracioController extends BaseUserController {
 	    				true));
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(IntegracioController.class);
 }

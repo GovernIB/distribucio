@@ -263,13 +263,7 @@
 		var idsBustiesFavorits = [];
 		var idsPerConeixement = [];
 		$(document).ready(function() {
-			
-			/*if(${enabled_bustia_defecte == 'true'}){
-				alert("si" + ${enabled_bustia_defecte});
-			}else {
-				alert("no" + ${enabled_bustia_defecte});
-			}*/
-			
+						
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 			$('#taula_coneixement').hide();

@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.security.concurrent.DelegatingSecurityContextRunnable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -1599,7 +1601,9 @@ public class RegistreServiceImpl implements RegistreService {
 				
 				int nThreads = getPropertyZipNumThrads();
 				ExecutorService executor = Executors.newFixedThreadPool(nThreads);
-				
+
+				SecurityContext context = SecurityContextHolder.getContext();
+				DelegatingSecurityContextRunnable wrappedRunnable;
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
 					// Filtra documents tècnics si no s'és administrador
@@ -1607,7 +1611,8 @@ public class RegistreServiceImpl implements RegistreService {
 						|| annex.getSicresTipusDocument() == null 
 						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
 					{
-						Runnable thread = new GetZipDocumentacioThread(
+						Runnable thread = 
+								new GetZipDocumentacioThread(
 								registreHelper,
 								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
 								registre.getNumero(),
@@ -1618,7 +1623,9 @@ public class RegistreServiceImpl implements RegistreService {
 								zos,
 								executor,
 								errors);
-						executor.execute(thread);
+						
+						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
+						executor.execute(wrappedRunnable);
 					}
 				}
 
@@ -1718,6 +1725,8 @@ public class RegistreServiceImpl implements RegistreService {
 				try {
 					fitxer = registreHelper.getAnnexFitxer(annexID, true);
 				} catch (Exception e) {
+					logger.warn("Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
+								+ e.getClass() + " " + e.getMessage());
 					fitxer = registreHelper.getAnnexFitxer(annexID, false);
 				}
 						

@@ -43,8 +43,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 PRE
-	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 PRE
+	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 DES
+	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 DES
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -59,7 +59,7 @@ public class BustiaV1Test {
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
 	private static final String OFICINA_DESC = "Oficina de proves";
-	private static final String LLIBRE_CODI = "11";
+	private static final String LLIBRE_CODI = "GOIB";
 	private static final String LLIBRE_DESC = "Llibre de proves";
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
@@ -69,7 +69,7 @@ public class BustiaV1Test {
 
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
@@ -171,7 +171,7 @@ public class BustiaV1Test {
 	        anotacio.setOficinaDescripcio(OFICINA_DESC);
 	        anotacio.setLlibreCodi(LLIBRE_CODI);
 	        anotacio.setLlibreDescripcio(LLIBRE_DESC);
-	        anotacio.setNumero("L" + LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
+	        anotacio.setNumero(LLIBRE_CODI + "E" + System.currentTimeMillis() + "/" + Calendar.getInstance().get(Calendar.YEAR));
 	        anotacio.setIdiomaCodi(IDIOMA_CODI);
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);

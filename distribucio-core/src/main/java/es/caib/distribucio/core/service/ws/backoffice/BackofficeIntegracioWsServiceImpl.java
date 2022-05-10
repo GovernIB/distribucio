@@ -118,8 +118,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			Estat estat,
 			String observacions) {
 		
-		String accioDescripcio = "Canvi d'estat";
-//		String usuariIntegracio = "Obtenir l'usuari integracio";
+		String accioDescripcio = "Canvi d'estat de l'anotació " + (id != null ? id.getIndetificador() : "-") + " a " + estat;
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		

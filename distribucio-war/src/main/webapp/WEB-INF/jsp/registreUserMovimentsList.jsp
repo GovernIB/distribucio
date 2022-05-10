@@ -547,7 +547,7 @@ $(document).ready(function() {
 				</div>
 				<div class="modal-body">
 					<ul>
-						<c:set var="enumValues" value="<%=es.caib.distribucio.core.api.dto.RegistreProcesEstatEnumDto.values()%>"/>
+						<c:set var="enumValues" value="<%=es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.values()%>"/>
 						<c:forEach items="${enumValues}" var="enumValue">
 						  	<li>
 						  		<strong><spring:message code="registre.proces.estat.enum.${enumValue}"/></strong> :

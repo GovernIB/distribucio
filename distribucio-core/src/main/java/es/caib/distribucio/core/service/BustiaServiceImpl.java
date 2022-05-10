@@ -8,11 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -38,7 +36,6 @@ import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
-import es.caib.distribucio.core.api.dto.ArbreNodeDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -65,7 +62,6 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
@@ -175,9 +171,6 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Autowired
 	private ConfigHelper configHelper;
-	
-	@Autowired
-	private UnitatOrganitzativaService uoService;
 	
 	@Override
 	@Transactional
@@ -626,7 +619,7 @@ public class BustiaServiceImpl implements BustiaService {
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId()==null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId()) ;
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
-		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
+		List<String> codisUnitatsSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
 		if (codisUnitatsSuperiors.isEmpty())
 			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 
@@ -656,26 +649,6 @@ public class BustiaServiceImpl implements BustiaService {
 				});
 		omplirPermisosPerBusties(resultPagina.getContingut(), true);
 		return resultPagina;
-	}
-
-	/** Mètode per obtenir els codis d'unitats orgàniques de l'arbre que penja a partir de l'unitat
-	 * orgànica superior per filtrar per unitat orgànica superior. 
-	 * 
-	 * @param entitat
-	 * @param codiUnitatSuperior
-	 * @return Els codis de les UO de l'arbe a partir del node amb codi igual a codiUnitatSuperior.
-	 */
-	private List<String> getCodisUnitatsSuperiors(EntitatEntity entitat, String codiUnitatSuperior) {
-		List<String> codisUnitatsSuperiors = new ArrayList<String>();
-		if (codiUnitatSuperior != null) {
-			
-			ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreUnitatsSuperiors(entitat, null, codiUnitatSuperior);
-			// Agafa tots els identificadors
-			for (UnitatOrganitzativaDto uo : arbre.toDadesList()) {
-				codisUnitatsSuperiors.add(uo.getCodi());
-			}			
-		}
-		return codisUnitatsSuperiors;
 	}
 
 	@Override
@@ -749,7 +722,7 @@ public class BustiaServiceImpl implements BustiaService {
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findOne(filtre.getUnitatIdFiltre()): null;
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
-		List<String> codisUnitatsSuperiors = this.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
+		List<String> codisUnitatsSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
 		if (codisUnitatsSuperiors.isEmpty())
 			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 				
@@ -2788,7 +2761,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		
-		ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreUnitatsSuperiors(entitat, filtre, null);
+		ArbreDto<UnitatOrganitzativaDto> arbre = bustiaHelper.getArbreUnitatsSuperiors(entitat, filtre, null);
 				
 		return arbre.toDadesList();
 	}
@@ -2920,49 +2893,6 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return (usuariBustiaFavoritId != null) ? true : false;
 	}
 	
-	/** Mètode privat per retornnar un arbre amb les unitats organitzatives superiors
-	 * a les bústies de l'entitat. D'aquesta forma s'obté només l'arbre amb bústies.
-	 * 
-	 * @param entitat Entitat amb les bústies per buscar les unititats orgàniques.
-	 * @param filtre Filtre per codi o nom de les unitats orgàniques superiors de les bústies.
-	 * @param codiUnitatOrganitzativa Codi del node superior. Només es retornarà l'arbre a partir
-	 * del node que coincideixi amb aquest codi.
-	 * @return
-	 */
-	private ArbreDto<UnitatOrganitzativaDto> getArbreUnitatsSuperiors(
-			EntitatEntity entitat, 
-			String filtre,
-			String codiUnitatOrganitzativa) {
-		// Recupera les diferents unitats organitzatives de les bústies de l'entorn
-		List<UnitatOrganitzativaEntity> unitatsSuperiors = 
-				unitatOrganitzativaRepository.findUnitatsSuperiors(
-						entitat.getId(),
-						filtre == null || filtre.isEmpty(),
-						filtre != null ? filtre : "");
-		
-		// Crea una llista de codis d'UO amb bústia
-		Set<String> bustiaUnitatCodis = new HashSet<String>();
-		for (UnitatOrganitzativaEntity us : unitatsSuperiors) {
-			bustiaUnitatCodis.add(us.getCodi());
-		}
-		// Consulta tot l'arbre de l'entitat filtrant per codis permesos
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatOrganitzativaHelper.findPerCodiDir3EntitatAmbCodisPermesos(
-				entitat.getCodiDir3(),
-				bustiaUnitatCodis);
-		// Si s'ha passat un codi d'unitat orgànica superior llavors retorna l'arbre a partir del node amb codi igual
-		if (codiUnitatOrganitzativa != null && !codiUnitatOrganitzativa.isEmpty()) {
-			// Busca el node amb el codi seleccionat
-			for (ArbreNodeDto<UnitatOrganitzativaDto> node : arbre.toList()) {
-				if (node.getDades().getCodi().equals(codiUnitatOrganitzativa)) {
-					arbre = new ArbreDto<UnitatOrganitzativaDto>(false);
-					arbre.setArrel(node);
-					break;
-				}
-			}
-		}
-		return arbre;
-	}
-	
 	private boolean isPermesReservarAnotacions() {
 		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.permetre.reservar");
 	}
@@ -2981,277 +2911,109 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 			String uoSuperior) {
 
 		List<BustiaDadesObertesDto> resultat = new ArrayList<BustiaDadesObertesDto>();
-
-		if (id == null && uo == null && uoSuperior != null) {			
-			List<BustiaEntity> busties = bustiaRepository.findBustiesPerUnitatSuperior(
-					uoSuperior == null || uoSuperior.isEmpty(),
-					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-					);
-
-			if (busties.isEmpty()) {
-				List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findPerCodiUnitatSuperior(
-						uoSuperior == null || uoSuperior.isEmpty(),
-						uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-						);
-				
-				for (UnitatOrganitzativaEntity u : llistatUO) {
-					uoSuperior = u.getCodi();	
-					List<BustiaEntity> bustiesllistat = bustiaRepository.findBustiesPerCodiUnitatSuperior(
-							uoSuperior == null || uoSuperior.isEmpty(),
-							uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-							);		
-					
-					for (BustiaEntity bustia : bustiesllistat) {
-						BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
-						
-						resultat.add(bustiaDOdto);		
-						
-						UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustia.getUnitatOrganitzativa().getCodi());
-						
-						if (uoInferior.getDenominacio().equals(bustia.getNom())) {
-							List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
-							for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
-								resultat.add(bustiaNivellInferior);
-							}					
-						}
-					}
-				}
-			}else {
-				for (BustiaEntity bustia : busties) {
-					BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
-					
-					resultat.add(bustiaDOdto);		
-					
-					UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustia.getUnitatOrganitzativa().getCodi());
-					
-					if (uoInferior.getDenominacio().equals(bustia.getNom())) {
-						List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
-						for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
-							resultat.add(bustiaNivellInferior);
-						}					
-					}
-				}
-				
-			}
-		  
+		
+		// Crea la llista d'unitats orgàniques superiors
+		boolean isCodisUosSuperiorsEmpty = false;
+		List<String> codisUosSuperiors = new ArrayList<String>();
+		UnitatOrganitzativaEntity uoEntity = null;
+		if (uo != null && !uo.isEmpty()) {
+			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
+			if (uoEntity == null)
+				return resultat;
+		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
+			// Arbre d'unitats superiors
+			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
+			if (uoSuperiorEntity == null)
+				return resultat;
+			EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
+			codisUosSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior); 
 		} else {
-			
-			List<BustiaEntity> busties = bustiaRepository.findBustiesPerDadesObertes(
-					id == null,
-					id != null? id : 0L,
-					uo == null || uo.isEmpty(),
-					uo != null && !uo.isEmpty() ? uo : "",
-					uoSuperior == null || uoSuperior.isEmpty(),
-					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : "");
-			
-			for (BustiaEntity bustia : busties ) {
-				BustiaDadesObertesDto bustiaDOdto = adBustiaDto(bustia);	
-				
-				resultat.add(bustiaDOdto);			
-			}
-		}		
+			// no es filtra per UO
+			isCodisUosSuperiorsEmpty = true;
+		}
+		if (codisUosSuperiors.isEmpty()) {
+			// Per a que la consulta no falli
+			codisUosSuperiors.add("-");
+		}
+
+		// Troba la llista de bústies
+		List<BustiaEntity> busties = bustiaRepository.findBustiesPerDadesObertes(
+				id == null,
+				id != null? id : 0L,
+				uoEntity == null,
+				uoEntity,
+				isCodisUosSuperiorsEmpty,
+				codisUosSuperiors);
 		
-		return resultat;	
-		
+		for (BustiaEntity bustia : busties ) {			
+			resultat.add(adBustiaDto(bustia));			
+		}
+
+		return resultat;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(String usuari, Long id, String uo,
 			String uoSuperior, boolean rol, boolean permis) {
-
+		
 		List<UsuariDadesObertesDto> resultat = new ArrayList<UsuariDadesObertesDto>();
 		
-		if (id == null && uo == null && uoSuperior != null) {
-			List<BustiaEntity> busties = bustiaRepository.findBustiesPerUnitatSuperior(
-					uoSuperior == null || uoSuperior.isEmpty(),
-					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-					);
+		if (!rol && !permis)
+			return resultat;
+		
+		// Crea la llista d'unitats orgàniques superiors
+		boolean isCodisUosSuperiorsEmpty = false;
+		List<String> codisUosSuperiors = new ArrayList<String>();
+		UnitatOrganitzativaEntity uoEntity = null;
+		if (uo != null && !uo.isEmpty()) {
+			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
+			if (uoEntity == null)
+				return resultat;
+		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
+			// Arbre d'unitats superiors
+			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
+			if (uoSuperiorEntity == null)
+				return resultat;
+			EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
+			codisUosSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior); 
+		} else {
+			// no es filtra per UO
+			isCodisUosSuperiorsEmpty = true;
+		}
+		if (codisUosSuperiors.isEmpty()) {
+			// Per a que la consulta no falli
+			codisUosSuperiors.add("-");
+		}
 
-			if (busties.isEmpty()) {
-				List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findPerCodiUnitatSuperior(
-						uoSuperior == null || uoSuperior.isEmpty(),
-						uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-						);
-				
-				for (UnitatOrganitzativaEntity u : llistatUO) {
-					uoSuperior = u.getCodi();	
-					List<BustiaEntity> bustiesllistat = bustiaRepository.findBustiesPerCodiUnitatSuperior(
-							uoSuperior == null || uoSuperior.isEmpty(),
-							uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""
-							);		
-					
-					for (BustiaEntity usuariBustia : bustiesllistat) {
-						List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
-						for (UsuariPermisDto usuariPermis : usuarisPermis) {
-							List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
-							for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
-								resultat.add(usuariDto);								
-							}
-						}	
+		// Troba la llista de bústies
+		List<BustiaEntity> busties = bustiaRepository.findBustiesPerDadesObertes(
+				id == null,
+				id != null? id : 0L,
+				uoEntity == null,
+				uoEntity,
+				isCodisUosSuperiorsEmpty,
+				codisUosSuperiors);
+
+		// Troba tots els usuaris per les diferents bústies i filtra el resultat segons l'usuari i si es filtra per rol o permís
+		for (BustiaEntity bustia : busties) {
+			List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(bustia.getId());
+			for (UsuariPermisDto usuariPermis : usuarisPermis) {
+				if (usuari == null || usuari.trim().isEmpty() || usuariPermis.getCodi().equals(usuari)) {
+					if (	(rol && permis)
+							||(!rol && permis && usuariPermis.isHasUsuariPermission())
+							||(!permis && rol && usuariPermis.getRols().size()>0)) {
 						
-						UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(usuariBustia.getUnitatOrganitzativa().getCodi());
-						if (uoInferior.getDenominacio().equals(usuariBustia.getNom())) {
-							List<UsuariDadesObertesDto> bustiesNivellInferior = cercarUsuarisBustiesNivellInferior(uoInferior.getCodi(), usuari, rol, permis);
-							for (UsuariDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
-								resultat.add(bustiaNivellInferior);
-							}					
-						}
-						
-					}	
-				}
-			}else {
-				for (BustiaEntity usuariBustia : busties) {
-					List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
-					for (UsuariPermisDto usuariPermis : usuarisPermis) {
-						List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
-						for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
-							resultat.add(usuariDto);								
-						}
-					}	
-					
-					UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(usuariBustia.getUnitatOrganitzativa().getCodi());
-					if (uoInferior.getDenominacio().equals(usuariBustia.getNom())) {
-						List<UsuariDadesObertesDto> bustiesNivellInferior = cercarUsuarisBustiesNivellInferior(uoInferior.getCodi(), usuari, rol, permis);
-						for (UsuariDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
-							resultat.add(bustiaNivellInferior);
-						}					
-					}
-					
-				}	
-				
-			}			
-			
-		}else {
-			List<BustiaEntity> usuarisBusties = bustiaRepository.findBustiesPerDadesObertes(
-					/*usuari == null || usuari.isEmpty(), 
-					usuari != null && !usuari.isEmpty() ? usuari : "",*/
-					id == null,
-					id != null? id : 0L,
-					uo == null || uo.isEmpty(),
-					uo != null && !uo.isEmpty() ? uo : "",
-					uoSuperior == null || uoSuperior.isEmpty(),
-					uoSuperior != null && !uoSuperior.isEmpty() ? uoSuperior : ""/*, 
-					rol, 
-					permis*/);
-			
-			for (BustiaEntity usuariBustia : usuarisBusties) {
-				List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(usuariBustia.getId());
-				for (UsuariPermisDto usuariPermis : usuarisPermis) {
-					List<UsuariDadesObertesDto> usuariDOdto = adUsuariDto(usuari, usuariPermis, usuariBustia, rol, permis);
-					for (UsuariDadesObertesDto usuariDto : usuariDOdto) {
-						resultat.add(usuariDto);								
+						resultat.add(adUsuariDto(usuari, usuariPermis, bustia, rol, permis));
 					}
 				}
 				
 			}
-		
-		}		
+			
+		}
 
+		
 		return resultat;
-	}
-	
-	private List<BustiaDadesObertesDto> cercarBustiesNivellInferior(String codiUOInferior) {
-		
-		List<BustiaDadesObertesDto> llistatBusties = new ArrayList<BustiaDadesObertesDto>();
-		
-		List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findByCodiUnitatSuperior(
-				codiUOInferior == null || codiUOInferior.isEmpty(),
-				codiUOInferior != null && !codiUOInferior.isEmpty() ? codiUOInferior : ""
-				);
-		for (UnitatOrganitzativaEntity uoe : llistatUO) {
-			Long idBustiaInferior = uoe.getId();
-			List<BustiaEntity> llistatBustiesUnitatInferior = bustiaRepository.findBustiesPerIdUnitatOrganitzativa(
-					idBustiaInferior == null,
-					idBustiaInferior != null? idBustiaInferior : 0L
-					);
-			
-			for (BustiaEntity bustiaInferior : llistatBustiesUnitatInferior) {
-				BustiaDadesObertesDto bustiaDOdtoInferior = new BustiaDadesObertesDto();
-				String codiUOSbustiaInferior = bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior();
-				
-				if (codiUOSbustiaInferior.contains("A999999")) {
-					codiUOSbustiaInferior = bustiaInferior.getEntitat().getCodiDir3();
-				}
-				bustiaDOdtoInferior.setId(bustiaInferior.getId());
-				bustiaDOdtoInferior.setNom(bustiaInferior.getNom());
-				bustiaDOdtoInferior.setUO(bustiaInferior.getUnitatOrganitzativa().getCodi());
-				bustiaDOdtoInferior.setUoNom(bustiaInferior.getUnitatOrganitzativa().getDenominacio());
-				bustiaDOdtoInferior.setUOsuperior(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());	
-				UnitatOrganitzativaDto uoDtoInferior = uoService.findByCodi(codiUOSbustiaInferior);
-				bustiaDOdtoInferior.setUOsuperiorNom(uoDtoInferior.getNom());		
-				
-				llistatBusties.add(bustiaDOdtoInferior);		
-				
-				UnitatOrganitzativaEntity uoInferior = unitatOrganitzativaRepository.findByCodi(bustiaInferior.getUnitatOrganitzativa().getCodi());
-				
-				if (uoInferior.getDenominacio().equals(bustiaInferior.getNom())) {
-					List<BustiaDadesObertesDto> bustiesNivellInferior = cercarBustiesNivellInferior(uoInferior.getCodi());
-					for (BustiaDadesObertesDto bustiaNivellInferior : bustiesNivellInferior) {
-						llistatBusties.add(bustiaNivellInferior);
-					}					
-				}
-			}	
-		}
-		
-		return llistatBusties;	
-	}
-	
-	private List<UsuariDadesObertesDto> cercarUsuarisBustiesNivellInferior(String codiUOInferior, String usuari, boolean rol, boolean permis) {
-
-		List<UsuariDadesObertesDto> llistatBusties = new ArrayList<UsuariDadesObertesDto>();
-		
-		List<UnitatOrganitzativaEntity> llistatUO = unitatOrganitzativaRepository.findByCodiUnitatSuperior(
-				codiUOInferior == null || codiUOInferior.isEmpty(),
-				codiUOInferior != null && !codiUOInferior.isEmpty() ? codiUOInferior : ""
-				);
-		for (UnitatOrganitzativaEntity uoe : llistatUO) {
-			Long idBustiaInferior = uoe.getId();
-			List<BustiaEntity> llistatBustiesUnitatInferior = bustiaRepository.findBustiesPerIdUnitatOrganitzativa(
-					idBustiaInferior == null,
-					idBustiaInferior != null? idBustiaInferior : 0L
-					);
-			
-			for (BustiaEntity bustiaInferior : llistatBustiesUnitatInferior) {
-				List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(bustiaInferior.getId());
-				for (UsuariPermisDto usuariPermis : usuarisPermis) {
-					UsuariDadesObertesDto usuariDOdto = new UsuariDadesObertesDto();	
-					boolean teRol;
-					if (usuariPermis.getRols().contains(bustiaInferior.getCreatedBy().getRolActual())) {
-						teRol = true;
-					}else {
-						teRol = false;
-					}
-					if (usuari != null && usuari.equals(usuariPermis.getCodi()) || usuari == null) {
-						if (usuariPermis.isHasUsuariPermission() == permis 
-							&& teRol == rol) {
-							usuariDOdto.setUsuari(usuariPermis.getCodi());
-							usuariDOdto.setUsuariNom(usuariPermis.getNom());
-							usuariDOdto.setBustiaId(bustiaInferior.getId());
-							usuariDOdto.setBustiaNom(bustiaInferior.getNom());
-							usuariDOdto.setUo(bustiaInferior.getUnitatOrganitzativa().getCodi());
-							usuariDOdto.setUoNom(bustiaInferior.getUnitatOrganitzativa().getDenominacio());
-							usuariDOdto.setUoSuperior(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());
-							UnitatOrganitzativaDto uoSuperiorEntity = new UnitatOrganitzativaDto();
-							if (bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior().contains("A99999")) {
-								uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustiaInferior.getEntitat().getCodiDir3());
-							} else {
-								uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustiaInferior.getUnitatOrganitzativa().getCodiUnitatSuperior());
-							}
-							usuariDOdto.setUoSuperiorNom(uoSuperiorEntity.getDenominacio());
-							usuariDOdto.setRol(rol);						
-							usuariDOdto.setPermis(usuariPermis.isHasUsuariPermission());
-					
-							llistatBusties.add(usuariDOdto);	
-							
-						}	
-					}
-				}
-				
-			}
-		}
-		
-		return llistatBusties;	
 	}
 	
 	private BustiaDadesObertesDto adBustiaDto(BustiaEntity bustia) {
@@ -3266,50 +3028,36 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		bustiaDOdto.setUO(bustia.getUnitatOrganitzativa().getCodi());
 		bustiaDOdto.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
 		bustiaDOdto.setUOsuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());	
-		UnitatOrganitzativaDto uoDtosuperior = uoService.findByCodi(codiUOsuperior);
-		String nomUnitatSuperior = CercarNomUnitatSuperior(uoDtosuperior.getCodi());
+		UnitatOrganitzativaEntity uoDtosuperiorEntity = unitatOrganitzativaRepository.findByCodi(codiUOsuperior);
+		String nomUnitatSuperior = CercarNomUnitatSuperior(uoDtosuperiorEntity.getCodi());
 		bustiaDOdto.setUOsuperiorNom(nomUnitatSuperior);
 		
 		return bustiaDOdto;
 	}
 	
-	private List<UsuariDadesObertesDto> adUsuariDto(String usuari, UsuariPermisDto usuariPermis, BustiaEntity usuariBustia, boolean rol, boolean permis) {
-		List<UsuariDadesObertesDto> resultat = new ArrayList<UsuariDadesObertesDto>();
-		UsuariDadesObertesDto usuariDOdto = new UsuariDadesObertesDto();
+	private UsuariDadesObertesDto adUsuariDto(String usuari, UsuariPermisDto usuariPermis, BustiaEntity bustia, boolean rol, boolean permis) {
 		
-		boolean teRol;
-		if (usuariPermis.getRols().contains(usuariBustia.getCreatedBy().getRolActual())) {
-			teRol = true;
-		}else {
-			teRol = false;
+		UsuariDadesObertesDto usuariDadesObertes = new UsuariDadesObertesDto();
+		usuariDadesObertes.setUsuari(usuariPermis.getCodi());
+		usuariDadesObertes.setUsuariNom(usuariPermis.getNom());
+		usuariDadesObertes.setBustiaId(bustia.getId());
+		usuariDadesObertes.setBustiaNom(bustia.getNom());
+		usuariDadesObertes.setUo(bustia.getUnitatOrganitzativa().getCodi());
+		usuariDadesObertes.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
+		usuariDadesObertes.setUoSuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
+		UnitatOrganitzativaDto uoSuperiorEntity = null;
+		if (bustia.getUnitatOrganitzativa().getCodiUnitatSuperior().contains("A99999")) {
+			uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustia.getEntitat().getCodiDir3());
+		} else {
+			uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
 		}
-		if (usuari != null && usuari.equals(usuariPermis.getCodi()) || usuari == null) {
-			
-			if (usuariPermis.isHasUsuariPermission() == permis 
-				&& teRol == rol) {
-				usuariDOdto.setUsuari(usuariPermis.getCodi());
-				usuariDOdto.setUsuariNom(usuariPermis.getNom());
-				usuariDOdto.setBustiaId(usuariBustia.getId());
-				usuariDOdto.setBustiaNom(usuariBustia.getNom());
-				usuariDOdto.setUo(usuariBustia.getUnitatOrganitzativa().getCodi());
-				usuariDOdto.setUoNom(usuariBustia.getUnitatOrganitzativa().getDenominacio());
-				usuariDOdto.setUoSuperior(usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
-				UnitatOrganitzativaDto uoSuperiorEntity = new UnitatOrganitzativaDto();
-				if (usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior().contains("A99999")) {
-					uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(usuariBustia.getEntitat().getCodiDir3());
-				} else {
-					uoSuperiorEntity = unitatOrganitzativaHelper.findAmbCodi(usuariBustia.getUnitatOrganitzativa().getCodiUnitatSuperior());
-				}
-				usuariDOdto.setUoSuperiorNom(uoSuperiorEntity.getDenominacio());
-				usuariDOdto.setRol(rol);						
-				usuariDOdto.setPermis(usuariPermis.isHasUsuariPermission());
-		
-				resultat.add(usuariDOdto);		
-				
-			}									
+		if (uoSuperiorEntity != null) {
+			usuariDadesObertes.setUoSuperiorNom(uoSuperiorEntity.getDenominacio());
 		}
-		
-		return resultat;
+		usuariDadesObertes.setRol(usuariPermis.getRols().size() > 0);
+		usuariDadesObertes.setPermis(usuariPermis.isHasUsuariPermission());
+
+		return usuariDadesObertes;
 		
 	}
 	

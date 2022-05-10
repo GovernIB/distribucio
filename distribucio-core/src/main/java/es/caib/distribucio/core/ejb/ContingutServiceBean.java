@@ -19,11 +19,13 @@ import es.caib.distribucio.core.api.dto.ContingutFiltreDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ContingutService;
 
 /**
@@ -162,10 +164,23 @@ public class ContingutServiceBean implements ContingutService {
 	
 
 	@Override
-	public List<LogsDadesObertesDto> findLogsDetallsPerData(Date dataInici, Date dataFi, String tipus, String usuari,
-			Long anotacioId, String anotacioEstat, Boolean errorEstat, Boolean pendent, Long bustiaOrigen,
-			Long bustiaDesti, String uoOrigen, String uoSuperior, String uoDesti, String uoDestiSuperior) {
-		return delegate.findLogsDetallsPerData(dataInici, dataFi, tipus, usuari, anotacioId, anotacioEstat, errorEstat, 
+	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN"})
+	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
+			Date dataInici, 
+			Date dataFi, 
+			LogTipusEnumDto tipus, 
+			String usuari,
+			Long anotacioId, 
+			RegistreProcesEstatEnum anotacioEstat, 
+			Boolean errorEstat, 
+			Boolean pendent, 
+			Long bustiaOrigen,
+			Long bustiaDesti, 
+			String uoOrigen, 
+			String uoSuperior, 
+			String uoDesti, 
+			String uoDestiSuperior) {
+		return delegate.findLogsPerDadesObertes(dataInici, dataFi, tipus, usuari, anotacioId, anotacioEstat, errorEstat, 
 				pendent, bustiaOrigen, bustiaDesti, uoOrigen, uoSuperior, uoDesti, uoDestiSuperior);
 	}
 

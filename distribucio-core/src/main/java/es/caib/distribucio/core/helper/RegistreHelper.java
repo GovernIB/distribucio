@@ -1586,21 +1586,7 @@ public class RegistreHelper {
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
 			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
-				try {
-					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
-				}catch (Exception e) {
-					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
-					if (document != null) {
-						DocumentContingut documentContingut = document.getContingut();
-						if (documentContingut != null) {
-							fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-							fitxerDto.setContentType(documentContingut.getTipusMime());
-							fitxerDto.setContingut(documentContingut.getContingut());
-							fitxerDto.setTamany(documentContingut.getContingut().length);
-						}
-					}					
-				}
-				
+				fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
 			} else {
 				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
 				if (document != null) {

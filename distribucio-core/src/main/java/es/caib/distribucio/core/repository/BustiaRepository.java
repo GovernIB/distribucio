@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -115,19 +114,20 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("activa") boolean activa,
 			Pageable pageable);
 
-	@Query("from BustiaEntity b "
-			+ "where " + 
-			" (:isNullBustiaId = true or b.id like :bustiaId) " + 
-			"and (:isNullUo = true or b.unitatOrganitzativa.codi like :uo) " + 
-			"and (:isNullUoSuperior = true or b.unitatOrganitzativa.codiUnitatSuperior like :uoSuperior) "
+	@Query("from BustiaEntity b " +
+			"where " +
+			" b.activa = true " +
+			"and (:isNullBustiaId = true or b.id like :bustiaId) " + 
+			"and (:isNullUo = true or b.unitatOrganitzativa = :uo) " +
+			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) "
 			)
 	List<BustiaEntity> findBustiesPerDadesObertes(
 			@Param("isNullBustiaId") boolean isNullBustiaId, 
 			@Param("bustiaId") long bustiaId, 
-			@Param("isNullUo") boolean isNullUo, 
-			@Param("uo") String uo, 
-			@Param("isNullUoSuperior") boolean isNullUoSuperior, 
-			@Param("uoSuperior") String uoSuperior);	
+			@Param("isNullUo") boolean isNullUo,
+			@Param("uo") UnitatOrganitzativaEntity uo, 
+			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
+			@Param("codisUnitatsSuperiors") List<String> codisUnitatsSuperiors);	
 
 
 	@Query("from BustiaEntity b "

@@ -1,18 +1,18 @@
 package es.caib.distribucio.apiexterna.controller;
 
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,20 +23,22 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 
 /**
- * Controlador REST per a les dades obertes.
+ * Controlador API REST per a les Dades Obertes per a la consulta de bústies, usuaris i esdevenidments (logs).
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
 @RequestMapping("/externa/opendata")
-@Api(value = "/externa/opendata", description = "API REST de consulta de dades obertes. És necessari tenir el rol DIS_REPORT.")
+@Api(value = "/externa/opendata", description = "API REST de consulta de Dades Obertes. És necessari tenir el rol DIS_REPORT.")
 public class ApiExternaController {
 
 	@Autowired
@@ -124,18 +126,20 @@ public class ApiExternaController {
 	public List<LogsDadesObertesDto> logs (
 			HttpServletRequest request, 
 
-			@ApiParam(name="dataInici", value="Data inici esdeveniment <br>(dd-mm-yyyy)")
-			@RequestParam(required = false) String dataInici, 
-			@ApiParam(name="dataFi", value="Data fi esdeveniment <br>(dd-mm-yyyy)")
-			@RequestParam(required = false) String dataFi, 
-			@ApiParam(name="tipus", value="Id tipus esdeveniment")
-			@RequestParam(required = false) String tipus, 
+			@ApiParam(name="dataInici", value="Data filtre inici. Si no s'especifica serà un mes abans de la data fi o de la data de la consulta.<br>(dd-mm-yyyy)")
+			@RequestParam(value = "dataInici", required = false) 
+			@DateTimeFormat(pattern = "dd-MM-yyyy") Date dataInici, 
+			@ApiParam(name="dataFi", value="Data filtre fi. Si no s'especifica serà un mes posterior a la data d'inici o el mateix dia de la consulta en cas de no especificar la data d'inici La data de fi està inclosa en el rang de consulta.<br>(dd-mm-yyyy)")
+			@RequestParam(required = false) 
+			@DateTimeFormat(pattern = "dd-MM-yyyy") Date dataFi, 
+			@ApiParam(name="tipus", value="Codi del tipus d'esdeveniment")
+			@RequestParam(required = false) LogTipusEnumDto tipus, 
 			@ApiParam(name="usuari", value="Codi de l'usuari")
 			@RequestParam(required = false) String usuari, 
 			@ApiParam(name="anotacioId", value="Id anotació")
 			@RequestParam(required = false) Long anotacioId, 
-			@ApiParam(name="anotacioEstat", value="Id estat anotació")
-			@RequestParam(required = false) String anotacioEstat, 
+			@ApiParam(name="anotacioEstat", value="Codi de l'estat de l'anotació")
+			@RequestParam(required = false) RegistreProcesEstatEnum anotacioEstat, 
 			@ApiParam(name="errorEstat", value="Id estat error anotació")
 			@RequestParam(required = false) Boolean errorEstat, 
 			@ApiParam(name="pendent", value="Booleà per indicar si la bústia està pendent")
@@ -154,38 +158,52 @@ public class ApiExternaController {
 			@RequestParam(required = false) String uoDestiSuperior
 			) {
 		
-		if (dataInici == null) {			
-			DateTime faUnMes = new DateTime().minusMonths (1); 
-			dataInici = faUnMes.getDayOfMonth() + "-" + faUnMes.getMonthOfYear() + "-" + faUnMes.getYear();
-			DateTime avui = new DateTime();
-			dataFi = avui.getDayOfMonth() + "-" + avui.getMonthOfYear() + "-" + avui.getYear();
+		// Adequa les dates d'inici i fi
+		Calendar c = new GregorianCalendar();
+		if (dataInici != null && dataFi != null) {
+			if (dataInici.after(dataFi)) {
+				dataFi = dataInici; 
+			} else {
+				c.setTime(dataInici);
+				c.add(Calendar.MONTH, 1);
+				if (dataFi.after(c.getTime())) {
+					dataFi = c.getTime();
+				}
+			}
+		} else if (dataInici == null && dataFi != null) {
+			c.setTime(dataFi);
+			c.add(Calendar.MONTH, -1);
+			dataInici = c.getTime();
+		} else if (dataInici != null && dataFi == null) {
+			c.setTime(dataInici);
+			c.add(Calendar.MONTH, 1);
+			dataFi = c.getTime();
+		} else {
+			dataInici = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
+			c.setTime(dataInici);
+			c.add(Calendar.MONTH, 1);
+			dataFi = c.getTime();
 		}
-		if (dataFi == null) {
-			String[] dataIniciSplit = new String[3];
-			dataIniciSplit = dataInici.split("-");
-			int mes = Integer.parseInt(dataIniciSplit[1]) + 1;
-			dataFi = dataIniciSplit[0] + "-" + mes + "-" + dataIniciSplit[2];
-			
-		}
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		Timestamp dataInicit = null;
-		Timestamp dataFit = null;
-		try {
-			Date parseDate = dateFormat.parse(dataInici);
-			Timestamp timestamp = new java.sql.Timestamp(parseDate.getTime());
-			dataInicit = timestamp;
-			Date parseDate2 = dateFormat.parse(dataFi);
-			Timestamp timestamp2 = new java.sql.Timestamp(parseDate2.getTime());
-			dataFit = timestamp2;
-		} catch (ParseException e) {
-			
-			e.printStackTrace();
-		}
+		// Afegeix un dia a la data de fi per incloure'l en els resultats
+		c.setTime(dataFi);
+		c.add(Calendar.DATE, 1);
+		dataFi = c.getTime();
 		
-		List<LogsDadesObertesDto> listContingutLog = contingutService.findLogsDetallsPerData(
-				dataInicit, dataFit, tipus, usuari, anotacioId, anotacioEstat, errorEstat, 
-				pendent, bustiaOrigen, bustiaDesti, uoOrigen, uoSuperior, uoDesti, uoDestiSuperior);
+		List<LogsDadesObertesDto> listContingutLog = contingutService.findLogsPerDadesObertes(
+				dataInici, 
+				dataFi, 
+				tipus, 
+				usuari, 
+				anotacioId, 
+				anotacioEstat, 
+				errorEstat, 
+				pendent, 
+				bustiaOrigen, 
+				bustiaDesti, 
+				uoOrigen, 
+				uoSuperior, 
+				uoDesti, 
+				uoDestiSuperior);
 		
 		return listContingutLog;		
 	}

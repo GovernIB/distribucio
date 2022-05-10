@@ -68,5 +68,10 @@ public class MonitorIntegracioServiceBean implements MonitorIntegracioService {
 		return delegate.esborrarDadesAntigues(data);
 	}
 
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public int delete(String codi) {
+		return delegate.delete(codi);
+	}
 
 }

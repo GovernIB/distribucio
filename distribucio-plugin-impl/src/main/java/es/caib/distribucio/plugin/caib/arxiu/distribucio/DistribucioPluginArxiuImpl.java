@@ -592,6 +592,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			byte[] annexContingut,
 			String motiu) throws SistemaExternException {
 		String accioDescripcio = "Firma en servidor de document annex de l'anotació de registre";
+		String usuariIntegracio = "";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("annexId", annex.getId().toString());
 		accioParams.put("annexFitxerNom", annex.getFitxerNom());
@@ -599,6 +600,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		accioParams.put("motiu", motiu);
 		long t0 = System.currentTimeMillis();
 		try {
+			usuariIntegracio = getSignaturaPlugin().getUsuariIntegracio();
 			// Assegura que l'annex tingui tipus MIME i si és un .pdf sigui application/pdf
 			String mime = annex.getFitxerTipusMime();
 			if ("pdf".equals(FilenameUtils.getExtension(annex.getFitxerNom().toLowerCase()))) {
@@ -627,6 +629,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioAddAccioOk(
 					integracioSignaturaCodi,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					System.currentTimeMillis() - t0);
 			return signatura;
@@ -635,6 +638,7 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioAddAccioError(
 					integracioSignaturaCodi,
 					accioDescripcio,
+					usuariIntegracio,
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1257,18 +1261,51 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			String descripcio,
 			Map<String, String> parametres,
 			long tempsResposta) {
+		this.integracioAddAccioOk(
+				integracioCodi, 
+				descripcio, 
+				this.getUsuariIntegracio(),
+				parametres, 
+				tempsResposta);		
+	}
+	
+	private void integracioAddAccioOk(
+			String integracioCodi,
+			String descripcio,
+			String usuariIntegracio,
+			Map<String, String> parametres,
+			long tempsResposta) {
 		if (integracioManager != null) {
 			integracioManager.addAccioOk(
 					integracioCodi,
 					descripcio,
-					this.getUsuariIntegracio(),
+					usuariIntegracio,
 					parametres,
 					tempsResposta);
 		}
 	}
+
 	private void integracioAddAccioError(
 			String integracioCodi,
 			String descripcio,
+			Map<String, String> parametres,
+			long tempsResposta,
+			String errorDescripcio,
+			Throwable throwable) {
+		this.integracioAddAccioError(
+				integracioCodi, 
+				descripcio, 
+				this.getUsuariIntegracio(), 
+				parametres, 
+				tempsResposta, 
+				errorDescripcio, 
+				throwable);
+	}
+
+	private void integracioAddAccioError(
+			String integracioCodi,
+			String descripcio,
+			String usuariIntegracio,
 			Map<String, String> parametres,
 			long tempsResposta,
 			String errorDescripcio,
@@ -1277,14 +1314,13 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			integracioManager.addAccioError(
 					integracioCodi,
 					descripcio,
-					this.getUsuariIntegracio(),
+					usuariIntegracio,
 					parametres,
 					tempsResposta,
 					errorDescripcio,
 					throwable);
 		}
 	}
-
 	private IArxiuPlugin getArxiuPlugin() throws SistemaExternException {
 		if (arxiuPlugin == null) {
 			String pluginClass = getPropertyPluginArxiu();

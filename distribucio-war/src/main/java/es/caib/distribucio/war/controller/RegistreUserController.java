@@ -1111,8 +1111,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 			model.addAttribute("destiLogic", destiLogic);
-			String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
-			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);	
+			model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
 		
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -1178,8 +1177,6 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual,
 						registreId,
 						model);
-				String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
-				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 				return "registreReenviarForm";
 			}
 			if (command.getDestins() == null || command.getDestins().length <= 0) {
@@ -1189,8 +1186,7 @@ public class RegistreUserController extends BaseUserController {
 								request, 	
 								"bustia.pendent.accio.reenviar.no.desti"));
 				model.addAttribute("maxLevel", getMaxLevelArbre());
-				String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
-				model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
+				model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
 				return "registreReenviarForm";
 			}
 			bustiaService.registreReenviar(
@@ -1257,10 +1253,7 @@ public class RegistreUserController extends BaseUserController {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			omplirModelPerReenviarMultiple(request, entitatActual, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
-
 			model.addAttribute(command);
-			String enabled_bustia_defecte = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
-			model.addAttribute("enabledBustiaDefecte", enabled_bustia_defecte);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			if (NotFoundException.class.equals((e.getCause() != null ? e.getCause() : e).getClass())) {
@@ -1953,6 +1946,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
+		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
 		return registreDto;
 	}
 	
@@ -1987,6 +1981,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
+		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
@@ -2011,6 +2006,12 @@ public class RegistreUserController extends BaseUserController {
 		String isEnviarConeixementStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.coneixement");
 		return Boolean.parseBoolean(isEnviarConeixementStr);
 	}
+	
+	private Object isReenviarBustiaDefaultEntitatDisabled() {
+		String isReenviarBustiaDefaultEntitatDisabled = aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat");
+		return Boolean.parseBoolean(isReenviarBustiaDefaultEntitatDisabled);
+	}
+
 	
 	private boolean isFavoritsPermes() {
 		String isFavoritsPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.favorits");

@@ -3,18 +3,25 @@ package es.caib.distribucio.core.api.dto.dadesobertes;
 import java.io.Serializable;
 import java.text.ParseException;
 
+import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+
+/** Classe per retornar les dades de logs a l'API REST de dades obertes.
+*
+*/
 public class LogsDadesObertesDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String data;
-	private String tipus;
+	private LogTipusEnumDto tipus;
 	private String tipusDesc;
 	private String usuari;
 	private Long anotacioId;
-	private String anotacioEstat;
+	private String anotacioNumero;
+	private RegistreProcesEstatEnum anotacioEstat;
 	private String anotacioEstatDesc;
-	private String anotacioError;
+	private boolean anotacioError;
 	private String anotacioErrorDesc;
 	private boolean pendent;
 	private Long nAnnexos;
@@ -24,7 +31,7 @@ public class LogsDadesObertesDto implements Serializable {
 	private String bustiaDestiNom;
 	private String uoOrigenCodi;
 	private String uoOrigenNom;
-	private String uoSuperirOrigenCodi;
+	private String uoSuperiorOrigenCodi;
 	private String uoSuperiorOrigenNom;
 	private String uoDestiCodi;
 	private String uoDestiNom;
@@ -38,10 +45,10 @@ public class LogsDadesObertesDto implements Serializable {
 	public void setData(String strDate) throws ParseException {
 		this.data = strDate;
 	}
-	public String getTipus() {
+	public LogTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(String tipus) {
+	public void setTipus(LogTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 	public String getTipusDesc() {
@@ -62,10 +69,16 @@ public class LogsDadesObertesDto implements Serializable {
 	public void setAnotacioId(Long anotacioId) {
 		this.anotacioId = anotacioId;
 	}
-	public String getAnotacioEstat() {
+	public String getAnotacioNumero() {
+		return anotacioNumero;
+	}
+	public void setAnotacioNumero(String anotacioNumero) {
+		this.anotacioNumero = anotacioNumero;
+	}
+	public RegistreProcesEstatEnum getAnotacioEstat() {
 		return anotacioEstat;
 	}
-	public void setAnotacioEstat(String anotacioEstat) {
+	public void setAnotacioEstat(RegistreProcesEstatEnum anotacioEstat) {
 		this.anotacioEstat = anotacioEstat;
 	}
 	public String getAnotacioEstatDesc() {
@@ -74,10 +87,10 @@ public class LogsDadesObertesDto implements Serializable {
 	public void setAnotacioEstatDesc(String anotacioEstatDesc) {
 		this.anotacioEstatDesc = anotacioEstatDesc;
 	}
-	public String getAnotacioError() {
+	public boolean getAnotacioError() {
 		return anotacioError;
 	}
-	public void setAnotacioError(String anotacioError) {
+	public void setAnotacioError(boolean anotacioError) {
 		this.anotacioError = anotacioError;
 	}
 	public String getAnotacioErrorDesc() {
@@ -134,11 +147,11 @@ public class LogsDadesObertesDto implements Serializable {
 	public void setUoOrigenNom(String uoOrigenNom) {
 		this.uoOrigenNom = uoOrigenNom;
 	}
-	public String getUoSuperirOrigenCodi() {
-		return uoSuperirOrigenCodi;
+	public String getUoSuperiorOrigenCodi() {
+		return uoSuperiorOrigenCodi;
 	}
-	public void setUoSuperirOrigenCodi(String uoSuperirOrigenCodi) {
-		this.uoSuperirOrigenCodi = uoSuperirOrigenCodi;
+	public void setUoSuperiorOrigenCodi(String uoSuperirOrigenCodi) {
+		this.uoSuperiorOrigenCodi = uoSuperirOrigenCodi;
 	}
 	public String getUoSuperiorOrigenNom() {
 		return uoSuperiorOrigenNom;
