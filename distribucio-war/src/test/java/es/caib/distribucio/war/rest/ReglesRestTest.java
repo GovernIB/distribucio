@@ -18,9 +18,10 @@ import javax.net.ssl.X509TrustManager;
  */
 public class ReglesRestTest {
 
-	private static final String URL = "https://dev.caib.es/distribucio";
-	private static final String USERNAME = "e43631077p";
-	private static final String PASSWORD = "g3ST1B2562111";
+	private static final String URL = "http://localhost:8080/distribucio";
+	// Usuari amb només el rol de DIS_REGLA
+	private static final String USERNAME = "disregla";
+	private static final String PASSWORD = "disregla";
 
 	
 	/** Mètode de prova de creació d'una regla. 
@@ -38,9 +39,9 @@ public class ReglesRestTest {
 		
 		// Creació de la regla
 		try {
-			String entitat = "A04003003";
+			String entitat = "A04019281";
 			String sia = "20220429";
-			String backoffice = "helium";
+			String backoffice = "HELIUM";
 			boolean ret = client.add(entitat, sia, backoffice);
 			System.out.println("Creació finalitzada correctament amb resultat " + ret);
 		} catch (Exception e) {

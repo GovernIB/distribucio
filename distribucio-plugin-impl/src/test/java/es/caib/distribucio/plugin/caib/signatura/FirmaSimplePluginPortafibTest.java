@@ -6,9 +6,6 @@ package es.caib.distribucio.plugin.caib.signatura;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 

@@ -115,13 +115,27 @@ public class AjaxUserController extends BaseUserController {
 		return remitentsList;
 	}
 	
+	private static String[] enumPackages = {
+			"es.caib.distribucio.core.api.dto",
+			"es.caib.distribucio.core.api.dto.historic",
+			"es.caib.distribucio.core.api.registre"
+	};
+
+	/** Busca l'enumeració en diferents rutes. Si no troba la classe llença excepció. */
 	private Class<?> findEnumDtoClass(String className) throws ClassNotFoundException{
-		try {
-			return Class.forName("es.caib.distribucio.core.api.dto." + className);
-		} catch(ClassNotFoundException e) {
-			// TODO: això hauria de cercar per tots els subpackages de dto
-			return Class.forName("es.caib.distribucio.core.api.dto.historic." + className);
-		}		
+		Class<?> c = null;
+		int i = 0;
+		while (c == null && i < enumPackages.length) {
+			try {
+				c = Class.forName(enumPackages[i++] + "." + className);
+			} catch(ClassNotFoundException e) {
+				// Es provarà en el seguent package
+			}
+		}
+		if (c == null) {
+			throw new ClassNotFoundException("No s'ha trobat cap enumeració pel nom \"" + className + "\"");
+		}
+		return c;
 	}
 
 }

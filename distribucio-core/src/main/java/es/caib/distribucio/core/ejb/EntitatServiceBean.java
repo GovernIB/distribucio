@@ -75,7 +75,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed({"DIS_REGLA", "tothom"})
 	public EntitatDto findByCodiDir3(String codiDir3) {
 		return delegate.findByCodiDir3(codiDir3);
 	}

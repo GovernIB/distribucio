@@ -1,14 +1,11 @@
 package es.caib.distribucio.apiexterna.controller;
 
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,14 +64,33 @@ public class ApiExternaController {
 			@ApiParam(name="uo", value="Codi DIR3 de l'unitat organitzativa")
 			@RequestParam(required = false) String uo, 
 			@ApiParam(name="uoSuperior", value="Codi DIR3 de l'unitat organitzativa superior")
-			@RequestParam(required = false) String uoSuperior) {
+			@RequestParam(required = false) String uoSuperior) throws Exception {
 				
-		List<BustiaDadesObertesDto> busties = bustiaService.findBustiesPerDadesObertes(
+		long start = new Date().getTime();
+		StringBuilder logMsg = new StringBuilder("Consulda de dades obertes de bústies (");
+		Exception exception = null;
+		logMsg.append("id: " + id); 
+		logMsg.append(", uo: " + uo); 
+		logMsg.append(", uoSuperior: " + uoSuperior + ")"); 
+		List<BustiaDadesObertesDto> busties = null;
+		try {
+			busties = bustiaService.findBustiesPerDadesObertes(
 					id,
 					uo,
 					uoSuperior
-				);		
-		
+				);	
+		} catch(Exception e) {
+			exception = e;
+		} finally {
+			logMsg.append(" finalitada en " + (new Date().getTime()-start) + "ms");
+		}
+		if (exception != null) {
+			logMsg.append(" amb error " + exception.getClass() + ": "  + exception.getMessage());
+			logger.error(logMsg.toString(), exception);
+			throw new Exception("Error no controlat en la consulta de bústies: " + exception.getMessage(), exception);
+		} else {
+			logger.debug(logMsg.toString());
+		}
 		return busties;
 	}
 	
@@ -96,23 +112,45 @@ public class ApiExternaController {
 			@RequestParam(required = false) String uo, 
 			@ApiParam(name="uoSuperior", value="Codi dir3 de l'unitat organitzativa superior")
 			@RequestParam(required = false) String uoSuperior, 
-			@ApiParam(name="rol", value="Booleà per indicar si mostrar o no els usuaris amb permís sobre la\r\n"
-					+ "bústia per rol, per defecte el valor és sí")
-			@RequestParam(required = false, defaultValue = "true") boolean rol,
-			@ApiParam(name="permis", value="Indica si mostrar o no els usuaris amb permís directe. Per\r\n"
-					+ "defecte el valor és sí") 
-			@RequestParam(required = false, defaultValue = "true") boolean permis
-			) {
+			@ApiParam(name="rol", value="Booleà opcional per filtrar els usuaris que tinguin o no permís per rol. r\n"
+					+ "Per defecte el valor és nul i es mostren tots els usuaris.")
+			@RequestParam(required = false) Boolean rol,
+			@ApiParam(name="permis", value="Booleà opcional per filtrar els usuaris que tinguin o no permís directe a la bústia. r\n"
+					+ "Per defecte el valor és nul i es mostren tots els usuaris.")
+			@RequestParam(required = false) Boolean permis
+			) throws Exception {
 				
-		List<UsuariDadesObertesDto> usuariDOdto = bustiaService.findBustiesUsuarisPerDadesObertes(
-				usuari, 
-				bustiaId,
-				uo,
-				uoSuperior, 
-				rol, 
-				permis
-			);	
-		
+		long start = new Date().getTime();
+		StringBuilder logMsg = new StringBuilder("Consulda de dades obertes d'usuaris (");
+		Exception exception = null;
+		logMsg.append("usuari: " + usuari); 
+		logMsg.append(", bustiaId: " + bustiaId); 
+		logMsg.append(", uo: " + uo); 
+		logMsg.append(", uoSuperior: " + uoSuperior); 
+		logMsg.append(", rol: " + rol); 
+		logMsg.append(", permis: " + permis + ")"); 
+		List<UsuariDadesObertesDto> usuariDOdto = null;
+		try {
+			usuariDOdto = bustiaService.findBustiesUsuarisPerDadesObertes(
+					usuari, 
+					bustiaId,
+					uo,
+					uoSuperior, 
+					rol, 
+					permis
+				);	
+		} catch(Exception e) {
+			exception = e;
+		} finally {
+			logMsg.append(" finalitada en " + (new Date().getTime()-start) + "ms");
+		}
+		if (exception != null) {
+			logMsg.append(" amb error " + exception.getClass() + ": "  + exception.getMessage());
+			logger.error(logMsg.toString(), exception);
+			throw new Exception("Error no controlat en la consulta d'usuaris: " + exception.getMessage(), exception);
+		} else {
+			logger.debug(logMsg.toString());
+		}
 		return usuariDOdto;		
 	}
 	
@@ -138,10 +176,12 @@ public class ApiExternaController {
 			@RequestParam(required = false) String usuari, 
 			@ApiParam(name="anotacioId", value="Id anotació")
 			@RequestParam(required = false) Long anotacioId, 
+			@ApiParam(name="anotacioNumero", value="Número d'anotació")
+			@RequestParam(required = false) String anotacioNumero, 
 			@ApiParam(name="anotacioEstat", value="Codi de l'estat de l'anotació")
 			@RequestParam(required = false) RegistreProcesEstatEnum anotacioEstat, 
-			@ApiParam(name="errorEstat", value="Id estat error anotació")
-			@RequestParam(required = false) Boolean errorEstat, 
+			@ApiParam(name="error", value="Indica si mostrar anotacions amb estat, sense estat o totes.")
+			@RequestParam(required = false) Boolean error, 
 			@ApiParam(name="pendent", value="Booleà per indicar si la bústia està pendent")
 			@RequestParam(required = false) Boolean pendent, 
 			@ApiParam(name="bustiaOrigen", value="Id bústia origen")
@@ -156,55 +196,56 @@ public class ApiExternaController {
 			@RequestParam(required = false) String uoDesti, 
 			@ApiParam(name="uoDestiSuperior", value="Codi dir3 de l'unitat organitzativa superior de la bústia destí")
 			@RequestParam(required = false) String uoDestiSuperior
-			) {
-		
-		// Adequa les dates d'inici i fi
-		Calendar c = new GregorianCalendar();
-		if (dataInici != null && dataFi != null) {
-			if (dataInici.after(dataFi)) {
-				dataFi = dataInici; 
-			} else {
-				c.setTime(dataInici);
-				c.add(Calendar.MONTH, 1);
-				if (dataFi.after(c.getTime())) {
-					dataFi = c.getTime();
-				}
-			}
-		} else if (dataInici == null && dataFi != null) {
-			c.setTime(dataFi);
-			c.add(Calendar.MONTH, -1);
-			dataInici = c.getTime();
-		} else if (dataInici != null && dataFi == null) {
-			c.setTime(dataInici);
-			c.add(Calendar.MONTH, 1);
-			dataFi = c.getTime();
-		} else {
-			dataInici = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
-			c.setTime(dataInici);
-			c.add(Calendar.MONTH, 1);
-			dataFi = c.getTime();
+			) throws Exception {
+
+		long start = new Date().getTime();
+		StringBuilder logMsg = new StringBuilder("Consulda de dades obertes de logs d'esdeveniments (");
+		Exception exception = null;
+		logMsg.append("dataInici: " + dataInici); 
+		logMsg.append(", bustiaId: " + dataFi); 
+		logMsg.append(", tipus: " + tipus); 
+		logMsg.append(", usuari: " + usuari); 
+		logMsg.append(", anotacioId: " + anotacioId); 
+		logMsg.append(", anotacioNumero: " + anotacioNumero); 
+		logMsg.append(", anotacioEstat: " + anotacioEstat); 
+		logMsg.append(", error: " + error); 
+		logMsg.append(", pendent: " + pendent); 
+		logMsg.append(", bustiaOrigen: " + bustiaOrigen); 
+		logMsg.append(", bustiaDesti: " + bustiaDesti); 
+		logMsg.append(", uoOrigen: " + uoOrigen); 
+		logMsg.append(", uoSuperior: " + uoSuperior); 
+		logMsg.append(", uoDesti: " + uoDesti); 
+		logMsg.append(", uoDestiSuperior: " + uoDestiSuperior + ")"); 
+		List<LogsDadesObertesDto> listContingutLog = null;
+		try {
+			listContingutLog = contingutService.findLogsPerDadesObertes(
+					dataInici, 
+					dataFi, 
+					tipus, 
+					usuari, 
+					anotacioId, 
+					anotacioNumero,
+					anotacioEstat, 
+					error, 
+					pendent, 
+					bustiaOrigen, 
+					bustiaDesti, 
+					uoOrigen, 
+					uoSuperior, 
+					uoDesti, 
+					uoDestiSuperior);
+		} catch(Exception e) {
+			exception = e;
+		} finally {
+			logMsg.append(" finalitada en " + (new Date().getTime()-start) + "ms");
 		}
-		// Afegeix un dia a la data de fi per incloure'l en els resultats
-		c.setTime(dataFi);
-		c.add(Calendar.DATE, 1);
-		dataFi = c.getTime();
-		
-		List<LogsDadesObertesDto> listContingutLog = contingutService.findLogsPerDadesObertes(
-				dataInici, 
-				dataFi, 
-				tipus, 
-				usuari, 
-				anotacioId, 
-				anotacioEstat, 
-				errorEstat, 
-				pendent, 
-				bustiaOrigen, 
-				bustiaDesti, 
-				uoOrigen, 
-				uoSuperior, 
-				uoDesti, 
-				uoDestiSuperior);
-		
+		if (exception != null) {
+			logMsg.append(" amb error " + exception.getClass() + ": "  + exception.getMessage());
+			logger.error(logMsg.toString(), exception);
+			throw new Exception("Error no controlat en la consulta de logs d'esdeveniments: " + exception.getMessage(), exception);
+		} else {
+			logger.debug(logMsg.toString());
+		}
 		return listContingutLog;		
 	}
 	

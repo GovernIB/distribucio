@@ -15,8 +15,9 @@ import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
 public class DadesObertesRestTest {
 
 	private static final String URL = "http://localhost:8080/distribucioapi";
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "admin";
+	// Usuari amb només el rol de DIS_REPORT
+	private static final String USERNAME = "disreport";
+	private static final String PASSWORD = "disreport";
 
 	
 	/** Mètode de prova d'execució per les diferents consultes */
@@ -32,7 +33,7 @@ public class DadesObertesRestTest {
 		// Consulta de bústies
 		try {
 			Long bustiaId = null;
-			String uo = "A04019281";
+			String uo = null;
 			String uoSuperior = null; // A04019281 - Govern
 			List<BustiaDadesObertesDto> busties = client.busties(bustiaId, uo, uoSuperior);
 			System.out.println("Consulta correcta amb " + busties.size() + " resultats.");

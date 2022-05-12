@@ -2920,6 +2920,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
 			if (uoEntity == null)
 				return resultat;
+			codisUosSuperiors.add(uo);
 		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
 			// Arbre d'unitats superiors
 			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
@@ -2955,11 +2956,11 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 	@Override
 	@Transactional(readOnly = true)
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(String usuari, Long id, String uo,
-			String uoSuperior, boolean rol, boolean permis) {
+			String uoSuperior, Boolean rol, Boolean permis) {
 		
 		List<UsuariDadesObertesDto> resultat = new ArrayList<UsuariDadesObertesDto>();
 		
-		if (!rol && !permis)
+		if (rol != null && rol == false && permis != null && permis == false)
 			return resultat;
 		
 		// Crea la llista d'unitats orgàniques superiors
@@ -2970,6 +2971,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
 			if (uoEntity == null)
 				return resultat;
+			codisUosSuperiors.add(uo);
 		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
 			// Arbre d'unitats superiors
 			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
@@ -2999,43 +3001,39 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		for (BustiaEntity bustia : busties) {
 			List<UsuariPermisDto> usuarisPermis = this.getUsuarisPerBustia(bustia.getId());
 			for (UsuariPermisDto usuariPermis : usuarisPermis) {
-				if (usuari == null || usuari.trim().isEmpty() || usuariPermis.getCodi().equals(usuari)) {
-					if (	(rol && permis)
-							||(!rol && permis && usuariPermis.isHasUsuariPermission())
-							||(!permis && rol && usuariPermis.getRols().size()>0)) {
-						
-						resultat.add(adUsuariDto(usuari, usuariPermis, bustia, rol, permis));
-					}
+				if ( (usuari == null || usuari.trim().isEmpty() || usuariPermis.getCodi().equals(usuari))
+						&& (rol == null || (rol.booleanValue() == (usuariPermis.getRols().size() > 0)))
+						&& (permis == null || (permis.booleanValue() == usuariPermis.isHasUsuariPermission()) ))
+				{
+						resultat.add(adUsuariDto(usuariPermis, bustia));
 				}
-				
 			}
-			
 		}
-
 		
 		return resultat;
 	}
 	
 	private BustiaDadesObertesDto adBustiaDto(BustiaEntity bustia) {
-		BustiaDadesObertesDto bustiaDOdto = new BustiaDadesObertesDto();
+		BustiaDadesObertesDto bustiaDto = new BustiaDadesObertesDto();
 		String codiUOsuperior = bustia.getUnitatOrganitzativa().getCodiUnitatSuperior();
 		
 		if (codiUOsuperior.contains("A999999")) {
 			codiUOsuperior = bustia.getEntitat().getCodiDir3();
 		}
-		bustiaDOdto.setId(bustia.getId());
-		bustiaDOdto.setNom(bustia.getNom());
-		bustiaDOdto.setUO(bustia.getUnitatOrganitzativa().getCodi());
-		bustiaDOdto.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
-		bustiaDOdto.setUOsuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());	
+		bustiaDto.setId(bustia.getId());
+		bustiaDto.setNom(bustia.getNom());
+		bustiaDto.setUO(bustia.getUnitatOrganitzativa().getCodi());
+		bustiaDto.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
+		bustiaDto.setUOsuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());	
 		UnitatOrganitzativaEntity uoDtosuperiorEntity = unitatOrganitzativaRepository.findByCodi(codiUOsuperior);
 		String nomUnitatSuperior = CercarNomUnitatSuperior(uoDtosuperiorEntity.getCodi());
-		bustiaDOdto.setUOsuperiorNom(nomUnitatSuperior);
+		bustiaDto.setUOsuperiorNom(nomUnitatSuperior);
+		bustiaDto.setPerDefecte(bustia.isPerDefecte());
 		
-		return bustiaDOdto;
+		return bustiaDto;
 	}
 	
-	private UsuariDadesObertesDto adUsuariDto(String usuari, UsuariPermisDto usuariPermis, BustiaEntity bustia, boolean rol, boolean permis) {
+	private UsuariDadesObertesDto adUsuariDto(UsuariPermisDto usuariPermis, BustiaEntity bustia) {
 		
 		UsuariDadesObertesDto usuariDadesObertes = new UsuariDadesObertesDto();
 		usuariDadesObertes.setUsuari(usuariPermis.getCodi());

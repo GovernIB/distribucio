@@ -15,6 +15,7 @@ public class BustiaDadesObertesDto implements Serializable{
 	private String uoNom;
 	private String uoSuperior;
 	private String uoSuperiorNom;
+	private boolean perDefecte;
 	
 	
 	public Long getId() {
@@ -52,6 +53,12 @@ public class BustiaDadesObertesDto implements Serializable{
 	}
 	public void setUOsuperiorNom(String nameUOsuperior) {
 		this.uoSuperiorNom = nameUOsuperior;
+	}
+	public boolean isPerDefecte() {
+		return perDefecte;
+	}
+	public void setPerDefecte(boolean perDefecte) {
+		this.perDefecte = perDefecte;
 	}
 
 }

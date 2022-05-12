@@ -117,6 +117,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	@Query("from BustiaEntity b " +
 			"where " +
 			" b.activa = true " +
+			"and b.pare != null " +
 			"and (:isNullBustiaId = true or b.id like :bustiaId) " + 
 			"and (:isNullUo = true or b.unitatOrganitzativa = :uo) " +
 			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) "

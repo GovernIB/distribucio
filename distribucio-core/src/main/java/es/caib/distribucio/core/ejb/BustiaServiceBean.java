@@ -334,7 +334,7 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(String usuari, Long id, String uo,
-			String uoSuperior, boolean rol, boolean permis) {
+			String uoSuperior, Boolean rol, Boolean permis) {
 		return delegate.findBustiesUsuarisPerDadesObertes(usuari, id, uo, uoSuperior, rol, permis);
 	}
 	

@@ -149,7 +149,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
+				false,
 				false);
 		
 		BackofficeEntity entity = backofficeRepository.findByEntitatAndCodi(entitat, backofficeCodi);

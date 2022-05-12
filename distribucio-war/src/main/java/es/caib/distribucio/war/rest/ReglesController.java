@@ -144,7 +144,7 @@ public class ReglesController extends BaseUserController {
 			return new ResponseEntity<String>(msg, HttpStatus.OK);
 		} catch (Exception e) {
 			String errMsg = "Error creant la regla pel backoffice " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage(); 
-			logger.error(errMsg);
+			logger.error(errMsg, e);
 			return new ResponseEntity<String>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}	

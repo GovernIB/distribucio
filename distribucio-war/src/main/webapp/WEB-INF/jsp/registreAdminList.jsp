@@ -301,7 +301,7 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">
-						<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnumDto" placeholderKey="contingut.admin.filtre.estat.especific" emptyOption="true"/>
+						<dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnum" placeholderKey="contingut.admin.filtre.estat.especific" emptyOption="true"/>
 					</div>
 					<div class="col-md-2" style="padding-left: 0;">
 						<button id="nomesAmbErrorsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>

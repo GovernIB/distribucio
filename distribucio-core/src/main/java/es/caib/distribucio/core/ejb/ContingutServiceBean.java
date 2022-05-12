@@ -171,6 +171,7 @@ public class ContingutServiceBean implements ContingutService {
 			LogTipusEnumDto tipus, 
 			String usuari,
 			Long anotacioId, 
+			String anotacioNumero,
 			RegistreProcesEstatEnum anotacioEstat, 
 			Boolean errorEstat, 
 			Boolean pendent, 
@@ -180,7 +181,7 @@ public class ContingutServiceBean implements ContingutService {
 			String uoSuperior, 
 			String uoDesti, 
 			String uoDestiSuperior) {
-		return delegate.findLogsPerDadesObertes(dataInici, dataFi, tipus, usuari, anotacioId, anotacioEstat, errorEstat, 
+		return delegate.findLogsPerDadesObertes(dataInici, dataFi, tipus, usuari, anotacioId, anotacioNumero, anotacioEstat, errorEstat, 
 				pendent, bustiaOrigen, bustiaDesti, uoOrigen, uoSuperior, uoDesti, uoDestiSuperior);
 	}
 

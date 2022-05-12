@@ -433,6 +433,6 @@ public interface BustiaService {
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari, Long id, 
 			String uo, String uoSuperior, 
-			boolean rol, boolean permis);
+			Boolean rol, Boolean permis);
 
 }

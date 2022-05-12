@@ -88,7 +88,7 @@ public class ReglaServiceImpl implements ReglaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
+				false,
 				false);
 		int ordre = reglaRepository.countByEntitat(entitat);
 		ReglaEntity reglaEntity = ReglaEntity.getBuilder(

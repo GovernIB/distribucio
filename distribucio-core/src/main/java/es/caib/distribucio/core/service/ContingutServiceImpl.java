@@ -9,12 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -586,8 +588,9 @@ public class ContingutServiceImpl implements ContingutService {
 			LogTipusEnumDto tipus, 
 			String usuari,
 			Long anotacioId, 
+			String anotacioNumero,
 			RegistreProcesEstatEnum anotacioEstat, 
-			Boolean errorEstat, 
+			Boolean error, 
 			Boolean pendent, 
 			Long bustiaOrigen, 
 			Long bustiaDesti,
@@ -599,6 +602,41 @@ public class ContingutServiceImpl implements ContingutService {
 		
 		List<LogsDadesObertesDto> resultat = new ArrayList<LogsDadesObertesDto>();
 		
+		// Adequa les dates d'inici i fi
+		boolean isDatesNules = dataInici == null && dataFi == null;
+		Calendar c = new GregorianCalendar();
+		if (dataInici != null && dataFi != null) {
+			if (dataInici.after(dataFi)) {
+				dataFi = dataInici; 
+			} else {
+				c.setTime(dataInici);
+				c.add(Calendar.MONTH, 1);
+				if (dataFi.after(c.getTime())) {
+					dataFi = c.getTime();
+				}
+			}
+		} else if (dataInici == null && dataFi != null) {
+			c.setTime(dataFi);
+			c.add(Calendar.MONTH, -1);
+			dataInici = c.getTime();
+		} else if (dataInici != null && dataFi == null) {
+			c.setTime(dataInici);
+			c.add(Calendar.MONTH, 1);
+			dataFi = c.getTime();
+		} else {
+			// Dates per defecte
+			dataFi = DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
+			c.setTime(dataFi);
+			c.add(Calendar.MONTH, -1);
+			dataInici = c.getTime();
+		}
+		if (dataFi != null) {
+			// Afegeix un dia a la data de fi per incloure'l en els resultats
+			c.setTime(dataFi);
+			c.add(Calendar.DATE, 1);
+			dataFi = c.getTime();
+		}
+		
 		// Llistats de UO's superiors
 		List<String> codisUoSuperiorsOrigen = new ArrayList<String>();
 		boolean isCodisUoSuperiorsOrigenEmpty = this.findCodisUosSuperiors(uoOrigen, uoSuperior, codisUoSuperiorsOrigen);
@@ -608,6 +646,7 @@ public class ContingutServiceImpl implements ContingutService {
 		// Consulta les dades
 		// Ojbect[] {ContingutLogEntity log, RegistreEntity registre, BustiaEntity origen, BustiaEntity destí }
 		List<Object[]> logs = contingutLogRepository.findLogsPerDadesObertes(
+				isDatesNules,
 				dataInici, 
 				dataFi, 
 				tipus == null, 
@@ -615,17 +654,19 @@ public class ContingutServiceImpl implements ContingutService {
 				usuari == null || usuari.isEmpty(), 
 				usuari != null && !usuari.isEmpty() ? usuari : "",
 				anotacioId == null, 
-				anotacioId != null ? anotacioId : 0L, 
+				anotacioId != null ? anotacioId.longValue() : 0L, 
+				anotacioNumero == null || anotacioNumero.isEmpty(), 
+				anotacioNumero != null && !anotacioNumero.isEmpty() ? anotacioNumero : "",
 				anotacioEstat == null, 
 				anotacioEstat != null ? anotacioEstat : RegistreProcesEstatEnum.ARXIU_PENDENT,
-				errorEstat == null,
-				errorEstat != null ? errorEstat.booleanValue() : false, 
+				error == null,
+				error != null ? error.booleanValue() : false, 
 				pendent == null, 
 				pendent != null ? pendent.booleanValue() : false,
 				bustiaOrigen == null, 
-				bustiaOrigen != null ? bustiaOrigen : 0L, 
+				bustiaOrigen != null ? bustiaOrigen.longValue() : 0L, 
 				bustiaDesti == null, 
-				bustiaDesti != null ? bustiaDesti : 0L,
+				bustiaDesti != null ? bustiaDesti.longValue() : 0L,
 				uoOrigen == null || uoOrigen.isEmpty(),  
 				uoOrigen != null && !uoOrigen.isEmpty() ? uoOrigen : "", 
 				isCodisUoSuperiorsOrigenEmpty, 
@@ -667,26 +708,30 @@ public class ContingutServiceImpl implements ContingutService {
 			logDto.setPendent(registre.getPendent() != null? registre.getPendent().booleanValue() : false);
 			logDto.setnAnnexos((long)registre.getAnnexos().size()); 
 			
-			ContingutMovimentEntity moviment = log.getContingutMoviment();
-			if (moviment != null) {
-				logDto.setBustiaOrigenId(moviment.getOrigenId());
-				logDto.setBustiaOrigenNom(moviment.getOrigenNom());
-				logDto.setBustiaDestiId(moviment.getDestiId());
-				logDto.setBustiaDestiNom(moviment.getDestiNom());
-			}
-			if (bOrigen != null && bOrigen.getUnitatOrganitzativa() != null) {				
-				logDto.setUoOrigenCodi(bOrigen.getUnitatOrganitzativa().getCodi());
-				logDto.setUoOrigenNom(bOrigen.getUnitatOrganitzativa().getDenominacio());
-				UnitatOrganitzativaEntity uoSuperiorOrigen = this.getUoSuperior(uosSuperiors, bOrigen.getUnitatOrganitzativa());
-				logDto.setUoSuperiorOrigenCodi(uoSuperiorOrigen.getCodi());
-				logDto.setUoSuperiorOrigenNom(uoSuperiorOrigen.getDenominacio());
-			}
-			if (bDesti != null && bDesti.getUnitatOrganitzativa() != null) {				
-				logDto.setUoDestiCodi(bDesti.getUnitatOrganitzativa().getCodi());
-				logDto.setUoDestiNom(bDesti.getUnitatOrganitzativa().getDenominacio());
-				UnitatOrganitzativaEntity uoSuperiorDesti = this.getUoSuperior(uosSuperiors, bDesti.getUnitatOrganitzativa());
-				logDto.setUoSuperiorDestiCodi(uoSuperiorDesti.getCodi());
-				logDto.setUoSuperiorDestiNom(uoSuperiorDesti.getDenominacio());
+			if (log.getContingutMoviment() != null) {
+				ContingutMovimentEntity moviment = log.getContingutMoviment();
+				if (moviment.getOrigenId() != null) {
+					logDto.setBustiaOrigenId(moviment.getOrigenId());
+					logDto.setBustiaOrigenNom(moviment.getOrigenNom());
+					if (bOrigen != null && moviment.getOrigenId().equals(bOrigen.getId()) && bOrigen.getUnitatOrganitzativa() != null) {
+						logDto.setUoOrigenCodi(bOrigen.getUnitatOrganitzativa().getCodi());
+						logDto.setUoOrigenNom(bOrigen.getUnitatOrganitzativa().getDenominacio());
+						UnitatOrganitzativaEntity uoSuperiorOrigen = this.getUoSuperior(uosSuperiors, bOrigen.getUnitatOrganitzativa());
+						logDto.setUoSuperiorOrigenCodi(uoSuperiorOrigen.getCodi());
+						logDto.setUoSuperiorOrigenNom(uoSuperiorOrigen.getDenominacio());
+					}
+				}
+				if (moviment.getDestiId() != null) {
+					logDto.setBustiaDestiId(moviment.getDestiId());
+					logDto.setBustiaDestiNom(moviment.getDestiNom());
+					if (bDesti != null && moviment.getDestiId().equals(bDesti.getId()) && bDesti.getUnitatOrganitzativa() != null) {				
+						logDto.setUoDestiCodi(bDesti.getUnitatOrganitzativa().getCodi());
+						logDto.setUoDestiNom(bDesti.getUnitatOrganitzativa().getDenominacio());
+						UnitatOrganitzativaEntity uoSuperiorDesti = this.getUoSuperior(uosSuperiors, bDesti.getUnitatOrganitzativa());
+						logDto.setUoSuperiorDestiCodi(uoSuperiorDesti.getCodi());
+						logDto.setUoSuperiorDestiNom(uoSuperiorDesti.getDenominacio());
+					}
+				}
 			}
 			
 			resultat.add(logDto);

@@ -37,35 +37,39 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 	/** Consulta per treure la informació d'un registre filtrant per data, tipus i usuari. Per cada 
 	 * resultat retorna un Ojbect[] {ContingutLogEntity log, RegistreEntity registre, BustiaEntity origen, BustiaEntity destí } */
 	@Query(	"select l, r, bOrigen, bDesti " + 
-			"from  	ContingutLogEntity l, " +
+			"from  	ContingutLogEntity l " +
+			"			left join l.contingutMoviment as contingutMoviment, " +
 			"		RegistreEntity r, " +
 			"		BustiaEntity bOrigen, " +
 			"		BustiaEntity bDesti " +
 			"where " +
 			"		(l.contingut.id = r.id) " +
 			"	and (l.contingut.tipus = es.caib.distribucio.core.api.dto.ContingutTipusEnumDto.REGISTRE) " +
-			"	and ((l.contingutMoviment is null and bOrigen.id = r.pare.id) " + 
-			"			or (bOrigen.id = l.contingutMoviment.origenId)) " + // bústia origen
-			"	and ((l.contingutMoviment is null and bDesti.id = r.pare.id) " + 
-			" 			or (bDesti.id = l.contingutMoviment.destiId)) " + // bústia destí
-			" 	and (l.createdDate between :dataInici and :dataFi) " +
-			" and (:isNullTipus = true or l.tipus = :tipus) " +
-			" and (:isNullUsuari = true or l.createdBy.codi like :usuari) " +
-			" and (:isNullAnotacioId = true or r.id = :anotacioId) " +
-			" and (:isNullAnotacioEstat = true or r.procesEstat like :anotacioEstat) " +
-			" and (:isNullAnotacioError = true " + 
+			" 	and (:isNullAnotacioId = true or r.id = :anotacioId) " +
+			" 	and (:isNullAnotacioNumero = true or r.numero like :anotacioNumero) " +
+			"	and ((contingutMoviment.origenId is not null and bOrigen.id = contingutMoviment.origenId) " + 
+			"			or (contingutMoviment.origenId is null and bOrigen.id = r.pare.id)) " + 
+			"	and ((contingutMoviment.destiId is not null and bDesti.id = contingutMoviment.destiId) " + 
+			" 			or (contingutMoviment.destiId is null and bDesti.id = r.pare.id)) " + 
+			"	and (:esNullDates = true or l.createdDate  between :dataInici and :dataFi) " +
+			"	and (l.createdDate  between :dataInici and :dataFi) " +
+			" 	and (:isNullTipus = true or l.tipus = :tipus) " +
+			" 	and (:isNullUsuari = true or l.createdBy.codi like :usuari) " +
+			" 	and (:isNullAnotacioEstat = true or r.procesEstat like :anotacioEstat) " +
+			" 	and (:isNullAnotacioError = true " + 
 			"			or (:anotacioError = true and r.procesError != null) " + 
 			"			or (:anotacioError = false and r.procesError is null)) " +
-			" and (:isNullPendent = true or r.pendent = :pendent ) " +
-			" and (:isNullBustiaOrigen = true or bOrigen.id = :bustiaOrigen) " +
-			" and (:isNullBustiaDesti = true or bDesti.id = :bustiaDesti) " +
-			" and (:isNullUoOrigen = true or bOrigen.unitatOrganitzativa.codi like :uoOrigen) " +
-			" and (:isCodisUoSuperiorsOrigenEmpty = true or bOrigen.unitatOrganitzativa.codi in (:codisUoSuperiorsOrigen)) " +
-			" and (:isNullUoDesti = true or bDesti.unitatOrganitzativa.codi like :uoDesti) " +
-			" and (:isCodisUoSuperiorsDestiEmpty = true or bDesti.unitatOrganitzativa.codi in (:codisUoSuperiorsDesti)) " +
+			" 	and (:isNullPendent = true or r.pendent = :pendent ) " +
+			" 	and (:isNullBustiaOrigen = true or bOrigen.id = :bustiaOrigen) " +
+			" 	and (:isNullBustiaDesti = true or bDesti.id = :bustiaDesti) " +
+			" 	and (:isNullUoOrigen = true or bOrigen.unitatOrganitzativa.codi like :uoOrigen) " +
+			" 	and (:isCodisUoSuperiorsOrigenEmpty = true or bOrigen.unitatOrganitzativa.codi in (:codisUoSuperiorsOrigen)) " +
+			" 	and (:isNullUoDesti = true or bDesti.unitatOrganitzativa.codi like :uoDesti) " +
+			" 	and (:isCodisUoSuperiorsDestiEmpty = true or bDesti.unitatOrganitzativa.codi in (:codisUoSuperiorsDesti)) " +
 			"order by l.createdDate asc "
 			)
 	List<Object[]> findLogsPerDadesObertes(
+			@Param("esNullDates") boolean esNullDates,
 			@Param("dataInici") Date dataInici,
 			@Param("dataFi") Date dataFi,
 			@Param("isNullTipus") boolean isNullTipus,
@@ -74,12 +78,14 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			@Param("usuari") String usuari, 
 			@Param("isNullAnotacioId") boolean isNullAnotacioId, 
 			@Param("anotacioId") long anotacioId, 
+			@Param("isNullAnotacioNumero") boolean isNullAnotacioNumero, 
+			@Param("anotacioNumero") String anotacioNumero, 
 			@Param("isNullAnotacioEstat") boolean isNullAnotacioEstat, 
 			@Param("anotacioEstat") RegistreProcesEstatEnum anotacioEstat,
 			@Param("isNullAnotacioError") boolean isNullAnotacioError, 
- 			@Param("anotacioError") Boolean anotacioError,
+ 			@Param("anotacioError") boolean anotacioError,
 			@Param("isNullPendent") boolean isNullPendent,
-			@Param("pendent") Boolean pendent, 
+			@Param("pendent") boolean pendent, 
 			@Param("isNullBustiaOrigen") boolean isNullBustiaOrigen, 
 			@Param("bustiaOrigen") long bustiaOrigen, 
 			@Param("isNullBustiaDesti") boolean isNullBustiaDesti, 
