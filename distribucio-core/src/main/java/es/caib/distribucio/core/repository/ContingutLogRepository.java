@@ -60,12 +60,16 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			"			or (:anotacioError = true and r.procesError != null) " + 
 			"			or (:anotacioError = false and r.procesError is null)) " +
 			" 	and (:isNullPendent = true or r.pendent = :pendent ) " +
-			" 	and (:isNullBustiaOrigen = true or bOrigen.id = :bustiaOrigen) " +
-			" 	and (:isNullBustiaDesti = true or bDesti.id = :bustiaDesti) " +
-			" 	and (:isNullUoOrigen = true or bOrigen.unitatOrganitzativa.codi like :uoOrigen) " +
-			" 	and (:isCodisUoSuperiorsOrigenEmpty = true or bOrigen.unitatOrganitzativa.codi in (:codisUoSuperiorsOrigen)) " +
-			" 	and (:isNullUoDesti = true or bDesti.unitatOrganitzativa.codi like :uoDesti) " +
-			" 	and (:isCodisUoSuperiorsDestiEmpty = true or bDesti.unitatOrganitzativa.codi in (:codisUoSuperiorsDesti)) " +
+			" 	and (:isNullBustiaOrigen = true or (contingutMoviment.origenId = :bustiaOrigen)) " +
+			" 	and (:isNullBustiaDesti = true or contingutMoviment.destiId = :bustiaDesti) " +
+			" 	and (:isNullUoOrigen = true or (contingutMoviment.origenId is not null " + 
+			"										and bOrigen.unitatOrganitzativa.codi like :uoOrigen)) " +
+			" 	and (:isCodisUoSuperiorsOrigenEmpty = true or (contingutMoviment.origenId is not null " + 
+			"													and bOrigen.unitatOrganitzativa.codi in (:codisUoSuperiorsOrigen))) " +
+			" 	and (:isNullUoDesti = true or (contingutMoviment.destiId is not null " + 
+			"										and bDesti.unitatOrganitzativa.codi like :uoDesti)) " +
+			" 	and (:isCodisUoSuperiorsDestiEmpty = true or (contingutMoviment.destiId is not null " + 
+			"													and bDesti.unitatOrganitzativa.codi in (:codisUoSuperiorsDesti))) " +
 			"order by l.createdDate asc "
 			)
 	List<Object[]> findLogsPerDadesObertes(

@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta pdf firmat " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -69,7 +69,7 @@ public class BustiaV1Test {
 
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = true;
+	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
