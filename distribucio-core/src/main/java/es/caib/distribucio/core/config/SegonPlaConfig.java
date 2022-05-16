@@ -3,6 +3,8 @@ package es.caib.distribucio.core.config;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -47,7 +49,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
                     	
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.tasca.guardar.annexos.temps.espera.execucio");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució de guardar annexos: " + e.getMessage());
+						}
                     	if (value == null) 
                     		value = new Long("60000");
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
@@ -70,7 +77,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
                     	
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució d'enviar anotacions pendents als backoffices: " + e.getMessage());
+						}
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
@@ -91,7 +103,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.tasca.aplicar.regles.temps.espera.execucio");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució d'aplicar regles: " + e.getMessage());
+						}
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
@@ -113,7 +130,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.tasca.tancar.contenidors.temps.espera.execucio");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució de tancar contenidors a l'Arxiu: " + e.getMessage());
+						}
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
@@ -135,7 +157,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.segonpla.email.bustia.periode.enviament.no.agrupat");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució d'enviar emails no agrupats: " + e.getMessage());
+						}
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
@@ -158,7 +185,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
-                    	String value = configHelper.getConfig("es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat");
+                    	String value = null;
+						try {
+							value = configHelper.getConfig("es.caib.distribucio.segonpla.email.bustia.cron.enviament.agrupat");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució d'enviar emails agrupats: " + e.getMessage());
+						}
                     	if (value == null) 
 							value = "* * * * * *";
                     	
@@ -214,7 +246,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
                     	
-                    	Long value = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.periode");
+                    	Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.periode");
+						} catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució d'esborrar dades monitor integració antigues: " + e.getMessage());
+						}
                     	if (value == null) {
                     		value = new Long("3600000"); // Per defecte un cop cada hora per defecte
                     	}
@@ -225,4 +262,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 }
         );
     }
+    
+	private static final Logger logger = LoggerFactory.getLogger(SegonPlaConfig.class);
+
 }
