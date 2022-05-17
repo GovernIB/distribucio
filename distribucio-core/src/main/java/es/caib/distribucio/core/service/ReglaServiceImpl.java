@@ -608,6 +608,7 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 	
 	
+	@Transactional(readOnly = true)
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi) {
 		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);

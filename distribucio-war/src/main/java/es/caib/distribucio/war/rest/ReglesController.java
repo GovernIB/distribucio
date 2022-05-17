@@ -120,7 +120,7 @@ public class ReglesController extends BaseUserController {
 		for (ReglaDto regla : reglesPerSia) {			
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
-				return new ResponseEntity<String>("Ja existeix la regla amb id " + regla.getId() + " i nom \"" + regla.getNom() + "\" pel backoffice " + backofficeDto.getCodi() + " a l'entitat " + entitatDto.getCodi(), HttpStatus.NOT_ACCEPTABLE);
+				return new ResponseEntity<String>("Ja existeix la regla amb id " + regla.getId() + " i nom \"" + regla.getNom() + "\" pel backoffice \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \"" + regla.getEntitatNom() + "\"", HttpStatus.NOT_ACCEPTABLE);
 			} else {
 				// OK Regla existent pel mateix backoffie 
 				return new ResponseEntity<String>("Ja existeix la regla amb id " + regla.getId() + " i nom \"" + regla.getNom() + "\" per aquest backoffice i codi SIA", HttpStatus.OK);

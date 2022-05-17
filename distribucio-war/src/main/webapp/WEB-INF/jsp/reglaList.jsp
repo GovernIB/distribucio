@@ -119,7 +119,15 @@
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputSelect name="backofficeId" placeholderKey="bustia.list.filtre.backoffice" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="id" optionTextAttribute="nom" inline="true"/>
+				<dis:inputSelect 
+					name="backofficeId" 
+					placeholderKey="bustia.list.filtre.backoffice" 
+					optionItems="${backoffices}" 
+					emptyOption="true" 
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					inline="true"
+					optionMinimumResultsForSearch="0"/>
 			</div>
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">

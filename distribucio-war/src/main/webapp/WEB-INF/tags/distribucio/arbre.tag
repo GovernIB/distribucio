@@ -53,19 +53,10 @@
 	</c:if>
 </div>
 <script>
-	<c:if test="${isReenviarBustiaDefaultEntitatDisabled}">
-	window.addEventListener("load", function(event) {
-		const bustia_collection = document.getElementsByClassName("jstree-leaf");
-		for (let i = 0; i < bustia_collection.length; i++) {
-			var bustia = bustia_collection[i].innerText;
-			if (bustia.includes("(default)")) {
-				bustia_collection[i].classList.add("disabled-bustia");
-				bustia_collection[i].setAttribute('title', '<spring:message code="contingut.enviar.bustia.entitat.default.deshabilitada" />');
-			}
-		}
+	$(document).ready(function(){
+		deshabilitarBustiaDefectePrincipal();
 	});
-	</c:if>
-
+	
 	(function ($) {
 		$.jstree.defaults.conditionalselect = function () { return true; };
 		$.jstree.defaults.conditionalhover = function () { return true; };
@@ -145,7 +136,11 @@
 	})</c:if>
 	.on('ready.jstree click', function (e, data) {
 		changeCheckbox(false);
+	}).on('ready.jstree', function (e, data) {
+		deshabilitarBustiaDefectePrincipal();
 	});
+	
+
 	
 	function changeCheckbox(removeAllSelected) {
 		if (${isCheckBoxEnabled}) {
@@ -202,4 +197,17 @@
 	    	}
 		});
 	}
+	
+	function deshabilitarBustiaDefectePrincipal() {
+		// <c:if test="${isReenviarBustiaDefaultEntitatDisabled}">
+		$('.jstree-leaf').each(function(){
+			var bustia = $(this).text();
+			if (bustia.includes("(default)")) {
+				$(this).addClass("disabled-bustia");
+				$(this).attr('title', '<spring:message code="contingut.enviar.bustia.entitat.default.deshabilitada" />');
+			}
+		})		
+		// </c:if>
+	}
+		
 </script>
