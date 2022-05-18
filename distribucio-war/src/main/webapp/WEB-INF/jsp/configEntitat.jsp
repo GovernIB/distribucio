@@ -125,7 +125,7 @@ function accioBoto(id, valorGeneric) {
 			var inputType = document.getElementById(configElement).type;
 			var inputField = document.getElementById(configElement);
 			if (inputType == 'number' || inputType == 'text') {
-				inputType.value='';
+				inputField.value='';
 			}else if (inputType == 'checkbox'){
 				if (valorGeneric == 'true'){
 					inputField.checked = valorGeneric;					
