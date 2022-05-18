@@ -1,7 +1,14 @@
 package es.caib.distribucio.core.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -9,13 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.entity.ConfigEntity;
+import es.caib.distribucio.core.entity.ConfigTypeEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.repository.ConfigGroupRepository;
 import es.caib.distribucio.core.repository.ConfigRepository;
+import es.caib.distribucio.core.repository.ConfigTypeRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
 
 /**
  * Classe que implementa els metodes per consultar i editar les configuracions de l'aplicació.
@@ -30,11 +42,17 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     private ConfigRepository configRepository;
     @Autowired
+    private ConfigTypeRepository configTypeRepository;
+    @Autowired
+    private EntitatRepository entitatRepository;
+    @Autowired
     private ConversioTipusHelper conversioTipusHelper;
     @Autowired
     private PluginHelper pluginHelper;
     @Autowired
     private ConfigHelper configHelper;
+    
+    
     @Override
     @Transactional
     public ConfigDto updateProperty(ConfigDto property) {
@@ -45,6 +63,91 @@ public class ConfigServiceImpl implements ConfigService {
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
     }
 
+    
+    /** Mètode que revisa després d'iniciar Distribucio que totes les entitats tinguin una entrada
+     * per cada propietat configurable a nivell d'entitat.
+     */
+    @PostConstruct
+    @Transactional
+    public void postConstruct() {
+		// Recuperar totes les propietats configurables que no siguin d'entitat
+    	List<ConfigEntity> listConfigEntity = configRepository.findConfigurablesAmbEntitatNull();
+    	List<ConfigEntity> llistatPropietatsConfigurables = configRepository.findConfigurables();
+	    List<EntitatEntity> llistatEntitats = entitatRepository.findAll();
+	    int propietatsNecessaries = listConfigEntity.size() * (llistatEntitats.size() + 1);
+		// Mirar que la propietat existeixi per a la entitat, si no crear-la amb el valor null
+	    if (llistatPropietatsConfigurables.size() != propietatsNecessaries) {
+		    for (ConfigEntity cGroup : listConfigEntity) {
+		    	int lengthKey = cGroup.getKey().length();
+		    	for (EntitatEntity entitat : llistatEntitats) {
+		    		if (cGroup.getEntitatCodi() == null) {
+		        		String cercarPropietat = cGroup.getKey().substring(0, 20) + entitat.getCodi() + cGroup.getKey().substring(19, lengthKey);
+		        		ConfigEntity configEntity = configRepository.findPerKey(cercarPropietat);
+		        		if (configEntity == null) {
+		        			ConfigEntity novaPropietat = new ConfigEntity();
+			        		novaPropietat.setDescription(cGroup.getDescription());
+			        		novaPropietat.setEntitatCodi(entitat.getCodi());
+			        		novaPropietat.setGroupCode(cGroup.getGroupCode());
+			        		novaPropietat.setJbossProperty(cGroup.isJbossProperty());
+			        		novaPropietat.setKey(cercarPropietat);
+			        		novaPropietat.setPosition(cGroup.getPosition());
+			        		novaPropietat.setConfigurable(cGroup.isConfigurable());			        		
+			        		novaPropietat.setTypeCode(cGroup.getTypeCode());
+			        		
+		                    logger.info("Guardant la propietat: " + novaPropietat.getKey());		        		
+			        		configRepository.save(novaPropietat);
+		        		}
+		    		}
+		    	}
+		    }	
+	    }
+    	//configHelper.initEntitats();
+    }
+    
+    @Override
+    @Transactional
+	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat) {
+    	List<ConfigEntity> llistatConfiguracionsEntitat = configRepository.findAllPerEntitat(entitat.getCodi());
+        List<ConfigDto> llistatPropietatsEntitat = new ArrayList<ConfigDto>();
+    	for (ConfigEntity cEntity : llistatConfiguracionsEntitat) {
+        	ConfigDto configDto = new ConfigDto();
+        	configDto.setDescription(cEntity.getDescription());
+        	configDto.setEntitatCodi(cEntity.getEntitatCodi());
+        	configDto.setJbossProperty(cEntity.isJbossProperty());
+        	configDto.setKey(cEntity.getKey());
+        	configDto.setTypeCode(cEntity.getTypeCode());
+        	configDto.setGroupCode(cEntity.getGroupCode());
+        	configDto.setTypeCode(cEntity.getTypeCode());
+        	
+        	/*String keyPropietatGeneral = cEntity.getKey().replace(entitat.getCodi() + ".", "");
+        	ConfigEntity propietatGeneral = configRepository.findPerKey(keyPropietatGeneral);
+        	if (propietatGeneral.getTypeCode().equals(cEntity.getTypeCode())) {
+        		configDto.setTypeCode(cEntity.getTypeCode());
+        	} else {
+        		configDto.setTypeCode(propietatGeneral.getTypeCode());
+        	}*/
+        	
+        	configDto.setValidValues(cEntity.getValidValues());
+        	String valorPropietat = "";
+    		String propietatGenerica = cEntity.getKey().replace(cEntity.getEntitatCodi() + ".", "");
+    		ConfigEntity configGeneric = configRepository.findPerKey(propietatGenerica);
+        	if (cEntity.getValue() == null) {
+        		valorPropietat = configGeneric.getValue();
+        		if (valorPropietat == null) {
+        			configDto.setValue(valorPropietat);
+        		} else {
+        			configDto.setValue(valorPropietat + " ////");
+        		}
+        	}else {
+            	configDto.setValue(cEntity.getValue());
+        	}
+        	
+        	llistatPropietatsEntitat.add(configDto);
+        }
+    	return llistatPropietatsEntitat;
+    }
+
+    
     @Override
     @Transactional(readOnly = true)
     public List<ConfigGroupDto> findAll() {
@@ -90,4 +193,7 @@ public class ConfigServiceImpl implements ConfigService {
         ConfigEntity configEntity = configRepository.findOne(key);
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
 	}
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
 }

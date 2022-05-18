@@ -1,6 +1,8 @@
 package es.caib.distribucio.war.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -12,13 +14,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -40,6 +43,8 @@ public class ConfigController extends BaseUserController{
     private ConfigService configService;
     @Autowired
     private EntitatRepository entitatRepository;
+    @Autowired
+    private EntitatService entitatService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(
@@ -62,7 +67,6 @@ public class ConfigController extends BaseUserController{
             Model model,
 			@Valid ConfigCommand configCommand,
 			BindingResult bindingResult) {
-    	System.out.println("PROPIETAT CONFIGURADA: " + configCommand.getKey() + "=>" + configCommand.getValue());
         if (bindingResult.hasErrors()) {
         	StringBuilder errors = new StringBuilder();
         	for(ObjectError error : bindingResult.getAllErrors()) {
@@ -84,23 +88,34 @@ public class ConfigController extends BaseUserController{
     
     
     
-    @RequestMapping(value="/propietatsEntitat", method = RequestMethod.GET)
+    @RequestMapping(value="/propietatsEntitat/{idEntitat}", method = RequestMethod.GET)
     public String propietatsEntitat(
     		HttpServletRequest request, 
     		Model model, 
-    		@RequestParam long idEntitat) {
-    	System.out.println("PROPIETATS PER L'ENTITAT: " + idEntitat);
+    		@PathVariable long idEntitat) {
         List<ConfigGroupDto> configGroups = configService.findAll();
+        EntitatDto entitatDto = entitatService.findById(idEntitat);
         model.addAttribute("config_groups", configGroups);
-        model.addAttribute("idEntitat", idEntitat);
+        model.addAttribute("entitatDto", entitatDto);
         for (ConfigGroupDto cGroup: configGroups) {
-            fillFormsModel(cGroup, model);
+            fillFormsModelEntitat(cGroup, model, entitatDto);
         }
+        
+        List<ConfigDto> llistatPropietats = configService.findAllPerEntitat(entitatDto);
+        model.addAttribute("llistatPropietats", llistatPropietats);
+        
+        Map<String, Object> valorsDefault = new HashMap<>();
+        for (ConfigDto configDto : llistatPropietats) {
+        	//if (configDto.getValue() != null && !configDto.getValue().contains("////")) {
+        		String keyGeneral = configDto.getKey().replace(configDto.getEntitatCodi() + ".", "");
+        		ConfigDto propGeneral = configService.findByKey(keyGeneral);
+        		valorsDefault.put(propGeneral.getKey(), propGeneral.getValue());
+        	//}
+        }
+        model.addAttribute("valorsDefault", valorsDefault);
     	
-    	return "config";
-    }
-    
-    
+    	return "configEntitat";
+    }    
     
     
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
@@ -137,6 +152,21 @@ public class ConfigController extends BaseUserController{
         }
         for (ConfigGroupDto child : cGroup.getInnerConfigs()){
             fillFormsModel(child, model);
+        }
+    }
+    
+
+    private void fillFormsModelEntitat(ConfigGroupDto cGroup, Model model, EntitatDto entitatEntity){
+        for (ConfigDto config: cGroup.getConfigs()) {
+        	ConfigCommand configCommand = ConfigCommand.asCommand(config);
+            model.addAttribute("config_" + config.getKey().replace('.', '_'),
+                    ConfigCommand.asCommand(config));
+        }
+        if (cGroup.getInnerConfigs() == null || cGroup.getInnerConfigs().isEmpty()){
+            return;
+        }
+        for (ConfigGroupDto child : cGroup.getInnerConfigs()){
+            fillFormsModelEntitat(child, model, entitatEntity);
         }
     }
     

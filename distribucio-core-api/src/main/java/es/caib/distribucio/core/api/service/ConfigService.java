@@ -1,11 +1,13 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 
 /**
  * Declaració dels mètodes per a la gestió dels paràmetres de configuració de l'aplicació.
@@ -27,6 +29,9 @@ public interface ConfigService {
 
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public List<ConfigGroupDto> findAll();
+
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat);
 
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public void synchronize();

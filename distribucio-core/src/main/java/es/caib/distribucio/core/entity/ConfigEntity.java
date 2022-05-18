@@ -45,10 +45,13 @@ public class ConfigEntity {
     @Column(name = "GROUP_CODE", length = 2048, nullable = true)
     private String groupCode;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "TYPE_CODE", insertable = false, updatable = false)
     @ForeignKey(name = "NOT_CONFIG_TYPE_FK")
     private ConfigTypeEntity type;
+    
+    @Column(name="TYPE_CODE", length = 128, nullable = true)
+    private String typeCode;
 
     @Column(name = "POSITION")
     private int position;
@@ -60,6 +63,12 @@ public class ConfigEntity {
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedDate;
+    
+    @Column(name = "ENTITAT_CODI")
+    private String entitatCodi;
+    
+    @Column(name = "CONFIGURABLE")
+    private boolean configurable;
 
     /**
      * Per a mapejar el Dto de la vista.
@@ -99,6 +108,53 @@ public class ConfigEntity {
 	}
 
 	public ConfigEntity() {
+	}
+	
+	public String getEntitatCodi() {
+		return entitatCodi;
+	}
+	public void setEntitatCodi(String entitatCodi) {
+		this.entitatCodi = entitatCodi;
+	}
+	
+	
+	
+	
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public void setJbossProperty(boolean jbossProperty) {
+		this.jbossProperty = jbossProperty;
+	}
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
+	public void setType(ConfigTypeEntity type) {
+		this.type = type;
+	}
+	public void setPosition(int position) {
+		this.position = position;
+	}
+	public void setLastModifiedBy(UsuariEntity lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public boolean isConfigurable() {
+		return configurable;
+	}
+	public void setConfigurable(boolean configurable) {
+		this.configurable = configurable;
+	}
+	public void setTypeCode(String typeCode) {
+		this.typeCode = typeCode;
 	}
 	
     

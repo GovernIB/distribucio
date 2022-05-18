@@ -15,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.ConfigGroupEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.repository.ConfigGroupRepository;
 import es.caib.distribucio.core.repository.ConfigRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
 
 @Component
 public class ConfigHelper {
@@ -29,6 +32,12 @@ public class ConfigHelper {
     private ConfigGroupRepository configGroupRepository;
     @Autowired
     private PluginHelper pluginHelper;
+    @Autowired
+    private EntitatRepository entitatRepository;
+    
+    public static ThreadLocal<Integer> ti = new ThreadLocal<>();
+    public static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();
+    
     
     
     @PostConstruct
@@ -58,7 +67,15 @@ public class ConfigHelper {
     
     @Transactional(readOnly = true)
     public String getConfig(String key)  {
+    	
+    	// Provem de recuperar l'entitat
+		EntitatDto entitat = ConfigHelper.entitat.get();
+		logger.debug("Entitat actual per les propietats : " + (entitat != null ? entitat.getCodi() : ""));
+		System.out.println(">>>>>>>>>>>>>ThreadLocal: " + ConfigHelper.ti.get());
+		System.out.println(">>>>>>>>>>>>>Entitat: " + ConfigHelper.entitat.get());
+
         ConfigEntity configEntity = configRepository.findOne(key);
+        System.out.println(">>>>>>>key: " + key);
 
 		if (configEntity != null) {
 			return getConfig(configEntity);
@@ -263,4 +280,35 @@ public class ConfigHelper {
         
     	private static final Logger logger = LoggerFactory.getLogger(JBossPropertiesHelper.class);
     }
+
+    /*@Transactional
+	public void initEntitats() {
+    	// Recuperar totes les propietats configurables que no siguin d'entitat
+    	// Per cada entitat
+			// Mirar que la propietat existeixi per a la entitat, si no crear-la amb el valor null
+        List<ConfigEntity> listConfigEntity = configRepository.findAll();
+        List<EntitatEntity> llistatEntitats = entitatRepository.findAll();
+        for (ConfigEntity cGroup : listConfigEntity) {
+        	int lengthKey = cGroup.getKey().length();
+        	for (EntitatEntity entitat : llistatEntitats) {
+        		if (cGroup.getEntitatCodi() == null) {
+	        		String cercarPropietat = cGroup.getKey().substring(0, 20) + entitat.getCodi() + cGroup.getKey().substring(19, lengthKey);
+	        		ConfigEntity configEntity = configRepository.findPerKey(cercarPropietat);
+	        		if (configEntity == null) {
+	        			ConfigEntity novaPropietat = new ConfigEntity();
+		        		novaPropietat.setDescription(cGroup.getDescription());
+		        		novaPropietat.setEntitatCodi(entitat.getCodi());
+		        		novaPropietat.setGroupCode(cGroup.getGroupCode());
+		        		novaPropietat.setJbossProperty(cGroup.isJbossProperty());
+		        		novaPropietat.setKey(cercarPropietat);
+		        		novaPropietat.setPosition(cGroup.getPosition());
+		        		novaPropietat.setType(cGroup.getType());
+		        		
+	                    logger.info("Guardant la propietat: " + novaPropietat.getKey());		        		
+		        		configRepository.save(novaPropietat);
+	        		}
+        		}
+        	}
+        }		
+	}*/
 }

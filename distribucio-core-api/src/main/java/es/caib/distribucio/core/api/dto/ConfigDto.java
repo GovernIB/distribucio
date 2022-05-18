@@ -8,6 +8,8 @@ public class ConfigDto {
     private String value;
     private String description;
     private boolean jbossProperty;
+    private String entitatCodi;
+    private String groupCode;
 
     private String typeCode;
     private List<String> validValues;
@@ -48,6 +50,18 @@ public class ConfigDto {
 	}
 	public void setValidValues(List<String> validValues) {
 		this.validValues = validValues;
+	}
+	public String getEntitatCodi() {
+		return entitatCodi;
+	}
+	public void setEntitatCodi(String entitatCodi) {
+		this.entitatCodi = entitatCodi;
+	}
+	public String getGroupCode() {
+		return groupCode;
+	}
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
 	}
     
     
