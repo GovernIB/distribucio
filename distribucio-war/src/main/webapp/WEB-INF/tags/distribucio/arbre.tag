@@ -47,15 +47,13 @@
 				<dis:arbreFills pare="${arbre.arrel}" fills="${arbre.arrel.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}" fulles="${fulles}" 
 				fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" 
 				fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}" fullesAtributCssClassCondition="${fullesAtributCssClassCondition}" 
-				fillsAtributInfoCondition="${fillsAtributInfoCondition}" fillsAtributInfoText="${fillsAtributInfoText}"/>
+				fillsAtributInfoCondition="${fillsAtributInfoCondition}" fillsAtributInfoText="${fillsAtributInfoText}"
+				nivell="0"/>
 			</li>
 		</ul>
 	</c:if>
 </div>
 <script>
-	$(document).ready(function(){
-		deshabilitarBustiaDefectePrincipal();
-	});
 	
 	(function ($) {
 		$.jstree.defaults.conditionalselect = function () { return true; };
@@ -118,6 +116,7 @@
 		changeCheckbox(false);
 		addIcons();
 		paintSelectedNodes();
+		$('.disabled-bustia').attr('title', '<spring:message code="contingut.enviar.bustia.entitat.default.deshabilitada" />');
 	})
 	.on('after_close.jstree', function (e, data) {
 		// var iframe = $('.modal-body iframe', window.parent.document);
@@ -136,8 +135,6 @@
 	})</c:if>
 	.on('ready.jstree click', function (e, data) {
 		changeCheckbox(false);
-	}).on('ready.jstree', function (e, data) {
-		deshabilitarBustiaDefectePrincipal();
 	});
 	
 
@@ -196,18 +193,5 @@
 	    		popoverUsers(nodeId);
 	    	}
 		});
-	}
-	
-	function deshabilitarBustiaDefectePrincipal() {
-		// <c:if test="${isReenviarBustiaDefaultEntitatDisabled}">
-		$('.jstree-leaf').each(function(){
-			var bustia = $(this).text();
-			if (bustia.includes("(default)")) {
-				$(this).addClass("disabled-bustia");
-				$(this).attr('title', '<spring:message code="contingut.enviar.bustia.entitat.default.deshabilitada" />');
-			}
-		})		
-		// </c:if>
-	}
-		
+	}		
 </script>

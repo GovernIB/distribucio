@@ -212,6 +212,7 @@ public class ContingutHelper {
 			}
 			
 			if (RegistreProcesEstatEnum.isPendent(registreEntity.getProcesEstat())) {
+				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
 			} else {
 				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
 			}

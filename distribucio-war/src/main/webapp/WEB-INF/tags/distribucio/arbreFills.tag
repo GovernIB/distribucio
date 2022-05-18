@@ -19,6 +19,7 @@
 <%@ attribute name="fullesAtributInfo2Condition"%> <!-- Name of the boolean attribute of the leaf, if not empty and true, the text specified by: fullesAtributInfo2Text will be displayed  -->
 <%@ attribute name="fullesAtributInfo2Text"%> 
 <%@ attribute name="isOcultarCounts" type="java.lang.Boolean"%>
+<%@ attribute name="nivell" required="false" type="java.lang.Integer"%>
 <ul>
 	<c:forEach var="fill" items="${fills}">
 		<li id="${fill.dades[atributId]}" data-jstree='{"icon":"fa fa-folder fa-lg"<c:if test="${not empty seleccionatId and fill.dades[atributId] == seleccionatId}">, "selected": true</c:if>}'>
@@ -27,12 +28,18 @@
 			<dis:arbreFills pare="${fill}" fills="${fill.fills}" atributId="${atributId}" atributNom="${atributNom}" seleccionatId="${seleccionatId}"  fulles="${fulles}" 
 			fullesIcona="${fullesIcona}" fullesAtributId="${fullesAtributId}" fullesAtributNom="${fullesAtributNom}" fullesAtributPare="${fullesAtributPare}" 
 			fullesAtributInfo="${fullesAtributInfo}" fullesAtributInfoText="${fullesAtributInfoText}" isOcultarCounts="${isOcultarCounts}" 
-			fillsAtributInfoCondition="${fillsAtributInfoCondition}" fillsAtributInfoText="${fillsAtributInfoText}" fullesAtributCssClassCondition="${fullesAtributCssClassCondition}"/>
+			fillsAtributInfoCondition="${fillsAtributInfoCondition}" fillsAtributInfoText="${fillsAtributInfoText}" fullesAtributCssClassCondition="${fullesAtributCssClassCondition}"
+			nivell="${nivell+1}"/>
 		</li>
 	</c:forEach>
 	<c:forEach var="fulla" items="${fulles}">
 		<c:if test="${fulla[fullesAtributPare] == pare.dades[atributId]}">
-			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}'>
+			<li id="${fulla[fullesAtributId]}" data-jstree='{"icon":"${fullesIcona}"}'
+				<c:if test="${isReenviarBustiaDefaultEntitatDisabled && nivell == 0 && fulla[fullesAtributInfo]}">
+					class="disabled-bustia" 
+					
+				</c:if> 
+			>
 				<c:choose>
 					<c:when test="${!empty fullesAtributCssClassCondition && fulla[fullesAtributCssClassCondition]}">
 					 	<a class="fullesAtributCssClass">${fulla[fullesAtributNom]} 
