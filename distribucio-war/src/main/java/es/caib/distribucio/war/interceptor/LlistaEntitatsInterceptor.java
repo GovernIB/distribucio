@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.war.interceptor;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,8 +31,6 @@ public class LlistaEntitatsInterceptor extends HandlerInterceptorAdapter {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			Object handler) throws Exception {
-		System.out.println("/////////////////////////////////// PREHANDLE: "
-				+ EntitatHelper.getEntitatActual(request));
 		if (!ContingutEstaticHelper.isContingutEstatic(request)) {
 			EntitatHelper.findEntitatsAccessibles(
 					request,
@@ -43,10 +39,10 @@ public class LlistaEntitatsInterceptor extends HandlerInterceptorAdapter {
 					request,
 					entitatService);
 		}
-		System.out.println("******************************************************"
-				+ EntitatHelper.getEntitatActual(request));
-		ConfigHelper.ti.set(new Long(new Date().getTime()).intValue());
-		ConfigHelper.entitat.set(EntitatHelper.getEntitatActual(request));
+		EntitatDto entitatDto = EntitatHelper.getEntitatActual(request);
+		if (entitatDto != null) {
+			ConfigHelper.setEntitat(entitatDto);
+		}		
 		
 		return true;
 	}

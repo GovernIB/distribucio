@@ -53,9 +53,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"where " +
 			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents < :maxReintents " +
+			"and r.entitat = :entitat " + 
 		    "order by " +
 		    "    r.data asc")
 	List<RegistreEntity> findGuardarAnnexPendents(
+			@Param("entitat") EntitatEntity entitat, 
 			@Param("maxReintents") int maxReintents);
 
 	@Query(
@@ -65,9 +67,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    r.regla is not null " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.REGLA_PENDENT " +
 			"and r.procesIntents <= :maxReintents " +
+			"and r.entitat = :entitat " + 
 		    "order by " +
 		    "    r.data desc")
 	List<RegistreEntity> findAmbReglaPendentAplicar(
+			@Param("entitat") EntitatEntity entitat, 
 			@Param("maxReintents") int maxReintents);
 	
 	
@@ -78,6 +82,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.regla is not null and r.regla.activa = true " +
+			"and r.entitat = :entitat " + 
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"and r.procesIntents < :maxReintents " +
@@ -85,6 +90,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 		    "    r.data desc "
 		    + "group by r.regla.id")
 	List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(
+			@Param("entitat") EntitatEntity entitat,
 			@Param("currentDate") Date currentDate,
 			@Param("maxReintents") int maxReintents);
 

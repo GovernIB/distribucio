@@ -1554,20 +1554,20 @@ public class RegistreHelper {
 
 	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. */
 	@Transactional
-	public List<RegistreEntity> findGuardarAnnexPendents(int maxReintents) {
-		return 	registreRepository.findGuardarAnnexPendents(maxReintents);
+	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
+		return 	registreRepository.findGuardarAnnexPendents(entitat, maxReintents);
 	}
 
 	/** Consulta els registres pendents d'enviar al backoffice. */
 	@Transactional
-	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date, int maxReintents) {
-		return registreRepository.findAmbEstatPendentEnviarBackoffice(date, maxReintents);
+	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(EntitatEntity entitat, Date date, int maxReintents) {
+		return registreRepository.findAmbEstatPendentEnviarBackoffice(entitat, date, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
 	@Transactional
-	public List<RegistreEntity> findAmbReglaPendentAplicar(int maxReintents) {
-		return registreRepository.findAmbReglaPendentAplicar(maxReintents);
+	public List<RegistreEntity> findAmbReglaPendentAplicar(EntitatEntity entitat, int maxReintents) {
+		return registreRepository.findAmbReglaPendentAplicar(entitat, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents de tancar a l'arxiu. */

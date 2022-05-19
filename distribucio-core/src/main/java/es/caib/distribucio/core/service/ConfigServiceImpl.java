@@ -1,9 +1,7 @@
 package es.caib.distribucio.core.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -19,14 +17,12 @@ import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.entity.ConfigEntity;
-import es.caib.distribucio.core.entity.ConfigTypeEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
 import es.caib.distribucio.core.repository.ConfigGroupRepository;
 import es.caib.distribucio.core.repository.ConfigRepository;
-import es.caib.distribucio.core.repository.ConfigTypeRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 
 /**
@@ -41,8 +37,6 @@ public class ConfigServiceImpl implements ConfigService {
     private ConfigGroupRepository configGroupRepository;
     @Autowired
     private ConfigRepository configRepository;
-    @Autowired
-    private ConfigTypeRepository configTypeRepository;
     @Autowired
     private EntitatRepository entitatRepository;
     @Autowired
@@ -101,7 +95,7 @@ public class ConfigServiceImpl implements ConfigService {
 		    	}
 		    }	
 	    }
-    	//configHelper.initEntitats();
+
     }
     
     @Override
