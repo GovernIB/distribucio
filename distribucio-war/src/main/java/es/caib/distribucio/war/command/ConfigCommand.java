@@ -82,6 +82,22 @@ public class ConfigCommand {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public String getEntitatCodi() {
+		return entitatCodi;
+	}
+
+	public void setEntitatCodi(String entitatCodi) {
+		this.entitatCodi = entitatCodi;
+	}
+
+	public String getEntitatKey() {
+		return entitatKey;
+	}
+
+	public void setEntitatKey(String entitatKey) {
+		this.entitatKey = entitatKey;
+	}
     
     
 }
