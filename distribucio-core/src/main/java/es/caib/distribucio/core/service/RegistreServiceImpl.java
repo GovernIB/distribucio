@@ -71,6 +71,7 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnu
 import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -86,6 +87,8 @@ import es.caib.distribucio.core.api.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.core.api.service.ws.backoffice.Representant;
 import es.caib.distribucio.core.api.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
+import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -2074,8 +2077,61 @@ public class RegistreServiceImpl implements RegistreService {
 		} else {
 			classificacioResultat.setResultat(ClassificacioResultatEnumDto.SENSE_CANVIS);
 		}
+		
+		
+//		### Recuperar registres duplicats ###
+		List<RegistreEntity> registreRepetit = registreRepository.findRegistresByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndDataAndEsborrat(
+				registre.getEntitatCodi(),
+				registre.getLlibreCodi(),
+				RegistreTipusEnum.ENTRADA.getValor(),
+				registre.getNumero(),
+				registre.getData(),
+				0);
+
+//		### Comprovar si existeixen moviments del registre al destí seleccionat ###
+		List<ContingutMovimentEntity> contingutMoviments = contingutHelper.comprovarExistenciaAnotacioEnDesti(registreRepetit, bustia.getId());
+
+		ContingutEntity registrePerClassificar = null;
+		Map<RegistreEntity, ContingutMovimentEntity> registresAmbCanviEstat = new HashMap<RegistreEntity, ContingutMovimentEntity>();
+		RegistreEntity registreOriginalR = registre;
+		for (ContingutMovimentEntity contingutMovimentEntity : contingutMoviments) {
+			registrePerClassificar = contingutMovimentEntity.getContingut();
+			
+//			### Tornar a marcar l'anotació com a pendent si estava processada i es reb per duplicat ###
+			registre = (RegistreEntity)registrePerClassificar;
+			if (!registre.getPendent()) {
+				registresAmbCanviEstat.put(registre, contingutMovimentEntity);
+			}
+//			### Actualitzar històric i crear coa correus per cada registre a crear ###
+			updateMovimentDetail(
+					registrePerClassificar, 
+					contingutMovimentEntity);
+		}
+		
+		
 		return classificacioResultat;
 	}
+	
+	private void updateMovimentDetail(
+			ContingutEntity registrePerClassificar, 
+			ContingutMovimentEntity contingutMoviment) {
+		
+		contingutLogHelper.logMoviment(
+				registrePerClassificar,
+				LogTipusEnumDto.CLASSIFICAR,
+				contingutMoviment,
+				true);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	@Override
 	@Transactional(readOnly = true)
