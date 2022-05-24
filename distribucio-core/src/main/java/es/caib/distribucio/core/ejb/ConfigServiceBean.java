@@ -57,4 +57,9 @@ public class ConfigServiceBean implements ConfigService {
 	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat) {
 		return delegate.findAllPerEntitat(entitat);
 	}
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public List<ConfigDto> findEntitatsConfigByKey(String key) {
+		return delegate.findEntitatsConfigByKey(key);
+	}
 }

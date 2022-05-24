@@ -2,6 +2,7 @@ package es.caib.distribucio.core.helper;
 
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.ConfigGroupEntity;
@@ -97,7 +99,9 @@ public class ConfigHelper {
 	
 	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
 		if (entitatActual != null) {
-			String keyReplace = key.replace(".", "_");
+	    	String[] splitKey = key.split("es.caib.distribucio");
+	    	key = splitKey[0] + entitatActual.getCodi() + splitKey[1];
+			/*String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";
 			for (int i=0; i<splitKey.length; i++) {
@@ -109,7 +113,7 @@ public class ConfigHelper {
 					keyEntitat = keyEntitat + splitKey[i] + ".";
 				}
 			}
-			key = keyEntitat;
+			key = keyEntitat;*/
 		}
 		return key;
 	}
@@ -122,6 +126,27 @@ public class ConfigHelper {
 		} else {
 			return defaultValue;
 		}
+	}
+	
+	public void crearConfigsEntitat(String codiEntitat) {
+		
+		List<ConfigEntity> configs = configRepository.findConfigurablesAmbEntitatNull();
+		ConfigDto dto = new ConfigDto();
+		dto.setEntitatCodi(codiEntitat);
+		ConfigEntity nova;
+		List<ConfigEntity> confs = new ArrayList<>();
+		for (ConfigEntity config : configs) {
+			dto.setKey(config.getKey());
+			String key = dto.crearEntitatKey();
+			nova = new ConfigEntity();
+			nova.crearConfigNova(key, codiEntitat, config);
+			confs.add(nova);
+		}
+		configRepository.save(confs);
+	}
+	
+	public void deleteConfigEntitat(String codiEntitat) {
+		configRepository.deleteByEntitatCodi(codiEntitat);
 	}
 
     @Transactional(readOnly = true)

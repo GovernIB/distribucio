@@ -51,7 +51,8 @@ public class ConfigServiceImpl implements ConfigService {
     @Transactional
     public ConfigDto updateProperty(ConfigDto property) {
         ConfigEntity configEntity = configRepository.findOne(property.getKey());
-        configEntity.updateValue(property.getValue());
+        //configEntity.updateValue(property.getValue());
+        configEntity.updateValue(!"null".equals(property.getValue()) ? property.getValue() : null);
         pluginHelper.reloadProperties(configEntity.getGroupCode());
         pluginHelper.resetPlugins();
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
@@ -111,16 +112,7 @@ public class ConfigServiceImpl implements ConfigService {
         	configDto.setKey(cEntity.getKey());
         	configDto.setTypeCode(cEntity.getTypeCode());
         	configDto.setGroupCode(cEntity.getGroupCode());
-        	configDto.setTypeCode(cEntity.getTypeCode());
-        	
-        	/*String keyPropietatGeneral = cEntity.getKey().replace(entitat.getCodi() + ".", "");
-        	ConfigEntity propietatGeneral = configRepository.findPerKey(keyPropietatGeneral);
-        	if (propietatGeneral.getTypeCode().equals(cEntity.getTypeCode())) {
-        		configDto.setTypeCode(cEntity.getTypeCode());
-        	} else {
-        		configDto.setTypeCode(propietatGeneral.getTypeCode());
-        	}*/
-        	
+        	configDto.setTypeCode(cEntity.getTypeCode());        	
         	configDto.setValidValues(cEntity.getValidValues());
         	String valorPropietat = "";
     		String propietatGenerica = cEntity.getKey().replace(cEntity.getEntitatCodi() + ".", "");
@@ -160,6 +152,19 @@ public class ConfigServiceImpl implements ConfigService {
     public void synchronize() {
     	configHelper.synchronize();
     }
+    
+
+	@Override
+	@Transactional
+	public List<ConfigDto> findEntitatsConfigByKey(String key) {
+		
+		String[] splitKey = key.split(ConfigDto.getPrefix());
+		if (splitKey[1] == null) {
+			logger.error("Entitat config key no trobada. Key: " + key);
+			return new ArrayList<>();
+		}
+		return conversioTipusHelper.convertirList(configRepository.findLikeKeyEntitatNotNullAndConfigurable(splitKey[1]), ConfigDto.class);
+	}
 
     private void processPropertyValues(ConfigGroupDto cGroup) {
         for (ConfigDto config: cGroup.getConfigs()) {
@@ -190,4 +195,6 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
+
+
 }

@@ -47,6 +47,81 @@
 
 <script>
 
+
+let getValueRadio = elem => {
+    let inputs = $(elem).find("input");
+    if (!inputs || (inputs && inputs.length !== 2)) {
+        return null;
+    }
+    return $(inputs[0]).is(":checked") ? inputs[0].value : $(inputs[1]).is(":checked") ? inputs[1].value : null;
+};
+let removeValueRadio = elem => $(elem).find('input:radio').attr("checked", false);
+let addSpinner = id => {
+    let spinner;
+    if (!document.getElementById(id + "_spinner")) {
+        spinner = document.createElement("span");
+        spinner.setAttribute("aria-hidden", true);
+        spinner.className = "fa fa-circle-o-notch fa-spin fa-1x spinner-config";
+        spinner.setAttribute("id", id + "_spinner");
+        console.log(id);
+        let elem = document.getElementById(id + "_key");
+        elem.append(spinner);
+    }
+    return spinner;
+};
+let removeSpinner = spinner =>  {
+    if (spinner) {
+        spinner.remove();
+    }
+};
+let addSeparador = tag => $(tag).closest(".form-group").addClass("separador");
+let removeSeparador = tag => $(tag).closest(".form-group").removeClass("separador");
+let mostrarMissatge = (id, data) => {
+    let elem = document.getElementById(id);
+    elem = !elem ? document.getElementById(id + "_1") : elem;
+    let tagId = elem.getAttribute("id") + "_msg";
+    let msg = document.getElementById(tagId);
+    if (msg) {
+        let el = document.getElementById(msg);
+        if (el) {
+            el.remove();
+        }
+    }
+    let div = document.createElement("div");
+    div.setAttribute("id", tagId);
+    div.className = "flex-space-between alert-config " +  (data.status === 1 ?  "alert-config-ok" : "alert-config-error");
+    div.append(data.message);
+    let span = document.createElement("span");
+    span.className = "fa fa-times alert-config-boto";
+    div.append(span);
+    elem.closest(".col-sm-8").append(div);
+    span.addEventListener("click", () => div.remove());
+    window.setTimeout(() => div ? div.remove() : "", data.status === 1 ? 2250 : 4250);
+};
+let getInputValue = elem =>  ($(elem).is(':checkbox') ? $(elem).is(":checked") : $(elem).is("div") ? getValueRadio(elem) : $(elem).val());
+let guardarPropietat = (configKey, natejar) => {
+    let configKeyReplaced = configKey.replaceAll("_",".");
+    let spinner = addSpinner(configKey);
+    let elem = $("#" + configKey);
+    let value = !natejar ? getInputValue(elem) : null;
+    let formData = new FormData();
+    formData.append("key", configKeyReplaced);
+    formData.append("value", value);
+    $.ajax({
+        url: "/distribucio/config/update",
+        type: "post",
+        processData: false,
+        contentType: false,
+        enctype: "multipart/form-data",
+        data: formData,
+        success: data => {
+            removeSpinner(spinner);
+            afegirCssSiValueNull(elem, value);
+            mostrarMissatge(configKey + "_key", data);
+        }
+    });
+};
+
 $(document).ready(function() {
 	
 	$("#header").append("<div style='float: right;'><a href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
@@ -57,8 +132,8 @@ $(document).ready(function() {
 	    let formData = new FormData(this);
 	    let key = $('input[name=key]', this).val();
 	
-	    $(this).find('button').find('i').removeClass();
-	    $(this).find('button').find('i').addClass('fa fa-circle-o-notch fa-spin');
+	    //$(this).find('button').find('i').removeClass();
+	    //$(this).find('button').find('i').addClass('fa fa-circle-o-notch fa-spin');
 	    $(this).find('.info-block').empty();
 	    $(this).find('.form-group').removeClass('has-success');
 	    $(this).find('.form-group').removeClass('has-error');
@@ -95,10 +170,42 @@ $(document).ready(function() {
 	    });
 	});
 });
+
+<%
+pageContext.setAttribute(
+        "isRolActualAdministrador",
+        es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+%>
 </script>
 
 </head>
 <body>
+
+	<div class="text-right" data-toggle="botons-titol">
+	    <a id="btn-sync" class="btn btn-default" data-toggle="modal" data-target="#syncModal"><span class="fa fa-refresh"></span>&nbsp;Sincronitzar amb JBoss</a>
+		<c:if test="${isRolActualAdministrador}">
+        <a class="btn btn-default" href="<c:url value="/entitat"/>" data-datatable-id="permisos"><span class="fa fa-reply"></span>&nbsp;<spring:message code="entitat.permis.list.boto.tornar"/></a>
+    </c:if>
+	</div>
+	<div id="syncModal" class="modal fade" role="dialog">
+	    <div class="modal-dialog">
+	
+	        <!-- Modal content-->
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal">&times;</button>
+	                <h4 class="modal-title">Sincronitzant propietats</h4>
+	            </div>
+	            <div id="syncModal-body" class="modal-body">
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-default" data-dismiss="modal">Tanca</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+
 
     <div class="row">
         <div class="col-md-3">
@@ -114,7 +221,8 @@ $(document).ready(function() {
                 <c:set var="group" value="${group}" scope="request"/>
                 <c:set var="level" value="0" scope="request"/>
                 <div id="group-${group.key}" class="tab-pane fade ${status_group.first ? 'active in': ''}">
-                    <jsp:include page="configGroup.jsp"/>
+                    
+                    <jsp:include page="configEntitatGroup.jsp"/>
                 </div>
             </c:forEach>
             </div>

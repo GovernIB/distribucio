@@ -45,8 +45,9 @@ public class ConfigEntity {
     @Column(name = "GROUP_CODE", length = 2048, nullable = true)
     private String groupCode;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE_CODE", insertable = false, updatable = false)
+//    @JoinColumn(name = "TYPE_CODE", updatable = false)
     @ForeignKey(name = "NOT_CONFIG_TYPE_FK")
     private ConfigTypeEntity type;
     
@@ -75,6 +76,17 @@ public class ConfigEntity {
      *
      * @return El llistat de possibles valors que pot prendre la propietat
      */
+    public void crearConfigNova(String key, String entitatCodi, ConfigEntity entitat) {
+    	this.key = key;
+    	this.entitatCodi = entitatCodi;
+    	this.value = null;
+    	this.description = entitat.getDescription();
+    	this.jbossProperty = entitat.isJbossProperty();
+    	this.groupCode = entitat.getGroupCode();
+    	this.type = entitat.getType();
+    	this.configurable = entitat.isConfigurable();
+    }
+    
     public List<String> getValidValues() {
        return type.getValidValues();
     }

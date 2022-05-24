@@ -1,5 +1,6 @@
 package es.caib.distribucio.war.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +20,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.base.Strings;
+
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.entity.EntitatEntity;
+//import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.war.command.ConfigCommand;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.JsonResponse;
+import es.caib.distribucio.war.helper.RolHelper;
+
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controlador per a la gestió de la configuració de l'aplicació.
@@ -36,6 +44,7 @@ import es.caib.distribucio.war.helper.JsonResponse;
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Slf4j
 @Controller
 @RequestMapping("/config")
 public class ConfigController extends BaseUserController{
@@ -45,18 +54,32 @@ public class ConfigController extends BaseUserController{
     private EntitatRepository entitatRepository;
     @Autowired
     private EntitatService entitatService;
+/*    @Autowired
+    private ConversioTipusHelper conversioTypusHelper;*/
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(
             HttpServletRequest request,
             Model model) {
         List<ConfigGroupDto> configGroups = configService.findAll();
-        List<EntitatEntity> entitats = entitatRepository.findAll();
-        model.addAttribute("config_groups", configGroups);
-        model.addAttribute("entitats", entitats);
-        for (ConfigGroupDto cGroup: configGroups) {
-            fillFormsModel(cGroup, model);
+        List<EntitatEntity> llistatEntitats = entitatRepository.findAll();
+        List<EntitatDto> entitats = new ArrayList<>();
+        if (RolHelper.isRolActualAdministrador(request)) {
+        	for (EntitatEntity entitatEntity : llistatEntitats) {
+        		/*EntitatDto entitatDto = conversioTypusHelper.convertir(
+        				entitatEntity, 
+        				EntitatDto.class);*/
+        		EntitatDto entitatDto = entitatService.findById(entitatEntity.getId());
+        		entitats.add(entitatDto);
+        	}
         }
+        model.addAttribute("config_groups", configGroups);
+        //model.addAttribute("entitats", entitats);
+        for (ConfigGroupDto cGroup: configGroups) {
+            //fillFormsModel(cGroup, model);
+            fillFormsModel(cGroup, model, entitats);
+        }
+        
         return "config";
     }
 
@@ -76,7 +99,7 @@ public class ConfigController extends BaseUserController{
         	}
         	return new JsonResponse(true, getMessage(request, "config.controller.edit.error") + ": " + errors.toString());
         }
-
+              
         try {
         	configService.updateProperty(ConfigCommand.asDto(configCommand));
 			return new JsonResponse(configCommand.getKey());
@@ -98,7 +121,8 @@ public class ConfigController extends BaseUserController{
         model.addAttribute("config_groups", configGroups);
         model.addAttribute("entitatDto", entitatDto);
         for (ConfigGroupDto cGroup: configGroups) {
-            fillFormsModelEntitat(cGroup, model, entitatDto);
+            //fillFormsModelEntitat(cGroup, model, entitatDto);
+        	fillFormsModelEntitat(cGroup, model, entitatDto);
         }
         
         List<ConfigDto> llistatPropietats = configService.findAllPerEntitat(entitatDto);
@@ -116,6 +140,23 @@ public class ConfigController extends BaseUserController{
     	
     	return "configEntitat";
     }    
+    
+    
+    @ResponseBody
+    @RequestMapping(value = "/entitat/{key}", method = RequestMethod.GET)
+    public List<ConfigDto> getEntitatConfigByKey(
+    		HttpServletRequest request, 
+    		@PathVariable String key, 
+    		Model model) {
+    	
+    	try {
+    		return configService.findEntitatsConfigByKey(key.replace("-", "."));
+    	}catch (Exception ex) {
+    		logger.error("Error obtinguent les configuracions d'entitats per la key " + key, ex);
+    		return new ArrayList<>();
+    	}
+    	
+    }
     
     
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
@@ -142,7 +183,7 @@ public class ConfigController extends BaseUserController{
     }
     
 
-    private void fillFormsModel(ConfigGroupDto cGroup, Model model){
+    /*private void fillFormsModel(ConfigGroupDto cGroup, Model model){
         for (ConfigDto config: cGroup.getConfigs()) {
             model.addAttribute("config_" + config.getKey().replace('.', '_'),
                     ConfigCommand.asCommand(config));
@@ -152,6 +193,39 @@ public class ConfigController extends BaseUserController{
         }
         for (ConfigGroupDto child : cGroup.getInnerConfigs()){
             fillFormsModel(child, model);
+        }
+    }*/
+    
+
+
+    private void fillFormsModel(ConfigGroupDto cGroup, Model model, List<EntitatDto> entitats){
+    	/*String key = null;
+    	List<ConfigDto> confs = new ArrayList<>();
+        for (ConfigDto config: cGroup.getConfigs()) {
+        	if (!Strings.isNullOrEmpty(config.getEntitatCodi())) {
+        		continue;
+        	}
+            model.addAttribute("config_" + config.getKey().replace('.', '_'));
+            for (EntitatDto entitat : entitats) {
+                key = config.addEntitatKey(entitat);
+//                model.addAttribute("entitat_config_" + key.replace('.', '_'), ConfigCommand.builder().key(config.getKey()).value(config.getValue()).build());
+            }
+            confs.add(config);
+        }
+        cGroup.setConfigs(confs);*/
+    	for (ConfigDto config: cGroup.getConfigs()) {
+            model.addAttribute("config_" + config.getKey().replace('.', '_'),
+                    ConfigCommand.asCommand(config));
+            for (EntitatDto entitat : entitats) {
+            	String  keyEntitat = config.addEntitatKey(entitat);
+            	model.addAttribute("entitat_config_" + keyEntitat.replace('.', '_'));
+            }
+        }
+        if (cGroup.getInnerConfigs() == null || cGroup.getInnerConfigs().isEmpty()){
+            return;
+        }
+        for (ConfigGroupDto child : cGroup.getInnerConfigs()){
+            fillFormsModel(child, model, entitats);
         }
     }
     

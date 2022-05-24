@@ -13,7 +13,7 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 
 @Configuration
 @EnableSwagger
-@ComponentScan(basePackages = "es.caib.notib.war.rest")
+@ComponentScan(basePackages = "es.caib.distribucio.war.rest")
 public class SwaggerConfig {
 
 	private SpringSwaggerConfig springSwaggerConfig;
