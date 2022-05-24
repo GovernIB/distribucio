@@ -278,7 +278,7 @@ public class ContingutController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				registreId);
@@ -286,7 +286,8 @@ public class ContingutController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok");
+					"contingut.admin.controller.registre.reintentat.ok", 
+					new Object[] {registreReenviat.getBackCodi()});
 		} else {
 			MissatgesHelper.error(
 					request,

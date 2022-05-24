@@ -1331,6 +1331,7 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
 		boolean processatOk = registreService.reintentarProcessamentUser(
 				entitatActual.getId(),
 				registreId);
@@ -1338,7 +1339,8 @@ public class RegistreUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok");
+					"contingut.admin.controller.registre.reintentat.ok", 
+					new Object[] {registreReenviat.getBackCodi()});
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -1355,13 +1357,14 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);	
+		boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 					registreId);
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok",
-								null));
+								"contingut.admin.controller.registre.reintentat.ok", 
+								new Object[] {registreReenviat.getBackCodi()}));
 			} else {
 				MissatgesHelper.error(request,
 						getMessage(request,

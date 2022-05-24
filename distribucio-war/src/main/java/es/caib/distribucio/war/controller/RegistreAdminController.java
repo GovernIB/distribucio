@@ -126,7 +126,6 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-				
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
@@ -351,6 +350,7 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
 		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
 				registreId);
@@ -359,8 +359,8 @@ public class RegistreAdminController extends BaseAdminController {
 					request, 
 					getMessage(
 							request, 
-							"contingut.admin.controller.registre.reintentat.ok",
-							null));
+							"contingut.admin.controller.registre.reintentat.ok", 
+							new Object[] {registreReenviat.getBackCodi()}));
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -405,13 +405,14 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
 			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 					registreId);
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok",
-								null));
+								"contingut.admin.controller.registre.reintentat.ok", 
+								new Object[] {registreReenviat.getBackCodi()}));
 			} else {
 				MissatgesHelper.error(request,
 						getMessage(request,
