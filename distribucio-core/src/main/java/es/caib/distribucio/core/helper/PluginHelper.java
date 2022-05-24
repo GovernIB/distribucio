@@ -608,14 +608,15 @@ public class PluginHelper {
 		}
 	}
 	
-	public FitxerDto arxiuDocumentImprimible(String fitxerArxiuUuid) {
+	public FitxerDto arxiuDocumentImprimible(String fitxerArxiuUuid, String titol) {
 		
 		FitxerDto fitxerDto = new FitxerDto();
 		
 		try {
 			DocumentContingut documentImprimible = getDistribucioPlugin().documentImprimible(fitxerArxiuUuid);
 			if (documentImprimible != null) {
-				fitxerDto.setNom(documentImprimible.getArxiuNom());
+				//fitxerDto.setNom(documentImprimible.getArxiuNom());
+				fitxerDto.setNom(titol);
 				fitxerDto.setContentType(documentImprimible.getTipusMime());
 				fitxerDto.setContingut(documentImprimible.getContingut());
 				fitxerDto.setTamany(documentImprimible.getContingut().length);

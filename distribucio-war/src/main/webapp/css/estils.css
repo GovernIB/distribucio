@@ -190,3 +190,71 @@ table.dataTable tr.datatable-dades-carregant div {
 .avisCardError button{
 	color: #721c24CC;
 }
+
+
+.entitats-config {
+	background-color: #f2f2f2;
+	border-radius:4px;
+	display: none;
+}
+
+.margin-bottom {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.entitat-no-configurada {
+	background: pink;
+	outline: 3px solid pink;
+}
+
+.separador {
+	border-bottom: 1px solid #DDDDDD;
+}
+
+.padding-bottom-4 {
+	padding-bottom: 4px;
+}
+
+.text-gray {
+	color: #c0c0c7;
+}
+
+.no-display {
+	display: none;
+}
+
+.padding-top-bottom {
+	padding-top: 10px;
+	padding-bottom:10px;
+}
+
+.padding-top-7 {
+	padding-top: 7px;
+}
+
+.label-config {
+	text-align: right;
+	padding-top: 7px !important;
+}
+
+.no-side-padding {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+.d-none {
+	display: none;
+}
+
+.d-block {
+	display: block;
+}
+
+.d-flex {
+	display: flex;
+}
+
+.ml-1 {
+	margin-left: 0.3rem
+}

@@ -1,5 +1,6 @@
 package es.caib.distribucio.core.ejb;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -10,6 +11,7 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 
 /**
@@ -49,5 +51,15 @@ public class ConfigServiceBean implements ConfigService {
 	@RolesAllowed({"DIS_SUPER"})
 	public ConfigDto findByKey(String key) {
 		return delegate.findByKey(key);
+	}
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat) {
+		return delegate.findAllPerEntitat(entitat);
+	}
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public List<ConfigDto> findEntitatsConfigByKey(String key) {
+		return delegate.findEntitatsConfigByKey(key);
 	}
 }

@@ -76,6 +76,16 @@ public class EntitatController extends BaseController {
 			model.addAttribute(new EntitatCommand());
 		return "entitatForm";
 	}
+	
+	/*@RequestMapping(value = "/{entitatId}/configurar", method = RequestMethod.GET)
+	public String configEntitat(
+			HttpServletRequest request, 
+			@PathVariable Long entitatId, 
+			Model model) {
+		
+		return "configPropEntitat";
+	}*/
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,

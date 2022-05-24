@@ -29,20 +29,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
+import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
 import es.caib.distribucio.core.helper.HistoricHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.WorkerThread;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
+import es.caib.distribucio.core.repository.EntitatRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -70,6 +74,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private HistoricHelper historicHelper;
 	@Autowired
 	private MonitorIntegracioService monitorIntegracioService;
+	@Autowired
+	private EntitatRepository entitatRepository;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -87,34 +95,37 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
-			int maxReintents = getGuardarAnnexosMaxReintentsProperty();
-			int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
-			
-			List<RegistreEntity> pendents;
-			// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
-			synchronized (SemaphoreDto.getSemaphore()) {
-				pendents = registreHelper.findGuardarAnnexPendents(maxReintents);
-			}
-			if (pendents != null && !pendents.isEmpty()) {
+			for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+				int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
+				int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
 				
-				long startTime = new Date().getTime();
-				ExecutorService executor = Executors.newFixedThreadPool(maxThreadsParallel);
-				for (RegistreEntity pendent : pendents) {
-
-					Runnable worker = new WorkerThread(pendent.getId(), registreHelper);
-					executor.execute(worker);
+				List<RegistreEntity> pendents;
+				// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
+				synchronized (SemaphoreDto.getSemaphore()) {
+					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents);
 				}
-				
-		        executor.shutdown();
-		        while (!executor.isTerminated()) {
-		        	try {
-		        		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
-		        	} catch (InterruptedException e) {}
-		        }
-		        long stopTime = new Date().getTime();
-				logger.trace("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");
-				
+				if (pendents != null && !pendents.isEmpty()) {
+					
+					long startTime = new Date().getTime();
+					ExecutorService executor = Executors.newFixedThreadPool(maxThreadsParallel);
+					for (RegistreEntity pendent : pendents) {
+
+						Runnable worker = new WorkerThread(pendent.getId(), registreHelper);
+						executor.execute(worker);
+					}
+					
+			        executor.shutdown();
+			        while (!executor.isTerminated()) {
+			        	try {
+			        		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+			        	} catch (InterruptedException e) {}
+			        }
+			        long stopTime = new Date().getTime();
+					logger.trace("Finished processing annotacions with " + maxThreadsParallel + " threads. " + pendents.size() + " annotacions processed in " + (stopTime - startTime) + "ms");
+					
+				}				
 			}
+			
 
 		}
 	}
@@ -153,10 +164,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Scheduled(fixedDelayString = "60000")
 	public void addNewEntryToHistogram() {
 
-		int maxReintents = getGuardarAnnexosMaxReintentsProperty();
-		int pendentsArxiu = registreHelper.findGuardarAnnexPendents(maxReintents).size();
-		
-		historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+			int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
+			int pendentsArxiu = registreHelper.findGuardarAnnexPendents(entitat, maxReintents).size();
+			
+			historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
+		}		
 
 	}
 
@@ -168,29 +181,32 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		
-		int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty();
-		// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
-		List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(new Date(), maxReintents);
-		if (pendents != null && !pendents.isEmpty()) {
-			
-			Map<ReglaEntity, List<Long>> pendentsByRegla = new HashMap<ReglaEntity, List<Long>>();
-			for (RegistreEntity pendent : pendents) {
-				if (!pendentsByRegla.containsKey(pendent.getRegla())) {
-					pendentsByRegla.put(pendent.getRegla(), new ArrayList<Long>());
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+			int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+		
+			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
+			List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(entitat, new Date(), maxReintents);
+			if (pendents != null && !pendents.isEmpty()) {
+				
+				Map<ReglaEntity, List<Long>> pendentsByRegla = new HashMap<ReglaEntity, List<Long>>();
+				for (RegistreEntity pendent : pendents) {
+					if (!pendentsByRegla.containsKey(pendent.getRegla())) {
+						pendentsByRegla.put(pendent.getRegla(), new ArrayList<Long>());
+					}
+					pendentsByRegla.get(pendent.getRegla()).add(pendent.getId());
 				}
-				pendentsByRegla.get(pendent.getRegla()).add(pendent.getId());
-			}
-			
-			for (ReglaEntity regla : pendentsByRegla.keySet()) {
-				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
-				Timer.Context context = timer.time();
-				List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
-				logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom());
-				Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
-				if (t != null) {
-					logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + ": " + t.getMessage());
+				
+				for (ReglaEntity regla : pendentsByRegla.keySet()) {
+					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
+					Timer.Context context = timer.time();
+					List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
+					logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom());
+					Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
+					if (t != null) {
+						logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + ": " + t.getMessage());
+					}
+					context.stop();
 				}
-				context.stop();
 			}
 		}
 		long stopTime = new Date().getTime();
@@ -204,25 +220,27 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 		logger.trace("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
 		
-		
-		int maxReintents = getAplicarReglesMaxReintentsProperty();
-		List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(maxReintents);
-		
-		if (pendents != null && !pendents.isEmpty()) {
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {			
+			int maxReintents = getAplicarReglesMaxReintentsProperty(entitat);
+			List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(entitat, maxReintents);
 			
-			logger.trace("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
+			if (pendents != null && !pendents.isEmpty()) {
+				
+				logger.trace("Aplicant regles a " + pendents.size() + " anotacions de registre pendents");
 
-			for (RegistreEntity pendent : pendents) {
-				
-				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "aplicarReglesPendents"));
-				Timer.Context context = timer.time();
-				
-				registreHelper.processarAnotacioPendentRegla(pendent.getId());
-				
-				context.stop();
+				for (RegistreEntity pendent : pendents) {
+					
+					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "aplicarReglesPendents"));
+					Timer.Context context = timer.time();
+					
+					registreHelper.processarAnotacioPendentRegla(pendent.getId());
+					
+					context.stop();
+				}
+			} else {
+				logger.trace("No hi ha anotacions de registre amb regles pendents de processar");
 			}
-		} else {
-			logger.trace("No hi ha anotacions de registre amb regles pendents de processar");
+			
 		}
 		
 		
@@ -399,8 +417,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		contingutMovimentEmailRepository.delete(moviments);
 	}
 
-	private int getGuardarAnnexosMaxReintentsProperty() {
-		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+	private int getGuardarAnnexosMaxReintentsProperty(EntitatEntity entitat) {
+		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -408,8 +427,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 	
-	private int getEnviarIdsAnotacionsMaxReintentsProperty() {
-		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+	private int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
+		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -417,8 +437,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 
-	private int getAplicarReglesMaxReintentsProperty() {
-		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+	private int getAplicarReglesMaxReintentsProperty(EntitatEntity entitat) {
+		
+		/*String maxReintents = configHelper.getConfig("es.caib.distribucio." + entitat.getCodi() + ".tasca.aplicar.regles.max.reintents");
+		if (maxReintents == null) {
+			maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+		}*/
+		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {

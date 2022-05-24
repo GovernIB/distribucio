@@ -35,4 +35,10 @@ public interface UsuariBustiaFavoritRepository extends JpaRepository<UsuariBusti
 			@Param("usuari") UsuariEntity usuari);
 	
 	public List<UsuariBustiaFavoritEntity> findByUsuari(UsuariEntity usuari);
+	
+	
+	@Query("from UsuariBustiaFavoritEntity ub " + 
+			"where ub.bustia.id = :bustia")
+	public List<UsuariBustiaFavoritEntity> findByBustia (
+			@Param("bustia") long bustia);
 }

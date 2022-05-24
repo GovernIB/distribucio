@@ -54,10 +54,16 @@
                         <span class="help-block">${config.key}</span>
                         <span class="info-block"></span>
                     </div>
-                    <div class="col-sm-1">
+                    <div class="/*col-sm-1*/ d-flex">
                         <button class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
                             <i class="fa fa-edit"></i>
                         </button>
+                        <c:if test="${!config.jbossProperty}">
+                        <!-- <a href="/distribucio/config/propietatsEntitat?idEntitat=${idEntitat}" class="btn btn-primary"<c:if test="${config.jbossProperty}"> disabled</c:if> title="Anar a les propietats configurables de l'entitat '${idEntitat}' ">
+                            <i class="fa fa-edit"></i>
+                        </a> -->                        
+                        
+                        </c:if>
                     </div>
                 </div>
             </form:form>

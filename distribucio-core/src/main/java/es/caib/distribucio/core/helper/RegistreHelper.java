@@ -1555,20 +1555,20 @@ public class RegistreHelper {
 
 	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. */
 	@Transactional
-	public List<RegistreEntity> findGuardarAnnexPendents(int maxReintents) {
-		return 	registreRepository.findGuardarAnnexPendents(maxReintents);
+	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
+		return 	registreRepository.findGuardarAnnexPendents(entitat, maxReintents);
 	}
 
 	/** Consulta els registres pendents d'enviar al backoffice ordenats per regla. */
 	@Transactional
-	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(Date date, int maxReintents) {
-		return registreRepository.findAmbEstatPendentEnviarBackoffice(date, maxReintents);
+	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(EntitatEntity entitat, Date date, int maxReintents) {
+		return registreRepository.findAmbEstatPendentEnviarBackoffice(entitat, date, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
 	@Transactional
-	public List<RegistreEntity> findAmbReglaPendentAplicar(int maxReintents) {
-		return registreRepository.findAmbReglaPendentAplicar(maxReintents);
+	public List<RegistreEntity> findAmbReglaPendentAplicar(EntitatEntity entitat, int maxReintents) {
+		return registreRepository.findAmbReglaPendentAplicar(entitat, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents de tancar a l'arxiu. */
@@ -1580,13 +1580,29 @@ public class RegistreHelper {
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);		
+		String titol = registreAnnexEntity.getFitxerNom().replace(".", "_imprimible.");
+		
 		FitxerDto fitxerDto = new FitxerDto();
 		
 		// if annex is already created in arxiu take content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			
 			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
-				fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid());
+				try {
+					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+				}catch (Exception e) {
+					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+					if (document != null) {
+						DocumentContingut documentContingut = document.getContingut();
+						if (documentContingut != null) {
+							fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+							fitxerDto.setContentType(documentContingut.getTipusMime());
+							fitxerDto.setContingut(documentContingut.getContingut());
+							fitxerDto.setTamany(documentContingut.getContingut().length);
+						}
+					}					
+				}
+				
 			} else {
 				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
 				if (document != null) {

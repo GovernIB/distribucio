@@ -23,6 +23,7 @@ import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
+import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
@@ -142,8 +143,16 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaEntity reglaEntity = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaDto.getId());
-
+		BackofficeEntity backofficeDestiId;
+		if (reglaDto.getTipus().equals(ReglaTipusEnumDto.BUSTIA) || 
+			reglaDto.getTipus().equals(ReglaTipusEnumDto.UNITAT) ) {
+			backofficeDestiId = null;
+		}else {
+			backofficeDestiId = backofficeRepository.findOne(reglaDto.getBackofficeDestiId());
+		}
+		System.out.println("REGLADTO: " + backofficeDestiId);
 		reglaEntity.update(
+				backofficeDestiId, 
 				reglaDto.getNom(),
 				reglaDto.getDescripcio(),
 				reglaDto.getTipus(),

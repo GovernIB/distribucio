@@ -47,8 +47,12 @@ public class ConfigEntity {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE_CODE", insertable = false, updatable = false)
+//    @JoinColumn(name = "TYPE_CODE", updatable = false)
     @ForeignKey(name = "NOT_CONFIG_TYPE_FK")
     private ConfigTypeEntity type;
+    
+    @Column(name="TYPE_CODE", length = 128, nullable = true)
+    private String typeCode;
 
     @Column(name = "POSITION")
     private int position;
@@ -60,12 +64,29 @@ public class ConfigEntity {
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedDate;
+    
+    @Column(name = "ENTITAT_CODI")
+    private String entitatCodi;
+    
+    @Column(name = "CONFIGURABLE")
+    private boolean configurable;
 
     /**
      * Per a mapejar el Dto de la vista.
      *
      * @return El llistat de possibles valors que pot prendre la propietat
      */
+    public void crearConfigNova(String key, String entitatCodi, ConfigEntity entitat) {
+    	this.key = key;
+    	this.entitatCodi = entitatCodi;
+    	this.value = null;
+    	this.description = entitat.getDescription();
+    	this.jbossProperty = entitat.isJbossProperty();
+    	this.groupCode = entitat.getGroupCode();
+    	this.type = entitat.getType();
+    	this.configurable = entitat.isConfigurable();
+    }
+    
     public List<String> getValidValues() {
        return type.getValidValues();
     }
@@ -99,6 +120,53 @@ public class ConfigEntity {
 	}
 
 	public ConfigEntity() {
+	}
+	
+	public String getEntitatCodi() {
+		return entitatCodi;
+	}
+	public void setEntitatCodi(String entitatCodi) {
+		this.entitatCodi = entitatCodi;
+	}
+	
+	
+	
+	
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public void setJbossProperty(boolean jbossProperty) {
+		this.jbossProperty = jbossProperty;
+	}
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
+	public void setType(ConfigTypeEntity type) {
+		this.type = type;
+	}
+	public void setPosition(int position) {
+		this.position = position;
+	}
+	public void setLastModifiedBy(UsuariEntity lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public boolean isConfigurable() {
+		return configurable;
+	}
+	public void setConfigurable(boolean configurable) {
+		this.configurable = configurable;
+	}
+	public void setTypeCode(String typeCode) {
+		this.typeCode = typeCode;
 	}
 	
     

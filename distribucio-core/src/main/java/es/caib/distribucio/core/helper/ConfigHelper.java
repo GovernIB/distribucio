@@ -2,6 +2,7 @@ package es.caib.distribucio.core.helper;
 
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.ConfigDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.ConfigGroupEntity;
 import es.caib.distribucio.core.repository.ConfigGroupRepository;
@@ -31,7 +34,19 @@ public class ConfigHelper {
     private PluginHelper pluginHelper;
     
     
-    @PostConstruct
+    private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
+    
+    public static ThreadLocal<EntitatDto> getEntitat() {
+		return entitat;
+	}
+
+
+	public static void setEntitat(EntitatDto entitat) {
+		ConfigHelper.entitat.set(entitat);
+	}
+
+
+	@PostConstruct
     public void firstSincronization() {
 		if (configRepository.countNotNullValues() == 0) {
 			synchronize();
@@ -57,14 +72,50 @@ public class ConfigHelper {
     }
     
     @Transactional(readOnly = true)
-    public String getConfig(String key)  {
+    public String getConfig(EntitatDto entitatActual, String key) {
+
+		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+    	
         ConfigEntity configEntity = configRepository.findOne(key);
+		logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {
 			return getJBossProperty(key);
 		}
+    }
+    
+    @Transactional(readOnly = true)
+    public String getConfig(String key)  {
+    	
+		EntitatDto entitatActual = ConfigHelper.entitat.get();
+		
+		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+		
+		return this.getConfig(entitatActual, key);
+		
+	}
+	
+	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
+		if (entitatActual != null) {
+	    	String[] splitKey = key.split("es.caib.distribucio");
+	    	key = splitKey[0] + entitatActual.getCodi() + splitKey[1];
+			/*String keyReplace = key.replace(".", "_");
+			String[] splitKey = keyReplace.split("_");
+			String keyEntitat = "";
+			for (int i=0; i<splitKey.length; i++) {
+				if (i == (splitKey.length - 1)) {
+					keyEntitat = keyEntitat + splitKey[i];
+				}else if (i == 2){
+					keyEntitat = keyEntitat + splitKey[i] + "." + entitatActual.getCodi() + ".";
+				}else {				
+					keyEntitat = keyEntitat + splitKey[i] + ".";
+				}
+			}
+			key = keyEntitat;*/
+		}
+		return key;
 	}
     
 	@Transactional(readOnly = true)
@@ -75,6 +126,27 @@ public class ConfigHelper {
 		} else {
 			return defaultValue;
 		}
+	}
+	
+	public void crearConfigsEntitat(String codiEntitat) {
+		
+		List<ConfigEntity> configs = configRepository.findConfigurablesAmbEntitatNull();
+		ConfigDto dto = new ConfigDto();
+		dto.setEntitatCodi(codiEntitat);
+		ConfigEntity nova;
+		List<ConfigEntity> confs = new ArrayList<>();
+		for (ConfigEntity config : configs) {
+			dto.setKey(config.getKey());
+			String key = dto.crearEntitatKey();
+			nova = new ConfigEntity();
+			nova.crearConfigNova(key, codiEntitat, config);
+			confs.add(nova);
+		}
+		configRepository.save(confs);
+	}
+	
+	public void deleteConfigEntitat(String codiEntitat) {
+		configRepository.deleteByEntitatCodi(codiEntitat);
 	}
 
     @Transactional(readOnly = true)
@@ -263,4 +335,5 @@ public class ConfigHelper {
         
     	private static final Logger logger = LoggerFactory.getLogger(JBossPropertiesHelper.class);
     }
+    
 }
