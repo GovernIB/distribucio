@@ -182,7 +182,6 @@ pageContext.setAttribute(
 <body>
 
 	<div class="text-right" data-toggle="botons-titol">
-	    <a id="btn-sync" class="btn btn-default" data-toggle="modal" data-target="#syncModal"><span class="fa fa-refresh"></span>&nbsp;Sincronitzar amb JBoss</a>
 		<c:if test="${isRolActualAdministrador}">
         <a class="btn btn-default" href="<c:url value="/entitat"/>" data-datatable-id="permisos"><span class="fa fa-reply"></span>&nbsp;<spring:message code="entitat.permis.list.boto.tornar"/></a>
     </c:if>
