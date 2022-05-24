@@ -375,32 +375,42 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		try {
-			List<String> registres = reglaService.aplicarManualment(
-				entitatActual.getId(),
-				reglaId);
-			StringBuilder numeros = new StringBuilder();
-			for (int i = 0; i < registres.size(); i ++) {
-				numeros.append(registres.get(i));
-				if (i < registres.size() - 1) {
-					numeros.append(", ");
+		ReglaDto reglaPerAplicar = reglaService.findOne(entitatActual.getId(), reglaId);
+		if (reglaPerAplicar.isActiva()) {
+			try {
+				List<String> registres = reglaService.aplicarManualment(
+					entitatActual.getId(),
+					reglaId);
+				StringBuilder numeros = new StringBuilder();
+				for (int i = 0; i < registres.size(); i ++) {
+					numeros.append(registres.get(i));
+					if (i < registres.size() - 1) {
+						numeros.append(", ");
+					}
 				}
+				
+				return getAjaxControllerReturnValueSuccess(
+						request,
+						"redirect:../../regla",
+						"regla.controller.aplicada.ok", new Object[] {registres.size(), numeros});
+				
+			} catch(Exception e) {
+				
+				String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {e.getMessage()});
+				logger.error(errMsg, e);
+				return getAjaxControllerReturnValueError(
+						request,
+						"redirect:../../regla",
+						"regla.controller.aplicada.error", new Object[] {e.getMessage()});			
 			}
-			
-			return getAjaxControllerReturnValueSuccess(
-					request,
-					"redirect:../../regla",
-					"regla.controller.aplicada.ok", new Object[] {registres.size(), numeros});
-			
-		} catch(Exception e) {
-			
-			String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {e.getMessage()});
-			logger.error(errMsg, e);
+		}else {
+			String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {"No es pot executar la regla perquè no està activa."});
 			return getAjaxControllerReturnValueError(
 					request,
 					"redirect:../../regla",
-					"regla.controller.aplicada.error", new Object[] {e.getMessage()});			
+					"regla.controller.aplicada.error", new Object[] {errMsg});
 		}
+		
 	}
 
 	
