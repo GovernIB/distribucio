@@ -19,15 +19,6 @@ public class ConfigDto {
     private List<String> validValues;
     
     private static final String prefix = "es.caib.distribucio";    
-    
-    private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
-    
-    public static ThreadLocal<EntitatDto> getEntitat() {
-		return entitat;
-	}
-	public static void setEntitat(EntitatDto entitat) {
-		ConfigDto.entitat.set(entitat);
-	}	
 	
     public String addEntitatKey(EntitatDto entitat) {
     	String[] splitKey = key.split(prefix);

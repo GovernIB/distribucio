@@ -23,6 +23,7 @@ import es.caib.distribucio.core.api.dto.PermisDto;
 import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.CacheHelper;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntitatHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
@@ -401,6 +402,14 @@ public class EntitatServiceImpl implements EntitatService {
 				id,
 				EntitatEntity.class,
 				permisId);
+	}
+	
+	
+	
+
+	@Override
+	public void setConfigEntitat(EntitatDto entitatDto) {
+		ConfigHelper.setEntitat(entitatDto);		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(EntitatServiceImpl.class);
