@@ -77,7 +77,7 @@ public class ConfigHelper {
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
     	
         ConfigEntity configEntity = configRepository.findOne(key);
-		logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
+		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
 		if (configEntity != null) {
 			return getConfig(configEntity);

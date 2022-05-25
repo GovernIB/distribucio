@@ -18,7 +18,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.google.common.base.Strings;
 
@@ -27,6 +29,7 @@ import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 //import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.repository.EntitatRepository;
@@ -54,6 +57,8 @@ public class ConfigController extends BaseUserController{
     private EntitatRepository entitatRepository;
     @Autowired
     private EntitatService entitatService;
+    @Autowired
+    private SegonPlaService segonPlaService;
 /*    @Autowired
     private ConversioTipusHelper conversioTypusHelper;*/
 
@@ -182,37 +187,31 @@ public class ConfigController extends BaseUserController{
 
     }
     
-
-    /*private void fillFormsModel(ConfigGroupDto cGroup, Model model){
-        for (ConfigDto config: cGroup.getConfigs()) {
-            model.addAttribute("config_" + config.getKey().replace('.', '_'),
-                    ConfigCommand.asCommand(config));
-        }
-        if (cGroup.getInnerConfigs() == null || cGroup.getInnerConfigs().isEmpty()){
-            return;
-        }
-        for (ConfigGroupDto child : cGroup.getInnerConfigs()){
-            fillFormsModel(child, model);
-        }
-    }*/
+    
+    @RequestMapping(value="/guardarAnnexesPendents", method = RequestMethod.GET)
+    public String guardarAnnexes(
+    		HttpServletRequest request,
+            Model model, 
+            @RequestParam("currentPage") String paginaActual) {
+    	
+    	try {
+    		segonPlaService.guardarAnotacionsPendentsEnArxiu();
+    		return getAjaxControllerReturnValueSuccess(
+    				request,
+    				"redirect:../" + paginaActual,
+    				"anotacions.pendents.arxiu.guardar.ok");
+    	}catch (Exception e) {
+    		return getAjaxControllerReturnValueError(
+    				request,
+    				"redirect:../" + paginaActual,
+    				"anotacions.pendents.arxiu.guardar.error", 
+    				new Object[] {e.getMessage()});
+    	}
+    }
     
 
 
     private void fillFormsModel(ConfigGroupDto cGroup, Model model, List<EntitatDto> entitats){
-    	/*String key = null;
-    	List<ConfigDto> confs = new ArrayList<>();
-        for (ConfigDto config: cGroup.getConfigs()) {
-        	if (!Strings.isNullOrEmpty(config.getEntitatCodi())) {
-        		continue;
-        	}
-            model.addAttribute("config_" + config.getKey().replace('.', '_'));
-            for (EntitatDto entitat : entitats) {
-                key = config.addEntitatKey(entitat);
-//                model.addAttribute("entitat_config_" + key.replace('.', '_'), ConfigCommand.builder().key(config.getKey()).value(config.getValue()).build());
-            }
-            confs.add(config);
-        }
-        cGroup.setConfigs(confs);*/
     	for (ConfigDto config: cGroup.getConfigs()) {
             model.addAttribute("config_" + config.getKey().replace('.', '_'),
                     ConfigCommand.asCommand(config));
