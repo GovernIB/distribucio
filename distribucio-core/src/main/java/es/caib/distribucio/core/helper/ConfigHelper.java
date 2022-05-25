@@ -34,7 +34,7 @@ public class ConfigHelper {
     private PluginHelper pluginHelper;
     
     
-    private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
+   /* private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
     
     public static ThreadLocal<EntitatDto> getEntitat() {
 		return entitat;
@@ -43,7 +43,7 @@ public class ConfigHelper {
 
 	public static void setEntitat(EntitatDto entitat) {
 		ConfigHelper.entitat.set(entitat);
-	}
+	}*/
 
 
 	@PostConstruct
@@ -89,7 +89,8 @@ public class ConfigHelper {
     @Transactional(readOnly = true)
     public String getConfig(String key)  {
     	
-		EntitatDto entitatActual = ConfigHelper.entitat.get();
+    	ThreadLocal<EntitatDto> entitatActualThread = ConfigDto.getEntitat();
+    	EntitatDto entitatActual = entitatActualThread.get();
 		
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
 		
@@ -98,7 +99,7 @@ public class ConfigHelper {
 	}
 	
 	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
-		if (entitatActual != null) {			
+		if (entitatActual != null) {
 			String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";
