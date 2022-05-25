@@ -34,7 +34,7 @@ public class ConfigHelper {
     private PluginHelper pluginHelper;
     
     
-   /* private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
+    private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
     
     public static ThreadLocal<EntitatDto> getEntitat() {
 		return entitat;
@@ -43,7 +43,7 @@ public class ConfigHelper {
 
 	public static void setEntitat(EntitatDto entitat) {
 		ConfigHelper.entitat.set(entitat);
-	}*/
+	}
 
 
 	@PostConstruct
@@ -77,7 +77,7 @@ public class ConfigHelper {
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
     	
         ConfigEntity configEntity = configRepository.findOne(key);
-		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
+		logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
 		if (configEntity != null) {
 			return getConfig(configEntity);
@@ -87,10 +87,9 @@ public class ConfigHelper {
     }
     
     @Transactional(readOnly = true)
-    public String getConfig(String key)  {
+    public String getConfig(String key)  {    	
     	
-    	ThreadLocal<EntitatDto> entitatActualThread = ConfigDto.getEntitat();
-    	EntitatDto entitatActual = entitatActualThread.get();
+		EntitatDto entitatActual = ConfigHelper.entitat.get();
 		
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
 		
