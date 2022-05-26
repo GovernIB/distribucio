@@ -32,6 +32,7 @@ public enum RegistreProcesEstatEnum {
 	BACK_REBUDA,
 	BACK_PROCESSADA,
 	BACK_REBUTJADA,
+	BACK_COMUNICADA,
 	BACK_ERROR;
 	
 	/** Llista d'estats pendents */

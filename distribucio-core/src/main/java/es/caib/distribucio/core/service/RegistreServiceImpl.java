@@ -2489,18 +2489,9 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 
-	private Exception desarAnnexos(RegistreEntity anotacio) {
-		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat());		
-		Exception exceptionProcessant = null;
-		if (pendentArxiu) {			
-			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacio.getId());			
-		} else {
-			throw new ValidationException(
-					anotacio.getId(),
-					RegistreEntity.class,
-					"El desat d'annexos no està en estat pendent");
-		}
-		return exceptionProcessant;
+	private Exception desarAnnexos(RegistreEntity anotacio) {		
+		
+		return registreHelper.processarAnotacioPendentArxiu(anotacio.getId());
 	}
 
 	
