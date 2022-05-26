@@ -54,6 +54,7 @@
 $(document).ready(function() {
 	
 	$("#header").append("<div style='float: right;'><a href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a onclick='guardarAnotacionsPendents()' href='' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 	$("#header h2").append(" - ${entitatDto.nom}");
 
 	
@@ -62,8 +63,6 @@ $(document).ready(function() {
 	    let formData = new FormData(this);
 	    let key = $('input[name=key]', this).val();
 	
-	    //$(this).find('button').find('i').removeClass();
-	    //$(this).find('button').find('i').addClass('fa fa-circle-o-notch fa-spin');
 	    $(this).find('.info-block').empty();
 	    $(this).find('.form-group').removeClass('has-success');
 	    $(this).find('.form-group').removeClass('has-error');
@@ -100,6 +99,12 @@ $(document).ready(function() {
 	    });
 	});
 });
+
+function guardarAnotacionsPendents() {
+	var location = window.location.href;
+	const locationSplit = location.split("distribucio/");
+	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';		
+}
 
 
 function accioBoto(id, valorGeneric) {

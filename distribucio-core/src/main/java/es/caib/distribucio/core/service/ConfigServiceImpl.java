@@ -16,6 +16,7 @@ import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.core.config.SegonPlaConfig;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -45,6 +46,8 @@ public class ConfigServiceImpl implements ConfigService {
     private PluginHelper pluginHelper;
     @Autowired
     private ConfigHelper configHelper;
+    @Autowired
+    private SegonPlaConfig segonPlaConfig;
     
     
     @Override
@@ -153,6 +156,13 @@ public class ConfigServiceImpl implements ConfigService {
     	configHelper.synchronize();
     }
     
+    
+    @Override
+    @Transactional
+	public void reiniciarTasquesEnSegonPla() {
+		segonPlaConfig.reiniciarTasquesSegonPla();
+	}
+    
 
 	@Override
 	@Transactional
@@ -195,6 +205,5 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
-
 
 }

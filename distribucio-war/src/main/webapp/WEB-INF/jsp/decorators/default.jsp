@@ -123,11 +123,6 @@ body {
 	    var expires = new Date(0).toUTCString();
 	    document.cookie = cname + "=; path=/; expires=" + expires + ";";
 	}
-	function guardarAnotacionsPendents() {
-		var location = window.location.href;
-		const locationSplit = location.split("distribucio/");
-		window.location.href = '<c:url value="/config/guardarAnnexesPendents?currentPage=' + locationSplit[1] + '"/>';		
-	}
 </script>
 </head>
 <body>
@@ -221,16 +216,8 @@ body {
 							</ul>
 						</li>
 					</ul>
-					<div class="clearfix"></div>
-					
-				
-					<div class="navbar-btn navbar-right">					
-						<c:if test="${isRolActualSuperusuari}">						
-							<a onclick="guardarAnotacionsPendents()" class="btn btn-primary">Guardar anotacions pendents</a>
-						</c:if>		
-									
-						<div class="btn-group">
-					
+					<div class="clearfix"></div>									
+						<div class="btn-group">					
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
