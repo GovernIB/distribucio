@@ -62,4 +62,9 @@ public class ConfigServiceBean implements ConfigService {
 	public List<ConfigDto> findEntitatsConfigByKey(String key) {
 		return delegate.findEntitatsConfigByKey(key);
 	}
+	@Override
+	public void reiniciarTasquesEnSegonPla() {
+		delegate.reiniciarTasquesEnSegonPla();
+		
+	}
 }
