@@ -154,4 +154,10 @@ public class EntitatServiceBean implements EntitatService {
 		delegate.evictEntitatsAccessiblesUsuari();
 	}
 
+	@Override
+	@RolesAllowed("DIS_SUPER")
+	public void setConfigEntitat(EntitatDto entitatDto) {
+		delegate.setConfigEntitat(entitatDto);		
+	}
+
 }

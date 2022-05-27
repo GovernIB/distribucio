@@ -76,9 +76,18 @@ public class ConfigHelper {
 
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
     	
-        ConfigEntity configEntity = configRepository.findOne(key);
 		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
+		ConfigEntity configEntity = new ConfigEntity();
+        configEntity = configRepository.findOne(key);
+        if (configEntity == null && entitatActual != null) {
+        	String replace = "." + entitatActual.getCodi();
+        	key = key.replace(replace, "");
+        	configEntity = configRepository.findOne(key);
+        }
+        
+		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
+       
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {
@@ -87,7 +96,7 @@ public class ConfigHelper {
     }
     
     @Transactional(readOnly = true)
-    public String getConfig(String key)  {
+    public String getConfig(String key)  {    	
     	
 		EntitatDto entitatActual = ConfigHelper.entitat.get();
 		
@@ -98,7 +107,7 @@ public class ConfigHelper {
 	}
 	
 	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
-		if (entitatActual != null) {
+		if (entitatActual != null && !key.contains(entitatActual.getCodi())) {
 			String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";

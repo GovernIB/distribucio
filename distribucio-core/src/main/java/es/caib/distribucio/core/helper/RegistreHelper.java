@@ -1265,7 +1265,7 @@ public class RegistreHelper {
 	
 	@Transactional()
 	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable, Date dataComunicacio) {
-	
+
 		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
 		for (Long id : pendentsIdsGroupedByRegla) {
 			RegistreEntity pendent = registreRepository.findOne(id);
