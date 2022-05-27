@@ -599,7 +599,15 @@ public class RegistreAdminController extends BaseAdminController {
 					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
 				}
 			} 
-			else 
+			else if (this.isPendentArxiu(registreDto)) {
+				correcte = registreService.processarAnnexosAdmin(
+						entitatActual.getId(),
+						registreId);
+				missatge = getMessage(
+						request, 
+						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
+						null);				
+			} else 
 			{
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.estat.no.reprocessable");
 				correcte = false;
@@ -624,6 +632,20 @@ public class RegistreAdminController extends BaseAdminController {
 		return response;
 	}
 	
+	private boolean isPendentArxiu(RegistreDto registreDto) {
+		boolean isPendentArxiu = false;
+		boolean annexosPendents = false;
+		// Mirar si té uuid
+		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
+		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
+			if (registreAnnex.getFitxerArxiuUuid() == null) {
+				annexosPendents = true;
+			}
+		}
+		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
+		return isPendentArxiu;
+	}
+
 	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
 	public String marcarPendentMultipleGet(
 			HttpServletRequest request,
