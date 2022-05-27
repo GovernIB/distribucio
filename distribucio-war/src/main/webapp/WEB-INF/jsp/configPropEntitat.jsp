@@ -144,7 +144,6 @@
     });
 </script>
 <div class="text-right" data-toggle="botons-titol">
-    <a id="btn-sync" class="btn btn-default" data-toggle="modal" data-target="#syncModal"><span class="fa fa-refresh"></span>&nbsp;Sincronitzar amb JBoss</a>
 </div>
 <div id="syncModal" class="modal fade" role="dialog">
     <div class="modal-dialog">

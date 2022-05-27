@@ -644,12 +644,17 @@ public class RegistreHelper {
 		Exception exceptionAplicantRegla = null;
 		
 		if (anotacio.getRegla() != null) {
-			exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio, new ArrayList<ReglaEntity>());
-			
-			if (exceptionAplicantRegla != null) {
-				anotacio.updateProces(
-						null,
-						exceptionAplicantRegla);
+			if (anotacio.getRegla().isActiva()) {
+				exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio, new ArrayList<ReglaEntity>());
+				
+				if (exceptionAplicantRegla != null) {
+					anotacio.updateProces(
+							null,
+							exceptionAplicantRegla);
+				}
+			}else {
+				// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
+				anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 			}
 		} else {
 			// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
