@@ -45,6 +45,11 @@
 		    background-color: #5cb85c;
 		    border-color: #4cae4c;
 		}
+		
+		.inactiva {
+			cursor: not-allowed;
+			color: grey !important;
+		}
 	
 	</style>
 	
@@ -217,7 +222,11 @@
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="regla/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
+								{{if !activa}}
+								<li><a href="regla/{{:id}}/aplicar" data-confirm="<spring:message code="regla.list.accio.aplicar.manualment.confirm"/>" class="inactiva" title="Acció no disponible si està inactiva"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
+								{{else}}
 								<li><a href="regla/{{:id}}/aplicar" data-confirm="<spring:message code="regla.list.accio.aplicar.manualment.confirm"/>"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
+								{{/if}}
 								<li><a href="regla/{{:id}}/up" data-toggle="ajax"><span class="fa fa-arrow-up"></span>&nbsp;&nbsp;<spring:message code="comu.boto.amunt"/></a></li>
 								<li><a href="regla/{{:id}}/down" data-toggle="ajax"><span class="fa fa-arrow-down"></span>&nbsp;&nbsp;<spring:message code="comu.boto.avall"/></a></li>
 								{{if !activa}}
