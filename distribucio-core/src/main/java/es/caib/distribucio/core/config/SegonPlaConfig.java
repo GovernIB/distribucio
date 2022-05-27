@@ -31,11 +31,22 @@ public class SegonPlaConfig implements SchedulingConfigurer {
     SegonPlaService segonPlaService;
     @Autowired
 	private ConfigHelper configHelper;
+    
+    private ScheduledTaskRegistrar taskRegistrar;
+    
+    
+    public void reiniciarTasquesSegonPla() {
+    	if (taskRegistrar != null) {
+    		taskRegistrar.destroy();
+    		taskRegistrar.afterPropertiesSet();
+    	}
+    }
 
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
     	taskRegistrar.setScheduler(taskScheduler);
+    	this.taskRegistrar = taskRegistrar;
 
    	 	//Guardar anotacions de registre amb estat pendent de guardar a l'arxiu.
         taskRegistrar.addTriggerTask(

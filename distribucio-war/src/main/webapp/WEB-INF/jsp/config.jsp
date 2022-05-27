@@ -122,9 +122,17 @@ let guardarPropietat = (configKey, natejar) => {
     });
 };
 
+
+function guardarAnotacionsPendents() {
+	var location = window.location.href;
+	const locationSplit = location.split("distribucio/");
+	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';		
+}
+
 $(document).ready(function() {
 	
 	$("#header").append("<div style='float: right;'><a href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a onclick='guardarAnotacionsPendents()' href='' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 
 	
 	$(".form-update-config").submit(function(e) {
