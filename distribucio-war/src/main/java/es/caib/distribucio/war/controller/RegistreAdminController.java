@@ -54,7 +54,6 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
@@ -576,6 +575,7 @@ public class RegistreAdminController extends BaseAdminController {
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 			registreDto = (RegistreDto) contingutDto;
+			
 			if (registreDto.getPare() == null) {
 				// Restaura la bústia per defecte i la la regla aplicable si s'escau
 				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
@@ -609,8 +609,8 @@ public class RegistreAdminController extends BaseAdminController {
 						null);				
 			} else 
 			{
-				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.estat.no.reprocessable");
-				correcte = false;
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
+				correcte = true;
 			}
 		} catch(Exception e) {
 			logger.error("Error incontrolat reprocessant l'anotació amb id " + registreId + ": " + e.getMessage() , e);
@@ -634,15 +634,16 @@ public class RegistreAdminController extends BaseAdminController {
 	
 	private boolean isPendentArxiu(RegistreDto registreDto) {
 		boolean isPendentArxiu = false;
-		boolean annexosPendents = false;
-		// Mirar si té uuid
-		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
-		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
-			if (registreAnnex.getFitxerArxiuUuid() == null) {
-				annexosPendents = true;
+		if (registreDto.getExpedientArxiuUuid() == null) {
+			isPendentArxiu = true;
+		} else {
+			for (RegistreAnnexDto registreAnnex : registreDto.getAnnexos()) {
+				if (registreAnnex.getFitxerArxiuUuid() == null) {
+					isPendentArxiu = true;
+					break;
+				}
 			}
 		}
-		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
 		return isPendentArxiu;
 	}
 

@@ -99,9 +99,9 @@ public class ConfigHelper {
 	
 	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
 		if (entitatActual != null) {
-	    	String[] splitKey = key.split("es.caib.distribucio");
-	    	key = splitKey[0] + entitatActual.getCodi() + splitKey[1];
-			/*String keyReplace = key.replace(".", "_");
+//	    	String[] splitKey = key.split("es.caib.distribucio");
+//	    	key = splitKey[0] + entitatActual.getCodi() + splitKey[1];
+			String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";
 			for (int i=0; i<splitKey.length; i++) {
@@ -113,7 +113,7 @@ public class ConfigHelper {
 					keyEntitat = keyEntitat + splitKey[i] + ".";
 				}
 			}
-			key = keyEntitat;*/
+			key = keyEntitat;
 		}
 		return key;
 	}

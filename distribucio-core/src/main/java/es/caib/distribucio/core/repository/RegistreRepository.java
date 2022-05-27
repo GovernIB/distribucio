@@ -81,6 +81,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.regla.activa = true " +
+			"and r.entitat = :entitat " +
 			"and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
