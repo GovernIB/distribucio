@@ -10,6 +10,7 @@ import java.util.List;
  * Enumeració amb els possibles valors de l'estat de processament
  * d'una anotació de registre:
  *   ARXIU_PENDENT: Pendent de guardar annexos a dins l'arxiu
+ *   ARXIU_PENDENT_AMB_INTENTS_PENDENTS: Pendent de guardar annexos a dins l'arxiu amb intents pendents
  *   REGLA_PENDENT: Pendent d'aplicar regla
  *   BUSTIA_PENDENT: Pendent a bústia
  *   BUSTIA_PROCESSADA: Distribuït marcant com a processat
@@ -26,6 +27,7 @@ import java.util.List;
  */
 public enum RegistreProcesEstatEnum {
 	ARXIU_PENDENT,
+	ARXIU_PENDENT_AMB_INTENTS_PENDENTS, 
 	REGLA_PENDENT,
 	BUSTIA_PENDENT,
 	BUSTIA_PROCESSADA,
@@ -41,6 +43,7 @@ public enum RegistreProcesEstatEnum {
 	static {
 		estatsPendents.add(BUSTIA_PENDENT);
 		estatsPendents.add(ARXIU_PENDENT);
+		estatsPendents.add(ARXIU_PENDENT_AMB_INTENTS_PENDENTS);
 		estatsPendents.add(REGLA_PENDENT);
 		estatsPendents.add(BACK_REBUTJADA);
 		estatsPendents.add(BACK_ERROR);

@@ -48,6 +48,7 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
@@ -429,6 +430,12 @@ public class RegistreServiceImpl implements RegistreService {
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
+			boolean ambIntentsPendents = false;
+			int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
+			if (filtre.getEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT_AMB_INTENTS_PENDENTS) {
+				filtre.setEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+				ambIntentsPendents = true;
+			}
 			pagina = registreRepository.findRegistreByPareAndFiltre(
 					entitat,
 					totesLesbusties,
@@ -457,6 +464,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
 					filtre.getEstat() == null,
 					filtre.getEstat(),
+					ambIntentsPendents, 
+					maxReintents, 
 					filtre.isNomesAmbErrors(),
 					unitat == null,
 					unitat,
@@ -498,6 +507,16 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		contextTotal.stop();
 		return pag;
+	}
+
+	private int getGuardarAnnexosMaxReintentsProperty(EntitatEntity entitat) {
+		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
 	}
 	
 	

@@ -84,9 +84,11 @@ public class ConfigHelper {
         	String replace = "." + entitatActual.getCodi();
         	key = key.replace(replace, "");
         	configEntity = configRepository.findOne(key);
+        } else if (configEntity != null && configEntity.getValue() == null) {
+        	String replace = "." + entitatActual.getCodi();
+        	key = key.replace(replace, "");
+        	configEntity = configRepository.findOne(key);
         }
-        
-		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
        
 		if (configEntity != null) {
 			return getConfig(configEntity);
