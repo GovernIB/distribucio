@@ -83,8 +83,10 @@ public class ConfigHelper {
         if (configEntity == null && entitatActual != null || 
         	configEntity != null && configEntity.getValue() == null && 
         	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()) {
+        	String replace = "." + entitatActual.getCodi();
+        	key = key.replace(replace, "");
+        	configEntity = configRepository.findOne(key);
         } 
-       
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {

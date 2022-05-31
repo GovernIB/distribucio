@@ -29,7 +29,12 @@
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
-		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
+		<c:if test="${nou == true}">
+			<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
+		</c:if>
+		<c:if test="${nou != true}">
+			<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment" disabled="true"/>
+		</c:if>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
