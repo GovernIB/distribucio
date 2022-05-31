@@ -7,6 +7,7 @@ package es.caib.distribucio.plugin.caib.procediment;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
@@ -54,6 +55,12 @@ public class ProcedimentPluginMock implements ProcedimentPlugin {
 	@Override
 	public String getUsuariIntegracio() {
 		return "ProcedimentsMock";
+	}
+
+	@Override
+	public ProcedimentDto findAmbCodiSia(String codiDir3, String codiSia) throws SistemaExternException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

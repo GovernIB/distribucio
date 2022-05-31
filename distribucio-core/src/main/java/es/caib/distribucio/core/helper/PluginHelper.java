@@ -31,6 +31,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
@@ -894,6 +895,20 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
+	}
+	
+	
+	public ProcedimentDto findByCodiSia(String codiDir3, String codiSia) {
+		
+		try {
+			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiDir3, codiSia);
+			return procediment;
+		} catch (es.caib.distribucio.plugin.SistemaExternException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return null;		
 	}
 
 
