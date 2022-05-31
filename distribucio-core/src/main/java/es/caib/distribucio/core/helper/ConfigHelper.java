@@ -80,11 +80,8 @@ public class ConfigHelper {
 
 		ConfigEntity configEntity = new ConfigEntity();
         configEntity = configRepository.findOne(key);
-        if (configEntity == null && entitatActual != null) {
-        	String replace = "." + entitatActual.getCodi();
-        	key = key.replace(replace, "");
-        	configEntity = configRepository.findOne(key);
-        } else if (configEntity != null && configEntity.getValue() == null) {
+        if (configEntity == null && entitatActual != null || 
+        	configEntity != null && configEntity.getValue() == null && !configEntity.getGroupCode().equals("USUARIS")) {
         	String replace = "." + entitatActual.getCodi();
         	key = key.replace(replace, "");
         	configEntity = configRepository.findOne(key);
