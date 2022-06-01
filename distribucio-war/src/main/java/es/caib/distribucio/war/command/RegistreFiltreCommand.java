@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
@@ -40,6 +41,8 @@ public class RegistreFiltreCommand {
 	private String backCodi;
 	
 	private RegistreMarcatPerSobreescriureEnumDto sobreescriure;
+	
+	private RegistreFiltreReintentsEnumDto reintents;
 
 	// Filtre per administradors
 	/** Estat específic. */
@@ -186,6 +189,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setSobreescriure(RegistreMarcatPerSobreescriureEnumDto sobreescriure) {
 		this.sobreescriure = sobreescriure;
+	}
+	public RegistreFiltreReintentsEnumDto getReintents() {
+		return reintents;
+	}
+	public void setReintents(RegistreFiltreReintentsEnumDto reintents) {
+		this.reintents = reintents;
 	}
 	
 }

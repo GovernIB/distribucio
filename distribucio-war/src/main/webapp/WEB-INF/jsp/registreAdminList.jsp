@@ -83,6 +83,7 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
+	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
@@ -323,21 +324,42 @@ $(document).ready(function() {
 			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="sobreescriure" netejar="false" optionEnum="RegistreMarcatPerSobreescriureEnumDto" placeholderKey="registre.admin.list.filtre.sobreescriure" emptyOption="true" inline="true"/>
-			</div>			
-		</div>
-		<div class="row">				
-			<div class="col-md-4 pull-right">
-				<div class="pull-right">
-					<!-- <a href="registreAdmin/exportarCSV?llistat=filtre" class="btn btn-success"> -->
-					<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
-						<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
-					</a>
-					<!-- <button id="exportar" type="submit" name="accio" value="exportar" class="btn btn-success"><spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" /></button> -->
-					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+			</div>		
+		</div>	
+		<div class="row">	
+			<div class="col-md-2"></div>
+			<div class="col-md-2"></div>
+			<div class="col-md-3"></div>
+			<div id="reintents" class="col-md-2">
+				<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
 			</div>
+			<div class="col-md-3 d-flex justify-content-end">
+				<a onclick="exportarCSV();" href="#" class="ml-2 btn btn-success"> 
+					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
+				</a>
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+			</div>				
+			<!-- <div class="col-md-5 pull-right">
+				<div class="pull-right d-flex">
+					<div class="box-input">
+						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
+					</div>
+					<div class="box-botons ml-6">
+						<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
+							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
+						</a>
+						<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+					</div>
+				</div>
+			</div>-->
 		</div>
+		
+		
+		
+		
+		
 		
 
 	</form:form>
@@ -487,8 +509,6 @@ $(document).ready(function() {
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
-						{{else procesEstat == 'ARXIU_PENDENT_AMB_INTENTS_PENDENTS'}}
-							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT_AMB_INTENTS_PENDENTS"/>
 						{{else procesEstat == 'REGLA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}

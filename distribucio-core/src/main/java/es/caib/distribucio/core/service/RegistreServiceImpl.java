@@ -60,6 +60,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
@@ -431,10 +432,11 @@ public class RegistreServiceImpl implements RegistreService {
 		long beginTime = new Date().getTime();
 		try {
 			boolean ambIntentsPendents = false;
-			int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
-			if (filtre.getEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT_AMB_INTENTS_PENDENTS) {
-				filtre.setEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+			int maxReintents = 0;
+			System.out.println(">>>>>>>>>>>>>>>>>>>>filtre: " + filtre );
+			if (filtre.getReintents() != null) {
 				ambIntentsPendents = true;
+				maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 			}
 			pagina = registreRepository.findRegistreByPareAndFiltre(
 					entitat,
@@ -464,7 +466,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
 					filtre.getEstat() == null,
 					filtre.getEstat(),
-					ambIntentsPendents, 
+					filtre.getReintents() == null, 
+					filtre.getReintents() != null ? (filtre.getReintents() == RegistreFiltreReintentsEnumDto.SI ? true : false) : false,
 					maxReintents, 
 					filtre.isNomesAmbErrors(),
 					unitat == null,
