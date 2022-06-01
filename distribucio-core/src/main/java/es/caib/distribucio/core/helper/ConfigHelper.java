@@ -87,6 +87,7 @@ public class ConfigHelper {
         	key = key.replace(replace, "");
         	configEntity = configRepository.findOne(key);
         } 
+        
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {

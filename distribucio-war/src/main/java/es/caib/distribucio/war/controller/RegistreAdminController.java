@@ -39,6 +39,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
@@ -54,16 +55,20 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.core.helper.PluginHelper;
+import es.caib.distribucio.plugin.caib.procediment.ProcedimentPluginRolsac;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -89,6 +94,8 @@ public class RegistreAdminController extends BaseAdminController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private RegistreHelper registreHelper;
+	@Autowired
+	private PluginHelper pluginHelper;
 	
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -164,8 +171,9 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
-			Model model) {
+			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		
 		try {
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
@@ -174,13 +182,32 @@ public class RegistreAdminController extends BaseAdminController {
 					true);
 			
 			int numeroAnnexosPendentsArxiu = 0;
+			String codiSia = null;
 			if (registreDto instanceof RegistreDto) {
-				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;				
+				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;		
+				codiSia = registreDtoAmbAnnexos.getProcedimentCodi();
 				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
 					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
 						numeroAnnexosPendentsArxiu++;
 					}
 				}
+			}			
+			
+			String codiDir3;
+			if (RolHelper.isRolActualAdministrador(request)) {
+				codiDir3 = EntitatHelper.getEntitatActual(request).getCodiDir3();
+			}else {
+			codiDir3 = entitatActual.getCodiDir3();
+			}
+			
+			try {
+				ProcedimentDto procedimentDto = pluginHelper.procedimentFindByCodiSia(codiDir3, codiSia);
+				String procedimentNom = procedimentDto.getNom();
+				model.addAttribute("procedimentNom", procedimentDto.getNom());
+			}catch(NullPointerException e) {
+				model.addAttribute("procedimentNom", null);
+				String errMsg = "No s'ha pogut concretar el nom del procediment";
+				logger.info(errMsg);
 			}
 			
 			model.addAttribute("registre", registreDto);
