@@ -898,17 +898,40 @@ public class PluginHelper {
 	}
 	
 	
-	public ProcedimentDto findByCodiSia(String codiDir3, String codiSia) {
+	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
+		
+		String accioDescripcio = "Consulta dels procediments pel codi SIA";
+		String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiSia", codiSia);
+		long t0 = System.currentTimeMillis();
 		
 		try {
 			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiDir3, codiSia);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 			return procediment;
-		} catch (es.caib.distribucio.plugin.SistemaExternException e) {
-			
-			e.printStackTrace();
-		}
-		
-		return null;		
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PROCEDIMENT,
+							errorDescripcio,
+							ex);
+		}	
 	}
 
 

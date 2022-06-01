@@ -191,10 +191,7 @@ public class RegistreAdminController extends BaseAdminController {
 						numeroAnnexosPendentsArxiu++;
 					}
 				}
-			}
-			
-			
-			
+			}			
 			
 			String codiDir3;
 			if (RolHelper.isRolActualAdministrador(request)) {
@@ -202,27 +199,17 @@ public class RegistreAdminController extends BaseAdminController {
 			}else {
 			codiDir3 = entitatActual.getCodiDir3();
 			}
-			ProcedimentDto procedimentDto = pluginHelper.findByCodiSia(codiDir3, codiSia);
-			String procedimentNom = procedimentDto.getNom();
-			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>PROCEDIMENT NOM: " + procedimentNom);
 			
-			/*String codiDir3;
-			if (RolHelper.isRolActualAdministrador(request)) {
-				codiDir3 = EntitatHelper.getEntitatActual(request).getCodi();
-			}else {
-				codiDir3 = entitatActual.getCodiDir3();
+			try {
+				ProcedimentDto procedimentDto = pluginHelper.procedimentFindByCodiSia(codiDir3, codiSia);
+				String procedimentNom = procedimentDto.getNom();
+				model.addAttribute("procedimentNom", procedimentDto.getNom());
+			}catch(NullPointerException e) {
+				model.addAttribute("procedimentNom", null);
+				String errMsg = "No s'ha pogut concretar el nom del procediment";
+				logger.info(errMsg);
 			}
-			ProcedimentDto procedimentDto = procedimentPluginRolsac.findAmbCodiSia(codiDir3, codiSia);*/
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			model.addAttribute("procedimentNom", procedimentDto.getNom());
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);

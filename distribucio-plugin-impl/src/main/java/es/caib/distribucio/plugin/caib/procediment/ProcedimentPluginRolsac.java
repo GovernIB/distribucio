@@ -72,7 +72,7 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 		ProcedimientosResponse response = null;
 		try {
 			StringBuilder sb = new StringBuilder(getServiceUrl());			
-			String params = "lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
+			String params = "?lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
 			
 			response = findProcedimentsRolsac(
 					sb.toString(),
@@ -147,7 +147,6 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 				"url=" + url + ", " +
 				"tipus=application/json, " +
 				"body=" + body + ")");
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>url-body: " + url + body);
 		ClientResponse response = getJerseyClient().
 				resource(url).
 				accept("application/json").
