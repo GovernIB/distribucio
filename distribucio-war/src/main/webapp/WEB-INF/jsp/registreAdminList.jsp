@@ -83,7 +83,7 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
-	$("#reintents .select2").css("width", "29.5rem");
+	//$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
@@ -330,38 +330,18 @@ $(document).ready(function() {
 			<div class="col-md-2"></div>
 			<div class="col-md-2"></div>
 			<div class="col-md-3"></div>
-			<div id="reintents" class="col-md-2">
-				<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
-			</div>
-			<div class="col-md-3 d-flex justify-content-end">
-				<a onclick="exportarCSV();" href="#" class="ml-2 btn btn-success"> 
-					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
-				</a>
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-			</div>				
-			<!-- <div class="col-md-5 pull-right">
-				<div class="pull-right d-flex">
-					<div class="box-input">
+			<div id="reintents" class="col-md-3">
+				<div class="row">
+					<div class="col-md-10">
 						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
 					</div>
-					<div class="box-botons ml-6">
-						<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
-							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
-						</a>
-						<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-					</div>
 				</div>
-			</div>-->
+			</div>
+			<div class="col-md-2">
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+			</div>	
 		</div>
-		
-		
-		
-		
-		
-		
-
 	</form:form>
 	
 	<script>
@@ -392,8 +372,15 @@ $(document).ready(function() {
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
 	<c:if test="${isRolActualAdministrador}">
+
 	
 		<div class="text-right">
+			<div class="btn-group">
+				<a onclick="exportarCSV();" href="#" class="ml-2 btn btn-success"> 
+					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
+				</a>
+			</div>
+		
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
