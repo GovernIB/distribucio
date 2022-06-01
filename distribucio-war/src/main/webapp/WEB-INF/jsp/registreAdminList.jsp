@@ -83,7 +83,7 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
-	//$("#reintents .select2").css("width", "29.5rem");
+	
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
