@@ -539,7 +539,7 @@ li[id^="anotacio_"] {
 								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if>"><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:when>
 							<c:otherwise>
-								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id} disabled</c:if>"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if> disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:otherwise>
 						</c:choose>	
 					</c:if>
