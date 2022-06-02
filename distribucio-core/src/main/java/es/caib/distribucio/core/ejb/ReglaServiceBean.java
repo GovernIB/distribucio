@@ -184,4 +184,9 @@ public class ReglaServiceBean implements ReglaService {
 		return delegate.findReglaBackofficeByProcediment(procedimentCodi);
 	}
 
+	@Override
+	public ReglaDto findReglaByNom(String nomRegla) {
+		return delegate.findReglaByNom(nomRegla);
+	}
+	
 }

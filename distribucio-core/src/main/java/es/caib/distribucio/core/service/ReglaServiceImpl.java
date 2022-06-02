@@ -622,6 +622,16 @@ public class ReglaServiceImpl implements ReglaService {
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public ReglaDto findReglaByNom(String nomRegla) {
+		
+		ReglaEntity reglaEntity = reglaRepository.findReglaByNom(nomRegla);
+		ReglaDto reglaDto = conversioTipusHelper.convertir(reglaEntity, ReglaDto.class);
+		
+		return reglaDto;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
 
 

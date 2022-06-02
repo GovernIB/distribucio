@@ -44,7 +44,7 @@ import es.caib.distribucio.war.controller.BaseUserController;
  */
 @Controller
 @RequestMapping("/api/rest/regles")
-@Api(value = "/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA.")
+@Api(value = "/api/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA.")
 public class ReglesController extends BaseUserController {
 
 
@@ -166,6 +166,46 @@ public class ReglesController extends BaseUserController {
 			}
 		}
 		return ret;
+	}
+	
+	@RequestMapping(value = "/canviEstat", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(
+			value = "Activa/Desactivar regla", 
+			notes = "Depenent del seu estat, activa o desactiva una regla en concret."
+			)
+	public ResponseEntity<String> canviEstat(
+			HttpServletRequest request, 
+			
+			@ApiParam(name="nom", value="Nom de la regla")
+			@RequestParam(required = true) String nom, 
+			@ApiParam(name="entitatCodi", value="Codi de l'entitat")
+			@RequestParam(required = true) String entitatCodi){
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
+			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per crear regles.", HttpStatus.UNAUTHORIZED);
+		}
+
+		ReglaDto reglaDto = reglaService.findReglaByNom(nom);
+		EntitatDto entitatDto = entitatService.findByCodi(entitatCodi);
+		boolean activa = false;
+		String response = "";
+		if (reglaDto.isActiva()) {
+			response = "La regla amb nom " + nom + " s'ha desactivat correctament.";
+	
+		}else {
+			activa = true;
+			response = "La regla amb nom " + nom + " s'ha activat correctament.";	
+		}
+		ReglaDto reglaResponse = reglaService.updateActiva(entitatDto.getId(), reglaDto.getId(), activa);
+		
+		if (reglaResponse != null) {
+
+			return new ResponseEntity<String>(response, HttpStatus.OK);	
+		}
+		
+		return new ResponseEntity<String>(response, HttpStatus.EXPECTATION_FAILED);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglesController.class);

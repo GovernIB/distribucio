@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -142,5 +143,13 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			" and (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))")
 	List<ReglaEntity> findReglaBackofficeByCodiProcediment(
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre);
+	
+	
+	/** Consulta per cercar una regla concreta */
+	@Query( "from ReglaEntity r " + 
+			"where " + 
+			"r.nom = :nomRegla ")
+	ReglaEntity findReglaByNom(
+			@Param("nomRegla") String nomRegla);
 
 }

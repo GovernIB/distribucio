@@ -219,7 +219,8 @@ body {
 							</ul>
 						</li>
 					</ul>
-					<div class="clearfix"></div>									
+					<div class="clearfix"></div>	
+					  <div class="navbar-btn navbar-right">								
 						<div class="btn-group">					
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
@@ -282,6 +283,7 @@ body {
 								</c:when>
 							</c:choose>
 						</div>
+					  </div>
 
 						<%--c:if test="${isRolActualUsuari or isRolActualAdministrador}">
 							<div class="btn-group">
