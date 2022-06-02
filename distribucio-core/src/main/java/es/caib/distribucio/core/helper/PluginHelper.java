@@ -46,6 +46,7 @@ import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
@@ -844,8 +845,14 @@ public class PluginHelper {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
+					/*Class<?> clazz = Class.forName(pluginClass);
+					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.newInstance();*/
 					Class<?> clazz = Class.forName(pluginClass);
-					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.newInstance();
+					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(
+							String.class,
+							Properties.class).newInstance(
+							"es.caib.distribucio.",
+							PropertiesHelper.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_USUARIS,

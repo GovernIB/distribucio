@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 
@@ -25,7 +27,15 @@ import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DadesUsuariPluginJdbc implements DadesUsuariPlugin {
+public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
+	  
+	public DadesUsuariPluginJdbc()  {
+		super();
+	}
+	
+	public DadesUsuariPluginJdbc(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 
 	@Override
 	public DadesUsuari findAmbCodi(
@@ -112,16 +122,16 @@ public class DadesUsuariPluginJdbc implements DadesUsuariPlugin {
 	}
 
 	private String getDatasourceJndiName() {
-		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name");
+		return getProperty("plugin.dades.usuari.jdbc.datasource.jndi.name");
 	}
 	private String getJdbcQueryUsuariCodi() {
-		String query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query");
+		String query = getProperty("plugin.dades.usuari.jdbc.query");
 		if (query == null || query.isEmpty())
-			query = System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi");
+			query = getProperty("plugin.dades.usuari.jdbc.query.codi");
 		return query;
 	}
 	private String getJdbcQueryUsuariGrup() {
-		return System.getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
+		return getProperty("plugin.dades.usuari.jdbc.query.grup");
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginJdbc.class);

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -22,6 +23,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -30,8 +32,14 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DadesExternesPluginCaib implements DadesExternesPlugin {
+public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
 
+	public DadesExternesPluginCaib() {
+		super();
+	}
+	public DadesExternesPluginCaib(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
@@ -296,8 +304,8 @@ public class DadesExternesPluginCaib implements DadesExternesPlugin {
 	}
 
 	private String getBaseUrl() {
-		String baseUrl = PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.dadesext.service.url");
+		String baseUrl = getProperty(
+				"plugin.dadesext.service.url");
 		if (baseUrl != null && baseUrl.length() > 0) {
 			return baseUrl;
 		} else {

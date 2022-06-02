@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -33,6 +34,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -40,7 +42,14 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DadesExternesPluginDir3 implements DadesExternesPlugin {
+public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
+	
+	public DadesExternesPluginDir3() {
+		super();
+	}
+	public DadesExternesPluginDir3(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 	
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
@@ -285,16 +294,34 @@ public class DadesExternesPluginDir3 implements DadesExternesPlugin {
 	}
 
 	private String getServiceUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.dadesext.service.url");
+		String url = getProperty(
+				"plugin.dadesext.dir3.service.url");
+		if (url != null) {
+			return url;
+		}else {
+			return getProperty(
+					"plugin.dadesext.service.url");
+		}
 	}
 	private String getUsername() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
+		String username = getProperty(
+				"plugin.dadesext.dir3.service.username");
+		if(username != null) {
+			return username;
+		}else {
+			return getProperty(
+					"plugin.unitats.organitzatives.dir3.service.username");
+		}
 	}
 	private String getPassword() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
+		String password = getProperty(
+				"plugin.dadesext.dir3.service.password");
+		if(password != null) {
+			return password;
+		}else {
+			return getProperty(
+					"plugin.unitats.organitzatives.dir3.service.password");
+		}
 	}
 
 	
