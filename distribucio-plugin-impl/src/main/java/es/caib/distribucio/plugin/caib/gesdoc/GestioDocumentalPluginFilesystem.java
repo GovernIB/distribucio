@@ -8,11 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 
 /**
  * Implementació del plugin de gestió documental que
@@ -21,8 +23,17 @@ import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin {
-
+public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginProperties implements GestioDocumentalPlugin {
+	  
+	public GestioDocumentalPluginFilesystem()  {
+		super();
+	}
+	
+	public GestioDocumentalPluginFilesystem(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
+	
+	
 	@Override
 	public synchronized String create(
 			String agrupacio,
@@ -117,8 +128,8 @@ public class GestioDocumentalPluginFilesystem implements GestioDocumentalPlugin 
 
 
 	private String getBaseDir(String agrupacio) {
-		String baseDir = System.getProperty(
-				"es.caib.distribucio.plugin.gesdoc.filesystem.base.dir");
+		String baseDir = getProperty(
+				"plugin.gesdoc.filesystem.base.dir");
 		if (baseDir != null) {
 			if (baseDir.endsWith("/")) {
 				return baseDir + agrupacio;

@@ -8,8 +8,10 @@ import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Properties;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 
@@ -19,7 +21,15 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class UnitatsOrganitzativesPluginCaibMock implements UnitatsOrganitzativesPlugin {
+public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
+	  
+	public UnitatsOrganitzativesPluginCaibMock()  {
+		super();
+	}
+	
+	public UnitatsOrganitzativesPluginCaibMock(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 
 	
 	@Override

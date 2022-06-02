@@ -8,8 +8,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 
@@ -21,10 +23,15 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class UnitatsOrganitzativesPluginMock implements UnitatsOrganitzativesPlugin {
-
+public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
+	  
+	public UnitatsOrganitzativesPluginMock()  {
+		super();
+	}
 	
-	
+	public UnitatsOrganitzativesPluginMock(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}	
 
 	
 	@Override
