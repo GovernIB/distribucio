@@ -36,7 +36,6 @@ import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
