@@ -21,14 +21,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
-import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.war.command.ConfigCommand;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.JsonResponse;
@@ -49,8 +47,6 @@ public class ConfigController extends BaseUserController{
     @Autowired
     private ConfigService configService;
     @Autowired
-    private EntitatRepository entitatRepository;
-    @Autowired
     private EntitatService entitatService;
 
     @RequestMapping(method = RequestMethod.GET)
@@ -58,13 +54,9 @@ public class ConfigController extends BaseUserController{
             HttpServletRequest request,
             Model model) {
         List<ConfigGroupDto> configGroups = configService.findAll();
-        List<EntitatEntity> llistatEntitats = entitatRepository.findAll();
         List<EntitatDto> entitats = new ArrayList<>();
         if (RolHelper.isRolActualAdministrador(request)) {
-        	for (EntitatEntity entitatEntity : llistatEntitats) {
-        		EntitatDto entitatDto = entitatService.findById(entitatEntity.getId());
-        		entitats.add(entitatDto);
-        	}
+        	entitats = entitatService.findPaginat(PaginacioParamsDto.getPaginacioDtoTotsElsResultats()).getContingut();
         }
         model.addAttribute("config_groups", configGroups);
         //model.addAttribute("entitats", entitats);
@@ -219,7 +211,7 @@ public class ConfigController extends BaseUserController{
         for (ConfigDto config: cGroup.getConfigs()) {
         	ConfigCommand configCommand = ConfigCommand.asCommand(config);
             model.addAttribute("config_" + config.getKey().replace('.', '_'),
-                    ConfigCommand.asCommand(config));
+            		configCommand);
         }
         if (cGroup.getInnerConfigs() == null || cGroup.getInnerConfigs().isEmpty()){
             return;

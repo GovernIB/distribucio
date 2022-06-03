@@ -32,10 +32,6 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.core.entity.BustiaEntity;
-import es.caib.distribucio.core.entity.UsuariBustiaFavoritEntity;
-import es.caib.distribucio.core.repository.BustiaRepository;
-import es.caib.distribucio.core.repository.UsuariBustiaFavoritRepository;
 import es.caib.distribucio.war.command.BustiaCommand;
 import es.caib.distribucio.war.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.war.command.BustiaFiltreOrganigramaCommand;
@@ -59,11 +55,6 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	private UnitatOrganitzativaService unitatService;
 	@Autowired
 	private BustiaHelper bustiaHelper;
-	@Autowired
-	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
-	@Autowired
-	private BustiaRepository bustiaRepository;
-
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -242,11 +233,6 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			@PathVariable Long bustiaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
-			BustiaEntity bustia = bustiaRepository.findOne(bustiaId);
-			List<UsuariBustiaFavoritEntity> usuariBustiaFavoritEntity = usuariBustiaFavoritRepository.findByBustia(bustiaId);
-			for (UsuariBustiaFavoritEntity usuariBustiaFavorit : usuariBustiaFavoritEntity) {
-				usuariBustiaFavoritRepository.delete(usuariBustiaFavorit.getId());
-			}
 			bustiaService.delete(
 					entitatActual.getId(),
 					bustiaId);

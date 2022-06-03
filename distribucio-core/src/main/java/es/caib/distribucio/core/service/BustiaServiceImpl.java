@@ -463,7 +463,12 @@ public class BustiaServiceImpl implements BustiaService {
 					missatgeError);
 		}
 		
-		
+		// Esborra les relacions com a favorita d'usuaris per evitar errors de relació
+		List<UsuariBustiaFavoritEntity> usuariBustiaFavoritEntity = usuariBustiaFavoritRepository.findByBustia(bustia.getId());
+		for (UsuariBustiaFavoritEntity usuariBustiaFavorit : usuariBustiaFavoritEntity) {
+			usuariBustiaFavoritRepository.delete(usuariBustiaFavorit.getId());
+		}
+
 		bustiaRepository.delete(bustia);
 		return bustiaHelper.toBustiaDto(
 				bustia,
