@@ -75,7 +75,7 @@ public class ConfigHelper {
     public String getConfig(EntitatDto entitatActual, String key) {
 
 		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-    	
+		
 		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
 		ConfigEntity configEntity = new ConfigEntity();
@@ -86,7 +86,7 @@ public class ConfigHelper {
         	String replace = "." + entitatActual.getCodi();
         	key = key.replace(replace, "");
         	configEntity = configRepository.findOne(key);
-        }
+        } 
        
 		if (configEntity != null) {
 			return getConfig(configEntity);
@@ -221,7 +221,7 @@ public class ConfigHelper {
 
     public static class JBossPropertiesHelper extends Properties {
 
-        private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path";
+        private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path"; //in jboss is null
 
         private static JBossPropertiesHelper instance = null;
 
@@ -238,7 +238,7 @@ public class ConfigHelper {
             if (instance == null) {
                 instance = new JBossPropertiesHelper();
                 if (propertiesPath != null) {
-                    instance.llegirSystem = false;
+                    instance.llegirSystem = false; //a jboss no entrem aquí
                     logger.info("Llegint les propietats de l'aplicació del path: " + propertiesPath);
                     try {
                         if (propertiesPath.startsWith("classpath:")) {
@@ -263,9 +263,9 @@ public class ConfigHelper {
 
         public String getProperty(String key) {
             if (llegirSystem)
-                return System.getProperty(key);
+                return System.getProperty(key); //jboss
             else
-                return super.getProperty(key);
+                return super.getProperty(key); //jboss
         }
         public String getProperty(String key, String defaultValue) {
             String val = getProperty(key);

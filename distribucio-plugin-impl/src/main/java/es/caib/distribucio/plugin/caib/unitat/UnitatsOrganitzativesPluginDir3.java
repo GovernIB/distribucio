@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,17 +33,24 @@ import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
 import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
 import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.plugin.caib.integracio.IntegracioPluginImpl;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlugin {
+public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
+	  
+	public UnitatsOrganitzativesPluginDir3()  {
+		super();
+	}
+	
+	public UnitatsOrganitzativesPluginDir3(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 	
 	@Override
 	public UnitatOrganitzativa findUnidad(
@@ -245,31 +253,31 @@ public class UnitatsOrganitzativesPluginDir3 implements UnitatsOrganitzativesPlu
 	}
 	
 	private String getServiceUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url");
+		return getProperty(
+				"plugin.unitats.organitzatives.dir3.service.url");
 	}
 	private String getServiceUsername() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
+		return getProperty(
+				"plugin.unitats.organitzatives.dir3.service.username");
 	}
 	private String getServicePassword() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
+		return getProperty(
+				"plugin.unitats.organitzatives.dir3.service.password");
 	}
 	private boolean isLogMissatgesActiu() {
-		return PropertiesHelper.getProperties().getAsBoolean(
-				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.log.actiu");
+		return getAsBoolean(
+				"plugin.unitats.organitzatives.dir3.service.log.actiu");
 	}
 	private Integer getServiceTimeout() {
-		String key = "es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout";
-		if (System.getProperty(key) != null)
-			return PropertiesHelper.getProperties().getAsInt(key);
+		String key = "plugin.unitats.organitzatives.dir3.service.timeout";
+		if (getProperty(key) != null)
+			return getAsInt(key);
 		else
 			return null;
 	}
 	private String getServiceCercaUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.unitats.cerca.dir3.service.url");
+		return getProperty(
+				"plugin.unitats.cerca.dir3.service.url");
 	}
 
 	@Override

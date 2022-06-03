@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.caib.procediment;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -29,10 +31,19 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ProcedimentPluginRolsac implements ProcedimentPlugin {
+public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties implements ProcedimentPlugin {
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
+	
+	  
+	public ProcedimentPluginRolsac()  {
+		super();
+	}
+	
+	public ProcedimentPluginRolsac(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 
 	@Override
 	public List<Procediment> findAmbCodiDir3(
@@ -104,21 +115,21 @@ public class ProcedimentPluginRolsac implements ProcedimentPlugin {
 	}
 
 	private String getServiceUrl() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
+		return getProperty(
+				"plugin.procediment.rolsac.service.url");
 	}
 	private String getServiceUsername() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.procediment.rolsac.service.username");
+		return getProperty(
+				"plugin.procediment.rolsac.service.username");
 	}
 	private String getServicePassword() {
-		return PropertiesHelper.getProperties().getProperty(
-				"es.caib.distribucio.plugin.procediment.rolsac.service.password");
+		return getProperty(
+				"plugin.procediment.rolsac.service.password");
 	}
 	private Integer getServiceTimeout() {
-		String key = "es.caib.distribucio.plugin.procediment.rolsac.service.timeout";
-		if (PropertiesHelper.getProperties().getProperty(key) != null) {
-			return PropertiesHelper.getProperties().getAsInt(key);
+		String key = "plugin.procediment.rolsac.service.timeout";
+		if (getProperty(key) != null) {
+			return getAsInt(key);
 		} else {
 			return null;
 		}
