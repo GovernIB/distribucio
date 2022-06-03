@@ -107,7 +107,7 @@ function guardarAnotacionsPendents() {
 }
 
 
-function accioBoto(id, valorGeneric) {
+function accioBoto(id, valorGeneric, otherButton) {
 	const idSplit = id.split("_");
 	var idElementDel = 'del_' + idSplit[1];
 	var idElementMod = 'mod_' + idSplit[1];
@@ -139,8 +139,13 @@ function accioBoto(id, valorGeneric) {
 				}
 			}
 			document.getElementById(id).classList.add('d-none');
-			modIcon.classList.remove('fa-edit');
-			modIcon.classList.add('fa-plus');
+			if(otherButton == 'otherEdit'){
+				modIcon.classList.remove('fa-edit');
+				modIcon.classList.add('fa-plus');
+			}else if(otherButton == 'otherAdd') {
+				addIcon.classList.remove('fa-edit');
+				addIcon.classList.add('fa-plus');
+			}
 			document.getElementById(idElementMod).id = idElementAdd;
 			document.getElementById(modIconButton).id = addIconButton;
 		}else if (idSplit[0] == 'mod') {

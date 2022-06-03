@@ -6,6 +6,7 @@ package es.caib.distribucio.plugin.caib.signatura;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import org.fundaciobit.apisib.apifirmasimple.v1.ApiFirmaEnServidorSimple;
 import org.fundaciobit.apisib.apifirmasimple.v1.beans.FirmaSimpleAvailableProfile;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
@@ -31,9 +33,16 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class FirmaSimplePluginPortafib implements SignaturaPlugin {	  
+public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
 	
-	private static final String PROPERTIES_BASE = "es.caib.distribucio.plugin.signatura.portafib.";
+	  
+	public FirmaSimplePluginPortafib()  {
+		super();
+	}
+	
+	public FirmaSimplePluginPortafib(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 	  
 	@Override
 	public SignaturaResposta signar(
@@ -96,7 +105,7 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 		String signID = id;
 		String name = fileToSign.getNom();
 		String reason = motiu;
-		String location = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "location", "Palma");
+		String location = getProperty("plugin.signatura.portafib." + "location", "Palma");
 
 		int signNumber = 1;
 		String languageSign = "ca";
@@ -113,12 +122,12 @@ public class FirmaSimplePluginPortafib implements SignaturaPlugin {
 				tipusDocumentalID);
 
 		String languageUI = "ca";
-		String username = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "username", null);
+		String username = getProperty("plugin.signatura.portafib." + "username", null);
 		if (username != null &&  username.trim().isEmpty()) {
 			username = null;
 		}
 		String administrationID = null;
-		String signerEmail = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "signerEmail", "suport@caib.es");
+		String signerEmail = getProperty("plugin.signatura.portafib." + "signerEmail", "suport@caib.es");
 
 		FirmaSimpleCommonInfo commonInfo;
 		commonInfo = new FirmaSimpleCommonInfo(perfil, languageUI, username, administrationID, signerEmail);

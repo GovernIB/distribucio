@@ -635,6 +635,25 @@ public class RegistreAdminController extends BaseAdminController {
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
 						null);				
+				//TODO: fer acció de guardar a l'arxiu com apretar el botó "processar desat d'annexos */
+				boolean processatOk = registreService.processarAnnexosAdmin(
+						entitatActual.getId(),
+						registreId);
+				if (processatOk) {
+					MissatgesHelper.success(
+							request, 
+							getMessage(
+									request, 
+									"contingut.admin.controller.registre.desat.arxiu.ok",
+									null));
+				} else {
+					MissatgesHelper.error(
+							request,
+							getMessage(
+									request, 
+									"contingut.admin.controller.registre.desat.arxiu.error",
+									null));
+				}
 			} else 
 			{
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
@@ -672,6 +691,15 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 			}
 		}
+		boolean annexosPendents = false;
+		// Mirar si té uuid
+		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
+		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
+			if (registreAnnex.getFitxerArxiuUuid() == null) {
+				annexosPendents = true;
+			}
+		}
+		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
 		return isPendentArxiu;
 	}
 

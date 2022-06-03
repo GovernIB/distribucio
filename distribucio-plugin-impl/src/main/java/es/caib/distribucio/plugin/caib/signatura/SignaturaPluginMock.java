@@ -4,12 +4,14 @@
 package es.caib.distribucio.plugin.caib.signatura;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
@@ -21,8 +23,16 @@ import es.caib.plugins.arxiu.api.FirmaPerfil;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class SignaturaPluginMock implements SignaturaPlugin {	  
+public class SignaturaPluginMock extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
 		  
+	public SignaturaPluginMock()  {
+		super();
+	}
+	
+	public SignaturaPluginMock(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
+	
 	@Override
 	public SignaturaResposta signar(
 			String id,

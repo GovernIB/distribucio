@@ -112,18 +112,18 @@
                         <c:set var="valorGeneric" value="${fn:replace(config.key, entitat, '')}" scope="session" />
                     	<c:choose>
                     		<c:when test="${fn:contains(config.value, '////') }">
-		                        <button id="add_${config.key}" onclick="accioBoto('add_${config.key}', '${valorsDefault[valorGeneric]}')" class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
+		                        <button id="add_${config.key}" onclick="accioBoto('add_${config.key}', '${valorsDefault[valorGeneric]}', null)" class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
 		                            <i id="addIconButton_${config.key}" class="fa fa-plus"></i>
 		                        </button>
-		                        <button id="del_${config.key}" onclick="accioBoto('del_${config.key}', '${valorsDefault[valorGeneric]}')" class="btn btn-danger d-none"<c:if test="${config.jbossProperty}"> disabled</c:if>>
+		                        <button id="del_${config.key}" onclick="accioBoto('del_${config.key}', '${valorsDefault[valorGeneric]}', 'otherAdd')" class="btn btn-danger d-none"<c:if test="${config.jbossProperty}"> disabled</c:if>>
 		                            <i id="delIconButton_${config.key}" class="fa fa-trash-o"></i>
 		                        </button>
                     		</c:when>
                     		<c:otherwise>
-		                        <button id="mod_${config.key}" onclick="accioBoto('mod_${config.key}', '${valorsDefault[valorGeneric]}')" class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
+		                        <button id="mod_${config.key}" onclick="accioBoto('mod_${config.key}', '${valorsDefault[valorGeneric]}', null)" class="btn btn-success"<c:if test="${config.jbossProperty}"> disabled</c:if>>
 		                            <i id="modIconButton_${config.key}" class="fa fa-edit"></i>
 		                        </button>
-		                        <button id="del_${config.key}" onclick="accioBoto('del_${config.key}', '${valorsDefault[valorGeneric]}')" class="btn btn-danger"<c:if test="${config.jbossProperty}"> disabled</c:if>>
+		                        <button id="del_${config.key}" onclick="accioBoto('del_${config.key}', '${valorsDefault[valorGeneric]}', 'otherEdit')" class="btn btn-danger"<c:if test="${config.jbossProperty}"> disabled</c:if>>
 		                            <i id="delIconButton_${config.key}" class="fa fa-trash-o"></i>
 		                        </button>
 	                        </c:otherwise>

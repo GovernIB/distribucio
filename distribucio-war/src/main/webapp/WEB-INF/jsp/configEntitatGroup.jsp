@@ -203,7 +203,7 @@
 		    		$(iconConfig).removeClass('fa-circle-o-notch');
 		    		$(iconConfig).removeClass('fa-spin');
 		    		if (nameEvent == 'trash') {
-		        		$(iconConfig).removeClass('fa-save');
+		        		$(iconConfig).removeClass('fa-edit');
 		        		$(iconConfig).addClass('fa-pencil');
 		    		} else if (nameEvent == 'save'){
 		        		$(iconSave).removeClass('fa-pencil');
