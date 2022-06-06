@@ -223,7 +223,7 @@
 							<ul class="dropdown-menu">
 								<li><a href="regla/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 								{{if !activa}}
-								<li><a href="regla/{{:id}}/aplicar" data-confirm="<spring:message code="regla.list.accio.aplicar.manualment.confirm"/>" class="inactiva" title="Acció no disponible si està inactiva"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
+								<li><a href="#" class="inactiva" title="Acció no disponible si està inactiva"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
 								{{else}}
 								<li><a href="regla/{{:id}}/aplicar" data-confirm="<spring:message code="regla.list.accio.aplicar.manualment.confirm"/>"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
 								{{/if}}
