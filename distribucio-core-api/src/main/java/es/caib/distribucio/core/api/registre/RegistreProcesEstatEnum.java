@@ -27,7 +27,6 @@ import java.util.List;
  */
 public enum RegistreProcesEstatEnum {
 	ARXIU_PENDENT,
-	ARXIU_PENDENT_AMB_INTENTS_PENDENTS, 
 	REGLA_PENDENT,
 	BUSTIA_PENDENT,
 	BUSTIA_PROCESSADA,
@@ -43,7 +42,6 @@ public enum RegistreProcesEstatEnum {
 	static {
 		estatsPendents.add(BUSTIA_PENDENT);
 		estatsPendents.add(ARXIU_PENDENT);
-		estatsPendents.add(ARXIU_PENDENT_AMB_INTENTS_PENDENTS);
 		estatsPendents.add(REGLA_PENDENT);
 		estatsPendents.add(BACK_REBUTJADA);
 		estatsPendents.add(BACK_ERROR);

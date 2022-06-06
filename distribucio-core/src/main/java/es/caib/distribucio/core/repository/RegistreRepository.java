@@ -203,7 +203,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
 			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
 			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat) " +
-			"and (:ambIntentsPendents = false or r.procesIntents < :maxReintents) " +
+			"and (:esNullReintentsPendents = true " +
+			"		or (:reintentsPendents = true and r.procesIntents < :maxReintents) " + 
+			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
 			"and (:nomesAmbErrors = false or r.procesError != null ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
@@ -241,7 +243,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("backCodi") String backCodi,
 			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
 			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
-			@Param("ambIntentsPendents") boolean ambIntentsPendents,
+			@Param("esNullReintentsPendents") boolean esNullReintentsPendents,
+			@Param("reintentsPendents") Boolean reintentsPendents,
 			@Param("maxReintents") int maxReintents, 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
