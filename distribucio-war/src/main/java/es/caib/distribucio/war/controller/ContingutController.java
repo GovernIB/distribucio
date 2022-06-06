@@ -390,7 +390,7 @@ public class ContingutController extends BaseUserController {
 		for (ContingutLogDetallsDto log : logsDetall) {
 			item = new Object[2];
 			item[0] = log;
-			item[1] = this.getLogText(request, log);
+			item[1] = this.getLogText(request, log, registre);
 			ret.add(item);
 		}
 		return ret;
@@ -512,7 +512,7 @@ public class ContingutController extends BaseUserController {
     	List<String> textList = new ArrayList<String>();
     	String text;
     	for (ContingutLogDetallsDto log : logsResum) {
-    		text = this.getLogText(request, log);
+    		text = this.getLogText(request, log, registre);
     		// posa la 1a lletra en minúscula
     		text = decapitalize(text);
     		// Afegeix "A data"
@@ -551,7 +551,7 @@ public class ContingutController extends BaseUserController {
 	 * @param log
 	 * @return
 	 */
-	private String getLogText(HttpServletRequest request, ContingutLogDetallsDto log) {
+	private String getLogText(HttpServletRequest request, ContingutLogDetallsDto log, RegistreDto registre) {
 		
 		StringBuilder sb = new StringBuilder();
 		String usuari = log.getCreatedBy() != null ? log.getCreatedBy().getCodi() + " - " + log.getCreatedBy().getNom() : "-";
@@ -648,7 +648,7 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.SOBREESCRIURE", new Object[] {log.getParams().get(0)}));
 			break;
 		case CLASSIFICAR:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR"));
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {log.getLastModifiedBy().getNom(), registre.getProcedimentCodi()}));
 			break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
