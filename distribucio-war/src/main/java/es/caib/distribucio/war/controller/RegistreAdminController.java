@@ -641,6 +641,12 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		
 		if (correcte) {
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"registre.admin.controller.reintentar.processament.reprocessables.no.detectat",
+							new Object[] {registreDto.getNumero()}));
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(getMessage(request, missatge.toString()));
 		} else {
@@ -660,19 +666,15 @@ public class RegistreAdminController extends BaseAdminController {
 			for (RegistreAnnexDto registreAnnex : registreDto.getAnnexos()) {
 				if (registreAnnex.getFitxerArxiuUuid() == null) {
 					isPendentArxiu = true;
-					break;
 				}
 			}
 		}
-		boolean annexosPendents = false;
-		// Mirar si té uuid
 		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
 		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
 			if (registreAnnex.getFitxerArxiuUuid() == null) {
-				annexosPendents = true;
+				isPendentArxiu = true;
 			}
 		}
-		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
 		return isPendentArxiu;
 	}
 
