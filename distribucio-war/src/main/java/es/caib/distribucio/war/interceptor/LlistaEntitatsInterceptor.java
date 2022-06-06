@@ -11,6 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.war.helper.ContingutEstaticHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 
@@ -40,7 +41,7 @@ public class LlistaEntitatsInterceptor extends HandlerInterceptorAdapter {
 		}
 		EntitatDto entitatDto = EntitatHelper.getEntitatActual(request);
 		if (entitatDto != null) {
-			entitatService.setConfigEntitat(entitatDto);
+			ConfigHelper.setEntitat(entitatDto);
 		}		
 		
 		return true;

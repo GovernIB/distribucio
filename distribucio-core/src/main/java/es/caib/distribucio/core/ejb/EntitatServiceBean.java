@@ -155,7 +155,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed({"DIS_SUPER","DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public void setConfigEntitat(EntitatDto entitatDto) {
 		delegate.setConfigEntitat(entitatDto);		
 	}
