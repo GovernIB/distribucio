@@ -1584,8 +1584,8 @@ public class RegistreHelper {
 
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);		
-		String titol = registreAnnexEntity.getFitxerNom().replace(".", "_imprimible.");
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);	
+		String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
 		
 		FitxerDto fitxerDto = new FitxerDto();
 		

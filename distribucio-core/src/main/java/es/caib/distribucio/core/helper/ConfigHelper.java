@@ -82,11 +82,13 @@ public class ConfigHelper {
         configEntity = configRepository.findOne(key);
         if (configEntity == null && entitatActual != null || 
         	configEntity != null && configEntity.getValue() == null && 
-        	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()) {
+        	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()
+        	|| configEntity != null && configEntity.getValue() == null) {
         	String replace = "." + entitatActual.getCodi();
         	key = key.replace(replace, "");
         	configEntity = configRepository.findOne(key);
         } 
+        
        
 		if (configEntity != null) {
 			return getConfig(configEntity);
@@ -100,7 +102,7 @@ public class ConfigHelper {
     	
 		EntitatDto entitatActual = ConfigHelper.entitat.get();
 		
-		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+		//key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
 		
 		return this.getConfig(entitatActual, key);
 		
