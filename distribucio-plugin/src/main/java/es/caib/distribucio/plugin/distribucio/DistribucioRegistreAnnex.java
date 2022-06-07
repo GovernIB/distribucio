@@ -28,6 +28,9 @@ public class DistribucioRegistreAnnex {
 	private List<DistribucioRegistreFirma> firmes;
 	private String metaDades;
 	
+	private boolean firmaValida;
+	private String firmaValidacioDesc;
+	
 	
 	
 	public String getId() {
@@ -114,5 +117,17 @@ public class DistribucioRegistreAnnex {
 	}
 	public void setMetaDades(String metaDades) {
 		this.metaDades = metaDades;
+	}
+	public boolean isFirmaValida() {
+		return firmaValida;
+	}
+	public void setFirmaValida(boolean firmaValida) {
+		this.firmaValida = firmaValida;
+	}
+	public String getFirmaValidacioDesc() {
+		return firmaValidacioDesc;
+	}
+	public void setFirmaValidacioDesc(String firmaValidacioDesc) {
+		this.firmaValidacioDesc = firmaValidacioDesc;
 	}
 }

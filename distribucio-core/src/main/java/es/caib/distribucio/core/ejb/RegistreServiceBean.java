@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.ejb;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -15,8 +14,6 @@ import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -26,6 +23,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -362,6 +360,15 @@ public class RegistreServiceBean implements RegistreService {
 				registreId,
 				text,
 				rolActual);
+	}
+	
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public boolean validarFirmes(
+			Long entitatId,
+			Long registreId,
+			Long annexId) {
+		return delegate.validarFirmes(entitatId, registreId, annexId);
 	}
 
 }

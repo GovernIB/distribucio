@@ -138,10 +138,14 @@ public class AplicacioServiceImpl implements AplicacioService {
 	@Transactional(readOnly = true)
 	@Override
 	public UsuariDto getUsuariActual() {
+		UsuariDto usuari = null;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.trace("Obtenint usuari actual");
-		return toUsuariDtoAmbRols(
-				usuariRepository.findOne(auth.getName()));
+		if (auth != null) {
+			logger.trace("Obtenint usuari actual \"" + auth.getName() + "\"");
+			return toUsuariDtoAmbRols(
+					usuariRepository.findOne(auth.getName()));
+		}
+		return usuari;
 	}
 	
 	@Transactional

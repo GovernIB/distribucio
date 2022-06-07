@@ -176,15 +176,11 @@ public class RegistreAdminController extends BaseAdminController {
 					true);
 			
 			int numeroAnnexosPendentsArxiu = 0;
+			int numeroAnnexosFirmaInvalida = 0;
 			if (registreDto instanceof RegistreDto) {
-				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;				
-				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
-					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
-						numeroAnnexosPendentsArxiu++;
-					}
-				}
+				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
+				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 			}
-			
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
@@ -192,6 +188,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isVistaMoviments", false);
 			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
+			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -867,5 +864,32 @@ public class RegistreAdminController extends BaseAdminController {
 		return filtreCommand;
 	}
 
+	
+	/** Mètode per validar les firmes d'un annex per mostrar informació de les firmes en el detall de l'annex.
+	 * 
+	 * @param request
+	 * @param registreId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/registre/{registreId}/annex/{annexId}/validarFirmes", method = RequestMethod.GET)
+	public String validarFirmesAnnex(HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		boolean processatOk = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
+		if (processatOk) {
+			MissatgesHelper.success(request,
+					getMessage(request,
+							"contingut.admin.controller.validar.firmes.ok"));
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"contingut.admin.controller.validar.firmes.ko"));
+		}
+		return "redirect:" + request.getHeader("referer");
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
 }

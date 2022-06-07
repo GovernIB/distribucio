@@ -74,6 +74,7 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -2048,15 +2049,10 @@ public class RegistreServiceImpl implements RegistreService {
 					RegistreEntity.class,
 					"El registre (id=" + registreId + ") no té cap bústia assignada i per tant no es pot recuperar la llista de procediments associats a la bústia per procedir a la classificació.");
 
-		boolean findIsAdmin = false;
-		if (!usuariHelper.equals("DIS_ADMIN") && !usuariHelper.equals("DIS_ADMIN_LECTURA")) {
-			findIsAdmin = true;
-		}
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				registre.getPareId(),
-				findIsAdmin
-				/*!usuariHelper.isAdmin()*/);
+				this.comprovarPermisLectura());
 		
 		registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
@@ -2100,7 +2096,7 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		
-//		### Recuperar registres duplicats ###
+		// Recuperar registres duplicats
 		List<RegistreEntity> registreRepetit = registreRepository.findRegistresByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndDataAndEsborrat(
 				registre.getEntitatCodi(),
 				registre.getLlibreCodi(),
@@ -2109,7 +2105,7 @@ public class RegistreServiceImpl implements RegistreService {
 				registre.getData(),
 				0);
 
-//		### Comprovar si existeixen moviments del registre al destí seleccionat ###
+		// Comprovar si existeixen moviments del registre al destí seleccionat
 		List<ContingutMovimentEntity> contingutMoviments = contingutHelper.comprovarExistenciaAnotacioEnDesti(registreRepetit, bustia.getId());
 
 		ContingutEntity registrePerClassificar = null;
@@ -2118,12 +2114,12 @@ public class RegistreServiceImpl implements RegistreService {
 		for (ContingutMovimentEntity contingutMovimentEntity : contingutMoviments) {
 			registrePerClassificar = contingutMovimentEntity.getContingut();
 			
-//			### Tornar a marcar l'anotació com a pendent si estava processada i es reb per duplicat ###
+			// Tornar a marcar l'anotació com a pendent si estava processada i es rep per duplicat
 			registre = (RegistreEntity)registrePerClassificar;
 			if (!registre.getPendent()) {
 				registresAmbCanviEstat.put(registre, contingutMovimentEntity);
 			}
-//			### Actualitzar històric i crear coa correus per cada registre a crear ###
+			// Actualitzar històric i crear coa correus per cada registre a crear
 			updateMovimentDetail(
 					registrePerClassificar, 
 					contingutMovimentEntity);
@@ -2143,16 +2139,6 @@ public class RegistreServiceImpl implements RegistreService {
 				contingutMoviment,
 				true);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -2170,14 +2156,13 @@ public class RegistreServiceImpl implements RegistreService {
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (bustiaId != null && bustiaId > 0) {
 			boolean findIsAdmin = false;
-			if (!usuariHelper.equals("DIS_ADMIN") && !usuariHelper.equals("DIS_ADMIN_LECTURA")) {
+			if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura()) {
 				findIsAdmin = true;
 			}
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
 															entitat,
 															bustiaId,
-															findIsAdmin
-															/*!usuariHelper.isAdmin()*/);
+															this.comprovarPermisLectura());
 			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			if (procediments != null) {
 				for (Procediment procediment: procediments) {
@@ -2192,13 +2177,19 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 		}
-		//### Ordenar per codi SIA
+		// Ordenar per codi SIA
 		if (!dtos.isEmpty()) {
 			Collections.sort(dtos);
 		}
 		return dtos;
 	}
-	
+
+	/** Retorna true si no és administrador nii admin lectura. */
+	private boolean comprovarPermisLectura() {
+		return !usuariHelper.isAdmin() && !usuariHelper.isAdminLectura();
+	}
+
+
 	@Transactional
 	@Override
 	public void bloquejar(Long entitatId, Long id) {
@@ -2251,6 +2242,22 @@ public class RegistreServiceImpl implements RegistreService {
 				usuariHelper.getUsuariAutenticat().getCodi());
 	}
 
+	@Transactional
+	@Override
+	public boolean validarFirmes(Long entitatId, Long registreId, Long annexId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.debug("Validant les firmes d'annex (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		return ValidacioFirmaEnum.isValida(
+				registreHelper.validaFirmes(
+						registreAnnexRepository.findOne(annexId)));
+	}
+	
+	
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
 		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
 		RegistreEntity registre = registreRepository.findOne(registreId);

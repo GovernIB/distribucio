@@ -220,9 +220,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		if (annexContingut != null) {
 			// Si l'annex no està firmat el firma amb el plugin de firma
-			// en servidor.
+			// en servidor. En cas de tenir firmes invàlides no es firma en servidor.
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
-			if (!annexFirmat && isRegistreSignarAnnexos()) {
+			if (!annexFirmat 
+					&& isRegistreSignarAnnexos()
+					&& distribucioAnnex.isFirmaValida()) {
 				
 				//sign annex and return firma content bytes
 				SignaturaResposta signatura = signaturaDistribucioSignar(
@@ -415,7 +417,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
-			estatDocument = DocumentEstat.DEFINITIU;
+			if (annex.isFirmaValida() 
+					|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
+				estatDocument = DocumentEstat.DEFINITIU;
+			}
 		}
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
@@ -1446,6 +1451,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				"es.caib.distribucio.plugin.signatura.class");
 //		return System.getProperty(
 //				"es.caib.distribucio.plugin.signatura.class");
+	}
+	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
+	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
+		return new Boolean(System.getProperty(
+				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
 	
 	@Override

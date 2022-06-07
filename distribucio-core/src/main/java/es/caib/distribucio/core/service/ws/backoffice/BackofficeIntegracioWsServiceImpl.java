@@ -178,8 +178,14 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	}
 
 	private String getUsuariIntegracio() {
+		String usuari;
 		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
-		return usuariDto.getCodi();
+		if (usuariDto != null) {
+			usuari = usuariDto.getCodi();
+		} else {
+			usuari = "-";
+		}
+		return usuari;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(BackofficeIntegracioWsServiceImpl.class);

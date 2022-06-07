@@ -427,4 +427,18 @@ public interface RegistreService {
 			String text,
 			String rolActual);		
 	
+	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si té firmes vàlides llavors
+	 * es guarda com a definitiu.
+	 * 
+	 * @param entitatId
+	 * @param registreId
+	 * @param annexId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public boolean validarFirmes(
+			Long entitatId,
+			Long registreId,
+			Long annexId);
+
 }

@@ -381,14 +381,7 @@ public class RegistreUserController extends BaseUserController {
 							registreId,
 							isVistaMoviments,
 							RolHelper.getRolActual(request));
-			
-			int numeroAnnexosPendentsArxiu = 0;						
-			for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
-				if (registreAnnexDto.getFitxerArxiuUuid()==null) {
-					numeroAnnexosPendentsArxiu++;
-				}
-			}			
-			
+						
 			//recupera la ruta del destí lògic del moviment o no l'actual
 			if (isVistaMoviments && destiLogic != null) {
 				List<ContingutDto> path = registreService.getPathContingut(entitatActual.getId(), destiLogic);
@@ -403,7 +396,8 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 			model.addAttribute("isVistaMoviments", isVistaMoviments);
 			model.addAttribute("destiLogic", destiLogic);
-			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
+			model.addAttribute("numeroAnnexosPendentsArxiu", this.numeroAnnexosPendentsArxiu(registre));
+			model.addAttribute("numeroAnnexosFirmaInvalida", this.numeroAnnexosFirmaInvalida(registre));
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {

@@ -618,7 +618,6 @@ public class PluginHelper {
 		try {
 			DocumentContingut documentImprimible = getDistribucioPlugin().documentImprimible(fitxerArxiuUuid);
 			if (documentImprimible != null) {
-				//fitxerDto.setNom(documentImprimible.getArxiuNom());
 				fitxerDto.setNom(titol);
 				fitxerDto.setContentType(documentImprimible.getTipusMime());
 				fitxerDto.setContingut(documentImprimible.getContingut());
@@ -930,8 +929,6 @@ public class PluginHelper {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
-					/*Class<?> clazz = Class.forName(pluginClass);
-					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.newInstance();*/
 					Class<?> clazz = Class.forName(pluginClass);
 					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(
 							String.class,
@@ -1159,10 +1156,8 @@ public class PluginHelper {
 			propertiesLoaded.put(codeProperties, true);
 			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);
 			for (Map.Entry<String, String> entry : pluginProps.entrySet() ) {
-				String value = entry.getValue() == null ? "" : (String) entry.getValue();
-				PropertiesHelper.getProperties().setProperty((String) entry.getKey(), value);
-//				String value = entry.getValue() == null ? "" : entry.getValue();
-//				System.setProperty(entry.getKey(), value);
+				String value = entry.getValue() == null ? "" : entry.getValue();
+				System.setProperty(entry.getKey(), value);
 			}
 		}
 	}
