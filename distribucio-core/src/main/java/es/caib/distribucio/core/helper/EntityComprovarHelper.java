@@ -70,17 +70,19 @@ public class EntityComprovarHelper {
 		}
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (comprovarPermisUsuari) {
-			boolean esLectorEntitat = permisosHelper.isGrantedAll(
+			boolean esLectorEntitat = permisosHelper.isGrantedAny(
 					entitatId,
 					EntitatEntity.class,
-					new Permission[] {ExtendedPermission.READ},
+					new Permission[] {
+							ExtendedPermission.READ, 
+							ExtendedPermission.ADMIN_LECTURA},
 					auth);
 			if (!esLectorEntitat) {
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
 						auth.getName(),
-						"READ");
+						"READ || ADMIN_LECTURA");
 			}
 		}
 		if (comprovarPermisAdmin) {
