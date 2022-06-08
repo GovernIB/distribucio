@@ -641,12 +641,6 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		
 		if (correcte) {
-			MissatgesHelper.success(
-					request, 
-					getMessage(
-							request, 
-							"registre.admin.controller.reintentar.processament.reprocessables.no.detectat",
-							new Object[] {registreDto.getNumero()}));
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(getMessage(request, missatge.toString()));
 		} else {
