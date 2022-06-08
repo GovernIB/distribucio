@@ -821,11 +821,19 @@ public class ContingutServiceImpl implements ContingutService {
 		}
 		return isCodisUoSuperiorsEmpty;
 	}
+	
 
+	@Override
+	public String cercarBustia(Long contingutId) {
+		
+		ContingutEntity contingutEntity = contingutRepository.findOne(contingutId);
+		String bustiaRegistre = contingutEntity.getDarrerMoviment().getDestiNom();
+		
+		return bustiaRegistre;
+	}
 
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutServiceImpl.class);
-
 
 
 }

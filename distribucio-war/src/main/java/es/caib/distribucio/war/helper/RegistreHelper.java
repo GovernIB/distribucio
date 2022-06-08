@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -22,17 +23,23 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
+import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.war.controller.BaseController;
 
 @Component
-public class RegistreHelper {
+public class RegistreHelper extends BaseController{
 	
 	@Autowired
 	private RegistreService registreService;
+	@Autowired
+	private ContingutService contingutService;
 	
 	public void generarExcelAnotacions(
+			HttpServletRequest request,
 			HttpServletResponse response,
-			List<RegistreDto> registres) {
+			List<RegistreDto> registres, 
+			String extensio) {
 
 		HSSFWorkbook wb;
 		HSSFCellStyle cellStyle;
@@ -85,7 +92,10 @@ public class RegistreHelper {
 				cellRegistreNumero.setCellStyle(dStyle);
 				
 				HSSFCell cellRegistreData = xlsRow.createCell(1);
-				cellRegistreData.setCellValue(registre.getData());
+				Date data = registre.getData();
+				DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+				String strData = dateFormat.format(data);
+				cellRegistreData.setCellValue(strData);
 				cellRegistreData.setCellStyle(dStyle);
 				
 				HSSFCell cellOficinaCodi = xlsRow.createCell(2);
@@ -93,7 +103,13 @@ public class RegistreHelper {
 				cellOficinaCodi.setCellStyle(dStyle);
 
 				HSSFCell cellRegistrePresencial = xlsRow.createCell(3);
-				cellRegistrePresencial.setCellValue(registre.getPresencial());
+				String presencial = "";
+				if (registre.getPresencial()) {
+					presencial = "Si";
+				}else {
+					presencial = "no";
+				}
+				cellRegistrePresencial.setCellValue(presencial);
 				cellRegistrePresencial.setCellStyle(dStyle);
 				
 				HSSFCell cellRegistreExtracte = xlsRow.createCell(4);
@@ -117,12 +133,12 @@ public class RegistreHelper {
 				cellRegistreNumeroOrigen.setCellStyle(dStyle);
 				
 				Date date = registre.getDataOrigen();
-				DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+				DateFormat dateFormat2 = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
 				String origenData;
 				if (date == null) {
 					origenData = "";
 				}else {
-					origenData = dateFormat.format(date);
+					origenData = dateFormat2.format(date);
 				}
 				HSSFCell cellRegistreDataOrigen = xlsRow.createCell(9);
 				cellRegistreDataOrigen.setCellValue(origenData);
@@ -145,11 +161,17 @@ public class RegistreHelper {
 				cellRegistreInteressats.setCellStyle(dStyle);
 				
 				HSSFCell cellRegistreEstat = xlsRow.createCell(12);
-				cellRegistreEstat.setCellValue(registre.getProcesEstat().toString());
+				String propietat = "registre.proces.estat.enum." + registre.getProcesEstat().toString();
+				String estatDescripcio = getMessage(
+						request, 
+						propietat,
+						null);
+				cellRegistreEstat.setCellValue(estatDescripcio);
 				cellRegistreEstat.setCellStyle(dStyle);
 				
 				HSSFCell cellRegistreDarrerMoviment = xlsRow.createCell(13);
-				cellRegistreDarrerMoviment.setCellValue(registre.getDarrerMovimentOrigenBustia());
+				String bustiaOrigen = contingutService.cercarBustia(registre.getId());
+				cellRegistreDarrerMoviment.setCellValue(bustiaOrigen);
 				cellRegistreDarrerMoviment.setCellStyle(dStyle);
 
 			} catch (Exception e) {
@@ -161,7 +183,7 @@ public class RegistreHelper {
 			sheet.autoSizeColumn(i);
 
 		try {
-			String fileName = "Anotacions.xls";
+			String fileName = "Anotacions." + extensio;
 			response.setHeader("Pragma", "");
 			response.setHeader("Expires", "");
 			response.setHeader("Cache-Control", "");

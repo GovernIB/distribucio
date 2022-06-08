@@ -745,13 +745,14 @@ public class RegistreAdminController extends BaseAdminController {
 	}
 	
 	
-	@RequestMapping(value="/exportarCSV", method = RequestMethod.GET)
-	public void exportarCSV(
+	@RequestMapping(value="/exportar", method = RequestMethod.GET)
+	public void exportar(
 			HttpServletRequest request,
 			HttpServletResponse response, 
 			Model model, 
 			@RequestParam String llistat, 
-			@RequestParam String[] filtresForm) throws IllegalAccessException, NoSuchMethodException  {
+			@RequestParam String[] filtresForm, 
+			@RequestParam String extensio) throws IllegalAccessException, NoSuchMethodException  {
 		
 		List<RegistreDto> llistatRegistres = new ArrayList<RegistreDto>();
 		if (llistat.equals("seleccio")) {
@@ -837,7 +838,7 @@ public class RegistreAdminController extends BaseAdminController {
 					true);			
 		}
 		
-		registreHelper.generarExcelAnotacions(response, llistatRegistres);
+		registreHelper.generarExcelAnotacions(request, response, llistatRegistres, extensio);
 		
 	}
 	

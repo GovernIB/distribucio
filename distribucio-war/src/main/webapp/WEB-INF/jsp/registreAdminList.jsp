@@ -334,9 +334,20 @@ $(document).ready(function() {
 				<!-- <dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/> -->
 			</div>
 			<div class="col-md-3 d-flex justify-content-end">
-				<a onclick="exportarCSV();" href="#" class="ml-2 btn btn-success"> 
-					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
-				</a>
+			
+				
+				
+			<div class="btn-group">
+				<button class="ml-2 btn btn-success" data-toggle="dropdown"><span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />&nbsp;<span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li><a onclick="exportar('csv');" aria-haspopup="true" aria-expanded="false">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.csv"/></span>
+					</a></li>
+					<li><a onclick="exportar('odt');" aria-haspopup="true" aria-expanded="false">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.odt"/></span>
+					</a></li>		
+				</ul>
+			</div>
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>				
@@ -347,7 +358,7 @@ $(document).ready(function() {
 					</div>
 					<div class="box-botons ml-6">
 						<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
-							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportarcsv.filtre.anotacio" />
+							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />
 						</a>
 						<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
@@ -360,7 +371,7 @@ $(document).ready(function() {
 	</form:form>
 	
 	<script>
-		function exportarCSV() {
+		function exportar(extensio) {
 			var numero = document.getElementById("numero").value;
 			var titol = document.getElementById("titol").value;
 			var numeroOrigen = document.getElementById("numeroOrigen").value;
@@ -381,7 +392,7 @@ $(document).ready(function() {
 							dataRecepcioInici, dataRecepcioFi, unitatId, bustia, enviatPerEmail, 
 							tipusDocFisica, backCodi, procesEstatSimple, estatestat, sobreescriure];
 			
-			window.location.href = 'registreAdmin/exportarCSV?llistat=filtre&filtresForm=' + FILTRE;
+			window.location.href = 'registreAdmin/exportar?llistat=filtre&filtresForm=' + FILTRE + '&extensio=' + extensio;
 		}
 	</script>
 	
@@ -404,8 +415,8 @@ $(document).ready(function() {
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>	
-					<li><a href="registreAdmin/exportarCSV?llistat=seleccio&filtresForm=">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportarcsv.anotacio"/>
+					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio"/>
 					</a></li>			
 				</ul>
 			</div>
