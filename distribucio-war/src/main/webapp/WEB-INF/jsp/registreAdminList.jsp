@@ -340,11 +340,11 @@ $(document).ready(function() {
 			<div class="btn-group">
 				<button class="ml-2 btn btn-success" data-toggle="dropdown"><span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu">
+					<li><a onclick="exportar('ods');" aria-haspopup="true" aria-expanded="false">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.ods"/></span>
+					</a></li>
 					<li><a onclick="exportar('csv');" aria-haspopup="true" aria-expanded="false">
 						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.csv"/></span>
-					</a></li>
-					<li><a onclick="exportar('odt');" aria-haspopup="true" aria-expanded="false">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.odt"/></span>
 					</a></li>		
 				</ul>
 			</div>
@@ -371,7 +371,7 @@ $(document).ready(function() {
 	</form:form>
 	
 	<script>
-		function exportar(extensio) {
+		function exportar(format) {
 			var numero = document.getElementById("numero").value;
 			var titol = document.getElementById("titol").value;
 			var numeroOrigen = document.getElementById("numeroOrigen").value;
@@ -392,7 +392,7 @@ $(document).ready(function() {
 							dataRecepcioInici, dataRecepcioFi, unitatId, bustia, enviatPerEmail, 
 							tipusDocFisica, backCodi, procesEstatSimple, estatestat, sobreescriure];
 			
-			window.location.href = 'registreAdmin/exportar?llistat=filtre&filtresForm=' + FILTRE + '&extensio=' + extensio;
+			window.location.href = 'registreAdmin/exportar?llistat=filtre&filtresForm=' + FILTRE + '&format=' + format;
 		}
 	</script>
 	
@@ -415,8 +415,11 @@ $(document).ready(function() {
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>	
-					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio"/>
+					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=ods">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
+					</a></li>	
+					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=csv">
+						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
 					</a></li>			
 				</ul>
 			</div>
