@@ -289,4 +289,10 @@ public interface ContingutService {
 			);
 	
 	
+	/**
+	 * Mètode per cercar la bustia
+	 * */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	public String cercarBustia(Long contingutId);
+	
 }

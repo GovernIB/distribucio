@@ -79,9 +79,9 @@
                         if (!entitat.jbossProperty) {
                         	let saveDelete = entitat.value ? "" : "no-display";
                             let config = !entitat.value ? "" : "no-display";
-                            string += '<button onclick="accioBoto(' + keyReplaced + ', this.name)" id="' + keyReplaced + '_button_save" name="save" type="button" class="btn btn-success entitat-save ' + saveDelete + '"><i class="fa fa-save"></i></button>';
-                            string += '<button onclick="accioBoto(' + keyReplaced + ', this.name)" id="' + keyReplaced + '_button_trash" name="trash" type="button" class="btn btn-danger entitat-trash ml-1 ' + saveDelete + '"><i class="fa fa-trash"></i></button>';
+                            string += '<button onclick="accioBoto(' + keyReplaced + ', this.name)" id="' + keyReplaced + '_button_save" name="save" type="button" class="btn btn-success entitat-save ' + saveDelete + '"><i class="fa fa-save"></i></button>';                            
                             string += '<button onclick="accioBoto(' + keyReplaced + ', this.name)" id="' + keyReplaced + '_button_config" name="edit" type="button" class="btn btn-success entitat-config ' + config + '"><i class="fa fa-pencil"></i></button>';
+                            string += '<button onclick="accioBoto(' + keyReplaced + ', this.name)" id="' + keyReplaced + '_button_trash" name="trash" type="button" class="btn btn-danger entitat-trash ml-1 ' + saveDelete + '"><i class="fa fa-trash"></i></button>';
                         }
                         string += '</div></div>';
                         div.append(string);
@@ -203,8 +203,10 @@
 		    		$(iconConfig).removeClass('fa-circle-o-notch');
 		    		$(iconConfig).removeClass('fa-spin');
 		    		if (nameEvent == 'trash') {
-		        		$(iconConfig).removeClass('fa-edit');
+		        		$(iconConfig).removeClass('fa-save');
 		        		$(iconConfig).addClass('fa-pencil');
+		        		$(iconSave).removeClass('fa-save');
+		        		$(iconSave).addClass('fa-pencil');
 		    		} else if (nameEvent == 'save'){
 		        		$(iconSave).removeClass('fa-pencil');
 		        		$(iconSave).addClass('fa-save');

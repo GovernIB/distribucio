@@ -67,4 +67,8 @@ public class ConfigServiceBean implements ConfigService {
 		delegate.reiniciarTasquesEnSegonPla();
 		
 	}
+	@Override
+	public void setEntitatPerPropietat(EntitatDto entitatDto) {
+		delegate.setEntitatPerPropietat(entitatDto);
+	}
 }

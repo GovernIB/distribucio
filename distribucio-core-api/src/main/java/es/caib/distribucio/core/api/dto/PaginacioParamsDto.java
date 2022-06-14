@@ -131,6 +131,14 @@ public class PaginacioParamsDto implements Serializable {
 		}
 		private static final long serialVersionUID = -139254994389509932L;
 	}
+	
+	public static PaginacioParamsDto getPaginacioDtoTotsElsResultats() {
+		PaginacioParamsDto paginacio = new PaginacioParamsDto();
+		paginacio.setPaginaNum(0);
+		paginacio.setPaginaTamany(-1);
+		return paginacio;
+	}
+
 
 	private static final long serialVersionUID = -139254994389509932L;
 

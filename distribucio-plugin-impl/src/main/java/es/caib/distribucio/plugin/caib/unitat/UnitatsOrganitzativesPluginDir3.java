@@ -36,6 +36,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -253,31 +254,86 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 	}
 	
 	private String getServiceUrl() {
-		return getProperty(
-				"plugin.unitats.organitzatives.dir3.service.url");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.url");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url");
+//		return getProperty(
+//				"plugin.unitats.organitzatives.dir3.service.url");
 	}
 	private String getServiceUsername() {
-		return getProperty(
-				"plugin.unitats.organitzatives.dir3.service.username");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.username");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
+//		return getProperty(
+//				"plugin.unitats.organitzatives.dir3.service.username");
 	}
 	private String getServicePassword() {
-		return getProperty(
-				"plugin.unitats.organitzatives.dir3.service.password");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.password");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
+//		return getProperty(
+//				"plugin.unitats.organitzatives.dir3.service.password");
 	}
 	private boolean isLogMissatgesActiu() {
-		return getAsBoolean(
-				"plugin.unitats.organitzatives.dir3.service.log.actiu");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			Boolean propietatAmbEntitat = PropertiesHelper.getProperties().getAsBoolean(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.log.actiu");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getAsBoolean(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.log.actiu");
+//		return getAsBoolean(
+//				"plugin.unitats.organitzatives.dir3.service.log.actiu");
 	}
 	private Integer getServiceTimeout() {
-		String key = "plugin.unitats.organitzatives.dir3.service.timeout";
-		if (getProperty(key) != null)
-			return getAsInt(key);
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			Integer propietatAmbEntitat = PropertiesHelper.getProperties().getAsInt(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.timeout");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		String key = "es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout";
+		if (System.getProperty(key) != null)
+			return PropertiesHelper.getProperties().getAsInt(key);
+//		String key = "plugin.unitats.organitzatives.dir3.service.timeout";
+//		if (getProperty(key) != null)
+//			return getAsInt(key);
 		else
 			return null;
 	}
 	private String getServiceCercaUrl() {
-		return getProperty(
-				"plugin.unitats.cerca.dir3.service.url");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.cerca.dir3.service.url");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.cerca.dir3.service.url");
+//		return getProperty(
+//				"plugin.unitats.cerca.dir3.service.url");
 	}
 
 	@Override

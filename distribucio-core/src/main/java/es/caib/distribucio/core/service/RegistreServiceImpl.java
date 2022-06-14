@@ -433,7 +433,6 @@ public class RegistreServiceImpl implements RegistreService {
 		try {
 			boolean ambIntentsPendents = false;
 			int maxReintents = 0;
-			System.out.println(">>>>>>>>>>>>>>>>>>>>filtre: " + filtre );
 			if (filtre.getReintents() != null) {
 				ambIntentsPendents = true;
 				maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);

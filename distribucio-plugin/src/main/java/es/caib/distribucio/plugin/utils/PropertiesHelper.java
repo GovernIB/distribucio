@@ -30,7 +30,11 @@ public class PropertiesHelper extends Properties {
 			String propertiesPath = System.getProperty(APPSERV_PROPS_PATH);
 			if (propertiesPath != null) {
 				instance.llegirSystem = false;
+<<<<<<< HEAD
 				//logger.debug("Llegint les propietats de l'aplicació del path: " + propertiesPath);
+=======
+//				logger.debug("Llegint les propietats de l'aplicació del path: " + propertiesPath);
+>>>>>>> refs/heads/dis-dev
 				try {
 					if (propertiesPath.startsWith("classpath:")) {
 						instance.load(
@@ -45,7 +49,11 @@ public class PropertiesHelper extends Properties {
 						instance.load(fis);
 					}
 				} catch (Exception ex) {
+<<<<<<< HEAD
 					//logger.error("No s'han pogut llegir els properties", ex);
+=======
+//					logger.error("No s'han pogut llegir els properties", ex);
+>>>>>>> refs/heads/dis-dev
 				}
 			}
 		}
@@ -117,7 +125,11 @@ public class PropertiesHelper extends Properties {
 		return properties;
 	}
 	
+<<<<<<< HEAD
 	//private static final Logger logger = LoggerFactory.getLogger(PropertiesHelper.class);
+=======
+//	private static final Logger logger = LoggerFactory.getLogger(PropertiesHelper.class);
+>>>>>>> refs/heads/dis-dev
 	private static final long serialVersionUID = 1L;
 
 }

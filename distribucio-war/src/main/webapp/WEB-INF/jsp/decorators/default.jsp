@@ -219,9 +219,14 @@ body {
 							</ul>
 						</li>
 					</ul>
+<<<<<<< HEAD
 					<div class="clearfix"></div>	
 					  <div class="navbar-btn navbar-right">								
 						<div class="btn-group">					
+=======
+					<div class="clearfix"></div>									
+						<div class="btn-group pull-right">					
+>>>>>>> refs/heads/dis-dev
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>

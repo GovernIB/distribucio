@@ -25,7 +25,7 @@ import java.util.List;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public enum RegistreProcesEstatEnum {
-	ARXIU_PENDENT, 
+	ARXIU_PENDENT,
 	REGLA_PENDENT,
 	BUSTIA_PENDENT,
 	BUSTIA_PROCESSADA,

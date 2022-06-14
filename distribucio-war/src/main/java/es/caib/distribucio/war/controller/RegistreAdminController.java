@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
@@ -634,8 +636,7 @@ public class RegistreAdminController extends BaseAdminController {
 				missatge = getMessage(
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
-						null);				
-				//TODO: fer acció de guardar a l'arxiu com apretar el botó "processar desat d'annexos */
+						null);		
 				boolean processatOk = registreService.processarAnnexosAdmin(
 						entitatActual.getId(),
 						registreId);
@@ -687,7 +688,6 @@ public class RegistreAdminController extends BaseAdminController {
 			for (RegistreAnnexDto registreAnnex : registreDto.getAnnexos()) {
 				if (registreAnnex.getFitxerArxiuUuid() == null) {
 					isPendentArxiu = true;
-					break;
 				}
 			}
 		}
@@ -700,6 +700,12 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		}
 		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
+//		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
+//		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
+//			if (registreAnnex.getFitxerArxiuUuid() == null) {
+//				isPendentArxiu = true;
+//			}
+//		}
 		return isPendentArxiu;
 	}
 
@@ -770,13 +776,14 @@ public class RegistreAdminController extends BaseAdminController {
 	}
 	
 	
-	@RequestMapping(value="/exportarCSV", method = RequestMethod.GET)
-	public void exportarCSV(
+	@RequestMapping(value="/exportar", method = RequestMethod.GET)
+	public String exportar(
 			HttpServletRequest request,
 			HttpServletResponse response, 
 			Model model, 
 			@RequestParam String llistat, 
-			@RequestParam String[] filtresForm) throws IllegalAccessException, NoSuchMethodException  {
+			@RequestParam String[] filtresForm, 
+			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
 		
 		List<RegistreDto> llistatRegistres = new ArrayList<RegistreDto>();
 		if (llistat.equals("seleccio")) {
@@ -862,12 +869,21 @@ public class RegistreAdminController extends BaseAdminController {
 					true);			
 		}
 		
-		registreHelper.generarExcelAnotacions(response, llistatRegistres);
+		FitxerDto fitxer;
+		try {
+			fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 		
 	}
 	
-
-
 	
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
