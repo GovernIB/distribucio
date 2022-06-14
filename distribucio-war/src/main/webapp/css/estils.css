@@ -260,7 +260,6 @@ table.dataTable tr.datatable-dades-carregant div {
 }
 
 .ml-1 {
-<<<<<<< HEAD
 	margin-left: 0.3rem;
 }
 
@@ -270,8 +269,6 @@ table.dataTable tr.datatable-dades-carregant div {
 
 .ml-6 {
 	margin-left: 3rem;
-=======
-	margin-left: 0.3rem
 }
 
 
@@ -285,5 +282,4 @@ table.dataTable tr.datatable-dades-carregant div {
 
 .justify-content-end {
 	justify-content: end;
->>>>>>> refs/heads/dis-dev
 }
