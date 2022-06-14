@@ -202,6 +202,12 @@ public class ConfigServiceImpl implements ConfigService {
         ConfigEntity configEntity = configRepository.findOne(key);
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
 	}
+
+
+	@Override
+	public void setEntitatPerPropietat(EntitatDto entitatDto) {
+		configHelper.setEntitat(entitatDto);
+	}
 	
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);

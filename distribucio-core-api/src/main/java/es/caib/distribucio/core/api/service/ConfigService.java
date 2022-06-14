@@ -48,6 +48,9 @@ public interface ConfigService {
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	List<ConfigDto> findEntitatsConfigByKey(String key);
 	
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public void setEntitatPerPropietat(EntitatDto entitatDto);
+	
 
 }
 

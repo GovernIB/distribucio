@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.core.helper;
+package es.caib.distribucio.war.helper;
 
 import java.io.IOException;
 

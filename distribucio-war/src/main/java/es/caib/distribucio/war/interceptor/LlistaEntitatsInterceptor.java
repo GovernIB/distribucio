@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
-import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.war.helper.ContingutEstaticHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 
@@ -24,6 +24,8 @@ public class LlistaEntitatsInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
 	private EntitatService entitatService;
+	@Autowired
+	private ConfigService configService;
 
 
 	@Override
@@ -41,7 +43,7 @@ public class LlistaEntitatsInterceptor extends HandlerInterceptorAdapter {
 		}
 		EntitatDto entitatDto = EntitatHelper.getEntitatActual(request);
 		if (entitatDto != null) {
-			ConfigHelper.setEntitat(entitatDto);
+			configService.setEntitatPerPropietat(entitatDto);
 		}		
 		
 		return true;

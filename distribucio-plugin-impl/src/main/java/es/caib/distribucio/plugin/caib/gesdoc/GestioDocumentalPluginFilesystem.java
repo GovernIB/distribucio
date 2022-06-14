@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de gestió documental que
@@ -128,8 +129,17 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 
 
 	private String getBaseDir(String agrupacio) {
-		String baseDir = getProperty(
-				"plugin.gesdoc.filesystem.base.dir");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugingesdoc.filesystem.base.dir");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		String baseDir = System.getProperty(
+				"es.caib.distribucio.plugin.gesdoc.filesystem.base.dir");
+//		String baseDir = getProperty(
+//				"plugin.gesdoc.filesystem.base.dir");
 		if (baseDir != null) {
 			if (baseDir.endsWith("/")) {
 				return baseDir + agrupacio;

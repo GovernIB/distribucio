@@ -304,8 +304,17 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 	}
 
 	private String getBaseUrl() {
-		String baseUrl = getProperty(
-				"plugin.dadesext.service.url");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.dadesext.service.url");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		String baseUrl = PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.dadesext.service.url");
+//		String baseUrl = getProperty(
+//				"plugin.dadesext.service.url");
 		if (baseUrl != null && baseUrl.length() > 0) {
 			return baseUrl;
 		} else {

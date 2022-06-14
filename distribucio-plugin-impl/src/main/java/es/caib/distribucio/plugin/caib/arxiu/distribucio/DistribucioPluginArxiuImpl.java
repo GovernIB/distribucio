@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -45,8 +46,10 @@ import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
@@ -75,7 +78,7 @@ import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
+public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginProperties implements DistribucioPlugin {
 
 
 	private IntegracioManager integracioManager;
@@ -88,6 +91,15 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 	private IArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
+	
+	  
+	public DistribucioPluginArxiuImpl()  {
+		super();
+	}
+	
+	public DistribucioPluginArxiuImpl(String propertyKeyBase, Properties properties) {
+		super(propertyKeyBase, properties);
+	}
 
 
 	@Override
@@ -1328,17 +1340,17 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-//					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+					if (PropertiesHelper.getProperties().isLlegirSystem()) {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
-//					} else {
-//						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-//								String.class,
-//								Properties.class).newInstance(
-//								"es.caib.distribucio.",
-//								PropertiesHelper.getProperties().findAll());
-//					}
+					} else {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class,
+								Properties.class).newInstance(
+								"es.caib.distribucio.",
+								PropertiesHelper.getProperties().findAll());
+					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1402,27 +1414,38 @@ public class DistribucioPluginArxiuImpl implements DistribucioPlugin {
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}
 	private String getPropertyPluginArxiu() {
-		return System.getProperty(
+		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
+//		return System.getProperty(
+//				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
-		return System.getProperty(
+		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
+//		return System.getProperty(
+//				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
-		return System.getProperty(
+		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
+//		return System.getProperty(
+//				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return System.getProperty("es.caib.distribucio.plugin.gesdoc.class");
+		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+//		return System.getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
-		return new Boolean(System.getProperty(
+		return new Boolean(PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
+//		return new Boolean(System.getProperty(
+//				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
-		return System.getProperty(
+		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
+//		return System.getProperty(
+//				"es.caib.distribucio.plugin.signatura.class");
 	}
 	
 	@Override

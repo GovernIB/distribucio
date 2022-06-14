@@ -294,34 +294,61 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		String url = getProperty(
-				"plugin.dadesext.dir3.service.url");
-		if (url != null) {
-			return url;
-		}else {
-			return getProperty(
-					"plugin.dadesext.service.url");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.dadesext.service.url");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
 		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.dadesext.service.url");
+//		String url = getProperty(
+//				"plugin.dadesext.dir3.service.url");
+//		if (url != null) {
+//			return url;
+//		}else {
+//			return getProperty(
+//					"plugin.dadesext.service.url");
+//		}
 	}
 	private String getUsername() {
-		String username = getProperty(
-				"plugin.dadesext.dir3.service.username");
-		if(username != null) {
-			return username;
-		}else {
-			return getProperty(
-					"plugin.unitats.organitzatives.dir3.service.username");
-		}
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.username");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}		
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
+//		String username = getProperty(
+//				"plugin.dadesext.dir3.service.username");
+//		if(username != null) {
+//			return username;
+//		}else {
+//			return getProperty(
+//					"plugin.unitats.organitzatives.dir3.service.username");
+//		}
 	}
 	private String getPassword() {
-		String password = getProperty(
-				"plugin.dadesext.dir3.service.password");
-		if(password != null) {
-			return password;
-		}else {
-			return getProperty(
-					"plugin.unitats.organitzatives.dir3.service.password");
-		}
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.password");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}	
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
+//		String password = getProperty(
+//				"plugin.dadesext.dir3.service.password");
+//		if(password != null) {
+//			return password;
+//		}else {
+//			return getProperty(
+//					"plugin.unitats.organitzatives.dir3.service.password");
+//		}
 	}
 
 	public String getUsuariIntegracio() {

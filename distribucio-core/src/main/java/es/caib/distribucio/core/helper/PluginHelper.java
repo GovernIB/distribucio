@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
@@ -44,6 +45,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManage
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -70,7 +72,7 @@ public class PluginHelper {
 	private IValidateSignaturePlugin validaSignaturaPlugin;
 	private ProcedimentPlugin procedimentPlugin;
 	private DistribucioPlugin distribucioPlugin;
-
+	
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
@@ -869,6 +871,9 @@ public class PluginHelper {
 		accioParams.put("codiDir3", codiDir3);
 		long t0 = System.currentTimeMillis();
 		try {
+			EntitatDto entitatDto = configHelper.getEntitat().get();
+			DistribucioAbstractPluginProperties.setCodiEntitat(entitatDto.getCodi());
+			
 			//codiDir3 = "A04003003";
 			List<Procediment> procediments = getProcedimentPlugin().findAmbCodiDir3(codiDir3);
 			integracioHelper.addAccioOk(
@@ -1154,8 +1159,10 @@ public class PluginHelper {
 			propertiesLoaded.put(codeProperties, true);
 			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);
 			for (Map.Entry<String, String> entry : pluginProps.entrySet() ) {
-				String value = entry.getValue() == null ? "" : entry.getValue();
-				System.setProperty(entry.getKey(), value);
+				String value = entry.getValue() == null ? "" : (String) entry.getValue();
+				PropertiesHelper.getProperties().setProperty((String) entry.getKey(), value);
+//				String value = entry.getValue() == null ? "" : entry.getValue();
+//				System.setProperty(entry.getKey(), value);
 			}
 		}
 	}

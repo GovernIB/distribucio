@@ -2,10 +2,22 @@ package es.caib.distribucio.plugin.properties;
 
 import java.util.Properties;
 
+
 public abstract class DistribucioAbstractPluginProperties {
 	
 	private final String propertyKeyBase;
 	private final Properties properties;
+	
+	private static String codiEntitat;
+	
+	  
+	public static String getCodiEntitat() {
+		return codiEntitat;
+	}
+
+	public static void setCodiEntitat(String codiEntitat) {
+		DistribucioAbstractPluginProperties.codiEntitat = codiEntitat;
+	}
 
 	public DistribucioAbstractPluginProperties() {
 		this("", (Properties) null);

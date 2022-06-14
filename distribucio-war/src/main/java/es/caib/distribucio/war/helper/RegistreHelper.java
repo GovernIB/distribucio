@@ -22,7 +22,6 @@ import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.service.ContingutService;
-import es.caib.distribucio.core.helper.CsvHelper;
 import es.caib.distribucio.war.controller.BaseController;
 
 @Component

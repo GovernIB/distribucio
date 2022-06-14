@@ -35,8 +35,7 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
-	
-	  
+
 	public ProcedimentPluginRolsac()  {
 		super();
 	}
@@ -115,21 +114,57 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		return getProperty(
-				"plugin.procediment.rolsac.service.url");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.url");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
+//		return getProperty(
+//				"plugin.procediment.rolsac.service.url");
 	}
 	private String getServiceUsername() {
-		return getProperty(
-				"plugin.procediment.rolsac.service.username");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.username");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.procediment.rolsac.service.username");
+//		return getProperty(
+//				"plugin.procediment.rolsac.service.username");
 	}
 	private String getServicePassword() {
-		return getProperty(
-				"plugin.procediment.rolsac.service.password");
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
+					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.password");
+			if (propietatAmbEntitat != null) {
+				return propietatAmbEntitat;
+			}
+		}
+		return PropertiesHelper.getProperties().getProperty(
+				"es.caib.distribucio.plugin.procediment.rolsac.service.password");
+//		return getProperty(
+//				"plugin.procediment.rolsac.service.password");
 	}
 	private Integer getServiceTimeout() {
-		String key = "plugin.procediment.rolsac.service.timeout";
-		if (getProperty(key) != null) {
-			return getAsInt(key);
+		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
+			String keyAmbEntitat = "es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.timeout";
+			if (PropertiesHelper.getProperties().getProperty(keyAmbEntitat) != null) {
+				return PropertiesHelper.getProperties().getAsInt(keyAmbEntitat);
+			}
+		}
+		String key = "es.caib.distribucio.plugin.procediment.rolsac.service.timeout";
+		if (PropertiesHelper.getProperties().getProperty(key) != null) {
+			return PropertiesHelper.getProperties().getAsInt(key);
+//		String key = "plugin.procediment.rolsac.service.timeout";
+//		if (getProperty(key) != null) {
+//			return getAsInt(key);
 		} else {
 			return null;
 		}

@@ -37,11 +37,11 @@
 		<sec:intercept-url pattern="/rest/v0/bustia" access="hasRole('DIS_BSTWS')"/>
 		<sec:intercept-url pattern="/rest/v1/bustia" access="hasRole('DIS_BSTWS')"/>
  		<sec:intercept-url pattern="/entitat*" access="hasRole('DIS_SUPER')"/>
-		<sec:intercept-url pattern="/permis*" access="hasRole({'DIS_ADMIN', 'DIS_ADMIN_LECTURA'})"/>
-		<sec:intercept-url pattern="/metaExpedient*" access="hasRole({'DIS_ADMIN', 'DIS_ADMIN_LECTURA'})"/>
-		<sec:intercept-url pattern="/metaDocument*" access="hasRole({'DIS_ADMIN', 'DIS_ADMIN_LECTURA'})"/>
-		<sec:intercept-url pattern="/metaCarpeta*" access="hasRole({'DIS_ADMIN', 'DIS_ADMIN_LECTURA'})"/>
-		<sec:intercept-url pattern="/metaDada*" access="hasRole({'DIS_ADMIN', 'DIS_ADMIN_LECTURA'})"/>
+		<sec:intercept-url pattern="/permis*" access="hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')"/>
+		<sec:intercept-url pattern="/metaExpedient*" access="hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')"/>
+		<sec:intercept-url pattern="/metaDocument*" access="hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')"/>
+		<sec:intercept-url pattern="/metaCarpeta*" access="hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')"/>
+		<sec:intercept-url pattern="/metaDada*" access="hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')"/>
 		<sec:intercept-url pattern="/*" access="hasRole('tothom')"/>
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>

@@ -35,7 +35,8 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
 	
-	  
+	private static final String PROPERTIES_BASE = "es.caib.distribucio.plugin.signatura.portafib.";  
+	
 	public FirmaSimplePluginPortafib()  {
 		super();
 	}
@@ -106,6 +107,7 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 		String name = fileToSign.getNom();
 		String reason = motiu;
 		String location = getProperty("plugin.signatura.portafib." + "location", "Palma");
+//		String location = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "location", "Palma");
 
 		int signNumber = 1;
 		String languageSign = "ca";
@@ -123,10 +125,12 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 
 		String languageUI = "ca";
 		String username = getProperty("plugin.signatura.portafib." + "username", null);
+//		String username = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "username", null);
 		if (username != null &&  username.trim().isEmpty()) {
 			username = null;
 		}
 		String administrationID = null;
+//		String signerEmail = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "signerEmail", "suport@caib.es");
 		String signerEmail = getProperty("plugin.signatura.portafib." + "signerEmail", "suport@caib.es");
 
 		FirmaSimpleCommonInfo commonInfo;
