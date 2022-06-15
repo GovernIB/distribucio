@@ -218,6 +218,6 @@ public interface ReglaService {
 	 * @return la regla trobada
 	 */
 	@PreAuthorize("hasRole('DIS_REGLA') or hasRole('DIS_ADMIN')")
-	public ReglaDto findReglaByNom(String nomRegla);
+	public ReglaDto findReglaByCodiSia(String codiSia);
 	
 }

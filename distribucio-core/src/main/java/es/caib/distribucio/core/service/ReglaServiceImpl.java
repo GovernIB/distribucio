@@ -624,9 +624,9 @@ public class ReglaServiceImpl implements ReglaService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ReglaDto findReglaByNom(String nomRegla) {
+	public ReglaDto findReglaByCodiSia(String codiSia) {
 		
-		ReglaEntity reglaEntity = reglaRepository.findReglaByNom(nomRegla);
+		ReglaEntity reglaEntity = reglaRepository.findReglaByCodiSia(codiSia);
 		ReglaDto reglaDto = conversioTipusHelper.convertir(reglaEntity, ReglaDto.class);
 		
 		return reglaDto;

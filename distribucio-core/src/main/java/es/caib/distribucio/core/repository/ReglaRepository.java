@@ -148,8 +148,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	/** Consulta per cercar una regla concreta */
 	@Query( "from ReglaEntity r " + 
 			"where " + 
-			"r.nom = :nomRegla ")
-	ReglaEntity findReglaByNom(
-			@Param("nomRegla") String nomRegla);
+			"r.procedimentCodiFiltre = :codiSia ")
+	ReglaEntity findReglaByCodiSia(
+			@Param("codiSia") String codiSia);
 
 }

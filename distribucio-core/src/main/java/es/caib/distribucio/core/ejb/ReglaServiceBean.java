@@ -185,8 +185,8 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	public ReglaDto findReglaByNom(String nomRegla) {
-		return delegate.findReglaByNom(nomRegla);
+	public ReglaDto findReglaByCodiSia(String codiSia) {
+		return delegate.findReglaByCodiSia(codiSia);
 	}
 	
 }
