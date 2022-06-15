@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -46,6 +47,8 @@ public class IntegracioController extends BaseUserController {
 	
 	@Autowired
 	private MonitorIntegracioService monitorIntegracioService;
+	@Autowired
+	private ConfigService configService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -100,8 +103,14 @@ public class IntegracioController extends BaseUserController {
 	public List<IntegracioDto> getIntegracionsIErrors() {
 		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
 		
+		String numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
+		if (numeroHoresPropietat == null) {
+			numeroHoresPropietat = "48";
+		}
+		int numeroHores = Integer.parseInt(numeroHoresPropietat);
+		
 		// Consulta el número d'errors per codi d'integracio
-		Map<String, Integer> errors = monitorIntegracioService.countErrors();
+		Map<String, Integer> errors = monitorIntegracioService.countErrors(numeroHores);
 		
 		for (IntegracioDto integracio: integracions) {
 			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -127,9 +128,13 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Map<String, Integer> countErrors() {
+	public Map<String, Integer> countErrors(int numeroHores) {
+		DateTime date = new DateTime();
+		long dataInici = date.getMillis() - (numeroHores * 60*60*1000);
+		DateTime dataIniciDate = new DateTime(dataInici);
+		
 		Map<String, Integer> errors = new HashMap<String, Integer>();
-		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi();
+		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(dataIniciDate.toDate());
 		for (Object[] resultat : resultats) {
 			errors.put(
 					(String) resultat[0], 

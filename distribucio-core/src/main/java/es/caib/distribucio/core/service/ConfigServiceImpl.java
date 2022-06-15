@@ -212,4 +212,10 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
 
+
+	@Override
+	public String getTempsErrorsMonitorIntegracio() {
+		return configHelper.getConfig("es.caib.distribucio.monitor.integracio.errors.temps");
+	}
+
 }
