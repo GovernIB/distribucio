@@ -41,6 +41,7 @@ import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
@@ -219,12 +220,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		
 		if (annexContingut != null) {
-			// Si l'annex no està firmat el firma amb el plugin de firma
-			// en servidor. En cas de tenir firmes invàlides no es firma en servidor.
+			// Si l'annex no està firmat el firma amb el plugin de firma en servidor.
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			if (!annexFirmat 
-					&& isRegistreSignarAnnexos()
-					&& distribucioAnnex.isFirmaValida()) {
+					&& isRegistreSignarAnnexos()) {
 				
 				//sign annex and return firma content bytes
 				SignaturaResposta signatura = signaturaDistribucioSignar(
@@ -380,6 +379,46 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					ex);
 		}
 	}
+	
+	@Override
+	public void documentSetDefinitiu (
+			String arxiuUuid) throws SistemaExternException {
+
+		// Recupera les dades
+		Document document = this.getDocumentDetalls(arxiuUuid, null, false);
+		if (!document.getEstat().equals(DocumentEstat.DEFINITIU)) {
+			// Modifica el document a definitiu
+			String accioDescripcio = "Modificar el document a definitiu";
+			Map<String, String> accioParams = new HashMap<String, String>();
+			accioParams.put("identificador", arxiuUuid);
+			accioParams.put("documentDescripcio", document.getDescripcio());
+			accioParams.put("documentNom", document.getNom());
+			accioParams.put("documentEstat", document.getEstat().toString());
+			long t0 = System.currentTimeMillis();
+			try {
+				document.setEstat(DocumentEstat.DEFINITIU);
+				getArxiuPlugin().documentModificar(document);
+				integracioAddAccioOk(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0);
+			} catch (Exception ex) {
+				String errorDescripcio = "Error modificant el document a definitiu";
+				integracioAddAccioError(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0,
+						errorDescripcio,
+						ex);
+				throw new SistemaExternException(
+						integracioArxiuCodi,
+						errorDescripcio,
+						ex);
+			}
+		}
+	}
 
 	@Override
 	public void configurar(
@@ -417,7 +456,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
-			if (annex.isFirmaValida() 
+			if (ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
 					|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
 				estatDocument = DocumentEstat.DEFINITIU;
 			}
@@ -1421,40 +1460,29 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private String getPropertyPluginArxiu() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
-//		return System.getProperty(
-//				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
-//		return System.getProperty(
-//				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
-//		return System.getProperty(
-//				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
 		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
-//		return System.getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
 		return new Boolean(PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
-//		return new Boolean(System.getProperty(
-//				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
 		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
-//		return System.getProperty(
-//				"es.caib.distribucio.plugin.signatura.class");
 	}
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
-		return new Boolean(System.getProperty(
+		return new Boolean(PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
 	

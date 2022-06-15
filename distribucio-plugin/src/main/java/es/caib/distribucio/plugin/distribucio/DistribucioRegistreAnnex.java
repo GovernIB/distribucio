@@ -6,6 +6,8 @@ package es.caib.distribucio.plugin.distribucio;
 import java.util.Date;
 import java.util.List;
 
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+
 /**
  * Classe que representa un annex d'una anotació de registre.
  * 
@@ -28,8 +30,8 @@ public class DistribucioRegistreAnnex {
 	private List<DistribucioRegistreFirma> firmes;
 	private String metaDades;
 	
-	private boolean firmaValida;
-	private String firmaValidacioDesc;
+	private ValidacioFirmaEnum validacioFirma;
+	private String validacioFirmaError;
 	
 	
 	
@@ -118,16 +120,16 @@ public class DistribucioRegistreAnnex {
 	public void setMetaDades(String metaDades) {
 		this.metaDades = metaDades;
 	}
-	public boolean isFirmaValida() {
-		return firmaValida;
+	public ValidacioFirmaEnum getValidacioFirma() {
+		return validacioFirma;
 	}
-	public void setFirmaValida(boolean firmaValida) {
-		this.firmaValida = firmaValida;
+	public void setValidacioFirma(ValidacioFirmaEnum validacioFirmaEnum) {
+		this.validacioFirma = validacioFirmaEnum;
 	}
-	public String getFirmaValidacioDesc() {
-		return firmaValidacioDesc;
+	public String getValidacioFirmaError() {
+		return validacioFirmaError;
 	}
 	public void setFirmaValidacioDesc(String firmaValidacioDesc) {
-		this.firmaValidacioDesc = firmaValidacioDesc;
+		this.validacioFirmaError = firmaValidacioDesc;
 	}
 }

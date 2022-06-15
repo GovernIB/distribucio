@@ -738,7 +738,7 @@ public class RegistreHelper {
 							}
 							
 							// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
-							distribucioAnnex.setFirmaValida(ValidacioFirmaEnum.isValida(validacioFirma));
+							distribucioAnnex.setValidacioFirma(validacioFirma);
 							
 							// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
 							String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(

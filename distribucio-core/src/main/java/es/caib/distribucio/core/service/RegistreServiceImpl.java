@@ -432,10 +432,8 @@ public class RegistreServiceImpl implements RegistreService {
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
-			boolean ambIntentsPendents = false;
 			int maxReintents = 0;
 			if (filtre.getReintents() != null) {
-				ambIntentsPendents = true;
 				maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 			}
 			pagina = registreRepository.findRegistreByPareAndFiltre(
@@ -2110,7 +2108,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 		ContingutEntity registrePerClassificar = null;
 		Map<RegistreEntity, ContingutMovimentEntity> registresAmbCanviEstat = new HashMap<RegistreEntity, ContingutMovimentEntity>();
-		RegistreEntity registreOriginalR = registre;
 		for (ContingutMovimentEntity contingutMovimentEntity : contingutMoviments) {
 			registrePerClassificar = contingutMovimentEntity.getContingut();
 			
@@ -2155,10 +2152,6 @@ public class RegistreServiceImpl implements RegistreService {
 				false);
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (bustiaId != null && bustiaId > 0) {
-			boolean findIsAdmin = false;
-			if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura()) {
-				findIsAdmin = true;
-			}
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
 															entitat,
 															bustiaId,
@@ -2244,7 +2237,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional
 	@Override
-	public boolean validarFirmes(Long entitatId, Long registreId, Long annexId) {
+	public ValidacioFirmaEnum validarFirmes(Long entitatId, Long registreId, Long annexId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Validant les firmes d'annex (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
 		entityComprovarHelper.comprovarEntitat(
@@ -2252,9 +2245,20 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		return ValidacioFirmaEnum.isValida(
-				registreHelper.validaFirmes(
-						registreAnnexRepository.findOne(annexId)));
+		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(
+						registreAnnexRepository.findOne(annexId));
+		
+		// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
+		// guardar com a definitiu
+		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
+			// Recuperar informació de l'annex
+			RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+			// Modificar 
+			if (annex.getFitxerArxiuUuid() != null) {
+				pluginHelper.arxiuDocumentSetDefinitiu(annex);
+			}
+		}
+		return validacioFirma;
 	}
 	
 	

@@ -51,6 +51,7 @@ import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
@@ -878,15 +879,15 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long annexId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		boolean processatOk = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
-		if (processatOk) {
+		ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
+		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
 			MissatgesHelper.success(request,
 					getMessage(request,
-							"contingut.admin.controller.validar.firmes.ok"));
+							"contingut.admin.controller.validar.firmes.valides"));
 		} else {
-			MissatgesHelper.error(request,
+			MissatgesHelper.warning(request,
 					getMessage(request,
-							"contingut.admin.controller.validar.firmes.ko"));
+							"contingut.admin.controller.validar.firmes.no.valides"));
 		}
 		return "redirect:" + request.getHeader("referer");
 	}

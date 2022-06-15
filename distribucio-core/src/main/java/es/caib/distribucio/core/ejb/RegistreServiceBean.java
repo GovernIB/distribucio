@@ -25,6 +25,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -364,7 +365,7 @@ public class RegistreServiceBean implements RegistreService {
 	
 	@Override
 	@RolesAllowed("DIS_ADMIN")
-	public boolean validarFirmes(
+	public ValidacioFirmaEnum validarFirmes(
 			Long entitatId,
 			Long registreId,
 			Long annexId) {
