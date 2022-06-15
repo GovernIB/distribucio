@@ -211,6 +211,45 @@ public class ReglesController extends BaseUserController {
 	}
 	
 	
+	
+	@RequestMapping(value = "/consultarRegla", method = RequestMethod.GET)
+	@ApiOperation(
+			value = "Consultar una regla", 
+			notes = "Consulta si una regla existeix i si està activa"
+			)
+	@ResponseBody
+	public ResponseEntity<Object> consultarRegla(
+			HttpServletRequest request, 
+			
+			@ApiParam(name="codiSia", value="Codi SIA de la regla")
+			@RequestParam(required = true) String codiSia) {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
+			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
+		}
+		ReglaDto reglaDto = reglaService.findReglaByCodiSia(codiSia);
+		if (reglaDto == null) {
+			return new ResponseEntity<Object>("La regla amb codi SIA: " + codiSia + " no existeix", HttpStatus.NOT_FOUND);
+			
+		}
+
+		Map<String, Object> regla = new HashMap<>();
+		regla.put("id", reglaDto.getId());
+		regla.put("nom", reglaDto.getNom());
+		Date data = reglaDto.getCreatedDate();
+		DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+		regla.put("data", dateFormat.format(data));
+		regla.put("entitat", reglaDto.getEntitatNom());
+		regla.put("activa", reglaDto.isActiva());
+		BackofficeDto backofficeDto = backofficeService.findById(reglaDto.getEntitatId(), reglaDto.getBackofficeDestiId());
+		regla.put("backofficeDesti", backofficeDto.getNom());
+		
+		
+		return new ResponseEntity<Object>(regla, HttpStatus.OK);	
+	}
+	
+	
 
 	/** Comprova que l'usuari autenticat tingui el rol.
 	 * 
