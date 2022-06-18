@@ -272,6 +272,35 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     }
                 }
         );
+        
+        
+        // Reintentar processament al backoffice
+        taskRegistrar.addTriggerTask(
+        		new Runnable() {
+					@Override
+					public void run() {
+						segonPlaService.reintentarProcessamentBackoffice();
+					}        			
+        		}, 
+        		new Trigger() {
+					@Override
+					public Date nextExecutionTime(TriggerContext triggerContext) {
+						Long value = null;
+						try {
+							value = configHelper.getAsLong("es.caib.distribucio.backoffice.interval.temps.reintentar.processament");
+						}catch (Exception e) {
+							logger.warn("Error consultant la propietat per la propera execució per reintentar l'enviament al backoffice");
+						}
+						if (value == null) {
+							value = new Long("60000");
+						}
+						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+						Date nextExecution = trigger.nextExecutionTime(triggerContext);
+						
+						return nextExecution;
+					}        			
+        		}
+        );
     }
     
 	private static final Logger logger = LoggerFactory.getLogger(SegonPlaConfig.class);

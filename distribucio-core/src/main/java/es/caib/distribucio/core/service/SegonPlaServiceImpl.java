@@ -30,8 +30,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
+import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -78,6 +80,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private EntitatRepository entitatRepository;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+	@Autowired
+	private RegistreService registreService;
 	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
@@ -474,6 +478,37 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		} catch (Exception e) {
 			logger.error("Error en la tasca d'esborrar dades antigues del monitor d'integracions", e);
 		}
+	}
+	
+	
+
+	@Override
+	public void reintentarProcessamentBackoffice() {
+		
+		long startTime = new Date().getTime();
+		logger.trace("Execució de tasca programada (" + startTime + "): reintentar enviament d'una anotació al backoffice");
+		
+		String maxReintentsString = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+		int maxReintents = 0;
+		if (maxReintentsString != null) {
+			maxReintents = Integer.parseInt(maxReintentsString);
+		}
+		
+		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);
+		for (int i=0; i<=registresBackError.size(); i++) {
+			List<Long> unRegistreBackError = new ArrayList<>();
+			unRegistreBackError.add(registresBackError.get(i));
+			try {
+				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(unRegistreBackError);
+				registresBackError.remove(0);
+				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(0));
+			}catch(Exception e) {
+				logger.info("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(0));
+			}
+		}
+		
+		
+		
 	}
 	
 	
