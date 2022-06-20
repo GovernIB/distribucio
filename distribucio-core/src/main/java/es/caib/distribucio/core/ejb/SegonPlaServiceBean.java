@@ -80,4 +80,10 @@ public class SegonPlaServiceBean implements SegonPlaService {
 		delegate.esborrarDadesAntigesMonitorIntegracio();
 	}
 
+	@Override
+	public void reintentarProcessamentBackoffice() {
+		delegate.reintentarProcessamentBackoffice();
+		
+	}
+
 }

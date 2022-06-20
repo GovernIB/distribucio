@@ -51,7 +51,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Prova annex sense firma" + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
@@ -296,7 +296,7 @@ public class BustiaV1Test {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
 				        		"Annex amb índex " + j,
-				        		"ànnex.1.pdf",
+				        		"ànnex.pdf",
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
@@ -557,9 +557,7 @@ public class BustiaV1Test {
 	}
 	private InputStream getContingutAnnexFirmat() {
 		InputStream is = getClass().getResourceAsStream(
-//        		"/annex_firmat.pdf");
-				"/annex_firmat_invalid.pdf");
-
+        		"/annex_firmat.pdf");
 		return is;
 	}
 	private InputStream getContingutAltre(String arxiuNom) {

@@ -1302,7 +1302,7 @@ public class RegistreHelper {
 					null,
 					BackofficeWsService.class);			
 			
-			logger.trace(">>> Abans de cridar backoffice WS");			
+			logger.trace(">>> Abans de cridar backoffice WS");
 			backofficeClient.comunicarAnotacionsPendents(ids);		
 						
 			integracioHelper.addAccioOk (
@@ -1372,7 +1372,10 @@ public class RegistreHelper {
 	
 	
 	@Transactional()
-	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable, Date dataComunicacio) {
+	public void updateBackEnviarDelayData(
+			List<Long> pendentsIdsGroupedByRegla, 
+			Exception throwable, 
+			Date dataComunicacio) {
 
 		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
 		for (Long id : pendentsIdsGroupedByRegla) {
@@ -1386,8 +1389,13 @@ public class RegistreHelper {
 			if (throwable == null) {
 				// remove exception message and increment procesIntents
 				pend.updateProces(null, null);
-				// Si estava pendent de comunicar al backoffice actualitza l'estat
-				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT)) {
+				
+				// Si estava pendent de comunicar al backoffice 
+				// 		o estava processada amb error abans de tornar a comunicar-la (pot ser que el backoffic la hagi tornat a posar com a back_error mentre se li comunica la nova anotació)
+				// llavors actualitza l'estat
+				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT) 
+						|| (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_ERROR) 
+								&& dataComunicacio.after(pend.getBackProcesRebutjErrorData()))) {
 					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy").format(dataComunicacio));
 				}
 			} else { // if excepion occured during sending anotacions ids to backoffice
@@ -1412,6 +1420,7 @@ public class RegistreHelper {
 					delayMinutes);
 			pend.updateBackRetryEnviarData(cal.getTime());
 			registreRepository.saveAndFlush(pend);
+			
 		}
 	}
 
@@ -1782,6 +1791,22 @@ public class RegistreHelper {
 		}
 
 		return fitxerDto;
+	}
+	
+	/**
+	 * Mètode per retornar un llistat de les anotacions processades al backoffice
+	 * amb errors
+	 **/
+	public List<Long> findRegistresBackError(int maxReintents) {
+		List<Long> registresBackError = new ArrayList<>();
+		
+		List<RegistreEntity> llistatRegistresBackError = registreRepository.findRegistresBackError(maxReintents);
+		for(RegistreEntity registre : llistatRegistresBackError) {
+			
+			registresBackError.add(registre.getId());
+		}
+		
+		return registresBackError;
 	}
 	
 	/** Consulta el contingut de la firma en la gestió documental. */

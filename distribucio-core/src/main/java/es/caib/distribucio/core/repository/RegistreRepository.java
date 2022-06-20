@@ -315,4 +315,16 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
 	
+	
+	/**
+	 * Consulta per retornar un llistat amb els registres processats al backoffice
+	 * amb errors 
+	 **/
+	@Query("from RegistreEntity r "
+			+ "where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
+			"and r.procesIntents <= :maxReintents "
+			+ "order by r.data DESC")
+	public List<RegistreEntity> findRegistresBackError(
+			@Param("maxReintents") int maxReintents);
+	
 }

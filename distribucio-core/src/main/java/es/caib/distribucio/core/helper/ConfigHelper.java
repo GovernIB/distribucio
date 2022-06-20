@@ -74,25 +74,29 @@ public class ConfigHelper {
     @Transactional(readOnly = true)
     public String getConfig(EntitatDto entitatActual, String key) {
 
-		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+		ConfigEntity configEntity = new ConfigEntity();
+    	if (entitatActual != null) {
+    		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+            configEntity = configRepository.findOne(key);
+            if (configEntity != null && configEntity.getValue() == null 
+        		&& !configEntity.getGroupCode().equals("USUARIS")) {
+            	String replace = "." + entitatActual.getCodi();
+            	key = key.replace(replace, "");
+            	configEntity = configRepository.findOne(key);
+            }
+            if (configEntity == null && entitatActual != null || 
+            	configEntity != null && configEntity.getValue() == null && 
+            	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()) {
+            	String replace = "." + entitatActual.getCodi();
+            	key = key.replace(replace, "");
+            	configEntity = configRepository.findOne(key);
+            } 
+    	}else {
+    		configEntity = configRepository.findOne(key);
+    	}
 		
 		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
 
-		ConfigEntity configEntity = new ConfigEntity();
-        configEntity = configRepository.findOne(key);
-        if (configEntity != null && configEntity.getValue() == null 
-    		&& !configEntity.getGroupCode().equals("USUARIS")) {
-        	String replace = "." + entitatActual.getCodi();
-        	key = key.replace(replace, "");
-        	configEntity = configRepository.findOne(key);
-        }
-        if (configEntity == null && entitatActual != null || 
-        	configEntity != null && configEntity.getValue() == null && 
-        	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()) {
-        	String replace = "." + entitatActual.getCodi();
-        	key = key.replace(replace, "");
-        	configEntity = configRepository.findOne(key);
-        } 
         
        
 		if (configEntity != null) {
