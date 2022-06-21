@@ -77,9 +77,9 @@ public class BackofficeIntegracioTest {
 
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"http://localhost:8081/distribucio/ws/backofficeIntegracio",
-				"admin",
-				"admin");
+				"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
+				"provesFernando",
+				"provesFernando");
 	}
 	
 

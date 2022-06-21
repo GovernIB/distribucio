@@ -178,12 +178,19 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	}
 
 	private String getUsuariIntegracio() {
-		String usuari;
-		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
-		if (usuariDto != null) {
-			usuari = usuariDto.getCodi();
-		} else {
-			usuari = "-";
+//		String usuari;
+//		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
+//		if (usuariDto != null) {
+//			usuari = usuariDto.getCodi();
+//		} else {
+//			usuari = "-";
+//		}
+//		return usuari;
+		
+		String usuari = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			usuari = auth.getName();
 		}
 		return usuari;
 	}

@@ -13,6 +13,8 @@ import javax.jws.WebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.MetricRegistry;
@@ -391,12 +393,19 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	}
 
 	private String getUsuariIntegracio() {
-		String usuari;
-		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
-		if (usuariDto != null) {
-			usuari = usuariDto.getCodi();
-		} else {
-			usuari = "-";
+//		String usuari;
+//		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
+//		if (usuariDto != null) {
+//			usuari = usuariDto.getCodi();
+//		} else {
+//			usuari = "-";
+//		}
+//		return usuari;
+		
+		String usuari = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			usuari = auth.getName();
 		}
 		return usuari;
 	}
