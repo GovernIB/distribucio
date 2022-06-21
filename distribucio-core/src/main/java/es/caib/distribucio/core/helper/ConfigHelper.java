@@ -75,18 +75,25 @@ public class ConfigHelper {
     public String getConfig(EntitatDto entitatActual, String key) {
 
 		ConfigEntity configEntity = null;
+		String value = null;
     	if (entitatActual != null) {
+    		// Cerca el valor per l'entitat
     		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatActual, key);
             configEntity = configRepository.findOne(keyEntitat);
+            if (configEntity != null) {
+            	value = getConfig(configEntity);
+            }
     	}
-    	if (configEntity == null || configEntity.getValue() == null) {
+    	if (configEntity == null || value == null) {
+    		// Cerca el valor per la key sense entitat
     		configEntity = configRepository.findOne(key);
     	}
 		if (configEntity != null) {
-			return getConfig(configEntity);
+			value = getConfig(configEntity);
 		} else {
-			return getJBossProperty(key);
+			value = getJBossProperty(key);
 		}
+		return value;
     }
     
     @Transactional(readOnly = true)

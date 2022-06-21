@@ -51,10 +51,10 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = null; // "208002" prova regles //"BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova annex sense firma" + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Alta JUnit " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
