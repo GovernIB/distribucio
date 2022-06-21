@@ -495,7 +495,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		
 		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);
-		for (int i=0; i<=registresBackError.size(); i++) {
+		for (int i=0; i<registresBackError.size(); i++) {
 			List<Long> unRegistreBackError = new ArrayList<>();
 			unRegistreBackError.add(registresBackError.get(i));
 			try {

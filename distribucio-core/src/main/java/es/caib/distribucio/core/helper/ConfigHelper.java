@@ -74,31 +74,14 @@ public class ConfigHelper {
     @Transactional(readOnly = true)
     public String getConfig(EntitatDto entitatActual, String key) {
 
-		ConfigEntity configEntity = new ConfigEntity();
+		ConfigEntity configEntity = null;
     	if (entitatActual != null) {
-    		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-            configEntity = configRepository.findOne(key);
-            if (configEntity != null && configEntity.getValue() == null 
-        		&& !configEntity.getGroupCode().equals("USUARIS")) {
-            	String replace = "." + entitatActual.getCodi();
-            	key = key.replace(replace, "");
-            	configEntity = configRepository.findOne(key);
-            }
-            if (configEntity == null && entitatActual != null || 
-            	configEntity != null && configEntity.getValue() == null && 
-            	!configEntity.getGroupCode().equals("USUARIS") && !configEntity.isJbossProperty()) {
-            	String replace = "." + entitatActual.getCodi();
-            	key = key.replace(replace, "");
-            	configEntity = configRepository.findOne(key);
-            } 
-    	}else {
+    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatActual, key);
+            configEntity = configRepository.findOne(keyEntitat);
+    	}
+    	if (configEntity == null || configEntity.getValue() == null) {
     		configEntity = configRepository.findOne(key);
     	}
-		
-		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
-
-        
-       
 		if (configEntity != null) {
 			return getConfig(configEntity);
 		} else {

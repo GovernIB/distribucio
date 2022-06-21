@@ -989,7 +989,7 @@ public class PluginHelper {
 			} else {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_USUARIS,
-						"No està configurada la classe per al plugin de dades d'usuari");
+						"No està configurada la classe per al plugin de dades d'usuari " + pluginClass);
 			}
 		}
 		return dadesUsuariPlugin;

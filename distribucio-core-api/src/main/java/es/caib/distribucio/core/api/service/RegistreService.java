@@ -205,7 +205,7 @@ public interface RegistreService {
 	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
 	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('dis_admin_lectura')")
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
 			String rolActual) throws Exception;
