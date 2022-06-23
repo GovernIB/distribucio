@@ -32,6 +32,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
     @Autowired
 	private ConfigHelper configHelper;
     
+    //TODO: autowired del teu MonitorTascaService
+    
+    
     private ScheduledTaskRegistrar taskRegistrar;
     
     
@@ -50,10 +53,17 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 
    	 	//Guardar anotacions de registre amb estat pendent de guardar a l'arxiu.
         taskRegistrar.addTriggerTask(
+        		//TODO: val la pena fer new DistribucioRunnable() ????
                 new Runnable() {
                     @Override
                     public void run() {
-                        segonPlaService.guardarAnotacionsPendentsEnArxiu();
+                    	// TODO: invocar amonitorTascaService.update data d'inici i estat i observacions
+                        try{ 
+                        	segonPlaService.guardarAnotacionsPendentsEnArxiu();
+                        	// TODO: invocar amonitorTascaService.update per la data de fi
+                        } catch(Exception e) {                        	
+                        	// TODO: a vegades hi ha error no controlat, podríem pensar un 3r estat d'error executant la tasca
+                        }
                     }
                 },
                 new Trigger() {
@@ -70,10 +80,16 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                        
+                    	// TODO: actualitzar la data de la propera execució
+
                         return nextExecution;
                     }
                 }
         );
+        // TODO: invocar el teu monitorTascaService.addTasca  amb un codi de la tasca únic
+        // aquest codi únic ens servidrà per traduir-la a ca i es
+        
         
         
    	 	//Enviar annotacions al backoffice

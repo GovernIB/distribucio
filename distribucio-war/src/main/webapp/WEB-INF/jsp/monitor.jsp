@@ -109,6 +109,11 @@
 		                        '</div>'+
 		                        '</div>'+
 		                        '</div>';
+		                        
+		                        //TODO: afegir una nova pipella i fer un mètode per carregar la taual
+		                        // buildTaulaTasques(tasques): "<table> .... </table>"
+		                        // aquesta funció JAVASCRIPT l'aprofitaràs en el refres
+		                        
 		           
 		                $("#monitor_contens").html(content);
 		        }

@@ -1,6 +1,18 @@
 package es.caib.distribucio.war.controller;
 
-import es.caib.distribucio.war.helper.MonitorHelper;
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.springframework.stereotype.Controller;
@@ -9,12 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import java.util.*;
+import es.caib.distribucio.war.helper.MonitorHelper;
 
 /**
  * Controlador per la gestió d'perfils
@@ -99,6 +106,21 @@ public class MonitorSystemController extends BaseController {
 		mjson.put("estado", estado);
 		mjson.put("espera", espera);
 		mjson.put("blockedtime", blockedtime);
+		
+		//TODO: afegir la informació de les tasques en segon pla
+		mjson.put("tasques", this.getTasquesJson(request));
 		return mjson;
+	}
+
+	//TODO: aquest mètode pot ser públic i el refresc el pot cridar
+	@RequestMapping(value="/tasques", method = RequestMethod.GET)
+	@ResponseBody
+	public JSONArray getTasquesJson(HttpServletRequest request) {
+		//return new HashMap<String, String>();
+		//TODO: abans de retornar les dades json afegeix el nom traduït per les tasques
+		getMessage(request, "prefix.enumeració.tasques.el.que.vulguis." + "CODI_TASCA");
+		return null; //TODO: espavila't
+		//TODO: return monitorService.findAll(); //List<MonitorTascaInfo>
+		// {{codi: 'ARXIU', dataInici: '22-06-2022 11:12:13'}}
 	}
 }
