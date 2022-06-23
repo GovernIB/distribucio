@@ -74,9 +74,6 @@ public class ConfigHelper {
     @Transactional(readOnly = true)
     public String getConfig(EntitatDto entitatActual, String key) {
 
-		key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-		//logger.debug("Entitat actual per les propietats : " + (entitatActual != null ? entitatActual.getCodi() : ""));
-
 		ConfigEntity configEntity = null;
 		String value = null;
     	if (entitatActual != null) {
