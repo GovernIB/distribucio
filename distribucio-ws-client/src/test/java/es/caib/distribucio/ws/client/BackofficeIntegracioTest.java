@@ -22,8 +22,8 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  */
 public class BackofficeIntegracioTest {
 	// autofirma wih PADES
-	private static final String IDENTIFICADOR = "L11E1557929165976/2019";
-	private static final String CLAU_ACCESS = "jqCJ/24gm+j5VGtETYj8itrQmlD6zwHp4BL8g33ulh4=";
+	private static final String IDENTIFICADOR = "L11E1646737371605/2022"; //L11E1557929165976/2019
+	private static final String CLAU_ACCESS = "iqV8SiGk90e9sv2DqQfdCC0E4r//5M/WyG0K0fE19dg="; //jqCJ/24gm+j5VGtETYj8itrQmlD6zwHp4BL8g33ulh4=
 	
 //	// autofirma wih CADES
 //	private static final String IDENTIFICADOR = "L11E1557470209883/2019";
@@ -52,7 +52,7 @@ public class BackofficeIntegracioTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void canviEstat() throws DatatypeConfigurationException, IOException {
 
 		try {
@@ -78,9 +78,9 @@ public class BackofficeIntegracioTest {
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
 				"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
-				"provesFernando",
-				"provesFernando");
-	}
+				"admin",				// proves amb usuari només a SEYCON
+				"admin");				// usuari: provesFernando
+	}									// contrasenya: provesFernando
 	
 
 	
