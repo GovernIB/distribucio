@@ -95,6 +95,14 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 	public void contenidorEliminar(
 			String uuid) throws SistemaExternException;
 
+	/** Recupera els detalls d'un document i si no està com a definitiu el modifica a 
+	 * definitiu.
+	 * 
+	 * @param uuid
+	 */
+	public void documentSetDefinitiu(
+			String uuid) throws SistemaExternException;
+
 	/**
 	 * Configura el gestor d'integracions.
 	 * 
@@ -125,5 +133,4 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 				String errorDescripcio,
 				Throwable throwable);
 	}
-
 }

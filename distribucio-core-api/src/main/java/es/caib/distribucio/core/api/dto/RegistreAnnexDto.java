@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+
 /**
  * Classe que representa una anotació de registre amb id.
  * 
@@ -40,6 +42,9 @@ public class RegistreAnnexDto implements Serializable {
 	private boolean signaturaDetallsDescarregat;
 	
 	private Map<String, String> metaDadesMap;
+	
+	private ValidacioFirmaEnum validacioFirmaEstat;
+	private String validacioFirmaError;
 	
 	private static final long serialVersionUID = -8656873728034274066L;
 
@@ -202,6 +207,18 @@ public class RegistreAnnexDto implements Serializable {
 		}
 		DecimalFormat df = new DecimalFormat("#,###.##");
 		return df.format(valor) + " " + tamanyUnitats[i];
+	}
+	public ValidacioFirmaEnum getValidacioFirmaEstat() {
+		return validacioFirmaEstat;
+	}
+	public void setValidacioFirmaEstat(ValidacioFirmaEnum validacoFirmaEstat) {
+		this.validacioFirmaEstat = validacoFirmaEstat;
+	}
+	public String getValidacioFirmaError() {
+		return validacioFirmaError;
+	}
+	public void setValidacioFirmaError(String validacioFirmaError) {
+		this.validacioFirmaError = validacioFirmaError;
 	}
 
 

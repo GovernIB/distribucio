@@ -4,7 +4,6 @@
 package es.caib.distribucio.core.helper;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +12,13 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.fundaciobit.plugins.certificate.InformacioCertificat;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
 import org.fundaciobit.plugins.validatesignature.api.SignatureRequestedInformation;
 import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
+import org.fundaciobit.pluginsib.validatecertificate.InformacioCertificat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
@@ -52,6 +52,7 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
+import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
@@ -619,7 +620,6 @@ public class PluginHelper {
 		try {
 			DocumentContingut documentImprimible = getDistribucioPlugin().documentImprimible(fitxerArxiuUuid);
 			if (documentImprimible != null) {
-				//fitxerDto.setNom(documentImprimible.getArxiuNom());
 				fitxerDto.setNom(titol);
 				fitxerDto.setContentType(documentImprimible.getTipusMime());
 				fitxerDto.setContingut(documentImprimible.getContingut());
@@ -635,12 +635,50 @@ public class PluginHelper {
 		return fitxerDto;
 	}
 
+	/** Recupera les dades de l'arxiu i el modifica per fer-lo definitiu */
+	public void arxiuDocumentSetDefinitiu(RegistreAnnexEntity annex) {
+		String accioDescripcio = "Canviant el document \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getNumero() + " a definitiu";
+		String usuariIntegracio = this.getUsuariAutenticat();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("annexUuid", annex.getFitxerArxiuUuid());
+		accioParams.put("annexTitol", annex.getTitol());
+		accioParams.put("annexFirmesSize", String.valueOf(annex.getFirmes() != null ? annex.getFirmes().size() : 0));
+		accioParams.put("registreNumero", annex.getRegistre().getNumero());
+		accioParams.put("entitat", annex.getRegistre().getEntitatCodi());
+		long t0 = System.currentTimeMillis();
+		try {
+			getDistribucioPlugin().documentSetDefinitiu(annex.getFitxerArxiuUuid());
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error posant com a definitiu un annexo per l'anotació " + annex.getRegistre().getNumero();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					errorDescripcio,
+					ex);
+		}
+	}
+
 
 	public boolean isValidaSignaturaPluginActiu() {
 		return getValidaSignaturaPlugin() != null;
 	}
 
-	public List<ArxiuFirmaDetallDto> validaSignaturaObtenirDetalls(
+	public ValidaSignaturaResposta validaSignaturaObtenirDetalls(
 			byte[] documentContingut,
 			byte[] firmaContingut) {
 		String accioDescripcio = "Obtenir informació de document firmat";
@@ -664,7 +702,13 @@ public class PluginHelper {
 			sri.setReturnTimeStampInfo(true);
 			validationRequest.setSignatureRequestedInformation(sri);
 			ValidateSignatureResponse validateSignatureResponse = getValidaSignaturaPlugin().validateSignature(validationRequest);
-			List<ArxiuFirmaDetallDto> detalls = new ArrayList<ArxiuFirmaDetallDto>();
+			
+			// Completa la resposta
+			ValidaSignaturaResposta detalls = new ValidaSignaturaResposta();
+			detalls.setStatus(validateSignatureResponse.getValidationStatus().getStatus());
+			detalls.setErrMsg(validateSignatureResponse.getValidationStatus().getErrorMsg());
+			detalls.setErrException(validateSignatureResponse.getValidationStatus().getErrorException());
+			
 			if (validateSignatureResponse.getSignatureDetailInfo() != null) {
 				for (SignatureDetailInfo signatureInfo: validateSignatureResponse.getSignatureDetailInfo()) {
 					ArxiuFirmaDetallDto detall = new ArxiuFirmaDetallDto();
@@ -681,7 +725,7 @@ public class PluginHelper {
 						detall.setResponsableNom(certificateInfo.getNomCompletResponsable());
 						detall.setEmissorCertificat(certificateInfo.getEmissorOrganitzacio());
 					}
-					detalls.add(detall);
+					detalls.getFirmaDetalls().add(detall);
 				}
 			}
 			integracioHelper.addAccioOk(
@@ -872,7 +916,7 @@ public class PluginHelper {
 		accioParams.put("codiDir3", codiDir3);
 		long t0 = System.currentTimeMillis();
 		try {
-			EntitatDto entitatDto = configHelper.getEntitat().get();
+			EntitatDto entitatDto = ConfigHelper.getEntitat().get();
 			DistribucioAbstractPluginProperties.setCodiEntitat(entitatDto.getCodi());
 			
 			//codiDir3 = "A04003003";
@@ -968,8 +1012,6 @@ public class PluginHelper {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
-					/*Class<?> clazz = Class.forName(pluginClass);
-					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.newInstance();*/
 					Class<?> clazz = Class.forName(pluginClass);
 					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(
 							String.class,
@@ -985,7 +1027,7 @@ public class PluginHelper {
 			} else {
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_USUARIS,
-						"No està configurada la classe per al plugin de dades d'usuari");
+						"No està configurada la classe per al plugin de dades d'usuari " + pluginClass);
 			}
 		}
 		return dadesUsuariPlugin;
@@ -1197,10 +1239,8 @@ public class PluginHelper {
 			propertiesLoaded.put(codeProperties, true);
 			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);
 			for (Map.Entry<String, String> entry : pluginProps.entrySet() ) {
-				String value = entry.getValue() == null ? "" : (String) entry.getValue();
-				PropertiesHelper.getProperties().setProperty((String) entry.getKey(), value);
-//				String value = entry.getValue() == null ? "" : entry.getValue();
-//				System.setProperty(entry.getKey(), value);
+				String value = entry.getValue() == null ? "" : entry.getValue();
+				System.setProperty(entry.getKey(), value);
 			}
 		}
 	}
@@ -1255,4 +1295,5 @@ public class PluginHelper {
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
+
 }

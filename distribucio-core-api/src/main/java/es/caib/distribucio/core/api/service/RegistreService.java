@@ -20,6 +20,7 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
@@ -427,4 +428,30 @@ public interface RegistreService {
 			String text,
 			String rolActual);		
 	
+	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si té firmes vàlides llavors
+	 * es guarda com a definitiu.
+	 * 
+	 * @param entitatId
+	 * @param registreId
+	 * @param annexId
+	 * @return
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public ValidacioFirmaEnum validarFirmes(
+			Long entitatId,
+			Long registreId,
+			Long annexId);
+	
+	
+	/**
+	 * Cerca el procediment pel seu codi SIA i pel codiDIR3
+	 * 
+	 * @param codiDir3
+	 * @param codiSia
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public ProcedimentDto procedimentFindByCodiSia(
+			String codiDir3, 
+			String codiSia);
+
 }

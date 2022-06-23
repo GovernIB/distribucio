@@ -19,9 +19,11 @@ public class BaseUserController extends BaseController {
 	public EntitatDto getEntitatActualComprovantPermisUsuari(
 			HttpServletRequest request) {
 		EntitatDto entitat = this.getEntitatActual(request);
-		if (!entitat.isUsuariActualRead())
+		if (entitat.isUsuariActualRead() || entitat.isUsuariActualAdminLectura()) {
+			return entitat;
+		}else {
 			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.usuari"));
-		return entitat;
+		}
 	}
 
 }

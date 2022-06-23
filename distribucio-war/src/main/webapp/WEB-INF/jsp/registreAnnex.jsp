@@ -6,6 +6,12 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
+<% 
+	pageContext.setAttribute(
+				"isRolActualAdministrador",
+				es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+%>
+
 <html>
 <head>
 	<script type="text/javascript">
@@ -22,8 +28,9 @@
 		    }
 	    });
 	    
-
-	    
+	    $('.btn-validarFirmes').click(function() {
+	    	$(this).find(".fa").addClass('fa-spin');
+	    });
 	});
 
 </script>
@@ -212,6 +219,33 @@
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.tipus.mime"/></strong></td>
 		<td><c:if test="${not empty annex.fitxerTipusMime}">${annex.fitxerTipusMime}</c:if></td>
+	</tr>
+	<tr>
+		<td><strong><spring:message code="registre.annex.detalls.camp.validacio.firma"/></strong></td>
+		<td>
+			<!-- Informació de la validació de firmes -->
+			<c:if test="${empty annex.validacioFirmaEstat || annex.validacioFirmaEstat == 'NO_VALIDAT'}">
+				- <spring:message code="validacio.firma.enum.NO_VALIDAT"></spring:message>
+			</c:if>
+			<c:if test="${not empty annex.validacioFirmaEstat}">
+				<c:choose>
+					<c:when test="${annex.validacioFirmaEstat == 'SENSE_FIRMES'}"><span class="fa fa-ban"></span></c:when>
+					<c:when test="${annex.validacioFirmaEstat == 'FIRMA_VALIDA'}"><span class="fa fa-pencil-square text-success"></span></c:when>
+					<c:when test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA'}"><span class="fa fa-pencil-square text-danger"></span></c:when>
+					<c:when test="${annex.validacioFirmaEstat == 'ERROR_VALIDANT'}"><span class="fa fa-exclamation-triangle text-danger"></span></c:when>
+				</c:choose>
+				<spring:message code="validacio.firma.enum.${annex.validacioFirmaEstat}"></spring:message>
+			</c:if>
+			
+			<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
+				: ${annex.validacioFirmaError}
+			</c:if>
+			
+			<c:if test="${isRolActualAdministrador}">
+				<a href="<c:url value="/registreAdmin/registre/${registreId}/annex/${annex.id}/validarFirmes"/>"  class="btn-validarFirmes btn btn-xs btn-default pull-right processarBtn" title="<spring:message code="contingut.admin.controller.validar.firmes.title"/>"><span class="fa fa-refresh"></span></a>
+			</c:if>
+			
+		</td>
 	</tr>
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>

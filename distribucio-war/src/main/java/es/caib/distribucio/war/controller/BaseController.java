@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.support.RequestContext;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
@@ -249,28 +252,6 @@ public class BaseController implements MessageSourceAware {
         binder.registerCustomEditor(String.class, stringtrimmer);
     }
 
-//	/** Mètode per consultar els registres seleccionats pel processament múltiple.
-//	 * @param request Request
-//	 * @param sessionName Objecte de sessió que conté la selecció
-//	 * @return
-//	 */
-//	protected List<RegistreDto> getRegistresSeleccionats(HttpServletRequest request, String sessionName) {
-//		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-//				request,
-//				sessionName);
-//		List<RegistreDto> registres;
-//		if (seleccio != null) {
-//			EntitatDto entitatActual = this.getentitat getEntitatActualComprovantPermisos(request);
-//			registres = registreService.findMultiple(
-//					entitatActual.getId(),
-//					new ArrayList<Long>(seleccio));
-//		} else {
-//			registres = new ArrayList<>();
-//		}
-//		return registres;
-//
-//	}
-
 	/** Mètode per consultar els registres seleccionats pel processament múltiple.
 	 * @param request Request
 	 * @param sessionName Objecte de sessió que conté la selecció
@@ -301,5 +282,26 @@ public class BaseController implements MessageSourceAware {
 		return entitat;
 	}
 
+	/** Compta el número d'annexos pendents d'Arxiu */
+	public int numeroAnnexosPendentsArxiu(RegistreDto registre) {
+		int numeroAnnexosPendentsArxiu = 0;						
+		for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
+			if (registreAnnexDto.getFitxerArxiuUuid()==null) {
+				numeroAnnexosPendentsArxiu++;
+			}
+		}
+		return numeroAnnexosPendentsArxiu;
+	}
+	
+	/** Compta el número d'annexos amb firma invàlida */
+	public int numeroAnnexosFirmaInvalida(RegistreDto registre) {
+		int numeroAnnexosFirmaInvalida = 0;						
+		for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
+			if (registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
+				numeroAnnexosFirmaInvalida++;
+			}
+		}
+		return numeroAnnexosFirmaInvalida;
+	}
 
 }

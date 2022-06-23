@@ -68,6 +68,7 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
@@ -89,6 +90,7 @@ import es.caib.distribucio.core.service.RegistreServiceImpl;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
+import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
@@ -493,12 +495,7 @@ public class RegistreHelper {
 				byte[] firmaContingut = null;
 				
 				if (annexFirma.getGesdocFirmaId() != null) {
-					ByteArrayOutputStream baos_fir = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							annexFirma.getGesdocFirmaId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-							baos_fir);
-					firmaContingut = baos_fir.toByteArray();
+					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId());
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
 				}
@@ -733,6 +730,16 @@ public class RegistreHelper {
 							documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
 							documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
 							
+							
+							// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
+							ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
+							if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
+								logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registreEntity.getIdentificador() );
+							}
+							
+							// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
+							distribucioAnnex.setValidacioFirma(validacioFirma);
+							
 							// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
 							String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
 									registreEntity.getNumero(),
@@ -808,6 +815,110 @@ public class RegistreHelper {
 			
 	}
 	
+
+	/** Mètode per validar les firmes de l'annex tingui o no firmes per revisar si 
+	 * l'annex té firmes invàlides.
+	 * 
+	 * @param distribucioAnnex
+	 */
+	public ValidacioFirmaEnum validaFirmes(RegistreAnnexEntity annex) {
+		
+				
+		ValidacioFirmaEnum validacioFirmaEstat = ValidacioFirmaEnum.NO_VALIDAT;
+		String validacioFirmaError = null;
+		
+		if (pluginHelper.isValidaSignaturaPluginActiu()) {
+
+			FitxerDto fitxer = this.getAnnexFitxer(annex.getId(), false);
+			byte[] documentContingut = fitxer.getContingut();
+			byte[] firmaContingut = null;
+			
+			// 1- Valida el document com si no tingués firmes
+			try {
+				logger.debug("Validant firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
+				ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut);
+				switch(validacioFirma.getStatus()) {
+					case ValidaSignaturaResposta.FIRMA_VALIDA:
+						validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
+						break;
+					case ValidaSignaturaResposta.FIRMA_INVALIDA:
+						validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
+						validacioFirmaError = validacioFirma.getCausaInvalida();
+						break;
+					case ValidaSignaturaResposta.FIRMA_ERROR:
+						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+						validacioFirmaError = validacioFirma.getCausaInvalida();
+						break;
+					default:
+						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+				}
+			} catch(Exception e) {
+				// Determina si és error perquè no té firmes o validant
+				Throwable throwable = ExceptionHelper.getRootCauseOrItself(e);
+				if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") || throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") || throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
+					validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+				} else {
+					logger.error("Error validant les firmes del document", e);
+					validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+					validacioFirmaError = "Error no controlat validant: " + e.getMessage();
+				}
+			}
+			annex.setValidacioFirmaEstat(validacioFirmaEstat);
+			annex.setValidacioFirmaError(validacioFirmaError);
+
+			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
+			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
+			if (annexFirmat 
+					&& (validacioFirmaEstat == ValidacioFirmaEnum.SENSE_FIRMES 
+						|| validacioFirmaEstat == ValidacioFirmaEnum.FIRMA_VALIDA)) 
+			{
+				// 2- Valida les firmes per separat
+				int nFirma = 1;
+				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+					if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
+						firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId());
+					}
+					try {
+						logger.debug("Validant la firma " + nFirma++ + "/" + annex.getFirmes().size() + " " + firma.getTipus()
+									 + " de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
+						
+						ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(documentContingut, firmaContingut);
+						switch(validacioFirma.getStatus()) {
+							case ValidaSignaturaResposta.FIRMA_VALIDA:
+								validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
+								break;
+							case ValidaSignaturaResposta.FIRMA_INVALIDA:
+								validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
+								validacioFirmaError = validacioFirma.getCausaInvalida();
+								break;
+							case ValidaSignaturaResposta.FIRMA_ERROR:
+								validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+								validacioFirmaError = validacioFirma.getCausaInvalida();
+								break;
+							default:
+								validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+						}
+					} catch(Exception e) {
+						logger.error("Error validant una firma del document", e);
+						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+						validacioFirmaError = "Error no controlat validant les firmes del document: " + e.getMessage();
+					}
+				}
+				// Si troba un error s'atura de valida
+				if (validacioFirmaEstat == ValidacioFirmaEnum.ERROR_VALIDANT 
+						||validacioFirmaEstat == ValidacioFirmaEnum.FIRMA_INVALIDA ) 
+				{
+					annex.setValidacioFirmaEstat(validacioFirmaEstat);
+					annex.setValidacioFirmaError(validacioFirmaError);
+	
+				}
+			}
+
+			logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
+								validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
+		}
+		return validacioFirmaEstat;
+	}
 
 	public FitxerDto getJustificant(Long registreId) {
 		RegistreEntity registre = registreRepository.findOne(registreId);
@@ -886,16 +997,12 @@ public class RegistreHelper {
 					}
 					byte[] firmaContingut = null;
 					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
-						ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-						gestioDocumentalHelper.gestioDocumentalGet(
-								registreAnnexFirmaEntity.getGesdocFirmaId(),
-								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
-								streamAnnexFirma);
-						firmaContingut = streamAnnexFirma.toByteArray();
+						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId());
 					}
-					arxiuFirmaDto.setDetalls(pluginHelper.validaSignaturaObtenirDetalls(
+					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 							documentContingut,
-							firmaContingut));
+							firmaContingut); 
+					arxiuFirmaDto.setDetalls(validacioFirma.getFirmaDetalls());
 				} else {
 					logger.warn("ValidaSignaturaPlugin is not configured");
 				}
@@ -1008,9 +1115,10 @@ public class RegistreHelper {
 							}
 							final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
 							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
-							List<ArxiuFirmaDetallDto> firmaDetalls = pluginHelper.validaSignaturaObtenirDetalls(
+							ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 									documentContingut,
-									firmaContingut);
+									firmaContingut) ;
+							List<ArxiuFirmaDetallDto> firmaDetalls = validacioFirma.getFirmaDetalls();
 							contevalidaSignaturaObtenirDetalls.stop();
 							
 							for (ArxiuFirmaDetallDto arxiuFirmaDetallDto : firmaDetalls) {
@@ -1194,7 +1302,7 @@ public class RegistreHelper {
 					null,
 					BackofficeWsService.class);			
 			
-			logger.trace(">>> Abans de cridar backoffice WS");			
+			logger.trace(">>> Abans de cridar backoffice WS");
 			backofficeClient.comunicarAnotacionsPendents(ids);		
 						
 			integracioHelper.addAccioOk (
@@ -1264,7 +1372,10 @@ public class RegistreHelper {
 	
 	
 	@Transactional()
-	public void updateBackEnviarDelayData(List<Long> pendentsIdsGroupedByRegla, Exception throwable, Date dataComunicacio) {
+	public void updateBackEnviarDelayData(
+			List<Long> pendentsIdsGroupedByRegla, 
+			Exception throwable, 
+			Date dataComunicacio) {
 
 		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
 		for (Long id : pendentsIdsGroupedByRegla) {
@@ -1278,8 +1389,13 @@ public class RegistreHelper {
 			if (throwable == null) {
 				// remove exception message and increment procesIntents
 				pend.updateProces(null, null);
-				// Si estava pendent de comunicar al backoffice actualitza l'estat
-				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT)) {
+				
+				// Si estava pendent de comunicar al backoffice 
+				// 		o estava processada amb error abans de tornar a comunicar-la (pot ser que el backoffic la hagi tornat a posar com a back_error mentre se li comunica la nova anotació)
+				// llavors actualitza l'estat
+				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT) 
+						|| (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_ERROR) 
+								&& dataComunicacio.after(pend.getBackProcesRebutjErrorData()))) {
 					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy").format(dataComunicacio));
 				}
 			} else { // if excepion occured during sending anotacions ids to backoffice
@@ -1304,6 +1420,7 @@ public class RegistreHelper {
 					delayMinutes);
 			pend.updateBackRetryEnviarData(cal.getTime());
 			registreRepository.saveAndFlush(pend);
+			
 		}
 	}
 
@@ -1631,13 +1748,7 @@ public class RegistreHelper {
 				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
 				
 				if (firmaEntity.getGesdocFirmaId() != null) {
-					ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							firmaEntity.getGesdocFirmaId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-							streamAnnexFirma);
-					byte[] firmaContingut = streamAnnexFirma.toByteArray();
-					
+					byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId());					
 					fitxerDto.setNom(firmaEntity.getFitxerNom());
 					fitxerDto.setContentType(firmaEntity.getTipusMime());
 					fitxerDto.setContingut(firmaContingut);
@@ -1682,6 +1793,37 @@ public class RegistreHelper {
 		return fitxerDto;
 	}
 	
+	/**
+	 * Mètode per retornar un llistat de les anotacions processades al backoffice
+	 * amb errors
+	 **/
+	public List<Long> findRegistresBackError(int maxReintents) {
+		List<Long> registresBackError = new ArrayList<>();
+		
+		List<RegistreEntity> llistatRegistresBackError = registreRepository.findRegistresBackError(maxReintents);
+		for(RegistreEntity registre : llistatRegistresBackError) {
+			
+			registresBackError.add(registre.getId());
+		}
+		
+		return registresBackError;
+	}
+	
+	/** Consulta el contingut de la firma en la gestió documental. */
+	private byte[] getFirmaContingut(String gesdocFirmaId) {
+		byte[] firmaContingut = null;
+		if (gesdocFirmaId != null) {
+			ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+			gestioDocumentalHelper.gestioDocumentalGet(
+					gesdocFirmaId, 
+					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+					streamAnnexFirma);
+			firmaContingut = streamAnnexFirma.toByteArray();
+		}
+		return firmaContingut;
+	}
+
+
 	/** Llistat d'extensions convertibles. */
 	private static String[] extensionsConvertiblesPdf = {
 			"pdf", "odt", "sxw", "rtf", "doc", "wpd", "txt", "ods",

@@ -54,4 +54,9 @@ public interface SegonPlaService {
 	 * Esborra les dades antigues del monitor d'integracions
 	 */
 	public void esborrarDadesAntigesMonitorIntegracio();
+	
+	/**
+	 * Reintenta el processament al backoffice 
+	 **/
+	public void reintentarProcessamentBackoffice();
 }

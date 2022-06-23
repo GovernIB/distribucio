@@ -123,6 +123,8 @@ public class ConversioTipusHelper {
 								throw new RuntimeException(e);
 							}
 						}
+						target.setValidacioFirmaEstat(source.getValidacioFirmaEstat());
+						target.setValidacioFirmaError(source.getValidacioFirmaError());
 
 						return target;
 					}

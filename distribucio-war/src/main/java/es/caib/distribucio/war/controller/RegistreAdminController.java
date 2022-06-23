@@ -52,13 +52,12 @@ import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.plugin.caib.procediment.ProcedimentPluginRolsac;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
@@ -96,8 +95,6 @@ public class RegistreAdminController extends BaseAdminController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private RegistreHelper registreHelper;
-	@Autowired
-	private PluginHelper pluginHelper;
 	
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -185,6 +182,7 @@ public class RegistreAdminController extends BaseAdminController {
 			
 			int numeroAnnexosPendentsArxiu = 0;
 			String codiSia = null;
+			int numeroAnnexosFirmaInvalida = 0;
 			if (registreDto instanceof RegistreDto) {
 				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;		
 				codiSia = registreDtoAmbAnnexos.getProcedimentCodi();
@@ -199,19 +197,20 @@ public class RegistreAdminController extends BaseAdminController {
 			if (RolHelper.isRolActualAdministrador(request)) {
 				codiDir3 = EntitatHelper.getEntitatActual(request).getCodiDir3();
 			}else {
-			codiDir3 = entitatActual.getCodiDir3();
+				codiDir3 = entitatActual.getCodiDir3();
 			}
 			
 			try {
-				ProcedimentDto procedimentDto = pluginHelper.procedimentFindByCodiSia(codiDir3, codiSia);
+				ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(codiDir3, codiSia);
 				String procedimentNom = procedimentDto.getNom();
 				model.addAttribute("procedimentNom", procedimentDto.getNom());
 			}catch(NullPointerException e) {
 				model.addAttribute("procedimentNom", null);
 				String errMsg = "No s'ha pogut concretar el nom del procediment";
 				logger.info(errMsg);
+				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
+				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 			}
-			
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
@@ -219,6 +218,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("ordreDir", ordreDir);
 			model.addAttribute("isVistaMoviments", false);
 			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
+			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -902,5 +902,32 @@ public class RegistreAdminController extends BaseAdminController {
 		return filtreCommand;
 	}
 
+	
+	/** Mètode per validar les firmes d'un annex per mostrar informació de les firmes en el detall de l'annex.
+	 * 
+	 * @param request
+	 * @param registreId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/registre/{registreId}/annex/{annexId}/validarFirmes", method = RequestMethod.GET)
+	public String validarFirmesAnnex(HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable Long annexId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
+		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
+			MissatgesHelper.success(request,
+					getMessage(request,
+							"contingut.admin.controller.validar.firmes.valides"));
+		} else {
+			MissatgesHelper.warning(request,
+					getMessage(request,
+							"contingut.admin.controller.validar.firmes.no.valides"));
+		}
+		return "redirect:" + request.getHeader("referer");
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
 }

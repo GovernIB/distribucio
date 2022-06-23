@@ -11,6 +11,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,6 +29,7 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
+import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
@@ -98,7 +101,14 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	@Version
 	private long version = 0;
 
-	
+
+	// Camps per a mostrar informació de la validacó de firmes
+	@Enumerated(EnumType.STRING)
+	@Column(name = "val_firma_estat")
+	private ValidacioFirmaEnum validacioFirmaEstat;
+	@Column(name = "val_firma_error", length= 255)
+	private String validacioFirmaError;
+
 	public String getFirmaCsv() {
 		return firmaCsv;
 	}
@@ -205,6 +215,18 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 		this.gesdocDocumentId = gesdocDocumentId;
 	}
 
+	public ValidacioFirmaEnum getValidacioFirmaEstat() {
+		return validacioFirmaEstat;
+	}
+	public void setValidacioFirmaEstat(ValidacioFirmaEnum validacioFirmaEstat) {
+		this.validacioFirmaEstat = validacioFirmaEstat;
+	}
+	public String getValidacioFirmaError() {
+		return validacioFirmaError;
+	}
+	public void setValidacioFirmaError(String validacioFirmaError) {
+		this.validacioFirmaError = validacioFirmaError;
+	}
 	public static Builder getBuilder(
 			String titol,
 			String fitxerNom,
