@@ -12,6 +12,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
 import org.fundaciobit.plugins.validatesignature.api.SignatureRequestedInformation;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
@@ -45,12 +45,10 @@ import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManage
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
@@ -66,13 +64,13 @@ public class PluginHelper {
 
 
 
-	private DadesUsuariPlugin dadesUsuariPlugin;
-	private UnitatsOrganitzativesPlugin unitatsOrganitzativesPlugin;
-	private DadesExternesPlugin dadesExternesPlugin;
-	private IArxiuPlugin arxiuPlugin;
-	private IValidateSignaturePlugin validaSignaturaPlugin;
-	private ProcedimentPlugin procedimentPlugin;
-	private DistribucioPlugin distribucioPlugin;
+	private Map<String, DadesUsuariPlugin> dadesUsuariPlugin = new HashMap<>();
+	private Map<String, UnitatsOrganitzativesPlugin> unitatsOrganitzativesPlugin = new HashMap<>();
+	private Map<String, DadesExternesPlugin> dadesExternesPlugin = new HashMap<>();
+	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
+	private Map<String, IValidateSignaturePlugin> validaSignaturaPlugin = new HashMap<>();
+	private Map<String, ProcedimentPlugin> procedimentPlugin = new HashMap<>();
+	private Map<String, DistribucioPlugin> distribucioPlugin = new HashMap<>();
 	
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
@@ -82,7 +80,19 @@ public class PluginHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
 	private ConfigHelper configHelper;
+	
+	/** Mètode per consultar el codi de l'entitat actual */
+	private String getCodiEntitatActual() {
 
+		String codiEntitat = ConfigHelper.getEntitatActualCodi();
+		if (StringUtils.isEmpty(codiEntitat)) {
+			throw new RuntimeException("El codi de l'entitat no pot ser null");
+		}
+		return codiEntitat;
+	}
+
+
+	
 	public String saveRegistreAsExpedientInArxiu(
 			String registreNumero,
 			String expedientNumero,
@@ -915,9 +925,6 @@ public class PluginHelper {
 		accioParams.put("codiDir3", codiDir3);
 		long t0 = System.currentTimeMillis();
 		try {
-			EntitatDto entitatDto = ConfigHelper.getEntitat().get();
-			DistribucioAbstractPluginProperties.setCodiEntitat(entitatDto.getCodi());
-			
 			//codiDir3 = "A04003003";
 			List<Procediment> procediments = getProcedimentPlugin().findAmbCodiDir3(codiDir3);
 			integracioHelper.addAccioOk(
@@ -970,16 +977,16 @@ public class PluginHelper {
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		loadPluginProperties("USUARIS");
-		if (dadesUsuariPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		DadesUsuariPlugin plugin = dadesUsuariPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(
-							String.class,
-							Properties.class).newInstance(
-							"es.caib.distribucio.",
-							PropertiesHelper.getProperties());
+					plugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					dadesUsuariPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_USUARIS,
@@ -992,16 +999,21 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin de dades d'usuari " + pluginClass);
 			}
 		}
-		return dadesUsuariPlugin;
+		return plugin;
 	}
+	
 	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
 		loadPluginProperties("UNITATS");
-		if (unitatsOrganitzativesPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		UnitatsOrganitzativesPlugin plugin = unitatsOrganitzativesPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginUnitatsOrganitzatives();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					unitatsOrganitzativesPlugin = (UnitatsOrganitzativesPlugin)clazz.newInstance();
+					plugin = (UnitatsOrganitzativesPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					unitatsOrganitzativesPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_UNITATS,
@@ -1014,27 +1026,21 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin d'unitats organitzatives");
 			}
 		}
-		return unitatsOrganitzativesPlugin;
+		return plugin;
 	}
 	
 	private IArxiuPlugin getArxiuPlugin() {
 		loadPluginProperties("ARXIU");
-		if (arxiuPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		IArxiuPlugin plugin = arxiuPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginArxiu();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class).newInstance(
-								"es.caib.distribucio.");
-					} else {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class,
-								Properties.class).newInstance(
-								"es.caib.distribucio.",
-								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
-					}
+					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(configHelper.getAllEntityProperties(codiEntitat));
+					arxiuPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_ARXIU,
@@ -1047,16 +1053,20 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin d'arxiu digital");
 			}
 		}
-		return arxiuPlugin;
+		return plugin;
 	}
 	private DadesExternesPlugin getDadesExternesPlugin() {
 		loadPluginProperties("DADES_EXTERNES");
-		if (dadesExternesPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		DadesExternesPlugin plugin = dadesExternesPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginDadesExternes();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					dadesExternesPlugin = (DadesExternesPlugin)clazz.newInstance();
+					plugin = (DadesExternesPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					dadesExternesPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_DADESEXT,
@@ -1069,26 +1079,20 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin de dades externes");
 			}
 		}
-		return dadesExternesPlugin;
+		return plugin;
 	}
 	private IValidateSignaturePlugin getValidaSignaturaPlugin() {
 		loadPluginProperties("VALID_SIGN");
-		if (validaSignaturaPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		IValidateSignaturePlugin plugin = validaSignaturaPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginValidaSignatura();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
-						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
-								String.class).newInstance(
-								"es.caib.distribucio.");
-					} else {
-						validaSignaturaPlugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(
-								String.class,
-								Properties.class).newInstance(
-								"es.caib.distribucio.",
-								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
-					}
+					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					validaSignaturaPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_VALIDASIG,
@@ -1099,22 +1103,20 @@ public class PluginHelper {
 				return null;
 			}
 		}
-		return validaSignaturaPlugin;
+		return plugin;
 	}
 	private ProcedimentPlugin getProcedimentPlugin() {
 		loadPluginProperties("ARXIU");
-		if (procedimentPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		ProcedimentPlugin plugin = procedimentPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginProcediment();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					try {
-						procedimentPlugin = (ProcedimentPlugin)clazz.newInstance();
-					} catch (InstantiationException ex) {
-						procedimentPlugin = (ProcedimentPlugin)clazz.getDeclaredConstructor(
-								Properties.class).newInstance(
-								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
-					}
+					plugin = (ProcedimentPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					procedimentPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_PROCEDIMENT,
@@ -1127,19 +1129,22 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin de procediments");
 			}
 		}
-		return procedimentPlugin;
+		return plugin;
 	}
 	private DistribucioPlugin getDistribucioPlugin() {
 		loadPluginProperties("ARXIU");
 		loadPluginProperties("GES_DOC");
 		loadPluginProperties("SIGNATURA");
-		if (distribucioPlugin == null) {
+		String codiEntitat = getCodiEntitatActual();
+		DistribucioPlugin plugin = distribucioPlugin.get(codiEntitat);
+		if (plugin == null) {
 			String pluginClass = getPropertyPluginDistribucio();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					distribucioPlugin = (DistribucioPlugin)clazz.newInstance();
-					distribucioPlugin.configurar(
+					plugin = (DistribucioPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					plugin.configurar(
 							new IntegracioManager() {
 								public void addAccioOk(
 										String integracioCodi,
@@ -1179,6 +1184,7 @@ public class PluginHelper {
 							IntegracioHelper.INTCODI_SIGNATURA,
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
+					distribucioPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -1191,11 +1197,12 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin de distribucio");
 			}
 		}
-		return distribucioPlugin;
+		return plugin;
 	}
 	
 	
 	private final static Map<String, Boolean> propertiesLoaded = new HashMap<>();
+	
 	public synchronized void loadPluginProperties(String codeProperties) {
 		if (!propertiesLoaded.containsKey(codeProperties) || !propertiesLoaded.get(codeProperties)) {
 			propertiesLoaded.put(codeProperties, true);

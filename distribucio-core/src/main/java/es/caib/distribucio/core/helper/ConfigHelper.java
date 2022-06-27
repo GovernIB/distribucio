@@ -10,6 +10,8 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +35,19 @@ public class ConfigHelper {
     @Autowired
     private PluginHelper pluginHelper;
     
-    
+    /** Per guardar l'entitat actual per a les propietats multi entitat. */
     private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
     
-    public static ThreadLocal<EntitatDto> getEntitat() {
-		return entitat;
+    public static EntitatDto getEntitat() {
+		return entitat.get();
 	}
-
-
 	public static void setEntitat(EntitatDto entitat) {
 		ConfigHelper.entitat.set(entitat);
 	}
-
+	public static String getEntitatActualCodi() {
+		EntitatDto entitat = getEntitat();
+		return entitat != null ? entitat.getCodi() : null;
+	}
 
 	@PostConstruct
     public void firstSincronization() {
@@ -220,7 +223,8 @@ public class ConfigHelper {
     
 	private static final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
 
-    public static class JBossPropertiesHelper extends Properties {
+    @SuppressWarnings("serial")
+	public static class JBossPropertiesHelper extends Properties {
 
         private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path"; //in jboss is null
 
@@ -343,5 +347,19 @@ public class ConfigHelper {
         
     	private static final Logger logger = LoggerFactory.getLogger(JBossPropertiesHelper.class);
     }
+
+    /** Obté totes les propietats per a un codi d'entitat. */
+    @Transactional(readOnly = true)
+	public Object getAllEntityProperties(String entitatCodi) {
+        Properties properties = new Properties();
+        List<ConfigEntity> configs = !StringUtils.isEmpty(entitatCodi) ? configRepository.findConfigEntitaCodiAndGlobals(entitatCodi) : configRepository.findByEntitatCodiIsNull();
+        for (ConfigEntity config: configs) {
+             String value = !Strings.isNullOrEmpty(entitatCodi) ? getConfigKeyByEntitat(entitatCodi, config.getKey()) : getConfig(config);
+            if (value != null) {
+                properties.put(config.getKey(), value);
+            }
+        }
+        return properties;
+	}
     
 }

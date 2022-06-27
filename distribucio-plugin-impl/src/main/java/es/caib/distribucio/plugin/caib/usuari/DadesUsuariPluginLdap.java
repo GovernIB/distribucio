@@ -20,6 +20,7 @@ import javax.naming.ldap.LdapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
@@ -30,7 +31,7 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DadesUsuariPluginLdap implements DadesUsuariPlugin {
+public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
 
 	@Override
 	public DadesUsuari findAmbCodi(

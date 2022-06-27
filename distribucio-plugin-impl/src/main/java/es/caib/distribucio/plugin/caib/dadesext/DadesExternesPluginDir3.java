@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -25,6 +24,7 @@ import es.caib.dir3caib.ws.api.catalogo.CatProvinciaTF;
 import es.caib.dir3caib.ws.api.catalogo.CatTipoVia;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWs;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWsService;
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.dadesext.ComunitatAutonoma;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
@@ -34,8 +34,6 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -43,14 +41,7 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
-	
-	public DadesExternesPluginDir3() {
-		super();
-	}
-	public DadesExternesPluginDir3(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
-	
+		
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
 		try {
@@ -294,65 +285,20 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.dadesext.service.url");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.dadesext.service.url");
-//		String url = getProperty(
-//				"plugin.dadesext.dir3.service.url");
-//		if (url != null) {
-//			return url;
-//		}else {
-//			return getProperty(
-//					"plugin.dadesext.service.url");
-//		}
 	}
 	private String getUsername() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.username");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}		
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
-//		String username = getProperty(
-//				"plugin.dadesext.dir3.service.username");
-//		if(username != null) {
-//			return username;
-//		}else {
-//			return getProperty(
-//					"plugin.unitats.organitzatives.dir3.service.username");
-//		}
 	}
 	private String getPassword() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.unitats.organitzatives.dir3.service.password");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}	
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
-//		String password = getProperty(
-//				"plugin.dadesext.dir3.service.password");
-//		if(password != null) {
-//			return password;
-//		}else {
-//			return getProperty(
-//					"plugin.unitats.organitzatives.dir3.service.password");
-//		}
 	}
 
 	public String getUsuariIntegracio() {
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username","-");
 	}
 	

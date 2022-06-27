@@ -2,7 +2,7 @@
 -- Script per afegir una nova columna a la bbdd on es mostra per mitjà 
 -- d'un booleà si és una propietat configurable
 
-ALTER TABLE DIS_CONFIG ADD entitat_codi VARCHAR2(64 CHAR);
+ALTER TABLE DIS_CONFIG ADD ENTITAT_CODI VARCHAR2(64 CHAR);
 ALTER TABLE DIS_CONFIG ADD CONFIGURABLE NUMBER(1) DEFAULT 0;
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';

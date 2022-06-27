@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.caib.usuari;
 
 import java.util.List;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
@@ -14,7 +15,7 @@ import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class DadesUsuariPluginMock implements DadesUsuariPlugin {
+public class DadesUsuariPluginMock extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
 
 	@Override
 	public DadesUsuari findAmbCodi(

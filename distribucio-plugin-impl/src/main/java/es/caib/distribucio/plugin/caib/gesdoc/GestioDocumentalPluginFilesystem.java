@@ -12,9 +12,9 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**

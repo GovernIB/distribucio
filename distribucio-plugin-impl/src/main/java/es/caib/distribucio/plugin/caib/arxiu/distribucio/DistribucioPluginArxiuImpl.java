@@ -42,12 +42,12 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
@@ -92,16 +92,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private IArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
-	
-	  
-	public DistribucioPluginArxiuImpl()  {
-		super();
-	}
-	
-	public DistribucioPluginArxiuImpl(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
-
 
 	@Override
 	public String expedientCrear(
@@ -1384,17 +1374,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (PropertiesHelper.getProperties().isLlegirSystem()) {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class).newInstance(
-								"es.caib.distribucio.");
-					} else {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class,
-								Properties.class).newInstance(
-								"es.caib.distribucio.",
-								PropertiesHelper.getProperties().findAll());
-					}
+					arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+							String.class,
+							Properties.class).newInstance(
+							"es.caib.distribucio.",
+							this.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1458,31 +1442,31 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}
 	private String getPropertyPluginArxiu() {
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+		return this.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
-		return new Boolean(PropertiesHelper.getProperties().getProperty(
+		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
-		return PropertiesHelper.getProperties().getProperty(
+		return this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
 	}
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
-		return new Boolean(PropertiesHelper.getProperties().getProperty(
+		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
 	

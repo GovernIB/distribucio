@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -17,8 +16,8 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 
@@ -29,14 +28,6 @@ import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
  */
 public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
 	  
-	public DadesUsuariPluginJdbc()  {
-		super();
-	}
-	
-	public DadesUsuariPluginJdbc(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
-
 	@Override
 	public DadesUsuari findAmbCodi(
 			String usuariCodi) throws SistemaExternException {

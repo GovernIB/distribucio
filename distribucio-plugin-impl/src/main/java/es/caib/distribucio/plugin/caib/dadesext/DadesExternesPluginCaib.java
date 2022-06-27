@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.dadesext.ComunitatAutonoma;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
@@ -23,8 +23,6 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de dades externes que consulta la
@@ -34,12 +32,6 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
 
-	public DadesExternesPluginCaib() {
-		super();
-	}
-	public DadesExternesPluginCaib(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
 
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
@@ -304,17 +296,8 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 	}
 
 	private String getBaseUrl() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.dadesext.service.url");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		String baseUrl = PropertiesHelper.getProperties().getProperty(
+		String baseUrl = this.getProperties().getProperty(
 				"es.caib.distribucio.plugin.dadesext.service.url");
-//		String baseUrl = getProperty(
-//				"plugin.dadesext.service.url");
 		if (baseUrl != null && baseUrl.length() > 0) {
 			return baseUrl;
 		} else {
