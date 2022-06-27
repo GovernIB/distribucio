@@ -24,14 +24,6 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
-	  
-	public UnitatsOrganitzativesPluginMock()  {
-		super();
-	}
-	
-	public UnitatsOrganitzativesPluginMock(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}	
 	
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{

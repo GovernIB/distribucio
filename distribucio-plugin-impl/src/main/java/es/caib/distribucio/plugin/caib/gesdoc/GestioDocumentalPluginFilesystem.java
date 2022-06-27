@@ -25,14 +25,6 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginProperties implements GestioDocumentalPlugin {
-	  
-	public GestioDocumentalPluginFilesystem()  {
-		super();
-	}
-	
-	public GestioDocumentalPluginFilesystem(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
 	
 	
 	@Override
@@ -129,17 +121,8 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 
 
 	private String getBaseDir(String agrupacio) {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugingesdoc.filesystem.base.dir");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		String baseDir = System.getProperty(
+		String baseDir = getProperty(
 				"es.caib.distribucio.plugin.gesdoc.filesystem.base.dir");
-//		String baseDir = getProperty(
-//				"plugin.gesdoc.filesystem.base.dir");
 		if (baseDir != null) {
 			if (baseDir.endsWith("/")) {
 				return baseDir + agrupacio;

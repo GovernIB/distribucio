@@ -1374,11 +1374,17 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-							String.class,
-							Properties.class).newInstance(
-							"es.caib.distribucio.",
-							this.getProperties());
+//					if (PropertiesHelper.getProperties().isLlegirSystem()) {
+						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+								String.class).newInstance(
+								"es.caib.distribucio.");
+//					} else {
+//						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+//								String.class,
+//								Properties.class).newInstance(
+//								"es.caib.distribucio.",
+//								PropertiesHelper.getProperties().findAll());
+//					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1442,26 +1448,26 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}
 	private String getPropertyPluginArxiu() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return this.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+		return getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
-		return new Boolean(this.getProperties().getProperty(
+		return new Boolean(getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
 	}
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */

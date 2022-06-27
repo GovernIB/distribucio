@@ -34,6 +34,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -285,20 +286,20 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.dadesext.service.url");
 	}
 	private String getUsername() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username");
 	}
 	private String getPassword() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
 	}
 
 	public String getUsuariIntegracio() {
-		return this.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username","-");
 	}
 	

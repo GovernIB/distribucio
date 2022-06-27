@@ -22,14 +22,6 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
-	  
-	public UnitatsOrganitzativesPluginCaibMock()  {
-		super();
-	}
-	
-	public UnitatsOrganitzativesPluginCaibMock(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
-	}
 
 	
 	@Override

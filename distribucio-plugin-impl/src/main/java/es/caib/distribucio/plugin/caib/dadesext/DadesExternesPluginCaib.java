@@ -23,6 +23,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de dades externes que consulta la
@@ -296,7 +297,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 	}
 
 	private String getBaseUrl() {
-		String baseUrl = this.getProperties().getProperty(
+		String baseUrl = getProperty(
 				"es.caib.distribucio.plugin.dadesext.service.url");
 		if (baseUrl != null && baseUrl.length() > 0) {
 			return baseUrl;

@@ -23,6 +23,7 @@ import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de consulta de procediments emprant ROLSAC.
@@ -104,29 +105,28 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		return getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
 	}
 	private String getServiceUsername() {
-		return getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.username");
 	}
 	private String getServicePassword() {
-		return getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.password");
 	}
 	private Integer getServiceTimeout() {
 		String key = "es.caib.distribucio.plugin.procediment.rolsac.service.timeout";
-		String timeout = getProperties().getProperty(key);
-		if (timeout != null && !timeout.trim().isEmpty()) {
-			return new Integer(timeout).intValue();
+		if (PropertiesHelper.getProperties().getProperty(key) != null) {
+			return PropertiesHelper.getProperties().getAsInt(key);
 		} else {
 			return null;
 		}
 	}
 
 	public String getUsuariIntegracio() {
-		return getProperties().getProperty(
+		return getProperty(
 					"es.caib.distribucio.plugin.procediment.rolsac.service.username","-");		
 	}
 	
