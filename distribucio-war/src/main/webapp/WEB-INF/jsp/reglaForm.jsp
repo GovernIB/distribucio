@@ -176,6 +176,10 @@ $(document).ready(function() {
 					optionTextAttribute="nom" 
 					required="true"
 					emptyOption="true" />
+				<dis:inputTextarea 
+					name="backofficeDestiDir3" 
+					textKey="regla.form.camp.backoffice.desti.dir3" 
+					required="false" />
 			</div>
 			<div id="camps_tipus_UNITAT">
 				<dis:inputSuggest 
