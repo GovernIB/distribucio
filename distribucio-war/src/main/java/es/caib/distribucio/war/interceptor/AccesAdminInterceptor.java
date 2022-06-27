@@ -31,7 +31,6 @@ public class AccesAdminInterceptor extends HandlerInterceptorAdapter {
 			HttpServletResponse response,
 			Object handler) throws Exception {
 		if (!RolHelper.isRolActualAdministrador(request) 
-				//TODO 2- Permetre d'accés a la zona d'administració a DIS_ADMIN_LECTURA, no només a DIS_ADMIN
 				 && !RolHelper.isRolActualAdminLectura(request) 
 				) {
 			UsuariDto usuariActual = aplicacioService.getUsuariActual();
