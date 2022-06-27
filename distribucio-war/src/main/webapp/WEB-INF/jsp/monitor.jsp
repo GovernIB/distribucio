@@ -53,6 +53,7 @@
 		
 	</style>
 	<script type="text/javascript">
+		var intervalCadaSegon;
 		$(document).ready(function(){
 			$("button[name=refrescar]").click(function() {
 				carregaMonitor();
@@ -121,25 +122,18 @@
 		       			                        '<th class=""><spring:message code="monitor.tasques.inici.execucio"/></th>' +
 		       			                        '<th class=""><spring:message code="monitor.tasques.temps.execucio"/></th>' +
 		       			                        //'<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th></tr>' +
 		       			                        //'<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
-		       			                        '</thead></tr>';
-		       			             for (var i = 0; i < data.tasca.length; i++) {
-		       			                content +=  '<tr class="monitor_fila">' +
-		       			                             '<td class="">' + data.tasca[i].replace("Tasca: ", "") + '</td>' +
-		       			                            '<td class="">' + data.estat[i].replace("Estat: ", "") + '</td>' +
-		       			                            '<td>' + data.iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
-		       			                            '<td>' + data.tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
-		       			                            //'<td>' + data.fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
-		       			                            '<td>' + data.properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
-		       			                            //'<td>' + data.observacions[i].replace("Observacions: ", "") + '</td>' + 
-		       			                            '</tr>';
-		       			            } 
-		       			            content +=  '</table>' + 
-				                        /* '<br><br><hr>' + 
-				                        '<label class="ml-6" for="refrescarTasquesCadaSegon">' + 
-				                        '<input onclick="refrescarTasquesCadaSegon()" type="checkbox" name="refrescarTasquesCadaSegon" id="refrescarTasquesCadaSegon">' + 
-				                        ' Refrescar cada 1s</label>' + */
+		       			                        '</thead><tbody id="tbody_monitor">';
+		       			                        
+		       			                        
+		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio);
+		       			            content +=  '</tbody></table>' + 
+				                        '<br><br><hr>' + 
+				                        	'<input class="ml-6" id="chRefrescarTasques" type="checkbox" name="refrescarTasquesCadaSegon">' +
+					                        '<label class="ml-1" for="refrescarTasquesCadaSegon">' + 					                        					                        
+					                        '<spring:message code="monitor.tasques.check.refresh"/></label>' +   
+					                        '<span id="span-refresh" class="ml-2 fa fa-refresh" style="visibylity-hidden"></span>' + 
 		       		                    '</div>'+  
 		    		                    '</div>'+
 		                        
@@ -147,12 +141,17 @@
 		                        
 		                        '</div>';
 		                        
-		                        //TODO: afegir una nova pipella i fer un mètode per carregar la taual
-		                        // buildTaulaTasques(tasques): "<table> .... </table>"
-		                        // aquesta funció JAVASCRIPT l'aprofitaràs en el refres
-		                        
 		           
 		                $("#monitor_contens").html(content);
+		                $("#chRefrescarTasques").click(function(){
+		                	var checkValue = $("#chRefrescarTasques").is(":checked");
+		                	if (checkValue) {
+		                		refrescarTasquesCadaSegon();
+		                	}else {
+		                		clearInterval(intervalCadaSegon);
+		                	}
+		                	
+		                });
 		        }
 		    })
 		    .fail(function( jqxhr, textStatus, error ) {
@@ -164,11 +163,52 @@
 	        });
 		}
 		
+		
+		function carregaTasques() {
+			$("#span-refresh").addClass('fa-circle-o-notch');
+			$("#span-refresh").addClass('fa-spin')
+		    $.ajax({
+		        url: "monitor/tasques",
+		        dataType: 'json',
+		        async: false,
+		        success: function(data){
+		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio));
+		        }
+		    })
+		    .fail(function( jqxhr, textStatus, error ) {
+		         var err = textStatus + ', ' + error;
+		         console.log( "Request Failed: " + err);
+		    })
+	        .always(function() {
+	            $("body").removeClass("loading");
+				$("#span-refresh").removeClass('fa-circle-o-notch');
+				$("#span-refresh").removeClass('fa-spin')
+	        });
+		}
+		
 		function refrescarTasquesCadaSegon() {
-			setTimeout(function() {
-				location.href = "/distribucio/monitor/tasques";
+			intervalCadaSegon = setInterval(function() {
+				carregaTasques();
 			}, 1000);
 		}
+		
+		
+		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio) {
+			var content = '';
+	            for (var i = 0; i < tasca.length; i++) {
+	               content +=  '<tr class="monitor_fila">' +
+	                            '<td class="">' + tasca[i].replace("Tasca: ", "") + '</td>' +
+	                           '<td class="">' + estat[i].replace("Estat: ", "") + '</td>' +
+	                           '<td>' + iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
+	                           '<td>' + tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
+	                           //'<td>' + fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
+	                           '<td>' + properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
+	                           //'<td>' + observacions[i].replace("Observacions: ", "") + '</td>' + 
+	                           '</tr>';
+	           }  
+	     	return content;
+		}
+		
 	</script>
 </head>
 <body>
