@@ -117,21 +117,18 @@ public class MonitorSystemController extends BaseController {
 		mjson.put("espera", espera);
 		mjson.put("blockedtime", blockedtime);
 		
-		//TODO: afegir la informació de les tasques en segon pla
 		Map<String, JSONArray> tasques = this.getTasquesJson(request);
 		mjson.put("tasca", tasques.get("tasca"));
 		mjson.put("estat", tasques.get("estat"));
 		mjson.put("iniciExecucio", tasques.get("iniciExecucio"));
 		mjson.put("tempsExecucio", tasques.get("tempsExecucio"));
-		mjson.put("fiExecucio", tasques.get("fiExecucio"));
+//		mjson.put("fiExecucio", tasques.get("fiExecucio"));
 		mjson.put("properaExecucio", tasques.get("properaExecucio"));
 		mjson.put("observacions", tasques.get("observacions"));
 		
-		//mjson.put("tasques", this.getTasquesJson(request));
 		return mjson;
 	}
 
-	//TODO: aquest mètode pot ser públic i el refresc el pot cridar
 	@RequestMapping(value="/tasques", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, JSONArray> getTasquesJson(HttpServletRequest request) {
@@ -140,7 +137,7 @@ public class MonitorSystemController extends BaseController {
 		JSONArray estat = new JSONArray();
 		JSONArray iniciExecucio = new JSONArray();
 		JSONArray tempsExecucio = new JSONArray();
-		JSONArray fiExecucio = new JSONArray();
+//		JSONArray fiExecucio = new JSONArray();
 		JSONArray properaExecucio = new JSONArray();
 		JSONArray observacions = new JSONArray();
 		List<MonitorTascaInfo> monitorTasques = monitortasquesService.findAll();
@@ -156,17 +153,17 @@ public class MonitorSystemController extends BaseController {
 			iniciExecucio.add(getMessage(request, "monitor.tasques.inici.execucio") + ": " + strDataInici);
 			String difDataSegons = "-";
 			if (monitorTasca.getDataInici() != null) {
-				long difDatas = /*System.currentTimeMillis()*/monitorTasca.getDataFi().getTime() - monitorTasca.getDataInici().getTime();
+				long difDatas = System.currentTimeMillis() - monitorTasca.getDataInici().getTime();
 				difDataSegons = ((int) (difDatas / 1000) % 60) + "s";
 			}
 			tempsExecucio.add(getMessage(request, "monitor.tasques.temps.execucio") + ": " + (difDataSegons));			
-			String strDataFi = "-";
-			if (monitorTasca.getDataFi() != null) {
-				Date dataFi = monitorTasca.getDataFi();
-				DateFormat dateFormatFi = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				strDataFi = dateFormatFi.format(dataFi);
-			}
-			fiExecucio.add(getMessage(request, "monitor.tasques.fi.execucio") + ": " + (strDataFi));
+//			String strDataFi = "-";
+//			if (monitorTasca.getDataFi() != null) {
+//				Date dataFi = monitorTasca.getDataFi();
+//				DateFormat dateFormatFi = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+//				strDataFi = dateFormatFi.format(dataFi);
+//			}
+//			fiExecucio.add(getMessage(request, "monitor.tasques.fi.execucio") + ": " + (strDataFi));
 			String strProperaExecucio = "-";
 			if (monitorTasca.getProperaExecucio() != null) {
 				Date dataProperaExecucio = monitorTasca.getProperaExecucio();
@@ -180,15 +177,10 @@ public class MonitorSystemController extends BaseController {
 		tasques.put("estat", estat);
 		tasques.put("iniciExecucio", iniciExecucio);
 		tasques.put("tempsExecucio", tempsExecucio);
-		tasques.put("fiExecucio", fiExecucio);
+//		tasques.put("fiExecucio", fiExecucio);
 		tasques.put("properaExecucio", properaExecucio);
 		tasques.put("observacions", observacions);
-		//sistema.add(getMessage(request, "monitor.deadlocked")+": " + numDeadlocked);
-		//return new HashMap<String, String>();
-		//TODO: abans de retornar les dades json afegeix el nom traduït per les tasques
-		//getMessage(request, "prefix.enumeració.tasques.el.que.vulguis." + "CODI_TASCA");
-		return tasques; //TODO: espavila't
-		//TODO: return monitorService.findAll(); //List<MonitorTascaInfo>
-		// {{codi: 'ARXIU', dataInici: '22-06-2022 11:12:13'}}
+
+		return tasques; 
 	}
 }

@@ -106,7 +106,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
 				synchronized (SemaphoreDto.getSemaphore()) {
 					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents);
-					System.out.println(">>>>>>>>>>>>>>>>>pendents: " + pendents.size() + "=>" + maxReintents);
 				}
 				if (pendents != null && !pendents.isEmpty()) {
 					

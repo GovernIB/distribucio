@@ -120,9 +120,9 @@
 		       			                        '<th class=""><spring:message code="monitor.tasques.estat"/></th>' +
 		       			                        '<th class=""><spring:message code="monitor.tasques.inici.execucio"/></th>' +
 		       			                        '<th class=""><spring:message code="monitor.tasques.temps.execucio"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
+		       			                        //'<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
 		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
+		       			                        //'<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
 		       			                        '</thead></tr>';
 		       			             for (var i = 0; i < data.tasca.length; i++) {
 		       			                content +=  '<tr class="monitor_fila">' +
@@ -130,16 +130,16 @@
 		       			                            '<td class="">' + data.estat[i].replace("Estat: ", "") + '</td>' +
 		       			                            '<td>' + data.iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
 		       			                            '<td>' + data.tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
-		       			                            '<td>' + data.fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
+		       			                            //'<td>' + data.fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
 		       			                            '<td>' + data.properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
-		       			                            '<td>' + data.observacions[i].replace("Observacions: ", "") + '</td>' + 
+		       			                            //'<td>' + data.observacions[i].replace("Observacions: ", "") + '</td>' + 
 		       			                            '</tr>';
 		       			            } 
 		       			            content +=  '</table>' + 
-				                        '<br><br><hr>' + 
+				                        /* '<br><br><hr>' + 
 				                        '<label class="ml-6" for="refrescarTasquesCadaSegon">' + 
 				                        '<input onclick="refrescarTasquesCadaSegon()" type="checkbox" name="refrescarTasquesCadaSegon" id="refrescarTasquesCadaSegon">' + 
-				                        ' Refrescar cada 1s</label>' +
+				                        ' Refrescar cada 1s</label>' + */
 		       		                    '</div>'+  
 		    		                    '</div>'+
 		                        

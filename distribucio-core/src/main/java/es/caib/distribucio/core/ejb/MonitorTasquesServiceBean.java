@@ -44,8 +44,8 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateObservacions(String codi, String observacions) {
-		delegate.updateObservacions(codi, observacions);
+	public void updateObservacions(String codi, MonitorTascaEstatEnum estat) {
+		delegate.updateObservacions(codi, estat);
 	}
 
 	@Override

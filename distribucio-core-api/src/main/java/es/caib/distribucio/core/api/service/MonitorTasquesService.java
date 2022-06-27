@@ -19,7 +19,7 @@ public interface MonitorTasquesService {
 	
 	public void updateEstat(String codi, MonitorTascaEstatEnum estat);
 	
-	public void updateObservacions(String codi, String observacions);
+	public void updateObservacions(String codi, MonitorTascaEstatEnum estat);
 	
 	public void updateDataInici(String codi);
 	

@@ -63,17 +63,13 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	// TODO: invocar amonitorTascaService.update data d'inici i estat i observacions
                     	monitorTasquesService.updateDataInici(codiGuardarAnotacionsPendents);
                     	monitorTasquesService.updateEstat(codiGuardarAnotacionsPendents, MonitorTascaEstatEnum.EN_EXECUCIO);
-						//monitorTasquesService.updateObservacions(codiGuardarAnotacionsPendents, observacions);
                     	//monitorTasquesService.updateObservacions(codiGuardarAnotacionsPendents, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.guardarAnotacionsPendentsEnArxiu();
-                        	// TODO: invocar amonitorTascaService.update per la data de fi
                         	monitorTasquesService.updateDataFi(codiGuardarAnotacionsPendents);
                         } catch(Exception e) {                        	
-                        	// TODO: a vegades hi ha error no controlat, podríem pensar un 3r estat d'error executant la tasca
                         	monitorTasquesService.updateEstat(codiGuardarAnotacionsPendents, MonitorTascaEstatEnum.ERROR);
                         }
                     }
@@ -93,15 +89,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
-                    	// TODO: actualitzar la data de la propera execució
         				monitorTasquesService.updateProperaExecucio(codiGuardarAnotacionsPendents, value);
 
                         return nextExecution;
                     }
                 }
         );
-        // TODO: invocar el teu monitorTascaService.addTasca  amb un codi de la tasca únic
-        // aquest codi únic ens servidrà per traduir-la a ca i es
         monitorTasquesService.addTasca(codiGuardarAnotacionsPendents);
         
         

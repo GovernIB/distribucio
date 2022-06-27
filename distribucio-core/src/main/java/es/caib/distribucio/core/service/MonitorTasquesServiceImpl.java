@@ -52,9 +52,9 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateObservacions(String codi, String observacions) {
+	public void updateObservacions(String codi, MonitorTascaEstatEnum estat) {
 		MonitorTascaInfo monitorTascaInfo = this.tasques.get(codi);
-		monitorTascaInfo.setObservacions(observacions);
+		monitorTascaInfo.setObservacions("");
 
 	}
 
