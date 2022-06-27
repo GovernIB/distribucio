@@ -70,6 +70,7 @@
 		            content += '<ul class="nav nav-tabs" role="tablist">' +
 		                '<li role="presentation" class="active"><a id="tab_sistema" href="#sistema" aria-controls="home" role="tab" data-toggle="tab"><spring:message code="monitor.sistema"/></a></li>' +
 		                '<li role="presentation"><a id="tab_fils" href="#fils" aria-controls="profile" role="tab" data-toggle="tab"><spring:message code="monitor.fils"/></a></li>' +
+		                '<li role="presentation"><a id="tab_tasques" href="#tasques" aria-controls="profile" role="tab" data-toggle="tab"><spring:message code="monitor.tasques"/></a></li>' +
 		              '</ul>';
 		            content += '<div class="tab-content">';
 		            content += '<div role="tabpanel" class="tab-pane active" id="sistema">';
@@ -107,7 +108,43 @@
 			            }
 			            content +=  '</table>' +
 		                        '</div>'+
-		                        '</div>'+
+		                        '</div>';
+		                        
+		                        
+		                        
+		                          content += '<div role="tabpanel" class="tab-pane" id="tasques">';
+		       		            content += '<div id="mesures_monitor" class="top-buffer">' +
+		       			                        '<table class="table-monitor table table-striped table-bordered dataTable">' +
+		       			                        '<thead><tr>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.tasca"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.estat"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.inici.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.temps.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
+		       			                        '</thead></tr>';
+		       			             for (var i = 0; i < data.tasca.length; i++) {
+		       			                content +=  '<tr class="monitor_fila">' +
+		       			                             '<td class="">' + data.tasca[i].replace("Tasca: ", "") + '</td>' +
+		       			                            '<td class="">' + data.estat[i].replace("Estat: ", "") + '</td>' +
+		       			                            '<td>' + data.iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
+		       			                            '<td>' + data.tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
+		       			                            '<td>' + data.fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
+		       			                            '<td>' + data.properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
+		       			                            '<td>' + data.observacions[i].replace("Observacions: ", "") + '</td>' + 
+		       			                            '</tr>';
+		       			            } 
+		       			            content +=  '</table>' + 
+				                        '<br><br><hr>' + 
+				                        '<label class="ml-6" for="refrescarTasquesCadaSegon">' + 
+				                        '<input onclick="refrescarTasquesCadaSegon()" type="checkbox" name="refrescarTasquesCadaSegon" id="refrescarTasquesCadaSegon">' + 
+				                        ' Refrescar cada 1s</label>' +
+		       		                    '</div>'+  
+		    		                    '</div>'+
+		                        
+		                        
+		                        
 		                        '</div>';
 		                        
 		                        //TODO: afegir una nova pipella i fer un mètode per carregar la taual
@@ -125,6 +162,12 @@
 	        .always(function() {
 	            $("body").removeClass("loading");
 	        });
+		}
+		
+		function refrescarTasquesCadaSegon() {
+			setTimeout(function() {
+				location.href = "/distribucio/monitor/tasques";
+			}, 1000);
 		}
 	</script>
 </head>
