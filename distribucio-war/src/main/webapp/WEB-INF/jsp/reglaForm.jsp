@@ -64,7 +64,6 @@ $(document).ready(function() {
 		$('div#camps_tipus_UNITAT').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
 		if ($(this).val() == 'BACKOFFICE') {
-			$('#unitatFiltreId').parent().closest('.form-group').css('display', 'none');
 			$('#unitatFiltreId').val('');
 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', 'none');
 			$('#bustiaFiltreId').val('');
@@ -72,7 +71,6 @@ $(document).ready(function() {
 			$('#assumpteCodiFiltre').val('');
 			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
 		} else {
-			$('#unitatFiltreId').parent().closest('.form-group').css('display', '');
 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
 			$('#asterisk').remove();
@@ -153,46 +151,6 @@ $(document).ready(function() {
 			
 			<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 			<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
-
-			<legend><spring:message code="regla.form.legend.accio"/></legend>
-			<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
-			<div id="camps_tipus_BUSTIA">
-				<dis:inputSelect 
-					name="bustiaDestiId"
-					textKey="regla.form.camp.bustia" 
-					optionItems="${busties}"
-					optionValueAttribute="id" 
-					optionTextAttribute="nom" 
-					required="true"
-					optionMinimumResultsForSearch="0" 
-					emptyOption="true" />
-			</div>
-			<div id="camps_tipus_BACKOFFICE">
-				<dis:inputSelect 
-					name="backofficeDestiId"
-					textKey="regla.form.camp.backoffice" 
-					optionItems="${backoffices}"
-					optionValueAttribute="id" 
-					optionTextAttribute="nom" 
-					required="true"
-					emptyOption="true" />
-				<dis:inputTextarea 
-					name="backofficeDestiDir3" 
-					textKey="regla.form.camp.backoffice.desti.dir3" 
-					required="false" />
-			</div>
-			<div id="camps_tipus_UNITAT">
-				<dis:inputSuggest 
-					name="unitatDestiId" 
-					textKey="bustia.form.camp.unitat"
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="false" 
-					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="id"
-					suggestText="codiAndNom"
-					optionTemplateFunction="formatSelectUnitat"/>
-			</div>
 			
 			<legend><spring:message code="regla.form.legend.filtre"/></legend>			
 			<dis:inputSuggest 
@@ -217,6 +175,42 @@ $(document).ready(function() {
 				optionMinimumResultsForSearch="0"/>
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
+
+			<legend><spring:message code="regla.form.legend.accio"/></legend>
+			<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>
+			<div id="camps_tipus_BUSTIA">
+				<dis:inputSelect 
+					name="bustiaDestiId"
+					textKey="regla.form.camp.bustia" 
+					optionItems="${busties}"
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					required="true"
+					optionMinimumResultsForSearch="0" 
+					emptyOption="true" />
+			</div>
+			<div id="camps_tipus_BACKOFFICE">
+				<dis:inputSelect 
+					name="backofficeDestiId"
+					textKey="regla.form.camp.backoffice" 
+					optionItems="${backoffices}"
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					required="true"
+					emptyOption="true" />
+			</div>
+			<div id="camps_tipus_UNITAT">
+				<dis:inputSuggest 
+					name="unitatDestiId" 
+					textKey="bustia.form.camp.unitat"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="false" 
+					placeholderKey="bustia.form.camp.unitat"
+					suggestValue="id"
+					suggestText="codiAndNom"
+					optionTemplateFunction="formatSelectUnitat"/>
+			</div>
 			
 			<div id="modal-botons">
 				<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
