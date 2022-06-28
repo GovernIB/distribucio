@@ -2158,16 +2158,17 @@ public class RegistreServiceImpl implements RegistreService {
 															this.comprovarPermisLectura());
 			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			if (procediments != null) {
-				for (Procediment procediment: procediments) {
-					if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
-							(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
-						ProcedimentDto dto = new ProcedimentDto();
-						dto.setCodi(procediment.getCodigo());
-						dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
-						dto.setNom(procediment.getNombre());
-						dtos.add(dto);
-					}
+				getProcediments(dtos, procediments);
+			}
+			List<UnitatOrganitzativaEntity> unitatsDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, bustia.getUnitatOrganitzativa().getCodi());
+			List<UnitatOrganitzativaEntity> llistatFinalUnitatsOrganitzatives = new ArrayList<>();
+			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
+			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
+				List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
+				if (procedimentsFills != null) {
+					getProcediments(dtos, procedimentsFills);
 				}
+				
 			}
 		}
 		// Ordenar per codi SIA
@@ -2175,6 +2176,29 @@ public class RegistreServiceImpl implements RegistreService {
 			Collections.sort(dtos);
 		}
 		return dtos;
+	}
+	
+	private void getUnitatsFills(List<UnitatOrganitzativaEntity> llistaUnitats, List<UnitatOrganitzativaEntity> llistaFinal) {
+		for (UnitatOrganitzativaEntity uoEntity : llistaUnitats) {
+			llistaFinal.add(uoEntity);
+			List<UnitatOrganitzativaEntity> uoDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, uoEntity.getCodi());
+			if (uoDescendents != null) {
+				getUnitatsFills(uoDescendents, llistaFinal);
+			}
+		}
+	}
+	
+	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
+		for (Procediment procediment: procediments) {
+			if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
+					(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
+				ProcedimentDto dto = new ProcedimentDto();
+				dto.setCodi(procediment.getCodigo());
+				dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
+				dto.setNom(procediment.getNombre());
+				dtos.add(dto);
+			}
+		}
 	}
 
 	/** Retorna true si no és administrador nii admin lectura. */
