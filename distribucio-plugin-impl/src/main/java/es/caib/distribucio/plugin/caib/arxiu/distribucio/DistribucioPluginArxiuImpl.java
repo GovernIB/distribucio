@@ -50,7 +50,6 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
@@ -93,6 +92,15 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
 
+	public DistribucioPluginArxiuImpl() {
+		super();
+	}
+	
+	public DistribucioPluginArxiuImpl(Properties properties) {
+		super(properties);
+	}
+
+	
 	@Override
 	public String expedientCrear(
 			String expedientNumero,

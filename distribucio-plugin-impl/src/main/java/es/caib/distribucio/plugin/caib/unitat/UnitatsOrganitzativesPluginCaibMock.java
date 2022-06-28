@@ -23,6 +23,13 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
  */
 public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
 
+	public UnitatsOrganitzativesPluginCaibMock() {
+		super();
+	}
+	
+	public UnitatsOrganitzativesPluginCaibMock(Properties properties) {
+		super(properties);
+	}
 	
 	@Override
 	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{

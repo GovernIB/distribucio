@@ -45,6 +45,14 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginProperties implements UnitatsOrganitzativesPlugin {
 	  	
+	public UnitatsOrganitzativesPluginDir3() {
+		super();
+	}
+	
+	public UnitatsOrganitzativesPluginDir3(Properties properties) {
+		super(properties);
+	}
+	
 	@Override
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 

@@ -77,6 +77,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				monitorIntegracio.getTempsResposta(),
 				monitorIntegracio.getEstat(),
 				monitorIntegracio.getCodiUsuari(),
+				monitorIntegracio.getCodiEntitat(),
 				monitorIntegracio.getErrorDescripcio(),
 				monitorIntegracio.getExcepcioMessage(),
 				monitorIntegracio.getExcepcioStacktrace()).build();

@@ -30,10 +30,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
-import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -79,10 +77,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
-	@Autowired
-	private RegistreService registreService;
-	
+	private ConversioTipusHelper conversioTipusHelper;	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**

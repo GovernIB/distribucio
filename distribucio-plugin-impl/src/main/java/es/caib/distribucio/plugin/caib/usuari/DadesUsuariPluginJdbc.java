@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -27,7 +28,15 @@ import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
-	  
+	
+	public DadesUsuariPluginJdbc() {
+		super();
+	}
+	
+	public DadesUsuariPluginJdbc(Properties properties) {
+		super(properties);
+	}
+	
 	@Override
 	public DadesUsuari findAmbCodi(
 			String usuariCodi) throws SistemaExternException {
@@ -113,16 +122,16 @@ public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties i
 	}
 
 	private String getDatasourceJndiName() {
-		return getProperty("plugin.dades.usuari.jdbc.datasource.jndi.name");
+		return getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name");
 	}
 	private String getJdbcQueryUsuariCodi() {
-		String query = getProperty("plugin.dades.usuari.jdbc.query");
+		String query = getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query");
 		if (query == null || query.isEmpty())
-			query = getProperty("plugin.dades.usuari.jdbc.query.codi");
+			query = getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi");
 		return query;
 	}
 	private String getJdbcQueryUsuariGrup() {
-		return getProperty("plugin.dades.usuari.jdbc.query.grup");
+		return getProperty("es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup");
 	}
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginJdbc.class);

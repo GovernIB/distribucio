@@ -4,6 +4,7 @@
 package es.caib.distribucio.plugin.caib.signatura;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,14 @@ import es.caib.plugins.arxiu.api.FirmaPerfil;
  */
 public class SignaturaPluginMock extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
 		  
+	public SignaturaPluginMock() {
+		super();
+	}
+	
+	public SignaturaPluginMock(Properties properties) {
+		super(properties);
+	}
+
 	
 	@Override
 	public SignaturaResposta signar(

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -34,7 +35,6 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -42,7 +42,15 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
-		
+	
+	public DadesExternesPluginDir3() {
+		super();
+	}
+	
+	public DadesExternesPluginDir3(Properties properties) {
+		super(properties);
+	}
+	
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
 		try {

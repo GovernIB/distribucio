@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de gestió documental que
@@ -26,6 +25,13 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginProperties implements GestioDocumentalPlugin {
 	
+	public GestioDocumentalPluginFilesystem() {
+		super();
+	}
+	
+	public GestioDocumentalPluginFilesystem(Properties properties) {
+		super(properties);
+	}
 	
 	@Override
 	public synchronized String create(

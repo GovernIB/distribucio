@@ -607,26 +607,7 @@ public class RegistreAdminController extends BaseAdminController {
 				missatge = getMessage(
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
-						null);				
-				boolean processatOk = registreService.processarAnnexosAdmin(
-						entitatActual.getId(),
-						registreId);
-				if (processatOk) {
-					MissatgesHelper.success(
-							request, 
-							getMessage(
-									request, 
-									"contingut.admin.controller.registre.desat.arxiu.ok",
-									null));
-				} else {
-					MissatgesHelper.error(
-							request,
-							getMessage(
-									request, 
-									"contingut.admin.controller.registre.desat.arxiu.error",
-									null));
-				}
-				
+						null);
 			} else 
 			{
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
@@ -642,7 +623,7 @@ public class RegistreAdminController extends BaseAdminController {
 		
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(getMessage(request, missatge.toString()));
+			response.setMissatge(missatge.toString());
 		} else {
 			response = AjaxHelper.generarAjaxError(missatge.toString());
 		}

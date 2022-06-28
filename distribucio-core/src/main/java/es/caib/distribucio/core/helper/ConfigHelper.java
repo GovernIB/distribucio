@@ -10,8 +10,6 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,24 +74,29 @@ public class ConfigHelper {
     
     @Transactional(readOnly = true)
     public String getConfig(EntitatDto entitatActual, String key) {
-
-		ConfigEntity configEntity = null;
+    	return getConfigForEntitat(entitatActual != null ? entitatActual.getCodi() : null, key);
+    }
+    
+    @Transactional(readOnly = true)
+    public String getConfigForEntitat(String entitatCodi, String key) {
 		String value = null;
-    	if (entitatActual != null) {
-    		// Cerca el valor per l'entitat
-    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-            configEntity = configRepository.findOne(keyEntitat);
-            if (configEntity != null) {
-            	value = getConfig(configEntity);
-            }
-    	}
-    	if (configEntity == null || value == null) {
-    		// Cerca el valor per la key sense entitat
-    		configEntity = configRepository.findOne(key);
-    	}
+		ConfigEntity configEntity = configRepository.findOne(key);
 		if (configEntity != null) {
-			value = getConfig(configEntity);
+			// Propietat trobada
+			if (configEntity.isConfigurable() && entitatCodi != null) {
+	    		// Propietat a nivell d'entitat
+	    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatCodi, key);
+	    		ConfigEntity configEntitatEntity = configRepository.findOne(keyEntitat);
+	            if (configEntitatEntity != null) {
+	            	value = getConfig(configEntitatEntity);
+	            }
+			}
+			if (value == null) {
+				// Propietat global
+				value = getConfig(configEntity);
+			}
 		} else {
+			// Propietat JBoss
 			value = getJBossProperty(key);
 		}
 		return value;
@@ -103,15 +106,12 @@ public class ConfigHelper {
     public String getConfig(String key)  {    	
     	
 		EntitatDto entitatActual = ConfigHelper.entitat.get();
-		
-		//key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-		
+				
 		return this.getConfig(entitatActual, key);
-		
 	}
 	
-	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
-		if (entitatActual != null && !key.contains(entitatActual.getCodi())) {
+	private String convertirKeyGeneralToKeyPropietat (String entitatActualCodi, String key) {
+		if (entitatActualCodi != null && !key.contains(entitatActualCodi)) {
 			String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";
@@ -119,7 +119,7 @@ public class ConfigHelper {
 				if (i == (splitKey.length - 1)) {
 					keyEntitat = keyEntitat + splitKey[i];
 				}else if (i == 2){
-					keyEntitat = keyEntitat + splitKey[i] + "." + entitatActual.getCodi() + ".";
+					keyEntitat = keyEntitat + splitKey[i] + "." + entitatActualCodi + ".";
 				}else {				
 					keyEntitat = keyEntitat + splitKey[i] + ".";
 				}
@@ -220,6 +220,22 @@ public class ConfigHelper {
         }
         return configEntity.getValue();
     }
+    
+    /** Obté totes les propietats per a un codi d'entitat s'usa per inicalitzar els plugins.
+     */
+    @Transactional(readOnly = true)
+	public Properties getAllEntityProperties(String entitatCodi) {
+        Properties properties = new Properties();
+        
+        List<ConfigEntity> configs = configRepository.findByEntitatCodiIsNull();
+        for (ConfigEntity config: configs) {
+             String value = getConfigForEntitat(entitatCodi, config.getKey());
+            if (value != null) {
+                properties.put(config.getKey(), value);
+            }
+        }
+        return properties;
+	}
     
 	private static final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
 
@@ -348,18 +364,6 @@ public class ConfigHelper {
     	private static final Logger logger = LoggerFactory.getLogger(JBossPropertiesHelper.class);
     }
 
-    /** Obté totes les propietats per a un codi d'entitat. */
-    @Transactional(readOnly = true)
-	public Object getAllEntityProperties(String entitatCodi) {
-        Properties properties = new Properties();
-        List<ConfigEntity> configs = !StringUtils.isEmpty(entitatCodi) ? configRepository.findConfigEntitaCodiAndGlobals(entitatCodi) : configRepository.findByEntitatCodiIsNull();
-        for (ConfigEntity config: configs) {
-             String value = !Strings.isNullOrEmpty(entitatCodi) ? getConfigKeyByEntitat(entitatCodi, config.getKey()) : getConfig(config);
-            if (value != null) {
-                properties.put(config.getKey(), value);
-            }
-        }
-        return properties;
-	}
+    
     
 }

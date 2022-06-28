@@ -177,17 +177,18 @@
 	           url: '<c:url value="${postUrl}"></c:url>' + registreId,
 	           data: $('${form}').serialize(),
 	            success : function(ajaxResponse) {
+	            	   var missatge = $('<div/>').html(ajaxResponse.missatge).text();
 		        	   if (ajaxResponse.estatOk) {
 		        		   ret = true;
 		        		   $('.success', $tr).show();
-		        		   $('.success', $tr).attr('title', ajaxResponse.missatge);
+		        		   $('.success', $tr).attr('title', missatge);
 							$tr.addClass('processat');
 		        	   } else {
 		        		   if (ajaxResponse.errorsCamps) {
 								$('${form}').webutilMostrarErrorsCamps(ajaxResponse.errorsCamps);
 		        		   }
 		        		   $('.error', $tr).show();
-		        		   $('.error', $tr).attr('title', ajaxResponse.missatge);
+		        		   $('.error', $tr).attr('title', missatge);
 		        	   }
 	            },
 	            error: function (request, status, error) {

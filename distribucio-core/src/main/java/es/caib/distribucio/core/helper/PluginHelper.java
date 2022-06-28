@@ -64,7 +64,7 @@ public class PluginHelper {
 
 
 
-	private Map<String, DadesUsuariPlugin> dadesUsuariPlugin = new HashMap<>();
+	private DadesUsuariPlugin dadesUsuariPlugin = null;
 	private Map<String, UnitatsOrganitzativesPlugin> unitatsOrganitzativesPlugin = new HashMap<>();
 	private Map<String, DadesExternesPlugin> dadesExternesPlugin = new HashMap<>();
 	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
@@ -963,12 +963,12 @@ public class PluginHelper {
 	
 	public void resetPlugins() {
 		 dadesUsuariPlugin = null;
-		 unitatsOrganitzativesPlugin = null;
-		 dadesExternesPlugin = null;
-		 arxiuPlugin = null;
-		 validaSignaturaPlugin = null;
-		 procedimentPlugin = null;
-		 distribucioPlugin = null;
+		 unitatsOrganitzativesPlugin.clear();
+		 dadesExternesPlugin.clear();
+		 arxiuPlugin.clear();
+		 validaSignaturaPlugin.clear();
+		 procedimentPlugin.clear();
+		 distribucioPlugin.clear();
 	}
 	
 	
@@ -977,16 +977,13 @@ public class PluginHelper {
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		loadPluginProperties("USUARIS");
-		String codiEntitat = getCodiEntitatActual();
-		DadesUsuariPlugin plugin = dadesUsuariPlugin.get(codiEntitat);
-		if (plugin == null) {
+		if (dadesUsuariPlugin == null) {
 			String pluginClass = getPropertyPluginDadesUsuari();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					plugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(Properties.class)
-							.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
-					dadesUsuariPlugin.put(codiEntitat, plugin);
+					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(configHelper.getAllEntityProperties(null));					
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_USUARIS,
@@ -999,7 +996,7 @@ public class PluginHelper {
 						"No està configurada la classe per al plugin de dades d'usuari " + pluginClass);
 			}
 		}
-		return plugin;
+		return dadesUsuariPlugin;
 	}
 	
 	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
@@ -1038,8 +1035,12 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(Properties.class)
-							.newInstance(configHelper.getAllEntityProperties(codiEntitat));
+					// El plugin Arxiu CAIB té un constructor amb la key base i les propietats
+					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+													String.class, 
+													Properties.class)
+							.newInstance("es.caib.distribucio.",
+										configHelper.getAllEntityProperties(codiEntitat));
 					arxiuPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
@@ -1090,8 +1091,10 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(Properties.class)
-								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(String.class, Properties.class)
+								.newInstance("es.caib.distribucio.", properties);
 					validaSignaturaPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(

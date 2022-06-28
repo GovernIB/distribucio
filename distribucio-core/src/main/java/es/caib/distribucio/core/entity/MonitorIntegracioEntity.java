@@ -58,7 +58,10 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 	
 	@Column(name = "codi_usuari", length = 64, nullable = false)
 	private String codiUsuari;
-	
+
+	@Column(name = "codi_entitat", length = 64)
+	private String codiEntitat;
+
 	@Column(name = "error_descripcio", length = 1024)
 	private String errorDescripcio;
 	
@@ -131,6 +134,14 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 		this.codiUsuari = codiUsuari;
 	}
 
+	public String getCodiEntitat() {
+		return codiEntitat;
+	}
+
+	public void setCodiEntitat(String codiEntitat) {
+		this.codiEntitat = codiEntitat;
+	}
+
 	public String getErrorDescripcio() {
 		return errorDescripcio;
 	}
@@ -190,6 +201,7 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 			long tempsResposta,
 			IntegracioAccioEstatEnumDto estat,
 			String codiUsuari,
+			String codiEntitat,
 			String errorDescripcio,
 			String excepcioMessage,
 			String excepcioStacktrace) {
@@ -201,6 +213,7 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 				tempsResposta,
 				estat,
 				codiUsuari,
+				codiEntitat,
 				errorDescripcio,
 				excepcioMessage,
 				excepcioStacktrace);
@@ -221,6 +234,7 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 				long tempsResposta,
 				IntegracioAccioEstatEnumDto estat,
 				String codiUsuari,
+				String codiEntitat,
 				String errorDescripcio,
 				String excepcioMessage,
 				String excepcioStacktrace) {
@@ -232,6 +246,7 @@ public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
 			built.tempsResposta = tempsResposta;
 			built.estat = estat;
 	        built.codiUsuari = StringUtils.abbreviate(codiUsuari, 64);
+	        built.codiEntitat = StringUtils.abbreviate(codiEntitat, 64);
 	        built.errorDescripcio = StringUtils.abbreviate(errorDescripcio, 1024);
 	        built.excepcioMessage = StringUtils.abbreviate(excepcioMessage, 1024);
 	        built.excepcioStacktrace = StringUtils.abbreviate(excepcioStacktrace, 2048);

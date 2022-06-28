@@ -2,8 +2,9 @@
 -- Script per afegir una nova columna a la bbdd on es mostra per mitjà 
 -- d'un booleà si és una propietat configurable
 
-ALTER TABLE DIS_CONFIG ADD entitat_codi VARCHAR2(64 CHAR);
-ALTER TABLE DIS_CONFIG ADD CONFIGURABLE NUMBER(1) DEFAULT 0;
+ALTER TABLE DIS_CONFIG ADD entitat_codi character varying(64);
+ALTER TABLE DIS_CONFIG ADD CONFIGURABLE BOOLEAN DEFAULT FALSE;
+ALTER TABLE DIS_MON_INT ADD CODI_ENTITAT character varying(64);
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu';
@@ -39,12 +40,6 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.request.timeout';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.filesystem.base.dir';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.class';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.nif';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.rols';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.rolsac.service.url';

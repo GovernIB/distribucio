@@ -24,6 +24,7 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 	private Long tempsResposta;
 	private IntegracioAccioEstatEnumDto estat;
 	private String codiUsuari;
+	private String codiEntitat;
 	private String errorDescripcio;
 	private String excepcioMessage;
 	private String excepcioStacktrace;
@@ -93,6 +94,14 @@ public class MonitorIntegracioDto extends AuditoriaDto {
 	public void setCodiUsuari(String codiUsuari) {
 		this.codiUsuari = codiUsuari;
 	}
+	public String getCodiEntitat() {
+		return codiEntitat;
+	}
+
+	public void setCodiEntitat(String codiEntitat) {
+		this.codiEntitat = codiEntitat;
+	}
+
 	public String getErrorDescripcio() {
 		return errorDescripcio;
 	}

@@ -21,6 +21,10 @@
 			<dd>${integracio.descripcio}</dd>
 			<dt><spring:message code="integracio.detall.camp.tipus"/></dt>
 			<dd>${integracio.tipus}</dd>
+			<dt><spring:message code="integracio.detall.camp.usuari"/></dt>
+			<dd>${integracio.codiUsuari}</dd>
+			<dt><spring:message code="integracio.detall.camp.entitat"/></dt>
+			<dd>${integracio.codiEntitat}</dd>
 			<dt><spring:message code="integracio.detall.camp.estat"/></dt>
 			<dd>${integracio.estat}</dd>
 			<c:if test="${not empty integracio.parametres}">

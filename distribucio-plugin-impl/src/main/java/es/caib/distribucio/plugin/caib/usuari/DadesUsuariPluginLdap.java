@@ -6,6 +6,7 @@ package es.caib.distribucio.plugin.caib.usuari;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -33,6 +34,15 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  */
 public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties implements DadesUsuariPlugin {
 
+	public DadesUsuariPluginLdap() {
+		super();
+	}
+	
+	public DadesUsuariPluginLdap(Properties properties) {
+		super(properties);
+	}
+	
+	
 	@Override
 	public DadesUsuari findAmbCodi(
 			String usuariCodi) throws SistemaExternException {

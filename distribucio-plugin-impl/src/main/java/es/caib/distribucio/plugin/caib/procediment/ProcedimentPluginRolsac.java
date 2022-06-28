@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.caib.procediment;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,14 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	private Client jerseyClient;
 	private ObjectMapper mapper;
 
+	public ProcedimentPluginRolsac() {
+		super();
+	}
+	
+	public ProcedimentPluginRolsac(Properties properties) {
+		super(properties);
+	}
+	
 	@Override
 	public List<Procediment> findAmbCodiDir3(
 			String codiDir3) throws SistemaExternException {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -34,6 +35,14 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
 public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties implements DadesExternesPlugin {
 
 
+	public DadesExternesPluginCaib() {
+		super();
+	}
+	
+	public DadesExternesPluginCaib(Properties properties) {
+		super(properties);
+	}
+	
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
 		String url = getBaseUrl() + "/services/paisos/format/JSON/idioma/ca";
