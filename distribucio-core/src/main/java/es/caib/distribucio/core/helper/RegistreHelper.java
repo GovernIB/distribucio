@@ -87,6 +87,7 @@ import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.service.RegistreServiceImpl;
+import es.caib.distribucio.core.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -542,9 +543,7 @@ public class RegistreHelper {
 	@Transactional
 	public void processarAnotacioPendentArxiuInThreadExecuto(Long registreId) {
 		
-//    	logger.info(Thread.currentThread().getName() + " START = " + registreId);
-    	
-		Timer.Context context = metricRegistry.timer(MetricRegistry.name(WorkerThread.class, "processarAnotacioPendentArxiu")).time();
+		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
 		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
 		
 		long startTime = new Date().getTime();
@@ -552,7 +551,6 @@ public class RegistreHelper {
     	Exception excepcio = null;
         try {
 			excepcio = processarAnotacioPendentArxiu(registreId);
-//        	Thread.sleep(10000);	
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
@@ -573,10 +571,6 @@ public class RegistreHelper {
 				
 		}
 		context.stop();
-    	
-//        logger.info(Thread.currentThread().getName() + " END = " + registreId);
-		
-
 	}
 	
 	
