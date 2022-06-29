@@ -711,6 +711,85 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 	$(document).ready(function() {
 		
 		$(this).webutilTogglesEval();
+
+		$('form input, form select').on('keypress', function (e) {
+			if (e.which && e.which == 13) {
+				$(this).parents('form').submit();
+				return false;
+			} else {
+				return true;
+			}
+		});
+		
+		// Esborram tots els espais en blanc introduïts al principi i al final dels inputs de formulari
+		let $body = $('body');
+		$body.on('change', 'input', function() {
+			if(this.type !== "file"){
+				this.value = this.value.trim();
+			}
+		});
+
+		$body.on('change', 'textarea', function() {
+			if(this.type !== "file"){
+				this.value = this.value.trim();
+			}
+		});
+		resetSessionTimeout();
 	});
 
 }(jQuery));
+
+function sessionTimeoutMessage(timeout_margin_ms){
+	let timeout_margin_minutes = (timeout_margin_ms / 60000)
+	var popupdate = new Date();
+	var renewSession = confirm('La seva sessió expirarà en breu!\n\nLa sessió es tancará en  ' +
+		timeout_margin_minutes + ' minuts.\nVoleu mantenir la sessió iniciada?');
+	if(renewSession){
+		var response = new Date();
+		if(response - popupdate > timeout_margin_ms){
+			alert("Has tardat massa a contestar, ja s'ha tancat la sessió. \nSe't redigirà a la pagina de login.");
+			window.location.reload();
+
+		}else{
+			pingServer();
+			resetSessionTimeout();
+		}
+	}else{
+		window.location.href = webutilContextPath() + "/usuari/logout";
+	}
+}
+
+function pingServer(){
+	jQuery.ajax({url: webutilContextPath() + "/usuari/refresh", type: "HEAD", complete: function (XMLHttpRequest, textStatus) {
+		alert("La sessió s'ha extés satisfactòriament");
+	}});
+}
+
+function resetSessionTimeout(){
+	let session_timeout_minutes = 120;
+	let session_timeout_ms = session_timeout_minutes * 60 * 1000;
+	let timeout_margin_ms = 60000;
+	setTimeout(function() {
+		sessionTimeoutMessage(timeout_margin_ms);
+	}, session_timeout_ms - timeout_margin_ms); // un minut abans de que finalitzi la sessió
+}
+
+function loadOrgans($selector, organsGestors, missatgeObsolets){
+	function formatState(organ) {
+		let msgObsolet = missatgeObsolets;
+		if (organ.estat == 'VIGENT' || organ.estat == null || organ.estat == '') {
+			return organ.text;
+		}
+		return $("<span title='" + msgObsolet + "'>" + organ.text + " <span class='fa fa-warning text-danger'></span></span>");
+	}
+
+	$selector.empty();
+	var select2Options = {
+		theme: 'bootstrap',
+		width: 'auto',
+		data: organsGestors,
+		allowClear: true,
+		templateResult: formatState
+	};
+	$selector.select2(select2Options);
+}
