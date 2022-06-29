@@ -397,7 +397,6 @@ $(document).ready(function() {
 	</script>
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
-	<c:if test="${isRolActualAdministrador}">
 	
 		<div class="text-right">
 			<div class="btn-group">
@@ -406,6 +405,7 @@ $(document).ready(function() {
 
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu">
+				  <c:if test="${isRolActualAdministrador}">
 					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
 					</a></li>
@@ -414,7 +414,8 @@ $(document).ready(function() {
 					</a></li>
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
-					</a></li>	
+					</a></li>
+				  </c:if>	
 					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=ods">
 						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
 					</a></li>	
@@ -424,7 +425,6 @@ $(document).ready(function() {
 				</ul>
 			</div>
 		</div>
-	</c:if>
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
