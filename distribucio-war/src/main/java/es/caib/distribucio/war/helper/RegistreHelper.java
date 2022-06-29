@@ -79,7 +79,7 @@ public class RegistreHelper extends BaseController{
 			
 			fila[4] = registre.getExtracte();
 			
-			fila[5] = registre.getDocumentacioFisicaCodi();
+			fila[5] = registre.getDocumentacioFisicaDescripcio();
 			
 			fila[6] = registre.getProcedimentCodi();
 			
@@ -102,8 +102,11 @@ public class RegistreHelper extends BaseController{
 			List<RegistreInteressat> llistatInteressats = registre.getInteressats();
 			String nomComplet = "";
 			for (RegistreInteressat interessat : llistatInteressats) {
-				nomComplet += interessat.getNom() + " " + interessat.getLlinatge1() + " " + interessat.getLlinatge2() + "(" + interessat.getDocumentNum() + ") | ";
-				System.out.println(nomComplet);
+				if (interessat.getNom() != null) {
+					nomComplet += interessat.getNom() + " " + interessat.getLlinatge1() + " " + interessat.getLlinatge2() + "(" + interessat.getDocumentNum() + ") | ";
+				} else {
+					nomComplet += interessat.getRaoSocial() + "(" + interessat.getDocumentNum() + ") | ";
+				}
 			}
 			fila[11] = nomComplet;
 			
