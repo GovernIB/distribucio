@@ -64,3 +64,34 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugi
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.guardar.annexos.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.enviar.anotacions.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.aplicar.regles.max.reintents';
+
+-- #463 Posar annexos amb firma no vàlida com a esborrany a l'arxiu 
+-- Noves columens per guardar l'estat de la validació i la descripció de l'error
+ 
+ALTER TABLE DIS_REGISTRE_ANNEX
+ADD (
+    VAL_FIRMA_ESTAT VARCHAR2(64 CHAR) 
+);
+ALTER TABLE DIS_REGISTRE_ANNEX
+ADD (
+    VAL_FIRMA_ERROR VARCHAR2(255 CHAR) 
+);
+
+-- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors
+-- Insereix un nou grup de tasques en segon pla
+
+Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) 
+	   values ('SCHEDULLED_BACKOFFICE_ERRORS', 'SCHEDULLED', '21', 'Tasca periòdica de reintentar anotacions processades amb errors al backoffice');
+	   
+	   
+-- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors
+  
+-- Insereix dos noves propietats pel nou grup creat (SCHEDULLED_BACKOFFICE_ERRORS)
+	   
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) 
+	   values ('es.caib.distribucio.backoffice.interval.temps.reintentar.processament', null, 'Interval de temps entre les execucions de la tasca(ms)', 'SCHEDULLED_BACKOFFICE_ERRORS', '1', '0', 'INT', null, '0', null, null);
+
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) 
+	   values ('es.caib.distribucio.backoffice.reintentar.processament.max.reintents', null, 'Nombre màxim de reintents per reintentar el processament al backoffice', 'SCHEDULLED_BACKOFFICE_ERRORS', '2', '0', 'INT', null, '0', null, null);
+
+	
