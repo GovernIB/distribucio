@@ -1382,17 +1382,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-//					if (PropertiesHelper.getProperties().isLlegirSystem()) {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class).newInstance(
-								"es.caib.distribucio.");
-//					} else {
-//						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-//								String.class,
-//								Properties.class).newInstance(
-//								"es.caib.distribucio.",
-//								PropertiesHelper.getProperties().findAll());
-//					}
+					arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+													String.class, 
+													Properties.class)
+									.newInstance("es.caib.distribucio.", this.getProperties());		
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1413,7 +1406,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					signaturaPlugin = (SignaturaPlugin)clazz.newInstance();
+					signaturaPlugin = (SignaturaPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(this.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioSignaturaCodi,
@@ -1428,15 +1422,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		return signaturaPlugin;
 	}
-	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() throws SistemaExternException {
-		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
-			gestioDocumentalPluginConfiguracioProvada = true;
+		if (gestioDocumentalPlugin == null) {
 			String pluginClass = getPropertyPluginGestioDocumental();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.newInstance();
+					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(this.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							itegracioGesdocCodi,

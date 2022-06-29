@@ -205,7 +205,7 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 	}
 	
 	private String getPropertyPerfil() {
-		return System.getProperty(
+		return getProperties().getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil");
 	}
 

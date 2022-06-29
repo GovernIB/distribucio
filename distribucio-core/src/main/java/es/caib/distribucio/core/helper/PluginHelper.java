@@ -1036,11 +1036,12 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					// El plugin Arxiu CAIB té un constructor amb la key base i les propietats
+					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
 					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 													String.class, 
 													Properties.class)
-							.newInstance("es.caib.distribucio.",
-										configHelper.getAllEntityProperties(codiEntitat));
+							.newInstance("es.caib.distribucio.", properties);
 					arxiuPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
@@ -1145,8 +1146,12 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
+					
+					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
 					plugin = (DistribucioPlugin)clazz.getDeclaredConstructor(Properties.class)
-								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+								.newInstance(properties);
+					
 					plugin.configurar(
 							new IntegracioManager() {
 								public void addAccioOk(
@@ -1211,8 +1216,9 @@ public class PluginHelper {
 			propertiesLoaded.put(codeProperties, true);
 			Map<String, String> pluginProps = configHelper.getGroupProperties(codeProperties);
 			for (Map.Entry<String, String> entry : pluginProps.entrySet() ) {
-				String value = entry.getValue() == null ? "" : entry.getValue();
-				System.setProperty(entry.getKey(), value);
+				if (entry.getValue() != null) {
+					System.setProperty(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 	}
