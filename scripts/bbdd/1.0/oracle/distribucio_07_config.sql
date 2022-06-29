@@ -17,6 +17,7 @@ Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SC
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_EMAILS_NO_AGRUPATS','SCHEDULLED','18','Tasca periòdica de enviar emails no agrupats');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_EMAILS_AGRUPATS','SCHEDULLED','19','Tasca periòdica de enviar emails agrupats');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_MON_INT','SCHEDULLED','20','Tasca periòdica d''esborrat de dades antigues del Monitor d''Integracions');
+Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_BACKOFFICE_ERRORS', 'SCHEDULLED', '21', 'Tasca periòdica de reintentar anotacions processades amb errors al backoffice');
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
@@ -115,3 +116,67 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat',null,'Marcar per no permetre reenviar anotacions a la bústia per defecte de l''entitat','GENERAL','11','0','BOOL',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE)) values ('es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.periode', '3600000', 'Iterval de temps entre les execucions de la tasca (ms). Per defecte 3600000 ms', 'SCHEDULLED_MON_INT', 0, 0, 'INT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE)) values ('es.caib.distribucio.tasca.monitor.integracio.esborrar.antics.dies', '30', 'Dies màxim d''antigitat per guardar registres. Per defecte 30 dies.', 'SCHEDULLED_MON_INT', 1, 0, 'INT',null,null);
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) values ('es.caib.distribucio.backoffice.interval.temps.reintentar.processament', null, 'Interval de temps entre les execucions de la tasca(ms)', 'SCHEDULLED_BACKOFFICE_ERRORS', '1', '0', 'INT', null, '0', null, null);
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) values ('es.caib.distribucio.backoffice.reintentar.processament.max.reintents', null, 'Nombre màxim de reintents per reintentar el processament al backoffice', 'SCHEDULLED_BACKOFFICE_ERRORS', '2', '0', 'INT', null, '0', null, null);
+
+
+-- Actualització de les propietats que poden ser configurables a nivell d'entitat
+
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.contingut.reenviar.favorits';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.contingut.enviar.coneixement';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.contingut.reenviar.mostrar.permisos';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.contingut.enviar.arbre.nivell';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.sobreescriure.anotacions.duplicades';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.concsv.base.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.email.remitent';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.base.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.aplicacio.codi';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.usuari';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.contrasenya';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.csv.definicio';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.document.versionable';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.suporta.metadades';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.csv.base.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.timeout.connect';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.timeout.read';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.conversio.imprimible.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.conversio.imprimible.usuari';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.caib.conversio.imprimible.contrasenya';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.registre.expedient.classificacio';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.registre.expedient.serie.documental';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.connect.timeout';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.request.timeout';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.filesystem.base.dir';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.rolsac.service.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.rolsac.service.username';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dadesext.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dadesext.service.url';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.signatura.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.signatura.signarAnnexos';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.api.firma.en.servidor.simple.endpoint';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.api.firma.en.servidor.simple.username';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.api.firma.en.servidor.simple.password';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.signatura.portafib.username';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.validatesignature.class';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.debug';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.applicationID';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.printxml';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.TransformersTemplatesPath';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.endpoint';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.username';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.password';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.guardar.annexos.max.reintents';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.enviar.anotacions.max.reintents';
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.aplicar.regles.max.reintents';

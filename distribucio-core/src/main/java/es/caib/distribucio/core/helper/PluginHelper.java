@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,7 @@ import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin.IntegracioManager;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
+import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
@@ -70,6 +73,7 @@ public class PluginHelper {
 	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
 	private Map<String, IValidateSignaturePlugin> validaSignaturaPlugin = new HashMap<>();
 	private Map<String, ProcedimentPlugin> procedimentPlugin = new HashMap<>();
+	private Map<String, GestioDocumentalPlugin> gestioDocumentalPlugin = new HashMap<>();
 	private Map<String, DistribucioPlugin> distribucioPlugin = new HashMap<>();
 	
 	@Autowired
@@ -952,6 +956,132 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public void gestioDocumentalGet(
+			String id,
+			String agrupacio,
+			OutputStream contingutOut) {
+		String accioDescripcio = "Consultant document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariAutenticat();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
+		accioParams.put("agrupacio", agrupacio);
+		long t0 = System.currentTimeMillis();
+		try {
+			if (getGestioDocumentalPlugin() != null) {
+				getGestioDocumentalPlugin().get(
+						id,
+						agrupacio,
+						contingutOut);
+			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al consultar document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}	
+	
+	public String gestioDocumentalCreate(
+			String agrupacio,
+			byte[] contingut) {
+		String accioDescripcio = "Creant nou document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariAutenticat();		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("agrupacio", agrupacio);
+		int contingutLength = contingut != null ? contingut.length : 0;
+		accioParams.put("numBytes", Integer.toString(contingutLength));
+		long t0 = System.currentTimeMillis();
+		try {
+			String gestioDocumentalId = null;
+			if (getGestioDocumentalPlugin() != null) {
+				gestioDocumentalId = getGestioDocumentalPlugin().create(
+						agrupacio,
+						new ByteArrayInputStream(contingut));
+			}
+			accioParams.put("idRetornat", gestioDocumentalId);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return gestioDocumentalId;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al crear document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
+
+	public void gestioDocumentalDelete(
+			String id,
+			String agrupacio) {
+		String accioDescripcio = "Esborrant document a dins la gestió documental";
+		String usuariIntegracio = this.getUsuariAutenticat();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", id);
+		accioParams.put("agrupacio", agrupacio);
+		long t0 = System.currentTimeMillis();
+		try {
+			if (getGestioDocumentalPlugin() != null) {
+				getGestioDocumentalPlugin().delete(
+						id,
+						agrupacio);
+			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al esborrar document a dins la gestió documental";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_GESDOC,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_GESDOC,
+					errorDescripcio,
+					ex);
+		}
+	}
 
 
 	private Long toLongValue(String text) {
@@ -968,6 +1098,7 @@ public class PluginHelper {
 		 arxiuPlugin.clear();
 		 validaSignaturaPlugin.clear();
 		 procedimentPlugin.clear();
+		 gestioDocumentalPlugin.clear();
 		 distribucioPlugin.clear();
 	}
 	
@@ -1135,6 +1266,34 @@ public class PluginHelper {
 		}
 		return plugin;
 	}
+	
+	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
+		loadPluginProperties("GES_DOC");
+		String codiEntitat = getCodiEntitatActual();
+		GestioDocumentalPlugin plugin = gestioDocumentalPlugin.get(codiEntitat);
+		if (plugin == null) {
+			String pluginClass = getPropertyPluginGestioDocumental();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					plugin = (GestioDocumentalPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					gestioDocumentalPlugin.put(codiEntitat, plugin);
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_GESDOC,
+							"Error al crear la instància del plugin de gestió documental",
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_GESDOC,
+						"No està configurada la classe per al plugin de gestió documental");
+			}
+		}
+		return plugin;
+	}
+	
 	private DistribucioPlugin getDistribucioPlugin() {
 		loadPluginProperties("ARXIU");
 		loadPluginProperties("GES_DOC");
@@ -1254,6 +1413,10 @@ public class PluginHelper {
 	private String getPropertyPluginProcediment() {
 		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.procediment.class");
+	}
+	private String getPropertyPluginGestioDocumental() {
+		return configHelper.getConfig(
+				"es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private String getPropertyPluginDistribucio() {
 		String pluginClass = configHelper.getConfig(

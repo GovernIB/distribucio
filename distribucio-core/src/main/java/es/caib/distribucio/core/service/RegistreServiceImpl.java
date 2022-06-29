@@ -1640,6 +1640,7 @@ public class RegistreServiceImpl implements RegistreService {
 					{
 						Runnable thread = 
 								new GetZipDocumentacioThread(
+								ConfigHelper.getEntitat(),
 								registreHelper,
 								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
 								registre.getNumero(),
@@ -1707,6 +1708,7 @@ public class RegistreServiceImpl implements RegistreService {
 	 */
 	protected class GetZipDocumentacioThread implements Runnable {
 
+		private EntitatDto entitatActual;
 		private Long justificantId;
 		private String registreNumero;
 		private Long annexID;
@@ -1722,6 +1724,7 @@ public class RegistreServiceImpl implements RegistreService {
 		 * @param errors 
 		 * @param errors */
 		public GetZipDocumentacioThread(
+				EntitatDto entitatActual,
 				RegistreHelper registreHelper, 
 				Long justificantId, 
 				String registreNumero, 
@@ -1732,6 +1735,7 @@ public class RegistreServiceImpl implements RegistreService {
 				ZipOutputStream zip, 
 				ExecutorService executor, 
 				List<String> errors) {
+			this.entitatActual = entitatActual;
 			this.justificantId = justificantId;
 			this.registreNumero = registreNumero;
 			this.annexID = annexID;
@@ -1746,6 +1750,7 @@ public class RegistreServiceImpl implements RegistreService {
 		@Transactional(propagation=Propagation.REQUIRED)
 		@Override
 		public void run() {
+			ConfigHelper.setEntitat(this.entitatActual);
 			try {		
 				String nom;
 				FitxerDto fitxer = new FitxerDto();
