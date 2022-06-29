@@ -139,6 +139,8 @@ public class RegistreAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
+//		request.getUserPrincipal();
+//		boolean isValidRequest = request.isRequestedSessionIdValid();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
