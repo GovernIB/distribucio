@@ -62,6 +62,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.core.entity.BustiaDefaultEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
@@ -88,6 +89,7 @@ import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
+import es.caib.distribucio.core.repository.BustiaDefaultRepository;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutMovimentRepository;
@@ -168,6 +170,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private VistaMovimentRepository vistaMovimentRepository;
+	@Autowired
+	private BustiaDefaultRepository bustiaDefaultRepository;
 
 	@Autowired
 	private ConfigHelper configHelper;
@@ -469,6 +473,12 @@ public class BustiaServiceImpl implements BustiaService {
 			usuariBustiaFavoritRepository.delete(usuariBustiaFavorit.getId());
 		}
 
+		// Posa a null la bústia per defecte pels usuaris
+		List<BustiaDefaultEntity> bustiesDefault  = bustiaDefaultRepository.findByBustia(bustia);
+		for (BustiaDefaultEntity bustiaDefault : bustiesDefault) {
+			bustiaDefaultRepository.delete(bustiaDefault);
+		}
+		
 		bustiaRepository.delete(bustia);
 		return bustiaHelper.toBustiaDto(
 				bustia,

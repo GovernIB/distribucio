@@ -3,9 +3,12 @@
  */
 package es.caib.distribucio.core.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import es.caib.distribucio.core.entity.BustiaDefaultEntity;
+import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
 
@@ -18,4 +21,7 @@ import es.caib.distribucio.core.entity.UsuariEntity;
 public interface BustiaDefaultRepository extends JpaRepository<BustiaDefaultEntity, Long> {
 
 	BustiaDefaultEntity findByEntitatAndUsuari(EntitatEntity entitat, UsuariEntity usuari);
+	
+	List<BustiaDefaultEntity> findByBustia(BustiaEntity bustai);
+
 }
