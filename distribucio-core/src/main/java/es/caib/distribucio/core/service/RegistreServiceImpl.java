@@ -2171,7 +2171,9 @@ public class RegistreServiceImpl implements RegistreService {
 					}				
 					
 				}catch (Exception e) {
-					logger.info("");
+					logger.info("No s'han pogut consultar els procediments de ROLSAC (" +
+							"codiDir3=" + uoEntity.getCodi() + ")",
+							e);
 				}
 			}
 		}
