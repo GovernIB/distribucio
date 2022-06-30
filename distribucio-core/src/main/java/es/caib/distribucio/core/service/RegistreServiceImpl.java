@@ -2164,11 +2164,15 @@ public class RegistreServiceImpl implements RegistreService {
 			List<UnitatOrganitzativaEntity> llistatFinalUnitatsOrganitzatives = new ArrayList<>();
 			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
 			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
-				List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
-				if (procedimentsFills != null) {
-					getProcediments(dtos, procedimentsFills);
+				try {
+					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
+					if (procedimentsFills != null) {
+						getProcediments(dtos, procedimentsFills);
+					}				
+					
+				}catch (Exception e) {
+					logger.info("");
 				}
-				
 			}
 		}
 		// Ordenar per codi SIA
@@ -2178,11 +2182,12 @@ public class RegistreServiceImpl implements RegistreService {
 		return dtos;
 	}
 	
+	@SuppressWarnings("null")
 	private void getUnitatsFills(List<UnitatOrganitzativaEntity> llistaUnitats, List<UnitatOrganitzativaEntity> llistaFinal) {
 		for (UnitatOrganitzativaEntity uoEntity : llistaUnitats) {
 			llistaFinal.add(uoEntity);
 			List<UnitatOrganitzativaEntity> uoDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, uoEntity.getCodi());
-			if (uoDescendents != null) {
+			if (uoDescendents != null || !uoDescendents.isEmpty()) {
 				getUnitatsFills(uoDescendents, llistaFinal);
 			}
 		}
