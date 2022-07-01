@@ -657,7 +657,7 @@ li[id^="anotacio_"] {
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td colspan="5">${procedimentNom} - ${registre.procedimentCodi}</td>
+					<td colspan="5">${registre.procedimentCodi} - ${procedimentNom}</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>

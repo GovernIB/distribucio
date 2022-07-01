@@ -957,6 +957,7 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		
 		try {
+			// codiDir3="A04003003" 		codiSia="874123"
 			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiDir3, codiSia);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,

@@ -184,10 +184,13 @@ public class RegistreAdminController extends BaseAdminController {
 			
 			int numeroAnnexosPendentsArxiu = 0;
 			String codiSia = null;
+			String codiDir3 = null;
 			int numeroAnnexosFirmaInvalida = 0;
 			if (registreDto instanceof RegistreDto) {
-				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;		
+				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;	
+				codiDir3 = registreDtoAmbAnnexos.getEntitatCodi();	
 				codiSia = registreDtoAmbAnnexos.getProcedimentCodi();
+				registreDtoAmbAnnexos.getEntitatCodi();
 				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
 					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
 						numeroAnnexosPendentsArxiu++;
@@ -195,16 +198,8 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 			}			
 			
-			String codiDir3;
-			if (RolHelper.isRolActualAdministrador(request)) {
-				codiDir3 = EntitatHelper.getEntitatActual(request).getCodiDir3();
-			}else {
-				codiDir3 = entitatActual.getCodiDir3();
-			}
-			
 			try {
 				ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(codiDir3, codiSia);
-				String procedimentNom = procedimentDto.getNom();
 				model.addAttribute("procedimentNom", procedimentDto.getNom());
 			}catch(NullPointerException e) {
 				model.addAttribute("procedimentNom", null);
