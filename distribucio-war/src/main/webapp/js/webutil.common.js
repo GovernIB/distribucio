@@ -747,7 +747,7 @@ function sessionTimeoutMessage(timeout_margin_ms){
 	if(renewSession){
 		var response = new Date();
 		if(response - popupdate > timeout_margin_ms){
-			alert("Has tardat massa a contestar, ja s'ha tancat la sessió. \nSe't redigirà a la pagina de login.");
+			alert("Has tardat massa a contestar, ja s'ha tancat la sessió. \nSe't redigirà a la pàgina de login.");
 			window.location.reload();
 
 		}else{
