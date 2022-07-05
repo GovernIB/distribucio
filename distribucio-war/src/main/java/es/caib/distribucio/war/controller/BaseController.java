@@ -297,7 +297,8 @@ public class BaseController implements MessageSourceAware {
 	public int numeroAnnexosFirmaInvalida(RegistreDto registre) {
 		int numeroAnnexosFirmaInvalida = 0;						
 		for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
-			if (registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
+			if (registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA 
+					|| registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.ERROR_VALIDANT ) {
 				numeroAnnexosFirmaInvalida++;
 			}
 		}

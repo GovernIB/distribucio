@@ -1321,8 +1321,8 @@ li[id^="anotacio_"] {
 									<c:if test="${annex.fitxerArxiuUuid == null }">
 										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
 									</c:if>
-									<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA'}">
-										<span class="fa fa-pencil-square text-danger" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
+									<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
+										<span class="fa fa-pencil-square text-warning" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
 									</c:if>
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>

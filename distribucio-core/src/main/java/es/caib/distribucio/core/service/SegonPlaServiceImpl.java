@@ -94,7 +94,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 
-				ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
+				EntitatDto entitatDto = new EntitatDto();
+				entitatDto.setCodi(entitat.getCodi());
+				ConfigHelper.setEntitat(entitatDto);
 				
 				int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 				int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
@@ -221,7 +223,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			
-			ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
 
 			int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
 		
@@ -263,7 +267,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			
-			ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
 
 			int maxReintents = getAplicarReglesMaxReintentsProperty(entitat);
 			List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(entitat, maxReintents);
@@ -306,7 +312,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {
 
-				ConfigHelper.setEntitat(conversioTipusHelper.convertir(registre.getEntitat(), EntitatDto.class));
+				EntitatDto entitatDto = new EntitatDto();
+				entitatDto.setCodi(registre.getEntitatCodi());
+				ConfigHelper.setEntitat(entitatDto);
 
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
 				Timer.Context context = timer.time();
