@@ -244,7 +244,7 @@ CREATE TABLE DIS_REGISTRE_ANNEX
   META_DADES CHARACTER VARYING(4000),
   SOBREESCRIURE        boolean default false,
   VAL_FIRMA_ESTAT      character varying(64),
-  VAL_FIRMA_ERROR      character varying(255)
+  VAL_FIRMA_ERROR      character varying(1000)
 
 );
 

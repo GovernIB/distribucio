@@ -74,7 +74,7 @@ ADD (
 );
 ALTER TABLE DIS_REGISTRE_ANNEX
 ADD (
-    VAL_FIRMA_ERROR VARCHAR2(255 CHAR) 
+    VAL_FIRMA_ERROR VARCHAR2(1000 CHAR) 
 );
 
 -- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors

@@ -22,6 +22,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -106,7 +107,7 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "val_firma_estat")
 	private ValidacioFirmaEnum validacioFirmaEstat;
-	@Column(name = "val_firma_error", length= 255)
+	@Column(name = "val_firma_error", length= 1000)
 	private String validacioFirmaError;
 
 	public String getFirmaCsv() {
@@ -225,7 +226,7 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 		return validacioFirmaError;
 	}
 	public void setValidacioFirmaError(String validacioFirmaError) {
-		this.validacioFirmaError = validacioFirmaError;
+		this.validacioFirmaError = StringUtils.abbreviate(validacioFirmaError, 1000);
 	}
 	public static Builder getBuilder(
 			String titol,
