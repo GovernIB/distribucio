@@ -457,6 +457,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
 					|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
 				estatDocument = DocumentEstat.DEFINITIU;
+			} else {
+				// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
+				if (fitxer.getContingut() == null) {
+					fitxer.setContingut(firmes.get(0).getContingut());
+				}
+				firmes = null;
 			}
 		}
 		//creating info for integracio logs

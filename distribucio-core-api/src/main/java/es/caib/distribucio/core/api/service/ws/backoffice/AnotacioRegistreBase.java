@@ -6,6 +6,8 @@ package es.caib.distribucio.core.api.service.ws.backoffice;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * Classe que representa la base d'anotació de registre.
  * 
@@ -48,6 +50,11 @@ public class AnotacioRegistreBase {
 	private List<Interessat> interessats;
 	private List<Annex> annexos;
 	private String justificantFitxerArxiuUuid;
+	
+	//@XmlTransient
+	//private boolean documentValid;
+	//@XmlTransient
+	//private String documentError;
 	
 	public String getIdentificador() {
 		return identificador;
@@ -259,5 +266,18 @@ public class AnotacioRegistreBase {
 	public void setJustificantFitxerArxiuUuid(String justificantFitxerArxiuUuid) {
 		this.justificantFitxerArxiuUuid = justificantFitxerArxiuUuid;
 	}
-
+	//public boolean isDocumentValid() {
+	//	return documentValid;
+	//}
+	//public void setDocumentValid(boolean documentValid) {
+	//	this.documentValid = documentValid;
+	//}
+	//@XmlTransient
+	//public String getDocumentError() {
+	//	return documentError;
+	//}
+	//@XmlTransient
+	//public void setDocumentError(String documentError) {
+	//	this.documentError = documentError;
+	//}
 }

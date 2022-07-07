@@ -77,6 +77,11 @@ ADD (
     VAL_FIRMA_ERROR VARCHAR2(1000 CHAR) 
 );
 
+-- Insereix la propietat per desar els annexos amb firmes invàlides com esborrany o no
+-- es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany',null,'Annexos amb firmes invàlides com esborranys. Per defecte és fals','SCHEDULLED_ARXIU','5',false,'BOOL',null,null);
+
+
 -- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors
 
 -- Insereix un nou grup de tasques en segon pla
@@ -88,4 +93,8 @@ Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PRO
 	   values ('es.caib.distribucio.backoffice.interval.temps.reintentar.processament', null, 'Interval de temps entre les execucions de la tasca(ms)', 'SCHEDULLED_BACKOFFICE_ERRORS', '1', false, 'INT', null, false, null, null);	   
 Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) 
 	   values ('es.caib.distribucio.backoffice.reintentar.processament.max.reintents', null, 'Nombre màxim de reintents per reintentar el processament al backoffice', 'SCHEDULLED_BACKOFFICE_ERRORS', '2', false, 'INT', null, false, null, null);
-   
+  
+	   
+-- Nou índex pels paràmetres dels logs
+CREATE INDEX DIS_CONTLOG_CONTLOGPARAM_FK_I ON DIS_CONT_LOG_PARAM(CONT_LOG_ID);
+	   
