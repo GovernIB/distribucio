@@ -5,6 +5,8 @@ package es.caib.distribucio.core.api.service.ws.backoffice;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * Classe que representa un annex d'una anotació de registre.
  * 
@@ -31,6 +33,9 @@ public class Annex {
 	private long firmaTamany;
 	private String firmaNom;
 	private String firmaTipusMime;
+
+	private boolean documentValid;
+	private String documentError;
 
 	
 	public String getFirmaTipusMime() {
@@ -146,6 +151,20 @@ public class Annex {
 	}
 	public void setFirmaTamany(long firmaTamany) {
 		this.firmaTamany = firmaTamany;
+	}
+	@XmlTransient
+	public boolean isDocumentValid() {
+		return documentValid;
+	}
+	public void setDocumentValid(boolean documentValid) {
+		this.documentValid = documentValid;
+	}
+	@XmlTransient
+	public String getDocumentError() {
+		return documentError;
+	}
+	public void setDocumentError(String documentError) {
+		this.documentError = documentError;
 	}
 
 }
