@@ -2,6 +2,7 @@ package es.caib.distribucio.war.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,14 +22,11 @@ import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
-import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.war.controller.BaseController;
 
 @Component
 public class RegistreHelper extends BaseController{
 	
-	@Autowired
-	private ContingutService contingutService;
 	@Autowired
 	private CsvHelper csvHelper;
 		
@@ -40,25 +38,28 @@ public class RegistreHelper extends BaseController{
 			String format) throws IOException {
 		
 		FitxerDto fitxer = new FitxerDto();
-		String[] columnes = {
-				"Número", 
-				"Data", 
-				"Oficina", 
-				"Presencial", 
-				"Extracte", 
-				"Documentació física", 
-				"Codi procediment", 
-				"Observacions", 
-				"Origen num", 
-				"Origen data", 
-				"Origen oficina", 
-				"Interessats", 
-				"Estat", 
-				"Bústia"};
+		String[] columnes = {	"numero",
+								"data",
+								"oficina",
+								"presencial",
+								"extracte",
+								"documentacio",
+								"procediment",
+								"observacions",
+								"origenNum",
+								"origenData",
+								"origenOficina",
+								"interessats",
+								"estat",
+								"uo",
+								"bustia"};
+		for (int i = 0; i < columnes.length; i++) {
+			columnes[i] = getMessage(request, "registre.user.exportar.columna." + columnes[i]);
+		}
 
 		List<String[]> files = new ArrayList<String[]>();
 		for (RegistreDto registre : registres) {
-			String[] fila = new String[14];
+			String[] fila = new String[15];
 			
 			fila[0] = registre.getNumero();
 			
@@ -117,8 +118,16 @@ public class RegistreHelper extends BaseController{
 					null);
 			fila[12] = estatDescripcio;
 			
-			String bustiaOrigen = contingutService.cercarBustia(registre.getId());
-			fila[13] = bustiaOrigen; 
+			String uo = "";
+			if (registre.getPath() != null && registre.getPath().size() > 1) {
+				uo = registre.getPath().get(registre.getPath().size()-2).getNom();
+			}
+			fila[13] = uo; 
+			String bustia = "";
+			if (registre.getPath() != null && registre.getPath().size() > 0) {
+				bustia = registre.getPath().get(registre.getPath().size()-1).getNom();
+			}
+			fila[14] = bustia; 
 			
 			files.add(fila);
 		}
@@ -133,14 +142,14 @@ public class RegistreHelper extends BaseController{
 			fitxer.setContentType("application/vnd.oasis.opendocument.spreadsheet");
 			fitxer.setContingut(baos.toByteArray());
 		} else if ("CSV".equalsIgnoreCase(format)) {
-			fitxer.setNom("exportacio.csv");
+			fitxer.setNom(getMessage(request, "registre.user.exportar.nomFitxer") + ".csv");
 			fitxer.setContentType("text/csv");
 			StringBuilder sb = new StringBuilder();
 			csvHelper.afegirLinia(sb, columnes, ';');
 			for (String[] fila : files) {
 				csvHelper.afegirLinia(sb, fila, ';');
 			}
-			fitxer.setContingut(sb.toString().getBytes());
+			fitxer.setContingut(sb.toString().getBytes(StandardCharsets.UTF_8));
 		} else {
 			throw new ValidationException("Format de fitxer no suportat: " + format);
 		}

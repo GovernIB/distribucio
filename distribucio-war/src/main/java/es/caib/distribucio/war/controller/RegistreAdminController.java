@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.war.controller;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -37,17 +34,12 @@ import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -65,7 +57,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
-import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -90,8 +81,6 @@ public class RegistreAdminController extends BaseAdminController {
 	private ContingutService contingutService;
 	@Autowired
 	private BackofficeService backofficeService;
-	@Autowired
-	private RegistreHelper registreHelper;
 	
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -717,117 +706,7 @@ public class RegistreAdminController extends BaseAdminController {
 			bustiesFinals = bustiaService.findAmbFiltreAdmin(entitatActual.getId(), filtre, paginacioParams).getContingut();
 		}
 		return bustiesFinals;
-	}
-	
-	
-	@RequestMapping(value="/exportar", method = RequestMethod.GET)
-	public String exportar(
-			HttpServletRequest request,
-			HttpServletResponse response, 
-			Model model, 
-			@RequestParam String llistat, 
-			@RequestParam String[] filtresForm, 
-			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
-		
-		List<RegistreDto> llistatRegistres = new ArrayList<RegistreDto>();
-		if (llistat.equals("seleccio")) {
-			llistatRegistres = registreService.findMultiple(
-				getEntitatActualComprovantPermisAdmin(request).getId(), 
-				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
-				true);
-		
-		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-			List<BustiaDto> llistatBusties = bustiaService.findAmbEntitat(entitatActual.getId());
-			RegistreFiltreDto registreFiltreDto = new RegistreFiltreDto();
-			registreFiltreDto.setNumero(filtresForm[0]);
-			registreFiltreDto.setTitol(filtresForm[1]);
-			registreFiltreDto.setNumeroOrigen(filtresForm[2]);
-			registreFiltreDto.setRemitent(filtresForm[3]);
-			registreFiltreDto.setInteressat(filtresForm[4]);
-			String stringDateInici = filtresForm[5];
-			Date dataInici = null;
-			try {
-				dataInici = new SimpleDateFormat("dd/MM/yyyy").parse(stringDateInici);
-			} catch (ParseException e) {
-				dataInici = null;
-			}
-			registreFiltreDto.setDataRecepcioInici(dataInici);
-			String stringDateFi = filtresForm[6];
-			Date dataFi = null;
-			try {
-				dataFi = new SimpleDateFormat("dd/MM/yyyy").parse(stringDateFi);
-			} catch (ParseException e) {
-				dataFi = null;
-			}
-			registreFiltreDto.setDataRecepcioFi(dataFi);
-			Long unitatId;
-			if (!filtresForm[7].equals("")) {
-				unitatId = Long.parseLong(filtresForm[7]);
-			}else {
-				unitatId = null;
-			}
-			registreFiltreDto.setUnitatId(unitatId);
-			registreFiltreDto.setBustia(filtresForm[8]);
-			RegistreEnviatPerEmailEnumDto enviatPerEmail;
-			if (!filtresForm[9].equals("")) {
-				enviatPerEmail = RegistreEnviatPerEmailEnumDto.valueOf(filtresForm[9]);
-			}else {
-				enviatPerEmail = null;
-			}			
-			registreFiltreDto.setEnviatPerEmail(enviatPerEmail);
-			RegistreTipusDocFisicaEnumDto tipusDocumentacio;
-			if (!filtresForm[10].equals("")) { 
-				tipusDocumentacio = RegistreTipusDocFisicaEnumDto.valueOf(filtresForm[10]);
-			}else {
-				tipusDocumentacio = null;
-			}
-			registreFiltreDto.setTipusDocFisica(tipusDocumentacio);
-			registreFiltreDto.setBackCodi(filtresForm[11]);
-			RegistreProcesEstatSimpleEnumDto procesEstatSimple;
-			if (!filtresForm[12].equals("")) {
-				procesEstatSimple = RegistreProcesEstatSimpleEnumDto.valueOf(filtresForm[12]);
-			}else {
-				procesEstatSimple = null;
-			}			
-			registreFiltreDto.setProcesEstatSimple(procesEstatSimple);
-			RegistreProcesEstatEnum estat;
-			if (!filtresForm[13].equals("")) {
-				estat = RegistreProcesEstatEnum.valueOf(filtresForm[13]);
-			}else {
-				estat = null;
-			}
-			registreFiltreDto.setEstat(estat);
-			RegistreMarcatPerSobreescriureEnumDto sobreescriure;
-			if (!filtresForm[14].equals("")) {
-				sobreescriure = RegistreMarcatPerSobreescriureEnumDto.valueOf(filtresForm[14]);
-			}else {
-				sobreescriure = null;
-			}
-			registreFiltreDto.setSobreescriure(sobreescriure);
-			List<Long> llistatFiltrat = registreService.findRegistreIds(entitatActual.getId(), llistatBusties, registreFiltreDto, false, true);
-			
-			llistatRegistres = registreService.findMultiple(
-					getEntitatActualComprovantPermisAdmin(request).getId(), 
-					llistatFiltrat, 
-					true);			
-		}
-		
-		FitxerDto fitxer;
-		try {
-			fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
-			writeFileToResponse(
-					fitxer.getNom(),
-					fitxer.getContingut(),
-					response);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-		
-	}
-	
+	}	
 	
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {

@@ -1166,6 +1166,10 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 			RegistreEntity registreEntity = this.getRegistrePerIdentificador(id.getIndetificador());
 
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(registreEntity.getEntitatCodi());
+			ConfigHelper.setEntitat(entitatDto);
+
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
 			anotacioPerBackoffice.setExtracte(registreEntity.getExtracte());
@@ -1906,20 +1910,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreHelper.getMaxThreadsParallelProperty();
 	}
 	
-
-	@Transactional(readOnly = true)
-	@Override
-	public RegistreDto findAmbIdentificador(String identificador) {
-		RegistreDto registreAnotacioDto;
-		RegistreEntity registre = registreRepository.findByIdentificador(identificador);
-		if (registre != null)
-			registreAnotacioDto = (RegistreDto) contingutHelper.toContingutDto(registre);
-		else
-			registreAnotacioDto = null;
-		return registreAnotacioDto;
-	}
-
-
 	@Transactional
 	@Override
 	public RegistreDto marcarLlegida(

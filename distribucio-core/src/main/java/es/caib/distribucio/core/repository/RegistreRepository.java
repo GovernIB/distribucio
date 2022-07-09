@@ -140,10 +140,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String numero,
 			Date data,
 			int esborrat);
-	
-	/** Troba l'anotació de registre per identificador. */
-	RegistreEntity findByIdentificador(String identificador);
-	
+		
 	/** Consulta les anotacions de registre que tenen l'expedient a l'arxiu pendents
 	 * de tancar i a les quals ja s'ha excedit el temps d'espera establert
 	 * 

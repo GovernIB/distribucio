@@ -419,6 +419,12 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 							<span class="fa fa-envelope"></span>+<span class="fa fa-check-circle-o"></span>
 							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
 						</a></li>
+						<li><a href="registreUser/exportar?format=ods">
+							<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
+						</a></li>	
+						<li><a href="registreUser/exportar?format=csv">
+							<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
+						</a></li>			
 					</ul>
 					
 			</div>

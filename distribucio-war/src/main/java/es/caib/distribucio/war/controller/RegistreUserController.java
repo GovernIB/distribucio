@@ -39,6 +39,7 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -72,6 +73,7 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
+import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 import es.caib.distribucio.war.helper.RolHelper;
 
@@ -100,7 +102,9 @@ public class RegistreUserController extends BaseUserController {
 	private AplicacioService aplicacioService;	
 	@Autowired
 	private ConfigService configService;
-	
+	@Autowired
+	private RegistreHelper registreHelper;
+
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -1885,6 +1889,34 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		return bustiaService.getUsuarisPerBustia(bustiaId);
 	}
+	
+	/** Mètode per exportar la selecció d'anotacions de registre en format CSV o ODT */
+	@RequestMapping(value="/exportar", method = RequestMethod.GET)
+	public String exportar(
+			HttpServletRequest request,
+			HttpServletResponse response, 
+			Model model, 
+			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
+		
+		List<RegistreDto> llistatRegistres = registreService.findMultiple(
+				getEntitatActual(request).getId(),
+				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
+				true);
+		try {
+			FitxerDto fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (Exception e) {
+			String errMsg = this.getMessage(request, "registre.user.accio.grup.exportar.error", new Object[] {e.getMessage()});
+			logger.error(errMsg, e);
+			MissatgesHelper.error(request, errMsg);
+			return "redirect:" + request.getHeader("referer");
+		}
+		return null;
+	}
+
 	
 	private void resetFiltreBustia(
 			HttpServletRequest request, 

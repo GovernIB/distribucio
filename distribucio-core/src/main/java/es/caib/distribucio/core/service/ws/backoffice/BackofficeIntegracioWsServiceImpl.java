@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -48,9 +47,6 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	@Resource
 	private RegistreService registreService;
 	
-	@Autowired
-	private AplicacioService aplicacioService;
-	
 	@Override
 	public AnotacioRegistreEntrada consulta(
 		AnotacioRegistreId id) {
@@ -76,11 +72,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			logger.trace(">>> Abans de cridar el servei de registre");					
 			
 			anotacioRegistreEntrada =  registreService.findOneForBackoffice(id);
-			
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(anotacioRegistreEntrada.getEntitatCodi());
-			ConfigHelper.setEntitat(entitatDto);
-			
+						
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,

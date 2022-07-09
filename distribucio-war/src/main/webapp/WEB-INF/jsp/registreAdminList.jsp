@@ -334,67 +334,13 @@ $(document).ready(function() {
 				<!-- <dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/> -->
 			</div>
 			<div class="col-md-3 d-flex justify-content-end">
-			
-				
-				
-			<div class="btn-group">
-				<button class="ml-2 btn btn-success" data-toggle="dropdown"><span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />&nbsp;<span class="caret"></span></button>
-				<ul class="dropdown-menu">
-					<li><a onclick="exportar('ods');" aria-haspopup="true" aria-expanded="false">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.ods"/></span>
-					</a></li>
-					<li><a onclick="exportar('csv');" aria-haspopup="true" aria-expanded="false">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.csv"/></span>
-					</a></li>		
-				</ul>
-			</div>
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-			</div>				
-			<!-- <div class="col-md-5 pull-right">
-				<div class="pull-right d-flex">
-					<div class="box-input">
-						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
-					</div>
-					<div class="box-botons ml-6">
-						<a onclick="exportarCSV();" href="#" class="btn btn-success"> 
-							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />
-						</a>
-						<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-						<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-					</div>
-				</div>
-			</div>-->
+			</div>
 		</div>
 		
 
 	</form:form>
-	
-	<script>
-		function exportar(format) {
-			var numero = document.getElementById("numero").value;
-			var titol = document.getElementById("titol").value;
-			var numeroOrigen = document.getElementById("numeroOrigen").value;
-			var remitent = document.getElementById("remitent").value;
-			var interessat = document.getElementById("interessat").value;
-			var dataRecepcioInici = document.getElementById("dataRecepcioInici").value;
-			var dataRecepcioFi = document.getElementById("dataRecepcioFi").value;
-			var unitatId = document.getElementById("unitatId").value;
-			var bustia = document.getElementById("bustia").value;
-			var enviatPerEmail = document.getElementById("enviatPerEmail").value;
-			var tipusDocFisica = document.getElementById("tipusDocFisica").value;
-			var backCodi = document.getElementById("backCodi").value;
-			var procesEstatSimple = document.getElementById("procesEstatSimple").value;
-			var estatestat = document.getElementById("estat").value;
-			var sobreescriure = document.getElementById("sobreescriure").value;
-			
-			const FILTRE = [numero, titol, numeroOrigen, remitent, interessat, 
-							dataRecepcioInici, dataRecepcioFi, unitatId, bustia, enviatPerEmail, 
-							tipusDocFisica, backCodi, procesEstatSimple, estatestat, sobreescriure];
-			
-			window.location.href = 'registreAdmin/exportar?llistat=filtre&filtresForm=' + FILTRE + '&format=' + format;
-		}
-	</script>
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
 	
@@ -416,11 +362,11 @@ $(document).ready(function() {
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>
 				  </c:if>	
-					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=ods">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
+					<li><a href="registreUser/exportar?format=ods">
+						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
 					</a></li>	
-					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=csv">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
+					<li><a href="registreUser/exportar?format=csv">
+						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
 					</a></li>			
 				</ul>
 			</div>

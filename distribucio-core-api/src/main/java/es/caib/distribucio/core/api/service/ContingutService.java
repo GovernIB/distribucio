@@ -286,13 +286,5 @@ public interface ContingutService {
 			String uoSuperior, 
 			String uoDesti, 
 			String uoDestiSuperior
-			);
-	
-	
-	/**
-	 * Mètode per cercar la bustia
-	 * */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
-	public String cercarBustia(Long contingutId);
-	
+			);	
 }
