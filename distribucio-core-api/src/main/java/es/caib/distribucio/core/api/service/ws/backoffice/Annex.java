@@ -36,6 +36,8 @@ public class Annex {
 
 	private boolean documentValid;
 	private String documentError;
+	private AnnexEstat estat;
+
 
 	
 	public String getFirmaTipusMime() {
@@ -165,6 +167,13 @@ public class Annex {
 	}
 	public void setDocumentError(String documentError) {
 		this.documentError = documentError;
+	}
+	@XmlTransient
+	public AnnexEstat getEstat() {
+		return estat;
+	}
+	public void setEstat(AnnexEstat estat) {
+		this.estat = estat;
 	}
 
 }

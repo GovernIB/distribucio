@@ -894,6 +894,10 @@ public class ContingutHelper {
 						validacioOCSP(registreAnnex.getValidacioOCSP()).
 						gesdocDocumentId(registreAnnex.getGesdocDocumentId()).
 						build();
+				nouAnnex.setValidacioFirmaEstat(registreAnnex.getValidacioFirmaEstat());
+				nouAnnex.setValidacioFirmaError(registreAnnex.getValidacioFirmaError());
+				nouAnnex.setArxiuEstat(registreAnnex.getArxiuEstat());
+				
 				for (RegistreAnnexFirmaEntity firma: registreAnnex.getFirmes()) {
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
 							firma.getTipus(), 

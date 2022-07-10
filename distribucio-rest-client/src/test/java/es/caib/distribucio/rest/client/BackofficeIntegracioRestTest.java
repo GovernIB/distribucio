@@ -19,12 +19,12 @@ import static org.junit.Assert.fail;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class BackofficeIntegracioRestTest {
-	private static final String URL_BASE = "http://localhost:8280/distribucioapi/interna";
+	private static final String URL_BASE = "http://10.35.3.232:8080/distribucioapi/interna";
 	private static final String USER = "admin";
 	private static final String PASS = "admin";
 
-	private static final String IDENTIFICADOR = "GOIBE1657117867882/2022"; //L11E1557929165976/2019
-	private static final String CLAU_ACCESS = "AVtXSNHCgNEIC8XndUkSExtd7CQ1ecd81v1zBWVhTrE="; //jqCJ/24gm+j5VGtETYj8itrQmlD6zwHp4BL8g33ulh4=
+	private static final String IDENTIFICADOR = "GOIBE1657117867882/2022";
+	private static final String CLAU_ACCESS = "AVtXSNHCgNEIC8XndUkSExtd7CQ1ecd81v1zBWVhTrE=";
 
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {

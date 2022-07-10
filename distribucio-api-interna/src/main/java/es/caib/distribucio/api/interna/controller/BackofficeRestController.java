@@ -1,15 +1,7 @@
 package es.caib.distribucio.api.interna.controller;
 
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import es.caib.distribucio.api.interna.model.InfoCanviEstat;
-import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
-import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
-import lombok.Builder;
-import lombok.Data;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+
+import es.caib.distribucio.api.interna.model.InfoCanviEstat;
+import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
 
 /**
  * Controlador pel servei REST de backoffice.
@@ -55,15 +53,14 @@ public class BackofficeRestController {
     @ApiOperation(
             value = "Canvi d'estat d'una anotació de registre",
             notes = "Canvia l'estat d'una anotació de registre enviada a backoffice")
-    public ResponseEntity<Void> consulta(
+    public ResponseEntity<Void> canviEstat(
             HttpServletRequest request,
             @ApiParam(name="infoCanviEstat", value="Informació del canvi d'estat. Inclou l'identificador de l'anotació de registrem, l'estat que es vol assignar a l'anotació, i observacions.")
             @RequestBody final InfoCanviEstat infoCanviEstat) throws SistemaExternException {
-        backofficeIntegracioWsService.canviEstat(
+    	backofficeIntegracioWsService.canviEstat(
                 infoCanviEstat.getId(),
                 infoCanviEstat.getEstat(),
                 infoCanviEstat.getObservacions());
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
+    }    
 }

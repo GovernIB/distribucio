@@ -30,7 +30,6 @@ import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
-import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
@@ -63,8 +62,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private IntegracioHelper integracioHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
-	@Autowired
-	private AplicacioService aplicacioService;
 	@Autowired
 	private ConfigService configService;
 	@Resource

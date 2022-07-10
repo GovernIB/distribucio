@@ -315,12 +315,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	/**
 	 * Consulta per retornar un llistat amb els registres processats al backoffice
-	 * amb errors 
+	 * amb errors i regla pendent de tipus enviar a backoffice
 	 **/
-	@Query("from RegistreEntity r "
-			+ "where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
-			"and r.procesIntents <= :maxReintents "
-			+ "order by r.data DESC")
+	@Query("from RegistreEntity r " +
+			"where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
+			"	and r.procesIntents <= :maxReintents " +
+			"	and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
+			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("maxReintents") int maxReintents);
 	

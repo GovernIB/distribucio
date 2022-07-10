@@ -3,11 +3,12 @@
  */
 package es.caib.distribucio.rest.client.domini;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Date;
 
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.Date;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Classe que representa un annex d'una anotació de registre.
@@ -39,6 +40,7 @@ public class Annex {
 
 	private boolean documentValid;
 	private String documentError;
+	private AnnexEstat estat;
 
 	
 	@XmlTransient
@@ -48,6 +50,10 @@ public class Annex {
 	@XmlTransient
 	public String getDocumentError() {
 		return documentError;
+	}
+	@XmlTransient
+	public AnnexEstat getEstat() {
+		return estat;
 	}
 
 }

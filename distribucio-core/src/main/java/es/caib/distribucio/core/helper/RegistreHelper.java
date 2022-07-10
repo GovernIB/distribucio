@@ -69,6 +69,7 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
@@ -724,7 +725,6 @@ public class RegistreHelper {
 							documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
 							documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
 							
-							
 							// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 							ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
 							if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
@@ -743,18 +743,6 @@ public class RegistreHelper {
 									documentEniRegistrableDto);
 							annex.updateFitxerArxiuUuid(uuidDocument);
 							
-							// set fitxer size if unset
-							if (annex.getFitxerTamany() <= 0) { 
-								Document document = pluginHelper.arxiuDocumentConsultar(
-										annex.getFitxerArxiuUuid(), 
-										null, 
-										true);
-								if (document.getContingut() != null) {
-									annex.updateFitxerTamany(
-											(int)document.getContingut().getTamany());
-								}
-							}
-							
 							if (distribucioAnnex.getFirmes() != null) {
 								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
 									// if firma was created with autofirma save info about firma(without content bytes) in db
@@ -772,15 +760,11 @@ public class RegistreHelper {
 										annex.getFirmes().add(novaFirma);
 									}
 								}
-							}
-							
+							}							
 							if (!annex.isSignaturaDetallsDescarregat()) {
 								loadSignaturaDetallsToDB(annex);
 							}
-							
-							
 						}
-					
 					} catch (Exception ex) {
 						exceptions.add(ex);
 					}
@@ -1082,10 +1066,25 @@ public class RegistreHelper {
 			final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
 			Timer.Context contexarxiuDocumentConsultar = timearxiuDocumentConsultar.time();
 			Document document = pluginHelper.arxiuDocumentConsultar(
-					annexEntity.getFitxerArxiuUuid(),
-					null,
+					annexEntity.getFitxerArxiuUuid(), 
+					null, 
 					true);
 			contexarxiuDocumentConsultar.stop();
+
+			// set fitxer size if unset
+			if (annexEntity.getFitxerTamany() <= 0 && document.getContingut() != null) {
+				annexEntity.updateFitxerTamany(
+							(int)document.getContingut().getTamany());
+			}							
+			// Guarda l'estat del documetn a l'Arxiu
+			switch(document.getEstat()) {
+			case DEFINITIU:
+				annexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
+				break;
+			case ESBORRANY:
+				annexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
+				break;
+			}
 			
 			DocumentMetadades metadades = document.getMetadades();
 			if (metadades != null) {
@@ -1715,6 +1714,14 @@ public class RegistreHelper {
 							fitxerDto.setContentType(documentContingut.getTipusMime());
 							fitxerDto.setContingut(documentContingut.getContingut());
 							fitxerDto.setTamany(documentContingut.getContingut().length);
+						}
+						switch(document.getEstat()) {
+						case DEFINITIU:
+							registreAnnexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
+							break;
+						case ESBORRANY:
+							registreAnnexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
+							break;
 						}
 					}					
 				}

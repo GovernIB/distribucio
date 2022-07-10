@@ -31,6 +31,7 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
@@ -109,6 +110,11 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	private ValidacioFirmaEnum validacioFirmaEstat;
 	@Column(name = "val_firma_error", length= 1000)
 	private String validacioFirmaError;
+
+	// Camp per mostrar si el document està en estat ESBORRANY o DEFINITIU
+	@Enumerated(EnumType.STRING)
+	@Column(name = "arxiu_estat")
+	private AnnexEstat arxiuEstat;
 
 	public String getFirmaCsv() {
 		return firmaCsv;
@@ -227,6 +233,12 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	}
 	public void setValidacioFirmaError(String validacioFirmaError) {
 		this.validacioFirmaError = StringUtils.abbreviate(validacioFirmaError, 1000);
+	}
+	public AnnexEstat getArxiuEstat() {
+		return arxiuEstat;
+	}
+	public void setArxiuEstat(AnnexEstat arxiuEstat) {
+		this.arxiuEstat = arxiuEstat;
 	}
 	public static Builder getBuilder(
 			String titol,

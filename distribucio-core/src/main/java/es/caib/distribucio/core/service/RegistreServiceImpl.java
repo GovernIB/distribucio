@@ -77,6 +77,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.DocumentTipus;
@@ -2327,6 +2328,23 @@ public class RegistreServiceImpl implements RegistreService {
 							}
 						}
 					}
+					// Estat DEFINITIU/ESBORRANY
+					switch(document.getEstat()) {
+					case DEFINITIU:
+						annexPerBackoffice.setEstat(AnnexEstat.DEFINITIU);
+						break;
+					case ESBORRANY:
+						annexPerBackoffice.setEstat(AnnexEstat.ESBORRANY);
+						break;
+					}
+					// Informació de si l'annex és vàlid
+					boolean documentValid = true;
+					if (annexEntity.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
+						documentValid = false;
+						annexPerBackoffice.setDocumentError("El document original tenia firmes invàlides i s'ha guardat com esborrany");
+					}
+					annexPerBackoffice.setDocumentValid(documentValid);
+					document.getEstat();
 				} else {
 					throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
 				}

@@ -362,10 +362,10 @@ $(document).ready(function() {
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>
 				  </c:if>	
-					<li><a href="registreUser/exportar?format=ods">
+					<li><a href="registreAdmin/exportar?format=ods">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
 					</a></li>	
-					<li><a href="registreUser/exportar?format=csv">
+					<li><a href="registreAdmin/exportar?format=csv">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
 					</a></li>			
 				</ul>

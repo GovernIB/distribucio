@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultat.ExpedientAccio;
 import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultatAnnex.AnnexAccio;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
-import es.caib.distribucio.ws.backofficeintegracio.Annex;
-import es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreEntrada;
-import es.caib.distribucio.ws.backofficeintegracio.Interessat;
+import es.caib.distribucio.rest.client.domini.Annex;
+import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
+import es.caib.distribucio.rest.client.domini.Interessat;
 import es.caib.plugins.arxiu.api.Carpeta;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutTipus;
@@ -254,7 +254,7 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 					arxiuResultat.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
 					arxiuResultat.setErrorMessage("Hi ha hagut un error movent annexos.");
 					
-					logger.error("Errro movent l'annex \"" + annex.getNom() + "\" a l'arxiu: " + e.getMessage(), e);
+					logger.error("Error movent l'annex \"" + annex.getNom() + "\" a l'arxiu: " + e.getMessage(), e);
 					event("documentMoure", parametres, false, e.getMessage(), e, System.currentTimeMillis() - t0);
 				}
 			}
