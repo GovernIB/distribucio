@@ -2350,10 +2350,10 @@ public class RegistreServiceImpl implements RegistreService {
 					if (document.getMetadades() != null && document.getMetadades().getFormat() == null) {
 						documentError.append(" El document no té un format reconegut per l'Arxiu");
 					}
-					if (document.getEstat() == DocumentEstat.ESBORRANY) {
-						documentValid = false;
-						documentError.append(" El document s'ha guardat com esborrany per poder distribuir-lo.");
-					}
+//					if (document.getEstat() == DocumentEstat.ESBORRANY) {
+//						documentValid = false;
+//						documentError.append(" El document s'ha guardat com esborrany per poder distribuir-lo.");
+//					}
 					annexPerBackoffice.setDocumentValid(documentValid);
 					if (!documentValid) {
 						annexPerBackoffice.setDocumentError(documentError.toString());
