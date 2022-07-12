@@ -206,7 +206,8 @@ CREATE TABLE DIS_REGISTRE
   PENDENT          BOOLEAN DEFAULT TRUE	NOT NULL,
   AGAFAT_PER 		character varying(64),
   SOBREESCRIURE           boolean default false,
-  REACTIVAT               boolean default false
+  REACTIVAT               boolean default false,
+  ANNEXOS_ESTAT_ESBORRANY integer default 0
 );
 
 
@@ -244,8 +245,8 @@ CREATE TABLE DIS_REGISTRE_ANNEX
   META_DADES CHARACTER VARYING(4000),
   SOBREESCRIURE        boolean default false,
   VAL_FIRMA_ESTAT      character varying(64),
-  VAL_FIRMA_ERROR      character varying(1000)
-
+  VAL_FIRMA_ERROR      character varying(1000),
+  ARXIU_ESTAT          character varying(20)
 );
 
 
