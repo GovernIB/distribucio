@@ -172,9 +172,11 @@ public class RegistreAdminController extends BaseAdminController {
 			
 			int numeroAnnexosPendentsArxiu = 0;
 			int numeroAnnexosFirmaInvalida = 0;
+			int numeroAnnexosEstatEsborrany = 0;
 			if (registreDto instanceof RegistreDto) {
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
+				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
 			}
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
@@ -184,6 +186,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("isVistaMoviments", false);
 			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
 			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
+			model.addAttribute("numeroAnnexosEstatEsborrany", numeroAnnexosEstatEsborrany);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);

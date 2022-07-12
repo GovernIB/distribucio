@@ -1287,6 +1287,12 @@ li[id^="anotacio_"] {
 			<c:choose>
 				<c:when test="${not empty registre.annexos}">
 				
+					<c:if test="${numeroAnnexosEstatEsborrany > 0 }">
+						<div class="alert well-sm alert-warning alert-dismissable">
+							<span class="fa fa-exclamation-triangle"></span>
+							<spring:message code="registre.detalls.annexos.estat.esborrany" arguments="${numeroAnnexosEstatEsborrany}"/>
+						</div>
+					</c:if>
 					<!------ Informació firma invàlida ------>
 					<c:if test="${numeroAnnexosFirmaInvalida > 0 }">
 						<div class="alert well-sm alert-warning alert-dismissable">
@@ -1323,6 +1329,9 @@ li[id^="anotacio_"] {
 									</c:if>
 									<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
 										<span class="fa fa-pencil-square text-warning" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
+									</c:if>
+									<c:if test="${annex.arxiuEstat == 'ESBORRANY'}">
+										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.estat.arxiu.esborrany"/>"></span>
 									</c:if>
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>

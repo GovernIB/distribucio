@@ -51,6 +51,10 @@ public class RegistreFiltreDto implements Serializable {
 	/** Per mostrar el contingut de les bústies innactives */
 	private boolean mostrarInnactivesOrigen;
 	
+	/** Per filtrar només les que tinguin annexos en estat esborrany. */
+	private boolean nomesAmbEsborranys;
+
+	
 	public String getBackCodi() {
 		return backCodi;
 	}
@@ -178,5 +182,11 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setReintents(RegistreFiltreReintentsEnumDto reintents) {
 		this.reintents = reintents;
+	}
+	public boolean isNomesAmbEsborranys() {
+		return nomesAmbEsborranys;
+	}
+	public void setNomesAmbEsborranys(boolean nomesAmbEsborranys) {
+		this.nomesAmbEsborranys = nomesAmbEsborranys;
 	}
 }

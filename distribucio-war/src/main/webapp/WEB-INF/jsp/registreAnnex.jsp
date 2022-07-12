@@ -260,8 +260,7 @@
 					</c:when>
 					<c:when test="${annex.arxiuEstat == 'ESBORRANY'}">
 						<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany"></spring:message>
-						<span class="fa fa-exclamation-triangle text-danger"></span>
-						<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany.info"></spring:message>
+						<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany.info"></spring:message>"></span>
 					</c:when>
 					<c:otherwise>${annex.arxiuEstat}</c:otherwise>
 				</c:choose>

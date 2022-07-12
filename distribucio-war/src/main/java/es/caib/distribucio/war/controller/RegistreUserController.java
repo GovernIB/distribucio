@@ -402,6 +402,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("destiLogic", destiLogic);
 			model.addAttribute("numeroAnnexosPendentsArxiu", this.numeroAnnexosPendentsArxiu(registre));
 			model.addAttribute("numeroAnnexosFirmaInvalida", this.numeroAnnexosFirmaInvalida(registre));
+			model.addAttribute("numeroAnnexosEstatEsborrany", this.numeroAnnexosEstatEsborrany(registre));
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {

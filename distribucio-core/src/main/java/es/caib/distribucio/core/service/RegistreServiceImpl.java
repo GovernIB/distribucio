@@ -131,6 +131,7 @@ import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
+import es.caib.plugins.arxiu.api.DocumentEstat;
 import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -429,6 +430,7 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
 				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
 				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "nomesAmbEsborranys= " + filtre.isNomesAmbEsborranys() + ", " 
 				+ "estat= " + filtre.getEstat() + ", " 
 				+ "unitat= " + filtre.getUnitatId() + ", " 
 				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
@@ -472,6 +474,7 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getReintents() != null ? (filtre.getReintents() == RegistreFiltreReintentsEnumDto.SI ? true : false) : false, 
 					maxReintents, 
 					filtre.isNomesAmbErrors(),
+					filtre.isNomesAmbEsborranys(),
 					unitat == null,
 					unitat,
 					filtre.getSobreescriure() == null,
@@ -2339,12 +2342,22 @@ public class RegistreServiceImpl implements RegistreService {
 					}
 					// Informació de si l'annex és vàlid
 					boolean documentValid = true;
+					StringBuilder documentError = new StringBuilder();
 					if (annexEntity.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
 						documentValid = false;
-						annexPerBackoffice.setDocumentError("El document original tenia firmes invàlides i s'ha guardat com esborrany");
+						documentError.append("El document original tenia firmes invàlides.");
+					}
+					if (document.getMetadades() != null && document.getMetadades().getFormat() == null) {
+						documentError.append(" El document no té un format reconegut per l'Arxiu");
+					}
+					if (document.getEstat() == DocumentEstat.ESBORRANY) {
+						documentValid = false;
+						documentError.append(" El document s'ha guardat com esborrany per poder distribuir-lo.");
 					}
 					annexPerBackoffice.setDocumentValid(documentValid);
-					document.getEstat();
+					if (!documentValid) {
+						annexPerBackoffice.setDocumentError(documentError.toString());
+					}
 				} else {
 					throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");
 				}

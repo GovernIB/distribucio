@@ -237,6 +237,11 @@ public class RegistreEntity extends ContingutEntity {
 
 	@Column(name = "sobreescriure")
 	private boolean sobreescriure;
+
+	/** Conté el recompte del número d'annexos en estat esborrany */
+	@Column(name = "annexos_estat_esborrany")
+	private int annexosEstatEsborrany;
+
 	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
@@ -596,6 +601,12 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public void updateSobreescriure(boolean sobreescriure) {
 		this.sobreescriure = sobreescriure;
+	}
+	public int getAnnexosEstatEsborrany() {
+		return annexosEstatEsborrany;
+	}
+	public void setAnnexosEstatEsborrany(int annexosEstatEsborrany) {
+		this.annexosEstatEsborrany = annexosEstatEsborrany;
 	}
 	public static Builder getBuilder(
 			EntitatEntity entitat,

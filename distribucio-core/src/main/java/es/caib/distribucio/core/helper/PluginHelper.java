@@ -148,9 +148,12 @@ public class PluginHelper {
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
-		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
+		accioParams.put("annexTitol", annex.getTitol());
+		accioParams.put("fitxerNom", annex.getFitxerNom());
 		accioParams.put("uuidExpedient", uuidExpedient);
+		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
+		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
 		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
 		long t0 = System.currentTimeMillis();

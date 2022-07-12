@@ -548,14 +548,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);
 		for (int i=0; i<registresBackError.size(); i++) {
-			List<Long> unRegistreBackError = new ArrayList<>();
-			unRegistreBackError.add(registresBackError.get(i));
 			try {
-				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(unRegistreBackError);
-				registresBackError.remove(0);
-				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(0));
+				List<Long> pendents = new ArrayList<Long>();
+				pendents.add(registresBackError.get(i));
+				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendents);
+				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(i));
 			}catch(Exception e) {
-				logger.error("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(0), e);
+				logger.error("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(i), e);
 			}
 		}
 		

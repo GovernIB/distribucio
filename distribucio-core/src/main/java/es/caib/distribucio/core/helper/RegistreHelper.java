@@ -710,6 +710,7 @@ public class RegistreHelper {
 						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
+				int nAnnexosEstatEsborrany = 0;
 				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
 					try {
 						
@@ -765,10 +766,14 @@ public class RegistreHelper {
 								loadSignaturaDetallsToDB(annex);
 							}
 						}
+						if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+							nAnnexosEstatEsborrany++;
+						}
 					} catch (Exception ex) {
 						exceptions.add(ex);
 					}
 				}
+				registreEntity.setAnnexosEstatEsborrany(nAnnexosEstatEsborrany);
 			}
 		}
 		if (exceptions != null && !exceptions.isEmpty()) {
@@ -1077,6 +1082,7 @@ public class RegistreHelper {
 							(int)document.getContingut().getTamany());
 			}							
 			// Guarda l'estat del documetn a l'Arxiu
+			AnnexEstat estatAnterior = annexEntity.getArxiuEstat();
 			switch(document.getEstat()) {
 			case DEFINITIU:
 				annexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
@@ -1085,7 +1091,12 @@ public class RegistreHelper {
 				annexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
 				break;
 			}
-			
+			// Si passa d'esborrany a definitiu resta un en el recompte d'annexos en estat d'esborrany de l'anotació
+			if (estatAnterior == AnnexEstat.ESBORRANY 
+					&& annexEntity.getArxiuEstat() == AnnexEstat.DEFINITIU) {
+				annexEntity.getRegistre().setAnnexosEstatEsborrany(
+						Math.max(0, annexEntity.getRegistre().getAnnexosEstatEsborrany() - 1));
+			}
 			DocumentMetadades metadades = document.getMetadades();
 			if (metadades != null) {
 				annexEntity.updateFirmaCsv(metadades.getCsv());

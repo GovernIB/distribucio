@@ -100,12 +100,20 @@ $(document).ready(function() {
 		$('#nomesAmbErrors').val(false);
 		$('#estat').val(null).trigger('change');
 		$('#enviatPerEmail').val(null).change();
+		$('#nomesAmbEsborranysBtn').removeClass('active');
+		$('#nomesAmbEsborranys').val(false);
 	});
 
 	$('#nomesAmbErrorsBtn').click(function() {
 		nomesAmbErrors = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#nomesAmbErrors').val(nomesAmbErrors);
+	})
+
+	$('#nomesAmbEsborranysBtn').click(function() {
+		nomesAmbEsborranys = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
 	})
 
 	$('#taulaDades').on( 'draw.dt', function () {
@@ -303,7 +311,15 @@ $(document).ready(function() {
 		</div>
 		<div class="row">			
 			<div class="col-md-2">
-				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+				<div class="row">
+					<div class="col-sm-9">
+						<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+					</div>
+					<div class="col-sm-3" style="padding-left: 0;">
+						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+						<dis:inputHidden name="nomesAmbEsborranys"/>
+					</div>
+				</div>
 			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true"/>
@@ -483,7 +499,9 @@ $(document).ready(function() {
 						{{else procesEstat == 'BACK_ERROR'}}
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
 						{{/if}}
-
+						{{if annexosEstatEsborrany > 0}}
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
+						{{/if}}
 					</script>
 
 				</th>
@@ -581,6 +599,7 @@ $(document).ready(function() {
 				<th data-col-name="maxReintents" data-visible="false"></th>
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="annexosEstatEsborrany" data-visible="false" data-orderable="false"></th>
 			</tr>
 		</thead>
 	</table>

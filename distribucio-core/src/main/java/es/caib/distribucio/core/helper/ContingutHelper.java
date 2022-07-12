@@ -44,6 +44,7 @@ import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.registre.RegistreInteressat;
 import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
@@ -867,6 +868,7 @@ public class ContingutHelper {
 		}
 		// Copia els annexos
 		if (registreOriginal.getAnnexos() != null) {
+			int nAnnexosEstatEsborrany = 0;
 			for (RegistreAnnexEntity registreAnnex: registreOriginal.getAnnexos()) {
 
 				if ((registreOriginal.getJustificant() != null && registreOriginal.getJustificant().getId().equals(registreAnnex.getId())
@@ -897,6 +899,9 @@ public class ContingutHelper {
 				nouAnnex.setValidacioFirmaEstat(registreAnnex.getValidacioFirmaEstat());
 				nouAnnex.setValidacioFirmaError(registreAnnex.getValidacioFirmaError());
 				nouAnnex.setArxiuEstat(registreAnnex.getArxiuEstat());
+				if (registreAnnex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+					nAnnexosEstatEsborrany++;
+				}
 				
 				for (RegistreAnnexFirmaEntity firma: registreAnnex.getFirmes()) {
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
@@ -922,6 +927,7 @@ public class ContingutHelper {
 				nouAnnex.updateSignaturaDetallsDescarregat(true);
 				registreCopia.getAnnexos().add(nouAnnex);
 			}
+			registreCopia.setAnnexosEstatEsborrany(nAnnexosEstatEsborrany);
 		}
 		registreCopia.updateJustificantArxiuUuid(
 				registreOriginal.getJustificantArxiuUuid());

@@ -216,11 +216,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 		}
 		
-		
 		if (annexContingut != null) {
-			// Si l'annex no està firmat el firma amb el plugin de firma en servidor.
+			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid i té un format reconegut ler l'Arxiu
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
+			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
+			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
+									&& format != null;
 			if (!annexFirmat 
+					&& documentValid
 					&& isRegistreSignarAnnexos()) {
 				
 				//sign annex and return firma content bytes
@@ -453,21 +456,29 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
 		
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
-		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
-			if (ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
-					|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
+		// Es guarden definitius si:
+		// 1) El documetn té firmes
+		boolean guardarDefinitiu = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
+		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
+		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
+				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
+		// 3) Format no reconegut
+		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxer));
+		guardarDefinitiu = guardarDefinitiu && format != null;
+				
+		if (guardarDefinitiu) {
 				estatDocument = DocumentEstat.DEFINITIU;
-			} else {
-				// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
-				if (fitxer.getContingut() == null) {
-					fitxer.setContingut(firmes.get(0).getContingut());
-				}
-				firmes = null;
+		} else {
+			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
+			if (fitxer.getContingut() == null) {
+				fitxer.setContingut(firmes.get(0).getContingut());
 			}
+			firmes = null;
 		}
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", annex.getId());
 		accioParams.put("titol", annex.getTitol());
 		if (fitxer != null) {
 			accioParams.put("fitxerNom", fitxer.getNom());
@@ -497,6 +508,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			accioParams.put("firmesPerfil", firmesPerfil.toString());
 			accioParams.put("firmesContingut", firmesContingut.toString());
 		}
+		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
+		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
 		
 		long t0 = System.currentTimeMillis();
 		try {
@@ -545,7 +558,147 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	}
 	
 	
+	/** Determina l'extensió a partir  del fitxer */
+	private DocumentExtensio getDocumentExtensio(FitxerDto fitxer) {
+		DocumentExtensio extensio = null;
+		if (fitxer != null && fitxer.getExtensio() != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
+		}
+		return extensio;
+	}
 	
+	/** Determina l'extensió a partir del nom del fitxer */
+	private DocumentExtensio getDocumentExtensio(String fitxerNom) {
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setNom(fitxerNom);
+		DocumentExtensio extensio = null;
+		if (fitxer != null && fitxer.getExtensio() != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
+		}
+		return extensio;
+	}
+
+
+	/** Consulta el format a partir de l'extensió
+	 * 
+	 * @param extensio
+	 * @return
+	 */
+	private DocumentFormat getDocumentFormat(DocumentExtensio extensio) {
+
+		if (extensio == null ) {
+			return null;
+		}
+		DocumentFormat format = null;
+		switch (extensio) {
+		case AVI:
+			format = DocumentFormat.AVI;
+			break;
+		case CSS:
+			format = DocumentFormat.CSS;
+			break;
+		case CSV:
+			format = DocumentFormat.CSV;
+			break;
+		case DOCX:
+			format = DocumentFormat.SOXML;
+			break;
+		case GML:
+			format = DocumentFormat.GML;
+			break;
+		case GZ:
+			format = DocumentFormat.GZIP;
+			break;
+		case HTM:
+			format = DocumentFormat.XHTML; // HTML o XHTML!!!
+			break;
+		case HTML:
+			format = DocumentFormat.XHTML; // HTML o XHTML!!!
+			break;
+		case JPEG:
+			format = DocumentFormat.JPEG;
+			break;
+		case JPG:
+			format = DocumentFormat.JPEG;
+			break;
+		case MHT:
+			format = DocumentFormat.MHTML;
+			break;
+		case MHTML:
+			format = DocumentFormat.MHTML;
+			break;
+		case MP3:
+			format = DocumentFormat.MP3;
+			break;
+		case MP4:
+			format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+			break;
+		case MPEG:
+			format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+			break;
+		case ODG:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODP:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODS:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODT:
+			format = DocumentFormat.OASIS12;
+			break;
+		case OGA:
+			format = DocumentFormat.OGG;
+			break;
+		case OGG:
+			format = DocumentFormat.OGG;
+			break;
+		case PDF:
+			format = DocumentFormat.PDF; // PDF o PDFA!!!
+			break;
+		case PNG:
+			format = DocumentFormat.PNG;
+			break;
+		case PPTX:
+			format = DocumentFormat.SOXML;
+			break;
+		case RTF:
+			format = DocumentFormat.RTF;
+			break;
+		case SVG:
+			format = DocumentFormat.SVG;
+			break;
+		case TIFF:
+			format = DocumentFormat.TIFF;
+			break;
+		case TXT:
+			format = DocumentFormat.TXT;
+			break;
+		case WEBM:
+			format = DocumentFormat.WEBM;
+			break;
+		case XLSX:
+			format = DocumentFormat.SOXML;
+			break;
+		case ZIP:
+			format = DocumentFormat.ZIP;
+			break;
+		case CSIG:
+			format = DocumentFormat.CSIG;
+			break;
+		case XSIG:
+			format = DocumentFormat.XSIG;
+			break;
+		case XML:
+			format = DocumentFormat.XML;
+			break;
+		}
+		return format;
+	}
+
 	private String uniqueNameArxiu(
 			String arxiuNom,
 			String identificadorPare) throws ArxiuException, SistemaExternException {
@@ -1013,11 +1166,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		metadades.setTipusDocumental(tipusDocumental);
 		
-		DocumentExtensio extensio = null;
-		if (fitxer != null && fitxer.getExtensio() != null) {
-			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
-			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-		}
+		DocumentExtensio extensio = this.getDocumentExtensio(fitxer);
 
 		// Firmes
 		Firma primeraFirma = null;
@@ -1082,111 +1231,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
-			DocumentFormat format = null;
-			switch (extensio) {
-			case AVI:
-				format = DocumentFormat.AVI;
-				break;
-			case CSS:
-				format = DocumentFormat.CSS;
-				break;
-			case CSV:
-				format = DocumentFormat.CSV;
-				break;
-			case DOCX:
-				format = DocumentFormat.SOXML;
-				break;
-			case GML:
-				format = DocumentFormat.GML;
-				break;
-			case GZ:
-				format = DocumentFormat.GZIP;
-				break;
-			case HTM:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-				break;
-			case HTML:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-				break;
-			case JPEG:
-				format = DocumentFormat.JPEG;
-				break;
-			case JPG:
-				format = DocumentFormat.JPEG;
-				break;
-			case MHT:
-				format = DocumentFormat.MHTML;
-				break;
-			case MHTML:
-				format = DocumentFormat.MHTML;
-				break;
-			case MP3:
-				format = DocumentFormat.MP3;
-				break;
-			case MP4:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-				break;
-			case MPEG:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-				break;
-			case ODG:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODP:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODS:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODT:
-				format = DocumentFormat.OASIS12;
-				break;
-			case OGA:
-				format = DocumentFormat.OGG;
-				break;
-			case OGG:
-				format = DocumentFormat.OGG;
-				break;
-			case PDF:
-				format = DocumentFormat.PDF; // PDF o PDFA!!!
-				break;
-			case PNG:
-				format = DocumentFormat.PNG;
-				break;
-			case PPTX:
-				format = DocumentFormat.SOXML;
-				break;
-			case RTF:
-				format = DocumentFormat.RTF;
-				break;
-			case SVG:
-				format = DocumentFormat.SVG;
-				break;
-			case TIFF:
-				format = DocumentFormat.TIFF;
-				break;
-			case TXT:
-				format = DocumentFormat.TXT;
-				break;
-			case WEBM:
-				format = DocumentFormat.WEBM;
-				break;
-			case XLSX:
-				format = DocumentFormat.SOXML;
-				break;
-			case ZIP:
-				format = DocumentFormat.ZIP;
-				break;
-			case CSIG:
-				format = DocumentFormat.CSIG;
-				break;
-			case XSIG:
-				format = DocumentFormat.XSIG;
-				break;
-			case XML:
-				format = DocumentFormat.XML;
-				break;
-			}
+			DocumentFormat format = this.getDocumentFormat(extensio);
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);

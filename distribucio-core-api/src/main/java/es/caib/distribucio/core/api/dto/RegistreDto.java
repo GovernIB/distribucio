@@ -105,6 +105,8 @@ public class RegistreDto extends ContingutDto {
 	private boolean reactivat;
 
 	private boolean sobreescriure;
+	
+	private int annexosEstatEsborrany;
 
 	
 	public boolean isAgafat() {
@@ -605,6 +607,14 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setSobreescriure(boolean sobreescriure) {
 		this.sobreescriure = sobreescriure;
+	}
+
+	public int getAnnexosEstatEsborrany() {
+		return annexosEstatEsborrany;
+	}
+
+	public void setAnnexosEstatEsborrany(int annexosEstatEsborrany) {
+		this.annexosEstatEsborrany = annexosEstatEsborrany;
 	}
 	
 }

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -70,14 +71,17 @@ public class GestioDocumentalHelper {
 		
 		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 			for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
-				if (annex.getGesdocDocumentId() != null) {
-					esborrarDocsTemporalsHandler.putIdentificador(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, annex.getGesdocDocumentId());
-					annex.updateGesdocDocumentId(null);
-				}
-				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-					if (firma.getGesdocFirmaId() != null) {
-						esborrarDocsTemporalsHandler.putIdentificador(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, firma.getGesdocFirmaId());
-						firma.updateGesdocFirmaId(null);
+				// No s'esborren els documents originals pels documents que queden com esborranys
+				if (annex.getArxiuEstat() != AnnexEstat.ESBORRANY) {
+					if (annex.getGesdocDocumentId() != null) {
+						esborrarDocsTemporalsHandler.putIdentificador(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, annex.getGesdocDocumentId());
+						annex.updateGesdocDocumentId(null);
+					}
+					for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+						if (firma.getGesdocFirmaId() != null) {
+							esborrarDocsTemporalsHandler.putIdentificador(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, firma.getGesdocFirmaId());
+							firma.updateGesdocFirmaId(null);
+						}
 					}
 				}
 			}

@@ -204,6 +204,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"		or (:reintentsPendents = true and r.procesIntents < :maxReintents) " + 
 			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
 			"and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"and (:nomesAmbEsborranys = false or r.annexosEstatEsborrany > 0 ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
@@ -244,6 +245,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("reintentsPendents") Boolean reintentsPendents,
 			@Param("maxReintents") int maxReintents, 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("nomesAmbEsborranys") boolean nomesAmbEsborranys,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("esNullSobreescriure") boolean esNullSobreescriure,
