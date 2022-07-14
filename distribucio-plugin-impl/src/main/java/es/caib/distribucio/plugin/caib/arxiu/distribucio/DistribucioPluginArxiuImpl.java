@@ -221,6 +221,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
 			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
 									&& format != null;
 			if (!annexFirmat 
 					&& documentValid
