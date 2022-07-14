@@ -223,51 +223,62 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
 									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
 									&& format != null;
+
+			// Mira si firmar en servidor
 			if (!annexFirmat 
 					&& documentValid
 					&& isRegistreSignarAnnexos()) {
 				
-				//sign annex and return firma content bytes
-				SignaturaResposta signatura = signaturaDistribucioSignar(
-						distribucioAnnex,
-						annexContingut,
-						"Firma en servidor de document annex de l'anotació de registre");
-				
-				if (StringUtils.isEmpty(signatura.getTipusFirmaEni()) 
-						|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
-					logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
-							signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
-					if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
-						logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
-						if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
-							signatura.setTipusFirmaEni("TF04");
-						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
-							signatura.setPerfilFirmaEni("BES");
+				try {
+					SignaturaResposta signatura = signaturaDistribucioSignar(
+							distribucioAnnex,
+							annexContingut,
+							"Firma en servidor de document annex de l'anotació de registre");
+					
+					if (StringUtils.isEmpty(signatura.getTipusFirmaEni()) 
+							|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
+						logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
+								signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
+						if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
+							logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
+							if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
+								signatura.setTipusFirmaEni("TF04");
+							if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
+								signatura.setPerfilFirmaEni("BES");
+						}
+					}
+					byte [] firmaDistribucioContingut = signatura.getContingut();
+					String tipusFirmaArxiu = signatura.getTipusFirmaEni();
+					String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
+					String fitxerNom = signatura.getNom();
+					String tipusMime = signatura.getMime();
+					String csvRegulacio = null;
+					
+					
+					DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
+					annexFirma.setTipus(tipusFirmaArxiu);
+					annexFirma.setPerfil(perfil);
+					annexFirma.setFitxerNom(fitxerNom);
+					annexFirma.setTipusMime(tipusMime);
+					annexFirma.setCsvRegulacio(csvRegulacio);
+					annexFirma.setAutofirma(true);
+					annexFirma.setGesdocFirmaId(null);
+					annexFirma.setContingut(firmaDistribucioContingut);
+					annexFirma.setAnnex(distribucioAnnex);
+					annexFirma.setTamany(firmaDistribucioContingut.length);
+					distribucioAnnex.getFirmes().add(annexFirma);
+					
+					arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
+							distribucioAnnex.getFirmes());					
+					
+				} catch(SistemaExternException se) {
+					if (getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
+						logger.error("Error firmant en servidor l'annex \"" + distribucioAnnex.getFitxerNom() + "\" (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+						+ ". Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+					} else {
+						throw se;
 					}
 				}
-				byte [] firmaDistribucioContingut = signatura.getContingut();
-				String tipusFirmaArxiu = signatura.getTipusFirmaEni();
-				String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
-				String fitxerNom = signatura.getNom();
-				String tipusMime = signatura.getMime();
-				String csvRegulacio = null;
-				
-				
-				DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
-				annexFirma.setTipus(tipusFirmaArxiu);
-				annexFirma.setPerfil(perfil);
-				annexFirma.setFitxerNom(fitxerNom);
-				annexFirma.setTipusMime(tipusMime);
-				annexFirma.setCsvRegulacio(csvRegulacio);
-				annexFirma.setAutofirma(true);
-				annexFirma.setGesdocFirmaId(null);
-				annexFirma.setContingut(firmaDistribucioContingut);
-				annexFirma.setAnnex(distribucioAnnex);
-				annexFirma.setTamany(firmaDistribucioContingut.length);
-				distribucioAnnex.getFirmes().add(annexFirma);
-				
-				arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
-						distribucioAnnex.getFirmes());
 			}
 		}
 		
