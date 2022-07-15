@@ -235,7 +235,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 							annexContingut,
 							"Firma en servidor de document annex de l'anotació de registre");
 					
-					if (StringUtils.isEmpty(signatura.getTipusFirmaEni()) 
+					if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()) 
 							|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
 						logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
 								signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
