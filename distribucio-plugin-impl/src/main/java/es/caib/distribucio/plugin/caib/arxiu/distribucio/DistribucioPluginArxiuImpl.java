@@ -217,12 +217,13 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		
 		if (annexContingut != null) {
-			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid i té un format reconegut ler l'Arxiu
+			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
 			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
 									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
 									&& format != null;
+			
 
 			// Mira si firmar en servidor
 			if (!annexFirmat 
@@ -288,14 +289,59 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		fitxerContingut.setContingut(annexContingut);
 		fitxerContingut.setTamany(distribucioAnnex.getFitxerTamany());
 		
+		// Determina l'estat
+		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
+		// Es guarden definitius si:
+		// 1) El documetn té firmes
+		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
+		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
+		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) 
+				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
+		// 3) Format no reconegut
+		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
+		guardarDefinitiu = guardarDefinitiu && format != null;
+		if (guardarDefinitiu) {
+			estatDocument = DocumentEstat.DEFINITIU;
+		}
+
+		
 		// SAVE IN ARXIU
-		String uuidDocumentCreat = arxiuDocumentAnnexCrear(
-				distribucioAnnex,
-				unitatArrelCodi,
-				fitxerContingut,
-				arxiuFirmes,
-				uuidExpedient,
-				documentEniRegistrableDto);
+		String uuidDocumentCreat = null;
+		try {
+			uuidDocumentCreat = arxiuDocumentAnnexCrear(
+					distribucioAnnex,
+					unitatArrelCodi,
+					fitxerContingut,
+					arxiuFirmes,
+					uuidExpedient,
+					documentEniRegistrableDto,
+					estatDocument);
+		} catch (Exception se) {
+			
+			int maxReintents = getGuardarAnnexosMaxReintents();
+			logger.error("Error guardant l'annex  \"" + distribucioAnnex.getFitxerNom() + "\" com a DEFINTIU. (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+			+ ". MaxReintents = " + maxReintents + ", proces intents = " + distribucioAnnex.getProcesIntents() 
+			+ ", es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=" + getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() + ". ");
+
+			// Si el document era definitiu, s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
+			if (DocumentEstat.DEFINITIU.equals(estatDocument)
+					&& distribucioAnnex.getProcesIntents() < maxReintents
+					&& getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) 
+			{	
+				logger.error("Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+				
+				uuidDocumentCreat = arxiuDocumentAnnexCrear(
+						distribucioAnnex,
+						unitatArrelCodi,
+						fitxerContingut,
+						arxiuFirmes,
+						uuidExpedient,
+						documentEniRegistrableDto,
+						DocumentEstat.ESBORRANY);	
+			} else {
+				throw se;
+			}
+		}
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
 	}
@@ -465,28 +511,17 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes,
 			String identificadorPare,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
-		
-		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
-		// Es guarden definitius si:
-		// 1) El documetn té firmes
-		boolean guardarDefinitiu = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
-		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
-		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
-				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
-		// 3) Format no reconegut
-		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxer));
-		guardarDefinitiu = guardarDefinitiu && format != null;
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			DocumentEstat estatDocument) throws SistemaExternException {
 				
-		if (guardarDefinitiu) {
-				estatDocument = DocumentEstat.DEFINITIU;
-		} else {
+		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
 			if (fitxer.getContingut() == null) {
 				fitxer.setContingut(firmes.get(0).getContingut());
 			}
 			firmes = null;
 		}
+		
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -1534,12 +1569,23 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
 	}
+
+	private int getGuardarAnnexosMaxReintents() {
+		String maxReintents = this.getProperties().getProperty(
+				"es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
+
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
 		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
-	
+
 	@Override
 	public String getUsuariIntegracio() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

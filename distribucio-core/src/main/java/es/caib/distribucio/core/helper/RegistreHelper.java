@@ -731,6 +731,7 @@ public class RegistreHelper {
 							if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
 								logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registreEntity.getIdentificador() );
 							}
+							distribucioAnnex.setPocesIntents(registreEntity.getProcesIntents());
 							
 							// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
 							distribucioAnnex.setValidacioFirma(validacioFirma);

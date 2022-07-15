@@ -345,7 +345,12 @@ public class RegistreAdminController extends BaseAdminController {
 	private static RegistreProcesEstatEnum[] estatsReprocessables = {
 			RegistreProcesEstatEnum.ARXIU_PENDENT,
 			RegistreProcesEstatEnum.REGLA_PENDENT,
-			RegistreProcesEstatEnum.BACK_PENDENT
+			RegistreProcesEstatEnum.BACK_PENDENT,
+			RegistreProcesEstatEnum.BACK_COMUNICADA,
+			RegistreProcesEstatEnum.BACK_REBUDA,
+			RegistreProcesEstatEnum.BACK_ERROR,
+			RegistreProcesEstatEnum.BACK_PROCESSADA,
+			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
 	
 	
