@@ -293,6 +293,7 @@
                         </c:choose>
                         <div id="config_${config.key}_key">
                         	<span class="help-block display-inline">${config.key}</span>
+                        	<span class="info-block"></span>
                         	<span class="info-block_${config.key}"></span>
                         </div>
                     </div>
