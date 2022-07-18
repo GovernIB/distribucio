@@ -325,7 +325,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 			// Si el document era definitiu, s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
 			if (DocumentEstat.DEFINITIU.equals(estatDocument)
-					&& distribucioAnnex.getProcesIntents() < maxReintents
+					&& distribucioAnnex.getProcesIntents() >= maxReintents
 					&& getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) 
 			{	
 				logger.error("Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
