@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -54,6 +55,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
@@ -92,6 +94,8 @@ public class RegistreAdminController extends BaseAdminController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private RegistreHelper registreHelper;
+	@Autowired
+	private ConfigService configService;
 	
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -101,11 +105,14 @@ public class RegistreAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+		ConfigDto configDto = configService.findByKey("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+		String maxReintentsProcessament = configDto.getValue();
 		model.addAttribute(filtreCommand);
 		model.addAttribute(
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
+		model.addAttribute("maxReintentsProcessament", maxReintentsProcessament);
 
 		return "registreAdminList";
 	}

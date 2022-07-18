@@ -545,9 +545,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			try {
 				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(unRegistreBackError);
 				registresBackError.remove(0);
-				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(0));
+				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(i));
 			}catch(Exception e) {
-				logger.info("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(0));
+				logger.info("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(i));
 			}
 		}
 		
