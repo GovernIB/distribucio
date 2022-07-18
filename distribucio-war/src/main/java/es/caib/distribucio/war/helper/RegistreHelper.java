@@ -64,7 +64,7 @@ public class RegistreHelper extends BaseController{
 			fila[0] = registre.getNumero();
 			
 			Date data = registre.getData();
-			DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+			DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 			String strData = dateFormat.format(data);
 			fila[1] = strData;
 			
