@@ -247,6 +247,7 @@
 	
 </head>
 <body>
+
 	<div id="comentaris_content" class="col-xs-12">
 	</div>
 	<div class="col-xs-10">
