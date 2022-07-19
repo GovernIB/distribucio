@@ -371,6 +371,9 @@ $(document).ready(function() {
 					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
 					</a></li>
+					<li><a href="registreAdmin/reintentarEnviamentBackofficeMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></span>
+					</a></li>
 					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
 					</a></li>

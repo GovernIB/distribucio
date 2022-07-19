@@ -419,7 +419,8 @@ public class RegistreAdminController extends BaseAdminController {
 	
 	
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
-	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+	public String reintentarEnviamentBackoffice(
+			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
@@ -442,6 +443,91 @@ public class RegistreAdminController extends BaseAdminController {
 
 //		return "redirect:../../" + registreId + "/detall";
 			return "redirect:" + request.getHeader("referer");
+	}
+	
+	
+	@RequestMapping(value = "/reintentarEnviamentBackofficeMultiple", method = RequestMethod.GET)
+	public String reintentarEnviamentBackofficeMultiple(
+			HttpServletRequest request,
+			Model model) {
+		Object command = new Object();
+		model.addAttribute("reintentarEnviamentBackofficeCommand", command);
+		model.addAttribute("registres", registreService.findMultiple(
+				getEntitatActualComprovantPermisAdmin(request).getId(), 
+				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
+				true));
+		return "reintentarEnviamentBackofficeMultiple";
+	}
+	
+	
+	/** Mèdode per enviar al backoffice una anotacions de registre via ajax des del llistat d'anotacions
+	 * de l'administrador.
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/reintentarEnviamentBackofficeAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse reintentarEnviamentBackofficeAjaxPost(
+			HttpServletRequest request, 
+			@PathVariable Long registreId, 
+			@Valid Object command, 
+			BindingResult bindingResult) {
+		
+		AjaxFormResponse response = null;
+		
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "enviamentMultiple.error.validacio"));
+			return response;
+		}
+		
+		boolean correcte = false;
+		String missatge = null;
+		ContingutDto contingutDto = null;
+		RegistreDto registreDto = null;
+		
+		try {
+			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
+			
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			registreDto = (RegistreDto) contingutDto;
+			
+			if (registreDto.getPare() == null) {
+				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(), registreId);
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
+			
+			}else if (ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+				correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
+				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+			
+			}else {
+				missatge = getMessage(request, "");
+				correcte = true;
+			}
+		
+		}catch (Exception e) {
+			logger.error("Error incontrolat enviant al backoffice l'anotació amb id " + registreId + ": " + e.getMessage(), e);
+			String errMsg = getMessage(
+					request, 
+					"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat", 
+					new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+			response = AjaxHelper.generarAjaxError(errMsg);
+		}
+		
+		if (correcte) {
+			response = AjaxHelper.generarAjaxFormOk();
+			response.setMissatge(missatge.toString());
+			
+		}else {
+			response = AjaxHelper.generarAjaxError(missatge.toString());
+		}
+		
+		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
+		
+		return response;
 	}
 	
 	
