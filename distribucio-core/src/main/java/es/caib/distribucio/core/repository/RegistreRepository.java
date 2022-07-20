@@ -47,18 +47,30 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	
 	@Query(
+			"select count(r) " + 
+			"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
+			"and r.procesIntents < :maxReintents " +
+			"and r.entitat = :entitat ")
+	long countGuardarAnnexPendents(
+			@Param("entitat") EntitatEntity entitat, 
+			@Param("maxReintents") int maxReintents);
+
+	@Query(
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
 			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents < :maxReintents " +
-			"and r.entitat = :entitat " + 
-		    "order by " +
-		    "    r.data asc")
-	List<RegistreEntity> findGuardarAnnexPendents(
+			"and r.entitat = :entitat ")
+	Page<RegistreEntity> findGuardarAnnexPendentsPaged(
 			@Param("entitat") EntitatEntity entitat, 
-			@Param("maxReintents") int maxReintents);
+			@Param("maxReintents") int maxReintents,
+			Pageable pageable);
 
+	
 	@Query(
 			"from" +
 			"    RegistreEntity r " +
