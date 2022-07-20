@@ -497,9 +497,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 	private String revisarContingutNom(String nom) {
 		if (nom != null) {
-			String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
+			/*String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
 			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
-			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
+			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();*/
+			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
+			if (nom.endsWith(".")) {
+				nom = nom.substring(0, nom.length()-1);
+			}
+			return nom;
 		} else {
 			return null;
 		}
