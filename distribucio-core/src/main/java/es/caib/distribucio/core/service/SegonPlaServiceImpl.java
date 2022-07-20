@@ -99,12 +99,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 				ConfigHelper.setEntitat(entitatDto);
 				
 				int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
+				int maxResultats = 200;
 				int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
 				
 				List<RegistreEntity> pendents;
 				// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
 				synchronized (SemaphoreDto.getSemaphore()) {
-					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents);
+					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents, maxResultats);
 				}
 				if (pendents != null && !pendents.isEmpty()) {
 					
@@ -204,12 +205,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Scheduled(fixedDelayString = "60000")
 	public void addNewEntryToHistogram() {
 
+		int pendentsArxiu = 0;
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
-			int pendentsArxiu = registreHelper.findGuardarAnnexPendents(entitat, maxReintents).size();
-			
-			historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
+			pendentsArxiu += registreHelper.countGuardarAnnexPendents(entitat, maxReintents);			
 		}		
+		historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
 
 	}
 

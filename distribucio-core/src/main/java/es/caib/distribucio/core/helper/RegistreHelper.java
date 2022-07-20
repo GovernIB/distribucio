@@ -29,6 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -51,6 +52,8 @@ import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -147,6 +150,8 @@ public class RegistreHelper {
 	private ContingutHelper contingutHelper;
 	@Autowired
 	private IntegracioHelper integracioHelper;
+	@Autowired
+	private PaginacioHelper paginacioHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -1703,10 +1708,29 @@ public class RegistreHelper {
 		return numeroCopia != null ? numeroCopia : 0;
 	}
 
-	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. */
+	/** Compta els registres pedents de guardar els annexos a l'Arxiu. 
+	 * @param maxResultats */
 	@Transactional
-	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
-		return 	registreRepository.findGuardarAnnexPendents(entitat, maxReintents);
+	public int countGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
+		return 	new Long(registreRepository.countGuardarAnnexPendents(entitat, maxReintents)).intValue();		
+	}
+
+	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. 
+	 * @param maxResultats */
+	@Transactional
+	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents, int maxResultats) {
+		
+		PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
+		paginacioParams.setPaginaNum(0);
+		paginacioParams.setPaginaTamany(maxResultats);
+		paginacioParams.afegirOrdre("data", OrdreDireccioDto.ASCENDENT);
+		
+		Page<RegistreEntity> pagina = registreRepository.findGuardarAnnexPendentsPaged(
+				entitat, 
+				maxReintents, 
+				paginacioHelper.toSpringDataPageable(paginacioParams, null));
+
+		return pagina.getContent();
 	}
 
 	/** Consulta els registres pendents d'enviar al backoffice ordenats per regla. */
