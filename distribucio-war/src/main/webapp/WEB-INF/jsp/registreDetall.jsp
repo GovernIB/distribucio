@@ -1500,3 +1500,4 @@ li[id^="anotacio_"] {
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
+</html>

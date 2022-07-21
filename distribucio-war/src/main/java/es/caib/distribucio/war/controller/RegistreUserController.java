@@ -798,7 +798,7 @@ public class RegistreUserController extends BaseUserController {
 		if (isVistaMoviments) {
 			Set<Long> seleccio = new HashSet<Long>();
 //			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
-			List<String> seleccioMoviments = (List<String>) RequestSessionHelper.obtenirObjecteSessio(
+			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
 			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
