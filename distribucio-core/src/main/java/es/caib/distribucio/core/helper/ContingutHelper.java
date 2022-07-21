@@ -236,7 +236,15 @@ public class ContingutHelper {
 
 			}
 			
-			int maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
+			int maxReintents = 0;
+			if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals(registreDto.getProcesEstat())) {
+				maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
+			} else if (RegistreProcesEstatEnum.BACK_COMUNICADA.equals(registreDto.getProcesEstat())
+					|| RegistreProcesEstatEnum.BACK_ERROR.equals(registreDto.getProcesEstat())
+					|| RegistreProcesEstatEnum.BACK_PENDENT.equals(registreDto.getProcesEstat())
+					|| RegistreProcesEstatEnum.BACK_REBUDA.equals(registreDto.getProcesEstat())){				
+				maxReintents = registreHelper.getBackofficeMaxReintentsProperty();
+			}
 			if (registreEntity.getProcesIntents() >= maxReintents) {
 				registreDto.setReintentsEsgotat(true);
 			}

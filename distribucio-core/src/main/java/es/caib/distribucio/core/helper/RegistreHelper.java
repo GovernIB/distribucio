@@ -1381,6 +1381,15 @@ public class RegistreHelper {
 		}
 	}
 	
+	public int getBackofficeMaxReintentsProperty() {
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
+	
 	public int getMaxThreadsParallelProperty() {
 		String maxThreadsParallel = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.threads.parallel");
 		if (maxThreadsParallel != null) {

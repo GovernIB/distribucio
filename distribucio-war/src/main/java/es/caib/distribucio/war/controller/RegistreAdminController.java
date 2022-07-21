@@ -99,14 +99,11 @@ public class RegistreAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-		ConfigDto configDto = configService.findByKey("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
-		String maxReintentsProcessament = configDto.getValue();
 		model.addAttribute(filtreCommand);
 		model.addAttribute(
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
-		model.addAttribute("maxReintentsProcessament", maxReintentsProcessament);
 
 		return "registreAdminList";
 	}
