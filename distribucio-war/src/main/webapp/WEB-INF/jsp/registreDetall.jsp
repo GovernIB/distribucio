@@ -500,7 +500,6 @@ li[id^="anotacio_"] {
 			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
 			&nbsp;
 			
-			<c:if test="${isRolActualAdministrador}">
 			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>
@@ -571,7 +570,6 @@ li[id^="anotacio_"] {
 					</c:choose>
 				</c:if>
 			</ul>
-		  </c:if>
 		</div>	
 
 	</c:if>
@@ -1287,6 +1285,12 @@ li[id^="anotacio_"] {
 			<c:choose>
 				<c:when test="${not empty registre.annexos}">
 				
+					<c:if test="${numeroAnnexosEstatEsborrany > 0 }">
+						<div class="alert well-sm alert-warning alert-dismissable">
+							<span class="fa fa-exclamation-triangle"></span>
+							<spring:message code="registre.detalls.annexos.estat.esborrany" arguments="${numeroAnnexosEstatEsborrany}"/>
+						</div>
+					</c:if>
 					<!------ Informació firma invàlida ------>
 					<c:if test="${numeroAnnexosFirmaInvalida > 0 }">
 						<div class="alert well-sm alert-warning alert-dismissable">
@@ -1321,8 +1325,11 @@ li[id^="anotacio_"] {
 									<c:if test="${annex.fitxerArxiuUuid == null }">
 										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
 									</c:if>
-									<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA'}">
-										<span class="fa fa-pencil-square text-danger" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
+									<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
+										<span class="fa fa-pencil-square text-warning" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
+									</c:if>
+									<c:if test="${annex.arxiuEstat == 'ESBORRANY'}">
+										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.estat.arxiu.esborrany"/>"></span>
 									</c:if>
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
@@ -1493,3 +1500,4 @@ li[id^="anotacio_"] {
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>
+</html>

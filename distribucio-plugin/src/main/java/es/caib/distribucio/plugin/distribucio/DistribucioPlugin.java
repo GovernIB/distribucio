@@ -9,12 +9,13 @@ import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 
 /**
- * Plugin per a la distribució de contingut contra sistemes externs
+ * Plugin per a la distribució de contingut contra sistemes externs. No és realment
+ * un plugin en si mateix sino un recull de mètodes. 
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface DistribucioPlugin extends IntegracioPlugin {
-
+	
 	/**
 	 * Crea un contenidor de contingut, per exemple un expedient
 	 * al gestor d'arxius remot

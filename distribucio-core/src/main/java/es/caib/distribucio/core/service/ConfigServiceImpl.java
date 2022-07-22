@@ -206,7 +206,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void setEntitatPerPropietat(EntitatDto entitatDto) {
-		configHelper.setEntitat(entitatDto);
+		ConfigHelper.setEntitat(entitatDto);
 	}
 	
 	

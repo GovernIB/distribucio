@@ -22,10 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
  * Implementació del plugin de signatura emprant el portafirmes
@@ -34,17 +33,15 @@ import es.caib.distribucio.plugin.utils.PropertiesHelper;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
-	
-	private static final String PROPERTIES_BASE = "es.caib.distribucio.plugin.signatura.portafib.";  
-	
-	public FirmaSimplePluginPortafib()  {
+		
+	public FirmaSimplePluginPortafib() {
 		super();
 	}
 	
-	public FirmaSimplePluginPortafib(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
+	public FirmaSimplePluginPortafib(Properties properties) {
+		super(properties);
 	}
-	  
+
 	@Override
 	public SignaturaResposta signar(
 			String id,
@@ -106,8 +103,7 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 		String signID = id;
 		String name = fileToSign.getNom();
 		String reason = motiu;
-		String location = getProperty("plugin.signatura.portafib." + "location", "Palma");
-//		String location = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "location", "Palma");
+		String location = getProperty("es.caib.distribucio.plugin.signatura.portafib." + "location", "Palma");
 
 		int signNumber = 1;
 		String languageSign = "ca";
@@ -124,14 +120,12 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 				tipusDocumentalID);
 
 		String languageUI = "ca";
-		String username = getProperty("plugin.signatura.portafib." + "username", null);
-//		String username = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "username", null);
+		String username = getProperty("es.caib.distribucio.plugin.signatura.portafib." + "username", null);
 		if (username != null &&  username.trim().isEmpty()) {
 			username = null;
 		}
 		String administrationID = null;
-//		String signerEmail = PropertiesHelper.getProperties().getProperty(PROPERTIES_BASE + "signerEmail", "suport@caib.es");
-		String signerEmail = getProperty("plugin.signatura.portafib." + "signerEmail", "suport@caib.es");
+		String signerEmail = getProperty("es.caib.distribucio.plugin.signatura.portafib." + "signerEmail", "suport@caib.es");
 
 		FirmaSimpleCommonInfo commonInfo;
 		commonInfo = new FirmaSimpleCommonInfo(perfil, languageUI, username, administrationID, signerEmail);
@@ -196,22 +190,22 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 	
 	
 	private String getPropertyEndpoint() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperties().getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.endpoint");
 	}
 	
 	private String getPropertyUsername() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperties().getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.username");
 	}
 	
 	private String getPropertyPassword() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperties().getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.password");
 	}
 	
 	private String getPropertyPerfil() {
-		return System.getProperty(
+		return getProperties().getProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil");
 	}
 

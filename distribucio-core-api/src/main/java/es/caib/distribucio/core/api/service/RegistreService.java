@@ -209,38 +209,7 @@ public interface RegistreService {
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
 			String rolActual) throws Exception;
-	/**
-	 * Retorna un justificant amb contingut o sense
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param contingutId
-	 *            Atribut id del contingut pare a on està situada l'anotació.
-	 * @param registreId
-	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
-	 * @param ambContingut
-	 *            Atribut booleà per indicar si es vol recuperar al contingut del justificant
-	 * @return annex justificant
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-//	@PreAuthorize("hasRole('tothom')")
-//	public RegistreAnnexDetallDto getJustificant(
-//			Long entitatId,
-//			Long contingutId,
-//			Long registreId,
-//			boolean ambContingut) throws NotFoundException;
 
-	/**
-	 * Retorna la informació d'una anotació de registre segons el seu identificador.
-	 * 
-	 * @param identificador
-	 *            Atribut identificador l'entitat.
-	 * @return els detalls de l'anotació o null si no es troba.
-	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
-	public RegistreDto findAmbIdentificador(String identificador);
-	
 	/**
 	 * Marca com a llegida una anotació de registre
 	 * 

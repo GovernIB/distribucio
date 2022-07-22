@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
@@ -25,13 +25,14 @@ import es.caib.plugins.arxiu.api.FirmaPerfil;
  */
 public class SignaturaPluginMock extends DistribucioAbstractPluginProperties implements SignaturaPlugin {	  
 		  
-	public SignaturaPluginMock()  {
+	public SignaturaPluginMock() {
 		super();
 	}
 	
-	public SignaturaPluginMock(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
+	public SignaturaPluginMock(Properties properties) {
+		super(properties);
 	}
+
 	
 	@Override
 	public SignaturaResposta signar(

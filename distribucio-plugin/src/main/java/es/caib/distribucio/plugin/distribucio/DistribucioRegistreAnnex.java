@@ -33,6 +33,8 @@ public class DistribucioRegistreAnnex {
 	private ValidacioFirmaEnum validacioFirma;
 	private String validacioFirmaError;
 	
+	private Integer procesIntents;
+	
 	
 	
 	public String getId() {
@@ -131,5 +133,16 @@ public class DistribucioRegistreAnnex {
 	}
 	public void setFirmaValidacioDesc(String firmaValidacioDesc) {
 		this.validacioFirmaError = firmaValidacioDesc;
+	}
+	/** Guarda el número d'intents del procés per guardar l'annex a l'Arxiu. Si se superen es guardarà
+	 * com esborrany.
+	 * 
+	 * @param procesIntents
+	 */
+	public void setPocesIntents(Integer procesIntents) {
+		this.procesIntents = procesIntents;
+	}
+	public int getProcesIntents() {
+		return this.procesIntents != null ? procesIntents.intValue() : 0;
 	}
 }

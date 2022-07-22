@@ -100,12 +100,20 @@ $(document).ready(function() {
 		$('#nomesAmbErrors').val(false);
 		$('#estat').val(null).trigger('change');
 		$('#enviatPerEmail').val(null).change();
+		$('#nomesAmbEsborranysBtn').removeClass('active');
+		$('#nomesAmbEsborranys').val(false);
 	});
 
 	$('#nomesAmbErrorsBtn').click(function() {
 		nomesAmbErrors = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#nomesAmbErrors').val(nomesAmbErrors);
+	})
+
+	$('#nomesAmbEsborranysBtn').click(function() {
+		nomesAmbEsborranys = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
 	})
 
 	$('#taulaDades').on( 'draw.dt', function () {
@@ -303,7 +311,15 @@ $(document).ready(function() {
 		</div>
 		<div class="row">			
 			<div class="col-md-2">
-				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+				<div class="row">
+					<div class="col-sm-9">
+						<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+					</div>
+					<div class="col-sm-3" style="padding-left: 0;">
+						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+						<dis:inputHidden name="nomesAmbEsborranys"/>
+					</div>
+				</div>
 			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true"/>
@@ -344,34 +360,7 @@ $(document).ready(function() {
 		</div>
 	</form:form>
 	
-	<script>
-		function exportar(format) {
-			var numero = document.getElementById("numero").value;
-			var titol = document.getElementById("titol").value;
-			var numeroOrigen = document.getElementById("numeroOrigen").value;
-			var remitent = document.getElementById("remitent").value;
-			var interessat = document.getElementById("interessat").value;
-			var dataRecepcioInici = document.getElementById("dataRecepcioInici").value;
-			var dataRecepcioFi = document.getElementById("dataRecepcioFi").value;
-			var unitatId = document.getElementById("unitatId").value;
-			var bustia = document.getElementById("bustia").value;
-			var enviatPerEmail = document.getElementById("enviatPerEmail").value;
-			var tipusDocFisica = document.getElementById("tipusDocFisica").value;
-			var backCodi = document.getElementById("backCodi").value;
-			var procesEstatSimple = document.getElementById("procesEstatSimple").value;
-			var estatestat = document.getElementById("estat").value;
-			var sobreescriure = document.getElementById("sobreescriure").value;
-			
-			const FILTRE = [numero, titol, numeroOrigen, remitent, interessat, 
-							dataRecepcioInici, dataRecepcioFi, unitatId, bustia, enviatPerEmail, 
-							tipusDocFisica, backCodi, procesEstatSimple, estatestat, sobreescriure];
-			
-			window.location.href = 'registreAdmin/exportar?llistat=filtre&filtresForm=' + FILTRE + '&format=' + format;
-		}
-	</script>
-	
 	<script id="botonsTemplate" type="text/x-jsrender">
-	<c:if test="${isRolActualAdministrador}">
 
 	
 		<div class="text-right">
@@ -393,25 +382,29 @@ $(document).ready(function() {
 
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu">
+				  <c:if test="${isRolActualAdministrador}">
 					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
+					</a></li>
+					<li><a href="registreAdmin/reintentarEnviamentBackofficeMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></span>
 					</a></li>
 					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
 					</a></li>
 					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
+					</a></li>
+				  </c:if>	
+					<li><a href="registreAdmin/exportar?format=ods">
+						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
 					</a></li>	
-					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=ods">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
-					</a></li>	
-					<li><a href="registreAdmin/exportar?llistat=seleccio&filtresForm=&format=csv">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
+					<li><a href="registreAdmin/exportar?format=csv">
+						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
 					</a></li>			
 				</ul>
 			</div>
 		</div>
-	</c:if>
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
@@ -522,9 +515,15 @@ $(document).ready(function() {
 						{{else procesEstat == 'BACK_REBUTJADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
 						{{else procesEstat == 'BACK_ERROR'}}
-							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
+							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>		
+							
+							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>					
 						{{/if}}
-
+						{{if annexosEstatEsborrany > 0}}
+							<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
+						{{/if}}
 					</script>
 
 				</th>
@@ -622,6 +621,7 @@ $(document).ready(function() {
 				<th data-col-name="maxReintents" data-visible="false"></th>
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="annexosEstatEsborrany" data-visible="false" data-orderable="false"></th>
 			</tr>
 		</thead>
 	</table>

@@ -648,7 +648,7 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.SOBREESCRIURE", new Object[] {log.getParams().get(0)}));
 			break;
 		case CLASSIFICAR:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {log.getLastModifiedBy().getNom(), registre.getProcedimentCodi()}));
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {usuari, registre.getProcedimentCodi()}));
 			break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");

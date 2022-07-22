@@ -21,17 +21,17 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnotacio;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
-import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ws.bustia.BustiaV1WsService;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
@@ -63,7 +63,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	@Autowired
 	private MetricRegistry metricRegistry;
 	@Autowired
-	private AplicacioService aplicacioService;
+	private ConfigService configService;
 	@Resource
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
@@ -76,7 +76,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
 		Timer.Context context = timer.time();
 		String entitatOArrel;
-		
 		if (entitat == null || entitat.isEmpty()) {
 			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
 			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
@@ -84,6 +83,9 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		} else {
 			entitatOArrel = entitat;
 		}
+		EntitatDto entitatDto = new EntitatDto();
+		entitatDto.setCodi(entitatOArrel);
+		configService.setEntitatPerPropietat(entitatDto);
 
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
 		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;

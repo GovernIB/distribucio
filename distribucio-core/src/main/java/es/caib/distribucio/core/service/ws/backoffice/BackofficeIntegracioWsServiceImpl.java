@@ -16,15 +16,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 
 /**
@@ -46,9 +46,6 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	
 	@Resource
 	private RegistreService registreService;
-	
-	@Autowired
-	private AplicacioService aplicacioService;
 	
 	@Override
 	public AnotacioRegistreEntrada consulta(
@@ -75,7 +72,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			logger.trace(">>> Abans de cridar el servei de registre");					
 			
 			anotacioRegistreEntrada =  registreService.findOneForBackoffice(id);
-			
+						
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
@@ -138,6 +135,12 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			
 			logger.trace(">>> Abans de cridar el servei de canvi d'estat");			
 			
+			AnotacioRegistreEntrada anotacioRegistreEntrada =  registreService.findOneForBackoffice(id);
+
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(anotacioRegistreEntrada.getEntitatCodi());
+			ConfigHelper.setEntitat(entitatDto);
+
 			registreService.canviEstat(id, estat, observacions);
 			
 			integracioHelper.addAccioOk (

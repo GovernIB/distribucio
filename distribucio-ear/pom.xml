@@ -66,6 +66,12 @@
 			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-api-interna</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -92,6 +98,12 @@
 							<artifactId>distribucio-api-externa</artifactId>
 							<contextRoot>/distribucioapi</contextRoot>
 							<bundleFileName>distribucioapi.war</bundleFileName>
+						</webModule>
+						<webModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>distribucio-api-interna</artifactId>
+							<contextRoot>/distribucioapi/interna</contextRoot>
+							<bundleFileName>distribucio-api-interna.war</bundleFileName>
 						</webModule>
 					</modules>
 					<defaultJavaBundleDir>lib/</defaultJavaBundleDir>

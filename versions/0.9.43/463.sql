@@ -8,14 +8,14 @@ ADD (
 );
 ALTER TABLE DIS_REGISTRE_ANNEX
 ADD (
-    VAL_FIRMA_ERROR VARCHAR2(255 CHAR) 
+    VAL_FIRMA_ERROR VARCHAR2(1000 CHAR) 
 );
 
 -- Postgresql:
 ALTER TABLE DIS_REGISTRE_ANNEX
 ADD VAL_FIRMA_ESTAT character varying(64);
 ALTER TABLE DIS_REGISTRE_ANNEX
-ADD VAL_FIRMA_ERROR character varying(255);
+ADD VAL_FIRMA_ERROR character varying(1000);
 
 
 -- Insereix la propietat per desar els annexos amb firmes invàlides com esborrany o no

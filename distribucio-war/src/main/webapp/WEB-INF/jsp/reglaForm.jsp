@@ -209,7 +209,8 @@ $(document).ready(function() {
 					placeholderKey="bustia.form.camp.unitat"
 					suggestValue="id"
 					suggestText="codiAndNom"
-					optionTemplateFunction="formatSelectUnitat"/>
+					optionTemplateFunction="formatSelectUnitat" 
+					required="true"/>
 			</div>
 			
 			<div id="modal-botons">

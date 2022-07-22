@@ -185,10 +185,4 @@ public class ContingutServiceBean implements ContingutService {
 				pendent, bustiaOrigen, bustiaDesti, uoOrigen, uoSuperior, uoDesti, uoDestiSuperior);
 	}
 
-	@Override
-	public String cercarBustia(Long contingutId) {
-		return delegate.cercarBustia(contingutId);
-	}
-
-
 }

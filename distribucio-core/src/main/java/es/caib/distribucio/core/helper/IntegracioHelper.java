@@ -96,6 +96,7 @@ public class IntegracioHelper {
 		accio.setData(new Date());
 		accio.setDescripcio(descripcio);
 		accio.setCodiUsuari(usuariIntegracio);
+		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
@@ -137,6 +138,7 @@ public class IntegracioHelper {
 		accio.setData(new Date());
 		accio.setDescripcio(descripcio);
 		accio.setCodiUsuari(usuariIntegracio);
+		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);

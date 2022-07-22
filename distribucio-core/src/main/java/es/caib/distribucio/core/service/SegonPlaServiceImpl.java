@@ -30,10 +30,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
-import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -46,7 +44,6 @@ import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
 import es.caib.distribucio.core.helper.HistoricHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
-import es.caib.distribucio.core.helper.WorkerThread;
 import es.caib.distribucio.core.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 
@@ -79,10 +76,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
-	@Autowired
-	private RegistreService registreService;
-	
+	private ConversioTipusHelper conversioTipusHelper;	
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -99,13 +93,19 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		if (bustiaHelper.isProcessamentAsincronProperty()) {
 			for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+
+				EntitatDto entitatDto = new EntitatDto();
+				entitatDto.setCodi(entitat.getCodi());
+				ConfigHelper.setEntitat(entitatDto);
+				
 				int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
+				int maxResultats = 200;
 				int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
 				
 				List<RegistreEntity> pendents;
 				// Consulta sincronitzada amb l'arribada d'anotacions per evitar problemes de sincronisme
 				synchronized (SemaphoreDto.getSemaphore()) {
-					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents);
+					pendents = registreHelper.findGuardarAnnexPendents(entitat, maxReintents, maxResultats);
 				}
 				if (pendents != null && !pendents.isEmpty()) {
 					
@@ -113,8 +113,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					ExecutorService executor = Executors.newFixedThreadPool(maxThreadsParallel);
 					for (RegistreEntity pendent : pendents) {
 
-						Runnable worker = new WorkerThread(pendent.getId(), registreHelper);
-						executor.execute(worker);
+						Runnable thread =
+								new GuardarAnotacioPendentThread(
+										ConfigHelper.getEntitat(),
+										pendent.getId(), 
+										registreHelper);
+						executor.execute(thread);
 					}
 					
 			        executor.shutdown();
@@ -131,6 +135,40 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			
 
 		}
+	}
+	
+	/** Classe runable per guardar un annex a l'Arxiu en un thread independent.
+	 * 
+	 */
+	public class GuardarAnotacioPendentThread implements Runnable {
+
+		private EntitatDto entitatActual;
+		private RegistreHelper registreHelper;		
+	    private Long registreId;
+		
+		/** Constructor amb els objectes de consulta i el zip per actualitzar. 
+		 * @param registreHelper 
+		 * @param errors 
+		 * @param errors */
+		public GuardarAnotacioPendentThread(
+				EntitatDto entitatActual,
+				Long registreId, 
+				RegistreHelper registreHelper) {
+			this.entitatActual = entitatActual;
+			this.registreId = registreId;
+			this.registreHelper = registreHelper;
+		}
+
+		@Override
+		public void run() {
+			ConfigHelper.setEntitat(this.entitatActual);
+			registreHelper.processarAnotacioPendentArxiuInThreadExecuto(registreId);
+		}
+		
+	    @Override
+	    public String toString(){
+			return this.registreId.toString();
+	    }
 	}
 	
 	/** Comprova si està informada la propietat de periode innactiu de la tasca 
@@ -167,12 +205,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Scheduled(fixedDelayString = "60000")
 	public void addNewEntryToHistogram() {
 
+		int pendentsArxiu = 0;
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
-			int pendentsArxiu = registreHelper.findGuardarAnnexPendents(entitat, maxReintents).size();
-			
-			historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
+			pendentsArxiu += registreHelper.countGuardarAnnexPendents(entitat, maxReintents);			
 		}		
+		historicsPendentHelper.addNewEntryToHistogram(pendentsArxiu);
 
 	}
 
@@ -185,6 +223,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+			
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
+
 			int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
 		
 			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
@@ -223,7 +266,12 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 		logger.trace("Execució de tasca programada (" + startTime + "): aplicar regles pendents");
 		
-		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {			
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+			
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
+
 			int maxReintents = getAplicarReglesMaxReintentsProperty(entitat);
 			List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(entitat, maxReintents);
 			
@@ -264,6 +312,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		if (pendents != null && !pendents.isEmpty()) {
 			logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {
+
+				EntitatDto entitatDto = new EntitatDto();
+				entitatDto.setCodi(registre.getEntitatCodi());
+				ConfigHelper.setEntitat(entitatDto);
+
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
 				Timer.Context context = timer.time();
 				registreHelper.tancarExpedientArxiu(registre.getId());
@@ -496,14 +549,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);
 		for (int i=0; i<registresBackError.size(); i++) {
-			List<Long> unRegistreBackError = new ArrayList<>();
-			unRegistreBackError.add(registresBackError.get(i));
 			try {
-				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(unRegistreBackError);
-				registresBackError.remove(0);
-				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(0));
+				List<Long> pendents = new ArrayList<Long>();
+				pendents.add(registresBackError.get(i));
+				registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendents);
+				logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(i));
 			}catch(Exception e) {
-				logger.info("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(0));
+				logger.error("No s'ha pogut reenviar al backoffice l'anotació amb id " + registresBackError.get(i), e);
 			}
 		}
 		

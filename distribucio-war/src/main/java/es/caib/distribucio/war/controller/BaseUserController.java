@@ -25,5 +25,4 @@ public class BaseUserController extends BaseController {
 			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.usuari"));
 		}
 	}
-
 }

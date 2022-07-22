@@ -175,13 +175,6 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.getZipDocumentacio(registreId, rolActual);
 	}
 
-
-	@Override
-	@RolesAllowed("tothom")
-	public RegistreDto findAmbIdentificador(String identificador) {
-		return delegate.findAmbIdentificador(identificador);
-	}
-
 	@Override
 	@RolesAllowed("tothom")
 	public FitxerDto getJustificant(Long registreId) throws NotFoundException {

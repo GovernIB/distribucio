@@ -16,14 +16,14 @@
 		<ehcache.version>2.10.1</ehcache.version>
 		<orika.version>1.1.7</orika.version>
 		<groovy.version>2.1.6</groovy.version>
-		<jackson.version>2.7.0</jackson.version>
+		<jackson.version>2.6.3</jackson.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<bouncycastle.version>1.46</bouncycastle.version>
 		<cxf.version>2.2.12</cxf.version>
 		<portafib.version>1.1</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
-		<arxiu.api.version>2.0.19</arxiu.api.version>
+		<arxiu.api.version>2.0.20</arxiu.api.version>
 		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
 		<slf4j.version>1.5.11</slf4j.version>
 		<maven.test.skip>true</maven.test.skip>
@@ -33,7 +33,7 @@
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<version.revision>43</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2022.06.21 18:00h</version.date>
+		<version.date>2022.07.21 12:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-core</module>
@@ -46,7 +46,9 @@
 		<module>distribucio-plugin-impl</module>
 		<module>distribucio-ws-client</module>
 		<module>distribucio-backoffice-utils</module>
-  </modules>
+        <module>distribucio-api-interna</module>
+        <module>distribucio-rest-client</module>
+    </modules>
 	<build>
 		<plugins>
 			<plugin>

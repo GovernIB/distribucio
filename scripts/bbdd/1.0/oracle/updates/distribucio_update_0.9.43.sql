@@ -2,8 +2,9 @@
 -- Script per afegir una nova columna a la bbdd on es mostra per mitjà 
 -- d'un booleà si és una propietat configurable
 
-ALTER TABLE DIS_CONFIG ADD entitat_codi VARCHAR2(64 CHAR);
+ALTER TABLE DIS_CONFIG ADD ENTITAT_CODI VARCHAR2(64 CHAR);
 ALTER TABLE DIS_CONFIG ADD CONFIGURABLE NUMBER(1) DEFAULT 0;
+ALTER TABLE DIS_MON_INT ADD CODI_ENTITAT VARCHAR2(64 CHAR);
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.duplicar.contingut.arxiu';
@@ -39,12 +40,6 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugi
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.unitats.organitzatives.dir3.request.timeout';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.gesdoc.filesystem.base.dir';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.class';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.datasource.jndi.name';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.codi';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.nif';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.rols';
-UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.jdbc.query.grup';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugins.distribucio.fitxers.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.class';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugin.procediment.rolsac.service.url';
@@ -69,3 +64,49 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.plugi
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.guardar.annexos.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.enviar.anotacions.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.aplicar.regles.max.reintents';
+
+-- #463 Posar annexos amb firma no vàlida com a esborrany a l'arxiu 
+-- Noves columens per guardar l'estat de la validació i la descripció de l'error
+ 
+ALTER TABLE DIS_REGISTRE_ANNEX
+ADD (
+    VAL_FIRMA_ESTAT VARCHAR2(64 CHAR) 
+);
+ALTER TABLE DIS_REGISTRE_ANNEX
+ADD (
+    VAL_FIRMA_ERROR VARCHAR2(1000 CHAR) 
+);
+
+-- Insereix la propietat per desar els annexos amb firmes invàlides com esborrany o no
+-- es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany',null,'Annexos amb firmes invàlides com esborranys. Per defecte és fals','SCHEDULLED_ARXIU','5','0','BOOL',null,null);
+
+
+-- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors
+-- Insereix un nou grup de tasques en segon pla
+
+Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) 
+	   values ('SCHEDULLED_BACKOFFICE_ERRORS', 'SCHEDULLED', '21', 'Tasca periòdica de reintentar anotacions processades amb errors al backoffice');
+	   
+	   
+-- #465 Reintentar processament d'anotacions amb estat 'Processada al backoffice amb errors
+  
+-- Insereix dos noves propietats pel nou grup creat (SCHEDULLED_BACKOFFICE_ERRORS)
+	   
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) 
+	   values ('es.caib.distribucio.backoffice.interval.temps.reintentar.processament', null, 'Interval de temps entre les execucions de la tasca(ms)', 'SCHEDULLED_BACKOFFICE_ERRORS', '1', '0', 'INT', null, '0', null, null);
+
+Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) 
+	   values ('es.caib.distribucio.backoffice.reintentar.processament.max.reintents', null, 'Nombre màxim de reintents per reintentar el processament al backoffice', 'SCHEDULLED_BACKOFFICE_ERRORS', '2', '0', 'INT', null, '0', null, null);
+
+-- Nou índex pels paràmetres dels logs
+CREATE INDEX DIS_CONTLOG_CONTLOGPARAM_FK_I ON DIS_CONT_LOG_PARAM(CONT_LOG_ID);
+
+
+-- #472 Crear API REST per canvi i consulta d'anotacions amb informació de annexos invàlids, 
+-- modificar la llibreria d'utilitats
+-- Crea una nova columna per guardar i mostrar l'estat del document.
+-- Crea una columna per guardar el recompte d'annexos en estat d'esborrany
+
+ALTER TABLE DIS_REGISTRE_ANNEX ADD ARXIU_ESTAT VARCHAR2(20 CHAR);
+ALTER TABLE DIS_REGISTRE ADD ANNEXOS_ESTAT_ESBORRANY NUMBER(8,0) DEFAULT 0;

@@ -57,6 +57,9 @@ public class RegistreFiltreCommand {
 	/** Per mostrar el contingut de les bústies origen innactives */
 	public boolean mostrarInactivesOrigen;
 
+	/** Per filtrar només les que tinguin annexos en estat esborrany. */
+	private boolean nomesAmbEsborranys;
+
 	public String getBackCodi() {
 		return backCodi;
 	}
@@ -195,6 +198,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setReintents(RegistreFiltreReintentsEnumDto reintents) {
 		this.reintents = reintents;
+	}
+	public boolean isNomesAmbEsborranys() {
+		return nomesAmbEsborranys;
+	}
+	public void setNomesAmbEsborranys(boolean nomesAmbEsborranys) {
+		this.nomesAmbEsborranys = nomesAmbEsborranys;
 	}
 	
 }

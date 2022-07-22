@@ -15,6 +15,7 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -104,4 +105,19 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			@Param("codisUoSuperiorsDesti") List<String> codisUoSuperiorsDesti
 			);
 	
+	/** Consulta els registres per número que s'han comunicat al backoffice. Retorna en ordre de data del log 
+	 * descendent */
+	@Query(	"select r " + 
+			"from  	ContingutLogEntity l, " +
+			"		RegistreEntity r " +
+			"where " +
+			"		l.contingut.id = r.id " +
+			"	and l.contingut.tipus = es.caib.distribucio.core.api.dto.ContingutTipusEnumDto.REGISTRE " +
+			" 	and r.numero like :anotacioNumero " +
+			" 	and l.tipus like 'BACK_%' " +
+			"order by l.createdDate desc "
+			)
+	public List<RegistreEntity> findByNumeroAndComunidaBackoffice(
+			@Param("anotacioNumero") String anotacioNumero
+			);
 }

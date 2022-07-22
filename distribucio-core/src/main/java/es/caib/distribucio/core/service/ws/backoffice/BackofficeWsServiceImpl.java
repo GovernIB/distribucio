@@ -30,10 +30,11 @@ import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.ws.backofficeintegracio.Annex;
-import es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreEntrada;
-import es.caib.distribucio.ws.backofficeintegracio.BackofficeIntegracio;
-import es.caib.distribucio.ws.client.BackofficeIntegracioWsClientFactory;
+import es.caib.distribucio.rest.client.BackofficeIntegracioRestClient;
+import es.caib.distribucio.rest.client.BackofficeIntegracioRestClientFactory;
+import es.caib.distribucio.rest.client.domini.Annex;
+import es.caib.distribucio.rest.client.domini.AnnexEstat;
+import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.Expedient;
@@ -62,16 +63,14 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 	/** Mètode del WS que rep les comunicacions d'anotacions pendents. */
 	@Override
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
-		int p = 0;
-		String ps = "hola";
 		try {
-			// Client dels serveis web de backoffice per consultar anotacions
-			BackofficeIntegracio backofficeClient = getBackofficeIntegracioServicePort();
-			es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreId idWs;
+			// Client de l'API REST de backoffice per consultar anotacions
+			BackofficeIntegracioRestClient backofficeClient = getClientRest();			
+			es.caib.distribucio.rest.client.domini.AnotacioRegistreId idWs;
 			for (AnotacioRegistreId id : ids) {
 				try {
 					// Construeix l'identificador pel WS del backoffice de DISTRIBUCIO
-					idWs = new es.caib.distribucio.ws.backofficeintegracio.AnotacioRegistreId();
+					idWs = new es.caib.distribucio.rest.client.domini.AnotacioRegistreId();
 					idWs.setClauAcces(id.getClauAcces());
 					idWs.setIndetificador(id.getIndetificador());
 		
@@ -80,7 +79,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Canvia l'estat a Rebuda
 					backofficeClient.canviEstat(
 							idWs,
-							es.caib.distribucio.ws.backofficeintegracio.Estat.REBUDA,
+							es.caib.distribucio.rest.client.domini.Estat.REBUDA,
 							"Canviar l'estat a rebuda");
 					
 					// Prepara la cria a la llibreria d'utilitats pel backoffice de DISTRIBUCIO
@@ -130,6 +129,15 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					String titol;
 					for (Annex annex : anotacio.getAnnexos()) {
 						titol = annex.getTitol();
+						
+						// Copmprovar si està en estat esborrany o és invàlid
+						if (annex.getEstat() == AnnexEstat.ESBORRANY) {
+							logger.warn("L'annex \"" + annex.getTitol() + "\" està en estat esborrany i es podria perdre a l'hora de tancar l'expedient.");
+						}
+						if (!annex.isDocumentValid()) {
+							logger.warn("L'annex \"" + annex.getTitol() + "\" està marcat com invàlid: " + annex.getDocumentError());
+						}
+						
 						if (titol != null 
 								&& ("FORMULARIO".equals(titol) 
 										|| "PAGO".equals(titol))) {
@@ -156,10 +164,10 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Es comunica el resultat a DISTRIBUCIO
 					switch(arxiuResultat.getErrorCodi()) {
 						case 0:
-							backofficeClient.canviEstat(idWs, es.caib.distribucio.ws.backofficeintegracio.Estat.PROCESSADA, "Processada");
+							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.domini.Estat.PROCESSADA, "Processada");
 							break;
 						default:
-							backofficeClient.canviEstat(idWs, es.caib.distribucio.ws.backofficeintegracio.Estat.ERROR, arxiuResultat.getErrorCodi() + " " + arxiuResultat.getErrorMessage());
+							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.domini.Estat.ERROR, arxiuResultat.getErrorCodi() + " " + arxiuResultat.getErrorMessage());
 							break;
 					}
 				} catch (Throwable ex) {
@@ -201,17 +209,9 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-//					if (ConfigHelper.JBossPropertiesHelper.getProperties().isLlegirSystem()) {
 						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 								String.class).newInstance(
 								"es.caib.distribucio.");
-//					} else {
-//						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-//								String.class,
-//								Properties.class).newInstance(
-//								"es.caib.distribucio.",
-//								ConfigHelper.JBossPropertiesHelper.getProperties().findAll());
-//					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_ARXIU,
@@ -231,22 +231,24 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	
-	private BackofficeIntegracio getBackofficeIntegracioServicePort() throws Exception {
-		BackofficeIntegracio wsClient = null;
-		String url = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.url");
+	private BackofficeIntegracioRestClient getClientRest() {
+		BackofficeIntegracioRestClient client = null;
+		
+		String url_base = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.url");
 		String usuari = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.usuari");
 		String contrasenya = configHelper.getConfig("es.caib.distribucio.backoffice.test.backofficeIntegracio.contrasenya");
-		if (url != null && usuari != null && contrasenya != null) {
-			logger.trace(">>> Creant el client BackofficeIntegracio WS");
-			wsClient = BackofficeIntegracioWsClientFactory.getWsClient(
-					url,
-					usuari,
+		if (url_base != null && usuari != null && contrasenya != null) {
+			logger.trace(">>> Creant el client BackofficeIntegracioRestClient API REST");
+			client = BackofficeIntegracioRestClientFactory.getRestClient(
+					url_base, 
+					usuari, 
 					contrasenya);
 		} else {
 			throw new RuntimeException("Falta configurar les propietats pel client de Backoffice de DISTRIBUCIO  es.caib.distribucio.backoffice.test.backofficeIntegracio.*");
 		}
-		return wsClient;
+		return client;
 	}
+
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 

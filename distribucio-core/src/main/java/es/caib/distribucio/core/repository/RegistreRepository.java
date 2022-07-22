@@ -48,18 +48,30 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	
 	@Query(
+			"select count(r) " + 
+			"from " +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
+			"and r.procesIntents < :maxReintents " +
+			"and r.entitat = :entitat ")
+	long countGuardarAnnexPendents(
+			@Param("entitat") EntitatEntity entitat, 
+			@Param("maxReintents") int maxReintents);
+
+	@Query(
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
 			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents < :maxReintents " +
-			"and r.entitat = :entitat " + 
-		    "order by " +
-		    "    r.data asc")
-	List<RegistreEntity> findGuardarAnnexPendents(
+			"and r.entitat = :entitat ")
+	Page<RegistreEntity> findGuardarAnnexPendentsPaged(
 			@Param("entitat") EntitatEntity entitat, 
-			@Param("maxReintents") int maxReintents);
+			@Param("maxReintents") int maxReintents,
+			Pageable pageable);
 
+	
 	@Query(
 			"from" +
 			"    RegistreEntity r " +
@@ -141,10 +153,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String numero,
 			Date data,
 			int esborrat);
-	
-	/** Troba l'anotació de registre per identificador. */
-	RegistreEntity findByIdentificador(String identificador);
-	
+		
 	/** Consulta les anotacions de registre que tenen l'expedient a l'arxiu pendents
 	 * de tancar i a les quals ja s'ha excedit el temps d'espera establert
 	 * 
@@ -209,6 +218,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
 			//"and (:ambIntentsPendents = true or r.procesIntents < :maxReintents) " +
 			"and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"and (:nomesAmbEsborranys = false or r.annexosEstatEsborrany > 0 ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
 			"			from r.interessats as interessat" +
@@ -249,6 +259,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("reintentsPendents") Boolean reintentsPendents,
 			@Param("maxReintents") int maxReintents, 
 			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("nomesAmbEsborranys") boolean nomesAmbEsborranys,
 			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("esNullSobreescriure") boolean esNullSobreescriure,
@@ -320,12 +331,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	
 	/**
 	 * Consulta per retornar un llistat amb els registres processats al backoffice
-	 * amb errors 
+	 * amb errors i regla pendent de tipus enviar a backoffice
 	 **/
-	@Query("from RegistreEntity r "
-			+ "where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
-			"and r.procesIntents <= :maxReintents "
-			+ "order by r.data DESC")
+	@Query("from RegistreEntity r " +
+			"where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
+			"	and r.procesIntents <= :maxReintents " +
+			"	and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
+			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("maxReintents") int maxReintents);
 	

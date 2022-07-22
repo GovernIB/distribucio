@@ -247,9 +247,9 @@
 	
 </head>
 <body>
+
 	<div id="comentaris_content" class="col-xs-12">
 	</div>
-	<c:if test="${isRolActualAdministrador}">
 	<div class="col-xs-10">
 		<div class="comentari_destins"><ul></ul></div>
 		<input id="comentari_text" class="form-control" placeholder="<spring:message code="contingut.comentaris.text.placeholder"/>" maxlength="1024" ${hasPermisBustia ? '' : 'disabled'}/>
@@ -257,7 +257,6 @@
 	<div class="col-xs-2">
 		<button class="btn btn-success enviar-comentari ${hasPermisBustia ? '' : 'disabled'}"><span class="fa fa-paper-plane-o"></span>&nbsp;<spring:message code="comu.boto.enviar"/></button>
 	</div>
-	</c:if>
 	<div class="col-xs-12" style="height:10px">
 	</div>
 

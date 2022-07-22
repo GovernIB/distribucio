@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 
 /**
  * Classe que representa una anotació de registre amb id.
@@ -45,7 +46,9 @@ public class RegistreAnnexDto implements Serializable {
 	
 	private ValidacioFirmaEnum validacioFirmaEstat;
 	private String validacioFirmaError;
-	
+
+	private AnnexEstat arxiuEstat;
+
 	private static final long serialVersionUID = -8656873728034274066L;
 
 	
@@ -219,6 +222,12 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	public void setValidacioFirmaError(String validacioFirmaError) {
 		this.validacioFirmaError = validacioFirmaError;
+	}
+	public AnnexEstat getArxiuEstat() {
+		return arxiuEstat;
+	}
+	public void setArxiuEstat(AnnexEstat arxiuEstat) {
+		this.arxiuEstat = arxiuEstat;
 	}
 
 

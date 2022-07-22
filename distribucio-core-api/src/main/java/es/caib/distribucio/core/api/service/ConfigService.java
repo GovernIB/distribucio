@@ -42,7 +42,7 @@ public interface ConfigService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public String getConcsvBaseUrl() ;
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public ConfigDto findByKey(String key);
 	
 	@PreAuthorize("hasRole('DIS_SUPER')")

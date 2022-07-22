@@ -206,7 +206,8 @@ CREATE TABLE DIS_REGISTRE
   PENDENT          BOOLEAN DEFAULT TRUE	NOT NULL,
   AGAFAT_PER 		character varying(64),
   SOBREESCRIURE           boolean default false,
-  REACTIVAT               boolean default false
+  REACTIVAT               boolean default false,
+  ANNEXOS_ESTAT_ESBORRANY integer default 0
 );
 
 
@@ -241,7 +242,11 @@ CREATE TABLE DIS_REGISTRE_ANNEX
   LASTMODIFIEDBY_CODI  character varying(256),
   GESDOC_DOC_ID 	   character varying(50),
   SIGN_DETALLS_DESCARREGAT BOOLEAN DEFAULT FALSE,
-  META_DADES CHARACTER VARYING(4000)
+  META_DADES CHARACTER VARYING(4000),
+  SOBREESCRIURE        boolean default false,
+  VAL_FIRMA_ESTAT      character varying(64),
+  VAL_FIRMA_ERROR      character varying(1000),
+  ARXIU_ESTAT          character varying(20)
 );
 
 
@@ -490,13 +495,15 @@ CREATE TABLE DIS_BUSTIA_FAVORIT
 
 CREATE TABLE DIS_CONFIG
 (
-    KEY                  CHARACTER VARYING(256 CHAR)     NOT NULL,
-    VALUE                CHARACTER VARYING(2048 CHAR),
-    DESCRIPTION          CHARACTER VARYING(2048 CHAR),
-    GROUP_CODE           CHARACTER VARYING(128 CHAR)     NOT NULL,
+    KEY                  CHARACTER VARYING(256)     NOT NULL,
+    VALUE                CHARACTER VARYING(2048),
+    DESCRIPTION          CHARACTER VARYING(2048),
+    GROUP_CODE           CHARACTER VARYING(128)     NOT NULL,
     POSITION             INTEGER                		 DEFAULT 0 NOT NULL,
     JBOSS_PROPERTY       BOOLEAN             			 DEFAULT 0 NOT NULL,
-    TYPE_CODE            CHARACTER VARYING(128 CHAR)     DEFAULT 'TEXT',
+    TYPE_CODE            CHARACTER VARYING(128)     DEFAULT 'TEXT',
+    ENTITAT_CODI         CHARACTER VARYING(64),
+    CONFIGURABLE         BOOLEAN                    DEFAULT FALSE,
     LASTMODIFIEDBY_CODI  CHARACTER VARYING(64),
     LASTMODIFIEDDATE     TIMESTAMP WITHOUT TIMEZONE
 );
@@ -581,6 +588,7 @@ CREATE TABLE DIS_MON_INT
 	TEMPS_RESPOSTA		BIGSERIAL, 
 	ESTAT				character varying(5),
 	CODI_USUARI			character varying(64),
+	CODI_ENTITAT		character varying(64),
 	ERROR_DESCRIPCIO	character varying(1024),
 	EXCEPCIO_MSG		character varying(1024),
 	EXCEPCIO_STACKTRACE	character varying(2048)

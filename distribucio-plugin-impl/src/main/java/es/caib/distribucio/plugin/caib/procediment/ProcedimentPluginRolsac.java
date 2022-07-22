@@ -20,11 +20,10 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -37,14 +36,14 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	private Client jerseyClient;
 	private ObjectMapper mapper;
 
-	public ProcedimentPluginRolsac()  {
+	public ProcedimentPluginRolsac() {
 		super();
 	}
 	
-	public ProcedimentPluginRolsac(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
+	public ProcedimentPluginRolsac(Properties properties) {
+		super(properties);
 	}
-
+	
 	@Override
 	public List<Procediment> findAmbCodiDir3(
 			String codiDir3) throws SistemaExternException {
@@ -71,60 +70,6 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 		}
 	}
-	
-
-	@Override
-	public ProcedimentDto findAmbCodiSia(
-			String codiDir3, 
-			String codiSia) throws SistemaExternException {
-		logger.debug("Consulta del procediment pel codi SIA i codiDir3 (" +
-			"codiSia=" + codiSia + "codiDir3=" + codiDir3 + ")");
-		ProcedimientosResponse response = null;
-		try {
-			StringBuilder sb = new StringBuilder(getServiceUrl());			
-			String params = "?lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
-			
-			response = findProcedimentsRolsac(
-					sb.toString(),
-					params);
-			
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar el procediment de ROLSAC (" +
-					"codiSia=" + codiSia + ", codiDir3=" + codiDir3 + ")",
-					ex);
-		}
-		
-		if (response != null && response.getStatus().equals("200")) {
-			if (response.getResultado() != null && !response.getResultado().isEmpty()) {
-				for (Procediment procediment: response.getResultado()) {
-	//				logger.info("Codi sia: " + procediment.getCodigoSIA());
-					toProcedmientDto(procediment);
-				}
-				
-				return toProcedmientDto(response.getResultado().get(0));
-			} else { 
-				return null;
-			}
-			
-		} else {
-			throw new SistemaExternException(
-					"No s'han pogut consultar el procediment de ROLSAC (" +
-					"codiSia=" + codiSia + "). Resposta rebuda amb el codi " + response.getStatus());
-		}	
-	}
-	
-	
-	public ProcedimentDto toProcedmientDto (Procediment procediment) throws  SistemaExternException {
-		ProcedimentDto dto = new ProcedimentDto();
-		if (procediment != null) {
-			dto.setCodi(procediment.getCodigo());
-			dto.setCodiSia(procediment.getCodigoSIA());
-			dto.setNom(procediment.getNombre());			
-		}
-		return dto;
-	}
-	
 
 	private Client getJerseyClient() {
 		if (jerseyClient == null) {
@@ -169,64 +114,28 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	}
 
 	private String getServiceUrl() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.url");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
-//		return getProperty(
-//				"plugin.procediment.rolsac.service.url");
 	}
 	private String getServiceUsername() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.username");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.username");
-//		return getProperty(
-//				"plugin.procediment.rolsac.service.username");
 	}
 	private String getServicePassword() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String propietatAmbEntitat = PropertiesHelper.getProperties().getProperty(
-					"es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.password");
-			if (propietatAmbEntitat != null) {
-				return propietatAmbEntitat;
-			}
-		}
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.password");
-//		return getProperty(
-//				"plugin.procediment.rolsac.service.password");
 	}
 	private Integer getServiceTimeout() {
-		if (DistribucioAbstractPluginProperties.getCodiEntitat() != null) {
-			String keyAmbEntitat = "es.caib.distribucio." + DistribucioAbstractPluginProperties.getCodiEntitat() + ".plugin.procediment.rolsac.service.timeout";
-			if (PropertiesHelper.getProperties().getProperty(keyAmbEntitat) != null) {
-				return PropertiesHelper.getProperties().getAsInt(keyAmbEntitat);
-			}
-		}
 		String key = "es.caib.distribucio.plugin.procediment.rolsac.service.timeout";
 		if (PropertiesHelper.getProperties().getProperty(key) != null) {
 			return PropertiesHelper.getProperties().getAsInt(key);
-//		String key = "plugin.procediment.rolsac.service.timeout";
-//		if (getProperty(key) != null) {
-//			return getAsInt(key);
 		} else {
 			return null;
 		}
 	}
 
 	public String getUsuariIntegracio() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 					"es.caib.distribucio.plugin.procediment.rolsac.service.username","-");		
 	}
 	
@@ -253,7 +162,6 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 			this.resultado = resultado;
 		}
 	}
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentPluginRolsac.class);
 

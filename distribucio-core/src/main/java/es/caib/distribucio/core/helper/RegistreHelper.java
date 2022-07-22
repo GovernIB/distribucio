@@ -29,6 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -39,6 +40,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.PdfReader;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
@@ -49,6 +52,8 @@ import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -69,6 +74,7 @@ import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
@@ -87,6 +93,7 @@ import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreInteressatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.service.RegistreServiceImpl;
+import es.caib.distribucio.core.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -143,6 +150,8 @@ public class RegistreHelper {
 	private ContingutHelper contingutHelper;
 	@Autowired
 	private IntegracioHelper integracioHelper;
+	@Autowired
+	private PaginacioHelper paginacioHelper;
 
 	public RegistreAnotacio fromRegistreEntity(
 			RegistreEntity entity) {
@@ -542,9 +551,7 @@ public class RegistreHelper {
 	@Transactional
 	public void processarAnotacioPendentArxiuInThreadExecuto(Long registreId) {
 		
-//    	logger.info(Thread.currentThread().getName() + " START = " + registreId);
-    	
-		Timer.Context context = metricRegistry.timer(MetricRegistry.name(WorkerThread.class, "processarAnotacioPendentArxiu")).time();
+		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
 		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
 		
 		long startTime = new Date().getTime();
@@ -552,7 +559,6 @@ public class RegistreHelper {
     	Exception excepcio = null;
         try {
 			excepcio = processarAnotacioPendentArxiu(registreId);
-//        	Thread.sleep(10000);	
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
@@ -573,10 +579,6 @@ public class RegistreHelper {
 				
 		}
 		context.stop();
-    	
-//        logger.info(Thread.currentThread().getName() + " END = " + registreId);
-		
-
 	}
 	
 	
@@ -715,6 +717,7 @@ public class RegistreHelper {
 						"anotacioId=" + registreEntity.getId() + ", " +
 						"anotacioNumero=" + registreEntity.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
+				int nAnnexosEstatEsborrany = 0;
 				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
 					try {
 						
@@ -730,12 +733,12 @@ public class RegistreHelper {
 							documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
 							documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
 							
-							
 							// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 							ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
 							if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
 								logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registreEntity.getIdentificador() );
 							}
+							distribucioAnnex.setPocesIntents(registreEntity.getProcesIntents());
 							
 							// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
 							distribucioAnnex.setValidacioFirma(validacioFirma);
@@ -748,18 +751,6 @@ public class RegistreHelper {
 									uuidExpedient,
 									documentEniRegistrableDto);
 							annex.updateFitxerArxiuUuid(uuidDocument);
-							
-							// set fitxer size if unset
-							if (annex.getFitxerTamany() <= 0) { 
-								Document document = pluginHelper.arxiuDocumentConsultar(
-										annex.getFitxerArxiuUuid(), 
-										null, 
-										true);
-								if (document.getContingut() != null) {
-									annex.updateFitxerTamany(
-											(int)document.getContingut().getTamany());
-								}
-							}
 							
 							if (distribucioAnnex.getFirmes() != null) {
 								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
@@ -778,19 +769,19 @@ public class RegistreHelper {
 										annex.getFirmes().add(novaFirma);
 									}
 								}
-							}
-							
+							}							
 							if (!annex.isSignaturaDetallsDescarregat()) {
 								loadSignaturaDetallsToDB(annex);
 							}
-							
-							
 						}
-					
+						if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+							nAnnexosEstatEsborrany++;
+						}
 					} catch (Exception ex) {
 						exceptions.add(ex);
 					}
 				}
+				registreEntity.setAnnexosEstatEsborrany(nAnnexosEstatEsborrany);
 			}
 		}
 		if (exceptions != null && !exceptions.isEmpty()) {
@@ -823,19 +814,40 @@ public class RegistreHelper {
 	 */
 	public ValidacioFirmaEnum validaFirmes(RegistreAnnexEntity annex) {
 		
+		logger.debug("Validant firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
 				
 		ValidacioFirmaEnum validacioFirmaEstat = ValidacioFirmaEnum.NO_VALIDAT;
 		String validacioFirmaError = null;
-		
-		if (pluginHelper.isValidaSignaturaPluginActiu()) {
 
-			FitxerDto fitxer = this.getAnnexFitxer(annex.getId(), false);
-			byte[] documentContingut = fitxer.getContingut();
-			byte[] firmaContingut = null;
+		FitxerDto fitxer = this.getAnnexFitxer(annex.getId(), false);
+		byte[] documentContingut = fitxer.getContingut();
+		byte[] firmaContingut = null;
+
+		// 0 - Mira si és un PDF sense firmes
+		boolean isPdfSenseFirmes = false;
+		if ("application/pdf".equals(annex.getFitxerTipusMime())) {
+			PdfReader reader;
+			try {
+				reader = new PdfReader(documentContingut);
+				AcroFields acroFields = reader.getAcroFields();
+				List<String> signatureNames = acroFields.getSignatureNames();
+				if (signatureNames != null && !signatureNames.isEmpty()) {
+					isPdfSenseFirmes = false;
+				} else {
+					isPdfSenseFirmes = true;
+					validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+				}
+			} catch (Exception e) {
+				logger.debug("Error validant si l'annex PDF \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes amb PdfReader.");
+			}
+		}
+
+		if (!isPdfSenseFirmes 
+				&& pluginHelper.isValidaSignaturaPluginActiu()) {
+
 			
 			// 1- Valida el document com si no tingués firmes
 			try {
-				logger.debug("Validant firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
 				ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut);
 				switch(validacioFirma.getStatus()) {
 					case ValidaSignaturaResposta.FIRMA_VALIDA:
@@ -855,7 +867,9 @@ public class RegistreHelper {
 			} catch(Exception e) {
 				// Determina si és error perquè no té firmes o validant
 				Throwable throwable = ExceptionHelper.getRootCauseOrItself(e);
-				if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") || throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") || throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
+				if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+						|| throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+						|| throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
 					validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
 				} else {
 					logger.error("Error validant les firmes del document", e);
@@ -863,8 +877,6 @@ public class RegistreHelper {
 					validacioFirmaError = "Error no controlat validant: " + e.getMessage();
 				}
 			}
-			annex.setValidacioFirmaEstat(validacioFirmaEstat);
-			annex.setValidacioFirmaError(validacioFirmaError);
 
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
@@ -903,20 +915,20 @@ public class RegistreHelper {
 						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
 						validacioFirmaError = "Error no controlat validant les firmes del document: " + e.getMessage();
 					}
-				}
-				// Si troba un error s'atura de valida
-				if (validacioFirmaEstat == ValidacioFirmaEnum.ERROR_VALIDANT 
-						||validacioFirmaEstat == ValidacioFirmaEnum.FIRMA_INVALIDA ) 
-				{
-					annex.setValidacioFirmaEstat(validacioFirmaEstat);
-					annex.setValidacioFirmaError(validacioFirmaError);
-	
+					// Si troba un error s'atura de valida
+					if (validacioFirmaEstat == ValidacioFirmaEnum.ERROR_VALIDANT 
+							||validacioFirmaEstat == ValidacioFirmaEnum.FIRMA_INVALIDA ) 
+					{
+						break;
+					}
 				}
 			}
-
-			logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
-								validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
 		}
+		annex.setValidacioFirmaEstat(validacioFirmaEstat);
+		annex.setValidacioFirmaError(validacioFirmaError);
+
+		logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
+							validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
 		return validacioFirmaEstat;
 	}
 
@@ -1088,11 +1100,32 @@ public class RegistreHelper {
 			final Timer timearxiuDocumentConsultar = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.arxiuDocumentConsultar"));
 			Timer.Context contexarxiuDocumentConsultar = timearxiuDocumentConsultar.time();
 			Document document = pluginHelper.arxiuDocumentConsultar(
-					annexEntity.getFitxerArxiuUuid(),
-					null,
+					annexEntity.getFitxerArxiuUuid(), 
+					null, 
 					true);
 			contexarxiuDocumentConsultar.stop();
-			
+
+			// set fitxer size if unset
+			if (annexEntity.getFitxerTamany() <= 0 && document.getContingut() != null) {
+				annexEntity.updateFitxerTamany(
+							(int)document.getContingut().getTamany());
+			}							
+			// Guarda l'estat del documetn a l'Arxiu
+			AnnexEstat estatAnterior = annexEntity.getArxiuEstat();
+			switch(document.getEstat()) {
+			case DEFINITIU:
+				annexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
+				break;
+			case ESBORRANY:
+				annexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
+				break;
+			}
+			// Si passa d'esborrany a definitiu resta un en el recompte d'annexos en estat d'esborrany de l'anotació
+			if (estatAnterior == AnnexEstat.ESBORRANY 
+					&& annexEntity.getArxiuEstat() == AnnexEstat.DEFINITIU) {
+				annexEntity.getRegistre().setAnnexosEstatEsborrany(
+						Math.max(0, annexEntity.getRegistre().getAnnexosEstatEsborrany() - 1));
+			}
 			DocumentMetadades metadades = document.getMetadades();
 			if (metadades != null) {
 				annexEntity.updateFirmaCsv(metadades.getCsv());
@@ -1341,6 +1374,15 @@ public class RegistreHelper {
 		
 	public int getGuardarAnnexosMaxReintentsProperty() {
 		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
+	
+	public int getBackofficeMaxReintentsProperty() {
+		String maxReintents = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -1675,10 +1717,29 @@ public class RegistreHelper {
 		return numeroCopia != null ? numeroCopia : 0;
 	}
 
-	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. */
+	/** Compta els registres pedents de guardar els annexos a l'Arxiu. 
+	 * @param maxResultats */
 	@Transactional
-	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
-		return 	registreRepository.findGuardarAnnexPendents(entitat, maxReintents);
+	public int countGuardarAnnexPendents(EntitatEntity entitat, int maxReintents) {
+		return 	new Long(registreRepository.countGuardarAnnexPendents(entitat, maxReintents)).intValue();		
+	}
+
+	/** Consulta els registres pedents de guardar els annexos a l'Arxiu. 
+	 * @param maxResultats */
+	@Transactional
+	public List<RegistreEntity> findGuardarAnnexPendents(EntitatEntity entitat, int maxReintents, int maxResultats) {
+		
+		PaginacioParamsDto paginacioParams = new PaginacioParamsDto();
+		paginacioParams.setPaginaNum(0);
+		paginacioParams.setPaginaTamany(maxResultats);
+		paginacioParams.afegirOrdre("data", OrdreDireccioDto.ASCENDENT);
+		
+		Page<RegistreEntity> pagina = registreRepository.findGuardarAnnexPendentsPaged(
+				entitat, 
+				maxReintents, 
+				paginacioHelper.toSpringDataPageable(paginacioParams, null));
+
+		return pagina.getContent();
 	}
 
 	/** Consulta els registres pendents d'enviar al backoffice ordenats per regla. */
@@ -1721,6 +1782,14 @@ public class RegistreHelper {
 							fitxerDto.setContentType(documentContingut.getTipusMime());
 							fitxerDto.setContingut(documentContingut.getContingut());
 							fitxerDto.setTamany(documentContingut.getContingut().length);
+						}
+						switch(document.getEstat()) {
+						case DEFINITIU:
+							registreAnnexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
+							break;
+						case ESBORRANY:
+							registreAnnexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
+							break;
 						}
 					}					
 				}

@@ -248,6 +248,26 @@
 		</td>
 	</tr>
 	<tr>
+		<td><strong><spring:message code="registre.annex.detalls.camp.arxiuEstat"/></strong></td>
+		<td>
+			<c:if test="${empty annex.arxiuEstat}">
+				- <spring:message code="registre.annex.detalls.camp.arxiuEstat.sense.informacio"></spring:message>
+			</c:if>
+			<c:if test="${not empty annex.arxiuEstat}">
+				<c:choose>
+					<c:when test="${annex.arxiuEstat == 'DEFINITIU'}">
+						<spring:message code="registre.annex.detalls.camp.arxiuEstat.definitiu"></spring:message>
+					</c:when>
+					<c:when test="${annex.arxiuEstat == 'ESBORRANY'}">
+						<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany"></spring:message>
+						<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany.info"></spring:message>"></span>
+					</c:when>
+					<c:otherwise>${annex.arxiuEstat}</c:otherwise>
+				</c:choose>
+			</c:if>
+		</td>
+	</tr>
+	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>
 		<td>
 

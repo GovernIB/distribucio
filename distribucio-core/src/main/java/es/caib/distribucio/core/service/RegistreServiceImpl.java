@@ -77,6 +77,7 @@ import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Annex;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.DocumentTipus;
@@ -119,6 +120,7 @@ import es.caib.distribucio.core.helper.ReglaHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
+import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -178,6 +180,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
 	private VistaMovimentRepository vistaMovimentRepository;
+	@Autowired
+	private ContingutLogRepository contingutLogRepository;
 	
 	@Resource
 	private ContingutLogHelper contingutLogHelper;
@@ -425,6 +429,7 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "enviatPerEmail= " + filtre.getEnviatPerEmail() + ", " 
 				+ "procesEstatSimple= " + filtre.getProcesEstatSimple() + ", " 
 				+ "nomesAmbError= " + filtre.isNomesAmbErrors() + ", " 
+				+ "nomesAmbEsborranys= " + filtre.isNomesAmbEsborranys() + ", " 
 				+ "estat= " + filtre.getEstat() + ", " 
 				+ "unitat= " + filtre.getUnitatId() + ", " 
 				+ "paginacioParams=" + "[paginaNum=" + paginacioParams.getPaginaNum() + ", paginaTamany=" + paginacioParams.getPaginaTamany() + ", ordres=" + paginacioParams.getOrdres() + "]" + ")");
@@ -468,6 +473,7 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getReintents() != null ? (filtre.getReintents() == RegistreFiltreReintentsEnumDto.SI ? true : false) : false,
 					maxReintents, 
 					filtre.isNomesAmbErrors(),
+					filtre.isNomesAmbEsborranys(),
 					unitat == null,
 					unitat,
 					filtre.getSobreescriure() == null,
@@ -1161,16 +1167,11 @@ public class RegistreServiceImpl implements RegistreService {
 			if (!encryptedIdentificator.equals(id.getClauAcces())) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			}
-			List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
-			if (registres.isEmpty()) {
-				throw new NotFoundException(
-						id.getIndetificador(),
-						RegistreEntity.class);
-			}
-			if (registres.size() > 1) {
-				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
-			}
-			RegistreEntity registreEntity = registres.get(0);
+			RegistreEntity registreEntity = this.getRegistrePerIdentificador(id.getIndetificador());
+
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(registreEntity.getEntitatCodi());
+			ConfigHelper.setEntitat(entitatDto);
 
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
@@ -1230,19 +1231,10 @@ public class RegistreServiceImpl implements RegistreService {
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
 			String encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(),
 					clauSecreta);
-			if (!encryptedIdentificator.equals(id.getClauAcces()))
+			if (!encryptedIdentificator.equals(id.getClauAcces())) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
-			List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
-			if (registres.isEmpty()) {
-				throw new NotFoundException(
-						id.getIndetificador(),
-						RegistreEntity.class);
 			}
-			if (registres.size() > 1) {
-				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
-			}
-			RegistreEntity registre = registres.get(0);
-
+			RegistreEntity registre = this.getRegistrePerIdentificador(id.getIndetificador());
 			switch (estat) {
 			case REBUDA:
 				registre.updateBackEstat(
@@ -1302,6 +1294,31 @@ public class RegistreServiceImpl implements RegistreService {
 			throw new RuntimeException(ex);
 		}
 	}
+
+	/** Obté el registre per identificador. Com que les anotacions reenviades tenen el mateix identificador si se'n troba més d'una
+	 * es retorna la darrera comunicada a un backoffice.
+	 * 
+	 * @param indetificador
+	 * @return
+	 */
+	private RegistreEntity getRegistrePerIdentificador(String indetificador) {
+		List<RegistreEntity> registres = registreRepository.findByNumero(indetificador);
+		if (registres.isEmpty()) {
+			throw new NotFoundException(
+					indetificador,
+					RegistreEntity.class);
+		}
+		RegistreEntity registre = registres.get(0);
+		if (registres.size() > 1) {
+			logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + indetificador + " en la consulta pel backoffice");
+			registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(indetificador);
+			if (registres != null && !registres.isEmpty()) {
+				registre = registres.get(0);
+			}
+		}
+		return registre;
+	}
+
 
 	@Transactional
 	@Override
@@ -1640,6 +1657,7 @@ public class RegistreServiceImpl implements RegistreService {
 					{
 						Runnable thread = 
 								new GetZipDocumentacioThread(
+								ConfigHelper.getEntitat(),
 								registreHelper,
 								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
 								registre.getNumero(),
@@ -1707,6 +1725,7 @@ public class RegistreServiceImpl implements RegistreService {
 	 */
 	protected class GetZipDocumentacioThread implements Runnable {
 
+		private EntitatDto entitatActual;
 		private Long justificantId;
 		private String registreNumero;
 		private Long annexID;
@@ -1722,6 +1741,7 @@ public class RegistreServiceImpl implements RegistreService {
 		 * @param errors 
 		 * @param errors */
 		public GetZipDocumentacioThread(
+				EntitatDto entitatActual,
 				RegistreHelper registreHelper, 
 				Long justificantId, 
 				String registreNumero, 
@@ -1732,6 +1752,7 @@ public class RegistreServiceImpl implements RegistreService {
 				ZipOutputStream zip, 
 				ExecutorService executor, 
 				List<String> errors) {
+			this.entitatActual = entitatActual;
 			this.justificantId = justificantId;
 			this.registreNumero = registreNumero;
 			this.annexID = annexID;
@@ -1746,6 +1767,7 @@ public class RegistreServiceImpl implements RegistreService {
 		@Transactional(propagation=Propagation.REQUIRED)
 		@Override
 		public void run() {
+			ConfigHelper.setEntitat(this.entitatActual);
 			try {		
 				String nom;
 				FitxerDto fitxer = new FitxerDto();
@@ -1891,20 +1913,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreHelper.getMaxThreadsParallelProperty();
 	}
 	
-
-	@Transactional(readOnly = true)
-	@Override
-	public RegistreDto findAmbIdentificador(String identificador) {
-		RegistreDto registreAnotacioDto;
-		RegistreEntity registre = registreRepository.findByIdentificador(identificador);
-		if (registre != null)
-			registreAnotacioDto = (RegistreDto) contingutHelper.toContingutDto(registre);
-		else
-			registreAnotacioDto = null;
-		return registreAnotacioDto;
-	}
-
-
 	@Transactional
 	@Override
 	public RegistreDto marcarLlegida(
@@ -2362,6 +2370,33 @@ public class RegistreServiceImpl implements RegistreService {
 								break;
 							}
 						}
+					}
+					// Estat DEFINITIU/ESBORRANY
+					switch(document.getEstat()) {
+					case DEFINITIU:
+						annexPerBackoffice.setEstat(AnnexEstat.DEFINITIU);
+						break;
+					case ESBORRANY:
+						annexPerBackoffice.setEstat(AnnexEstat.ESBORRANY);
+						break;
+					}
+					// Informació de si l'annex és vàlid
+					boolean documentValid = true;
+					StringBuilder documentError = new StringBuilder();
+					if (annexEntity.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
+						documentValid = false;
+						documentError.append("El document original tenia firmes invàlides.");
+					}
+					if (document.getMetadades() != null && document.getMetadades().getFormat() == null) {
+						documentError.append(" El document no té un format reconegut per l'Arxiu");
+					}
+//					if (document.getEstat() == DocumentEstat.ESBORRANY) {
+//						documentValid = false;
+//						documentError.append(" El document s'ha guardat com esborrany per poder distribuir-lo.");
+//					}
+					annexPerBackoffice.setDocumentValid(documentValid);
+					if (!documentValid) {
+						annexPerBackoffice.setDocumentError(documentError.toString());
 					}
 				} else {
 					throw new RuntimeException("Error en la consulta de annexos per backofice. Annex " + annexEntity.getTitol() + "de registre " + registre.getIdentificador() + " no te uuid de arxiu");

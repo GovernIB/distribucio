@@ -23,6 +23,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
@@ -297,11 +298,24 @@ public class BaseController implements MessageSourceAware {
 	public int numeroAnnexosFirmaInvalida(RegistreDto registre) {
 		int numeroAnnexosFirmaInvalida = 0;						
 		for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
-			if (registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA) {
+			if (registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.FIRMA_INVALIDA 
+					|| registreAnnexDto.getValidacioFirmaEstat() == ValidacioFirmaEnum.ERROR_VALIDANT ) {
 				numeroAnnexosFirmaInvalida++;
 			}
 		}
 		return numeroAnnexosFirmaInvalida;
+	}
+
+	/** Compta el número d'annexos en estat esborrany */
+	public int numeroAnnexosEstatEsborrany(RegistreDto registre) {
+		int numeroAnnexosEstatEsborrany = 0;						
+		for (RegistreAnnexDto registreAnnexDto:registre.getAnnexos()) {
+			if (registreAnnexDto.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+				
+				numeroAnnexosEstatEsborrany++;
+			}
+		}
+		return numeroAnnexosEstatEsborrany;
 	}
 
 }

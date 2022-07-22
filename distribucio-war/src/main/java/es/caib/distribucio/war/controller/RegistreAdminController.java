@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.war.controller;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -44,17 +43,14 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
@@ -95,7 +91,9 @@ public class RegistreAdminController extends BaseAdminController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private RegistreHelper registreHelper;
-	
+	@Autowired
+	private ConfigService configService;
+
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -186,6 +184,7 @@ public class RegistreAdminController extends BaseAdminController {
 			String codiSia = null;
 			String codiDir3 = null;
 			int numeroAnnexosFirmaInvalida = 0;
+			int numeroAnnexosEstatEsborrany = 0;
 			if (registreDto instanceof RegistreDto) {
 				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;	
 				codiDir3 = registreDtoAmbAnnexos.getEntitatCodi();	
@@ -207,6 +206,7 @@ public class RegistreAdminController extends BaseAdminController {
 				logger.info(errMsg);
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
+				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
 			}
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
@@ -216,6 +216,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("isVistaMoviments", false);
 			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
 			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
+			model.addAttribute("numeroAnnexosEstatEsborrany", numeroAnnexosEstatEsborrany);
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -374,7 +375,12 @@ public class RegistreAdminController extends BaseAdminController {
 	private static RegistreProcesEstatEnum[] estatsReprocessables = {
 			RegistreProcesEstatEnum.ARXIU_PENDENT,
 			RegistreProcesEstatEnum.REGLA_PENDENT,
-			RegistreProcesEstatEnum.BACK_PENDENT
+			RegistreProcesEstatEnum.BACK_PENDENT,
+			RegistreProcesEstatEnum.BACK_COMUNICADA,
+			RegistreProcesEstatEnum.BACK_REBUDA,
+			RegistreProcesEstatEnum.BACK_ERROR,
+			RegistreProcesEstatEnum.BACK_PROCESSADA,
+			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
 	
 	
@@ -436,7 +442,8 @@ public class RegistreAdminController extends BaseAdminController {
 	
 	
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
-	public String reintentarEnviamentBackoffice(HttpServletRequest request,
+	public String reintentarEnviamentBackoffice(
+			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
@@ -459,6 +466,91 @@ public class RegistreAdminController extends BaseAdminController {
 
 //		return "redirect:../../" + registreId + "/detall";
 			return "redirect:" + request.getHeader("referer");
+	}
+	
+	
+	@RequestMapping(value = "/reintentarEnviamentBackofficeMultiple", method = RequestMethod.GET)
+	public String reintentarEnviamentBackofficeMultiple(
+			HttpServletRequest request,
+			Model model) {
+		Object command = new Object();
+		model.addAttribute("reintentarEnviamentBackofficeCommand", command);
+		model.addAttribute("registres", registreService.findMultiple(
+				getEntitatActualComprovantPermisAdmin(request).getId(), 
+				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
+				true));
+		return "reintentarEnviamentBackofficeMultiple";
+	}
+	
+	
+	/** Mèdode per enviar al backoffice una anotacions de registre via ajax des del llistat d'anotacions
+	 * de l'administrador.
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/reintentarEnviamentBackofficeAjax/{registreId}", method = RequestMethod.POST)
+	public AjaxFormResponse reintentarEnviamentBackofficeAjaxPost(
+			HttpServletRequest request, 
+			@PathVariable Long registreId, 
+			@Valid Object command, 
+			BindingResult bindingResult) {
+		
+		AjaxFormResponse response = null;
+		
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "enviamentMultiple.error.validacio"));
+			return response;
+		}
+		
+		boolean correcte = false;
+		String missatge = null;
+		ContingutDto contingutDto = null;
+		RegistreDto registreDto = null;
+		
+		try {
+			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
+			
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			registreDto = (RegistreDto) contingutDto;
+			
+			if (registreDto.getPare() == null) {
+				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(), registreId);
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
+			
+			}else if (ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+				correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
+				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+			
+			}else {
+				missatge = getMessage(request, "");
+				correcte = true;
+			}
+		
+		}catch (Exception e) {
+			logger.error("Error incontrolat enviant al backoffice l'anotació amb id " + registreId + ": " + e.getMessage(), e);
+			String errMsg = getMessage(
+					request, 
+					"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat", 
+					new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+			response = AjaxHelper.generarAjaxError(errMsg);
+		}
+		
+		if (correcte) {
+			response = AjaxHelper.generarAjaxFormOk();
+			response.setMissatge(missatge.toString());
+			
+		}else {
+			response = AjaxHelper.generarAjaxError(missatge.toString());
+		}
+		
+		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
+		
+		return response;
 	}
 	
 	
@@ -633,25 +725,7 @@ public class RegistreAdminController extends BaseAdminController {
 				missatge = getMessage(
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
-						null);		
-				boolean processatOk = registreService.processarAnnexosAdmin(
-						entitatActual.getId(),
-						registreId);
-				if (processatOk) {
-					MissatgesHelper.success(
-							request, 
-							getMessage(
-									request, 
-									"contingut.admin.controller.registre.desat.arxiu.ok",
-									null));
-				} else {
-					MissatgesHelper.error(
-							request,
-							getMessage(
-									request, 
-									"contingut.admin.controller.registre.desat.arxiu.error",
-									null));
-				}
+						null);
 			} else 
 			{
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
@@ -667,7 +741,7 @@ public class RegistreAdminController extends BaseAdminController {
 		
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(getMessage(request, missatge.toString()));
+			response.setMissatge(missatge.toString());
 		} else {
 			response = AjaxHelper.generarAjaxError(missatge.toString());
 		}
@@ -770,117 +844,35 @@ public class RegistreAdminController extends BaseAdminController {
 			bustiesFinals = bustiaService.findAmbFiltreAdmin(entitatActual.getId(), filtre, paginacioParams).getContingut();
 		}
 		return bustiesFinals;
-	}
+	}	
 	
 	
+	/** Mètode per exportar la selecció d'anotacions de registre en format CSV o ODT */
 	@RequestMapping(value="/exportar", method = RequestMethod.GET)
 	public String exportar(
 			HttpServletRequest request,
 			HttpServletResponse response, 
 			Model model, 
-			@RequestParam String llistat, 
-			@RequestParam String[] filtresForm, 
 			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
 		
-		List<RegistreDto> llistatRegistres = new ArrayList<RegistreDto>();
-		if (llistat.equals("seleccio")) {
-			llistatRegistres = registreService.findMultiple(
-				getEntitatActualComprovantPermisAdmin(request).getId(), 
+		List<RegistreDto> llistatRegistres = registreService.findMultiple(
+				getEntitatActual(request).getId(),
 				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
 				true);
-		
-		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-			List<BustiaDto> llistatBusties = bustiaService.findAmbEntitat(entitatActual.getId());
-			RegistreFiltreDto registreFiltreDto = new RegistreFiltreDto();
-			registreFiltreDto.setNumero(filtresForm[0]);
-			registreFiltreDto.setTitol(filtresForm[1]);
-			registreFiltreDto.setNumeroOrigen(filtresForm[2]);
-			registreFiltreDto.setRemitent(filtresForm[3]);
-			registreFiltreDto.setInteressat(filtresForm[4]);
-			String stringDateInici = filtresForm[5];
-			Date dataInici = null;
-			try {
-				dataInici = new SimpleDateFormat("dd/MM/yyyy").parse(stringDateInici);
-			} catch (ParseException e) {
-				dataInici = null;
-			}
-			registreFiltreDto.setDataRecepcioInici(dataInici);
-			String stringDateFi = filtresForm[6];
-			Date dataFi = null;
-			try {
-				dataFi = new SimpleDateFormat("dd/MM/yyyy").parse(stringDateFi);
-			} catch (ParseException e) {
-				dataFi = null;
-			}
-			registreFiltreDto.setDataRecepcioFi(dataFi);
-			Long unitatId;
-			if (!filtresForm[7].equals("")) {
-				unitatId = Long.parseLong(filtresForm[7]);
-			}else {
-				unitatId = null;
-			}
-			registreFiltreDto.setUnitatId(unitatId);
-			registreFiltreDto.setBustia(filtresForm[8]);
-			RegistreEnviatPerEmailEnumDto enviatPerEmail;
-			if (!filtresForm[9].equals("")) {
-				enviatPerEmail = RegistreEnviatPerEmailEnumDto.valueOf(filtresForm[9]);
-			}else {
-				enviatPerEmail = null;
-			}			
-			registreFiltreDto.setEnviatPerEmail(enviatPerEmail);
-			RegistreTipusDocFisicaEnumDto tipusDocumentacio;
-			if (!filtresForm[10].equals("")) { 
-				tipusDocumentacio = RegistreTipusDocFisicaEnumDto.valueOf(filtresForm[10]);
-			}else {
-				tipusDocumentacio = null;
-			}
-			registreFiltreDto.setTipusDocFisica(tipusDocumentacio);
-			registreFiltreDto.setBackCodi(filtresForm[11]);
-			RegistreProcesEstatSimpleEnumDto procesEstatSimple;
-			if (!filtresForm[12].equals("")) {
-				procesEstatSimple = RegistreProcesEstatSimpleEnumDto.valueOf(filtresForm[12]);
-			}else {
-				procesEstatSimple = null;
-			}			
-			registreFiltreDto.setProcesEstatSimple(procesEstatSimple);
-			RegistreProcesEstatEnum estat;
-			if (!filtresForm[13].equals("")) {
-				estat = RegistreProcesEstatEnum.valueOf(filtresForm[13]);
-			}else {
-				estat = null;
-			}
-			registreFiltreDto.setEstat(estat);
-			RegistreMarcatPerSobreescriureEnumDto sobreescriure;
-			if (!filtresForm[14].equals("")) {
-				sobreescriure = RegistreMarcatPerSobreescriureEnumDto.valueOf(filtresForm[14]);
-			}else {
-				sobreescriure = null;
-			}
-			registreFiltreDto.setSobreescriure(sobreescriure);
-			List<Long> llistatFiltrat = registreService.findRegistreIds(entitatActual.getId(), llistatBusties, registreFiltreDto, false, true);
-			
-			llistatRegistres = registreService.findMultiple(
-					getEntitatActualComprovantPermisAdmin(request).getId(), 
-					llistatFiltrat, 
-					true);			
-		}
-		
-		FitxerDto fitxer;
 		try {
-			fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
+			FitxerDto fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
 					response);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			String errMsg = this.getMessage(request, "registre.user.accio.grup.exportar.error", new Object[] {e.getMessage()});
+			logger.error(errMsg, e);
+			MissatgesHelper.error(request, errMsg);
+			return "redirect:" + request.getHeader("referer");
 		}
-		
 		return null;
-		
 	}
-	
 	
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {

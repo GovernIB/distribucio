@@ -5,7 +5,6 @@ package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,15 +41,14 @@ import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
-import es.caib.distribucio.plugin.properties.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutOrigen;
@@ -92,17 +90,16 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private IArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
-	
-	  
-	public DistribucioPluginArxiuImpl()  {
+
+	public DistribucioPluginArxiuImpl() {
 		super();
 	}
 	
-	public DistribucioPluginArxiuImpl(String propertyKeyBase, Properties properties) {
-		super(propertyKeyBase, properties);
+	public DistribucioPluginArxiuImpl(Properties properties) {
+		super(properties);
 	}
 
-
+	
 	@Override
 	public String expedientCrear(
 			String expedientNumero,
@@ -218,54 +215,70 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 		}
 		
-		
 		if (annexContingut != null) {
-			// Si l'annex no està firmat el firma amb el plugin de firma en servidor.
+			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
+			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
+			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
+									&& format != null;
+			
+
+			// Mira si firmar en servidor
 			if (!annexFirmat 
+					&& documentValid
 					&& isRegistreSignarAnnexos()) {
 				
-				//sign annex and return firma content bytes
-				SignaturaResposta signatura = signaturaDistribucioSignar(
-						distribucioAnnex,
-						annexContingut,
-						"Firma en servidor de document annex de l'anotació de registre");
-				
-				if (StringUtils.isEmpty(signatura.getTipusFirmaEni()) 
-						|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
-					logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
-							signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
-					if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
-						logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
-						if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
-							signatura.setTipusFirmaEni("TF04");
-						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
-							signatura.setPerfilFirmaEni("BES");
+				try {
+					SignaturaResposta signatura = signaturaDistribucioSignar(
+							distribucioAnnex,
+							annexContingut,
+							"Firma en servidor de document annex de l'anotació de registre");
+					
+					if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()) 
+							|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
+						logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
+								signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
+						if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
+							logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
+							if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
+								signatura.setTipusFirmaEni("TF04");
+							if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
+								signatura.setPerfilFirmaEni("BES");
+						}
+					}
+					byte [] firmaDistribucioContingut = signatura.getContingut();
+					String tipusFirmaArxiu = signatura.getTipusFirmaEni();
+					String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
+					String fitxerNom = signatura.getNom();
+					String tipusMime = signatura.getMime();
+					String csvRegulacio = null;
+					
+					
+					DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
+					annexFirma.setTipus(tipusFirmaArxiu);
+					annexFirma.setPerfil(perfil);
+					annexFirma.setFitxerNom(fitxerNom);
+					annexFirma.setTipusMime(tipusMime);
+					annexFirma.setCsvRegulacio(csvRegulacio);
+					annexFirma.setAutofirma(true);
+					annexFirma.setGesdocFirmaId(null);
+					annexFirma.setContingut(firmaDistribucioContingut);
+					annexFirma.setAnnex(distribucioAnnex);
+					annexFirma.setTamany(firmaDistribucioContingut.length);
+					distribucioAnnex.getFirmes().add(annexFirma);
+					
+					arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
+							distribucioAnnex.getFirmes());					
+					
+				} catch(SistemaExternException se) {
+					if (getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
+						logger.error("Error firmant en servidor l'annex \"" + distribucioAnnex.getFitxerNom() + "\" (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+						+ ". Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+					} else {
+						throw se;
 					}
 				}
-				byte [] firmaDistribucioContingut = signatura.getContingut();
-				String tipusFirmaArxiu = signatura.getTipusFirmaEni();
-				String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
-				String fitxerNom = signatura.getNom();
-				String tipusMime = signatura.getMime();
-				String csvRegulacio = null;
-				
-				
-				DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
-				annexFirma.setTipus(tipusFirmaArxiu);
-				annexFirma.setPerfil(perfil);
-				annexFirma.setFitxerNom(fitxerNom);
-				annexFirma.setTipusMime(tipusMime);
-				annexFirma.setCsvRegulacio(csvRegulacio);
-				annexFirma.setAutofirma(true);
-				annexFirma.setGesdocFirmaId(null);
-				annexFirma.setContingut(firmaDistribucioContingut);
-				annexFirma.setAnnex(distribucioAnnex);
-				annexFirma.setTamany(firmaDistribucioContingut.length);
-				distribucioAnnex.getFirmes().add(annexFirma);
-				
-				arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
-						distribucioAnnex.getFirmes());
 			}
 		}
 		
@@ -275,14 +288,59 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		fitxerContingut.setContingut(annexContingut);
 		fitxerContingut.setTamany(distribucioAnnex.getFitxerTamany());
 		
+		// Determina l'estat
+		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
+		// Es guarden definitius si:
+		// 1) El documetn té firmes
+		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
+		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
+		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) 
+				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
+		// 3) Format no reconegut
+		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
+		guardarDefinitiu = guardarDefinitiu && format != null;
+		if (guardarDefinitiu) {
+			estatDocument = DocumentEstat.DEFINITIU;
+		}
+
+		
 		// SAVE IN ARXIU
-		String uuidDocumentCreat = arxiuDocumentAnnexCrear(
-				distribucioAnnex,
-				unitatArrelCodi,
-				fitxerContingut,
-				arxiuFirmes,
-				uuidExpedient,
-				documentEniRegistrableDto);
+		String uuidDocumentCreat = null;
+		try {
+			uuidDocumentCreat = arxiuDocumentAnnexCrear(
+					distribucioAnnex,
+					unitatArrelCodi,
+					fitxerContingut,
+					arxiuFirmes,
+					uuidExpedient,
+					documentEniRegistrableDto,
+					estatDocument);
+		} catch (Exception se) {
+			
+			int maxReintents = getGuardarAnnexosMaxReintents();
+			logger.error("Error guardant l'annex  \"" + distribucioAnnex.getFitxerNom() + "\" com a DEFINTIU. (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+			+ ". MaxReintents = " + maxReintents + ", proces intents = " + distribucioAnnex.getProcesIntents() 
+			+ ", es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=" + getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() + ". ");
+
+			// Si el document era definitiu, s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
+			if (DocumentEstat.DEFINITIU.equals(estatDocument)
+					&& distribucioAnnex.getProcesIntents() >= (maxReintents - 1) 
+					&& getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) 
+			{	
+				logger.error("Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+				
+				uuidDocumentCreat = arxiuDocumentAnnexCrear(
+						distribucioAnnex,
+						unitatArrelCodi,
+						fitxerContingut,
+						arxiuFirmes,
+						uuidExpedient,
+						documentEniRegistrableDto,
+						DocumentEstat.ESBORRANY);	
+			} else {
+				throw se;
+			}
+		}
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
 	}
@@ -438,9 +496,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 	private String revisarContingutNom(String nom) {
 		if (nom != null) {
-			String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
+			/*String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
 			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
-			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
+			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();*/
+			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
+			if (nom.endsWith(".")) {
+				nom = nom.substring(0, nom.length()-1);
+			}
+			return nom;
 		} else {
 			return null;
 		}
@@ -452,18 +515,21 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes,
 			String identificadorPare,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
-		
-		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
-		if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()) {
-			if (ValidacioFirmaEnum.isValida(annex.getValidacioFirma()) 
-					|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
-				estatDocument = DocumentEstat.DEFINITIU;
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			DocumentEstat estatDocument) throws SistemaExternException {
+				
+		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
+			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
+			if (fitxer.getContingut() == null) {
+				fitxer.setContingut(firmes.get(0).getContingut());
 			}
+			firmes = null;
 		}
+		
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("id", annex.getId());
 		accioParams.put("titol", annex.getTitol());
 		if (fitxer != null) {
 			accioParams.put("fitxerNom", fitxer.getNom());
@@ -493,6 +559,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			accioParams.put("firmesPerfil", firmesPerfil.toString());
 			accioParams.put("firmesContingut", firmesContingut.toString());
 		}
+		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
+		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
 		
 		long t0 = System.currentTimeMillis();
 		try {
@@ -541,7 +609,147 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	}
 	
 	
+	/** Determina l'extensió a partir  del fitxer */
+	private DocumentExtensio getDocumentExtensio(FitxerDto fitxer) {
+		DocumentExtensio extensio = null;
+		if (fitxer != null && fitxer.getExtensio() != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
+		}
+		return extensio;
+	}
 	
+	/** Determina l'extensió a partir del nom del fitxer */
+	private DocumentExtensio getDocumentExtensio(String fitxerNom) {
+		FitxerDto fitxer = new FitxerDto();
+		fitxer.setNom(fitxerNom);
+		DocumentExtensio extensio = null;
+		if (fitxer != null && fitxer.getExtensio() != null) {
+			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
+			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
+		}
+		return extensio;
+	}
+
+
+	/** Consulta el format a partir de l'extensió
+	 * 
+	 * @param extensio
+	 * @return
+	 */
+	private DocumentFormat getDocumentFormat(DocumentExtensio extensio) {
+
+		if (extensio == null ) {
+			return null;
+		}
+		DocumentFormat format = null;
+		switch (extensio) {
+		case AVI:
+			format = DocumentFormat.AVI;
+			break;
+		case CSS:
+			format = DocumentFormat.CSS;
+			break;
+		case CSV:
+			format = DocumentFormat.CSV;
+			break;
+		case DOCX:
+			format = DocumentFormat.SOXML;
+			break;
+		case GML:
+			format = DocumentFormat.GML;
+			break;
+		case GZ:
+			format = DocumentFormat.GZIP;
+			break;
+		case HTM:
+			format = DocumentFormat.XHTML; // HTML o XHTML!!!
+			break;
+		case HTML:
+			format = DocumentFormat.XHTML; // HTML o XHTML!!!
+			break;
+		case JPEG:
+			format = DocumentFormat.JPEG;
+			break;
+		case JPG:
+			format = DocumentFormat.JPEG;
+			break;
+		case MHT:
+			format = DocumentFormat.MHTML;
+			break;
+		case MHTML:
+			format = DocumentFormat.MHTML;
+			break;
+		case MP3:
+			format = DocumentFormat.MP3;
+			break;
+		case MP4:
+			format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+			break;
+		case MPEG:
+			format = DocumentFormat.MP4V; // MP4A o MP4V!!!
+			break;
+		case ODG:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODP:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODS:
+			format = DocumentFormat.OASIS12;
+			break;
+		case ODT:
+			format = DocumentFormat.OASIS12;
+			break;
+		case OGA:
+			format = DocumentFormat.OGG;
+			break;
+		case OGG:
+			format = DocumentFormat.OGG;
+			break;
+		case PDF:
+			format = DocumentFormat.PDF; // PDF o PDFA!!!
+			break;
+		case PNG:
+			format = DocumentFormat.PNG;
+			break;
+		case PPTX:
+			format = DocumentFormat.SOXML;
+			break;
+		case RTF:
+			format = DocumentFormat.RTF;
+			break;
+		case SVG:
+			format = DocumentFormat.SVG;
+			break;
+		case TIFF:
+			format = DocumentFormat.TIFF;
+			break;
+		case TXT:
+			format = DocumentFormat.TXT;
+			break;
+		case WEBM:
+			format = DocumentFormat.WEBM;
+			break;
+		case XLSX:
+			format = DocumentFormat.SOXML;
+			break;
+		case ZIP:
+			format = DocumentFormat.ZIP;
+			break;
+		case CSIG:
+			format = DocumentFormat.CSIG;
+			break;
+		case XSIG:
+			format = DocumentFormat.XSIG;
+			break;
+		case XML:
+			format = DocumentFormat.XML;
+			break;
+		}
+		return format;
+	}
+
 	private String uniqueNameArxiu(
 			String arxiuNom,
 			String identificadorPare) throws ArxiuException, SistemaExternException {
@@ -1009,11 +1217,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		metadades.setTipusDocumental(tipusDocumental);
 		
-		DocumentExtensio extensio = null;
-		if (fitxer != null && fitxer.getExtensio() != null) {
-			String extensioAmbPunt = (fitxer.getExtensio().startsWith(".") ? "" : ".") + fitxer.getExtensio().toLowerCase();
-			extensio = DocumentExtensio.toEnum(extensioAmbPunt);
-		}
+		DocumentExtensio extensio = this.getDocumentExtensio(fitxer);
 
 		// Firmes
 		Firma primeraFirma = null;
@@ -1078,111 +1282,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
-			DocumentFormat format = null;
-			switch (extensio) {
-			case AVI:
-				format = DocumentFormat.AVI;
-				break;
-			case CSS:
-				format = DocumentFormat.CSS;
-				break;
-			case CSV:
-				format = DocumentFormat.CSV;
-				break;
-			case DOCX:
-				format = DocumentFormat.SOXML;
-				break;
-			case GML:
-				format = DocumentFormat.GML;
-				break;
-			case GZ:
-				format = DocumentFormat.GZIP;
-				break;
-			case HTM:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-				break;
-			case HTML:
-				format = DocumentFormat.XHTML; // HTML o XHTML!!!
-				break;
-			case JPEG:
-				format = DocumentFormat.JPEG;
-				break;
-			case JPG:
-				format = DocumentFormat.JPEG;
-				break;
-			case MHT:
-				format = DocumentFormat.MHTML;
-				break;
-			case MHTML:
-				format = DocumentFormat.MHTML;
-				break;
-			case MP3:
-				format = DocumentFormat.MP3;
-				break;
-			case MP4:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-				break;
-			case MPEG:
-				format = DocumentFormat.MP4V; // MP4A o MP4V!!!
-				break;
-			case ODG:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODP:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODS:
-				format = DocumentFormat.OASIS12;
-				break;
-			case ODT:
-				format = DocumentFormat.OASIS12;
-				break;
-			case OGA:
-				format = DocumentFormat.OGG;
-				break;
-			case OGG:
-				format = DocumentFormat.OGG;
-				break;
-			case PDF:
-				format = DocumentFormat.PDF; // PDF o PDFA!!!
-				break;
-			case PNG:
-				format = DocumentFormat.PNG;
-				break;
-			case PPTX:
-				format = DocumentFormat.SOXML;
-				break;
-			case RTF:
-				format = DocumentFormat.RTF;
-				break;
-			case SVG:
-				format = DocumentFormat.SVG;
-				break;
-			case TIFF:
-				format = DocumentFormat.TIFF;
-				break;
-			case TXT:
-				format = DocumentFormat.TXT;
-				break;
-			case WEBM:
-				format = DocumentFormat.WEBM;
-				break;
-			case XLSX:
-				format = DocumentFormat.SOXML;
-				break;
-			case ZIP:
-				format = DocumentFormat.ZIP;
-				break;
-			case CSIG:
-				format = DocumentFormat.CSIG;
-				break;
-			case XSIG:
-				format = DocumentFormat.XSIG;
-				break;
-			case XML:
-				format = DocumentFormat.XML;
-				break;
-			}
+			DocumentFormat format = this.getDocumentFormat(extensio);
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
@@ -1384,17 +1484,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					if (PropertiesHelper.getProperties().isLlegirSystem()) {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class).newInstance(
-								"es.caib.distribucio.");
-					} else {
-						arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
-								String.class,
-								Properties.class).newInstance(
-								"es.caib.distribucio.",
-								PropertiesHelper.getProperties().findAll());
-					}
+					arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+													String.class, 
+													Properties.class)
+									.newInstance("es.caib.distribucio.", this.getProperties());		
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1415,7 +1508,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					signaturaPlugin = (SignaturaPlugin)clazz.newInstance();
+					signaturaPlugin = (SignaturaPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(this.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioSignaturaCodi,
@@ -1430,15 +1524,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		return signaturaPlugin;
 	}
-	private boolean gestioDocumentalPluginConfiguracioProvada = false;
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() throws SistemaExternException {
-		if (gestioDocumentalPlugin == null && !gestioDocumentalPluginConfiguracioProvada) {
-			gestioDocumentalPluginConfiguracioProvada = true;
+		if (gestioDocumentalPlugin == null) {
 			String pluginClass = getPropertyPluginGestioDocumental();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.newInstance();
+					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.getDeclaredConstructor(Properties.class)
+							.newInstance(this.getProperties());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							itegracioGesdocCodi,
@@ -1458,34 +1551,45 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}
 	private String getPropertyPluginArxiu() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.arxiu.class");
 	}
 	private String getPropertyPluginRegistreExpedientClassificacio() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.classificacio");
 	}
 	private String getPropertyPluginRegistreExpedientSerieDocumental() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.anotacions.registre.expedient.serie.documental");
 	}
 	private String getPropertyPluginGestioDocumental() {
-		return PropertiesHelper.getProperties().getProperty("es.caib.distribucio.plugin.gesdoc.class");
+		return getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
-		return new Boolean(PropertiesHelper.getProperties().getProperty(
+		return new Boolean(getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
-		return PropertiesHelper.getProperties().getProperty(
+		return getProperty(
 				"es.caib.distribucio.plugin.signatura.class");
 	}
+
+	private int getGuardarAnnexosMaxReintents() {
+		String maxReintents = this.getProperties().getProperty(
+				"es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
+	}
+
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
-		return new Boolean(PropertiesHelper.getProperties().getProperty(
+		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
-	
+
 	@Override
 	public String getUsuariIntegracio() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

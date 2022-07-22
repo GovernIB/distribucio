@@ -33,18 +33,19 @@ public class ConfigHelper {
     @Autowired
     private PluginHelper pluginHelper;
     
-    
+    /** Per guardar l'entitat actual per a les propietats multi entitat. */
     private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();    
     
-    public static ThreadLocal<EntitatDto> getEntitat() {
-		return entitat;
+    public static EntitatDto getEntitat() {
+		return entitat.get();
 	}
-
-
 	public static void setEntitat(EntitatDto entitat) {
 		ConfigHelper.entitat.set(entitat);
 	}
-
+	public static String getEntitatActualCodi() {
+		EntitatDto entitat = getEntitat();
+		return entitat != null ? entitat.getCodi() : null;
+	}
 
 	@PostConstruct
     public void firstSincronization() {
@@ -73,24 +74,29 @@ public class ConfigHelper {
     
     @Transactional(readOnly = true)
     public String getConfig(EntitatDto entitatActual, String key) {
-
-		ConfigEntity configEntity = null;
+    	return getConfigForEntitat(entitatActual != null ? entitatActual.getCodi() : null, key);
+    }
+    
+    @Transactional(readOnly = true)
+    public String getConfigForEntitat(String entitatCodi, String key) {
 		String value = null;
-    	if (entitatActual != null) {
-    		// Cerca el valor per l'entitat
-    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-            configEntity = configRepository.findOne(keyEntitat);
-            if (configEntity != null) {
-            	value = getConfig(configEntity);
-            }
-    	}
-    	if (configEntity == null || value == null) {
-    		// Cerca el valor per la key sense entitat
-    		configEntity = configRepository.findOne(key);
-    	}
+		ConfigEntity configEntity = configRepository.findOne(key);
 		if (configEntity != null) {
-			value = getConfig(configEntity);
+			// Propietat trobada
+			if (configEntity.isConfigurable() && entitatCodi != null) {
+	    		// Propietat a nivell d'entitat
+	    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatCodi, key);
+	    		ConfigEntity configEntitatEntity = configRepository.findOne(keyEntitat);
+	            if (configEntitatEntity != null) {
+	            	value = getConfig(configEntitatEntity);
+	            }
+			}
+			if (value == null) {
+				// Propietat global
+				value = getConfig(configEntity);
+			}
 		} else {
+			// Propietat JBoss
 			value = getJBossProperty(key);
 		}
 		return value;
@@ -100,15 +106,12 @@ public class ConfigHelper {
     public String getConfig(String key)  {    	
     	
 		EntitatDto entitatActual = ConfigHelper.entitat.get();
-		
-		//key = convertirKeyGeneralToKeyPropietat(entitatActual, key);
-		
+				
 		return this.getConfig(entitatActual, key);
-		
 	}
 	
-	private String convertirKeyGeneralToKeyPropietat (EntitatDto entitatActual, String key) {
-		if (entitatActual != null && !key.contains(entitatActual.getCodi())) {
+	private String convertirKeyGeneralToKeyPropietat (String entitatActualCodi, String key) {
+		if (entitatActualCodi != null && !key.contains(entitatActualCodi)) {
 			String keyReplace = key.replace(".", "_");
 			String[] splitKey = keyReplace.split("_");
 			String keyEntitat = "";
@@ -116,7 +119,7 @@ public class ConfigHelper {
 				if (i == (splitKey.length - 1)) {
 					keyEntitat = keyEntitat + splitKey[i];
 				}else if (i == 2){
-					keyEntitat = keyEntitat + splitKey[i] + "." + entitatActual.getCodi() + ".";
+					keyEntitat = keyEntitat + splitKey[i] + "." + entitatActualCodi + ".";
 				}else {				
 					keyEntitat = keyEntitat + splitKey[i] + ".";
 				}
@@ -218,9 +221,26 @@ public class ConfigHelper {
         return configEntity.getValue();
     }
     
+    /** Obté totes les propietats per a un codi d'entitat s'usa per inicalitzar els plugins.
+     */
+    @Transactional(readOnly = true)
+	public Properties getAllEntityProperties(String entitatCodi) {
+        Properties properties = new Properties();
+        
+        List<ConfigEntity> configs = configRepository.findByEntitatCodiIsNull();
+        for (ConfigEntity config: configs) {
+             String value = getConfigForEntitat(entitatCodi, config.getKey());
+            if (value != null) {
+                properties.put(config.getKey(), value);
+            }
+        }
+        return properties;
+	}
+    
 	private static final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
 
-    public static class JBossPropertiesHelper extends Properties {
+    @SuppressWarnings("serial")
+	public static class JBossPropertiesHelper extends Properties {
 
         private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path"; //in jboss is null
 
@@ -343,5 +363,7 @@ public class ConfigHelper {
         
     	private static final Logger logger = LoggerFactory.getLogger(JBossPropertiesHelper.class);
     }
+
+    
     
 }
