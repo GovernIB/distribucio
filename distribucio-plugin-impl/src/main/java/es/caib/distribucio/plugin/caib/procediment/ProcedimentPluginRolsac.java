@@ -20,6 +20,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
@@ -113,6 +114,57 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 				TypeFactory.defaultInstance().constructType(ProcedimientosResponse.class));
 	}
 
+	@Override
+	public ProcedimentDto findAmbCodiSia(
+			String codiDir3, 
+			String codiSia) throws SistemaExternException {
+		logger.debug("Consulta del procediment pel codi SIA i codiDir3 (" +
+			"codiSia=" + codiSia + "codiDir3=" + codiDir3 + ")");
+		ProcedimientosResponse response = null;
+		try {
+			StringBuilder sb = new StringBuilder(getServiceUrl());			
+			String params = "?lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
+			
+			response = findProcedimentsRolsac(
+					sb.toString(),
+					params);
+			
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					"No s'han pogut consultar el procediment de ROLSAC (" +
+					"codiSia=" + codiSia + ", codiDir3=" + codiDir3 + ")",
+					ex);
+		}
+		
+		if (response != null && response.getStatus().equals("200")) {
+			if (response.getResultado() != null && !response.getResultado().isEmpty()) {
+				for (Procediment procediment: response.getResultado()) {
+					toProcedmientDto(procediment);
+				}
+				
+				return toProcedmientDto(response.getResultado().get(0));
+			} else { 
+				return null;
+			}
+			
+		} else {
+			throw new SistemaExternException(
+					"No s'han pogut consultar el procediment de ROLSAC (" +
+					"codiSia=" + codiSia + "). Resposta rebuda amb el codi " + response.getStatus());
+		}	
+	}
+	
+	public ProcedimentDto toProcedmientDto (Procediment procediment) throws  SistemaExternException {
+		ProcedimentDto dto = new ProcedimentDto();
+		if (procediment != null) {
+			dto.setCodi(procediment.getCodigo());
+			dto.setCodiSia(procediment.getCodigoSIA());
+			dto.setNom(procediment.getNombre());			
+		}
+		return dto;
+	}
+
+	
 	private String getServiceUrl() {
 		return getProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
@@ -164,5 +216,6 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentPluginRolsac.class);
+
 
 }

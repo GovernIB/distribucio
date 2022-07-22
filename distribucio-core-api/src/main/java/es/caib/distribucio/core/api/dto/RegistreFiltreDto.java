@@ -181,5 +181,13 @@ public class RegistreFiltreDto implements Serializable {
 		return ToStringBuilder.reflectionToString(this);
 	}
 	
+	public boolean isNomesAmbEsborranys() {
+		return nomesAmbEsborranys;
+	}
+	public void setNomesAmbEsborranys(boolean nomesAmbEsborranys) {
+		this.nomesAmbEsborranys = nomesAmbEsborranys;
+	}
+	
 	private static final long serialVersionUID = -139254994389509932L;
+
 }

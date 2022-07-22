@@ -1093,7 +1093,7 @@ public class PluginHelper {
 	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
 		
 		String accioDescripcio = "Consulta dels procediments pel codi SIA";
-		String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();
+		String usuariIntegracio = getProcedimentPlugin().getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("codiSia", codiSia);
 		long t0 = System.currentTimeMillis();
@@ -1285,7 +1285,7 @@ public class PluginHelper {
 		return plugin;
 	}
 	private ProcedimentPlugin getProcedimentPlugin() {
-		loadPluginProperties("ARXIU");
+		loadPluginProperties("PROCEDIMENTS");
 		String codiEntitat = getCodiEntitatActual();
 		ProcedimentPlugin plugin = procedimentPlugin.get(codiEntitat);
 		if (plugin == null) {
