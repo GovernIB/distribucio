@@ -364,17 +364,6 @@ $(document).ready(function() {
 
 	
 		<div class="text-right">
-			<div class="btn-group">
-				<button class="ml-2 btn btn-success" data-toggle="dropdown"><span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="registre.user.accio.exportar.filtre.anotacio" />&nbsp;<span class="caret"></span></button>
-				<ul class="dropdown-menu">
-					<li><a onclick="exportar('ods');" aria-haspopup="true" aria-expanded="false">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.ods"/></span>
-					</a></li>
-					<li><a onclick="exportar('csv');" aria-haspopup="true" aria-expanded="false">
-						<span class="fa fa-file-excel-o"></span> <spring:message code="registre.user.accio.exportar.filtre.anotacio.csv"/></span>
-					</a></li>		
-				</ul>
-			</div>
 		
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
