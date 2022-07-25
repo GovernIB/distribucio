@@ -341,4 +341,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("maxReintents") int maxReintents);
 	
+	
+	/**
+	 * Consulta per retornar un llistat de registres filtrat pel seu
+	 * codi de backoffice (BACK_CODI) 
+	 **
+	 */
+	@Query("from RegistreEntity r " + 
+			"where r.backCodi = :backCodi")
+	public List<RegistreEntity> findRegistreBackCodi(
+			@Param("backCodi") String backCodi);
+	
 }

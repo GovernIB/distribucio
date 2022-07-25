@@ -16,10 +16,12 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.repository.BackofficeRepository;
+import es.caib.distribucio.core.repository.RegistreRepository;
 
 
 @Service
@@ -34,6 +36,8 @@ public class BackofficeServiceImpl implements BackofficeService {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
+	@Autowired
+	private RegistreRepository registreRepository;
 
 	
 	@Transactional
@@ -82,7 +86,8 @@ public class BackofficeServiceImpl implements BackofficeService {
 				false);
 		
 		BackofficeEntity backofficeEntity = backofficeRepository.findOne(backofficeDto.getId());
-
+		
+		List<RegistreEntity> llistatRegistres = registreRepository.findRegistreBackCodi(backofficeEntity.getCodi());
 		
 		backofficeEntity.update(
 				backofficeDto.getNom(),
@@ -96,6 +101,11 @@ public class BackofficeServiceImpl implements BackofficeService {
 		BackofficeDto dto = conversioTipusHelper.convertir(
 				backofficeEntity,
 				BackofficeDto.class);
+		
+		for(RegistreEntity registreEntity : llistatRegistres) {
+			registreEntity.updateBackCodi(dto.getCodi());
+		}
+		
 		return dto;
 	}
 
