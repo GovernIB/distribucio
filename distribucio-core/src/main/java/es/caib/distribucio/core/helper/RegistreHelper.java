@@ -1268,7 +1268,7 @@ public class RegistreHelper {
 										pluginHelper.arxiuDocumentConsultar(
 											contingut.getIdentificador(), null, false))) 
 						{
-								throw new ValidationException("Sóc en Fernando Montilla i vinc a per vosaltres.");
+								throw new ValidationException("No hi ha cap document en estat esborrany.");
 						}
 					}
 					// Tanca l'expedient
