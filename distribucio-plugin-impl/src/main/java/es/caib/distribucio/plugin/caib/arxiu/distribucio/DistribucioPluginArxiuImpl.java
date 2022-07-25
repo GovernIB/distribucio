@@ -517,14 +517,15 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
 			DocumentEstat estatDocument) throws SistemaExternException {
-				
-		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
-			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
-			if (fitxer.getContingut() == null) {
-				fitxer.setContingut(firmes.get(0).getContingut());
-			}
-			firmes = null;
-		}
+		
+		// Codi comentat per la issue #479 
+//		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
+//			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
+//			if (fitxer.getContingut() == null) {
+//				fitxer.setContingut(firmes.get(0).getContingut());
+//			}
+//			firmes = null;
+//		}
 		
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
