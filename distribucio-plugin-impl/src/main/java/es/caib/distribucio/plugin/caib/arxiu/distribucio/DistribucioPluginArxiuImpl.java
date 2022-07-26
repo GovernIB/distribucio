@@ -106,10 +106,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String unitatArrelCodi) throws SistemaExternException {
 
 		String nomExpedient = "EXP_REG_" + expedientNumero + "_" + System.currentTimeMillis();
-		nomExpedient = nomExpedient.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
-		if (nomExpedient.endsWith(".")) {
-			nomExpedient = nomExpedient.substring(0, nomExpedient.length()-1);
-		}
+		revisarContingutNom(nomExpedient);
 
 		String classificacio = getPropertyPluginRegistreExpedientClassificacio();
 		if (classificacio == null || classificacio.isEmpty()) {
