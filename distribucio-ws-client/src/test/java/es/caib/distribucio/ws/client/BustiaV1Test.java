@@ -67,7 +67,7 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
 	
 
-	private static final int N_ANOTACIONS = 1;
+	private static final int N_ANOTACIONS = 2;
 	private static final int N_ANNEXOS = 3;
 	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.TimeZone;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -79,6 +80,7 @@ import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
  */
 public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginProperties implements DistribucioPlugin {
 
+	private final int MAX_REINTENTS_NOM_ARXIU = 10;
 
 	private IntegracioManager integracioManager;
 	private String itegracioGesdocCodi = "GESDOC";
@@ -105,9 +107,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String expedientNumero,
 			String unitatArrelCodi) throws SistemaExternException {
 
-		String nomExpedient = "EXP_REG_" + expedientNumero + "_" + System.currentTimeMillis();
-		revisarContingutNom(nomExpedient);
-
+		String identificador = null;
+		boolean duplicated = false;
+		int intent = 0;
 		String classificacio = getPropertyPluginRegistreExpedientClassificacio();
 		if (classificacio == null || classificacio.isEmpty()) {
 			throw new ValidationException(
@@ -120,44 +122,65 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		String accioDescripcio = "Creant expedient per l'anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("titol", nomExpedient);
 		accioParams.put("organ", unitatArrelCodi);
 		accioParams.put("classificacio", classificacio);
 		accioParams.put("estat", ExpedientEstatEnumDto.OBERT.name());
 		accioParams.put("serieDocumental", serieDocumental);
-		long t0 = System.currentTimeMillis();
-		try {
-			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
-					toArxiuExpedient(
-							null,
-							nomExpedient,
-							null,
-							Arrays.asList(unitatArrelCodi),
-							new Date(),
-							classificacio,
-							ExpedientEstatEnumDto.OBERT,
-							null,
-							serieDocumental));
-			integracioAddAccioOk(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0);
-			return expedientCreat.getIdentificador();
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al crear expedient per l'anotació de registre";
-			integracioAddAccioError(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					integracioArxiuCodi,
-					errorDescripcio,
-					ex);
-		}
+		do {
+			duplicated = false;
+			String nomExpedient = "EXP_REG_" + expedientNumero + "_" + System.currentTimeMillis();
+			revisarContingutNom(nomExpedient);
+			accioParams.put("titol", nomExpedient);
+			long t0 = System.currentTimeMillis();
+			try {
+				ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
+						toArxiuExpedient(
+								null,
+								nomExpedient,
+								null,
+								Arrays.asList(unitatArrelCodi),
+								new Date(),
+								classificacio,
+								ExpedientEstatEnumDto.OBERT,
+								null,
+								serieDocumental));
+				integracioAddAccioOk(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0);
+				identificador = expedientCreat.getIdentificador();
+			} catch (Exception ex) {
+				
+				if (ex.getMessage().contains("Duplicate child name not allowed") 
+						&& intent < 10) {
+					intent++;
+					logger.warn("Error creant un expedient amb nom " + nomExpedient + " per nom duplicat. Intent " + intent + " de " + MAX_REINTENTS_NOM_ARXIU );
+					try {
+						Thread.sleep(new Random().nextLong());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					duplicated = true;
+				} else {
+					String errorDescripcio = "Error al crear expedient per l'anotació de registre";
+					integracioAddAccioError(
+							integracioArxiuCodi,
+							accioDescripcio,
+							accioParams,
+							System.currentTimeMillis() - t0,
+							errorDescripcio,
+							ex);
+					throw new SistemaExternException(
+							integracioArxiuCodi,
+							errorDescripcio,
+							ex);
+				}
+				
+			}
+		} while(duplicated && intent < 10);
+		
+		return identificador;
 	}
 	
 
