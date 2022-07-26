@@ -1268,7 +1268,7 @@ public class RegistreHelper {
 										pluginHelper.arxiuDocumentConsultar(
 											contingut.getIdentificador(), null, false))) 
 						{
-								throw new ValidationException("No hi ha cap document en estat esborrany.");
+								throw new ValidationException("No es pot tancar perquè hi ha documents en estat esborrany.");
 						}
 					}
 					// Tanca l'expedient

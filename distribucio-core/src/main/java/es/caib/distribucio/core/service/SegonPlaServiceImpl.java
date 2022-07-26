@@ -308,7 +308,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		long startTime = new Date().getTime();
 		
 		logger.trace("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
-		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date());
+		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date()); // 1662681600000L 09/09/2022
 		if (pendents != null && !pendents.isEmpty()) {
 			logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
 			for (RegistreEntity registre: pendents) {
