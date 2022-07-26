@@ -148,9 +148,10 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 			}
 			
 		} else {
-			throw new SistemaExternException(
-					"No s'han pogut consultar el procediment de ROLSAC (" +
-					"codiSia=" + codiSia + "). Resposta rebuda amb el codi " + response.getStatus());
+			return null;
+//			throw new SistemaExternException(
+//					"No s'han pogut consultar el procediment de ROLSAC (" +
+//					"codiSia=" + codiSia + "). Resposta rebuda amb el codi " + response.getStatus());
 		}	
 	}
 	
