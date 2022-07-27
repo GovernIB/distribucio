@@ -2759,7 +2759,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Override
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
-		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = null;
+		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = new ArrayList<>();
 		List<RegistreAnnexEntity> registresAnnexEntity = registreRepository.getDadesRegistreAnnex(registreId);
 		
 		for(RegistreAnnexEntity registreAnnex : registresAnnexEntity) {
@@ -2768,6 +2768,9 @@ public class RegistreServiceImpl implements RegistreService {
 				RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
 				registresAnnexFirmesDto.add(registreAnnexFirmaDto);
 			}
+		}
+		if (registresAnnexFirmesDto.isEmpty()) {
+			registresAnnexFirmesDto = null;
 		}
 		
 		return registresAnnexFirmesDto;
