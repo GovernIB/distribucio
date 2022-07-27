@@ -518,6 +518,7 @@ public class RegistreUserController extends BaseUserController {
 							isVistaMoviments));
 			model.addAttribute("registreId", registreId);
 			model.addAttribute("concsvBaseUrl", configService.getConcsvBaseUrl());
+			model.addAttribute("gestioDocumentalFirmes", registreService.getDadesAnnexFirmaSenseDetall(registreId)); // CANVIAR NOM
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de l'annex", ex);
 			model.addAttribute("missatgeError", ex.getMessage());

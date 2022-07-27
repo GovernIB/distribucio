@@ -10,6 +10,9 @@
 	pageContext.setAttribute(
 				"isRolActualAdministrador",
 				es.caib.distribucio.war.helper.RolHelper.isRolActualAdministrador(request));
+	pageContext.setAttribute(
+				"isRolActualAdminLectura",
+				es.caib.distribucio.war.helper.RolHelper.isRolActualAdminLectura(request));
 %>
 
 <html>
@@ -266,6 +269,52 @@
 				</c:choose>
 			</c:if>
 		</td>
+	</tr>
+	<tr>
+		<c:if test="${annex.arxiuEstat == 'ESBORRANY' }">
+			<c:if test="${isRolActualAdministrador || isRolActualAdminLectura}">
+				<td>
+					<strong><spring:message code="registre.annex.detalls.camp.gestio.documental"></spring:message></strong>
+				</td>
+				<td>Identificadors: 
+					${annex.gesdocDocumentId} <br>
+					Firmes: 
+					<c:choose>
+						<c:when test="${gestioDocumentalFirmes == null}">
+						(cap)
+						</c:when>
+						<c:when test="${gestioDocumentalFirmes != null}">							
+							<table class="table teble-striped table-bordered">
+								<thead>
+									<tr>
+										<th><strong><spring:message code="registre.annex.detalls.camp.firmaTipus"/></strong></th>		
+										<th><strong><spring:message code="registre.annex.detalls.camp.firmaPerfil"/></strong></th>
+										<th><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></th>
+										<th><strong><spring:message code="registre.annex.detalls.camp.tipus.mime"/></strong></th>
+										<th><strong><spring:message code="registre.annex.detalls.camp.firmaCsvRegulacio"/></strong></th>
+										<th><strong><spring:message code="registre.annex.detalls.camp.firma.autoFirma"/></strong></th>
+										<th><strong><spring:message code="registre.annex.detalls.camp.firma.gestio.documental.firma"/></strong></th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="gestDocFirmes" items="${gestioDocumentalFirmes}">
+										<tr>
+											<td>${gestDocFirmes.tipus}</td>
+											<td>${gestDocFirmes.perfil}</td>
+											<td>${gestDocFirmes.fitxerNom}</td>
+											<td>${gestDocFirmes.tipusMime}</td>
+											<td>${gestDocFirmes.csvRegulacio}</td>
+											<td>${gestDocFirmes.autofirma}</td>
+											<td>${gestDocFirmes.gesdocFirmaId}</td>						
+										</tr>
+									</c:forEach>									
+								</tbody>
+							</table>
+						</c:when>
+					</c:choose>
+				</td>
+			</c:if>
+		</c:if>
 	</tr>
 	<tr>
 		<td><strong><spring:message code="registre.annex.detalls.camp.fitxer"/></strong></td>

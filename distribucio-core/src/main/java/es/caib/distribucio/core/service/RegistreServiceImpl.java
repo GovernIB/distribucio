@@ -57,6 +57,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
@@ -121,6 +122,7 @@ import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -150,6 +152,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreAnnexRepository registreAnnexRepository;
 	@Autowired
 	RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
 	@Autowired
 	private BustiaRepository bustiaRepository;
 	@Autowired
@@ -2748,6 +2752,25 @@ public class RegistreServiceImpl implements RegistreService {
 							+ numThreads + ". Error: " + e.getMessage(),e);
 		}
 		return ret;
+	}
+
+
+	@SuppressWarnings("null")
+	@Transactional
+	@Override
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
+		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = null;
+		List<RegistreAnnexEntity> registresAnnexEntity = registreRepository.getDadesRegistreAnnex(registreId);
+		
+		for(RegistreAnnexEntity registreAnnex : registresAnnexEntity) {
+			RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexFirmaRepository.getRegistreAnnexFirmaSenseDetall(registreAnnex.getId());
+			if(registreAnnexFirmaEntity != null) {
+				RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
+				registresAnnexFirmesDto.add(registreAnnexFirmaDto);
+			}
+		}
+		
+		return registresAnnexFirmesDto;
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);

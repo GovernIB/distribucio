@@ -16,6 +16,7 @@ import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -340,5 +341,14 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("maxReintents") int maxReintents);
+	
+	
+	/**
+	 *  Consulta per retornar les dades dels annexos dels registres
+	 **/
+	@Query("from RegistreAnnexEntity ra " + 
+			"where ra.registre.id = :registreId")
+	public List<RegistreAnnexEntity> getDadesRegistreAnnex(
+			@Param("registreId") Long registreId);
 	
 }
