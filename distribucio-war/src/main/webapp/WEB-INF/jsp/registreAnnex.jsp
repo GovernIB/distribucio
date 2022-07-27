@@ -276,7 +276,8 @@
 				<td>
 					<strong><spring:message code="registre.annex.detalls.camp.gestio.documental"></spring:message></strong>
 				</td>
-				<td>Identificador: 
+				<td>
+					Identificador: 
 					${annex.gesdocDocumentId} <br>
 					Firmes: 
 					<c:choose>
