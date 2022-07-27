@@ -156,11 +156,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						&& intent < 10) {
 					intent++;
 					logger.warn("Error creant un expedient amb nom " + nomExpedient + " per nom duplicat. Intent " + intent + " de " + MAX_REINTENTS_NOM_ARXIU );
-					try {
+					/*try {
 						Thread.sleep(new Random().nextLong());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
-					}
+					}*/
 					duplicated = true;
 				} else {
 					String errorDescripcio = "Error al crear expedient per l'anotació de registre";
