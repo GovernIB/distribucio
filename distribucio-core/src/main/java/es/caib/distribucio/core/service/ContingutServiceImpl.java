@@ -528,7 +528,9 @@ public class ContingutServiceImpl implements ContingutService {
 					c.setTime(ara);
 					c.add(Calendar.DATE, dies);
 					Date dataTancament = c.getTime();
-					registre.updateDataTancament(dataTancament);
+					if(registre.getAnnexosEstatEsborrany() == 0) {
+						registre.updateDataTancament(dataTancament);
+					}
 					registre.updateArxiuEsborrat();
 				}
 			}

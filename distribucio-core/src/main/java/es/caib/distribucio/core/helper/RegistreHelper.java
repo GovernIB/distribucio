@@ -1263,10 +1263,10 @@ public class RegistreHelper {
 				} else {
 					// Primer comprova si hi ha cap document en estat d'esborrany
 					for(ContingutArxiu contingut : expedient.getContinguts()) {
+						Document document = pluginHelper.arxiuDocumentConsultar(
+								contingut.getIdentificador(), null, false);
 						if (ContingutTipus.DOCUMENT.equals(contingut.getTipus()) 
-								&& DocumentEstat.ESBORRANY.equals(
-										pluginHelper.arxiuDocumentConsultar(
-											contingut.getIdentificador(), null, false))) 
+								&& DocumentEstat.ESBORRANY.equals(document.getEstat())) 
 						{
 								throw new ValidationException("No es pot tancar perquè hi ha documents en estat esborrany.");
 						}
