@@ -1315,7 +1315,7 @@ public class RegistreHelper {
 			anotacioRegistreId.setIndetificador(pendent.getNumero());			
 			
 			try {
-				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero(),
+				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
 						clauSecreta));
 			} catch (Exception ex) {
 				String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;

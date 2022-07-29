@@ -1165,12 +1165,23 @@ public class RegistreServiceImpl implements RegistreService {
 			if (clauSecreta == null) {
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
 			}
-			String encryptedIdentificator = RegistreHelper.encrypt(
-					id.getIndetificador(),
-					clauSecreta);
-			if (!encryptedIdentificator.equals(id.getClauAcces())) {
+			List<RegistreEntity> registresMateixNumero = registreRepository.findByNumero(id.getIndetificador());
+			String encryptedIdentificator = "";
+			boolean registreIdentificat = false;
+			for(RegistreEntity registre : registresMateixNumero) {
+				encryptedIdentificator = RegistreHelper.encrypt(
+						id.getIndetificador() + "_" + new Long(registre.getId()),
+						clauSecreta);	
+				if (encryptedIdentificator.equals(id.getClauAcces())) {
+					registreIdentificat = true;
+				}
+			}
+			if (!registreIdentificat) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			}
+//			if (!encryptedIdentificator.equals(id.getClauAcces())) {
+//				throw new RuntimeException("La clau o identificador és incorrecte");
+//			}
 			RegistreEntity registreEntity = this.getRegistrePerIdentificador(id.getIndetificador());
 
 			EntitatDto entitatDto = new EntitatDto();
