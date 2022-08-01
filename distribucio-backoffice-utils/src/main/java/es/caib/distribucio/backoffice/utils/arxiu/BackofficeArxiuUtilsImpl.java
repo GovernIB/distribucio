@@ -210,8 +210,9 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 			
 			boolean documentExistsInArxiu = false;
 			if (fillsArxiu != null) {
+				String nom = revisarContingutNom(annex.getNom());
 				for (ContingutArxiu fillArxiu : fillsArxiu) {
-					if (fillArxiu.getTipus() == ContingutTipus.DOCUMENT && fillArxiu.getNom().equals(annex.getTitol())) {
+					if (fillArxiu.getTipus() == ContingutTipus.DOCUMENT && fillArxiu.getNom().equals(nom)) {
 						documentExistsInArxiu = true;
 						logger.debug("Document amb nom: " + annex.getTitol() + " ja existeix al arxiu");
 						resultatAnnex.setAccio(AnnexAccio.EXISTENT);
@@ -318,7 +319,12 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 		if (nom == null) {
 			return null;
 		}
-		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+		//return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+		nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
+		if (nom.endsWith(".")) {
+			nom = nom.substring(0, nom.length()-1);
+		}
+		return nom;
 	}
 
 	private void addInteressats(
