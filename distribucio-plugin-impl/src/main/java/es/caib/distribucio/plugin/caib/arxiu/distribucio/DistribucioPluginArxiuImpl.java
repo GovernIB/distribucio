@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.TimeZone;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -315,7 +314,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// Determina l'estat
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		// Es guarden definitius si:
-		// 1) El documetn té firmes
+		// 1) El document té firmes
 		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
 		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
 		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) 
@@ -323,9 +322,18 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// 3) Format no reconegut
 		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
 		guardarDefinitiu = guardarDefinitiu && format != null;
+
+		// 4) Té una firma reconeguda per l'arxiu CAIB o la propietat  
+		// (es.caib.distribucio.tasca.guardar.annexos.perfils.tipus.no.caib.com.esborrany) està desactivada 
+		boolean existeixAlCaibProperty = getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib();		
+		if (existeixAlCaibProperty) {
+			guardarDefinitiu = guardarDefinitiu && this.comprovarFirmesReconegudes(arxiuFirmes);			
+		}
+		
 		if (guardarDefinitiu) {
 			estatDocument = DocumentEstat.DEFINITIU;
 		}
+		
 
 		
 		// SAVE IN ARXIU
@@ -367,6 +375,25 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
+	}
+
+	private boolean comprovarFirmesReconegudes(List<ArxiuFirmaDto> arxiuFirmes) {
+
+		// comprovar si la firma està reconeguda
+		for (ArxiuFirmaDto arxiuFirma : arxiuFirmes) {
+			// comprova que el tipus i el perfil estiguin reconeguts pel model CAIb
+			if (arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.SMIME) || 
+					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.ODT) || 
+					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.OOXML)) {
+				return false;
+			}
+			if (arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASIC) || 
+					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASELINE_T) || 
+					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.LTA)) {
+				return false;
+			}	
+		}
+		return true;
 	}
 
 	/** Map amb el mapeig dels perfils de firma cap als perfils admesos per l'Arxiu. */
@@ -1612,6 +1639,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
 		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
+	}
+
+	/** Determina si guardar com a esborrany annexos si no existeix el perfil i el tipus a l'Arxiu CAIB. */
+	private boolean getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib() {
+		return new Boolean(this.getProperties().getProperty(
+				"es.caib.distribucio.tasca.guardar.annexos.com.esborrany.si.perfils.o.tipus.no.existeix.al.caib")).booleanValue();
 	}
 
 	@Override
