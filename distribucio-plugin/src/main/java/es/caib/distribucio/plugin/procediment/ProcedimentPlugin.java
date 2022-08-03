@@ -30,8 +30,6 @@ public interface ProcedimentPlugin extends IntegracioPlugin {
 	
 	/**
 	 * Retorna el procediment associats a un codi SIA.
-	 * @param codiDir3 
-				Codi DIR3
 	 * @param codiSia
 	 *            Codi SIA.
 	 * 
@@ -39,6 +37,6 @@ public interface ProcedimentPlugin extends IntegracioPlugin {
 	 * @throws SistemaExternException
 	 *            Si es produeix un error al consultar el procediment.
 	 */
-	public ProcedimentDto findAmbCodiSia(String codiDir3, String codiSia) throws SistemaExternException;
+	public ProcedimentDto findAmbCodiSia(String codiSia) throws SistemaExternException;
 
 }

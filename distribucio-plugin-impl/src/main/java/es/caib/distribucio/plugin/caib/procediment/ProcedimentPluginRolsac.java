@@ -116,14 +116,13 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 
 	@Override
 	public ProcedimentDto findAmbCodiSia(
-			String codiDir3, 
 			String codiSia) throws SistemaExternException {
-		logger.debug("Consulta del procediment pel codi SIA i codiDir3 (" +
-			"codiSia=" + codiSia + "codiDir3=" + codiDir3 + ")");
+		logger.debug("Consulta del procediment pel codi SIA (" +
+			"codiSia=" + codiSia + ")");
 		ProcedimientosResponse response = null;
 		try {
 			StringBuilder sb = new StringBuilder(getServiceUrl());			
-			String params = "?lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
+			String params = "?lang=ca&filtro={\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
 			
 			response = findProcedimentsRolsac(
 					sb.toString(),
@@ -131,8 +130,8 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 			
 		} catch (Exception ex) {
 			throw new SistemaExternException(
-					"No s'han pogut consultar el procediment de ROLSAC (" +
-					"codiSia=" + codiSia + ", codiDir3=" + codiDir3 + ")",
+					"Error consultant el procediment de ROLSAC (" +
+					"codiSia=" + codiSia + "): " + ex.getMessage(),
 					ex);
 		}
 		

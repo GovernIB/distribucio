@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
-import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -50,7 +49,6 @@ import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
@@ -60,12 +58,10 @@ import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
-import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -91,9 +87,6 @@ public class RegistreAdminController extends BaseAdminController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private RegistreHelper registreHelper;
-	@Autowired
-	private ConfigService configService;
-
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -137,8 +130,6 @@ public class RegistreAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
-//		request.getUserPrincipal();
-//		boolean isValidRequest = request.isRequestedSessionIdValid();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
@@ -181,32 +172,34 @@ public class RegistreAdminController extends BaseAdminController {
 					true);
 			
 			int numeroAnnexosPendentsArxiu = 0;
-			String codiSia = null;
-			String codiDir3 = null;
 			int numeroAnnexosFirmaInvalida = 0;
 			int numeroAnnexosEstatEsborrany = 0;
 			if (registreDto instanceof RegistreDto) {
-				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;	
-				codiDir3 = registreDtoAmbAnnexos.getEntitatCodi();	
-				codiSia = registreDtoAmbAnnexos.getProcedimentCodi();
-				registreDtoAmbAnnexos.getEntitatCodi();
-				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
-					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
-						numeroAnnexosPendentsArxiu++;
-					}
-				}
-			}			
-			
-			try {
-				ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(codiDir3, codiSia);
-				model.addAttribute("procedimentNom", procedimentDto.getNom());
-			}catch(NullPointerException e) {
-				model.addAttribute("procedimentNom", null);
-				String errMsg = "No s'ha pogut concretar el nom del procediment";
-				logger.info(errMsg);
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
+
+				String codiSia = ((RegistreDto)registreDto).getProcedimentCodi();
+				if (codiSia != null) {
+					String procedimentNom = null;
+					// Descripció del procediment
+					try {
+						ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
+						if (procedimentDto != null) {
+							procedimentNom = procedimentDto.getNom();
+						} else {
+							String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
+							MissatgesHelper.warning(request, errMsg);
+							procedimentNom = "(" + errMsg + ")";
+						}
+					}catch(NullPointerException e) {
+						String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
+						logger.error(errMsg, e);
+						MissatgesHelper.warning(request, errMsg);
+						procedimentNom = "(" + errMsg + ")";
+					}
+					model.addAttribute("procedimentNom", procedimentNom);
+				}
 			}
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("registreNumero", registreNumero);
@@ -762,21 +755,12 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 			}
 		}
-		boolean annexosPendents = false;
-		// Mirar si té uuid
 		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
 		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
 			if (registreAnnex.getFitxerArxiuUuid() == null) {
-				annexosPendents = true;
+				isPendentArxiu = true;
 			}
 		}
-		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
-//		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
-//		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
-//			if (registreAnnex.getFitxerArxiuUuid() == null) {
-//				isPendentArxiu = true;
-//			}
-//		}
 		return isPendentArxiu;
 	}
 

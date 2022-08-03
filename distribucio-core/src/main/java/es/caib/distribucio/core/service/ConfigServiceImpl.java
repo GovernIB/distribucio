@@ -19,6 +19,7 @@ import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.config.SegonPlaConfig;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
@@ -48,16 +49,19 @@ public class ConfigServiceImpl implements ConfigService {
     private ConfigHelper configHelper;
     @Autowired
     private SegonPlaConfig segonPlaConfig;
+    @Autowired
+    private CacheHelper cacheHelper;
     
     
     @Override
     @Transactional
     public ConfigDto updateProperty(ConfigDto property) {
         ConfigEntity configEntity = configRepository.findOne(property.getKey());
-        //configEntity.updateValue(property.getValue());
         configEntity.updateValue(!"null".equals(property.getValue()) ? property.getValue() : null);
         pluginHelper.reloadProperties(configEntity.getGroupCode());
         pluginHelper.resetPlugins();
+        // Buida algunes cachés
+        cacheHelper.evictProcedimentFindByCodiSia();
         return conversioTipusHelper.convertir(configEntity, ConfigDto.class);
     }
 

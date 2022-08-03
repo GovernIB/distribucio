@@ -1090,7 +1090,7 @@ public class PluginHelper {
 	
 	
 	
-	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
+	public ProcedimentDto procedimentFindByCodiSia(String codiSia) {
 		
 		String accioDescripcio = "Consulta dels procediments pel codi SIA";
 		String usuariIntegracio = getProcedimentPlugin().getUsuariIntegracio();
@@ -1100,7 +1100,7 @@ public class PluginHelper {
 		
 		try {
 			// codiDir3="A04003003" 		codiSia="874123"
-			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiDir3, codiSia);
+			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiSia);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,

@@ -44,6 +44,7 @@ import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -391,6 +392,30 @@ public class RegistreUserController extends BaseUserController {
 				List<ContingutDto> path = registreService.getPathContingut(entitatActual.getId(), destiLogic);
 				registre.setPath(path);
 			}
+			// Nom del procediment
+
+			String codiSia = registre.getProcedimentCodi();
+			if (codiSia != null) {
+				String procedimentNom = null;
+				// Descripció del procediment
+				try {
+					ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
+					if (procedimentDto != null) {
+						procedimentNom = procedimentDto.getNom();
+					} else {
+						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
+						MissatgesHelper.warning(request, errMsg);
+						procedimentNom = "(" + errMsg + ")";
+					}
+				}catch(Exception e) {
+					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
+					logger.error(errMsg, e);
+					MissatgesHelper.warning(request, errMsg);
+					procedimentNom = "(" + errMsg + ")";
+				}
+				model.addAttribute("procedimentNom", procedimentNom);
+			}
+
 			model.addAttribute("registre", registre);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);

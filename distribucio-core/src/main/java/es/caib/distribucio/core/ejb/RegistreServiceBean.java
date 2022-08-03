@@ -368,8 +368,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("DIS_ADMIN")
-	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
-		return delegate.procedimentFindByCodiSia(codiDir3, codiSia);
+	public ProcedimentDto procedimentFindByCodiSia(long entitatId, String codiSia) {
+		return delegate.procedimentFindByCodiSia(entitatId, codiSia);
 	}
 
 	@Override

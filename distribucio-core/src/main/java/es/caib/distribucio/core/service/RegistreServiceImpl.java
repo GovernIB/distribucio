@@ -103,6 +103,7 @@ import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
+import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -124,7 +125,6 @@ import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
-import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.VistaMovimentRepository;
@@ -150,8 +150,6 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreRepository registreRepository;
 	@Autowired
 	private RegistreAnnexRepository registreAnnexRepository;
-	@Autowired
-	RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
 	@Autowired
@@ -197,7 +195,9 @@ public class RegistreServiceImpl implements RegistreService {
 	private EmailHelper emailHelper;
 	@Autowired
 	private ConfigHelper configHelper;
-	
+	@Autowired
+	private CacheHelper cacheHelper;
+
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -2318,10 +2318,13 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	@Override
-	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
-		
-		ProcedimentDto procedimentDto = pluginHelper.procedimentFindByCodiSia(codiDir3, codiSia);
-		
+	public ProcedimentDto procedimentFindByCodiSia(long entitatId, String codiSia) {
+
+		ProcedimentDto procedimentDto = null;
+		if (codiSia != null) {
+			procedimentDto = cacheHelper.procedimentFindByCodiSia(entitatId, codiSia);
+		}
+				
 		return procedimentDto;
 	}
 	

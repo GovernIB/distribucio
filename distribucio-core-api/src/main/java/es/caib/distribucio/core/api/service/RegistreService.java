@@ -414,14 +414,14 @@ public interface RegistreService {
 	
 	
 	/**
-	 * Cerca el procediment pel seu codi SIA i pel codiDIR3
+	 * Cerca el procediment pel seu codi SIA
 	 * 
 	 * @param codiDir3
 	 * @param codiSia
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public ProcedimentDto procedimentFindByCodiSia(
-			String codiDir3, 
+			long entitatId,
 			String codiSia);
 	
 	
