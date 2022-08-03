@@ -53,6 +53,7 @@
 		
 	</style>
 	<script type="text/javascript">
+		var intervalCadaSegon;
 		$(document).ready(function(){
 			$("button[name=refrescar]").click(function() {
 				carregaMonitor();
@@ -70,6 +71,7 @@
 		            content += '<ul class="nav nav-tabs" role="tablist">' +
 		                '<li role="presentation" class="active"><a id="tab_sistema" href="#sistema" aria-controls="home" role="tab" data-toggle="tab"><spring:message code="monitor.sistema"/></a></li>' +
 		                '<li role="presentation"><a id="tab_fils" href="#fils" aria-controls="profile" role="tab" data-toggle="tab"><spring:message code="monitor.fils"/></a></li>' +
+		                '<li role="presentation"><a id="tab_tasques" href="#tasques" aria-controls="profile" role="tab" data-toggle="tab"><spring:message code="monitor.tasques"/></a></li>' +
 		              '</ul>';
 		            content += '<div class="tab-content">';
 		            content += '<div role="tabpanel" class="tab-pane active" id="sistema">';
@@ -107,10 +109,49 @@
 			            }
 			            content +=  '</table>' +
 		                        '</div>'+
-		                        '</div>'+
 		                        '</div>';
+		                        
+		                        
+		                        
+		                          content += '<div role="tabpanel" class="tab-pane" id="tasques">';
+		       		            content += '<div id="mesures_monitor" class="top-buffer">' +
+		       			                        '<table class="table-monitor table table-striped table-bordered dataTable">' +
+		       			                        '<thead><tr>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.tasca"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.estat"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.inici.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.temps.execucio"/></th>' +
+		       			                        //'<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
+		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th></tr>' +
+		       			                        //'<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
+		       			                        '</thead><tbody id="tbody_monitor">';
+		       			                        
+		       			                        
+		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio);
+		       			            content +=  '</tbody></table>' + 
+				                        '<br><br><hr>' + 
+				                        	'<input class="ml-6" id="chRefrescarTasques" type="checkbox" name="refrescarTasquesCadaSegon">' +
+					                        '<label class="ml-1" for="refrescarTasquesCadaSegon">' + 					                        					                        
+					                        '<spring:message code="monitor.tasques.check.refresh"/></label>' +   
+					                        '<span id="span-refresh" class="ml-2 fa fa-refresh" style="visibylity-hidden"></span>' + 
+		       		                    '</div>'+  
+		    		                    '</div>'+
+		                        
+		                        
+		                        
+		                        '</div>';
+		                        
 		           
 		                $("#monitor_contens").html(content);
+		                $("#chRefrescarTasques").click(function(){
+		                	var checkValue = $("#chRefrescarTasques").is(":checked");
+		                	if (checkValue) {
+		                		refrescarTasquesCadaSegon();
+		                	}else {
+		                		clearInterval(intervalCadaSegon);
+		                	}
+		                	
+		                });
 		        }
 		    })
 		    .fail(function( jqxhr, textStatus, error ) {
@@ -121,6 +162,53 @@
 	            $("body").removeClass("loading");
 	        });
 		}
+		
+		
+		function carregaTasques() {
+			$("#span-refresh").addClass('fa-circle-o-notch');
+			$("#span-refresh").addClass('fa-spin')
+		    $.ajax({
+		        url: "monitor/tasques",
+		        dataType: 'json',
+		        async: false,
+		        success: function(data){
+		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio));
+		        }
+		    })
+		    .fail(function( jqxhr, textStatus, error ) {
+		         var err = textStatus + ', ' + error;
+		         console.log( "Request Failed: " + err);
+		    })
+	        .always(function() {
+	            $("body").removeClass("loading");
+				$("#span-refresh").removeClass('fa-circle-o-notch');
+				$("#span-refresh").removeClass('fa-spin')
+	        });
+		}
+		
+		function refrescarTasquesCadaSegon() {
+			intervalCadaSegon = setInterval(function() {
+				carregaTasques();
+			}, 1000);
+		}
+		
+		
+		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio) {
+			var content = '';
+	            for (var i = 0; i < tasca.length; i++) {
+	               content +=  '<tr class="monitor_fila">' +
+	                            '<td class="">' + tasca[i].replace("Tasca: ", "") + '</td>' +
+	                           '<td class="">' + estat[i].replace("Estat: ", "") + '</td>' +
+	                           '<td>' + iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
+	                           '<td>' + tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
+	                           //'<td>' + fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
+	                           '<td>' + properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
+	                           //'<td>' + observacions[i].replace("Observacions: ", "") + '</td>' + 
+	                           '</tr>';
+	           }  
+	     	return content;
+		}
+		
 	</script>
 </head>
 <body>

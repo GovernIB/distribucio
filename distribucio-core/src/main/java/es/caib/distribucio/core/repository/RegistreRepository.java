@@ -12,9 +12,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -215,6 +217,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"and (:esNullReintentsPendents = true " +
 			"		or (:reintentsPendents = true and r.procesIntents < :maxReintents) " + 
 			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
+			//"and (:ambIntentsPendents = true or r.procesIntents < :maxReintents) " +
 			"and (:nomesAmbErrors = false or r.procesError != null ) " +
 			"and (:nomesAmbEsborranys = false or r.annexosEstatEsborrany > 0 ) " +
 			"and (:esNullInteressat = true " +
@@ -338,5 +341,14 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("maxReintents") int maxReintents);
+	
+	
+	/**
+	 *  Consulta per retornar les dades dels annexos dels registres
+	 **/
+	@Query("from RegistreAnnexEntity ra " + 
+			"where ra.registre.id = :registreId")
+	public List<RegistreAnnexEntity> getDadesRegistreAnnex(
+			@Param("registreId") Long registreId);
 	
 }

@@ -79,6 +79,7 @@ import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
  */
 public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginProperties implements DistribucioPlugin {
 
+	private final int MAX_REINTENTS_NOM_ARXIU = 10;
 
 	private IntegracioManager integracioManager;
 	private String itegracioGesdocCodi = "GESDOC";
@@ -105,8 +106,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String expedientNumero,
 			String unitatArrelCodi) throws SistemaExternException {
 
-		String nomExpedient = "EXP_REG_" + expedientNumero + "_" + System.currentTimeMillis();
-
+		String identificador = null;
+		boolean duplicated = false;
+		int intent = 0;
 		String classificacio = getPropertyPluginRegistreExpedientClassificacio();
 		if (classificacio == null || classificacio.isEmpty()) {
 			throw new ValidationException(
@@ -119,44 +121,65 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		String accioDescripcio = "Creant expedient per l'anotació de registre";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("titol", nomExpedient);
 		accioParams.put("organ", unitatArrelCodi);
 		accioParams.put("classificacio", classificacio);
 		accioParams.put("estat", ExpedientEstatEnumDto.OBERT.name());
 		accioParams.put("serieDocumental", serieDocumental);
-		long t0 = System.currentTimeMillis();
-		try {
-			ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
-					toArxiuExpedient(
-							null,
-							nomExpedient,
-							null,
-							Arrays.asList(unitatArrelCodi),
-							new Date(),
-							classificacio,
-							ExpedientEstatEnumDto.OBERT,
-							null,
-							serieDocumental));
-			integracioAddAccioOk(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0);
-			return expedientCreat.getIdentificador();
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al crear expedient per l'anotació de registre";
-			integracioAddAccioError(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					integracioArxiuCodi,
-					errorDescripcio,
-					ex);
-		}
+		do {
+			duplicated = false;
+			String nomExpedient = "EXP_REG_" + expedientNumero + "_" + System.currentTimeMillis();
+			revisarContingutNom(nomExpedient);
+			accioParams.put("titol", nomExpedient);
+			long t0 = System.currentTimeMillis();
+			try {
+				ContingutArxiu expedientCreat = getArxiuPlugin().expedientCrear(
+						toArxiuExpedient(
+								null,
+								nomExpedient,
+								null,
+								Arrays.asList(unitatArrelCodi),
+								new Date(),
+								classificacio,
+								ExpedientEstatEnumDto.OBERT,
+								null,
+								serieDocumental));
+				integracioAddAccioOk(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0);
+				identificador = expedientCreat.getIdentificador();
+			} catch (Exception ex) {
+				
+				if (ex.getMessage().contains("Duplicate child name not allowed") 
+						&& intent < 10) {
+					intent++;
+					logger.warn("Error creant un expedient amb nom " + nomExpedient + " per nom duplicat. Intent " + intent + " de " + MAX_REINTENTS_NOM_ARXIU );
+					/*try {
+						Thread.sleep(new Random().nextLong());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}*/
+					duplicated = true;
+				} else {
+					String errorDescripcio = "Error al crear expedient per l'anotació de registre";
+					integracioAddAccioError(
+							integracioArxiuCodi,
+							accioDescripcio,
+							accioParams,
+							System.currentTimeMillis() - t0,
+							errorDescripcio,
+							ex);
+					throw new SistemaExternException(
+							integracioArxiuCodi,
+							errorDescripcio,
+							ex);
+				}
+				
+			}
+		} while(duplicated && intent < 10);
+		
+		return identificador;
 	}
 	
 
@@ -291,7 +314,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// Determina l'estat
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		// Es guarden definitius si:
-		// 1) El documetn té firmes
+		// 1) El document té firmes
 		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
 		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
 		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) 
@@ -299,9 +322,18 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// 3) Format no reconegut
 		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
 		guardarDefinitiu = guardarDefinitiu && format != null;
+
+		// 4) Té una firma reconeguda per l'arxiu CAIB o la propietat  
+		// (es.caib.distribucio.tasca.guardar.annexos.perfils.tipus.no.caib.com.esborrany) està desactivada 
+		boolean existeixAlCaibProperty = getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib();		
+		if (existeixAlCaibProperty) {
+			guardarDefinitiu = guardarDefinitiu && this.comprovarFirmesReconegudes(arxiuFirmes);			
+		}
+		
 		if (guardarDefinitiu) {
 			estatDocument = DocumentEstat.DEFINITIU;
 		}
+		
 
 		
 		// SAVE IN ARXIU
@@ -343,6 +375,25 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
 		return uuidDocumentCreat;
+	}
+
+	private boolean comprovarFirmesReconegudes(List<ArxiuFirmaDto> arxiuFirmes) {
+
+		// comprovar si la firma està reconeguda
+		for (ArxiuFirmaDto arxiuFirma : arxiuFirmes) {
+			// comprova que el tipus i el perfil estiguin reconeguts pel model CAIb
+			if (arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.SMIME) || 
+					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.ODT) || 
+					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.OOXML)) {
+				return false;
+			}
+			if (arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASIC) || 
+					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASELINE_T) || 
+					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.LTA)) {
+				return false;
+			}	
+		}
+		return true;
 	}
 
 	/** Map amb el mapeig dels perfils de firma cap als perfils admesos per l'Arxiu. */
@@ -517,7 +568,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
 			DocumentEstat estatDocument) throws SistemaExternException {
-				
+		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
 			if (fitxer.getContingut() == null) {
@@ -1588,6 +1639,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
 		return new Boolean(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
+	}
+
+	/** Determina si guardar com a esborrany annexos si no existeix el perfil i el tipus a l'Arxiu CAIB. */
+	private boolean getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib() {
+		return new Boolean(this.getProperties().getProperty(
+				"es.caib.distribucio.tasca.guardar.annexos.com.esborrany.si.perfils.o.tipus.no.existeix.al.caib")).booleanValue();
 	}
 
 	@Override

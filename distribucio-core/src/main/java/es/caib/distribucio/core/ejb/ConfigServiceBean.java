@@ -71,4 +71,8 @@ public class ConfigServiceBean implements ConfigService {
 	public void setEntitatPerPropietat(EntitatDto entitatDto) {
 		delegate.setEntitatPerPropietat(entitatDto);
 	}
+	@Override
+	public String getTempsErrorsMonitorIntegracio() {
+		return delegate.getTempsErrorsMonitorIntegracio();
+	}
 }

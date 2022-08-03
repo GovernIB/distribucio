@@ -346,21 +346,25 @@ $(document).ready(function() {
 			<div class="col-md-2"></div>
 			<div class="col-md-2"></div>
 			<div class="col-md-3"></div>
-			<div id="reintents" class="col-md-2">
-				<!-- <dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/> -->
+			<div id="reintents" class="col-md-3">
+				<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
+					</div>
+				</div>			
 			</div>
-			<div class="col-md-3 d-flex justify-content-end">
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+			<div class="col-md-2">
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-			</div>
+			</div>	
 		</div>
-		
-
 	</form:form>
 	
 	<script id="botonsTemplate" type="text/x-jsrender">
+
 	
 		<div class="text-right">
+		
 			<div class="btn-group">
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>

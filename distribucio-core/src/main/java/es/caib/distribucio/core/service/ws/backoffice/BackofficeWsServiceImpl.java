@@ -91,7 +91,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					backofficeArxiuUtils.setCarpeta(anotacio.getIdentificador());
 		
 					// Crida a la creació de l'expedient
-					String SERIE_DOCUMENTAL = "S0002"; 
+					String SERIE_DOCUMENTAL = "S0001"; 
 					String CLASSIFICACIO = "000000";
 					ArxiuResultat arxiuResultat;
 					int intent = 0;
@@ -128,7 +128,9 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Processament dels annexos de documents tècnics segons el títol
 					String titol;
 					for (Annex annex : anotacio.getAnnexos()) {
-						titol = annex.getTitol();
+						String nomPerTitol = revisarContingutNom(annex.getNom());
+						//titol = annex.getTitol();
+						titol = nomPerTitol;
 						
 						// Copmprovar si està en estat esborrany o és invàlid
 						if (annex.getEstat() == AnnexEstat.ESBORRANY) {
@@ -247,6 +249,24 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 			throw new RuntimeException("Falta configurar les propietats pel client de Backoffice de DISTRIBUCIO  es.caib.distribucio.backoffice.test.backofficeIntegracio.*");
 		}
 		return client;
+	}
+	
+	
+	/** Mètode privat per revisar el nom del contingut de la mateixa manera que ho fa el 
+	 * plugin d'Arxiu abans de guardar el contingut.
+	 * @param nom Nomm del contingut
+	 * @return Retorna el nom substituïnt els caràcters no permesos o null si el nom és null.
+	 */
+	private String revisarContingutNom(String nom) {
+		if (nom == null) {
+			return null;
+		}
+		//return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+		nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
+		if (nom.endsWith(".")) {
+			nom = nom.substring(0, nom.length()-1);
+		}
+		return nom;
 	}
 
 

@@ -641,7 +641,7 @@ public class ContingutHelper {
 								usuariRolPermisDto.setCodi(usuariGrup.getCodi());
 								usuariRolPermisDto.setNom(usuariGrup.getNom());
 								usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
-								usuaris.put(permis.getPrincipalNom(), usuariRolPermisDto);
+								usuaris.put(usuariGrup.getNom(), usuariRolPermisDto);
 							}
 						}
 					}

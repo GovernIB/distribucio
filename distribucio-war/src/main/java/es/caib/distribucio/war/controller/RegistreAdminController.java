@@ -40,6 +40,7 @@ import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -59,10 +60,12 @@ import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
+import es.caib.distribucio.war.helper.RolHelper;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -134,6 +137,8 @@ public class RegistreAdminController extends BaseAdminController {
 	@ResponseBody
 	public DatatablesResponse registreAdminDatatable(
 			HttpServletRequest request) {
+//		request.getUserPrincipal();
+//		boolean isValidRequest = request.isRequestedSessionIdValid();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		return DatatablesHelper.getDatatableResponse(
@@ -165,8 +170,9 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
-			Model model) {
+			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		
 		try {
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
@@ -175,9 +181,29 @@ public class RegistreAdminController extends BaseAdminController {
 					true);
 			
 			int numeroAnnexosPendentsArxiu = 0;
+			String codiSia = null;
+			String codiDir3 = null;
 			int numeroAnnexosFirmaInvalida = 0;
 			int numeroAnnexosEstatEsborrany = 0;
 			if (registreDto instanceof RegistreDto) {
+				RegistreDto registreDtoAmbAnnexos = (RegistreDto)registreDto;	
+				codiDir3 = registreDtoAmbAnnexos.getEntitatCodi();	
+				codiSia = registreDtoAmbAnnexos.getProcedimentCodi();
+				registreDtoAmbAnnexos.getEntitatCodi();
+				for (RegistreAnnexDto registreAnnexDto:registreDtoAmbAnnexos.getAnnexos()) {
+					if (registreAnnexDto.getFitxerArxiuUuid()==null) {
+						numeroAnnexosPendentsArxiu++;
+					}
+				}
+			}			
+			
+			try {
+				ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(codiDir3, codiSia);
+				model.addAttribute("procedimentNom", procedimentDto.getNom());
+			}catch(NullPointerException e) {
+				model.addAttribute("procedimentNom", null);
+				String errMsg = "No s'ha pogut concretar el nom del procediment";
+				logger.info(errMsg);
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
@@ -736,12 +762,21 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 			}
 		}
+		boolean annexosPendents = false;
+		// Mirar si té uuid
 		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
 		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
 			if (registreAnnex.getFitxerArxiuUuid() == null) {
-				isPendentArxiu = true;
+				annexosPendents = true;
 			}
 		}
+		isPendentArxiu = registreDto.getArxiuUuid() == null || annexosPendents;
+//		List<RegistreAnnexDto> llistatAnnexes = registreDto.getAnnexos();
+//		for (RegistreAnnexDto registreAnnex : llistatAnnexes) {
+//			if (registreAnnex.getFitxerArxiuUuid() == null) {
+//				isPendentArxiu = true;
+//			}
+//		}
 		return isPendentArxiu;
 	}
 

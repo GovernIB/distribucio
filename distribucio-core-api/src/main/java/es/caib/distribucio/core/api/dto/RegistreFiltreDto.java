@@ -169,24 +169,25 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setSobreescriure(RegistreMarcatPerSobreescriureEnumDto sobreescriure) {
 		this.sobreescriure = sobreescriure;
-	}
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-	
-	private static final long serialVersionUID = -139254994389509932L;
-
+	}	
 	public RegistreFiltreReintentsEnumDto getReintents() {
 		return reintents;
 	}
 	public void setReintents(RegistreFiltreReintentsEnumDto reintents) {
 		this.reintents = reintents;
 	}
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+	
 	public boolean isNomesAmbEsborranys() {
 		return nomesAmbEsborranys;
 	}
 	public void setNomesAmbEsborranys(boolean nomesAmbEsborranys) {
 		this.nomesAmbEsborranys = nomesAmbEsborranys;
 	}
+	
+	private static final long serialVersionUID = -139254994389509932L;
+
 }

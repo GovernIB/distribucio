@@ -22,6 +22,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -363,6 +364,18 @@ public class RegistreServiceBean implements RegistreService {
 			Long registreId,
 			Long annexId) {
 		return delegate.validarFirmes(entitatId, registreId, annexId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
+		return delegate.procedimentFindByCodiSia(codiDir3, codiSia);
+	}
+
+	@Override
+	@RolesAllowed("{DIS_ADMIN, DIS_ADMIN_LECTURA}")
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
+		return delegate.getDadesAnnexFirmaSenseDetall(registreId);
 	}
 
 }

@@ -209,4 +209,15 @@ public interface ReglaService {
 	 */
 	@PreAuthorize("hasRole('DIS_REGLA')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
+	
+	
+	/** Mètode per trobar una regla concreta filtrant pel nom
+	 * 
+	 * @param nomRegla
+	 * 
+	 * @return la regla trobada
+	 */
+	@PreAuthorize("hasRole('DIS_REGLA') or hasRole('DIS_ADMIN')")
+	public ReglaDto findReglaByCodiSia(String codiSia);
+	
 }

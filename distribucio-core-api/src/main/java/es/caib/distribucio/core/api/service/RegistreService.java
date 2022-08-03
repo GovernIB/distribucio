@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -410,5 +411,27 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
 			Long annexId);
+	
+	
+	/**
+	 * Cerca el procediment pel seu codi SIA i pel codiDIR3
+	 * 
+	 * @param codiDir3
+	 * @param codiSia
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public ProcedimentDto procedimentFindByCodiSia(
+			String codiDir3, 
+			String codiSia);
+	
+	
+	/**
+	 * Cerca les dades (sense detall) de les firmes dels annexos  
+	 *  
+	 *  @param registreId
+	 **/
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(
+			Long registreId);
 
 }

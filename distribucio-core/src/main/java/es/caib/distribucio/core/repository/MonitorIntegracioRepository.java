@@ -44,9 +44,11 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 
 	@Query(	"select mon.codi, count(mon)" +
 			"from MonitorIntegracioEntity mon " +
-			"where mon.estat = 'ERROR' " +
+			"where mon.estat = 'ERROR' " + 
+			"and mon.data >= :dataInici " + 
 			"group by mon.codi ")
-	public List<Object[]> countErrorsGroupByCodi();
+	public List<Object[]> countErrorsGroupByCodi(
+			@Param("dataInici") Date dataInici);
 
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
 	@Query(	"delete  from MonitorIntegracioEntity mon " +

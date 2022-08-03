@@ -57,6 +57,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
@@ -121,6 +122,7 @@ import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -150,6 +152,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private RegistreAnnexRepository registreAnnexRepository;
 	@Autowired
 	RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
 	@Autowired
 	private BustiaRepository bustiaRepository;
 	@Autowired
@@ -470,7 +474,7 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getEstat() == null,
 					filtre.getEstat(),
 					filtre.getReintents() == null, 
-					filtre.getReintents() != null ? (filtre.getReintents() == RegistreFiltreReintentsEnumDto.SI ? true : false) : false, 
+					filtre.getReintents() != null ? (filtre.getReintents() == RegistreFiltreReintentsEnumDto.SI ? true : false) : false,
 					maxReintents, 
 					filtre.isNomesAmbErrors(),
 					filtre.isNomesAmbEsborranys(),
@@ -1161,12 +1165,23 @@ public class RegistreServiceImpl implements RegistreService {
 			if (clauSecreta == null) {
 				throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
 			}
-			String encryptedIdentificator = RegistreHelper.encrypt(
-					id.getIndetificador(),
-					clauSecreta);
-			if (!encryptedIdentificator.equals(id.getClauAcces())) {
+			List<RegistreEntity> registresMateixNumero = registreRepository.findByNumero(id.getIndetificador());
+			String encryptedIdentificator = "";
+			boolean registreIdentificat = false;
+			for(RegistreEntity registre : registresMateixNumero) {
+				encryptedIdentificator = RegistreHelper.encrypt(
+						id.getIndetificador() + "_" + new Long(registre.getId()),
+						clauSecreta);	
+				if (encryptedIdentificator.equals(id.getClauAcces())) {
+					registreIdentificat = true;
+				}
+			}
+			if (!registreIdentificat) {
 				throw new RuntimeException("La clau o identificador és incorrecte");
 			}
+//			if (!encryptedIdentificator.equals(id.getClauAcces())) {
+//				throw new RuntimeException("La clau o identificador és incorrecte");
+//			}
 			RegistreEntity registreEntity = this.getRegistrePerIdentificador(id.getIndetificador());
 
 			EntitatDto entitatDto = new EntitatDto();
@@ -2166,15 +2181,22 @@ public class RegistreServiceImpl implements RegistreService {
 															this.comprovarPermisLectura());
 			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			if (procediments != null) {
-				for (Procediment procediment: procediments) {
-					if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
-							(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
-						ProcedimentDto dto = new ProcedimentDto();
-						dto.setCodi(procediment.getCodigo());
-						dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
-						dto.setNom(procediment.getNombre());
-						dtos.add(dto);
-					}
+				getProcediments(dtos, procediments);
+			}
+			List<UnitatOrganitzativaEntity> unitatsDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, bustia.getUnitatOrganitzativa().getCodi());
+			List<UnitatOrganitzativaEntity> llistatFinalUnitatsOrganitzatives = new ArrayList<>();
+			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
+			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
+				try {
+					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
+					if (procedimentsFills != null) {
+						getProcediments(dtos, procedimentsFills);
+					}				
+					
+				}catch (Exception e) {
+					logger.info("No s'han pogut consultar els procediments de ROLSAC (" +
+							"codiDir3=" + uoEntity.getCodi() + ")",
+							e);
 				}
 			}
 		}
@@ -2183,6 +2205,30 @@ public class RegistreServiceImpl implements RegistreService {
 			Collections.sort(dtos);
 		}
 		return dtos;
+	}
+	
+	@SuppressWarnings("null")
+	private void getUnitatsFills(List<UnitatOrganitzativaEntity> llistaUnitats, List<UnitatOrganitzativaEntity> llistaFinal) {
+		for (UnitatOrganitzativaEntity uoEntity : llistaUnitats) {
+			llistaFinal.add(uoEntity);
+			List<UnitatOrganitzativaEntity> uoDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, uoEntity.getCodi());
+			if (uoDescendents != null || !uoDescendents.isEmpty()) {
+				getUnitatsFills(uoDescendents, llistaFinal);
+			}
+		}
+	}
+	
+	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
+		for (Procediment procediment: procediments) {
+			if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
+					(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
+				ProcedimentDto dto = new ProcedimentDto();
+				dto.setCodi(procediment.getCodigo());
+				dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
+				dto.setNom(procediment.getNombre());
+				dtos.add(dto);
+			}
+		}
 	}
 
 	/** Retorna true si no és administrador nii admin lectura. */
@@ -2267,6 +2313,16 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 		return validacioFirma;
+	}
+	
+
+
+	@Override
+	public ProcedimentDto procedimentFindByCodiSia(String codiDir3, String codiSia) {
+		
+		ProcedimentDto procedimentDto = pluginHelper.procedimentFindByCodiSia(codiDir3, codiSia);
+		
+		return procedimentDto;
 	}
 	
 	
@@ -2708,6 +2764,28 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return ret;
 	}
+
+
+	@Transactional
+	@Override
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
+		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = new ArrayList<>();
+		List<RegistreAnnexEntity> registresAnnexEntity = registreRepository.getDadesRegistreAnnex(registreId);
+		
+		for(RegistreAnnexEntity registreAnnex : registresAnnexEntity) {
+			RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexFirmaRepository.getRegistreAnnexFirmaSenseDetall(registreAnnex.getId());
+			if(registreAnnexFirmaEntity != null) {
+				RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
+				registresAnnexFirmesDto.add(registreAnnexFirmaDto);
+			}
+		}
+		if (registresAnnexFirmesDto.isEmpty()) {
+			registresAnnexFirmesDto = null;
+		}
+		
+		return registresAnnexFirmesDto;
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
+
 }

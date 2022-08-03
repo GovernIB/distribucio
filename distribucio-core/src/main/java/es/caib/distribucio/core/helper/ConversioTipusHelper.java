@@ -126,6 +126,8 @@ public class ConversioTipusHelper {
 						target.setValidacioFirmaEstat(source.getValidacioFirmaEstat());
 						target.setValidacioFirmaError(source.getValidacioFirmaError());
 						target.setArxiuEstat(source.getArxiuEstat());
+						
+						target.setGesdocDocumentId(source.getGesdocDocumentId());
 
 						return target;
 					}

@@ -29,7 +29,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .apiVersion("1.0")
                 .ignoredParameterTypes(ResponseEntity.class)
-                .includePatterns(".*/api/rest/regles/add");
+                .includePatterns(".*/api/rest/regles/add", ".*/api/rest/regles/canviEstat", ".*/api/rest/regles/consultarRegla");
     }
  
 	private ApiInfo apiInfo() {

@@ -98,8 +98,11 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
+import es.caib.plugins.arxiu.api.ContingutArxiu;
+import es.caib.plugins.arxiu.api.ContingutTipus;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
+import es.caib.plugins.arxiu.api.DocumentEstat;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -1245,6 +1248,7 @@ public class RegistreHelper {
 		return fileName;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Transactional
 	public void tancarExpedientArxiu(Long registreId) {
 		RegistreEntity registre = registreRepository.findOne(registreId);
@@ -1252,11 +1256,23 @@ public class RegistreHelper {
 		try {
 			if (registre.getExpedientArxiuUuid() != null) {
 				Expedient expedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
-				if (expedient.getContinguts() != null && !expedient.getContinguts().isEmpty()) {
-					pluginHelper.arxiuExpedientTancar(registre);
-				} else {
+
+				if (expedient.getContinguts() == null || expedient.getContinguts().isEmpty()) {
 					// Si no té annexos esborra l'espedient, el tancament fallaria
 					pluginHelper.arxiuExpedientEliminar(registre.getExpedientArxiuUuid());
+				} else {
+					// Primer comprova si hi ha cap document en estat d'esborrany
+					for(ContingutArxiu contingut : expedient.getContinguts()) {
+						Document document = pluginHelper.arxiuDocumentConsultar(
+								contingut.getIdentificador(), null, false);
+						if (ContingutTipus.DOCUMENT.equals(contingut.getTipus()) 
+								&& DocumentEstat.ESBORRANY.equals(document.getEstat())) 
+						{
+								throw new ValidationException("No es pot tancar perquè hi ha documents en estat esborrany.");
+						}
+					}
+					// Tanca l'expedient
+					pluginHelper.arxiuExpedientTancar(registre);
 				}
 			}
 		} catch (Exception ex) {
@@ -1299,7 +1315,7 @@ public class RegistreHelper {
 			anotacioRegistreId.setIndetificador(pendent.getNumero());			
 			
 			try {
-				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero(),
+				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
 						clauSecreta));
 			} catch (Exception ex) {
 				String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;

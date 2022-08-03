@@ -255,10 +255,13 @@ table.dataTable tr.datatable-dades-carregant div {
 	display: flex;
 }
 
-.ml-1 {
-	margin-left: 0.3rem
+.justify-content-end {
+	justify-content: end;
 }
 
+.ml-1 {
+	margin-left: 0.3rem;
+}
 
 .ml-2 {
 	margin-left: 1rem;
