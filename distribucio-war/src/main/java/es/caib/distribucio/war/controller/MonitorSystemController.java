@@ -40,7 +40,7 @@ import es.caib.distribucio.war.helper.MonitorHelper;
 public class MonitorSystemController extends BaseController {
 	
 	@Autowired
-	MonitorTasquesService monitortasquesService;
+	private MonitorTasquesService monitortasquesService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -129,6 +129,7 @@ public class MonitorSystemController extends BaseController {
 		return mjson;
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/tasques", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, JSONArray> getTasquesJson(HttpServletRequest request) {

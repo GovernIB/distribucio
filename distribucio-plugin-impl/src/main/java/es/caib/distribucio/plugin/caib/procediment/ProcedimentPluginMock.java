@@ -59,8 +59,10 @@ public class ProcedimentPluginMock implements ProcedimentPlugin {
 
 	@Override
 	public ProcedimentDto findAmbCodiSia(String codiDir3, String codiSia) throws SistemaExternException {
-		
-		return null;
+		ProcedimentDto response = new ProcedimentDto();
+		response.setCodi("1324");
+		response.setCodiSia("1315");
+		return response;
 	}
 
 }
