@@ -1165,7 +1165,8 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 		
 		// ################## HTML ########################
-		String htmlJustificant = "";
+		StringBuilder htmlJustificant = new StringBuilder();
+		htmlJustificant.append("");
 		if (registre.getJustificantArxiuUuid() != null && !registre.getJustificantArxiuUuid().isEmpty()) {
 			htmlJustificant = getHtmlJustificant(
 					justificant,
@@ -1174,7 +1175,8 @@ public class BustiaServiceImpl implements BustiaService {
 					appBaseUrl,
 					registreId);
 		}
-		String htmlAnnexosTable = "";
+		StringBuilder htmlAnnexosTable = new StringBuilder();
+		htmlAnnexosTable.append("");
 		if (!registre.getAnnexos().isEmpty()) {
 			htmlAnnexosTable = getHtmlAnnexosTable(
 					anexos,
@@ -1183,7 +1185,8 @@ public class BustiaServiceImpl implements BustiaService {
 					concsvBaseUrl,
 					registreId);
 		}
-		String htmlInteressatsTable = "";
+		StringBuilder htmlInteressatsTable = new StringBuilder();
+		htmlInteressatsTable.append("");
 		if (!registre.getInteressats().isEmpty()) {
 			htmlInteressatsTable = getHtmlInteressatsTable(registre);
 		}
@@ -1193,7 +1196,7 @@ public class BustiaServiceImpl implements BustiaService {
 		if (auth != null)
 			dadesUsuariActual = cacheHelper.findUsuariAmbCodi(auth.getName());
 		
-		String html = getHtml(
+		StringBuilder html = getHtml(
 				registre,
 				registreData,
 				message18nRegistreTipus,
@@ -1264,7 +1267,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		messageHelper.getMessage("registre.detalls.camp.tipus");
 		
-		helper.setText(plainText, html);
+		helper.setText(plainText, html.toString());
 		
 		mailSender.send(missatge);
 		
@@ -1799,200 +1802,228 @@ public class BustiaServiceImpl implements BustiaService {
 		}
 	}
 	
-	private String getHtmlJustificant(RegistreAnnexDto justificant, Object justificantDataCaptura, String concsvBaseUrl, String appBaseUrl, Long registreId) {
-		String htmlJustificant = 
-				"		<table>"+
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.justificant") + "</th>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +"</th>"+
-				"				<td>"+ justificantDataCaptura + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +"</th>"+
-				"				<td>"+ Objects.toString(justificant.getOrigenCiutadaAdmin(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + "</th>"+
-				"				<td>" + (justificant.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(justificant.getNtiElaboracioEstat(), ""))) + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + "</th>"+
-				"				<td>" + (justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), ""))) + "</td>"+
-				"			</tr>"+			
-				(justificant.getLocalitzacio() == null ? "": 
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + "</th>"+
-					"				<td>"  + justificant.getLocalitzacio() +
-					"			</tr>"
-						)+ 
-				(justificant.getObservacions() == null ? "": 
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + "</th>"+
-					"				<td>"  + justificant.getObservacions() +
-					"			</tr>"
-						)+ 					
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
-				"				<td>"  + Objects.toString(justificant.getFitxerNom(), "") + "("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)" +
-				(concsvBaseUrl != null && justificant.getFirmaCsv() != null?
-						"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+justificant.getFirmaCsv()+"\"> Descarregar </a>"
-						:"<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/justificant\"> Descarregar </a>") +
-				"</td>"+
-				"			</tr>"+								
-				"		</table>";
+	private StringBuilder getHtmlJustificant(RegistreAnnexDto justificant, Object justificantDataCaptura, String concsvBaseUrl, String appBaseUrl, Long registreId) {
+		StringBuilder htmlJustificant = new StringBuilder(); 
+		htmlJustificant.append("		<table>")
+					   .append("			<tr>")
+					   .append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.titol.justificant")).append("</th>")
+					   .append("			</tr>")
+					   .append(				"<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura")).append("</th>")
+					   .append("				<td>").append(justificantDataCaptura).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.origen")).append("</th>")
+					   .append("				<td>").append(Objects.toString(justificant.getOrigenCiutadaAdmin(), "")).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio")).append("</th>")
+					   .append("				<td>").append((justificant.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(justificant.getNtiElaboracioEstat(), "")))).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental")).append("</th>")
+					   .append("				<td>").append((justificant.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(justificant.getNtiTipusDocument(), "")))).append("</td>")
+					   .append("			</tr>");
+		
+		if (justificant.getLocalitzacio() == null) {
+			htmlJustificant.append("");
+		}else {
+			htmlJustificant.append("		<tr>")
+						   .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.localitzacio")).append("</th>")
+						   .append("			<td>").append(justificant.getLocalitzacio())
+						   .append("		</tr>"); 
+		}
+		
+		if (justificant.getObservacions() == null) {
+			htmlJustificant.append("");
+		}else {
+			htmlJustificant.append("		<tr>")
+						   .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.observacions")).append("</th>")
+						   .append("			<td>").append(justificant.getObservacions())
+						   .append("		</tr>");
+		}			
+		
+		htmlJustificant.append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.fitxer")).append("</th>")
+					   .append("				<td>").append(Objects.toString(justificant.getFitxerNom(), "")).append("("+Objects.toString(justificant.getFitxerTamany(), "")+" bytes)");
+		
+		if (concsvBaseUrl != null && justificant.getFirmaCsv() != null) {
+			htmlJustificant.append("				<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+justificant.getFirmaCsv()+"\"> Descarregar </a>");
+		}else {
+			htmlJustificant.append("				<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/justificant\"> Descarregar </a>");
+		}
+		
+		htmlJustificant.append(					"</td>")
+					   .append("			</tr>")
+					   .append("		</table>");
 		
 		return htmlJustificant;
 	}	
 	
-	private String getHtmlAnnexosTable(List<RegistreAnnexDto> anexos, SimpleDateFormat sdf, String appBaseUrl, String concsvBaseUrl, Long registreId) {
+	private StringBuilder getHtmlAnnexosTable(List<RegistreAnnexDto> anexos, SimpleDateFormat sdf, String appBaseUrl, String concsvBaseUrl, Long registreId) {
 		
-		String htmlAnnexos = "";
+		StringBuilder htmlAnnexos = new StringBuilder();
+		htmlAnnexos.append("");
 		for (RegistreAnnexDto annex: anexos) {
-			String htmlFirmes="";
+			StringBuilder htmlFirmes = new StringBuilder();
+			htmlFirmes.append("");
 			if (annex.getFirmes() != null && !annex.getFirmes().isEmpty()){
-				htmlFirmes+=
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.annex.detalls.camp.firmes") + "</th>"+
-				"			</tr>";
+				htmlFirmes.append("			<tr>")
+						  .append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.annex.detalls.camp.firmes")).append("</th>")
+						  .append("			</tr>");
 				int i=1;
 				for (ArxiuFirmaDto firma: annex.getFirmes()){
-					String htmlDetalls="";
+					StringBuilder htmlDetalls = new StringBuilder();
+					htmlDetalls.append("");
 					for(ArxiuFirmaDetallDto detall: firma.getDetalls()){
-						htmlDetalls+=
-								"							<tr>"+
-								"								<td>" +(detall.getData() == null ? messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.data.nd") : sdf.format(detall.getData())) + "</td>"+
-								"								<td>"+ Objects.toString(detall.getResponsableNif(), "") + "</td>"+
-								"								<td>"+ Objects.toString(detall.getResponsableNom(), "") + "</td>"+
-								"								<td>"+ Objects.toString(detall.getEmissorCertificat(), "") + "</td>"+
-								"							</tr>";
+						htmlDetalls.append("<tr>")
+								   .append("	<td>").append((detall.getData() == null ? messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.data.nd") : sdf.format(detall.getData()))).append("</td>")
+								   .append("	<td>").append(Objects.toString(detall.getResponsableNif(), "")).append("</td>")
+								   .append("	<td>").append(Objects.toString(detall.getResponsableNom(), "")).append("</td>")
+								   .append("	<td>").append(Objects.toString(detall.getEmissorCertificat(), "")).append("</td>")
+								   .append("</tr>");
 					}
-					htmlFirmes+=
-
-							"			<tr>"+
-							"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.annex.detalls.camp.firma") +" "+i+ 
-												(!firma.isAutofirma()? "": 
-													"("+messageHelper.getMessage("registre.annex.detalls.camp.firma.autoFirma")+")"
-												)+ 	
-											"</th>"+
-							"			</tr>"+
-							
-							
-							"			<tr>"+
-							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaTipus") +"</th>"+
-							"				<td>" + (firma.getTipus()==null ? "": messageHelper.getMessage("document.nti.tipfir.enum." + Objects.toString(firma.getTipus(), ""))) + "</td>"+
-							"			</tr>"+
-							"			<tr>"+
-							"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaPerfil") +"</th>"+
-							"				<td>"+ Objects.toString(firma.getPerfil(), "") + "</td>"+
-							"			</tr>"+
-							
-							(firma.getTipus() == ArxiuFirmaTipusEnumDto.PADES && firma.getTipus() == ArxiuFirmaTipusEnumDto.CADES_ATT && firma.getTipus() == ArxiuFirmaTipusEnumDto.XADES_ENV ? "": 
-								"			<tr>"+
-								"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
-								"				<td>"+ Objects.toString(firma.getFitxerNom(), "") + "</td>"+
-								"			</tr>"
-									)+ 	
-							
-							(firma.getCsvRegulacio() == null || firma.getCsvRegulacio().isEmpty() ? "": 
-								"			<tr>"+
-								"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaCsvRegulacio") + "</th>"+
-								"				<td>"+ Objects.toString(firma.getCsvRegulacio(), "") + "</td>"+
-								"			</tr>"
-									)+ 	
+					htmlFirmes.append("		<tr>")
+							  .append("			<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.annex.detalls.camp.firma")).append(" ").append(i);
 					
-							(firma.getDetalls().isEmpty() ? "": 
-								"				<tr>"+
-								"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls") + "</th>"+	
+					if (!firma.isAutofirma()) {
+						htmlFirmes.append("");
+					}else {
+						htmlFirmes.append("(").append(messageHelper.getMessage("registre.annex.detalls.camp.firma.autoFirma")).append(")");						
+					}
+					
+					htmlFirmes.append("			</th>")
+							  .append("		</tr>")
+							  .append("		<tr>")
+							  .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaTipus")).append("</th>")
+							  .append("			<td>").append((firma.getTipus()==null ? "": messageHelper.getMessage("document.nti.tipfir.enum." + Objects.toString(firma.getTipus(), "")))).append("</td>")
+							  .append("		</tr>")
+							  .append("		<tr>")
+							  .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaPerfil")).append("</th>")
+							  .append("			<td>").append(Objects.toString(firma.getPerfil(), "")).append("</td>")
+							  .append("		</tr>");
+					
+					if (firma.getTipus() == ArxiuFirmaTipusEnumDto.PADES && firma.getTipus() == ArxiuFirmaTipusEnumDto.CADES_ATT && firma.getTipus() == ArxiuFirmaTipusEnumDto.XADES_ENV) {
+						htmlFirmes.append("");
+					}else {
+						htmlFirmes.append("	<tr>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.fitxer")).append("</th>")
+								  .append("		<td>").append(Objects.toString(firma.getFitxerNom(), "")).append("</td>")
+								  .append("	</tr>");
+					}
+					
+					if (firma.getCsvRegulacio() == null || firma.getCsvRegulacio().isEmpty()) {
+						htmlFirmes.append("");
+					}else {
+						htmlFirmes.append("	<tr>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaCsvRegulacio")).append("</th>")
+								  .append("		<td>").append(Objects.toString(firma.getCsvRegulacio(), "")).append("</td>")
+								  .append("	</tr>");
+					}
+					
+					if (firma.getDetalls().isEmpty()) {
+						htmlFirmes.append("");
+					}else {
+						htmlFirmes.append("	<tr>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls")).append("</th>")
+								  .append("		<td>")
+								  .append("<table class=\"table teble-striped table-bordered\">")
+								  .append("<thead>")
+								  .append("	<tr>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.data")).append("</th>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.nif")).append("</th>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.nom")).append("</th>")
+								  .append("		<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.emissor")).append("</th>")
+								  .append("	</tr>")
+								  .append("<tbody>")
+								  .append(htmlDetalls)
+								  .append("</tbody>")
+								  .append("</table>")
+								  .append("		</td>")
+								  .append("	</tr>");
+					}					
 								
-								"					<td>"+
-								"						<table class=\"table teble-striped table-bordered\">"+
-								"						<thead>"+
-								"							<tr>"+
-								"								<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.data") + "</th>"+		
-								"								<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.nif") + "</th>"+	
-								"								<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.nom") + "</th>"+	
-								"								<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.firmaDetalls.emissor") + "</th>"+	
-								"							</tr>"+
-								"						<tbody>"+
-								htmlDetalls +
-								
-								"						</tbody>"+
-								"						</table>"+
-								"					</td>"+
-								"				</tr>");
 					i++;
 				}
 			}
-			htmlAnnexos += 
-					"			<tr>"+
-					"				<th class=\"tableHeader\" colspan=\"2\">" + annex.getTitol() + "</th>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura") +"</th>"+
-					"				<td>"+ (annex.getDataCaptura() == null ? "" : sdf.format(annex.getDataCaptura())) + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.origen") +"</th>"+
-					"				<td>"+ Objects.toString(annex.getOrigenCiutadaAdmin(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio") + "</th>"+
-					"				<td>" + (annex.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(annex.getNtiElaboracioEstat(), ""))) + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental") + "</th>"+
-					"				<td>" + (annex.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(annex.getNtiTipusDocument(), ""))) + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document") + "</th>"+
-					"				<td>"  + (annex.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+annex.getSicresTipusDocument())) + "</td>"+
-					"			</tr>"+				
-					(annex.getLocalitzacio() == null ? "": 
-						"			<tr>"+
-						"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.localitzacio") + "</th>"+
-						"				<td>"  + annex.getLocalitzacio() +
-						"			</tr>"
-							)+ 
-					(annex.getObservacions() == null ? "": 
-						"			<tr>"+
-						"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.observacions") + "</th>"+
-						"				<td>"  + annex.getObservacions() +
-						"			</tr>"
-							)+ 					
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.annex.detalls.camp.fitxer") + "</th>"+
-					"				<td>"  + Objects.toString(annex.getFitxerNom(), "") + "("+Objects.toString(annex.getFitxerTamany(), "")+" bytes)"+
-					(concsvBaseUrl != null && annex.getFirmaCsv()!=null?
-							"<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+annex.getFirmaCsv()+"\"> Descarregar </a>"
-							:"<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>") +
-					"</td>"+
-					"			</tr>"+
-					htmlFirmes+"";
+			htmlAnnexos.append("			<tr>")
+					   .append("				<th class=\"tableHeader\" colspan=\"2\">" + annex.getTitol()).append("</th>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.data.captura")).append("</th>")
+					   .append("				<td>").append((annex.getDataCaptura() == null ? "" : sdf.format(annex.getDataCaptura()))).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.origen")).append("</th>")
+					   .append("				<td>").append(Objects.toString(annex.getOrigenCiutadaAdmin(), "")).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.estat.elaboracio")).append("</th>")
+					   .append("				<td>").append((annex.getNtiElaboracioEstat()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiElaboracioEstat." + Objects.toString(annex.getNtiElaboracioEstat(), "")))).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.eni.tipus.documental")).append("</th>")
+					   .append("				<td>").append((annex.getNtiTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.ntiTipusDocument." + Objects.toString(annex.getNtiTipusDocument(), "")))).append("</td>")
+					   .append("			</tr>")
+					   .append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.sicres.tipus.document")).append("</th>")
+					   .append("				<td>").append((annex.getSicresTipusDocument()==null ? "": messageHelper.getMessage("registre.annex.detalls.camp.sicresTipusDocument."+annex.getSicresTipusDocument()))).append("</td>")
+					   .append("			</tr>");
+			
+			if (annex.getLocalitzacio() == null) {
+				htmlAnnexos.append("");
+			}else {
+				htmlAnnexos.append("		<tr>")
+						   .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.localitzacio")).append("</th>")
+						   .append("			<td>").append(annex.getLocalitzacio())
+						   .append("		</tr>");
+			}
+			
+			if (annex.getObservacions() == null) {
+				htmlAnnexos.append("");
+			}else {
+				htmlAnnexos.append("		<tr>")
+						   .append("			<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.observacions")).append("</th>")
+						   .append("			<td>").append(annex.getObservacions())
+						   .append("		</tr>");
+			}
+			
+			htmlAnnexos.append("			<tr>")
+					   .append("				<th>").append(messageHelper.getMessage("registre.annex.detalls.camp.fitxer")).append("</th>")
+					   .append("				<td>").append(Objects.toString(annex.getFitxerNom(), "")).append("(").append(Objects.toString(annex.getFitxerTamany(), "")).append(" bytes)");
+			
+			if (concsvBaseUrl != null && annex.getFirmaCsv() != null) {
+				htmlAnnexos.append("<a href=\""+concsvBaseUrl+"/view.xhtml?hash="+annex.getFirmaCsv()+"\"> Descarregar </a>");
+			} else {
+				htmlAnnexos.append("<a href=\""+appBaseUrl+"/modal/contingut/registre/"+registreId+"/annex/"+annex.getId()+"/arxiu/DOCUMENT\"> Descarregar </a>");
+			}
+			
+			htmlAnnexos.append("			</td>")
+					   .append("		</tr>")
+					   .append(htmlFirmes)
+					   .append("");
 		}
-		String htmlAnnexosTable=
-				
-				"		<table>"+
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.pipella.annexos") + "</th>"+
-				"			</tr>"+
-				htmlAnnexos +
-				"		</table>";
 		
-		
-		
+		StringBuilder htmlAnnexosTable = new StringBuilder();
+		htmlAnnexosTable.append("	<table>")
+						.append("		<tr>")
+						.append("			<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.pipella.annexos")).append("</th>")
+						.append("		</tr>")
+						.append(htmlAnnexos)
+						.append("	</table>");		
 		
 		return htmlAnnexosTable;
 		
 	}	
 	
 	
-	private String getHtmlInteressatsTable(RegistreDto registre) {
-		String htmlInteressats = "";
+	private StringBuilder getHtmlInteressatsTable(RegistreDto registre) {
+		StringBuilder htmlInteressats = new StringBuilder();
+		htmlInteressats.append("");
 		for (RegistreInteressat interessat: registre.getInteressats()) {
 			RegistreInteressat representant = interessat.getRepresentant();
-			String htmlRepresentant = "";
+			StringBuilder htmlRepresentant = new StringBuilder();
+			htmlRepresentant.append("");
 			if (representant!=null){
 				
 				String representantTitle="";
@@ -2003,61 +2034,60 @@ public class BustiaServiceImpl implements BustiaService {
 					representantTitle = representant.getRaoSocial();
 				}
 				
-				htmlRepresentant =
-					"			<tr>"+
-					"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.interessat.detalls.camp.representant") + "</th>"+
-					"			</tr>"+						
-					"			<tr>"+
-					"				<th class=\"tableHeader\" colspan=\"2\">" + representantTitle + "</th>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.detalls.camp.interessat.tipus") +"</th>"+
-					"				<td>"+ (representant.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(representant.getTipus(), "")))+ "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.detalls.camp.interessat.document") +"</th>"+
-					"				<td>"+ Objects.toString(representant.getDocumentTipus(), "")+": "+representant.getDocumentNum() + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.pais") + "</th>"+
-					"				<td>" + Objects.toString(representant.getPais(), "") + (representant.getPaisCodi() == null ? "" : " (" + representant.getPaisCodi() + ")") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.provincia") + "</th>"+
-					"				<td>" + Objects.toString(representant.getProvincia(), "") + (representant.getProvinciaCodi() == null ? "" : " (" + representant.getProvinciaCodi() + ")") +  "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.municipi") + "</th>"+
-					"				<td>"  + Objects.toString(representant.getMunicipi(), "") + (representant.getMunicipiCodi() == null ? "" : " (" + representant.getMunicipiCodi() + ")") + "</td>"+
-					"			</tr>"+	
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.adresa") + "</th>"+
-					"				<td>" + Objects.toString(representant.getAdresa(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.codiPostal") + "</th>"+
-					"				<td>"  + Objects.toString(representant.getCodiPostal(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.email") +"</th>"+
-					"				<td>"+ Objects.toString(representant.getEmail(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.telefon") + "</th>"+
-					"				<td>" + Objects.toString(representant.getTelefon(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat") + "</th>"+
-					"				<td>" + Objects.toString(representant.getEmailHabilitat(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +"</th>"+
-					"				<td>"+ (representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(representant.getCanalPreferent(), "")))+ "</td>"+
-					"			</tr>"+					
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.observacions") + "</th>"+
-					"				<td>"  + Objects.toString(representant.getObservacions(), "") + "</td>"+
-					"			</tr>";											
+				htmlRepresentant.append("			<tr>")
+								.append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.interessat.detalls.camp.representant")).append("</th>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th class=\"tableHeader\" colspan=\"2\">").append(representantTitle).append("</th>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.interessat.tipus")).append("</th>")
+								.append("				<td>").append((representant.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(representant.getTipus(), "")))).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.interessat.document")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getDocumentTipus(), "")+": "+representant.getDocumentNum()).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.pais")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getPais(), "")).append((representant.getPaisCodi() == null ? "" : " (" + representant.getPaisCodi() + ")")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.provincia")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getProvincia(), "")).append((representant.getProvinciaCodi() == null ? "" : " (" + representant.getProvinciaCodi() + ")")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.municipi")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getMunicipi(), "")).append((representant.getMunicipiCodi() == null ? "" : " (" + representant.getMunicipiCodi() + ")")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.adresa")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getAdresa(), "")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.codiPostal")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getCodiPostal(), "")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.email")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getEmail(), "")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.telefon")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getTelefon(), "")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getEmailHabilitat(), "")).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent")).append("</th>")
+								.append("				<td>").append((representant.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(representant.getCanalPreferent(), "")))).append("</td>")
+								.append("			</tr>")
+								.append("			<tr>")
+								.append("				<th>").append(messageHelper.getMessage("interessat.form.camp.observacions")).append("</th>")
+								.append("				<td>").append(Objects.toString(representant.getObservacions(), "")).append("</td>")
+								.append("			</tr>");											
 			}
 			String interesatTitle="";
 			if (interessat.getTipus().equals("PERSONA_FIS")) {
@@ -2066,330 +2096,334 @@ public class BustiaServiceImpl implements BustiaService {
 			} else {
 				interesatTitle = interessat.getRaoSocial();
 			}
-			htmlInteressats += 
-					"			<tr>"+
-					"				<th class=\"tableHeader\" colspan=\"2\">" + interesatTitle + "</th>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.detalls.camp.interessat.tipus") +"</th>"+
-					"				<td>"+ (interessat.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(interessat.getTipus(), "")))+ "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.detalls.camp.interessat.document") +"</th>"+
-					"				<td>"+ Objects.toString(interessat.getDocumentTipus(), "")+": "+interessat.getDocumentNum() + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.pais") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getPais(), "") + (interessat.getPaisCodi() == null ? "" : " (" + interessat.getPaisCodi() + ")")  + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.provincia") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getProvincia(), "") + (interessat.getProvinciaCodi() == null ? "" : " (" + interessat.getProvinciaCodi() + ")")  + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.municipi") + "</th>"+
-					"				<td>"  + Objects.toString(interessat.getMunicipi(), "") + (interessat.getMunicipiCodi() == null ? "" : " (" + interessat.getMunicipiCodi() + ")")  + "</td>"+
-					"			</tr>"+	
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.adresa") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getAdresa(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.codiPostal") + "</th>"+
-					"				<td>"  + Objects.toString(interessat.getCodiPostal(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.email") +"</th>"+
-					"				<td>"+ Objects.toString(interessat.getEmail(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.telefon") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getTelefon(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat") + "</th>"+
-					"				<td>" + Objects.toString(interessat.getEmailHabilitat(), "") + "</td>"+
-					"			</tr>"+
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent") +"</th>"+
-					"				<td>"+ (interessat.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))+ "</td>"+
-					"			</tr>"+					
-					"			<tr>"+
-					"				<th>"+ messageHelper.getMessage("interessat.form.camp.observacions") + "</th>"+
-					"				<td>"  + Objects.toString(interessat.getObservacions(), "") + "</td>"+
-					"			</tr>"+
-					htmlRepresentant;
+			htmlInteressats.append("			<tr>")
+						   .append("				<th class=\"tableHeader\" colspan=\"2\">").append(interesatTitle).append("</th>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.interessat.tipus")).append("</th>")
+						   .append("				<td>").append((interessat.getTipus()==null ? "": messageHelper.getMessage("registre.interessat.tipus.enum." + Objects.toString(interessat.getTipus(), "")))).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.interessat.document")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getDocumentTipus(), "")).append(": ").append(interessat.getDocumentNum()).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.pais")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getPais(), "")).append((interessat.getPaisCodi() == null ? "" : " (" + interessat.getPaisCodi() + ")")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.provincia")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getProvincia(), "")).append((interessat.getProvinciaCodi() == null ? "" : " (" + interessat.getProvinciaCodi() + ")")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.municipi")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getMunicipi(), "")).append((interessat.getMunicipiCodi() == null ? "" : " (" + interessat.getMunicipiCodi() + ")")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.adresa")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getAdresa(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.codiPostal")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getCodiPostal(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.email")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getEmail(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.telefon")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getTelefon(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("registre.interessat.detalls.camp.emailHabilitat")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getEmailHabilitat(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent")).append("</th>")
+						   .append("				<td>").append((interessat.getCanalPreferent()==null ? "": messageHelper.getMessage("registre.interessat.detalls.camp.canalPreferent." + Objects.toString(interessat.getCanalPreferent(), "")))).append("</td>")
+						   .append("			</tr>")
+						   .append("			<tr>")
+						   .append("				<th>").append(messageHelper.getMessage("interessat.form.camp.observacions")).append("</th>")
+						   .append("				<td>").append(Objects.toString(interessat.getObservacions(), "")).append("</td>")
+						   .append("			</tr>")
+						   .append(htmlRepresentant);
 		}
 		
 		
-		String htmlInteressatsTable = 
-							"		<table>"+
-							"			<tr>"+
-							"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.pipella.interessats") + "</th>"+
-							"			</tr>"+
-							htmlInteressats +
-							"		</table>";
+		StringBuilder htmlInteressatsTable = new StringBuilder();
+		htmlInteressatsTable.append("		<table>")
+							.append("			<tr>")
+							.append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.pipella.interessats")).append("</th>")
+							.append("			</tr>")
+							.append(htmlInteressats)
+							.append("		</table>");
 	
 		return htmlInteressatsTable;
 	}	
 
-	private  String getHtml(
+	private  StringBuilder getHtml(
 			RegistreDto registre, 
 			Object registreData, 
 			String message18nRegistreTipus, 
 			Object registreDataOrigen, 
 			Object registreCreatedDate, 
-			String htmlJustificant, 
-			String htmlAnnexosTable, 
-			String htmlInteressatsTable, 
+			StringBuilder htmlJustificant, 
+			StringBuilder htmlAnnexosTable, 
+			StringBuilder htmlInteressatsTable, 
 			DadesUsuari usuariActual, 
 			String motiu, 
 			String appBaseUrl) {
 		
-		String html = 
-				"<!DOCTYPE html>"+
-				"<html>"+
-				"<head>"+
-				"<style>"+
-				"body {"+
-				"	margin: 0px;"+
-				"	font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;"+
-				"	font-size: 14px;"+
-				"	color: #333;"+
-				"}"+
-				"table {"+
-				"	"+
-				"	border-radius: 4px;"+
-				"	width: 100%;"+
-				"	border-collapse: collapse;"+
-				"	margin-bottom: 10px;"+
-				"}"+
+		StringBuilder html = new StringBuilder();
+		html.append("<!DOCTYPE html>")
+			.append("<html>")
+			.append("<head>")
+			.append("<style>")
+			.append("body {")
+			.append("	margin: 0px;")
+			.append("	font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;")
+			.append("	font-size: 14px;")
+			.append("	color: #333;")
+			.append("}")
+			.append("table {")
+			.append("	")
+			.append("	border-radius: 4px;")
+			.append("	width: 100%;")
+			.append("	border-collapse: collapse;")
+			.append("	margin-bottom: 10px;")
+			.append("}")
+			
+			.append("td, th {")
+			.append("	border-bottom: solid 0.5px #ddd;")
+			.append("	height: 38px;")
+			.append("	border: 1px solid #ddd;")
+			.append("	padding-left: 8px;")
+			.append("	padding-right: 8px;")
+			.append("}")
+			
+			.append(".tableHeader {")
+			.append("	background-color: #f5f5f5;")
+			.append("	border-top-left-radius: 4px;")
+			.append("	border-top-righ-radius: 4px;")
+			.append("}")
+			
+			.append(".header {")
+			.append("	height: 30px;")
+			.append("	background-color: #ff9523;")
+			.append("	height: 90px;")
+			.append("	text-align: center;")
+			.append("	line-height: 100px;")
+			.append("}")
+			.append(".content {")
+			.append("	margin: auto;")
+			.append("	width: 70%;")
+			.append("	padding: 10px;")
+			.append("}")
 				
-				"td, th {"+
-				"	border-bottom: solid 0.5px #ddd;"+
-				"	height: 38px;"+
-				"	border: 1px solid #ddd;"+
-				"	padding-left: 8px;"+
-				"	padding-right: 8px;"+
-				"}"+
+			.append(".footer {")
+			.append("	height: 30px;")
+			.append("	background-color: #ff9523;")
+			.append("	text-align: center;")
 				
-				".tableHeader {"+
-				"	background-color: #f5f5f5;"+
-				"	border-top-left-radius: 4px;"+
-				"	border-top-righ-radius: 4px;"+
-				"}"+
+			.append("}")
 				
-				".header {"+
-				"	height: 30px;"+
-				"	background-color: #ff9523;"+
-				"	height: 90px;"+
-				"	text-align: center;"+
-				"	line-height: 100px;"+
-				"}"+
-				".content {"+
-				"	margin: auto;"+
-				"	width: 70%;"+
-				"	padding: 10px;"+
-				"}"+
+			.append(".headerText {")
+			.append("    font-weight: bold;")
+			.append("    font-family: \"Trebuchet MS\", Helvetica, sans-serif;")
+			.append("    color: white;")
+			.append("    font-size: 30px;")
+			.append("	display: inline-block;")
+			.append("	vertical-align: middle;")
+			.append("	line-height: normal; ")
+			.append("}")
 				
-				".footer {"+
-				"	height: 30px;"+
-				"	background-color: #ff9523;"+
-				"	text-align: center;"+
+			.append(".footerText {")
+			.append("    font-weight: bold;")
+			.append("    font-family: \"Trebuchet MS\", Helvetica, sans-serif;")
+			.append("    color: white;")
+			.append("    font-size: 13px;")
+			.append("	display: inline-block;")
+			.append("	vertical-align: middle;")
+			.append("	line-height: normal; ")
+			.append("}")
+			
+			.append("</style>")
+			.append("</head>")
+			.append("<body>")
+			.append("	<div class=\"header\">")
+			.append("	<span class=\"headerText\">").append(messageHelper.getMessage("registre.titol").toUpperCase()).append("</span> ")
+			.append("	</div>")
+			.append("	<div class=\"content\">");
+			
+			if (usuariActual == null) {
+				html.append("");
+			}else {
+				html.append("		<table>")
+					.append("			<tr>")
+					.append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.remitent.titol")).append("</th>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.remitent.id")).append("</th>")
+					.append("				<td>").append(usuariActual.getCodi()).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.remitent.nom")).append("</th>")
+					.append("				<td>").append(usuariActual.getNom()).append(" ").append((usuariActual.getLlinatges() != null ? usuariActual.getLlinatges() : "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.remitent.email")).append("</th>")
+					.append("				<td>").append(usuariActual.getEmail()).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.bustia")).append("</th>")
+					.append("				<td>").append((registre.getPare() != null? registre.getPare().getNom() : "-")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.motiu")).append("</th>")
+					.append("				<td>").append(motiu).append("</td>")
+					.append("			</tr>")
+					.append("		</table>");
+			}
 				
-				"}"+
 				
-				".headerText {"+
-				"    font-weight: bold;"+
-				"    font-family: \"Trebuchet MS\", Helvetica, sans-serif;"+
-				"    color: white;"+
-				"    font-size: 30px;"+
-				"	display: inline-block;"+
-				"	vertical-align: middle;"+
-				"	line-height: normal; "+
-				"}"+
-				
-				".footerText {"+
-				"    font-weight: bold;"+
-				"    font-family: \"Trebuchet MS\", Helvetica, sans-serif;"+
-				"    color: white;"+
-				"    font-size: 13px;"+
-				"	display: inline-block;"+
-				"	vertical-align: middle;"+
-				"	line-height: normal; "+
-				"}"+
-				
-				"</style>"+
-				"</head>"+
-				"<body>"+
-				"	<div class=\"header\">"+
-				"	<span class=\"headerText\">"+ messageHelper.getMessage("registre.titol").toUpperCase()+"</span> "+
-				"	</div>"+
-				"	<div class=\"content\">" +
-				(usuariActual == null ? "" :
-				"		<table>"+
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">"+messageHelper.getMessage("registre.remitent.titol")+"</th>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.remitent.id") + "</th>"+
-				"				<td>" + usuariActual.getCodi() + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.remitent.nom") +"</th>"+
-				"				<td>"+ usuariActual.getNom() + " " + (usuariActual.getLlinatges() != null ? usuariActual.getLlinatges() : "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.remitent.email") + "</th>"+
-				"				<td>" + usuariActual.getEmail() + "</td>"+
-				"			</tr>"+				
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.bustia") + "</th>"+
-				"				<td>" + (registre.getPare() != null? registre.getPare().getNom() : "-") + "</td>"+
-				"			</tr>"+				
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.motiu") + "</th>"+
-				"				<td>" + motiu + "</td>"+
-				"			</tr>"+						
-				"		</table>"
-				) +
-				"		<table>"+
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">"+messageHelper.getMessage("registre.titol")+"</th>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.tipus") +"</th>"+
-				"				<td>"+ messageHelper.getMessage("registre.anotacio.tipus.enum." + Objects.toString(registre.getRegistreTipus(), "")) + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.numero") +"</th>"+
-				"				<td>"+ Objects.toString(registre.getNumero(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.data") + "</th>"+
-				"				<td>" + registreData + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.proces.estat") + "</th>"+
-				"				<td>" + messageHelper.getMessage("registre.proces.estat.enum." + registre.getProcesEstat()) + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.proces.presencial") + "</th>"+
-				"				<td>" + messageHelper.getMessage("boolean." + Objects.toString(registre.getPresencial(), "")) + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.fitxers") + "</th>"+
-				"			    <td>" + "<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>" + "</td>" +
-				"			</tr>"+
-				"		</table>"+
+				html.append("		<table>")
+					.append("			<tr>")
+					.append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.titol")).append("</th>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.tipus")).append("</th>")
+					.append("				<td>").append(messageHelper.getMessage("registre.anotacio.tipus.enum.")).append(Objects.toString(registre.getRegistreTipus(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.numero")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getNumero(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.data")).append("</th>")
+					.append("				<td>").append(registreData).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.proces.estat")).append("</th>")
+					.append("				<td>").append(messageHelper.getMessage("registre.proces.estat.enum." + registre.getProcesEstat())).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.proces.presencial")).append("</th>")
+					.append("				<td>").append(messageHelper.getMessage("boolean." + Objects.toString(registre.getPresencial(), ""))).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.fitxers")).append("</th>")
+					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
+					.append("			</tr>")
+					.append("		</table>")
 
-				"		<table>"+
-				"			<tr>"+
-				"				<th class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.obligatories") + "</th>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>"+ messageHelper.getMessage("registre.detalls.camp.oficina") + "</th>"+
-				"				<td>" + Objects.toString(registre.getOficinaDescripcio(), "") + " (" + Objects.toString(registre.getOficinaCodi(), "") + ")" + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.llibre") + "</th>"+
-				"				<td>" + Objects.toString(registre.getLlibreDescripcio(), "") + " (" + Objects.toString(registre.getLlibreCodi(), "") + ")" + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.extracte") + "</th>"+
-				"				<td>" + Objects.toString(registre.getExtracte(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.docfis") + "</th>"+
-				"				<td>" + Objects.toString(registre.getDocumentacioFisicaCodi(), "")  + "-" + Objects.toString(registre.getDocumentacioFisicaDescripcio(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + message18nRegistreTipus +"</th>"+
-				"				<td>" + Objects.toString(registre.getUnitatAdministrativaDescripcio(), "") + " (" + Objects.toString(registre.getUnitatAdministrativa(), "") + ")" + "</td>"+
-				"			</tr>		"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.assumpte.tipus") + "</th>"+
-				"				<td>" + Objects.toString(registre.getAssumpteTipusDescripcio(), "") + " (" + Objects.toString(registre.getAssumpteTipusCodi(), "") + ")" + "</td>"+
-				"			</tr>	"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.idioma") + "</th>"+
-				"				<td>" + Objects.toString(registre.getIdiomaDescripcio(), "") + " (" + Objects.toString(registre.getIdiomaCodi(), "") + ")" + "</td>"+
-				"			</tr>		"+
-				"		</table>"+
+					.append("		<table>")
+					.append("			<tr>")
+					.append("				<th class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.titol.obligatories")).append("</th>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.oficina")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getOficinaDescripcio(), "")).append(" (" + Objects.toString(registre.getOficinaCodi(), "") + ")").append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.llibre")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getLlibreDescripcio(), "")).append(" (" + Objects.toString(registre.getLlibreCodi(), "") + ")").append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.extracte")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getExtracte(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.docfis")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getDocumentacioFisicaCodi(), "")).append("-").append(Objects.toString(registre.getDocumentacioFisicaDescripcio(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(message18nRegistreTipus).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getUnitatAdministrativaDescripcio(), "")).append(" (" + Objects.toString(registre.getUnitatAdministrativa(), "") + ")").append("</td>")
+					.append("			</tr>		")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.assumpte.tipus")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getAssumpteTipusDescripcio(), "")).append(" (" + Objects.toString(registre.getAssumpteTipusCodi(), "") + ")").append("</td>")
+					.append("			</tr>	")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.idioma")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getIdiomaDescripcio(), "")).append(" (" + Objects.toString(registre.getIdiomaCodi(), "") + ")").append("</td>")
+					.append("			</tr>		")
+					.append("		</table>")
 
-				"		<table>"+
-				"			<tr>"+
-				"				<th colspan=\"4\" class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.opcionals") + "</th>"+
-				"			</tr>			"+
-				"			<tr>"+
-				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.assumpte.codi") + "</th>"+
-				"				<td colspan=\"2\">" + Objects.toString(registre.getAssumpteCodi(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.procediment") + "</th>"+
-				"				<td colspan=\"2\">" + Objects.toString(registre.getProcedimentCodi(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.refext") + "</th>"+
-				"				<td>" + Objects.toString(registre.getReferencia(), "") + "</td>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.numexp") + "</th>"+
-				"				<td>" + Objects.toString(registre.getExpedientNumero(), "") + "</td>	"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.transport.tipus") + "</th>"+
-				"				<td>" + Objects.toString(registre.getTransportTipusDescripcio(), "") + " (" + Objects.toString(registre.getTransportTipusCodi(), "") + ")" + "</td>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.transport.num") + "</th>"+
-				"				<td>" + Objects.toString(registre.getTransportNumero(), "") + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.origen.oficina") + "</th>"+
-				"				<td colspan=\"2\">" + Objects.toString(registre.getOficinaOrigenDescripcio(), "") + " (" + Objects.toString(registre.getOficinaOrigenCodi(), "") + ")" + "</td>"+
-				"			</tr>		"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.origen.num") + "</th>"+
-				"				<td>" + Objects.toString(registre.getNumeroOrigen(), "") + "</td>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.origen.data") + "</th>"+
-				"				<td>" + registreDataOrigen + "</td>"+
-				"			</tr>	"+
-				"			<tr>"+
-				"				<th colspan=\"2\">" + messageHelper.getMessage("registre.detalls.camp.observacions") + "</th>"+
-				"				<td colspan=\"2\">" + Objects.toString(registre.getObservacions(), "") + "</td>"+
-				"			</tr>			"+
-				"		</table>"+
+					.append("		<table>")
+					.append("			<tr>")
+					.append("				<th colspan=\"4\" class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.titol.opcionals")).append("</th>")
+					.append("			</tr>			")
+					.append("			<tr>")
+					.append("				<th colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.camp.assumpte.codi")).append("</th>")
+					.append("				<td colspan=\"2\">").append(Objects.toString(registre.getAssumpteCodi(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.camp.procediment")).append("</th>")
+					.append("				<td colspan=\"2\">").append(Objects.toString(registre.getProcedimentCodi(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.refext")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getReferencia(), "")).append("</td>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.numexp")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getExpedientNumero(), "")).append("</td>	")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.transport.tipus")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getTransportTipusDescripcio(), "")).append(" (" + Objects.toString(registre.getTransportTipusCodi(), "") + ")").append("</td>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.transport.num")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getTransportNumero(), "")).append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.camp.origen.oficina")).append("</th>")
+					.append("				<td colspan=\"2\">").append(Objects.toString(registre.getOficinaOrigenDescripcio(), "")).append(" (" + Objects.toString(registre.getOficinaOrigenCodi(), "") + ")").append("</td>")
+					.append("			</tr>		")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.origen.num")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getNumeroOrigen(), "")).append("</td>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.origen.data")).append("</th>")
+					.append("				<td>").append(registreDataOrigen).append("</td>")
+					.append("			</tr>	")
+					.append("			<tr>")
+					.append("				<th colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.camp.observacions")).append("</th>")
+					.append("				<td colspan=\"2\">").append(Objects.toString(registre.getObservacions(), "")).append("</td>")
+					.append("			</tr>			")
+					.append("		</table>")
 				
-				"		<table>"+
-				"			<tr>"+
-				"				<th colspan=\"4\" class=\"tableHeader\" colspan=\"2\">" + messageHelper.getMessage("registre.detalls.titol.seguiment") + "</th>"+
-				"			</tr>			"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.entitat") + "</th>"+
-				"				<td>" + Objects.toString(registre.getEntitatDescripcio(), "") + " (" + Objects.toString(registre.getEntitatCodi(), "") + ")" + "</td>"+
-				"			</tr>"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.aplicacio") +"</th>"+
-				"				<td>" + Objects.toString(registre.getAplicacioCodi(), "") + Objects.toString(registre.getAplicacioVersio(), "")  + "</td>"+
-				"			</tr>		"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.usuari") + "</th>"+
-				"				<td>" + Objects.toString(registre.getUsuariNom(), "") + " (" + Objects.toString(registre.getUsuariCodi(), "") + ")" + "</td>"+
-				"			</tr>	"+
-				"			<tr>"+
-				"				<th>" + messageHelper.getMessage("registre.detalls.camp.distribucio.alta") + "</th>"+
-				"				<td>" + registreCreatedDate + "</td>"+
-				"			</tr>"+		
-				"		</table>"+					
-				htmlJustificant +
-				htmlInteressatsTable + 
-				htmlAnnexosTable + 
-				"	</div>"+
-				"	<div class=\"footer\">"+
-					"	<span class=\"footerText\">"+
-					"		Distribució - Govern Illes Baleares"+
-				"	</span>"+
+					.append("		<table>")
+					.append("			<tr>")
+					.append("				<th colspan=\"4\" class=\"tableHeader\" colspan=\"2\">").append(messageHelper.getMessage("registre.detalls.titol.seguiment")).append("</th>")
+					.append("			</tr>			")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.entitat")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getEntitatDescripcio(), "")).append(" (" + Objects.toString(registre.getEntitatCodi(), "") + ")").append("</td>")
+					.append("			</tr>")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.aplicacio")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getAplicacioCodi(), "")).append(Objects.toString(registre.getAplicacioVersio(), "")).append("</td>")
+					.append("			</tr>		")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.usuari")).append("</th>")
+					.append("				<td>").append(Objects.toString(registre.getUsuariNom(), "")).append(" (" + Objects.toString(registre.getUsuariCodi(), "") + ")").append("</td>")
+					.append("			</tr>	")
+					.append("			<tr>")
+					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.distribucio.alta")).append("</th>")
+					.append("				<td>").append(registreCreatedDate).append("</td>")
+					.append("			</tr>")		
+					.append("		</table>")				
+					.append(htmlJustificant)
+					.append(htmlInteressatsTable) 
+					.append(htmlAnnexosTable)
+					.append("	</div>")
+					.append("	<div class=\"footer\">")
+					.append("	<span class=\"footerText\">")
+					.append("		Distribució - Govern Illes Baleares")
+					.append("	</span>")
 
-				"	</div>"+
-				"</body>"+
-				"</html>";
+					.append("	</div>")
+					.append("</body>")
+					.append("</html>");
 		
 		return html;
 	}
