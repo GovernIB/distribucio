@@ -117,29 +117,34 @@ $(document).ready(function() {
 		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
 	})
 
+	var selectButtonsInitialized = false;
+	
 	$('#taulaDades').on( 'draw.dt', function () {
 	
-		$('#seleccioAll').on('click', function() {
-			$.get(
-					"registreAdmin/select",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
-		$('#seleccioNone').on('click', function() {
-			$.get(
-					"registreAdmin/deselect",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('select-none');
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
+		if (!selectButtonsInitialized) {
+			selectButtonsInitialized = true;
+			$('#seleccioAll').on('click', function(e) {
+				$.get(
+						"registreAdmin/select",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});
+			$('#seleccioNone').on('click', function() {
+				$.get(
+						"registreAdmin/deselect",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('select-none');
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});	
+		}
 		
 		$("tr", this).each(function(){
 			if ($(this).find("#detall-button").length > 0) {

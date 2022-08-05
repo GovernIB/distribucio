@@ -125,32 +125,39 @@ $(document).ready(function() {
 		$('#tipusDocFisica').val('').change();
 		$('#enviatPerEmail').val(null).change();
 	});
-	
+
+	var selectButtonsInitialized = false;
+
 	$('#taulaDades').on( 'draw.dt', function () {
 		$.get( "registreUser/getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
 		})
-		$('#seleccioAll').on('click', function() {
-			$.get(
-					"registreUser/select",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
-		$('#seleccioNone').on('click', function() {
-			$.get(
-					"registreUser/deselect",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('select-none');
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
+		
+		if (!selectButtonsInitialized) {
+			selectButtonsInitialized = true;
+
+			$('#seleccioAll').on('click', function() {
+				$.get(
+						"registreUser/select",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});
+			$('#seleccioNone').on('click', function() {
+				$.get(
+						"registreUser/deselect",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('select-none');
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});
+		}
 		$("tr", this).each(function(){
 			if ($(this).find("#detall-button").length > 0) {
 				var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
