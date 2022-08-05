@@ -128,9 +128,8 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Processament dels annexos de documents tècnics segons el títol
 					String titol;
 					for (Annex annex : anotacio.getAnnexos()) {
-						String nomPerTitol = revisarContingutNom(annex.getNom());
+						titol = revisarContingutNom(annex.getNom());
 						//titol = annex.getTitol();
-						titol = nomPerTitol;
 						
 						// Copmprovar si està en estat esborrany o és invàlid
 						if (annex.getEstat() == AnnexEstat.ESBORRANY) {
