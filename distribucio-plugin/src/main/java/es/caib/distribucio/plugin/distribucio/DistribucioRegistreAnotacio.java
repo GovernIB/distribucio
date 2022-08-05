@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class DistribucioRegistreAnotacio {
 
+	private long id;
 	private String arxiuUuid;
 	private Date arxiuDataActualitzacio;
 	private String entitatCodi;
@@ -25,6 +26,14 @@ public class DistribucioRegistreAnotacio {
 	
 	private List<DistribucioRegistreAnnex> annexos = new ArrayList<DistribucioRegistreAnnex>();
 	
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getArxiuUuid() {
 		return arxiuUuid;

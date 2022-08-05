@@ -551,7 +551,8 @@ public class RegistreHelper {
 	}
 	
 	
-	@Transactional
+	// TODO: prova sense aquest transactional tambÃ©
+	// @Transactional
 	public void processarAnotacioPendentArxiuInThreadExecuto(Long registreId) {
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
@@ -586,14 +587,14 @@ public class RegistreHelper {
 	
 	
 
-
-	@Transactional
+	// TODO: Es treu aquest Transactional perquÃ¨ Ã©s el mÃ¨tode que triga mÃ©s de 5 minuts i es talla
+	// @Transactional
 	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
 		
 		// PROCESSAR ARXIU
 		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(
-				anotacio,
+				anotacio.getId(),
 				anotacio.getEntitat().getCodiDir3(),
 				true);
 		if (exceptionsGuardantAnnexos == null) {
@@ -612,7 +613,28 @@ public class RegistreHelper {
 				}
 			}
 			if (allRegistresWithSameNumeroSavedInArxiu)
-				gestioDocumentalHelper.esborrarDocsTemporals(anotacio);
+				gestioDocumentalHelper.esborrarDocsTemporals(anotacio.getId());
+			
+			//TODO: aquÃ­ estem modificant l'estat de l'anotaciÃ³ i com que hem tret @Transactional ja no
+			// es guardarÃ  a BBDD.
+			this.updateAnotacioEstat(anotacio.getId(), exceptionsGuardantAnnexos);
+			
+			return null;
+		} else {
+			//TODO: aquÃ­ estem modificant l'estat de l'anotaciÃ³ i com que hem tret @Transactional ja no
+			// es guardarÃ  a BBDD.
+			this.updateAnotacioEstat(anotacio.getId(), exceptionsGuardantAnnexos);
+			
+			return exceptionsGuardantAnnexos != null && !exceptionsGuardantAnnexos.isEmpty() ? exceptionsGuardantAnnexos.get(0) : null;
+		}
+	}
+
+	@Transactional
+	private void updateAnotacioEstat(long anotacioId, List<Exception> exceptionsGuardantAnnexos) {
+		
+		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
+		
+		if (exceptionsGuardantAnnexos == null) {
 			
 			if (anotacio.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {
 				RegistreProcesEstatEnum nouEstat;
@@ -629,15 +651,13 @@ public class RegistreHelper {
 						null, 
 						null);
 			}
-
-			return null;
-		} else {
+		
+		}else {
 			anotacio.updateProcesMultipleExcepcions(
-					null, 
-					exceptionsGuardantAnnexos);
-			
-			return exceptionsGuardantAnnexos != null && !exceptionsGuardantAnnexos.isEmpty() ? exceptionsGuardantAnnexos.get(0) : null;
+				null, 
+				exceptionsGuardantAnnexos);
 		}
+		
 	}
 
 	@Transactional
@@ -673,148 +693,216 @@ public class RegistreHelper {
 	 * @param crearAutofirma
 	 * @return
 	 */
+	@SuppressWarnings("null")
 	public List<Exception> createRegistreAndAnnexosInArxiu(
-			RegistreEntity registreEntity,
+			long registreId, //TODO podem passar registreId/anotacioId ?
 			String unitatOrganitzativaCodi,
 			boolean crearAutofirma) {
 		
 		List<Exception> exceptions = new ArrayList<>();
 		
-		if (registreEntity.getAnnexos() != null && registreEntity.getAnnexos().size() > 0) {
-			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
-					registreEntity,
-					DistribucioRegistreAnotacio.class);
+		// TODO crea un mÃ¨tode privat de consulta per a que et retorni 
+		DistribucioRegistreAnotacio distribucioRegistreAnotacio = this.getDistribucioRegistreAnotacio(registreId);
+		
+		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
+//			DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
+//					registreEntity,
+//					DistribucioRegistreAnotacio.class);
 			String uuidExpedient = null;
 			
 			// check if registre is not already created in arxiu
-			if (registreEntity.getExpedientArxiuUuid() == null) {
-
-				try {
-					// ============= SAVE REGISTRE AS EXPEDIENT IN ARXIU ============
-					uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
-							registreEntity.getNumero(),
-							distribucioRegistreAnotacio.getNumero(),
-							unitatOrganitzativaCodi);
-					registreEntity.updateExpedientArxiuUuid(uuidExpedient);
-					logger.trace("Creat el contenidor a l'Arxiu per l'anotació (" +
-							"anotacioId=" + registreEntity.getId() + ", " +
-							"anotacioNumero=" + registreEntity.getNumero() + ", " +
-							"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
-					
-					loadJustificantToDB(registreEntity.getId());
-					
-				} catch (Exception ex) {
-					return Arrays.asList(ex);
+			if (distribucioRegistreAnotacio.getExpedientArxiuUuid() == null) {
+				
+				exceptions = this.crearExpedientArxiu(
+								distribucioRegistreAnotacio, 
+								unitatOrganitzativaCodi, 
+								uuidExpedient);
+				if (exceptions != null || !exceptions.isEmpty()) {
+					return exceptions;
 				}
+				
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
-				uuidExpedient = registreEntity.getExpedientArxiuUuid();
+				uuidExpedient = distribucioRegistreAnotacio.getExpedientArxiuUuid();
 				logger.trace("L'anotació (" +
-						"anotacioId=" + registreEntity.getId() + ", " +
-						"anotacioNumero=" + registreEntity.getNumero() + ", " +
+						"anotacioId=" + distribucioRegistreAnotacio.getId() + ", " +
+						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") ja estava a l'Arxiu amb uuid " + uuidExpedient);
 			}
 			
 			if (uuidExpedient != null) {
-				logger.debug("Guardant " + registreEntity.getAnnexos().size() + " annexos de l'anotació (" +
-						"anotacioId=" + registreEntity.getId() + ", " +
-						"anotacioNumero=" + registreEntity.getNumero() + ", " +
+				logger.debug("Guardant " + distribucioRegistreAnotacio.getAnnexos().size() + " annexos de l'anotació (" +
+						"anotacioId=" + distribucioRegistreAnotacio.getId() + ", " +
+						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
-				int nAnnexosEstatEsborrany = 0;
-				for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
-					try {
-						
-						RegistreAnnexEntity annex = registreEntity.getAnnexos().get(i);
-						// Només crea l'annex a dins el contenidor si encara no s'ha creat
-						if (annex.getFitxerArxiuUuid() == null) {
-
-							DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
-													
-							DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-							documentEniRegistrableDto.setNumero(registreEntity.getNumero());
-							documentEniRegistrableDto.setData(registreEntity.getData());
-							documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
-							documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
-							
-							// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
-							ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
-							if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
-								logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registreEntity.getIdentificador() );
-							}
-							distribucioAnnex.setPocesIntents(registreEntity.getProcesIntents());
-							
-							// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
-							distribucioAnnex.setValidacioFirma(validacioFirma);
-							
-							// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
-							String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
-									registreEntity.getNumero(),
-									distribucioAnnex,
-									unitatOrganitzativaCodi,
-									uuidExpedient,
-									documentEniRegistrableDto);
-							annex.updateFitxerArxiuUuid(uuidDocument);
-							
-							if (distribucioAnnex.getFirmes() != null) {
-								for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
-									// if firma was created with autofirma save info about firma(without content bytes) in db
-									if (distribucioFirma.isAutofirma() && crearAutofirma) {
-										RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
-										novaFirma.updatePerNovaFirma(
-												distribucioFirma.getTipus(), 
-												distribucioFirma.getPerfil(), 
-												distribucioFirma.getFitxerNom(), 
-												distribucioFirma.getTipusMime(), 
-												distribucioFirma.getCsvRegulacio(), 
-												distribucioFirma.isAutofirma(), 
-												distribucioFirma.getGesdocFirmaId(), 
-												annex);
-										annex.getFirmes().add(novaFirma);
-									}
-								}
-							}							
-							if (!annex.isSignaturaDetallsDescarregat()) {
-								loadSignaturaDetallsToDB(annex);
-							}
-						}
-						if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
-							nAnnexosEstatEsborrany++;
-						}
-					} catch (Exception ex) {
-						exceptions.add(ex);
-					}
-				}
-				registreEntity.setAnnexosEstatEsborrany(nAnnexosEstatEsborrany);
+				
+				this.guardarAnnexEnArxiu(
+						distribucioRegistreAnotacio, 
+						unitatOrganitzativaCodi, 
+						uuidExpedient, 
+						crearAutofirma, 
+						exceptions);
+				
 			}
 		}
 		if (exceptions != null && !exceptions.isEmpty()) {
 			return exceptions;
 		} else {
-			logger.trace("Creació del contenidor i dels annexos finalitzada correctament (" +
-					"anotacioId=" + registreEntity.getId() + ", " +
-					"anotacioNumero=" + registreEntity.getNumero() + ", " +
-					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+			this.tancarContenidorAmbAnnexos(
+						distribucioRegistreAnotacio, 
+						unitatOrganitzativaCodi);
 			
-			List<String> params = new ArrayList<>();
-			params.add(registreEntity.getNom());
-			params.add(null);
-			
-			contingutLogHelper.log(
-					registreEntity,
-					LogTipusEnumDto.DISTRIBUCIO,
-					params,
-					false);
 			return null;
 		}
 			
+	}	
+
+	@Transactional
+	private void tancarContenidorAmbAnnexos(
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio, 
+			String unitatOrganitzativaCodi) {
+		RegistreEntity registreEntity = registreRepository.findOne(distribucioRegistreAnotacio.getId());
+		logger.trace("Creació del contenidor i dels annexos finalitzada correctament (" +
+				"anotacioId=" + registreEntity.getId() + ", " +
+				"anotacioNumero=" + registreEntity.getNumero() + ", " +
+				"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
+		
+		List<String> params = new ArrayList<>();
+		params.add(registreEntity.getNom());
+		params.add(null);
+		
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.DISTRIBUCIO,
+				params,
+				false);
+		
 	}
-	
+
+	@Transactional
+	private void guardarAnnexEnArxiu(
+					DistribucioRegistreAnotacio distribucioRegistreAnotacio, 
+					String unitatOrganitzativaCodi, 
+					String uuidExpedient, 
+					boolean crearAutofirma, 
+					List<Exception> exceptions) {
+		
+		RegistreEntity registreEntity = registreRepository.findOne(distribucioRegistreAnotacio.getId());
+		int nAnnexosEstatEsborrany = 0;
+		for (int i = 0; i < registreEntity.getAnnexos().size(); i++) {
+
+			RegistreAnnexEntity annex = registreEntity.getAnnexos().get(i);
+			try {
+				
+				// Només crea l'annex a dins el contenidor si encara no s'ha creat
+				if (annex.getFitxerArxiuUuid() == null) {
+
+					DistribucioRegistreAnnex distribucioAnnex = distribucioRegistreAnotacio.getAnnexos().get(i);
+											
+					DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+					documentEniRegistrableDto.setNumero(registreEntity.getNumero());
+					documentEniRegistrableDto.setData(registreEntity.getData());
+					documentEniRegistrableDto.setOficinaDescripcio(registreEntity.getOficinaDescripcio());
+					documentEniRegistrableDto.setOficinaCodi(registreEntity.getOficinaCodi());
+					
+					// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
+					ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
+					if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
+						logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registreEntity.getIdentificador() );
+					}
+					distribucioAnnex.setPocesIntents(registreEntity.getProcesIntents());
+					
+					// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
+					distribucioAnnex.setValidacioFirma(validacioFirma);
+					
+					// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
+					String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
+							registreEntity.getNumero(),
+							distribucioAnnex,
+							unitatOrganitzativaCodi,
+							uuidExpedient,
+							documentEniRegistrableDto);
+					annex.updateFitxerArxiuUuid(uuidDocument);
+					
+					if (distribucioAnnex.getFirmes() != null) {
+						for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
+							// if firma was created with autofirma save info about firma(without content bytes) in db
+							if (distribucioFirma.isAutofirma() && crearAutofirma) {
+								RegistreAnnexFirmaEntity novaFirma = new RegistreAnnexFirmaEntity();
+								novaFirma.updatePerNovaFirma(
+										distribucioFirma.getTipus(), 
+										distribucioFirma.getPerfil(), 
+										distribucioFirma.getFitxerNom(), 
+										distribucioFirma.getTipusMime(), 
+										distribucioFirma.getCsvRegulacio(), 
+										distribucioFirma.isAutofirma(), 
+										distribucioFirma.getGesdocFirmaId(), 
+										annex);
+								annex.getFirmes().add(novaFirma);
+							}
+						}
+					}							
+					if (!annex.isSignaturaDetallsDescarregat()) {
+						loadSignaturaDetallsToDB(annex);
+					}
+				}
+				if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+					nAnnexosEstatEsborrany++;
+				}
+			} catch (Exception ex) {
+				exceptions.add(ex);
+			}
+		}
+		registreEntity.setAnnexosEstatEsborrany(nAnnexosEstatEsborrany);
+		
+	}
+
+	@Transactional
+	private List<Exception> crearExpedientArxiu(
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio, 
+			String unitatOrganitzativaCodi, 
+			String uuidExpedient) {
+		
+		RegistreEntity registreEntity = registreRepository.findOne(distribucioRegistreAnotacio.getId());
+
+		try {
+			// ============= SAVE REGISTRE AS EXPEDIENT IN ARXIU ============
+			uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
+					registreEntity.getNumero(),
+					distribucioRegistreAnotacio.getNumero(),
+					unitatOrganitzativaCodi);
+			registreEntity.updateExpedientArxiuUuid(uuidExpedient);
+			logger.trace("Creat el contenidor a l'Arxiu per l'anotació (" +
+					"anotacioId=" + registreEntity.getId() + ", " +
+					"anotacioNumero=" + registreEntity.getNumero() + ", " +
+					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
+			
+			loadJustificantToDB(registreEntity.getId());
+			
+		} catch (Exception ex) {
+			return Arrays.asList(ex);
+		}
+		return null;
+	}
+
+	@Transactional
+	private DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(long registreId) {
+		
+		RegistreEntity registreEntity = registreRepository.findOne(registreId);		
+		DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
+																	registreEntity, 
+																	DistribucioRegistreAnotacio.class);
+		distribucioRegistreAnotacio.setId(registreId);
+		
+		return distribucioRegistreAnotacio;
+	}
 
 	/** Mètode per validar les firmes de l'annex tingui o no firmes per revisar si 
 	 * l'annex té firmes invàlides.
 	 * 
 	 * @param distribucioAnnex
 	 */
+	@Transactional
 	public ValidacioFirmaEnum validaFirmes(RegistreAnnexEntity annex) {
 		
 		logger.debug("Validant firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());

@@ -18,12 +18,15 @@ import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
+import es.caib.distribucio.core.repository.RegistreRepository;
 
 @Component
 public class GestioDocumentalHelper {
 	
 	@Autowired
 	private PluginHelper pluginHelper;
+	@Autowired
+	private RegistreRepository registreRepository;
 	
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP = "anotacions_registre_doc_tmp";
 	public static final String GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP = "anotacions_registre_fir_tmp";
@@ -63,7 +66,9 @@ public class GestioDocumentalHelper {
 	 * També posa a null l'id del gestor documental.
 	 */
 	@Transactional
-	public void esborrarDocsTemporals(RegistreEntity anotacioEntity) {
+	public void esborrarDocsTemporals(long anotacioId) {
+		
+		RegistreEntity anotacioEntity = registreRepository.findOne(anotacioId);
 
 		logger.debug("Programant l'esborrat de temporals després del commit per l'anotació de registre " + anotacioEntity.getNumero());
 
