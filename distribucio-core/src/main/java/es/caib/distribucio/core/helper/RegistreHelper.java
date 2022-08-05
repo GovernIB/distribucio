@@ -551,7 +551,6 @@ public class RegistreHelper {
 	}
 	
 	
-	// TODO: prova sense aquest transactional tambÃ©
 	// @Transactional
 	public void processarAnotacioPendentArxiuInThreadExecuto(Long registreId) {
 		
@@ -586,8 +585,6 @@ public class RegistreHelper {
 	}
 	
 	
-
-	// TODO: Es treu aquest Transactional perquÃ¨ Ã©s el mÃ¨tode que triga mÃ©s de 5 minuts i es talla
 	// @Transactional
 	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);
@@ -615,14 +612,10 @@ public class RegistreHelper {
 			if (allRegistresWithSameNumeroSavedInArxiu)
 				gestioDocumentalHelper.esborrarDocsTemporals(anotacio.getId());
 			
-			//TODO: aquÃ­ estem modificant l'estat de l'anotaciÃ³ i com que hem tret @Transactional ja no
-			// es guardarÃ  a BBDD.
 			this.updateAnotacioEstat(anotacio.getId(), exceptionsGuardantAnnexos);
 			
 			return null;
 		} else {
-			//TODO: aquÃ­ estem modificant l'estat de l'anotaciÃ³ i com que hem tret @Transactional ja no
-			// es guardarÃ  a BBDD.
 			this.updateAnotacioEstat(anotacio.getId(), exceptionsGuardantAnnexos);
 			
 			return exceptionsGuardantAnnexos != null && !exceptionsGuardantAnnexos.isEmpty() ? exceptionsGuardantAnnexos.get(0) : null;
@@ -695,13 +688,12 @@ public class RegistreHelper {
 	 */
 	@SuppressWarnings("null")
 	public List<Exception> createRegistreAndAnnexosInArxiu(
-			long registreId, //TODO podem passar registreId/anotacioId ?
+			long registreId, 
 			String unitatOrganitzativaCodi,
 			boolean crearAutofirma) {
 		
 		List<Exception> exceptions = new ArrayList<>();
 		
-		// TODO crea un mÃ¨tode privat de consulta per a que et retorni 
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = this.getDistribucioRegistreAnotacio(registreId);
 		
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
