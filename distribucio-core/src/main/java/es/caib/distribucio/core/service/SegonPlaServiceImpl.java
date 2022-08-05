@@ -162,7 +162,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		@Override
 		public void run() {
 			ConfigHelper.setEntitat(this.entitatActual);
-			registreHelper.processarAnotacioPendentArxiuInThreadExecuto(registreId);
+			registreHelper.processarAnotacioPendentArxiuInThreadExecutor(registreId);
 		}
 		
 	    @Override
