@@ -390,7 +390,13 @@ $(document).ready(function() {
 					</a></li>	
 					<li><a href="registreAdmin/exportar?format=csv">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
-					</a></li>			
+					</a></li>	
+
+					<li class="divider"></li>
+					<li class="divider"></li>
+
+					<li><a href="">Proves</a></li>	
+					<li><a href="">Proves</a></li>			
 				</ul>
 			</div>
 		</div>
