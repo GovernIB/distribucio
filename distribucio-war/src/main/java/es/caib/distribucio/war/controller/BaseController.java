@@ -259,6 +259,7 @@ public class BaseController implements MessageSourceAware {
 	 * @return
 	 */
 	protected List<Long> getRegistresSeleccionats(HttpServletRequest request, String sessionName) {
+		@SuppressWarnings("unchecked")
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				sessionName);
@@ -317,5 +318,24 @@ public class BaseController implements MessageSourceAware {
 		}
 		return numeroAnnexosEstatEsborrany;
 	}
+	
+	
+	/** Obté l'entitat actual segons el rol que té l'usuari
+	 * s'utilitza només per les accions comuns d'admin i usuari */	
+	public EntitatDto getEntitatActualComprovantPermis(
+			HttpServletRequest request, 
+			String rol) {
+		EntitatDto entitat = this.getEntitatActual(request);
+		if ("admin".equals(rol)) {
+			if (!entitat.isUsuariActualAdministration() && !entitat.isUsuariActualAdminLectura())
+				throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
+			return entitat;
+		}else {
+			if (!entitat.isUsuariActualRead() && !entitat.isUsuariActualAdminLectura())
+				throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
+			return entitat;			
+		}
+	}
+	
 
 }
