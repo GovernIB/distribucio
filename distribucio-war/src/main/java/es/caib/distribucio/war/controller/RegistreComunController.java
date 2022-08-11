@@ -355,7 +355,11 @@ public class RegistreComunController extends BaseController{
 				this.getRegistresSeleccionats(request, sessionAttributeSeleccio), 
 				true);
 		try {
-			FitxerDto fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
+			FitxerDto fitxer = registreHelper.exportarAnotacions(
+										request, 
+										response, 
+										llistatRegistres, 
+										format);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
