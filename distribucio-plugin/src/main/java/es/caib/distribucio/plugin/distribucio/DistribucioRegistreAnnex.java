@@ -15,7 +15,7 @@ import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
  */
 public class DistribucioRegistreAnnex {
 
-	private String id;
+	private Long id;
 	private Date dataCaptura;
 	private String gesdocDocumentId;
 	private String origenCiutadaAdmin;
@@ -37,10 +37,10 @@ public class DistribucioRegistreAnnex {
 	
 	
 	
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTitol() {

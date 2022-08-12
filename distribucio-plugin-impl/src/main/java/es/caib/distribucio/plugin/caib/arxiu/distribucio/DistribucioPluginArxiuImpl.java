@@ -580,7 +580,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		//creating info for integracio logs
 		String accioDescripcio = "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("id", annex.getId());
+		accioParams.put("id", annex.getId().toString());
 		accioParams.put("titol", annex.getTitol());
 		if (fitxer != null) {
 			accioParams.put("fitxerNom", fitxer.getNom());

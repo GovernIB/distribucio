@@ -83,7 +83,6 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
-	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
@@ -102,6 +101,8 @@ $(document).ready(function() {
 		$('#enviatPerEmail').val(null).change();
 		$('#nomesAmbEsborranysBtn').removeClass('active');
 		$('#nomesAmbEsborranys').val(false);
+		$('#sobreescriure').val(null).trigger('change');
+		$('#reintents').val(null).trigger('change');
 	});
 
 	$('#nomesAmbErrorsBtn').click(function() {
@@ -116,29 +117,34 @@ $(document).ready(function() {
 		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
 	})
 
+	var selectButtonsInitialized = false;
+	
 	$('#taulaDades').on( 'draw.dt', function () {
 	
-		$('#seleccioAll').on('click', function() {
-			$.get(
-					"registreAdmin/select",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
-		$('#seleccioNone').on('click', function() {
-			$.get(
-					"registreAdmin/deselect",
-					function(data) {
-						$("#seleccioCount").html(data);
-						$('#taulaDades').webutilDatatable('select-none');
-						$('#taulaDades').webutilDatatable('refresh');
-					}
-			);
-			return false;
-		});
+		if (!selectButtonsInitialized) {
+			selectButtonsInitialized = true;
+			$('#seleccioAll').on('click', function(e) {
+				$.get(
+						"registreAdmin/select",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});
+			$('#seleccioNone').on('click', function() {
+				$.get(
+						"registreAdmin/deselect",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('select-none');
+							$('#taulaDades').webutilDatatable('refresh');
+						}
+				);
+				return false;
+			});	
+		}
 		
 		$("tr", this).each(function(){
 			if ($(this).find("#detall-button").length > 0) {
@@ -217,7 +223,6 @@ $(document).ready(function() {
 				function(data) {
 					$("#seleccioCount").html(data);
 					$('#taulaDades').webutilDatatable('select-none');
-					$('#taulaDades').webutilDatatable('refresh');
 				}
 		);
 		return false;
@@ -346,12 +351,14 @@ $(document).ready(function() {
 			<div class="col-md-2"></div>
 			<div class="col-md-2"></div>
 			<div class="col-md-3"></div>
-			<div id="reintents" class="col-md-3">
+			<div class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
 					</div>
-				</div>			
+					<div class="col-md-2" style="padding-left: 0;">
+					</div>
+				</div>
 			</div>
 			<div class="col-md-2">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

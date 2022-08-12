@@ -1257,7 +1257,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			omplirModelPerReenviarMultiple(request, entitatActual, model);
+			omplirModelPerReenviarMultiple(request, entitatActual, model, isVistaMoviments);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			model.addAttribute(command);
 		} catch (Exception e) {
@@ -1942,6 +1942,69 @@ public class RegistreUserController extends BaseUserController {
 	
 	private boolean isPermesReservarAnotacions() {
 		return new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar"));
+	}
+	
+	private void omplirModelPerReenviarMultiple(
+			HttpServletRequest request, 
+			EntitatDto entitatActual,
+			Model model, 
+			boolean isVistaMoviments) {
+
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
+				entitatActual.getId());
+		
+		boolean disableDeixarCopia = true;
+
+		
+		model.addAttribute(
+				"selectMultiple",
+				false);
+		
+		model.addAttribute(
+				"disableDeixarCopia",
+				disableDeixarCopia);
+		
+		model.addAttribute("maxLevel", getMaxLevelArbre());
+		
+		model.addAttribute(
+				"busties",
+				busties);
+		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
+		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+		model.addAttribute(
+				"arbreUnitatsOrganitzatives",
+				bustiaService.findArbreUnitatsOrganitzatives(
+						entitatActual.getId(),
+						true,
+						false,
+						true));
+		if (isVistaMoviments) {
+			Set<Long> seleccio = new HashSet<Long>();
+//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			@SuppressWarnings("unchecked")
+			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+				for (String idVistaMoviment: seleccioMoviments) {
+					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
+				}
+			}
+
+			model.addAttribute("registres", registreService.findMultiple(
+					entitatActual.getId(),
+					new ArrayList<Long>(seleccio),
+					false));
+
+		} else {
+		model.addAttribute("registres", 
+				registreService.findMultiple(
+						entitatActual.getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
+		}
 	}
 
 	private int getMaxLevelArbre() {

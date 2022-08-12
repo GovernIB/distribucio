@@ -131,12 +131,14 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	}
 
 	public void update(
+			String codi, 
 			String nom,
 			String url,
 			String usuari,
 			String contrasenya,
 			Integer intents,
 			Integer tempsEntreIntents) {
+		this.codi = codi;
 		this.nom = nom;
 		this.url = url;
 		this.usuari = usuari;

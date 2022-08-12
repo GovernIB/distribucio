@@ -90,6 +90,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 		List<RegistreEntity> llistatRegistres = registreRepository.findRegistreBackCodi(backofficeEntity.getCodi());
 		
 		backofficeEntity.update(
+				backofficeDto.getCodi(),
 				backofficeDto.getNom(),
 				backofficeDto.getUrl(),
 				backofficeDto.getUsuari(),
