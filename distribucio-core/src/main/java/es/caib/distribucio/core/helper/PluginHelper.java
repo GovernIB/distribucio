@@ -144,7 +144,8 @@ public class PluginHelper {
 			DistribucioRegistreAnnex annex,
 			String unitatOrganitzativaCodi,
 			String uuidExpedient,
-			DocumentEniRegistrableDto documentEniRegistrableDto) {
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -169,7 +170,8 @@ public class PluginHelper {
 					annex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto);
+					documentEniRegistrableDto, 
+					procedimentCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,

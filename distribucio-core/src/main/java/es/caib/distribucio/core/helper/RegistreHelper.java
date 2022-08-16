@@ -663,6 +663,8 @@ public class RegistreHelper {
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
 				self.getDistribucioRegistreAnotacio(anotacioId);
 		
+		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
+		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
@@ -699,7 +701,8 @@ public class RegistreHelper {
 								annex.getId(), 
 								annex, 
 								unitatOrganitzativaCodi,
-								uuidExpedient);
+								uuidExpedient, 
+								registreEntity.getProcedimentCodi());
 					} catch (Exception ex) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
 										+ distribucioRegistreAnotacio.getNumero() + ": " + ex.getMessage(), ex );
@@ -711,7 +714,7 @@ public class RegistreHelper {
 		if (exceptions != null && !exceptions.isEmpty()) {
 			return exceptions;
 		} else {
-			RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
+			//RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
 
 			logger.trace("Creació del contenidor i dels annexos finalitzada correctament (" +
 					"anotacioId=" + registreEntity.getId() + ", " +
@@ -1890,7 +1893,8 @@ public class RegistreHelper {
 			Long annexId, 
 			DistribucioRegistreAnnex distribucioAnnex, 
 			String unitatOrganitzativaCodi, 
-			String uuidExpedient) {
+			String uuidExpedient, 
+			String procedimentCodi) {
 
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		RegistreEntity registre = annex.getRegistre();
@@ -1921,7 +1925,8 @@ public class RegistreHelper {
 					distribucioAnnex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto);
+					documentEniRegistrableDto, 
+					procedimentCodi);
 			annex.updateFitxerArxiuUuid(uuidDocument);
 			
 			if (distribucioAnnex.getFirmes() != null) {

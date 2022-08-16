@@ -189,7 +189,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DistribucioRegistreAnnex distribucioAnnex,
 			String unitatArrelCodi,
 			String uuidExpedient,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) throws SistemaExternException {
 		
 		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;
@@ -346,7 +347,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirmes,
 					uuidExpedient,
 					documentEniRegistrableDto,
-					estatDocument);
+					estatDocument, 
+					procedimentCodi);
 		} catch (Exception se) {
 			
 			int maxReintents = getGuardarAnnexosMaxReintents();
@@ -368,7 +370,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						arxiuFirmes,
 						uuidExpedient,
 						documentEniRegistrableDto,
-						DocumentEstat.ESBORRANY);	
+						DocumentEstat.ESBORRANY, 
+						procedimentCodi);	
 			} else {
 				throw se;
 			}
@@ -567,7 +570,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			List<ArxiuFirmaDto> firmes,
 			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
-			DocumentEstat estatDocument) throws SistemaExternException {
+			DocumentEstat estatDocument, 
+			String procedimentCodi) throws SistemaExternException {
 		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
@@ -623,7 +627,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
 					toArxiuDocument(
 							null,
-							nom,
+							nom, 
+							procedimentCodi,
 							annex.getTitol(),
 							fitxer,
 							firmes,
@@ -1150,7 +1155,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 	private Document toArxiuDocument(
 			String identificador,
-			String nom,
+			String nom, 
+			String procedimentCodi,
 			String descripcio,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes, 
@@ -1330,10 +1336,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				}
 			}
 		}
-		
+		DocumentFormat format = null;
 		if (extensio != null) {
 			metadades.setExtensio(extensio);
-			DocumentFormat format = this.getDocumentFormat(extensio);
+			format = this.getDocumentFormat(extensio);
 			metadades.setFormat(format);
 		}
 		metadades.setOrgans(ntiOrgans);
@@ -1367,6 +1373,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		}		
+		if (format.equals(DocumentFormat.XML)) {
+			metaDadesAddicionals.put("id_tramite", procedimentCodi);
 		}
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	
