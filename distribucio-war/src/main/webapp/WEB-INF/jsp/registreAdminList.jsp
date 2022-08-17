@@ -371,7 +371,7 @@ $(document).ready(function() {
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-				<ul class="dropdown-menu">
+				<ul class="dropdown-menu dropdown-left-medium">
 				  <c:if test="${isRolActualAdministrador}">
 					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
@@ -596,7 +596,7 @@ $(document).ready(function() {
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-							<ul class="dropdown-menu">
+							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
 								<li><a data-refresh-tancar="true" href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>

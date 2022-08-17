@@ -398,7 +398,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 				
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu dropdown-left-medium">
 						<li><a href="registreComun/classificarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.accio.classificar"/>
 						</a></li>
@@ -590,7 +590,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && agafat}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-							<ul class="dropdown-menu">
+							<ul class="dropdown-menu dropdown-left-high">
 								<li>
 									<a id="detall-button"
 										href="registreUser/registre/{{:id}}"
