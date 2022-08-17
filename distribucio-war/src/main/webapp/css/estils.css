@@ -278,3 +278,8 @@ table.dataTable tr.datatable-dades-carregant div {
 .disable-events {
 	pointer-events: none;
 }
+
+#trash-btn-esborrar, 
+#spin-btn-esborrar {
+	margin-top: 0.2rem;
+}
