@@ -274,3 +274,7 @@ table.dataTable tr.datatable-dades-carregant div {
 .justify-content-end {
 	justify-content: end;
 }
+
+.disable-events {
+	pointer-events: none;
+}

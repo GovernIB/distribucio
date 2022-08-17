@@ -259,16 +259,20 @@ public class RegistreAdminController extends BaseAdminController {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
-			PaginaDto<ContingutDto> pagina = 
-				registreService.findRegistre(
-						entitatActual.getId(),
-						bustiesPermesesPerUsuari,
-						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						paginacioParams, false);
+			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
+				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+			}
+			PaginaDto<ContingutDto> pagina = registreService.findRegistre(
+								entitatActual.getId(),
+								bustiesPermesesPerUsuari,
+								RegistreFiltreCommand.asDto(registreFiltreCommand),
+								paginacioParams,
+								false);
+			
 			// Posa les dades dels registres al model segons la consulta
-			if (!pagina.getContingut().isEmpty()) {
-				registre = pagina.getContingut().get(0);
-				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+			if (pagina != null && !pagina.getContingut().isEmpty()) {
+				registre = pagina.getContingut().get(0);///{registreId}/detall    /registre/{registreId}
+				ret = "redirect:/modal/registreAdmin/" + registre.getId() + "/detall?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
 			}
 		} catch (Exception e) {
 			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
