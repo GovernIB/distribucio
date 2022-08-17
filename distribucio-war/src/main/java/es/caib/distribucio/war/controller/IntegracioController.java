@@ -70,8 +70,14 @@ public class IntegracioController extends BaseUserController {
 			@PathVariable String codi,
 			Model model) {
 		
+		String numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
+		if (numeroHoresPropietat == null) {
+			numeroHoresPropietat = "48";
+		}
+		model.addAttribute("numeroHoresPropietat", numeroHoresPropietat);
+		
 		// Fa una llista de les diferents integracions i els errors actuals
-		List<IntegracioDto> integracions = this.getIntegracionsIErrors();
+		List<IntegracioDto> integracions = this.getIntegracionsIErrors(numeroHoresPropietat);
 		
 		model.addAttribute(
 				"integracions",
@@ -100,13 +106,8 @@ public class IntegracioController extends BaseUserController {
 	/** Mètode per consultar les integracions i els errors.*/
 	@ResponseBody
 	@RequestMapping(value = "integracions", method = RequestMethod.GET)
-	public List<IntegracioDto> getIntegracionsIErrors() {
+	public List<IntegracioDto> getIntegracionsIErrors(String numeroHoresPropietat) {
 		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
-		
-		String numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
-		if (numeroHoresPropietat == null) {
-			numeroHoresPropietat = "48";
-		}
 		int numeroHores = Integer.parseInt(numeroHoresPropietat);
 		
 		// Consulta el número d'errors per codi d'integracio
