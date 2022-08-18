@@ -187,13 +187,13 @@ public class ReglesController extends BaseUserController {
 			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
 		}
 
-		ReglaDto reglaDto = reglaService.findReglaByCodiSia(codiSia);
+		List<ReglaDto> reglaDto = reglaService.findReglaBackofficeByProcediment(codiSia);
 		EntitatDto entitatDto = entitatService.findByCodiDir3(entitatCodi);
 		boolean activa = false;
 		String response = "";
 		if (reglaDto == null) {
 			return new ResponseEntity<String>("La regla amb el codi " + codiSia + " no existeix", HttpStatus.CONFLICT);
-		}else if (reglaDto.isActiva()) {
+		}else if (reglaDto.get(0).isActiva()) {
 			response = "La regla amb codi " + codiSia + " s'ha desactivat correctament.";
 	
 		}else {
@@ -201,7 +201,7 @@ public class ReglesController extends BaseUserController {
 			response = "La regla amb codi " + codiSia + " s'ha activat correctament.";	
 		}
 		try {
-			reglaService.updateActiva(entitatDto.getId(), reglaDto.getId(), activa);
+			reglaService.updateActiva(entitatDto.getId(), reglaDto.get(0).getId(), activa);
 		} catch(Exception e) {
 			logger.error("error fent l'update de la regla. ", e);
 			return new ResponseEntity<String>("Error intern en el servidor", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -228,25 +228,47 @@ public class ReglesController extends BaseUserController {
 		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
 			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
 		}
-		ReglaDto reglaDto = reglaService.findReglaByCodiSia(codiSia);
-		if (reglaDto == null) {
-			return new ResponseEntity<Object>("La regla amb codi SIA: " + codiSia + " no existeix", HttpStatus.NOT_FOUND);
-			
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(codiSia);
+		Map<String,Map<String, Object>> regles = new HashMap<>();
+		
+		if (reglesDto == null || reglesDto.isEmpty()) {
+			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA: " + codiSia, HttpStatus.NOT_FOUND);
 		}
-
-		Map<String, Object> regla = new HashMap<>();
-		regla.put("id", reglaDto.getId());
-		regla.put("nom", reglaDto.getNom());
-		Date data = reglaDto.getCreatedDate();
-		DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
-		regla.put("data", dateFormat.format(data));
-		regla.put("entitat", reglaDto.getEntitatNom());
-		regla.put("activa", reglaDto.isActiva());
-		BackofficeDto backofficeDto = backofficeService.findById(reglaDto.getEntitatId(), reglaDto.getBackofficeDestiId());
-		regla.put("backofficeDesti", backofficeDto.getNom());
 		
-		
-		return new ResponseEntity<Object>(regla, HttpStatus.OK);	
+		for (ReglaDto regla : reglesDto) {
+			Map<String, Object> r = new HashMap<>();
+			r.put("id", regla.getId());
+			r.put("nom", regla.getNom());
+			Date data = regla.getCreatedDate();
+			DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+			r.put("data", dateFormat.format(data));
+			r.put("entitat", regla.getEntitatNom());
+			r.put("activa", regla.isActiva());
+			BackofficeDto backofficeDto = backofficeService.findById(regla.getEntitatId(), regla.getBackofficeDestiId());
+			r.put("backofficeDesti", backofficeDto.getNom());			
+			
+			regles.put(codiSia, r);
+		}
+		return new ResponseEntity<Object>(regles, HttpStatus.OK);
+//		ReglaDto reglaDto = reglaService.findReglaByCodiSia(codiSia);
+//		if (reglaDto == null) {
+//			return new ResponseEntity<Object>("La regla amb codi SIA: " + codiSia + " no existeix", HttpStatus.NOT_FOUND);
+//			
+//		}
+//
+//		Map<String, Object> regla = new HashMap<>();
+//		regla.put("id", reglaDto.getId());
+//		regla.put("nom", reglaDto.getNom());
+//		Date data = reglaDto.getCreatedDate();
+//		DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+//		regla.put("data", dateFormat.format(data));
+//		regla.put("entitat", reglaDto.getEntitatNom());
+//		regla.put("activa", reglaDto.isActiva());
+//		BackofficeDto backofficeDto = backofficeService.findById(reglaDto.getEntitatId(), reglaDto.getBackofficeDestiId());
+//		regla.put("backofficeDesti", backofficeDto.getNom());
+//		
+//		
+//		return new ResponseEntity<Object>(regla, HttpStatus.OK);	
 	}
 	
 	

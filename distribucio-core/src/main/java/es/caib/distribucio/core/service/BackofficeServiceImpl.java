@@ -85,6 +85,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 
 		
 		backofficeEntity.update(
+				backofficeDto.getCodi(),
 				backofficeDto.getNom(),
 				backofficeDto.getUrl(),
 				backofficeDto.getUsuari(),
