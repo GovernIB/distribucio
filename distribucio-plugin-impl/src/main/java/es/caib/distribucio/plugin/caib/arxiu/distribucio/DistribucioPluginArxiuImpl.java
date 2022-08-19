@@ -104,7 +104,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	@Override
 	public String expedientCrear(
 			String expedientNumero,
-			String unitatArrelCodi) throws SistemaExternException {
+			String unitatArrelCodi, 
+			String codiProcediment) throws SistemaExternException {
 
 		String identificador = null;
 		boolean duplicated = false;
@@ -142,7 +143,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 								classificacio,
 								ExpedientEstatEnumDto.OBERT,
 								null,
-								serieDocumental));
+								serieDocumental, 
+								codiProcediment));
 				integracioAddAccioOk(
 						integracioArxiuCodi,
 						accioDescripcio,
@@ -1122,7 +1124,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String ntiClassificacio,
 			ExpedientEstatEnumDto ntiEstat,
 			List<String> ntiInteressats,
-			String serieDocumental) {
+			String serieDocumental, 
+			String codiProcediment) {
 		Expedient expedient = new Expedient();
 		expedient.setNom(nom);
 		expedient.setIdentificador(identificador);
@@ -1146,6 +1149,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		metadades.setOrgans(ntiOrgans);
 		metadades.setInteressats(ntiInteressats);
 		metadades.setSerieDocumental(serieDocumental);
+		metadades.addMetadadaAddicional("id_tramite", codiProcediment);
 		expedient.setMetadades(metadades);
 		return expedient;
 	}

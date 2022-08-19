@@ -101,7 +101,8 @@ public class PluginHelper {
 	public String saveRegistreAsExpedientInArxiu(
 			String registreNumero,
 			String expedientNumero,
-			String unitatOrganitzativaCodi) {
+			String unitatOrganitzativaCodi, 
+			String codiProcediment) {
 		String accioDescripcio = "Creant contenidor per als documents annexos";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -111,7 +112,8 @@ public class PluginHelper {
 		try {
 			String contenidorUuid = getDistribucioPlugin().expedientCrear(
 					expedientNumero,
-					unitatOrganitzativaCodi);
+					unitatOrganitzativaCodi, 
+					codiProcediment);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,

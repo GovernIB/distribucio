@@ -1873,7 +1873,8 @@ public class RegistreHelper {
 			uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
 					registreEntity.getNumero(),
 					distribucioRegistreAnotacio.getNumero(),
-					unitatOrganitzativaCodi);
+					unitatOrganitzativaCodi, 
+					registreEntity.getProcedimentCodi());
 			registreEntity.updateExpedientArxiuUuid(uuidExpedient);
 			logger.trace("Creat el contenidor a l'Arxiu per l'anotació (" +
 					"anotacioId=" + registreEntity.getId() + ", " +

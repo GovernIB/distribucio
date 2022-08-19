@@ -102,7 +102,10 @@
 	<c:forEach var="metaDada" items="${annex.metaDadesMap}">
 		<tr>
 			<td><strong>
-				<c:choose>
+				<c:choose>					
+					<c:when test="${metaDada.key=='id_tramite'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.codiProcediment"/>
+					</c:when>
 					<c:when test="${metaDada.key=='eni:resolucion'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.resolucion"/>
 					</c:when>
