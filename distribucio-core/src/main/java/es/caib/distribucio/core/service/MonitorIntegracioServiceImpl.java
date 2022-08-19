@@ -3,7 +3,9 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
+import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioParamDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
@@ -111,15 +115,36 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, String codiMonitor) {
+	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto/*String codiMonitor*/) {
 		logger.debug("Consulta de totes les monitorIntegracios paginades (" +
 				"paginacioParams=" + paginacioParams + ")");
+		boolean isDataNula = integracioFiltreDto.getData() == null;
+		Calendar c = new GregorianCalendar();
+		Date data = integracioFiltreDto.getData();
+		Date dataFi = new Date();
+		if (data != null) {
+			c.setTime(data);
+			data = c.getTime();
+			c.add(Calendar.DAY_OF_YEAR, 1);
+			dataFi = c.getTime();
+		}
+		String codiMonitor = integracioFiltreDto.getCodi();
+		String descripcio = integracioFiltreDto.getDescripcio();
+		String usuari = integracioFiltreDto.getUsuari();
+		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
 		PaginaDto<MonitorIntegracioDto> resposta;
 		resposta = paginacioHelper.toPaginaDto(
 				monitorIntegracioRepository.findByFiltrePaginat(
-						paginacioParams.getFiltre() == null || paginacioParams.getFiltre().isEmpty(),
-						paginacioParams.getFiltre() != null ? paginacioParams.getFiltre() : "",						
 						codiMonitor,
+						isDataNula,
+						data, 
+						dataFi, 
+						descripcio == null || descripcio.isEmpty(),
+						descripcio != null && !descripcio.isEmpty() ? descripcio : "", 
+						usuari == null || usuari.isEmpty(), 
+						usuari != null && !usuari.isEmpty() ? usuari : "",
+						estat == null, 
+						estat != null ? estat : IntegracioAccioEstatEnumDto.OK, 
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				MonitorIntegracioDto.class);	
 		return resposta;

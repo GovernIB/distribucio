@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <html>
 <head>
@@ -10,10 +11,20 @@
 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	
 <script>
 $(document).ready(function() {
@@ -24,6 +35,13 @@ $(document).ready(function() {
     	$('#trash-btn-esborrar').css("display", "none");
     	$('#spin-btn-esborrar').css("display", "block");
     	esborrarEntrades();
+    });
+    $('#netejarFiltre').click(function(e) {
+    	$('#codi').val('USUARIS').change();
+    	$('#data').val('').change();
+    	$('#descripcio').val('').change();
+    	$('#usuari').val('').change();
+    	$('#estat').val('').change();
     })
 });
 
@@ -67,10 +85,39 @@ function esborrarEntrades() {
 	
 </head>
 <body>
+	<form:form action="/distribucio/integracio/${integracioFiltreCommand.codi}" method="post" cssClass="well" commandName="integracioFiltreCommand">
+		
+		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+		
+		<div class="row">
+			<div class="col-md-3">
+				<dis:inputDate name="data" inline="true" placeholderKey="integracio.list.filtre.data"/>
+			</div>
+			<div class="col-md-3">
+				<dis:inputText name="descripcio" inline="true" placeholderKey="integracio.list.filtre.descripcio"/>
+			</div>			
+			<div class="col-md-3">
+				<dis:inputText name="usuari" inline="true" placeholderKey="integracio.list.filtre.usuari"/>
+			</div>
+			<div class="col-md-3">
+				<dis:inputSelect name="estat" inline="true" placeholderKey="integracio.list.filtre.estat" optionEnum="IntegracioAccioEstatEnumDto" emptyOption="true"/>
+			</div>
+			<div class="col-md-4 pull-right">
+				<div class="pull-right">
+					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+				</div>
+			</div>	
+		</div>
+	</form:form>
+
+
+
+
 	<ul class="nav nav-tabs" role="tablist">
 		<c:forEach var="integracio" items="${integracions}">
 			<li id="integracioTab_${integracio.codi}"
-				<c:if test="${integracio.codi == codiActual}"> class="active"</c:if>>
+				<c:if test="${integracio.codi == integracioFiltreCommand.codi}"> class="active"</c:if>>
 				<a href="<c:url value="/integracio/${integracio.codi}"/>"><spring:message code="${integracio.nom}"/>
 				
 					<span id="integracioErrors_${integracio.codi}" 
@@ -86,7 +133,7 @@ function esborrarEntrades() {
 		id="missatges-integracions"
 		data-toggle="datatable"
 		data-url="<c:url value="/integracio/datatable"/>" 
-		data-search-enabled="true"
+		data-search-enabled="false"
 		data-info-type="search"
 		data-default-order="2" 
 		data-default-dir="desc"
