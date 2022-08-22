@@ -1149,7 +1149,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		metadades.setOrgans(ntiOrgans);
 		metadades.setInteressats(ntiInteressats);
 		metadades.setSerieDocumental(serieDocumental);
-		metadades.addMetadadaAddicional("id_tramite", codiProcediment);
+		metadades.addMetadadaAddicional("eni:codi_procediment", codiProcediment);
 		expedient.setMetadades(metadades);
 		return expedient;
 	}
@@ -1379,7 +1379,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 		}		
 		if (format.equals(DocumentFormat.XML)) {
-			metaDadesAddicionals.put("id_tramite", procedimentCodi);
+			metaDadesAddicionals.put("eni:codi_procediment", procedimentCodi);
 		}
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	

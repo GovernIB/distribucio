@@ -103,7 +103,7 @@
 		<tr>
 			<td><strong>
 				<c:choose>					
-					<c:when test="${metaDada.key=='id_tramite'}">
+					<c:when test="${metaDada.key=='eni:codi_procediment'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.codiProcediment"/>
 					</c:when>
 					<c:when test="${metaDada.key=='eni:resolucion'}">
