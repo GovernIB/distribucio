@@ -49,6 +49,15 @@ public class MonitorTascaInfo {
 	public void setObservacions(String observacions) {
 		this.observacions = observacions;
 	}
+	/** Calcula el temps d'execució a partir de la data d'inici, la data de fi i l'estat */
+	public String getTempsExecucio() {
+		String temps = "-";
+		if (this.dataInici != null) {
+			Date dataFi = this.dataFi != null ? this.dataFi : new Date();
+			temps = String.valueOf((dataFi.getTime() - dataInici.getTime())/1000) + "s";
+		}
+		return temps;
+	}
 	
 	
 	

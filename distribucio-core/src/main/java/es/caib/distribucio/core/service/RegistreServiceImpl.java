@@ -659,6 +659,9 @@ public class RegistreServiceImpl implements RegistreService {
 		if (nomesAmbErrors) {
 			sqlWhere.append("and r.procesError != null ");
 		}
+		if (nomesAmbEsborranys) {
+			sqlWhere.append("and r.annexosEstatEsborrany > 0 ");
+		}
 		if (!esNullInteressat) {
 			sqlWhere.append("and (select count(interessat) ");
 			sqlWhere.append("			from r.interessats as interessat ");

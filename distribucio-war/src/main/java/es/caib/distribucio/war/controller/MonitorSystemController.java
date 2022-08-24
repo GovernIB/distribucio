@@ -125,46 +125,50 @@ public class MonitorSystemController extends BaseController {
 //		mjson.put("fiExecucio", tasques.get("fiExecucio"));
 		mjson.put("properaExecucio", tasques.get("properaExecucio"));
 		mjson.put("observacions", tasques.get("observacions"));
+		mjson.put("identificadors", tasques.get("identificadors"));
 		
 		return mjson;
 	}
 
+	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/tasques", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, JSONArray> getTasquesJson(HttpServletRequest request) {
+	public Map<String, JSONArray> getTasquesJson(
+			HttpServletRequest request) {
 		Map<String, JSONArray> tasques = new HashMap<>();
 		JSONArray tasca = new JSONArray();
 		JSONArray estat = new JSONArray();
 		JSONArray iniciExecucio = new JSONArray();
 		JSONArray tempsExecucio = new JSONArray();
-//		JSONArray fiExecucio = new JSONArray();
 		JSONArray properaExecucio = new JSONArray();
 		JSONArray observacions = new JSONArray();
+		JSONArray identificadors = new JSONArray();
+		
 		List<MonitorTascaInfo> monitorTasques = monitortasquesService.findAll();
 		for(MonitorTascaInfo monitorTasca : monitorTasques) {
+			identificadors.add(monitorTasca.getCodi());
+			
 			tasca.add(getMessage(request, "monitor.tasques.tasca") + ": " + getMessage(request, "monitor.tasques.tasca.codi." + monitorTasca.getCodi()));
+			
 			estat.add(getMessage(request, "monitor.tasques.estat") + ": " + getMessage(request, "monitor.tasques.estat." + monitorTasca.getEstat()));
+			
 			String strDataInici = "-";
 			if (monitorTasca.getDataInici() != null) {
 				Date dataInici = monitorTasca.getDataInici();
 				DateFormat dateFormatInici = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 				strDataInici = dateFormatInici.format(dataInici);
 			}
-			iniciExecucio.add(getMessage(request, "monitor.tasques.inici.execucio") + ": " + strDataInici);
+			iniciExecucio.add(getMessage(request, "monitor.tasques.darrer.inici") + ": " + strDataInici);
+			
+			@SuppressWarnings("unused")
 			String difDataSegons = "-";
 			if (monitorTasca.getDataInici() != null) {
 				long difDatas = System.currentTimeMillis() - monitorTasca.getDataInici().getTime();
 				difDataSegons = ((int) (difDatas / 1000) % 60) + "s";
 			}
-			tempsExecucio.add(getMessage(request, "monitor.tasques.temps.execucio") + ": " + (difDataSegons));			
-//			String strDataFi = "-";
-//			if (monitorTasca.getDataFi() != null) {
-//				Date dataFi = monitorTasca.getDataFi();
-//				DateFormat dateFormatFi = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//				strDataFi = dateFormatFi.format(dataFi);
-//			}
-//			fiExecucio.add(getMessage(request, "monitor.tasques.fi.execucio") + ": " + (strDataFi));
+			tempsExecucio.add(getMessage(request, "monitor.tasques.temps.execucio") + ": " + monitorTasca.getTempsExecucio());
+
 			String strProperaExecucio = "-";
 			if (monitorTasca.getProperaExecucio() != null) {
 				Date dataProperaExecucio = monitorTasca.getProperaExecucio();
@@ -172,16 +176,18 @@ public class MonitorSystemController extends BaseController {
 				strProperaExecucio = dateFormatProperaExecucio.format(dataProperaExecucio);
 			}
 			properaExecucio.add(getMessage(request, "monitor.tasques.propera.execucio") + ": " + strProperaExecucio);
+			
 			observacions.add(getMessage(request, "monitor.tasques.observacions") + ": " + monitorTasca.getObservacions());
 		}
 		tasques.put("tasca", tasca);
 		tasques.put("estat", estat);
 		tasques.put("iniciExecucio", iniciExecucio);
 		tasques.put("tempsExecucio", tempsExecucio);
-//		tasques.put("fiExecucio", fiExecucio);
 		tasques.put("properaExecucio", properaExecucio);
 		tasques.put("observacions", observacions);
-
+		tasques.put("identificadors", identificadors);
+		
 		return tasques; 
 	}
+	
 }

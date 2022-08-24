@@ -3,8 +3,6 @@ package es.caib.distribucio.core.api.service;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
 import es.caib.distribucio.core.api.monitor.MonitorTascaInfo;
 
@@ -29,11 +27,13 @@ public interface MonitorTasquesService {
 
 	public void updateObservacions(String codi, MonitorTascaEstatEnum estat);
 
-	public void updateDataInici(String codi);
+	public void inici(String codi);
 
-	public void updateDataFi(String codi);
+	public void fi(String codi);
 
-	public void updateProperaExecucio(String codi, long plusValue);
+	public void error(String codi);
+
+	public void updateProperaExecucio(String codi, Date dataProperaExecucio);
 
 	public List<MonitorTascaInfo> findAll();
 

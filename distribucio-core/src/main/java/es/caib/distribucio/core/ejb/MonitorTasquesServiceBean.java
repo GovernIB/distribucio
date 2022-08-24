@@ -49,13 +49,18 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateDataInici(String codi) {
-		delegate.updateDataInici(codi);
+	public void inici(String codi) {
+		delegate.inici(codi);
 	}
 
 	@Override
-	public void updateDataFi(String codi) {
-		delegate.updateDataFi(codi);
+	public void fi(String codi) {
+		delegate.fi(codi);
+	}
+
+	@Override
+	public void error(String codi) {
+		delegate.error(codi);
 	}
 
 	@Override
@@ -69,8 +74,8 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateProperaExecucio(String codi, long plusValue) {
-		delegate.updateProperaExecucio(codi, plusValue);		
+	public void updateProperaExecucio(String codi, Date nextExecution) {
+		delegate.updateProperaExecucio(codi, nextExecution);		
 	}
 
 }

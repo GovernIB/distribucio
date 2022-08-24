@@ -6,7 +6,6 @@ import java.util.Properties;
 public abstract class DistribucioAbstractPluginProperties {
 	
 	private Properties properties = null;
-	private static final String DEFAULT_VALUE_INTEGER = "5000"; //TODO: Per revisar! Valor assignat per provar
 
 	public DistribucioAbstractPluginProperties() {
 		this((Properties) null);
@@ -31,7 +30,7 @@ public abstract class DistribucioAbstractPluginProperties {
 		return new Boolean(getProperty(key)).booleanValue();
 	}
 	public int getAsInt(String key) {
-		return new Integer(getProperty(key, DEFAULT_VALUE_INTEGER)).intValue();
+		return new Integer(getProperty(key)).intValue();
 	}
 	public long getAsLong(String key) {
 		return new Long(getProperty(key)).longValue();

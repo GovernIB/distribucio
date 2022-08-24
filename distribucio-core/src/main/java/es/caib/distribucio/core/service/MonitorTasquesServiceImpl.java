@@ -60,35 +60,33 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateDataInici(String codi) {
-		Date dataInici = updateData(0);
+	public void inici(String codi) {
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
-		monitorTascaInfo.setDataInici(dataInici);
-		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
+		monitorTascaInfo.setDataInici(new Date());
+		monitorTascaInfo.setEstat(MonitorTascaEstatEnum.EN_EXECUCIO);
+		monitorTascaInfo.setDataFi(null);
 	}
 
 	@Override
-	public void updateDataFi(String codi) {
-		Date dataFi = updateData(0);
+	public void fi(String codi) {
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
-		monitorTascaInfo.setDataFi(dataFi);
-		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
+		monitorTascaInfo.setDataFi(new Date());
+		monitorTascaInfo.setEstat(MonitorTascaEstatEnum.EN_ESPERA);
 	}
 
 	@Override
-	public void updateProperaExecucio(String codi, long plusValue) {
-		Date dataProperaExecucio = updateData(plusValue);
+	public void error(String codi) {
+		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
+		monitorTascaInfo.setDataFi(new Date());
+		monitorTascaInfo.setEstat(MonitorTascaEstatEnum.ERROR);
+	}
+
+	@Override
+	public void updateProperaExecucio(String codi, Date dataProperaExecucio) {
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setProperaExecucio(dataProperaExecucio);
-		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
 	}
 	
-
-	private Date updateData(long plusValue) {
-		Date data = new Date(System.currentTimeMillis() + plusValue);
-		return data;
-	}
-
 	@Override
 	public List<MonitorTascaInfo> findAll() {
 		List<MonitorTascaInfo> monitorTasques = new ArrayList<>();

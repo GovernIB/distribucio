@@ -214,8 +214,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 	}
 
-	@Override
-	
+	@Override	
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();

@@ -56,6 +56,10 @@
 		var intervalCadaSegon;
 		$(document).ready(function(){
 			$("button[name=refrescar]").click(function() {
+            	var checkValue = $("#chRefrescarTasques").is(":checked");
+            	if (checkValue) {
+            		clearInterval(intervalCadaSegon);
+            	}
 				carregaMonitor();
 			});
 			carregaMonitor();
@@ -118,16 +122,16 @@
 		       			                        '<table class="table-monitor table table-striped table-bordered dataTable">' +
 		       			                        '<thead><tr>' +
 		       			                        '<th class=""><spring:message code="monitor.tasques.tasca"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.estat"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.inici.execucio"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.temps.execucio"/></th>' +
+		       			                        '<th class="text-center"><spring:message code="monitor.tasques.estat"/></th>' +
+		       			                        '<th class="text-center"><spring:message code="monitor.tasques.darrer.inici"/></th>' +
+		       			                        '<th class="text-center"><spring:message code="monitor.tasques.temps.execucio"/></th>' +
 		       			                        //'<th class=""><spring:message code="monitor.tasques.fi.execucio"/></th>' +
-		       			                        '<th class=""><spring:message code="monitor.tasques.propera.execucio"/></th></tr>' +
+		       			                        '<th class="text-center"><spring:message code="monitor.tasques.propera.execucio"/></th></tr>' +
 		       			                        //'<th class=""><spring:message code="monitor.tasques.observacions"/></th>' +
 		       			                        '</thead><tbody id="tbody_monitor">';
 		       			                        
 		       			                        
-		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio);
+		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors);
 		       			            content +=  '</tbody></table>' + 
 				                        '<br><br><hr>' + 
 				                        	'<input class="ml-6" id="chRefrescarTasques" type="checkbox" name="refrescarTasquesCadaSegon">' +
@@ -166,13 +170,13 @@
 		
 		function carregaTasques() {
 			$("#span-refresh").addClass('fa-circle-o-notch');
-			$("#span-refresh").addClass('fa-spin')
+			$("#span-refresh").addClass('fa-spin');
 		    $.ajax({
 		        url: "monitor/tasques",
 		        dataType: 'json',
 		        async: false,
 		        success: function(data){
-		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio));
+		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors));
 		        }
 		    })
 		    .fail(function( jqxhr, textStatus, error ) {
@@ -193,17 +197,15 @@
 		}
 		
 		
-		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio) {
+		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio, identificadors) {
 			var content = '';
 	            for (var i = 0; i < tasca.length; i++) {
 	               content +=  '<tr class="monitor_fila">' +
-	                            '<td class="">' + tasca[i].replace("Tasca: ", "") + '</td>' +
-	                           '<td class="">' + estat[i].replace("Estat: ", "") + '</td>' +
-	                           '<td>' + iniciExecucio[i].replace("Inici execució: ", "") + '</td>' +
-	                           '<td>' + tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
-	                           //'<td>' + fiExecucio[i].replace("Fi execució: ", "") + '</td>' +
-	                           '<td>' + properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
-	                           //'<td>' + observacions[i].replace("Observacions: ", "") + '</td>' + 
+	                            '<td id="tasca-' + identificadors[i] + '">' + tasca[i].replace("Tasca: ", "") + '</td>' +
+	                           '<td class="text-center" id="estat-' + identificadors[i] + '">' + estat[i].replace("Estat: ", "") + '</td>' +
+	                           '<td class="text-center" id="inici-execucio-' + identificadors[i] + '">' + iniciExecucio[i].replace("Darrer inici: ", "") + '</td>' +
+	                           '<td class="text-right" id ="temps-execucio-' + identificadors[i] + '">' + tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
+	                           '<td class="text-center" id="propera-execucio-' + identificadors[i] + '">' + properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
 	                           '</tr>';
 	           }  
 	     	return content;
