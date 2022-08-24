@@ -1422,7 +1422,38 @@ li[id^="anotacio_"] {
 					<dl class="dl-horizontal">
 					
 						<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
-						<dd>${registre.procesEstat}</dd>
+						<c:choose>
+							<c:when test="${registre.procesEstat == 'ARXIU_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'REGLA_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BUSTIA_PROCESSADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_COMUNICADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_REBUDA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_REBUDA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_PROCESSADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_REBUTJADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_ERROR' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_ERROR"/></dd>
+							</c:when>
+						</c:choose>
 						
 						<c:if test="${not empty registre.procesData}">
 							<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
