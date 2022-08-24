@@ -22,8 +22,8 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  */
 public class BackofficeIntegracioTest {
 	// autofirma wih PADES
-	private static final String IDENTIFICADOR = "L11E1646737371605/2022"; //L11E1557929165976/2019
-	private static final String CLAU_ACCESS = "iqV8SiGk90e9sv2DqQfdCC0E4r//5M/WyG0K0fE19dg="; //jqCJ/24gm+j5VGtETYj8itrQmlD6zwHp4BL8g33ulh4=
+	private static final String IDENTIFICADOR = "L11E1660041737586/2022"; //L11E1557929165976/2019
+	private static final String CLAU_ACCESS = "JyYoc/Oq8gCh4AwODQOAqw8ODKkc3f3AapnhGvkFuRQ="; //jqCJ/24gm+j5VGtETYj8itrQmlD6zwHp4BL8g33ulh4=
 	
 //	// autofirma wih CADES
 //	private static final String IDENTIFICADOR = "L11E1557470209883/2019";
