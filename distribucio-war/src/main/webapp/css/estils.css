@@ -102,12 +102,18 @@ table.dataTable tr input {
 table.dataTable tr.datatable-dades-carregant div {
 	width: 150px;
 	height: 150px;
-	border: 1px solid #ddd;
+	/*border: 1px solid #ddd;**/
 	border-radius: 1em;
-	margin: 4em auto 4em auto;
+	/*margin: 4em auto 4em auto;*/
+	margin-left: 70rem;
 	padding-top: 3.7em;
 	text-align: center;
-	background-color: white;
+	background-color: #fff;
+	position: relative;
+}
+table.dataTable tr.datatable-dades-carregant {
+	background-color: #fff;
+	margin-left: 70rem;
 }
 .ocult {
 	display: none;
