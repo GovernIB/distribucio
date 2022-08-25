@@ -270,8 +270,8 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.log.actiu");
 	}
 	private Integer getServiceTimeout() {
-		String key = "es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout";
-		return getAsInt(key);
+		String value = getProperty("es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout");		
+		return value != null ? Integer.valueOf(value) : null;
 	}
 	private String getServiceCercaUrl() {
 		return getProperty(
