@@ -100,7 +100,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 						// Crida al mètode de creació de la llibreria
 						arxiuResultat = backofficeArxiuUtils.crearExpedientAmbAnotacioRegistre(
 								expedientUuid,
-								anotacio.getIdentificador(),
+								anotacio.getIdentificador() + "_" + new Date().getTime(),
 								null,
 								Arrays.asList("A04019281"),
 								new Date(),
@@ -129,7 +129,6 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					String titol;
 					for (Annex annex : anotacio.getAnnexos()) {
 						titol = revisarContingutNom(annex.getNom());
-						//titol = annex.getTitol();
 						
 						// Copmprovar si està en estat esborrany o és invàlid
 						if (annex.getEstat() == AnnexEstat.ESBORRANY) {

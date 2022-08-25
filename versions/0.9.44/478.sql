@@ -1,3 +1,4 @@
+-- #478 Revisar tractament de perfils de firma 
 
 -- Insereix la propietat per desar els annexos com esborrany quan els tipus
 -- i els perfils de firmes no estiguin contemplades per l'Arxiu CAIB

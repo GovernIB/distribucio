@@ -135,12 +135,6 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			
 			logger.trace(">>> Abans de cridar el servei de canvi d'estat");			
 			
-			AnotacioRegistreEntrada anotacioRegistreEntrada =  registreService.findOneForBackoffice(id);
-
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(anotacioRegistreEntrada.getEntitatCodi());
-			ConfigHelper.setEntitat(entitatDto);
-
 			registreService.canviEstat(id, estat, observacions);
 			
 			integracioHelper.addAccioOk (
