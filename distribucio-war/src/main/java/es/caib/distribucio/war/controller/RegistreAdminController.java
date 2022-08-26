@@ -393,8 +393,7 @@ public class RegistreAdminController extends BaseAdminController {
 					request, 
 					getMessage(
 							request, 
-							"contingut.admin.controller.registre.reintentat.ok", 
-							new Object[] {registreReenviat.getBackCodi()}));
+							"contingut.admin.controller.registre.reintentat.ok"));
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -446,8 +445,7 @@ public class RegistreAdminController extends BaseAdminController {
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok", 
-								new Object[] {registreReenviat.getBackCodi()}));
+								"contingut.admin.controller.registre.reintentat.ok"));
 			} else {
 				MissatgesHelper.error(request,
 						getMessage(request,
