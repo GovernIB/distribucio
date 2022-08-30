@@ -375,8 +375,8 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
-	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
-		return delegate.getDadesAnnexFirmaSenseDetall(registreId);
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
+		return delegate.getDadesAnnexFirmesSenseDetall(annexId);
 	}
 
 }

@@ -426,12 +426,12 @@ public interface RegistreService {
 	
 	
 	/**
-	 * Cerca les dades (sense detall) de les firmes dels annexos  
+	 * Cerca les dades (sense detall) de les firmes d'un annex. 
 	 *  
 	 *  @param registreId
 	 **/
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
-	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(
-			Long registreId);
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(
+			Long annexId);
 
 }

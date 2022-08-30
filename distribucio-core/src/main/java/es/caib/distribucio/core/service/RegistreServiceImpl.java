@@ -3013,21 +3013,13 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional
 	@Override
-	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(Long registreId) {
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = new ArrayList<>();
-		List<RegistreAnnexEntity> registresAnnexEntity = registreRepository.getDadesRegistreAnnex(registreId);
-		
-		for(RegistreAnnexEntity registreAnnex : registresAnnexEntity) {
-			RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexFirmaRepository.getRegistreAnnexFirmaSenseDetall(registreAnnex.getId());
-			if(registreAnnexFirmaEntity != null) {
-				RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
-				registresAnnexFirmesDto.add(registreAnnexFirmaDto);
-			}
+		RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexFirmaRepository.getRegistreAnnexFirmaSenseDetall(annexId);
+		if(registreAnnexFirmaEntity != null) {
+			RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
+			registresAnnexFirmesDto.add(registreAnnexFirmaDto);
 		}
-		if (registresAnnexFirmesDto.isEmpty()) {
-			registresAnnexFirmesDto = null;
-		}
-		
 		return registresAnnexFirmesDto;
 	}
 	
