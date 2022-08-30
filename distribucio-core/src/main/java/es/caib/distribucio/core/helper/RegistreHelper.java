@@ -678,6 +678,7 @@ public class RegistreHelper {
 				if (exceptions != null && !exceptions.isEmpty()) {
 					return exceptions;
 				}
+				uuidExpedient = distribucioRegistreAnotacio.getArxiuUuid();
 				
 			// Si el contenidor ja està creat agafam el seu UUID
 			} else {
@@ -1872,6 +1873,8 @@ public class RegistreHelper {
 					distribucioRegistreAnotacio.getNumero(),
 					unitatOrganitzativaCodi);
 			registreEntity.updateExpedientArxiuUuid(uuidExpedient);
+			distribucioRegistreAnotacio.setArxiuUuid(uuidExpedient);
+			
 			logger.trace("Creat el contenidor a l'Arxiu per l'anotació (" +
 					"anotacioId=" + registreEntity.getId() + ", " +
 					"anotacioNumero=" + registreEntity.getNumero() + ", " +
