@@ -2293,7 +2293,7 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.tipus")).append("</th>")
-					.append("				<td>").append(messageHelper.getMessage("registre.anotacio.tipus.enum.")).append(Objects.toString(registre.getRegistreTipus(), "")).append("</td>")
+					.append("				<td>").append(messageHelper.getMessage("registre.anotacio.tipus.enum." + Objects.toString(registre.getRegistreTipus(), ""))).append("</td>")
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.numero")).append("</th>")
@@ -2313,7 +2313,8 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.fitxers")).append("</th>")
-					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
+//					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
+					.append("			    <td>").append("<a href=\"" + "localhost:8080/distribucio" + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
 					.append("			</tr>")
 					.append("		</table>")
 

@@ -246,10 +246,11 @@ public class ContingutController extends BaseUserController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@PathVariable Long registreId) throws IOException {
-		String rolActual = RolHelper.getRolActual(request);
+//		String rolActual = RolHelper.getRolActual(request);
 		try {
-			getEntitatActualComprovantPermisUsuari(request);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
+//			getEntitatActualComprovantPermisUsuari(request);
+//			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),

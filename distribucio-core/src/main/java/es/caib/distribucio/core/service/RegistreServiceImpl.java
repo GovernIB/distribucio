@@ -1642,8 +1642,8 @@ public class RegistreServiceImpl implements RegistreService {
 
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
-			Long registreId,
-			String rolActual) throws Exception {
+			Long registreId/*,
+			String rolActual*/) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
 
@@ -1666,10 +1666,10 @@ public class RegistreServiceImpl implements RegistreService {
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
 					// Filtra documents tècnics si no s'és administrador
-					if (!"tothom".equalsIgnoreCase(rolActual)
-						|| annex.getSicresTipusDocument() == null 
-						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
-					{
+//					if (!"tothom".equalsIgnoreCase(rolActual)
+//						|| annex.getSicresTipusDocument() == null 
+//						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
+//					{
 						Runnable thread = 
 								new GetZipDocumentacioThread(
 								ConfigHelper.getEntitat(),
@@ -1687,7 +1687,7 @@ public class RegistreServiceImpl implements RegistreService {
 						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
 						executor.execute(wrappedRunnable);
 					}
-				}
+//				}
 
 				try {Thread.sleep(200);} catch(Exception e) {};				
 		        executor.shutdown();
