@@ -10,7 +10,7 @@
 				http://www.springframework.org/schema/security/spring-security.xsd">
 
 	
-	<sec:http pattern="/**/descarregarZip" security="none"/>
+	<sec:http pattern="/public/**" security="none"/>
 	<sec:http pattern="/api-docs**" security="none"/>
 	<sec:http pattern="/**/api-docs" security="none"/>
 	<sec:http pattern="/js/**" security="none"/>
@@ -35,7 +35,7 @@
 		<sec:intercept-url pattern="/webjars/**" access="isAnonymous()"/>
 		<sec:intercept-url pattern="/images/**" access="isAnonymous()"/>
 		
-		<sec:intercept-url pattern="*/descarregarZip" access="isAnonymous()"/>
+		<sec:intercept-url pattern="/public/**" access="isAnonymous()"/>
 		
 		<sec:intercept-url pattern="/rest/v0/bustia" access="hasRole('DIS_BSTWS')"/>
 		<sec:intercept-url pattern="/rest/v1/bustia" access="hasRole('DIS_BSTWS')"/>
