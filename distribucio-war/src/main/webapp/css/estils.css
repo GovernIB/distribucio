@@ -112,8 +112,15 @@ table.dataTable tr.datatable-dades-carregant div {
 	position: relative;
 }
 table.dataTable tr.datatable-dades-carregant {
-	background-color: #fff;
-	margin-left: 70rem;
+	background-color: transparent;
+	margin-left: 2rem;
+	position: relative;
+	width: 90%;
+	opacity: 0.5;
+}
+table.dataTable tr.datatable-dades-carregant {
+	color: black;
+	margin-top: 10rem;
 }
 .ocult {
 	display: none;
