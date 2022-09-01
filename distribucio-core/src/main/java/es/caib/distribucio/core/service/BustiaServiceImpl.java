@@ -335,7 +335,6 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId){
 		return new ArrayList<>(this.getUsuarisPerBustia(bustiaId, true, true).values());
@@ -2174,6 +2173,15 @@ public class BustiaServiceImpl implements BustiaService {
 			DadesUsuari usuariActual, 
 			String motiu, 
 			String appBaseUrl) {
+		String idEncriptat = "";		
+
+		try {
+			String clauSecreta = configHelper.getConfig(
+					"es.caib.distribucio.backoffice.integracio.clau");
+			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()), clauSecreta);
+		} catch (Exception e) {
+		    logger.error("Error al encriptar l'identificador del registre: " + e.toString());
+		}
 		
 		StringBuilder html = new StringBuilder();
 		html.append("<!DOCTYPE html>")
@@ -2293,7 +2301,7 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.tipus")).append("</th>")
-					.append("				<td>").append(messageHelper.getMessage("registre.anotacio.tipus.enum.")).append(Objects.toString(registre.getRegistreTipus(), "")).append("</td>")
+					.append("				<td>").append(messageHelper.getMessage("registre.anotacio.tipus.enum." + Objects.toString(registre.getRegistreTipus(), ""))).append("</td>")
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.numero")).append("</th>")
@@ -2313,7 +2321,7 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.fitxers")).append("</th>")
-					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
+					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/public/" + idEncriptat + "/descarregarZipPublic\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
 					.append("			</tr>")
 					.append("		</table>")
 

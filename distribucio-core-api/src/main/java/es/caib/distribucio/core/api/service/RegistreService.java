@@ -206,7 +206,6 @@ public interface RegistreService {
 	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
 	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
 	 */
-	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
 			String rolActual) throws Exception;
@@ -433,5 +432,23 @@ public interface RegistreService {
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmaSenseDetall(
 			Long registreId);
+	
+	
+	/**
+	 * Retorna l'id d'un registre encriptat
+	 * 
+	 *  @param registreId
+	 **/
+	public String obtenirRegistreIdEncriptat (
+			Long registreId);
+	
+	
+	/**
+	 * Retorna l'id d'un registre desencriptat
+	 * 
+	 *  @param clau
+	 **/
+	public String obtenirRegistreIdDesencriptat (
+			String clau);
 
 }

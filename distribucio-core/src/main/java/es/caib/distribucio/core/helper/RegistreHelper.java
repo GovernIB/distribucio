@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -470,6 +471,55 @@ public class RegistreHelper {
 		String clauAcces =  new String(Base64.encode(encryptResult));
 
 		return clauAcces;
+	}
+	
+	@SuppressWarnings("restriction")
+	public String encriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
+
+		try {
+			SecretKeySpec secretKey = obtenirClau(clauSecreta);
+		    Cipher cipher = Cipher.getInstance("AES");
+		    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		    return new sun.misc.BASE64Encoder()
+		      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
+		    } catch (Exception e) {
+		      logger.error("Error al encriptar l'identificador del registre: " + e.toString());
+		    }
+		    return null;
+
+	}
+	
+	@SuppressWarnings("restriction")
+	public String desEncriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
+
+		try {
+			SecretKeySpec secretKey = obtenirClau(clauSecreta);
+		    Cipher cipher = Cipher.getInstance("AES");
+		    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		    return new String(cipher.doFinal( new sun.misc.BASE64Decoder()
+		      .decodeBuffer(missatgeAEncriptar)));
+		    } catch (Exception e) {
+			      logger.error("Error al desencriptar l'identificador del registre: " + e.toString());
+		    }
+		    return null;
+		  		
+	}
+	
+	
+	public static SecretKeySpec obtenirClau(String message) throws Exception {
+		SecretKeySpec secretKey = null;
+		byte[] key;
+		MessageDigest sha = null;
+	    try {
+	      key = message.getBytes("UTF-8");
+	      sha = MessageDigest.getInstance("SHA-1");
+	      key = sha.digest(key);
+	      key = Arrays.copyOf(key, 16);
+	      secretKey = new SecretKeySpec(key, "AES");
+	    } catch (NoSuchAlgorithmException e) {
+	      e.printStackTrace();
+	    }
+	      return secretKey;
 	}
 	
 	
