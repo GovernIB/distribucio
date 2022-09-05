@@ -43,8 +43,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 DES
-	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 DES
+	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV | A04019281 DES
+	private static final String UNITAT_ADM_CODI = "A04026923"; //A04026923 DEV | A04032369 DES
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -54,7 +54,7 @@ public class BustiaV1Test {
 	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació JUnit " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -67,8 +67,8 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
 	
 
-	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANOTACIONS = 2;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
@@ -296,7 +296,7 @@ public class BustiaV1Test {
 			        if (TEST_ANNEX_PDF) {
 				        annex = crearAnnex(
 				        		"Annex " + j,
-				        		"72309198_1_#"+j+"-signed.pdf", //"ànnex.pdf"				        		
+				        		"ànnex.pdf",				        		
 				        		"application/pdf",
 				        		null,
 				        		getContingutAnnexSenseFirmaPdf(),
