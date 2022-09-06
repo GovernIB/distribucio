@@ -345,7 +345,19 @@ $(document).ready(function() {
 		<div class="row">	
 			<div class="col-md-2"></div>
 			<div class="col-md-2"></div>
-			<div class="col-md-3"></div>
+			<div class="col-md-3">			
+				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
+				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="procedimentCodi"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="registre.admin.list.filtre.procediment"
+					suggestValue="codiSia"
+					suggestText="codiNom" 
+					optionTemplateFunction="formatSelectUnitat" />
+			</div>
 			<div id="reintents" class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">

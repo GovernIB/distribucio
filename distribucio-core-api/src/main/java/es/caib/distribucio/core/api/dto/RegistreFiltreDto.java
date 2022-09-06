@@ -53,6 +53,8 @@ public class RegistreFiltreDto implements Serializable {
 	
 	/** Per filtrar només les que tinguin annexos en estat esborrany. */
 	private boolean nomesAmbEsborranys;
+	
+	private String procedimentCodi;
 
 	
 	public String getBackCodi() {
@@ -188,6 +190,13 @@ public class RegistreFiltreDto implements Serializable {
 		this.nomesAmbEsborranys = nomesAmbEsborranys;
 	}
 	
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
+	}
+
 	private static final long serialVersionUID = -139254994389509932L;
 
 }

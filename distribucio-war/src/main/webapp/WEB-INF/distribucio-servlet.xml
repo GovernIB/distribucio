@@ -240,6 +240,8 @@
 			<mvc:mapping path="/config/**"/>
 			<mvc:mapping path="/avis**"/>
 			<mvc:mapping path="/avis/**"/>
+			<mvc:mapping path="/procediment/**"/>
+			<mvc:mapping path="/procediment**"/>
 			<mvc:exclude-mapping path="/entitat/logo"/>
 			<mvc:exclude-mapping path="/entitat/**/logo"/>
 			<bean class="es.caib.distribucio.war.interceptor.AccesSuperInterceptor"/>

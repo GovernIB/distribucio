@@ -272,6 +272,10 @@ table.dataTable tr.datatable-dades-carregant {
 	justify-content: end;
 }
 
+.f-right {
+	float: right;
+}
+
 .ml-1 {
 	margin-left: 0.3rem;
 }

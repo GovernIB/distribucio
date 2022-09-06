@@ -140,7 +140,7 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	@RolesAllowed("tothom")
 	public List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId) {
 		return delegate.getNewFromWS(entitatId);
-	}	
+	}
 	
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;

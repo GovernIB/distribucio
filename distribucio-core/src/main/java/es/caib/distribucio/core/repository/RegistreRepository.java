@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -227,7 +226,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " + 
-			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " )
+			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " + 
+			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi)")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -265,6 +265,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
 			@Param("esNullSobreescriure") boolean esNullSobreescriure,
 			@Param("sobreescriure") Boolean sobreescriure,
+			@Param("esNullProcedimentCodi") boolean esNullProcedimentCodi, 
+			@Param("procedimentCodi") String procedimentCodi, 
 			Pageable pageable);
 	
 	

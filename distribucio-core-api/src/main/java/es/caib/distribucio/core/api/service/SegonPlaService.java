@@ -59,4 +59,9 @@ public interface SegonPlaService {
 	 * Reintenta el processament al backoffice 
 	 **/
 	public void reintentarProcessamentBackoffice();
+	
+	/**
+	 * Actualitza els procediments 
+	 **/
+	public void actualitzarProcediments();
 }

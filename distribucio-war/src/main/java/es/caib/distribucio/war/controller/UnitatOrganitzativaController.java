@@ -42,7 +42,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
  */
 @Controller
 @RequestMapping("/unitatOrganitzativa")
-@SuppressWarnings({ "deprecation", "unchecked" })
+@SuppressWarnings("unchecked")
 public class UnitatOrganitzativaController extends BaseAdminController{
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "UnitatOrganitzativaController.session.filtre";

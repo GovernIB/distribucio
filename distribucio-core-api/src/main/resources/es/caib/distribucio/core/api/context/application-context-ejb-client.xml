@@ -81,4 +81,8 @@
 			id="monitorTasquesService"
 			jndi-name="distribucio/MonitorTasquesServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.MonitorTasquesService"/>
+	<jee:local-slsb
+			id="procedimentService"
+			jndi-name="distribucio/ProcedimentServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.ProcedimentService"/>
 </beans>
