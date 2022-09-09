@@ -2460,10 +2460,12 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
 		for (Procediment procediment: procediments) {
-			if ((procediment.getCodigoSIA() != null && !procediment.getCodigoSIA().isEmpty()) ||
-					(procediment.getCodigoSia() != null && !procediment.getCodigoSia().isEmpty())) {
+			if (procediment.getCodigoSIA() != null 
+					&& !procediment.getCodigoSIA().isEmpty()
+					&& !dtos.contains(procediment.getNombre())) {
 				ProcedimentDto dto = new ProcedimentDto();
 				dto.setCodi(procediment.getCodigo());
 				dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
