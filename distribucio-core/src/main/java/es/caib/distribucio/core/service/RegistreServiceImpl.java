@@ -2225,7 +2225,7 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unlikely-arg-type")
 	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
 		for (Procediment procediment: procediments) {
@@ -2240,6 +2240,7 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 	}
+
 
 	/** Retorna true si no és administrador nii admin lectura. */
 	private boolean comprovarPermisLectura() {
