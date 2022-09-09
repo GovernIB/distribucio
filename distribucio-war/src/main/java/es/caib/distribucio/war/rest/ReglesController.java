@@ -158,7 +158,7 @@ public class ReglesController extends BaseUserController {
 			String msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom() + "\" creada correctament pel backoffice " + 
 					backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat;
 			logger.debug(msg);
-			return new ResponseEntity<Object>(regla, HttpStatus.OK);
+			return new ResponseEntity<Object>(msg, HttpStatus.OK);
 		} catch (Exception e) {
 			String errMsg = "Error creant la regla pel backoffice " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage(); 
 			logger.error(errMsg, e);

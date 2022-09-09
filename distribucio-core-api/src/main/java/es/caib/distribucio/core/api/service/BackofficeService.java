@@ -76,7 +76,7 @@ public interface BackofficeService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA')")
 	public BackofficeDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -99,7 +99,7 @@ public interface BackofficeService {
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA')")
 	public BackofficeDto findByCodi(
 			Long entitatId,
 			String backofficeCodi) throws NotFoundException;
