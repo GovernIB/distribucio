@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -28,6 +29,7 @@ import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -212,10 +214,12 @@ public class CacheHelper {
 				auth);
 		
 		long count;
-		if (!busties.isEmpty())
-			count = contingutRepository.countPendentsByPares(busties);
-		else
+		if (!busties.isEmpty()) {
+			count = contingutRepository.countPendentsByPares(
+					busties);
+		}else {
 			count = 0;
+		}
 		return count;
 	}
 	

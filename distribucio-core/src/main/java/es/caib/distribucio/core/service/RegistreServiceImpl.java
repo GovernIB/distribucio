@@ -377,7 +377,7 @@ public class RegistreServiceImpl implements RegistreService {
 			totesLesbusties = isAdmin;
 			busties.add(0L);
 		}
-
+		
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"darrerMovimentData",
