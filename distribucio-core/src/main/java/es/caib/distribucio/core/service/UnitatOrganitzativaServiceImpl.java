@@ -151,18 +151,44 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		if (codisUnitatsDescendants.isEmpty())
 			codisUnitatsDescendants.add("-"); // per evitar error per llista buida
 		
+		 
+		// Es crean diferents llistes de 1000 com a màxim per evitar error a la consulta
+		List<String> llistaCodisUnitats1 = new ArrayList<>();
+		List<String> llistaCodisUnitats2 = new ArrayList<>();
+		List<String> llistaCodisUnitats3 = new ArrayList<>();
+		List<String> llistaCodisUnitats4 = new ArrayList<>();
+		List<String> llistaCodisUnitats5 = new ArrayList<>();
+		for(int i=0; i<codisUnitatsDescendants.size(); i++) {
+			if (i>=0 && i<1000) {
+				llistaCodisUnitats1.add(codisUnitatsDescendants.get(i));
+			} else  if (i>=1000 && i<2000) {
+				llistaCodisUnitats2.add(codisUnitatsDescendants.get(i));
+			} else  if (i>=2000 && i<3000) {
+				llistaCodisUnitats3.add(codisUnitatsDescendants.get(i));
+			} else  if (i>=3000 && i<4000) {
+				llistaCodisUnitats4.add(codisUnitatsDescendants.get(i));
+			} else  if (i>=4000 && i<5000) {
+				llistaCodisUnitats5.add(codisUnitatsDescendants.get(i));
+			}
+		}
+		
 		
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("codiIDenominacioUnitatSuperior", new String[]{"codiUnitatSuperior"});
 		PaginaDto<UnitatOrganitzativaDto> resultPagina =  paginacioHelper.toPaginaDto(
-				unitatOrganitzativaRepository.findByFiltrePaginat(
+				unitatOrganitzativaRepository.findByFiltrePaginatAmbLlistes(
 						entitat.getCodiDir3(),
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi() != null ? filtre.getCodi() : "",
 						filtre.getDenominacio() == null || filtre.getDenominacio().isEmpty(), 
 						filtre.getDenominacio() != null ? filtre.getDenominacio() : "",
 						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
-						codisUnitatsDescendants,
+						//codisUnitatsDescendants,
+						!llistaCodisUnitats1.isEmpty() ? llistaCodisUnitats1 : null,
+						!llistaCodisUnitats2.isEmpty() ? llistaCodisUnitats2 : llistaCodisUnitats1,
+						!llistaCodisUnitats3.isEmpty() ? llistaCodisUnitats3 : llistaCodisUnitats1,
+						!llistaCodisUnitats4.isEmpty() ? llistaCodisUnitats4 : llistaCodisUnitats1,
+						!llistaCodisUnitats5.isEmpty() ? llistaCodisUnitats5 : llistaCodisUnitats1,
 						estat == null,
 						estat,
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),

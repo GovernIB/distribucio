@@ -89,6 +89,37 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			@Param("esNullPerDefecte") boolean esNullPerDefecte,
 			@Param("esNullActiva") boolean esNullActiva);
+
+		
+	@Query(	"from " +
+			"    BustiaEntity b " +
+			"where " +
+			"    b.entitat = :entitat " +
+			"and b.pare != null " +
+			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
+			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " +
+			"and (:esCodisUnitatsSuperiorsBuida = true or " + 
+				"(b.unitatOrganitzativa.codi in (:llista1) or b.unitatOrganitzativa.codi in (:llista2) or b.unitatOrganitzativa.codi in (:llista3) or b.unitatOrganitzativa.codi in (:llista4) or b.unitatOrganitzativa.codi in (:llista5)) )" +
+			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat = 'E') or (b.unitatOrganitzativa.estat = 'A') or (b.unitatOrganitzativa.estat = 'T')) " +
+			"and (:esNullPerDefecte = true or b.perDefecte = true) " + 
+			"and (:esNullActiva = true or b.activa = true) " +
+			"order by b.nom asc "
+			)
+	List<BustiaEntity> findAmbEntitatAndFiltreAmbLlistes(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
+			@Param("esNullFiltreNom") boolean esNullFiltreNom,
+			@Param("filtreNom") String filtreNom,
+			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
+			@Param("llista1") List<String> llista1,
+			@Param("llista2") List<String> llista2,
+			@Param("llista3") List<String> llista3,
+			@Param("llista4") List<String> llista4,
+			@Param("llista5") List<String> llista5,
+			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
+			@Param("esNullPerDefecte") boolean esNullPerDefecte,
+			@Param("esNullActiva") boolean esNullActiva);
 	
 	@Query(	"from " +
 			"    BustiaEntity b " +
@@ -109,6 +140,35 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("filtreNom") String filtreNom,
 			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
 			@Param("codisUnitatsSuperiors") List<String> codisUnitatsSuperiors,
+			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
+			@Param("perDefecte") boolean perDefecte,
+			@Param("activa") boolean activa,
+			Pageable pageable);
+	
+	@Query(	"from " +
+			"    BustiaEntity b " +
+			"where " +
+			"    b.entitat = :entitat " +
+			"and b.pare != null " +
+			"and (:esNullFiltreUnitat = true or b.unitatOrganitzativa = :unitatOrganitzativa) " +
+			"and (:esNullFiltreNom = true or lower(b.nom) like lower('%'||:filtreNom||'%')) " +
+			"and (:esCodisUnitatsSuperiorsBuida = true or " +
+				"(b.unitatOrganitzativa.codi in (:llista1) or b.unitatOrganitzativa.codi in (:llista2) or b.unitatOrganitzativa.codi in (:llista3) or b.unitatOrganitzativa.codi in (:llista4) or b.unitatOrganitzativa.codi in (:llista5)) )" +
+			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat like 'E') or (b.unitatOrganitzativa.estat = 'A') or (b.unitatOrganitzativa.estat = 'T'))" +
+			"and (:perDefecte = false or b.perDefecte = true) " +
+			"and (:activa = false or b.activa = true)")
+	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginatAmbLlistes(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa, 
+			@Param("esNullFiltreNom") boolean esNullFiltreNom,
+			@Param("filtreNom") String filtreNom,
+			@Param("esCodisUnitatsSuperiorsBuida") boolean esCodisUnitatsSuperiorsBuida,
+			@Param("llista1") List<String> llista1,
+			@Param("llista2") List<String> llista2,
+			@Param("llista3") List<String> llista3,
+			@Param("llista4") List<String> llista4,
+			@Param("llista5") List<String> llista5,
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			@Param("perDefecte") boolean perDefecte,
 			@Param("activa") boolean activa,

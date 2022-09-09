@@ -107,6 +107,29 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi);
 
+	@Query(	
+			"from HistoricEstatEntity " +
+			"where entitat.id = :entitatId " +
+			"		and ((:dadesEntitat = true and unitat is null) " +
+			"			or (unitat.id in (:llista1) or unitat.id in (:llista2) or unitat.id in (:llista3) or unitat.id in (:llista4) or unitat.id in (:llista5)) )" +
+			"		and tipus = :tipus " +
+			"		and (:esNullDataInici = true or data >= :dataInici) " +
+			"		and (:esNullDataFi = true or data <= :dataFi) " +
+			"order by data asc ")
+	public List<HistoricEstatEntity> findByFiltreAmbLlistes (
+			@Param("entitatId") Long entitatId, 
+			@Param("dadesEntitat") boolean dadesEntitat, 
+			@Param("llista1") List<Long> llista1,
+			@Param("llista2") List<Long> llista2,
+			@Param("llista3") List<Long> llista3,
+			@Param("llista4") List<Long> llista4,
+			@Param("llista5") List<Long> llista5, 
+			@Param("tipus") HistoricTipusEnumDto tipus, 
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi);
+
 	/** Consulta per retornar les dades agregades per estat sense tenir
 	 * en compte la UO.	 */
 	@Query(	"select new es.caib.distribucio.core.api.dto.historic.HistoricEstatDto( " +

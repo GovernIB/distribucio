@@ -97,6 +97,27 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 	List<Object[]> countByPares(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("pares") List<? extends ContingutEntity> pares);
+	
+	
+	@Query(	"select " +
+			"    c.pare.id, " +
+			"    count(*) " +
+			"from " +
+			"    ContingutEntity c " +
+			"where " +
+			"    c.entitat = :entitat " +
+			"and (c.pare in (:llista1) or c.pare in (:llista2) or c.pare in (:llista3) or c.pare in (:llista4) or c.pare in (:llista5) )" +
+			"and c.esborrat = 0 " +
+			" and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)) " +
+			"group by " +
+			"    c.pare")
+	List<Object[]> countByParesAmbLlistes(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("llista1") List<? extends ContingutEntity> llista1,
+			@Param("llista2") List<? extends ContingutEntity> llista2,
+			@Param("llista3") List<? extends ContingutEntity> llista3,
+			@Param("llista4") List<? extends ContingutEntity> llista4,
+			@Param("llista5") List<? extends ContingutEntity> llista5);
 
 	@Query("select " +
 			"   c " +
