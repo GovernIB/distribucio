@@ -58,7 +58,7 @@ public class BackofficeServiceBean implements BackofficeService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA"})
 	public BackofficeDto findById(
 			Long entitatId, 
 			Long id) throws NotFoundException {
