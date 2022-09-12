@@ -91,7 +91,72 @@ public class ReglesRestClient {
 		return ret;
 	}
 	
+	/** Mètode per activar/desactivar una regla.
+	 * 
+	 */
+	public boolean canviEstat(
+			String sia,
+			Boolean activa) {
+		boolean ret = false;
+		try {
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/canviEstat?sia=" + sia + "&activa=" + (activa != null? activa.booleanValue() : "");
+			Client jerseyClient = generarClient();
+			if (username != null) {
+				autenticarClient(
+						jerseyClient,
+						urlAmbMetode,
+						username,
+						password);
+			}
+			ClientResponse response = jerseyClient
+					.resource(urlAmbMetode)
+					.post(ClientResponse.class);
+			
+			System.out.println("Resposta de l'actualització de la regla " + response.getStatus() 
+								+ " " + response.getStatusInfo().getReasonPhrase() 
+								+ ": " + response.getEntity(String.class));
+
+			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+				ret = true;
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return ret;
+	}
 	
+	/** Mètode per consultar regles per codi SIA.
+	 * 
+	 */
+	public boolean consultarRegla(
+			String sia) {
+		boolean ret = false;
+		try {
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/consultarRegla?sia=" + sia;
+			Client jerseyClient = generarClient();
+			if (username != null) {
+				autenticarClient(
+						jerseyClient,
+						urlAmbMetode,
+						username,
+						password);
+			}
+			ClientResponse response = jerseyClient
+					.resource(urlAmbMetode)
+					.get(ClientResponse.class);
+			
+			System.out.println("Resposta de la consulta de la regla " + response.getStatus() 
+								+ " " + response.getStatusInfo().getReasonPhrase() 
+								+ ": " + response.getEntity(String.class));
+
+			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+				ret = true;
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return ret;
+	}
 
 	
 	public boolean isAutenticacioBasic() {

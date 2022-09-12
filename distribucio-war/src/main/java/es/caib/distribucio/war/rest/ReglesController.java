@@ -5,6 +5,7 @@ package es.caib.distribucio.war.rest;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ import es.caib.distribucio.war.controller.BaseUserController;
  */
 @Controller
 @RequestMapping("/api/rest/regles")
-@Api(value = "/api/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA.")
+@Api(value = "/api/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari autenticar-se amb el rol DIS_REGLA.")
 public class ReglesController extends BaseUserController {
 
 
@@ -173,39 +174,43 @@ public class ReglesController extends BaseUserController {
 	@ResponseBody
 	public ResponseEntity<String> canviEstat(
 			HttpServletRequest request, 
-			
-			@ApiParam(name="codiSia", value="Codi SIA de la regla")
-			@RequestParam(required = true) String codiSia, 
-			@ApiParam(name="entitatCodi", value="Codi de l'entitat")
-			@RequestParam(required = true) String entitatCodi/*,
-			@ApiParam(name="backoffice", value="Codi Backoffice per la regla")
-			@RequestParam(required = true) String backoffice*/){
+			@ApiParam(name="sia", value="Codi SIA de la regla")
+			@RequestParam(required = true) String sia,
+			@ApiParam(name="activa", value="Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
+			@RequestParam(required = false) Boolean activa){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
 			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
 		}
 
-		List<ReglaDto> reglaDto = reglaService.findReglaBackofficeByProcediment(codiSia);
-		EntitatDto entitatDto = entitatService.findByCodiDir3(entitatCodi);
-		boolean activa = false;
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByProcediment(sia);
+		ReglaDto regla;
 		String response = "";
-		if (reglaDto == null) {
-			return new ResponseEntity<String>("La regla amb el codi " + codiSia + " no existeix", HttpStatus.CONFLICT);
-		}else if (reglaDto.get(0).isActiva()) {
-			response = "La regla amb codi " + codiSia + " s'ha desactivat correctament.";
-	
-		}else {
-			activa = true;
-			response = "La regla amb codi " + codiSia + " s'ha activat correctament.";	
+		if (regles == null || regles.isEmpty()) {
+			return new ResponseEntity<String>("La regla amb el codi " + sia + " no existeix", HttpStatus.CONFLICT);
+		} else if (regles.size() > 1) {
+			logger.warn("S'han trobat " + regles.size() + " regles pel codi de procediment " + sia + ", es consultarà només la primera regla.");
 		}
+		regla = regles.get(0);
 		try {
-			reglaService.updateActiva(entitatDto.getId(), reglaDto.get(0).getId(), activa);
+			if (activa == null) {
+				activa = !regla.isActiva();
+			}
+			reglaService.updateActiva(
+					regla.getEntitatId(), 
+					regla.getId(), 
+					activa);
+			if (activa) {
+				response = "La regla amb codi " + sia + " s'ha activat correctament.";	
+			}else {
+				response = "La regla amb codi " + sia + " s'ha desactivat correctament.";
+			}
 		} catch(Exception e) {
-			logger.error("error fent l'update de la regla. ", e);
-			return new ResponseEntity<String>("Error intern en el servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+			String errMsg = "error fent l'update de la regla " + regla.getNom() + " pel procediment " + sia + ":" + e.getMessage();
+			logger.error(errMsg, e);
+			return new ResponseEntity<String>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 		return new ResponseEntity<String>(response, HttpStatus.OK);	
 	}
 	
@@ -213,27 +218,27 @@ public class ReglesController extends BaseUserController {
 	
 	@RequestMapping(value = "/consultarRegla", method = RequestMethod.GET)
 	@ApiOperation(
-			value = "Consultar una regla", 
-			notes = "Consulta si una regla existeix i si està activa"
+			value = "Consultar regles per codi SIA",
+			notes = "Consulta les regles per codi SIA que existeixin i esigui actives. En principi només hi pot haver una regla de tipus backoffice per codi SIA."
 			)
 	@ResponseBody
 	public ResponseEntity<Object> consultarRegla(
 			HttpServletRequest request, 
-			
-			@ApiParam(name="codiSia", value="Codi SIA de la regla")
-			@RequestParam(required = true) String codiSia) {
+			@ApiParam(name="sia", value="Codi SIA de la regla que identifica la regla de tipus backoffice.")
+			@RequestParam(required = true) String sia) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
 			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
 		}
-		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(codiSia);
-		Map<String,Map<String, Object>> regles = new HashMap<>();
-		
-		if (reglesDto == null || reglesDto.isEmpty()) {
-			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA: " + codiSia, HttpStatus.NOT_FOUND);
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
+		if (reglesDto.size() > 1) {
+			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi de procediment " + sia + ".");
 		}
-		
+		List<Map<String, Object>> regles = new ArrayList<>();
+		if (reglesDto == null || reglesDto.isEmpty()) {
+			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA: " + sia, HttpStatus.NOT_FOUND);
+		}
 		for (ReglaDto regla : reglesDto) {
 			Map<String, Object> r = new HashMap<>();
 			r.put("id", regla.getId());
@@ -246,28 +251,9 @@ public class ReglesController extends BaseUserController {
 			BackofficeDto backofficeDto = backofficeService.findById(regla.getEntitatId(), regla.getBackofficeDestiId());
 			r.put("backofficeDesti", backofficeDto.getNom());			
 			
-			regles.put(codiSia, r);
+			regles.add(r);
 		}
 		return new ResponseEntity<Object>(regles, HttpStatus.OK);
-//		ReglaDto reglaDto = reglaService.findReglaByCodiSia(codiSia);
-//		if (reglaDto == null) {
-//			return new ResponseEntity<Object>("La regla amb codi SIA: " + codiSia + " no existeix", HttpStatus.NOT_FOUND);
-//			
-//		}
-//
-//		Map<String, Object> regla = new HashMap<>();
-//		regla.put("id", reglaDto.getId());
-//		regla.put("nom", reglaDto.getNom());
-//		Date data = reglaDto.getCreatedDate();
-//		DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
-//		regla.put("data", dateFormat.format(data));
-//		regla.put("entitat", reglaDto.getEntitatNom());
-//		regla.put("activa", reglaDto.isActiva());
-//		BackofficeDto backofficeDto = backofficeService.findById(reglaDto.getEntitatId(), reglaDto.getBackofficeDestiId());
-//		regla.put("backofficeDesti", backofficeDto.getNom());
-//		
-//		
-//		return new ResponseEntity<Object>(regla, HttpStatus.OK);	
 	}
 	
 	

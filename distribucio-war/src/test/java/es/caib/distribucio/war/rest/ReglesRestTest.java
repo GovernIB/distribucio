@@ -37,11 +37,13 @@ public class ReglesRestTest {
 				PASSWORD,
 				false);
 		
+		// Dades del test
+		String entitat = "A04019281";
+		String sia = "BACK_HELIUM_675";
+		String backoffice = "HELIUM";
+
 		// Creació de la regla
 		try {
-			String entitat = "A04019281";
-			String sia = "20220429";
-			String backoffice = "HELIUM";
 			boolean ret = client.add(entitat, sia, backoffice);
 			System.out.println("Creació finalitzada correctament amb resultat " + ret);
 		} catch (Exception e) {
@@ -49,6 +51,23 @@ public class ReglesRestTest {
 			e.printStackTrace();
 		}
 		
+		// Modificació de l'activació de la regla
+		try {
+			boolean ret = client.canviEstat(sia, null);
+			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + ret);
+		} catch (Exception e) {
+			System.err.println("Error canviant estat a la regla: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		// Consulta de la regla
+		try {
+			boolean ret = client.consultarRegla(sia);
+			System.out.println("Consulta finalitzada correctament amb resultat " + ret);
+		} catch (Exception e) {
+			System.err.println("Error consultant la regla: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 
