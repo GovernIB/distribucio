@@ -11,7 +11,6 @@ import javax.interceptor.Interceptors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -374,7 +373,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		return delegate.getDadesAnnexFirmesSenseDetall(annexId);
 	}
