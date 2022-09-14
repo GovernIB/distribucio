@@ -1,12 +1,12 @@
 package es.caib.distribucio.war.command;
 
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.distribucio.core.api.dto.BackofficeDto;
+import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.validation.Backoffice;
 
@@ -29,6 +29,8 @@ public class BackofficeCommand {
     private Integer tempsEntreIntents;
     
     private Long entitatId;
+    
+    private BackofficeTipusEnumDto tipus;
 
     public Long getId() {
         return id;
@@ -84,6 +86,12 @@ public class BackofficeCommand {
 	}
 	public void setEntitatId(Long entitatId) {
 		this.entitatId = entitatId;
+	}
+	public BackofficeTipusEnumDto getTipus() {
+		return tipus;
+	}
+	public void setTipus(BackofficeTipusEnumDto tipus) {
+		this.tipus = tipus;
 	}
 	public static BackofficeCommand asCommand(BackofficeDto dto) {
         return ConversioTipusHelper.convertir(dto, BackofficeCommand.class);

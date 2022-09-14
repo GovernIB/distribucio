@@ -10,7 +10,9 @@ public class BackofficeDto {
     private String contrasenya;
     private Integer intents;
     private Integer tempsEntreIntents;
-    private Long entitatId;
+    private Long entitatId;    
+    private BackofficeTipusEnumDto tipus;
+
 
     public Long getId() {
         return id;
@@ -65,6 +67,12 @@ public class BackofficeDto {
 	}
 	public void setEntitatId(Long entitatId) {
 		this.entitatId = entitatId;
+	}
+	public BackofficeTipusEnumDto getTipus() {
+		return tipus;
+	}
+	public void setTipus(BackofficeTipusEnumDto tipus) {
+		this.tipus = tipus;
 	}
 
 }

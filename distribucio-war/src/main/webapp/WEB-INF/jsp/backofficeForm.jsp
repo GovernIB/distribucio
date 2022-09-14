@@ -21,6 +21,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+			if (${nou != true}) {
+				$("#codi").attr('readonly', true);
+			}
 		});
 	</script>
 </head>
@@ -29,14 +32,18 @@
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
-		<c:if test="${nou == true}">
-			<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
-		</c:if>
-		<c:if test="${nou != true}">
-			<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment" disabled="true"/>
-		</c:if>
+		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
+		<dis:inputSelect 
+				name="tipus" 
+				textKey="backoffice.form.camp.tipus" 
+				optionEnum="BackofficeTipusEnumDto" 
+				optionValueAttribute="id" 
+				optionTextAttribute="nom" 
+				placeholderKey="backoffice.form.camp.tipus"
+				required="true"
+				optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
 

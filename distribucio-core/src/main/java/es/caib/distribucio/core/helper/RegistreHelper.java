@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -24,6 +25,11 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
+import javax.naming.NamingException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FilenameUtils;
@@ -43,11 +49,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandler;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.filter.ClientFilter;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.representation.Form;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -115,6 +130,9 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
  */
 @Component
 public class RegistreHelper {
+
+	private static final String URL_API_BACKOFFICE = "/distribucio/api/rest/backoffice";
+	private boolean autenticacioBasic = true;	
 
 	@Autowired
 	private RegistreRepository registreRepository;
@@ -1468,30 +1486,53 @@ public class RegistreHelper {
 				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			
+		
 			logger.trace(">>> Abans de crear backoffice WS");
-			BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
-					getClass().getResource(
-							"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-					backofficeDesti.getUrl(),
-					new QName(
-							"http://www.caib.es/distribucio/ws/backoffice",
-							"BackofficeService"),
-					usuari,
-					contrasenya,
-					null,
-					BackofficeWsService.class);			
-			
-			logger.trace(">>> Abans de cridar backoffice WS");
-			backofficeClient.comunicarAnotacionsPendents(ids);		
+			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
+				for (AnotacioRegistreId anotacioRegistreId : ids) {
+					String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
+					Client jerseyClient = generarClient();
+					autenticarClient(
+							jerseyClient, 
+							backofficeDesti.getUrl(), 
+							urlAmbMetode, 
+							backofficeDesti.getUsuari(), 
+							backofficeDesti.getContrasenya());
+					String identificador = anotacioRegistreId.getIndetificador();
+					String clauAcces = anotacioRegistreId.getClauAcces();
+					Form form = new Form();
+					form.putSingle("identificador", identificador);
+					form.putSingle("clauAcces", clauAcces);
+					jerseyClient
+							.resource(urlAmbMetode)
+							.type("application/json")
+							.post(form);
+				}
+			}else {
+				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
+						getClass().getResource(
+								"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
+						backofficeDesti.getUrl(),
+						new QName(
+								"http://www.caib.es/distribucio/ws/backoffice",
+								"BackofficeService"),
+						usuari,
+						contrasenya,
+						null,
+						BackofficeWsService.class);			
+				
+				logger.trace(">>> Abans de cridar backoffice WS");
+				backofficeClient.comunicarAnotacionsPendents(ids);
 						
-			integracioHelper.addAccioOk (
-					IntegracioHelper.INTCODI_BACKOFFICE,
-					accioDescripcio,
-					usuari,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0
-			);			
+				integracioHelper.addAccioOk (
+						IntegracioHelper.INTCODI_BACKOFFICE,
+						accioDescripcio,
+						usuari,
+						accioParams,
+						IntegracioAccioTipusEnumDto.ENVIAMENT,
+						System.currentTimeMillis() - t0
+				);			
+			}
 			logger.trace(">>> Despres de cridar backoffice WS");			
 			return null;
 			
@@ -1502,6 +1543,78 @@ public class RegistreHelper {
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
 					ex);
+		}
+	}
+
+	private Client generarClient() {
+		Client jerseyClient = Client.create();
+		jerseyClient.addFilter(
+				new ClientFilter() {
+					private ArrayList<Object> cookies;
+					@Override
+					public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
+						if (cookies != null) {
+							request.getHeaders().put("Cookie", cookies);
+						}
+						ClientResponse response = getNext().handle(request);
+						if (response.getCookies() != null) {
+							if (cookies == null) {
+								cookies = new ArrayList<Object>();
+							}
+							cookies.addAll(response.getCookies());
+						}
+						return response;
+					}
+				}
+		);
+		jerseyClient.addFilter(
+				new ClientFilter() {
+					@Override
+					public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
+						ClientHandler ch = getNext();
+				        ClientResponse resp = ch.handle(request);
+
+				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+				            return resp;
+				        } else {
+				            String redirectTarget = resp.getHeaders().getFirst("Location");
+				            request.setURI(UriBuilder.fromUri(redirectTarget).build());
+				            return ch.handle(request);
+				        }
+					}
+				}
+		);
+		return jerseyClient;
+	}
+
+	private void autenticarClient(
+			Client jerseyClient,
+			String baseUrl,
+			String urlAmbMetode,
+			String username,
+			String password) throws InstanceNotFoundException, MalformedObjectNameException, RemoteException, NamingException {
+		if (!autenticacioBasic) {
+			System.out.println(
+					"Autenticant client REST per a fer peticions cap a servei desplegat a damunt jBoss (" +
+					"urlAmbMetode=" + urlAmbMetode + ", " +
+					"username=" + username +
+					"password=********)");
+			jerseyClient.resource(urlAmbMetode).get(String.class);
+			Form form = new Form();
+			form.putSingle("j_username", username);
+			form.putSingle("j_password", password);
+			jerseyClient.
+			resource(baseUrl + "/j_security_check").
+			type("application/x-www-form-urlencoded").
+			post(form);
+		} else {
+			System.out.println(
+					"Autenticant REST amb autenticació de tipus HTTP basic (" +
+					"urlAmbMetode=" + urlAmbMetode + ", " +
+					"username=" + username +
+					"password=********)");
+			jerseyClient.addFilter(
+					new HTTPBasicAuthFilter(username, password));
 		}
 	}
 	

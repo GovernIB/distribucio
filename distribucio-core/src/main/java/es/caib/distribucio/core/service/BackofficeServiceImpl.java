@@ -58,6 +58,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 				backofficeDto.getCodi(),
 				backofficeDto.getNom(),
 				backofficeDto.getUrl(),
+				backofficeDto.getTipus(),
 				entitat).
 				usuari(backofficeDto.getUsuari()).
 				contrasenya(backofficeDto.getContrasenya()).
@@ -95,7 +96,8 @@ public class BackofficeServiceImpl implements BackofficeService {
 				backofficeDto.getUsuari(),
 				backofficeDto.getContrasenya(),
 				backofficeDto.getIntents(),
-				backofficeDto.getTempsEntreIntents());
+				backofficeDto.getTempsEntreIntents(), 
+				backofficeDto.getTipus());
 		
 		
 		BackofficeDto dto = conversioTipusHelper.convertir(
