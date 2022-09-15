@@ -185,6 +185,10 @@
 	function marcarPerDefecte() {
 		location.href = "bustiaAdminOrganigrama/" + $('#id').val() + "/default";
 	}
+	
+	function moureAnotacions() {
+		location.href = "bustiaAdmin/" + $('#id').val() + "/moureAnotacions";
+	}
 
 	function activar() {
 		$('#panellInfo').css('visibility', '');
@@ -460,8 +464,11 @@
 						<div class="row">
 							<div class="col-md-4">
 								<button id="marcarPerDefecteBtn" type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
+							</div>						
+							<div class="col-md-2">
+								<button id="moureAnotacions" type="button" onclick="moureAnotacions()" class="btn btn-default"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></button>
 							</div>
-						
+							
 							<div class="col-md-2">
 								<button id="activarBtn" type="button" onclick="activar()" style="display: none;" class="btn btn-default"><span class="fa fa-check"></span> <spring:message code="comu.boto.activar"/></button>
 								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default" ><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
