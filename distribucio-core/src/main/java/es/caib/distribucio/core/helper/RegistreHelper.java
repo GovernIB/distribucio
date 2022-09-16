@@ -36,7 +36,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -57,6 +59,7 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -595,15 +598,24 @@ public class RegistreHelper {
 		context.stop();
 	}
 	
-	
+	/** Mètode que s'ha d'executar sense transacció per poder anar guardant anotació i annexos en
+	 * transaccions separades per evitar error de timeout en la transacció.
+	 * 
+	 * @param anotacioId
+	 * @return
+	 */
 	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 
+		if (TransactionSynchronizationManager.isActualTransactionActive()) {
+			logger.warn("La transacció actual està activa, es desactiva per poder tractar anotació i annexos per separat.");
+			TransactionSynchronizationManager.setActualTransactionActive(false);
+		}
 		
 		// PROCESSAR ARXIU
 		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 
-			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(anotacioId);			
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(anotacioId);
 			boolean allRegistresWithSameNumeroSavedInArxiu = true;
 			if (distribucioRegistreAnotacio.getAnnexos() != null ) {
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
@@ -712,27 +724,31 @@ public class RegistreHelper {
 		if (exceptions != null && !exceptions.isEmpty()) {
 			return exceptions;
 		} else {
-			RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
-
 			logger.trace("Creació del contenidor i dels annexos finalitzada correctament (" +
-					"anotacioId=" + registreEntity.getId() + ", " +
-					"anotacioNumero=" + registreEntity.getNumero() + ", " +
+					"anotacioId=" + anotacioId + ", " +
+					"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 			
-			List<String> params = new ArrayList<>();
-			params.add(registreEntity.getNom());
-			params.add(null);
+			self.crearLogDistribucio(anotacioId);
 			
-			contingutLogHelper.log(
-					registreEntity,
-					LogTipusEnumDto.DISTRIBUCIO,
-					params,
-					false);
 			return null;
 		}
 	}	
 
 	
+	@Transactional
+	public void crearLogDistribucio(long anotacioId) {
+		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
+		List<String> params = new ArrayList<>();
+		params.add(registreEntity.getNom());
+		params.add(null);
+		
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.DISTRIBUCIO,
+				params,
+				false);
+	}
 
 	@Transactional
 	private void tancarContenidorAmbAnnexos(
@@ -1845,7 +1861,7 @@ public class RegistreHelper {
 	
 	// Mètodes per cridar de forma transaccional amb self
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(long registreId) {
 		
 		RegistreEntity registreEntity = registreRepository.findOne(registreId);		
@@ -1879,16 +1895,17 @@ public class RegistreHelper {
 					"anotacioId=" + registreEntity.getId() + ", " +
 					"anotacioNumero=" + registreEntity.getNumero() + ", " +
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
-			
+
 			loadJustificantToDB(registreEntity.getId());
 			
+			registreRepository.saveAndFlush(registreEntity);
 		} catch (Exception ex) {
 			return Arrays.asList(ex);
 		}
 		return null;
 	}
 	
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void crearAnnexInArxiu(
 			Long annexId, 
 			DistribucioRegistreAnnex distribucioAnnex, 
@@ -2048,7 +2065,67 @@ public class RegistreHelper {
     	}
 		return fileName;
 	}
-
 	
+	@Transactional(readOnly = true)
+	public RegistreDto findOne(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments,
+			String rolActual) throws NotFoundException {
+		
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "registreId=" + registreId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+	
+		RegistreEntity registre = registreRepository.findOne(registreId);
+		if (registre == null)
+			throw new NotFoundException(registreId, RegistreEntity.class);
+		
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
+			entityComprovarHelper.comprovarBustia(
+							entitat,
+							registre.getPareId(),
+							true);
+
+		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
+				registre,
+				false,
+				false,
+				false,
+				false,
+				true,
+				false,
+				true);
+		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
+	
+		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
+		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
+			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
+					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
+				registreAnotacio.getAnnexos().remove(annexDto);
+				break;
+			}
+		}
+		
+		if ("tothom".equalsIgnoreCase(rolActual)) {
+			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
+			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
+				if (annexDto.getSicresTipusDocument() == null 
+						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexDto.getSicresTipusDocument())) {
+					registreAnnexos.add(annexDto);
+				}
+			}
+			registreAnotacio.setAnnexos(registreAnnexos);
+		}
+		
+		return registreAnotacio;
+	
+	}
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
+
 }

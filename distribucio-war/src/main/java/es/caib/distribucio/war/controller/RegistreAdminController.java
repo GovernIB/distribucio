@@ -384,7 +384,6 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
 		boolean processatOk = registreService.reintentarProcessamentAdmin(
 				entitatActual.getId(),
 				registreId);
@@ -439,24 +438,19 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
-			boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-					registreId);
-			if (processatOk) {
-				MissatgesHelper.success(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok"));
-			} else {
-				MissatgesHelper.error(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.error",
-								null));
-			}
-
-
-
-//		return "redirect:../../" + registreId + "/detall";
-			return "redirect:" + request.getHeader("referer");
+		boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+				registreId);
+		if (processatOk) {
+			MissatgesHelper.success(request,
+					getMessage(request,
+							"contingut.admin.controller.registre.reintentat.ok"));
+		} else {
+			MissatgesHelper.error(request,
+					getMessage(request,
+							"contingut.admin.controller.registre.reintentat.error",
+							null));
+		}
+		return "redirect:" + request.getHeader("referer");
 	}
 	
 	
@@ -723,21 +717,19 @@ public class RegistreAdminController extends BaseAdminController {
 				correcte = true;
 			}
 		} catch(Exception e) {
-			logger.error("Error incontrolat reprocessant l'anotació amb id " + registreId + ": " + e.getMessage() , e);
-			String errMsg = getMessage(request, 
-										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
-										new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
-			response = AjaxHelper.generarAjaxError(errMsg);
+			missatge = getMessage(request, "registre.admin.controller.reintentar.processament.error", new Object[] {registreId, e.getMessage()});
+			logger.error(missatge, e);
+			correcte = false;
 		}
 		
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(missatge.toString());
 		} else {
-			response = AjaxHelper.generarAjaxError(missatge.toString());
+			response = AjaxHelper.generarAjaxError(missatge);
 		}
 		
-		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha processat " + (correcte ? "correctament" : "amb error"));
+		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha processat " + (correcte ? "correctament." : "amb error.") + missatge);
 
 		return response;
 	}

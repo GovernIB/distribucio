@@ -1077,7 +1077,7 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextprocess = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.process")).time();
 		// if asynchronous processing is turned off save anotacio in arxiu and apply reglas immediately
 		if (!bustiaHelper.isProcessamentAsincronProperty()) {
-			logger.trace("L'anotació es processarà inmediatament (" +
+			logger.debug("L'anotació es processarà inmediatament (" +
 					"entitatUnitatCodi=" + entitatCodi + ", " +
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
@@ -1100,8 +1100,127 @@ public class BustiaServiceImpl implements BustiaService {
 		return exceptionProcessant;
 	}
 
-	
 
+	@Transactional
+	@Override
+	public long registreAnotacioCrear(
+			String entitatCodi,
+			RegistreTipusEnum tipus,
+			String unitatOrganitzativaCodi,
+			RegistreAnotacio registreAnotacio) throws Exception {
+		
+		Timer.Context context = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar")).time();
+		
+		//---- validate anotacio -----
+		Timer.Context contextvalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre")).time();
+		EntitatEntity entitat = validateRegistre(entitatCodi, registreAnotacio);
+		contextvalidateRegistre.stop();
+		
+		
+		//---- find estat of anotacio -----
+		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
+		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
+				entitat,
+				unitatOrganitzativaCodi);
+		UnitatOrganitzativaDto unitat = unitatOrganitzativaHelper.findPerEntitatAndCodi(
+				entitat.getCodi(),
+				unitatOrganitzativaCodi);
+		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
+				entitat,
+				unitat.getId(),
+				bustia.getId(),
+				registreAnotacio.getProcedimentCodi(),
+				registreAnotacio.getAssumpteCodi());
+		RegistreProcesEstatEnum estat;
+		if (registreAnotacio.getAnnexos() != null && !registreAnotacio.getAnnexos().isEmpty()) {
+			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
+		} else if (reglaAplicable != null) {
+			estat = RegistreProcesEstatEnum.REGLA_PENDENT;
+		} else {
+			estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+		}
+		contextfindEstat.stop();
+		
+		
+		//-- save anotacio and interessats in db --
+		//-- and save annexos and firmes in db and their byte content in the folder in local file system --
+		Timer.Context contextcrearRegistreEntity = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.crearRegistreEntity")).time();
+		RegistreEntity anotacioEntity = registreHelper.crearRegistreEntity(
+				entitat,
+				tipus,
+				unitatOrganitzativaCodi,
+				registreAnotacio,
+				reglaAplicable,
+				estat);
+		contextcrearRegistreEntity.stop();
+		
+		//-- create emails ---
+		Timer.Context contextmoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte")).time();
+		moveAnotacioToBustiaPerDefecte(
+				entitat,
+				unitatOrganitzativaCodi,
+				anotacioEntity);
+		if (reglaAplicable == null 
+				&& anotacioEntity.getPare() != null) {
+			emailHelper.createEmailsPendingToSend(
+					(BustiaEntity) anotacioEntity.getPare(),
+					anotacioEntity,
+					anotacioEntity.getDarrerMoviment());
+		}
+		contextmoveAnotacioToBustiaPerDefecte.stop();
+		
+		
+		//-- apply rules of type bustia or unitat ---
+		Timer.Context contextprocessarAnotacioPendentRegla = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.processarAnotacioPendentRegla")).time();
+		Exception exceptionProcessant = null;
+		if (reglaAplicable != null && (reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA || reglaAplicable.getTipus() == ReglaTipusEnumDto.UNITAT)) {
+			exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
+		}
+		contextprocessarAnotacioPendentRegla.stop();
+		context.stop();
+		
+		if (exceptionProcessant != null) {
+			throw exceptionProcessant;
+		}
+		return anotacioEntity.getId();
+	}
+
+	@Override
+	public Exception registreAnotacioProcessar(
+			Long registreId) {
+		
+		Exception exceptionProcessant = null;
+		
+		Timer.Context context = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar")).time();
+		
+		RegistreEntity anotacioEntity = registreRepository.findOne(registreId);
+
+		//------- process --------
+		Timer.Context contextprocess = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.process")).time();
+		// if asynchronous processing is turned off save anotacio in arxiu and apply reglas immediately
+		if (!bustiaHelper.isProcessamentAsincronProperty()) {
+			logger.trace("L'anotació es processarà inmediatament (" +
+					"entitatUnitatCodi=" + anotacioEntity.getEntitatCodi() + ", " +
+					"tipus=" + anotacioEntity.getTipus() + ", " +
+					"unitatOrganitzativa=" + anotacioEntity.getUnitatAdministrativa() + ", " +
+					"anotacio=" + anotacioEntity.getIdentificador() + ")");
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getId());
+			if (exceptionProcessant == null) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
+			}
+		// if asynchronous processing is turned on there are two @Scheduled methods that will periodically process anotacions pending to save in arxiu or to apply regla to
+		} else {
+			logger.trace("L'anotació es processarà de forma asíncrona (" +
+					"entitatUnitatCodi=" + anotacioEntity.getEntitatCodi() + ", " +
+					"tipus=" + anotacioEntity.getTipus() + ", " +
+					"unitatOrganitzativa=" + anotacioEntity.getUnitatAdministrativa() + ", " +
+					"anotacio=" + anotacioEntity.getIdentificador() + ")");
+		}
+		contextprocess.stop();
+		
+		context.stop();
+		return exceptionProcessant;
+	}
 
 
 

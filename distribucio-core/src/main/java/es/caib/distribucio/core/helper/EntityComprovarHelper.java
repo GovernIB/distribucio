@@ -10,6 +10,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -53,7 +54,7 @@ public class EntityComprovarHelper {
 	@Autowired
 	private MetricRegistry metricRegistry;
 
-
+	@Transactional
 	public EntitatEntity comprovarEntitat(
 			Long entitatId,
 			boolean comprovarPermisUsuari,
@@ -151,7 +152,7 @@ public class EntityComprovarHelper {
 		return contingut;
 	}
 
-
+	@Transactional
 	public BustiaEntity comprovarBustia(
 			EntitatEntity entitat,
 			Long bustiaId,

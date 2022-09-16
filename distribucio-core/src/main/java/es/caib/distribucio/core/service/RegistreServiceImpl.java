@@ -226,65 +226,15 @@ public class RegistreServiceImpl implements RegistreService {
 		return findOne(entitatId, registreId, isVistaMoviments, null);		
 	}
 		
-		@Transactional(readOnly = true)
-		@Override
-		public RegistreDto findOne(
-				Long entitatId,
-				Long registreId,
-				boolean isVistaMoviments,
-				String rolActual) throws NotFoundException {
-		logger.debug("Obtenint anotació de registre ("
-				+ "entitatId=" + entitatId + ", "
-				+ "registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
-
-		RegistreEntity registre = registreRepository.findOne(registreId);
-		if (registre == null)
-			throw new NotFoundException(registreId, RegistreEntity.class);
+	@Transactional(readOnly = true)
+	@Override
+	public RegistreDto findOne(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments,
+			String rolActual) throws NotFoundException {
 		
-		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
-			entityComprovarHelper.comprovarBustia(
-							entitat,
-							registre.getPareId(),
-							true);
-					
-		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
-				registre,
-				false,
-				false,
-				false,
-				false,
-				true,
-				false,
-				true);
-		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
-
-		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
-					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
-				registreAnotacio.getAnnexos().remove(annexDto);
-				break;
-			}
-		}
-		
-		if ("tothom".equalsIgnoreCase(rolActual)) {
-			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
-			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-				if (annexDto.getSicresTipusDocument() == null 
-						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexDto.getSicresTipusDocument())) {
-					registreAnnexos.add(annexDto);
-				}
-			}
-			registreAnotacio.setAnnexos(registreAnnexos);
-		}
-		
-		return registreAnotacio;
-
+		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 	}
 
 
@@ -1695,75 +1645,38 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Override
-	@Transactional
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
-		
-		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
-			entityComprovarHelper.comprovarBustia(
-				entitat,
-				anotacio.getPareId(),
-				true);
 
-		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
+		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
 		return exceptionProcessant == null;
 	}
 	
 	@Override
-	@Transactional
 	public boolean processarAnnexosAdmin(
 			Long entitatId,
 			Long registreId) {
 		logger.debug("Intentant desat d'annexos pendents de l'anotació per admins (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
-		
-		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura())
-			entityComprovarHelper.comprovarBustia(
-				entitat,
-				anotacio.getPareId(),
-				true);
 
-		Exception exceptionProcessant = desarAnnexos(anotacio);
+		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
 		return exceptionProcessant == null;
 	}
 
 
 	@Override
-	@Transactional
 	public boolean reintentarProcessamentUser(
 			Long entitatId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per usuaris (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				false,
-				false,
-				true);
-		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);
-		entityComprovarHelper.comprovarBustia(
-				entitat,
-				anotacio.getPareId(),
-				true);
-		Exception exceptionProcessant = processarAnotacioPendent(anotacio);
+		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
 		return exceptionProcessant == null;
 	}
 	
@@ -2932,34 +2845,30 @@ public class RegistreServiceImpl implements RegistreService {
 		return interessatBase;
 	}
 
-	private Exception processarAnotacioPendent(RegistreEntity anotacio) {
+	private Exception processarAnotacioPendent(long entitatId, long anotacioId) {
+		
+		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
+
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
 		Exception exceptionProcessant = null;
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
-						anotacio.getId());
+						anotacioId);
 			}
 			if (exceptionProcessant == null && pendentRegla) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
-						anotacio.getId());
+						anotacioId);
 			}
 		} else {
 			throw new ValidationException(
-					anotacio.getId(),
+					anotacioId,
 					RegistreEntity.class,
 					"L'anotació de registre no es troba en estat pendent");
 		}
 		return exceptionProcessant;
 	}
-	
-
-	private Exception desarAnnexos(RegistreEntity anotacio) {		
-		
-		return registreHelper.processarAnotacioPendentArxiu(anotacio.getId());
-	}
-
 	
 	private RegistreAnnexDto getJustificantPerRegistre(
 			EntitatEntity entitat,

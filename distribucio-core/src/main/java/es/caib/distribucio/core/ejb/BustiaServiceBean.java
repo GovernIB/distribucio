@@ -143,7 +143,30 @@ public class BustiaServiceBean implements BustiaService {
 				unitatAdministrativa,
 				anotacio);
 	}
+	
+	@Override
+	@RolesAllowed("DIS_BSTWS")
+	public long registreAnotacioCrear(
+			String entitatCodi,
+			RegistreTipusEnum tipus,
+			String unitatAdministrativa,
+			RegistreAnotacio anotacio) throws Exception {
+		return delegate.registreAnotacioCrear(
+				entitatCodi,
+				tipus,
+				unitatAdministrativa,
+				anotacio);
+	}
 
+	@Override
+	@RolesAllowed("DIS_BSTWS")
+	public Exception registreAnotacioProcessar(
+			Long registreId) {
+		return delegate.registreAnotacioProcessar(
+				registreId);
+	}
+
+	
 	@Override
 	@RolesAllowed("tothom")
 	public void registreAnotacioEnviarPerEmail(

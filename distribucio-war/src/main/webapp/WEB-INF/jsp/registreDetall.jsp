@@ -224,6 +224,10 @@ li[id^="anotacio_"] {
 	        $('.processamentInfo').css('display', 'none');
 	        $(".datatable-dades-carregant").css("display", "block");
     	});
+    	
+    	$( "#btnProcessarAnnexos").click(function() {
+    		$('span', this).addClass('fa-spin');
+    	});
 
     	$( "a#accioReenviar" ).on( "click", function() {
 			var url = new URL(window.location);
@@ -1308,7 +1312,7 @@ li[id^="anotacio_"] {
 							<span class="fa fa-exclamation-triangle"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
 							<c:if test="${isRolActualAdministrador}">
-								<a href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
+								<a id="btnProcessarAnnexos" href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
 							</c:if>
 						</div>
 					</c:if>
