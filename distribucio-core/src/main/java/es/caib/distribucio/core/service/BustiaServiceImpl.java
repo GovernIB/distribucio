@@ -478,12 +478,6 @@ public class BustiaServiceImpl implements BustiaService {
 			bustiaDefaultRepository.delete(bustiaDefault);
 		}
 		
-		for (BustiaEntity b : bustiaRepository.findAll()) {
-			if (b.getNom().contains("provaFernando")) {
-				bustiaRepository.delete(b);
-			}
-		}
-		
 		bustiaRepository.delete(bustia);
 		return bustiaHelper.toBustiaDto(
 				bustia,

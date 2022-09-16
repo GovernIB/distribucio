@@ -43,7 +43,7 @@
 		
 		<div id="modal-botons" class="well">
 			<button type="submit" class="btn btn-success"><span class="fa fa-share"></span> <spring:message code="bustia.moure.anotacions.form.moure"/></button>
-			<a href="<c:url value="/bustiaAdmin/${bustia.id}/moureAnotacions"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+			<a href="<c:url value="/bustiaAdmin/${bustia.id}/moureAnotacions/${y}"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
 </body>

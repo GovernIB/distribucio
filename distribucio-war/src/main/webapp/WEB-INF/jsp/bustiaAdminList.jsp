@@ -173,6 +173,7 @@
 				</th>
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+				<c:set var="tipusVista" value="list"/>
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
@@ -184,7 +185,7 @@
 								{{else}}
 									<li {{if perDefecte}}class="disabled"{{/if}} ><a {{if !perDefecte}}href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable"{{/if}}  data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
 								{{/if}}
-								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/moureAnotacions" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></a></li>
+								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/moureAnotacions/${tipusVista}" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></a></li>
 								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="bustia.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 							</ul>
 						</div>
