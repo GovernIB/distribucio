@@ -23,7 +23,10 @@
 <c:if test="${select2}">
 <link href="<c:url value="/webjars/select2/4.0.4/dist/css/select2.min.css"/>" rel="stylesheet"/>
 <link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.10/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-<script src="<c:url value="/webjars/select2/4.0.4/dist/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 </c:if>
 <c:if test="${datepicker}">
 <link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
