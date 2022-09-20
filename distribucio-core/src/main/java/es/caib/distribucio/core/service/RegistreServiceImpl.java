@@ -301,7 +301,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<ContingutDto> findRegistre(
@@ -409,9 +408,7 @@ public class RegistreServiceImpl implements RegistreService {
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
-			
-			pagina = (Page<RegistreEntity>) this.findRegistresFiltrats(
-					false, // per retornar una pàgina
+			pagina = registreRepository.findRegistreByPareAndFiltre(
 					entitat,
 					totesLesbusties,
 					busties,
@@ -450,8 +447,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
-					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
-
+					paginacioHelper.toSpringDataPageable(paginacioParams,
+							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
 			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
@@ -492,7 +489,7 @@ public class RegistreServiceImpl implements RegistreService {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Transactional(readOnly = true)
 	private Object findRegistresFiltrats(
 			boolean nomesIds,

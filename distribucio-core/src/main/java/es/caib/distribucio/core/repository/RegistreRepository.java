@@ -18,6 +18,7 @@ import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -193,140 +194,144 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<RegistreEntity> findByIdIn(
 			List<Long> ids);
 
-//	/** Consulta pel datatable del registre user */
-//	@Query(	"select r " +
-//			"from " +
-//			"    RegistreEntity r " +
-//			"		left outer join r.darrerMoviment.remitent as remitent "	+
-//			"where " +
-//			"    (r.entitat = :entitat) " +
-//			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
-//			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
-//			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
-//			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-//			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
-//			"and (:esNullDataInici = true or r.data >= :dataInici) " +
-//			"and (:esNullDataFi = true or r.data < :dataFi) " +
-//			"and (:esProcessat = false or r.pendent = false) " +
-//			"and (:esPendent = false or r.pendent = true) " +
-//			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
-//			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
-//			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
-//			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
-//			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat) " +
-//			"and (:esNullReintentsPendents = true " +
-//			"		or (:reintentsPendents = true and r.procesIntents < :maxReintents) " + 
-//			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
-//			"and (:nomesAmbErrors = false or r.procesError != null ) " +
-//			"and (:nomesAmbEsborranys = false or r.annexosEstatEsborrany > 0 ) " +
-//			"and (:esNullInteressat = true " +
-//			"		or (select count(interessat) " +
-//			"			from r.interessats as interessat" +
-//			"			where " +
-//			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
-//			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-//			"			) > 0 ) " + 
-//			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " )
-//	public Page<RegistreEntity> findRegistreByPareAndFiltre(
-//			@Param("entitat") EntitatEntity entitat,
-//			@Param("esBustiesTotes") boolean esBustiesTotes,
-//			@Param("bustiesIds") List<Long> bustiesIds,
-//			@Param("esNullNumero") boolean esNullNumero,
-//			@Param("numero") String numero,
-//			@Param("esNullExtracte") boolean esNullExtracte,
-//			@Param("extracte") String extracte,
-//			@Param("esNumeroOrigen") boolean esNumeroOrigen,
-//			@Param("numeroOrigen") String numeroOrigen,
-//			@Param("esNullRemitent") boolean esNullRemitent,
-//			@Param("remitent") String remitent,
-//			@Param("esNullDataInici") boolean esNullDataInici,
-//			@Param("dataInici") Date dataInici,
-//			@Param("esNullDataFi") boolean esNullDataFi,
-//			@Param("dataFi") Date dataFi,
-//			@Param("esProcessat") boolean esProcessat,
-//			@Param("esPendent") boolean esPendent,
-//			@Param("esNullInteressat") boolean esNullInteressat,
-//			@Param("interessat") String interessat,
-//			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
-//			@Param("enviatPerEmail") Boolean enviatPerEmail,
-//			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
-//			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
-//			@Param("esNullBackCodi") boolean esNullBackCodi,
-//			@Param("backCodi") String backCodi,
-//			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
-//			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
-//			@Param("esNullReintentsPendents") boolean esNullReintentsPendents,
-//			@Param("reintentsPendents") Boolean reintentsPendents,
-//			@Param("maxReintents") int maxReintents, 
-//			@Param("nomesAmbErrors") boolean nomesAmbErrors,
-//			@Param("nomesAmbEsborranys") boolean nomesAmbEsborranys,
-//			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-//			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
-//			@Param("esNullSobreescriure") boolean esNullSobreescriure,
-//			@Param("sobreescriure") Boolean sobreescriure,
-//			Pageable pageable);
+	/** Consulta pel datatable del registre user */
+	@Query(	"select r " +
+			"from " +
+			"    RegistreEntity r " +
+			"		left outer join r.darrerMoviment.remitent as remitent "	+
+			"where " +
+			"    (r.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
+			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
+			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
+			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"and (:esNullDataFi = true or r.data < :dataFi) " +
+			"and (:esProcessat = false or r.pendent = false) " +
+			"and (:esPendent = false or r.pendent = true) " +
+			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
+			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
+			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
+			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
+			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat) " +
+			"and (:esNullReintentsPendents = true " +
+			"		or (:reintentsPendents = true and r.procesIntents < :maxReintents) " + 
+			"		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) " +
+			//"and (:ambIntentsPendents = true or r.procesIntents < :maxReintents) " +
+			"and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"and (:nomesAmbEsborranys = false or r.annexosEstatEsborrany > 0 ) " +
+			"and (:esNullInteressat = true " +
+			"		or (select count(interessat) " +
+			"			from r.interessats as interessat" +
+			"			where " +
+			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
+			"			) > 0 ) " + 
+			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " + 
+			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi)")
+	public Page<RegistreEntity> findRegistreByPareAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
+			@Param("bustiesIds") List<Long> bustiesIds,
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullExtracte") boolean esNullExtracte,
+			@Param("extracte") String extracte,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esProcessat") boolean esProcessat,
+			@Param("esPendent") boolean esPendent,
+			@Param("esNullInteressat") boolean esNullInteressat,
+			@Param("interessat") String interessat,
+			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
+			@Param("enviatPerEmail") Boolean enviatPerEmail,
+			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
+			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
+			@Param("esNullBackCodi") boolean esNullBackCodi,
+			@Param("backCodi") String backCodi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			@Param("esNullReintentsPendents") boolean esNullReintentsPendents,
+			@Param("reintentsPendents") Boolean reintentsPendents,
+			@Param("maxReintents") int maxReintents, 
+			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("nomesAmbEsborranys") boolean nomesAmbEsborranys,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa,
+			@Param("esNullSobreescriure") boolean esNullSobreescriure,
+			@Param("sobreescriure") Boolean sobreescriure,
+			@Param("esNullProcedimentCodi") boolean esNullProcedimentCodi, 
+			@Param("procedimentCodi") String procedimentCodi, 
+			Pageable pageable);
 	
 	
-//	/** Consulta dels identificadors de registre per a la selecció en registre user */
-//	@Query(	"select r.id " +
-//			"from " +
-//			"    RegistreEntity r " +
-//			"		left outer join r.darrerMoviment.remitent as remitent "	+
-//			"where " +
-//			"    (r.entitat = :entitat) " +
-//			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
-//			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
-//			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
-//			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
-//			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
-//			"and (:esNullDataInici = true or r.data >= :dataInici) " +
-//			"and (:esNullDataFi = true or r.data < :dataFi) " +
-//			"and (:esProcessat = false or r.pendent = false) " +
-//			"and (:esPendent = false or r.pendent = true) " +
-//			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
-//			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
-//			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
-//			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
-//			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
-//			"and (:nomesAmbErrors = false or r.procesError != null ) " +
-//			"and (:esNullInteressat = true " +
-//			"		or (select count(interessat) " +
-//			"			from r.interessats as interessat" +
-//			"			where " +
-//			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
-//			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
-//			"			) > 0 )") //el primer destí és l'origen
-//	public List<Long> findRegistreIdsByPareAndFiltre(
-//			@Param("entitat") EntitatEntity entitat,
-//			@Param("esBustiesTotes") boolean esBustiesTotes,
-//			@Param("bustiesIds") List<Long> bustiesIds,
-//			@Param("esNullNumero") boolean esNullNumero,
-//			@Param("numero") String numero,
-//			@Param("esNullExtracte") boolean esNullExtracte,
-//			@Param("extracte") String extracte,
-//			@Param("esNumeroOrigen") boolean esNumeroOrigen,
-//			@Param("numeroOrigen") String numeroOrigen,
-//			@Param("esNullRemitent") boolean esNullRemitent,
-//			@Param("remitent") String remitent,
-//			@Param("esNullDataInici") boolean esNullDataInici,
-//			@Param("dataInici") Date dataInici,
-//			@Param("esNullDataFi") boolean esNullDataFi,
-//			@Param("dataFi") Date dataFi,
-//			@Param("esProcessat") boolean esProcessat,
-//			@Param("esPendent") boolean esPendent,
-//			@Param("esNullInteressat") boolean esNullInteressat,
-//			@Param("interessat") String interessat,
-//			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
-//			@Param("enviatPerEmail") Boolean enviatPerEmail,
-//			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
-//			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
-//			@Param("esNullBackCodi") boolean esNullBackCodi,
-//			@Param("backCodi") String backCodi,
-//			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
-//			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
-//			@Param("nomesAmbErrors") boolean nomesAmbErrors,
-//			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
-//			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
+	/** Consulta dels identificadors de registre per a la selecció en registre user */
+	@Query(	"select r.id " +
+			"from " +
+			"    RegistreEntity r " +
+			"		left outer join r.darrerMoviment.remitent as remitent "	+
+			"where " +
+			"    (r.entitat = :entitat) " +
+			"and ((:esBustiesTotes = true) or (r.pare.id in (:bustiesIds))) " +
+			"and (:esNullNumero = true or lower(r.numero) like lower('%'||:numero||'%')) " +
+			"and (:esNullExtracte = true or lower(r.extracte) like lower('%'||:extracte||'%')) " +
+			"and (:esNumeroOrigen = true or lower(r.numeroOrigen) like lower('%'||:numeroOrigen||'%')) " +
+			"and (:esNullRemitent = true or lower(remitent.nom) like lower('%'||:remitent||'%')) " +
+			"and (:esNullDataInici = true or r.data >= :dataInici) " +
+			"and (:esNullDataFi = true or r.data < :dataFi) " +
+			"and (:esProcessat = false or r.pendent = false) " +
+			"and (:esPendent = false or r.pendent = true) " +
+			"and (:esNullEnviatPerEmail = true or r.enviatPerEmail = :enviatPerEmail) " +
+			"and (:esNullDocumentacioFisicaCodi = true or r.documentacioFisicaCodi = :documentacioFisicaCodi) " +
+			"and (:esNullBackCodi = true or lower(r.backCodi) like lower('%'||:backCodi||'%')) " +
+			"and (:esNullUnitatOrganitzativa = true or r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa)) " +
+			"and (:esNullProcesEstat = true or r.procesEstat = :procesEstat)" +
+			"and (:nomesAmbErrors = false or r.procesError != null ) " +
+			"and (:esNullInteressat = true " +
+			"		or (select count(interessat) " +
+			"			from r.interessats as interessat" +
+			"			where " +
+			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
+			"			) > 0 )") //el primer destí és l'origen
+	public List<Long> findRegistreIdsByPareAndFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esBustiesTotes") boolean esBustiesTotes,
+			@Param("bustiesIds") List<Long> bustiesIds,
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullExtracte") boolean esNullExtracte,
+			@Param("extracte") String extracte,
+			@Param("esNumeroOrigen") boolean esNumeroOrigen,
+			@Param("numeroOrigen") String numeroOrigen,
+			@Param("esNullRemitent") boolean esNullRemitent,
+			@Param("remitent") String remitent,
+			@Param("esNullDataInici") boolean esNullDataInici,
+			@Param("dataInici") Date dataInici,
+			@Param("esNullDataFi") boolean esNullDataFi,
+			@Param("dataFi") Date dataFi,
+			@Param("esProcessat") boolean esProcessat,
+			@Param("esPendent") boolean esPendent,
+			@Param("esNullInteressat") boolean esNullInteressat,
+			@Param("interessat") String interessat,
+			@Param("esNullEnviatPerEmail") boolean esNullEnviatPerEmail,
+			@Param("enviatPerEmail") Boolean enviatPerEmail,
+			@Param("esNullDocumentacioFisicaCodi") boolean esNullDocumentacioFisicaCodi,
+			@Param("documentacioFisicaCodi") String documentacioFisicaCodi,
+			@Param("esNullBackCodi") boolean esNullBackCodi,
+			@Param("backCodi") String backCodi,
+			@Param("esNullProcesEstat") boolean esNullProcesEstat, 
+			@Param("procesEstat") RegistreProcesEstatEnum procesEstat,
+			@Param("nomesAmbErrors") boolean nomesAmbErrors,
+			@Param("esNullUnitatOrganitzativa") boolean esNullUnitatOrganitzativa,
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatOrganitzativa);
 	
 	
 	/**

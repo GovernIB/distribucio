@@ -16,6 +16,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
+import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
 import es.caib.distribucio.core.api.service.MonitorTasquesService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -59,12 +60,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiGuardarAnotacionsPendents);
+                    	monitorTasquesService.updateDataInici(codiGuardarAnotacionsPendents);
+                    	monitorTasquesService.updateEstat(codiGuardarAnotacionsPendents, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiGuardarAnotacionsPendents, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.guardarAnotacionsPendentsEnArxiu();
-                        	monitorTasquesService.fi(codiGuardarAnotacionsPendents);
-                        } catch(Exception e) {
-                        	monitorTasquesService.error(codiGuardarAnotacionsPendents);
+                        	monitorTasquesService.updateDataFi(codiGuardarAnotacionsPendents);
+                        } catch(Exception e) {                        	
+                        	monitorTasquesService.updateEstat(codiGuardarAnotacionsPendents, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -83,7 +86,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
-        				monitorTasquesService.updateProperaExecucio(codiGuardarAnotacionsPendents, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiGuardarAnotacionsPendents, value);
 
                         return nextExecution;
                     }
@@ -100,12 +103,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiEnviarBackoffice);
+                    	monitorTasquesService.updateDataInici(codiEnviarBackoffice);
+                    	monitorTasquesService.updateEstat(codiEnviarBackoffice, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiEnviarBackoffice, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarIdsAnotacionsPendentsBackoffice();
-                        	monitorTasquesService.fi(codiEnviarBackoffice);
+                        	monitorTasquesService.updateDataFi(codiEnviarBackoffice);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarBackoffice);
+                        	monitorTasquesService.updateEstat(codiEnviarBackoffice, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -123,7 +128,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEnviarBackoffice, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiEnviarBackoffice, value);
                         
                         return nextExecution;
                     }
@@ -138,12 +143,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiAplicarReglesBackoffice);
+                    	monitorTasquesService.updateDataInici(codiAplicarReglesBackoffice);
+                    	monitorTasquesService.updateEstat(codiAplicarReglesBackoffice, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiAplicarReglesBackoffice, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.aplicarReglesPendentsBackoffice();
-                        	monitorTasquesService.fi(codiAplicarReglesBackoffice);
+                        	monitorTasquesService.updateDataFi(codiAplicarReglesBackoffice);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiAplicarReglesBackoffice);
+                        	monitorTasquesService.updateEstat(codiAplicarReglesBackoffice, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -160,7 +167,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, value);
                         
                         return nextExecution;
                     }
@@ -176,12 +183,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiTancarContenidors);
+                    	monitorTasquesService.updateDataInici(codiTancarContenidors);
+                    	monitorTasquesService.updateEstat(codiTancarContenidors, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiTancarContenidors, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.tancarContenidorsArxiuPendents();
-                        	monitorTasquesService.fi(codiTancarContenidors);
+                        	monitorTasquesService.updateDataFi(codiTancarContenidors);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiTancarContenidors);
+                        	monitorTasquesService.updateEstat(codiTancarContenidors, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -199,7 +208,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiTancarContenidors, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiTancarContenidors, value);
                         
                         
                         return nextExecution;
@@ -215,12 +224,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiEnviarEmailsNoAgrupats);
+                    	monitorTasquesService.updateDataInici(codiEnviarEmailsNoAgrupats);
+                    	monitorTasquesService.updateEstat(codiEnviarEmailsNoAgrupats, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiEnviarEmailsNoAgrupats, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarEmailsPendentsNoAgrupats();
-                        	monitorTasquesService.fi(codiEnviarEmailsNoAgrupats);
+                        	monitorTasquesService.updateDataFi(codiEnviarEmailsNoAgrupats);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarEmailsNoAgrupats);
+                        	monitorTasquesService.updateEstat(codiEnviarEmailsNoAgrupats, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -238,7 +249,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsNoAgrupats, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsNoAgrupats, value);
         				
         				
                         return nextExecution;
@@ -255,12 +266,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiEnviarEmailsAgrupats);
+                    	monitorTasquesService.updateDataInici(codiEnviarEmailsAgrupats);
+                    	monitorTasquesService.updateEstat(codiEnviarEmailsAgrupats, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiEnviarEmailsAgrupats, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarEmailsPendentsAgrupats();
-                        	monitorTasquesService.fi(codiEnviarEmailsAgrupats);
+                        	monitorTasquesService.updateDataFi(codiEnviarEmailsAgrupats);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarEmailsAgrupats);
+                        	monitorTasquesService.updateEstat(codiEnviarEmailsAgrupats, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -277,8 +290,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							value = "* * * * * *";
                     	
                     	CronTrigger trigger = new CronTrigger(value);
-                        Date nextExecution = trigger.nextExecutionTime(triggerContext);                        
-        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsAgrupats, nextExecution);
+
+                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+                        
+        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsAgrupats, longNextExecution);
+
         				
                         return nextExecution;
                     }
@@ -293,22 +310,37 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiCalularDadesHistoriques);
+                    	monitorTasquesService.updateDataInici(codiCalularDadesHistoriques);
+                    	monitorTasquesService.updateEstat(codiCalularDadesHistoriques, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiCalularDadesHistoriques, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.calcularDadesHistoriques();
-                        	monitorTasquesService.fi(codiCalularDadesHistoriques);
+                        	monitorTasquesService.updateDataFi(codiCalularDadesHistoriques);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiCalularDadesHistoriques);
+                        	monitorTasquesService.updateEstat(codiCalularDadesHistoriques, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
                 new Trigger() {
                     @Override
                     public Date nextExecutionTime(TriggerContext triggerContext) {
+                    	// Cada 1h a partir de les 20h:
+                    	//   0 0 20/1 * * *
+                    	// Cada 1h entre les 20h i les 6h
+                    	//    0 0 20-06 * * *
+                    	// Cada 1min entre les 11h i les 12h
+                    	// 0 0/1 11 * * *
+//                    	String value = "0 0 20-06 * * *"; 
                     	String value = "0 0 20 * * *";
                     	CronTrigger trigger = new CronTrigger(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiCalularDadesHistoriques, nextExecution);
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiCalularDadesHistoriques, longNextExecution);
+                        
+                        // Cada 60s
+                    	//Long value = new Long("60000");
+                    	//PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        //Date nextExecution = trigger.nextExecutionTime(triggerContext);
 
                         return nextExecution;
                     }
@@ -323,12 +355,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiEsborrarDadesAntigues);
+                    	monitorTasquesService.updateDataInici(codiEsborrarDadesAntigues);
+                    	monitorTasquesService.updateEstat(codiEsborrarDadesAntigues, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiEsborrarDadesAntigues, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.esborrarDadesAntigesMonitorIntegracio();
-                        	monitorTasquesService.fi(codiEsborrarDadesAntigues);
+                        	monitorTasquesService.updateDataFi(codiEsborrarDadesAntigues);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEsborrarDadesAntigues);
+                        	monitorTasquesService.updateEstat(codiEsborrarDadesAntigues, MonitorTascaEstatEnum.ERROR);
                         }
                     }
                 },
@@ -347,7 +381,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	}
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEsborrarDadesAntigues, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiEsborrarDadesAntigues, value);
         				
         				
                         return nextExecution;
@@ -364,11 +398,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
         		new Runnable() {
 					@Override
 					public void run() {
+                    	monitorTasquesService.updateDataInici(codiReintentarProcessament);
+                    	monitorTasquesService.updateEstat(codiReintentarProcessament, MonitorTascaEstatEnum.EN_EXECUCIO);
+                    	//monitorTasquesService.updateObservacions(codiReintentarProcessament, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.reintentarProcessamentBackoffice();
-                        	monitorTasquesService.fi(codiReintentarProcessament);
+                        	monitorTasquesService.updateDataFi(codiReintentarProcessament);
                         } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiReintentarProcessament);
+                        	monitorTasquesService.updateEstat(codiReintentarProcessament, MonitorTascaEstatEnum.ERROR);
                         }
 					}        			
         		}, 
@@ -386,7 +423,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						}
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiReintentarProcessament, nextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiReintentarProcessament, value);
 						
 						return nextExecution;
 					}        			
