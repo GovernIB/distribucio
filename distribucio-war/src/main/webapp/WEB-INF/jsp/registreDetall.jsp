@@ -224,6 +224,10 @@ li[id^="anotacio_"] {
 	        $('.processamentInfo').css('display', 'none');
 	        $(".datatable-dades-carregant").css("display", "block");
     	});
+    	
+    	$( "#btnProcessarAnnexos").click(function() {
+    		$('span', this).addClass('fa-spin');
+    	});
 
     	$( "a#accioReenviar" ).on( "click", function() {
 			var url = new URL(window.location);
@@ -538,7 +542,7 @@ li[id^="anotacio_"] {
 								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if>"><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:when>
 							<c:otherwise>
-								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id} disabled</c:if>"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if> disabled"><a><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:otherwise>
 						</c:choose>	
 					</c:if>
@@ -655,7 +659,11 @@ li[id^="anotacio_"] {
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td colspan="5">${registre.procedimentCodi}</td>
+					<td colspan="5">${registre.procedimentCodi}
+						<c:if test="${procedimentNom != null}">
+							- ${procedimentNom}
+						</c:if>				
+					</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
@@ -1304,7 +1312,7 @@ li[id^="anotacio_"] {
 							<span class="fa fa-exclamation-triangle"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
 							<c:if test="${isRolActualAdministrador}">
-								<a href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
+								<a id="btnProcessarAnnexos" href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
 							</c:if>
 						</div>
 					</c:if>

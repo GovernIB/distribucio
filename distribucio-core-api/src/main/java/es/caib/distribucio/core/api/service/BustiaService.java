@@ -230,6 +230,41 @@ public interface BustiaService {
 
 
 
+	/**
+	 * Crea l'anotació de registre.
+	 * 
+	 * @param entitatCodi
+	 *            El codi de l'entitat.
+	 * @param tipus
+	 *            El tipus d'anotació (ENTRADA o SORTIDA).
+	 * @param unitatAdministrativa
+	 *            La unitat administrativa destinatària.
+	 * @param anotacio
+	 *            Les dades de l'anotació de registre.
+	 * @return L'identificador de l'anotació de registre creada.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 *         Exception
+	 *         		Si es produeix alguna excepció creant l'anotació.
+	 */
+	@PreAuthorize("hasRole('DIS_BSTWS')")
+	public long registreAnotacioCrear(
+			String entitatCodi,
+			RegistreTipusEnum tipus,
+			String unitatAdministrativa,
+			RegistreAnotacio anotacio) throws Exception;
+	
+	/**
+	 * Processa immediatament l'anotació de registre aplicant la distribució, regles i desat
+	 * a l'arxiu o ho deixa amb l'estat adient pel seu tractament asíncron.
+	 * 
+	 * @param registreId
+	 *            Identificador de l'anotació de registre.
+	 * @return Excepció en cas de produir-se
+	 */
+	@PreAuthorize("hasRole('DIS_BSTWS')")
+	public Exception registreAnotacioProcessar(
+			Long registreId);
 
 
 	/**

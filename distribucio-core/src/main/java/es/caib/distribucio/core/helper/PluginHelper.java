@@ -15,13 +15,13 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.fundaciobit.plugins.certificate.InformacioCertificat;
 import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
 import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
 import org.fundaciobit.plugins.validatesignature.api.SignatureRequestedInformation;
 import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
-import org.fundaciobit.pluginsib.validatecertificate.InformacioCertificat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
@@ -960,6 +961,7 @@ public class PluginHelper {
 		}
 	}
 	
+	
 	public void gestioDocumentalGet(
 			String id,
 			String agrupacio,
@@ -1084,6 +1086,45 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
+	}
+	
+	
+	
+	public ProcedimentDto procedimentFindByCodiSia(String codiSia) {
+		
+		String accioDescripcio = "Consulta dels procediments pel codi SIA";
+		String usuariIntegracio = getProcedimentPlugin().getUsuariIntegracio();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiSia", codiSia);
+		long t0 = System.currentTimeMillis();
+		
+		try {
+			// codiDir3="A04003003" 		codiSia="874123"
+			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiSia);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return procediment;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PROCEDIMENT,
+							errorDescripcio,
+							ex);
+		}	
 	}
 
 
@@ -1244,7 +1285,7 @@ public class PluginHelper {
 		return plugin;
 	}
 	private ProcedimentPlugin getProcedimentPlugin() {
-		loadPluginProperties("ARXIU");
+		loadPluginProperties("PROCEDIMENTS");
 		String codiEntitat = getCodiEntitatActual();
 		ProcedimentPlugin plugin = procedimentPlugin.get(codiEntitat);
 		if (plugin == null) {

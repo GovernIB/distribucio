@@ -5,6 +5,7 @@ package es.caib.distribucio.plugin.procediment;
 
 import java.util.List;
 
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
@@ -25,5 +26,17 @@ public interface ProcedimentPlugin extends IntegracioPlugin {
 	 *            Si es produeix un error al consultar els procediments.
 	 */
 	public List<Procediment> findAmbCodiDir3(String codiDir3) throws SistemaExternException;
+	
+	
+	/**
+	 * Retorna el procediment associats a un codi SIA.
+	 * @param codiSia
+	 *            Codi SIA.
+	 * 
+	 * @return Procediment.
+	 * @throws SistemaExternException
+	 *            Si es produeix un error al consultar el procediment.
+	 */
+	public ProcedimentDto findAmbCodiSia(String codiSia) throws SistemaExternException;
 
 }

@@ -23,6 +23,7 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.MunicipiDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -228,7 +229,19 @@ public class CacheHelper {
 	}
 
 
+	@Cacheable(value = "procedimentFindByCodiSia", key="{#entitat, #codiSia}")
+	public ProcedimentDto procedimentFindByCodiSia(
+			long entitatId,
+			String codiSia) {
+		return pluginHelper.procedimentFindByCodiSia(codiSia);
+	}
+
+	@CacheEvict(value = "procedimentFindByCodiSia", allEntries = true)
+	public void evictProcedimentFindByCodiSia() {
+	}
+
 
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
+
 
 }

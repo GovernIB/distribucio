@@ -67,7 +67,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
@@ -207,6 +207,7 @@ public interface ReglaService {
 	 * @param procedimentCodi
 	 * @return
 	 */
-	@PreAuthorize("hasRole('DIS_REGLA')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_REGLA')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
+	
 }

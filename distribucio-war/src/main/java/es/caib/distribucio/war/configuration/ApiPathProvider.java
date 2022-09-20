@@ -17,22 +17,11 @@ public class ApiPathProvider extends SwaggerPathProvider {
 
 	@Override
 	protected String applicationPath() {
-//        return UriComponentsBuilder
-//        		.fromPath("/")
-//                .fromHttpUrl(basePath)
-//                .path(servletContext.getContextPath())
-//                .build()
-//                .toString();
 		return "/";
 	}
  
 	@Override
 	protected String getDocumentationPath() {
-//        return UriComponentsBuilder
-//                .fromHttpUrl(applicationPath())
-//                .pathSegment("api-docs/")
-//                .build()
-//                .toString();
 		return "/api-docs/";
 	}
 

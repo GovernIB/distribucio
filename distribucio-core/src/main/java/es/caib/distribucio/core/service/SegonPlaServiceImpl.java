@@ -162,7 +162,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		@Override
 		public void run() {
 			ConfigHelper.setEntitat(this.entitatActual);
-			registreHelper.processarAnotacioPendentArxiuInThreadExecuto(registreId);
+			registreHelper.processarAnotacioPendentArxiuInThreadExecutor(registreId);
 		}
 		
 	    @Override
@@ -214,8 +214,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 	}
 
-	@Override
-	
+	@Override	
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		
 		long startTime = new Date().getTime();

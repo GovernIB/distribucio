@@ -51,6 +51,9 @@ public interface ConfigService {
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
 	public void setEntitatPerPropietat(EntitatDto entitatDto);
 	
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	public String getTempsErrorsMonitorIntegracio() ;
+	
 
 }
 

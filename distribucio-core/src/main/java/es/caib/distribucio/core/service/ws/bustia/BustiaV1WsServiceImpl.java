@@ -131,31 +131,30 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			if (registreEntrada.getTipusES() != null && registreEntrada.getTipusES().equals("S")) {
 				registreTipus = RegistreTipusEnum.SORTIDA;
 			}
-			Exception exception = null;
 			
 			final Timer timerregistreAnotacioCrearIProcessar = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada.registreAnotacioCrearIProcessar"));
 			Timer.Context contextregistreAnotacioCrearIProcessar = timerregistreAnotacioCrearIProcessar.time();
+			long registreId;
 			synchronized(SemaphoreDto.getSemaphore()) {
-				exception = bustiaService.registreAnotacioCrearIProcessar(
+				// Crea l'anotació
+				registreId = bustiaService.registreAnotacioCrear(
 						entitatOArrel,
 						registreTipus,
 						unitatAdministrativa,
 						registreEntrada);
+				// Processa l'anotació
+				bustiaService.registreAnotacioProcessar(
+						registreId);
 			}
 			contextregistreAnotacioCrearIProcessar.stop();
 			
-			
-			if (exception == null) {
-				integracioHelper.addAccioOk(
-						IntegracioHelper.INTCODI_BUSTIAWS,
-						accioDescripcio,
-						usuariIntegracio,
-						accioParams,
-						IntegracioAccioTipusEnumDto.RECEPCIO,
-						System.currentTimeMillis() - t0);
-			} else {
-				throw exception;
-			}
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_BUSTIAWS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0);
 			
 		context.stop();	
 		} catch (Exception ex) {
@@ -394,16 +393,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	    return false;
 	}
 
-	private String getUsuariIntegracio() {
-//		String usuari;
-//		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
-//		if (usuariDto != null) {
-//			usuari = usuariDto.getCodi();
-//		} else {
-//			usuari = "-";
-//		}
-//		return usuari;
-		
+	private String getUsuariIntegracio() {		
 		String usuari = null;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {

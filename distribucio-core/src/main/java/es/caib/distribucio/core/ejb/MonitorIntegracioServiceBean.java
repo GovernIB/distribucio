@@ -59,8 +59,8 @@ public class MonitorIntegracioServiceBean implements MonitorIntegracioService {
 
 	@Override
 	@RolesAllowed({"DIS_SUPER"})
-	public Map<String, Integer> countErrors() {
-		return delegate.countErrors();
+	public Map<String, Integer> countErrors(int numeroHores) {
+		return delegate.countErrors(numeroHores);
 	}
 	
 	@Override

@@ -219,8 +219,11 @@ body {
 							</ul>
 						</li>
 					</ul>
+					<div class="clearfix"></div>	
+					  <div class="navbar-btn navbar-right">								
+						<div class="btn-group">					
 					<div class="clearfix"></div>									
-						<div class="btn-group pull-right">					
+						<div class="btn-group pull-right">			
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
@@ -282,6 +285,7 @@ body {
 								</c:when>
 							</c:choose>
 						</div>
+					  </div>
 
 						<%--c:if test="${isRolActualUsuari or isRolActualAdministrador}">
 							<div class="btn-group">

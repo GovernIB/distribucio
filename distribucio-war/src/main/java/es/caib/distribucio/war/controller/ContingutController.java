@@ -283,8 +283,7 @@ public class ContingutController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok", 
-					new Object[] {registreReenviat.getBackCodi()});
+					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
 					request,

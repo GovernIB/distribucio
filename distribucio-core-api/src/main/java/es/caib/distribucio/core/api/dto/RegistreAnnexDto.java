@@ -40,6 +40,7 @@ public class RegistreAnnexDto implements Serializable {
 	private boolean ambFirma;
 	private String firmaCsv;
 	private Long registreId;
+	private String gesdocDocumentId;
 	private boolean signaturaDetallsDescarregat;
 	
 	private Map<String, String> metaDadesMap;
@@ -69,6 +70,12 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	public void setRegistreId(Long registreId) {
 		this.registreId = registreId;
+	}
+	public String getGesdocDocumentId() {
+		return gesdocDocumentId;
+	}
+	public void setGesdocDocumentId(String gesdocDocumentId) {
+		this.gesdocDocumentId = gesdocDocumentId;
 	}
 	public Long getId() {
 		return id;

@@ -32,7 +32,7 @@ public class ProcedimentPluginRolsacTest {
 	private static final String ENDPOINT_ADDRESS = "https://proves.caib.es/rolsac/api/rest/v1/procedimientos";
 	private static final String USERNAME = "$distribucio_rolsac";
 	private static final String PASSWORD = "distribucio_rolsac";
-	private static final String CODI_DIR3 = "A04013512";
+	private static final String CODI_DIR3 = "A04026932";
 
 	private ProcedimentPlugin plugin;
 
@@ -74,7 +74,7 @@ public class ProcedimentPluginRolsacTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.password",
 				PASSWORD);
-		plugin = new ProcedimentPluginRolsac();
+		plugin = new ProcedimentPluginRolsac(PropertiesHelper.getProperties());
 	}
 
 	@Test

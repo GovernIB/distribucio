@@ -17,6 +17,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
+import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -409,6 +410,28 @@ public interface RegistreService {
 	public ValidacioFirmaEnum validarFirmes(
 			Long entitatId,
 			Long registreId,
+			Long annexId);
+	
+	
+	/**
+	 * Cerca el procediment pel seu codi SIA
+	 * 
+	 * @param codiDir3
+	 * @param codiSia
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	public ProcedimentDto procedimentFindByCodiSia(
+			long entitatId,
+			String codiSia);
+	
+	
+	/**
+	 * Cerca les dades (sense detall) de les firmes d'un annex. 
+	 *  
+	 *  @param registreId
+	 **/
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(
 			Long annexId);
 
 }

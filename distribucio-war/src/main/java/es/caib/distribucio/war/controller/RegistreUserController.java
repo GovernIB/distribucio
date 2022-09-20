@@ -44,6 +44,7 @@ import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -391,6 +392,30 @@ public class RegistreUserController extends BaseUserController {
 				List<ContingutDto> path = registreService.getPathContingut(entitatActual.getId(), destiLogic);
 				registre.setPath(path);
 			}
+			// Nom del procediment
+
+			String codiSia = registre.getProcedimentCodi();
+			if (codiSia != null) {
+				String procedimentNom = null;
+				// Descripció del procediment
+				try {
+					ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
+					if (procedimentDto != null) {
+						procedimentNom = procedimentDto.getNom();
+					} else {
+						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
+						MissatgesHelper.warning(request, errMsg);
+						procedimentNom = "(" + errMsg + ")";
+					}
+				}catch(Exception e) {
+					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
+					logger.error(errMsg, e);
+					MissatgesHelper.warning(request, errMsg);
+					procedimentNom = "(" + errMsg + ")";
+				}
+				model.addAttribute("procedimentNom", procedimentNom);
+			}
+
 			model.addAttribute("registre", registre);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
@@ -518,6 +543,7 @@ public class RegistreUserController extends BaseUserController {
 							isVistaMoviments));
 			model.addAttribute("registreId", registreId);
 			model.addAttribute("concsvBaseUrl", configService.getConcsvBaseUrl());
+			model.addAttribute("gestioDocumentalFirmes", registreService.getDadesAnnexFirmesSenseDetall(annexId)); // CANVIAR NOM
 		} catch(Exception ex) {
 			logger.error("Error recuperant informació de l'annex", ex);
 			model.addAttribute("missatgeError", ex.getMessage());
@@ -798,6 +824,7 @@ public class RegistreUserController extends BaseUserController {
 		if (isVistaMoviments) {
 			Set<Long> seleccio = new HashSet<Long>();
 //			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			@SuppressWarnings("unchecked")
 			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
@@ -1250,7 +1277,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			omplirModelPerReenviarMultiple(request, entitatActual, model);
+			omplirModelPerReenviarMultiple(request, entitatActual, model, isVistaMoviments);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			model.addAttribute(command);
 		} catch (Exception e) {
@@ -1328,8 +1355,7 @@ public class RegistreUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok", 
-					new Object[] {registreReenviat.getBackCodi()});
+					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -1352,8 +1378,7 @@ public class RegistreUserController extends BaseUserController {
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok", 
-								new Object[] {registreReenviat.getBackCodi()}));
+								"contingut.admin.controller.registre.reintentat.ok"));
 			} else {
 				MissatgesHelper.error(request,
 						getMessage(request,
@@ -1987,7 +2012,8 @@ public class RegistreUserController extends BaseUserController {
 	private void omplirModelPerReenviarMultiple(
 			HttpServletRequest request, 
 			EntitatDto entitatActual,
-			Model model) {
+			Model model, 
+			boolean isVistaMoviments) {
 
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
@@ -2019,11 +2045,31 @@ public class RegistreUserController extends BaseUserController {
 						true,
 						false,
 						true));
+		if (isVistaMoviments) {
+			Set<Long> seleccio = new HashSet<Long>();
+//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			@SuppressWarnings("unchecked")
+			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+				for (String idVistaMoviment: seleccioMoviments) {
+					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
+				}
+			}
+
+			model.addAttribute("registres", registreService.findMultiple(
+					entitatActual.getId(),
+					new ArrayList<Long>(seleccio),
+					false));
+
+		} else {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						entitatActual.getId(),
 						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
 						false));
+		}
 	}
 
 	private int getMaxLevelArbre() {

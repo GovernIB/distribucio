@@ -10,7 +10,6 @@ import java.util.List;
  * Enumeració amb els possibles valors de l'estat de processament
  * d'una anotació de registre:
  *   ARXIU_PENDENT: Pendent de guardar annexos a dins l'arxiu
- *   ARXIU_PENDENT_AMB_INTENTS_PENDENTS: Pendent de guardar annexos a dins l'arxiu amb intents pendents
  *   REGLA_PENDENT: Pendent d'aplicar regla
  *   BUSTIA_PENDENT: Pendent a bústia
  *   BUSTIA_PROCESSADA: Distribuït marcant com a processat

@@ -21,6 +21,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+			if (${nou != true}) {
+				$("#codi").attr('readonly', true);
+			}
 		});
 	</script>
 </head>

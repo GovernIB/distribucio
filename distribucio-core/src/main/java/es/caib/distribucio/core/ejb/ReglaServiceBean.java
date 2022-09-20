@@ -58,7 +58,7 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
@@ -183,5 +183,5 @@ public class ReglaServiceBean implements ReglaService {
 	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
 		return delegate.findReglaBackofficeByProcediment(procedimentCodi);
 	}
-
+	
 }

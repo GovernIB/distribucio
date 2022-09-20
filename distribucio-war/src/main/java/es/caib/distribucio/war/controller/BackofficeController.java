@@ -58,6 +58,7 @@ public class BackofficeController extends BaseAdminController {
 	public String getNew(
 			HttpServletRequest request,
 			Model model) {
+		model.addAttribute("nou", true);
 		return get(request, null, model);
 	}
 	

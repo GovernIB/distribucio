@@ -70,7 +70,9 @@ function esborrarEntrades() {
 				<a href="<c:url value="/integracio/${integracio.codi}"/>"><spring:message code="${integracio.nom}"/>
 				
 					<span id="integracioErrors_${integracio.codi}" 
-						class="badge small" style="background-color: #d9534f; display: ${integracio.numErrors > 0? 'inline' : 'none'}">
+						class="badge small" 
+						style="background-color: #d9534f; display: ${integracio.numErrors > 0? 'inline' : 'none'}"
+						title="${integracio.numErrors} errors a les darreres ${numeroHoresPropietat} hores">
 							${integracio.numErrors}
 					</span>
 				</a>

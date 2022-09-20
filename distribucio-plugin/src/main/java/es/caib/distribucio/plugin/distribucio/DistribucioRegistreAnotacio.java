@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class DistribucioRegistreAnotacio {
 
+	private long id;
 	private String arxiuUuid;
 	private Date arxiuDataActualitzacio;
 	private String entitatCodi;
@@ -21,10 +22,19 @@ public class DistribucioRegistreAnotacio {
 	private String numero;
 	private String extracte;
 	private String expedientArxiuUuid;
+	private String unitatOrganitzativaCodi;
 	
 	
 	private List<DistribucioRegistreAnnex> annexos = new ArrayList<DistribucioRegistreAnnex>();
 	
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getArxiuUuid() {
 		return arxiuUuid;
@@ -80,6 +90,14 @@ public class DistribucioRegistreAnotacio {
 
 	public void setExpedientArxiuUuid(String expedientArxiuUuid) {
 		this.expedientArxiuUuid = expedientArxiuUuid;
+	}
+
+	public String getUnitatOrganitzativaCodi() {
+		return unitatOrganitzativaCodi;
+	}
+
+	public void setUnitatOrganitzativaCodi(String unitatOrganitzativaCodi) {
+		this.unitatOrganitzativaCodi = unitatOrganitzativaCodi;
 	}
 
 	public List<DistribucioRegistreAnnex> getAnnexos() {

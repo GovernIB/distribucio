@@ -115,7 +115,8 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			"	and l.contingut.tipus = es.caib.distribucio.core.api.dto.ContingutTipusEnumDto.REGISTRE " +
 			" 	and r.numero like :anotacioNumero " +
 			" 	and l.tipus like 'BACK_%' " +
-			"order by l.createdDate desc "
+			"	and r.procesEstat =  es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_COMUNICADA " +
+			"order by r.procesData desc"
 			)
 	public List<RegistreEntity> findByNumeroAndComunidaBackoffice(
 			@Param("anotacioNumero") String anotacioNumero

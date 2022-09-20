@@ -33,10 +33,10 @@ public class FirmaSimplePluginPortafibTest {
 	//private static final String API_ENDPOINT_ADDRESS = "https://proves.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";	
 	private static final String API_USERNAME = "$distribucio_portafib";
 	private static final String API_PASSWORD = "distribucio_portafib";
-	//private static final String PERFIL = "FIRMAAPISIMPLE";
+	private static final String PERFIL = "FIRMAAPISIMPLE";
 	//private static final String PERFIL = "XADES_DETACHED"; //TF02
 	//private static final String PERFIL = "CADES_DETACHED"; //TF04
-	private static final String PERFIL = "CADES_ATTACHED"; //TF05
+	//private static final String PERFIL = "CADES_ATTACHED"; //TF05
 	//private static final String PERFIL = "PADES"; //TF06
 	//private static final String PERFIL = "FIRMAAPISIMPLE"; //TF02
 	// Nom del certificat emprat per @firma per firmar
@@ -83,13 +83,13 @@ public class FirmaSimplePluginPortafibTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.password",
 				API_PASSWORD);
-		System.setProperty(
+		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil",
 				PERFIL);
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.signatura.portafib.username",
 				USERNAME);
-		plugin = new FirmaSimplePluginPortafib();
+		plugin = new FirmaSimplePluginPortafib(PropertiesHelper.getProperties());
 	}
 
 	@Test
@@ -118,8 +118,9 @@ public class FirmaSimplePluginPortafibTest {
 			//Files.write(path, resposta.getContingut());
 
 		} catch(Exception e) {
-			fail("Error capturat: " + e.getClass() + ": " + e.getMessage());
+			System.err.println("Error executant el test: " + e.getClass() + " " + e.getMessage());
 			e.printStackTrace(System.err);
+			fail("Error capturat: " + e.getClass() + ": " + e.getMessage());
 		}
 	}
 

@@ -30,7 +30,7 @@ public class PropertiesHelper extends Properties {
 			String propertiesPath = System.getProperty(APPSERV_PROPS_PATH);
 			if (propertiesPath != null) {
 				instance.llegirSystem = false;
-//				logger.debug("Llegint les propietats de l'aplicació del path: " + propertiesPath);
+				//logger.debug("Llegint les propietats de l'aplicació del path: " + propertiesPath);
 				try {
 					if (propertiesPath.startsWith("classpath:")) {
 						instance.load(
@@ -45,6 +45,7 @@ public class PropertiesHelper extends Properties {
 						instance.load(fis);
 					}
 				} catch (Exception ex) {
+					ex.printStackTrace();
 //					logger.error("No s'han pogut llegir els properties", ex);
 				}
 			}

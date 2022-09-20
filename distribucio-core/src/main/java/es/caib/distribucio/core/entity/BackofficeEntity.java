@@ -131,7 +131,7 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	}
 
 	public void update(
-			String codi,
+			String codi, 
 			String nom,
 			String url,
 			String usuari,

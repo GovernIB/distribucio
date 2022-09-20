@@ -64,7 +64,7 @@ public interface MonitorIntegracioService {
 
 	/** Consulta el número d'errors per integració. */
 	@PreAuthorize("hasRole('DIS_SUPER')")
-	public Map<String, Integer> countErrors();
+	public Map<String, Integer> countErrors(int numeroHores);
 
 	/** Mètode per esborrar dades anteriors a una data passada per paràmetre */
 	public int esborrarDadesAntigues(Date data);
