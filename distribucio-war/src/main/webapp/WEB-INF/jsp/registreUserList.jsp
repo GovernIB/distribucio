@@ -105,12 +105,25 @@ function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
 
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+var tipusDocumentacioFisica = '${tipusDocumentacio}';
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
 	else
 		return item.text;
+}
+
+function formatSelectTipusDocumentacio(item) {
+	if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-archive text-danger'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-warning'></span> <span class='fa fa-archive text-warning'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-success'></span></span>");
+	}else {
+		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
+	}
 }
 
 $(document).ready(function() {
@@ -384,8 +397,17 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 			</div>
 		</div>
 		<div class="row">			
-			<div class="col-md-4">
-				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+			<div class="col-md-4">			
+				<dis:inputSelect 
+					name="tipusDocFisica" 
+					netejar="false" 
+					optionItems="${tipusDocumentacio}" 
+					optionValueAttribute="value" 
+					optionTextKeyAttribute="text" 
+					placeholderKey="bustia.list.filtre.tipusDocFisica" 
+					emptyOption="true" 
+					inline="true" 
+					optionTemplateFunction="formatSelectTipusDocumentacio"/>
 			</div>			
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">

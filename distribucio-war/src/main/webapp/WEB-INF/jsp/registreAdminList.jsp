@@ -62,6 +62,7 @@ div.extracteColumn {
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+var tipusDocumentacioFisica = '${tipusDocumentacio}';
 
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
@@ -69,6 +70,18 @@ function formatSelectBustia(item) {
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
 	else
 		return item.text;
+}
+
+function formatSelectTipusDocumentacio(item) {
+	if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-archive text-danger'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-warning'></span> <span class='fa fa-archive text-warning'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-success'></span></span>");
+	}else {
+		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
+	}
 }
 
 function formatSelectUnitat(item) {
@@ -82,10 +95,10 @@ function formatSelectUnitat(item) {
 	}
 }
 
-$(document).ready(function() {
+$(document).ready(function() {	
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
-
+	
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
 	});
@@ -320,7 +333,16 @@ $(document).ready(function() {
 			<div class="col-md-2">
 				<div class="row">
 					<div class="col-sm-9">
-						<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+						<dis:inputSelect 
+							name="tipusDocFisica" 
+							netejar="false" 
+							optionItems="${tipusDocumentacio}" 
+							optionValueAttribute="value" 
+							optionTextKeyAttribute="text" 
+							placeholderKey="bustia.list.filtre.tipusDocFisica" 
+							emptyOption="true" 
+							inline="true" 
+							optionTemplateFunction="formatSelectTipusDocumentacio"/>
 					</div>
 					<div class="col-sm-3" style="padding-left: 0;">
 						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>

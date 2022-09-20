@@ -47,6 +47,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
@@ -71,6 +72,7 @@ import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
+import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -114,6 +116,11 @@ public class RegistreUserController extends BaseUserController {
 //		###
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		model.addAttribute(filtreCommand);		
+		model.addAttribute(
+				"tipusDocumentacio",
+				EnumHelper.getOptionsForEnum(
+						RegistreTipusDocFisicaEnumDto.class,
+						"registre.tipus.doc.fisica.enum."));
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		if (bustiaPerDefecte != null)
