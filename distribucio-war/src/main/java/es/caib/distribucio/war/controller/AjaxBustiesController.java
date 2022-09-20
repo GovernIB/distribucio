@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 
@@ -41,7 +42,7 @@ public class AjaxBustiesController extends BaseAdminController{
 	
 	@RequestMapping(value = "/busties/{text}", method = RequestMethod.GET)
 	@ResponseBody
-	public List<BustiaDto> get(
+	public List<ContingutDto> get(
 			HttpServletRequest request, 
 			@PathVariable String text, 
 			Model model) {
@@ -52,7 +53,7 @@ public class AjaxBustiesController extends BaseAdminController{
 			e.printStackTrace();
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		List<BustiaDto> busties = bustiaService.findPerEntitatIFiltreInput(entitatActual.getId(), decodedToUTF8);
+		List<ContingutDto> busties = bustiaService.findPerEntitatIFiltreInput(entitatActual.getId(), decodedToUTF8);
 		
 		return busties;
 	}

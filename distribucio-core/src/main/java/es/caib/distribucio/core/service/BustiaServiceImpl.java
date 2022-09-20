@@ -42,6 +42,8 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -3270,17 +3272,18 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<BustiaDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
+	public List<ContingutDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
-		List<BustiaEntity> busties = new ArrayList<>();
-		List<BustiaDto> bustiesDto = new ArrayList<>();
+		List<ContingutEntity> busties = new ArrayList<>();
+		List<ContingutDto> bustiesDto = new ArrayList<>();
 		busties = bustiaRepository.findAmbEntitatAndFiltreInput(
-				//entitat.getId(), 
+				entitat.getId(), 
+				ContingutTipusEnumDto.BUSTIA, 
 				filtre == null || filtre.isEmpty(), 
 				filtre != null  ? filtre : "");		
 		
-		for (BustiaEntity bustia : busties) {
-			BustiaDto bustiaDto = conversioTipusHelper.convertir(bustia, BustiaDto.class);
+		for (ContingutEntity bustia : busties) {
+			ContingutDto bustiaDto = conversioTipusHelper.convertir(bustia, ContingutDto.class);
 			bustiesDto.add(bustiaDto);
 		}
 		

@@ -14,6 +14,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -498,7 +499,7 @@ public interface BustiaService {
 	 * @return Un llistat de bústies que coincideix amb el filtre.
 	 */
 	@PreAuthorize("hasRole('tothom')")	
-	public List<BustiaDto> findPerEntitatIFiltreInput(
+	public List<ContingutDto> findPerEntitatIFiltreInput(
 			Long entitatId, 
 			String filtre);
 

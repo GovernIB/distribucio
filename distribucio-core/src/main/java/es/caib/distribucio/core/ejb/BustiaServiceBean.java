@@ -18,6 +18,7 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -370,7 +371,7 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public List<BustiaDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
+	public List<ContingutDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
 		return delegate.findPerEntitatIFiltreInput(entitatId, filtre);
 	}
 	
