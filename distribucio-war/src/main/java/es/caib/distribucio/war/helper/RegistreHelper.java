@@ -39,11 +39,13 @@ public class RegistreHelper extends BaseController{
 		
 		FitxerDto fitxer = new FitxerDto();
 		String[] columnes = {	"numero",
+								"titol",
 								"data",
+								"data.presentacio",
 								"oficina",
 								"presencial",
-								"extracte",
-								"documentacio",
+								"documentacio.fisica",
+								"numero.annexes", 
 								"procediment",
 								"observacions",
 								"origenNum",
@@ -59,16 +61,20 @@ public class RegistreHelper extends BaseController{
 
 		List<String[]> files = new ArrayList<String[]>();
 		for (RegistreDto registre : registres) {
-			String[] fila = new String[15];
+			String[] fila = new String[17];
 			
 			fila[0] = registre.getNumero();
+			
+			fila[1] = registre.getExtracte();
 			
 			Date data = registre.getData();
 			DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 			String strData = dateFormat.format(data);
-			fila[1] = strData;
+			fila[2] = strData;
 			
-			fila[2] = registre.getOficinaDescripcio();
+			fila[3] = registre.getJustificant().getDataCaptura().toString(); //TODO: data presentació, revisar amb en Daniel
+			
+			fila[4] = registre.getOficinaDescripcio();
 			
 			String presencial = "";
 			if (registre.getPresencial()) {
@@ -76,17 +82,17 @@ public class RegistreHelper extends BaseController{
 			}else {
 				presencial = "no";
 			}
-			fila[3] = presencial;
+			fila[5] = presencial;
 			
-			fila[4] = registre.getExtracte();
+			fila[6] = registre.getDocumentacioFisicaDescripcio();
 			
-			fila[5] = registre.getDocumentacioFisicaDescripcio();
+			fila[7] = String.valueOf(registre.getAnnexos().size());
 			
-			fila[6] = registre.getProcedimentCodi();
+			fila[8] = registre.getProcedimentCodi();
 			
-			fila[7] = registre.getObservacions();
+			fila[9] = registre.getObservacions();
 			
-			fila[8] = registre.getNumeroOrigen();
+			fila[10] = registre.getNumeroOrigen();
 			
 			Date date = registre.getDataOrigen();
 			DateFormat dateFormat2 = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
@@ -96,9 +102,9 @@ public class RegistreHelper extends BaseController{
 			}else {
 				origenData = dateFormat2.format(date);
 			}
-			fila[9] = origenData;
+			fila[11] = origenData;
 			
-			fila[10] = registre.getOficinaOrigenCodi();
+			fila[12] = registre.getOficinaOrigenCodi();
 			
 			List<RegistreInteressat> llistatInteressats = registre.getInteressats();
 			String nomComplet = "";
@@ -109,25 +115,25 @@ public class RegistreHelper extends BaseController{
 					nomComplet += interessat.getRaoSocial() + "(" + interessat.getDocumentNum() + ") | ";
 				}
 			}
-			fila[11] = nomComplet;
+			fila[13] = nomComplet;
 			
 			String propietat = "registre.proces.estat.enum." + registre.getProcesEstat().toString();
 			String estatDescripcio = getMessage(
 					request, 
 					propietat,
 					null);
-			fila[12] = estatDescripcio;
+			fila[14] = estatDescripcio;
 			
 			String uo = "";
 			if (registre.getPath() != null && registre.getPath().size() > 1) {
 				uo = registre.getPath().get(registre.getPath().size()-2).getNom();
 			}
-			fila[13] = uo; 
+			fila[15] = uo; 
 			String bustia = "";
 			if (registre.getPath() != null && registre.getPath().size() > 0) {
 				bustia = registre.getPath().get(registre.getPath().size()-1).getNom();
 			}
-			fila[14] = bustia; 
+			fila[16] = bustia; 
 			
 			files.add(fila);
 		}

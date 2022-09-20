@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
@@ -40,6 +39,32 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("denominacio") String denominacio,	
 			@Param("esFiltreUnitatSuperiorBuit") boolean esFiltreUnitatSuperiorBuit,
 			@Param("codisUnitatsDecendants") List<String> codisUnitatsDecendants,
+			@Param("esNullEstat") boolean esNullEstat,
+			@Param("estat") String estat,
+			Pageable pageable);
+
+	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"    uo.codiDir3Entitat = :codiDir3Entitat " +
+			"and (:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:codi||'%')) " +
+			"and (:esNullFiltreDenominacio = true or lower(uo.denominacio) like lower('%'||:denominacio||'%')) " + 
+			"and (:esFiltreUnitatSuperiorBuit = true or " + 
+			"		(uo.codi in (:llista1) or uo.codi in (:llista2) or uo.codi in (:llista3) or uo.codi in (:llista4) or uo.codi in (:llista5)) )" +
+			"and (:esNullEstat = true or uo.estat = :estat) ")
+	Page<UnitatOrganitzativaEntity> findByFiltrePaginatAmbLlistes(
+			@Param("codiDir3Entitat") String codiDir3Entitat,
+			@Param("esNullFiltreCodi") boolean esNullFiltreCodi,
+			@Param("codi") String codi, 
+			@Param("esNullFiltreDenominacio") boolean esNullFiltreDenominacio,
+			@Param("denominacio") String denominacio,	
+			@Param("esFiltreUnitatSuperiorBuit") boolean esFiltreUnitatSuperiorBuit,
+			@Param("llista1") List<String> llista1,
+			@Param("llista2") List<String> llista2,
+			@Param("llista3") List<String> llista3,
+			@Param("llista4") List<String> llista4,
+			@Param("llista5") List<String> llista5,
 			@Param("esNullEstat") boolean esNullEstat,
 			@Param("estat") String estat,
 			Pageable pageable);

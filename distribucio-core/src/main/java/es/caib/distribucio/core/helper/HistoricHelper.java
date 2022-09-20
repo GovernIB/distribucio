@@ -524,6 +524,7 @@ public class HistoricHelper {
 	 * @param dataFi
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public HistoricDadesDto findDades(
 			Long entitatId, 
 			List<Long> unitatsIds, 
@@ -531,6 +532,25 @@ public class HistoricHelper {
 			List<HistoricDadesMostrarEnumDto> dadesMostrar,
 			Date dataInici, 
 			Date dataFi) {
+		// Es crean diferents llistes de 1000 com a màxim per evitar error a la consulta
+		List<Long> llistaUnitats1 = new ArrayList<>();
+		List<Long> llistaUnitats2 = new ArrayList<>();
+		List<Long> llistaUnitats3 = new ArrayList<>();
+		List<Long> llistaUnitats4 = new ArrayList<>();
+		List<Long> llistaUnitats5 = new ArrayList<>();
+		for(int i=0; i<unitatsIds.size(); i++) {
+			if (i>=0 && i<1000) {
+				llistaUnitats1.add(unitatsIds.get(i));
+			} else  if (i>=1000 && i<2000) {
+				llistaUnitats2.add(unitatsIds.get(i));
+			} else  if (i>=2000 && i<3000) {
+				llistaUnitats3.add(unitatsIds.get(i));
+			} else  if (i>=3000 && i<4000) {
+				llistaUnitats4.add(unitatsIds.get(i));
+			} else  if (i>=4000 && i<5000) {
+				llistaUnitats5.add(unitatsIds.get(i));
+			}
+		}
 		
 		HistoricDadesDto dades = new HistoricDadesDto();
 		boolean dadesEntitat = unitatsIds == null || unitatsIds.isEmpty();

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.IntegracioDto;
+import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -53,8 +54,8 @@ public class MonitorIntegracioServiceBean implements MonitorIntegracioService {
 
 	@Override
 	@RolesAllowed({"DIS_SUPER"})
-	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, String codiMonitor) {
-		return delegate.findPaginat(paginacioParams, codiMonitor);
+	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto) {
+		return delegate.findPaginat(paginacioParams, integracioFiltreDto);
 	}
 
 	@Override

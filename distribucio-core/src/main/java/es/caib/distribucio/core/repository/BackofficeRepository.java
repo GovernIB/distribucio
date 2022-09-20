@@ -19,7 +19,7 @@ public interface BackofficeRepository extends JpaRepository<BackofficeEntity, Lo
 			"    BackofficeEntity backoffice " +
 			"where " +
 			"    backoffice.entitat = :entitat " +
-			"and (:esNullFiltre = true or lower(backoffice.codi) like lower('%'||:filtre||'%') or lower(backoffice.nom) like lower('%'||:filtre||'%') or lower(backoffice.url) like lower('%'||:filtre||'%'))")
+			"and (:esNullFiltre = true or lower(backoffice.codi) like lower('%'||:filtre||'%') or lower(backoffice.nom) like lower('%'||:filtre||'%') or lower(backoffice.url) like lower('%'||:filtre||'%') or lower(backoffice.nom) like lower('%'||:filtre||'%') or lower(backoffice.tipus) like lower('%'||:filtre||'%'))")
 	Page<BackofficeEntity> findByEntitat(
 			@Param("entitat") EntitatEntity entitat, 
 			@Param("esNullFiltre") boolean esNullFiltre,

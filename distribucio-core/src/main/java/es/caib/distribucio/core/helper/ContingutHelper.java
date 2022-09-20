@@ -776,10 +776,62 @@ public class ContingutHelper {
 			List<? extends ContingutEntity> continguts,
 			boolean comprovarPermisos) {
 		long[] resposta = new long[continguts.size()];
+		// Es crean diferents llistes de 1000 com a màxim per evitar error a la consulta
+		List<? extends ContingutEntity> llistaContinguts1 = new ArrayList<>();
+		List<? extends ContingutEntity> llistaContinguts2 = new ArrayList<>();
+		List<? extends ContingutEntity> llistaContinguts3 = new ArrayList<>();
+		List<? extends ContingutEntity> llistaContinguts4 = new ArrayList<>();
+		List<? extends ContingutEntity> llistaContinguts5 = new ArrayList<>();
+		List<ContingutEntity> llista = new ArrayList<>();
+		for(int i=0; i<continguts.size(); i++) {
+			if (i>=0 && i<1000) {
+				llista.add(continguts.get(i));
+			} else  if (i>=1000 && i<2000) {
+				if (i == 1000) {
+					llistaContinguts1 = llista;
+					llista.clear();
+					llista.add(continguts.get(i));
+				}else {
+					llista.add(continguts.get(i));
+				}
+			} else  if (i>=2000 && i<3000) {
+				if (i == 2000) {
+					llistaContinguts2 = llista;
+					llista.clear();
+					llista.add(continguts.get(i));
+				}else {
+					llista.add(continguts.get(i));
+				}
+			} else  if (i>=3000 && i<4000) {
+				if (i == 3000) {
+					llistaContinguts3 = llista;
+					llista.clear();
+					llista.add(continguts.get(i));
+				}else {
+					llista.add(continguts.get(i));
+				}
+			} else  if (i>=4000 && i<5000) {
+				if (i == 4000) {
+					llistaContinguts4 = llista;
+					llista.clear();
+					llista.add(continguts.get(i));
+				}else {
+					llista.add(continguts.get(i));
+				}
+			}
+			if (i == 5000 && !llista.isEmpty()) {
+				llistaContinguts5 = llista;
+			}
+		}
 		if (!continguts.isEmpty()) {
-			List<Object[]> countFillsTotals = contingutRepository.countByPares(
+			List<Object[]> countFillsTotals = contingutRepository.countByParesAmbLlistes(
 					entitat,
-					continguts);
+					!llistaContinguts1.isEmpty() ? llistaContinguts1 : null,
+					!llistaContinguts2.isEmpty() ? llistaContinguts2 : llistaContinguts1,
+					!llistaContinguts3.isEmpty() ? llistaContinguts3 : llistaContinguts1,
+					!llistaContinguts4.isEmpty() ? llistaContinguts4 : llistaContinguts1,
+					!llistaContinguts5.isEmpty() ? llistaContinguts5 : llistaContinguts1
+					/*continguts*/);
 			List<Object[]> countNodesTotals = new ArrayList<Object[]>();
 			List<Object[]> countNodesByPares;
 			

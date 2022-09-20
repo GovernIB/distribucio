@@ -108,7 +108,14 @@
 
 		</form:form>
 
-		<table id="unitatsOrganitzatives" data-toggle="datatable" data-url="<c:url value="/unitatOrganitzativa/datatable"/>" data-filter="#unitatOrganitzativaFiltreCommand" data-default-order="1" data-default-dir="asc" data-botons-template="#botonsTemplate" class="table table-bordered table-striped">
+		<table id="unitatsOrganitzatives" 
+				data-toggle="datatable" 
+				data-url="<c:url value="/unitatOrganitzativa/datatable"/>" 
+				data-filter="#unitatOrganitzativaFiltreCommand" 
+				data-default-order="1" 
+				data-default-dir="asc" 
+				data-botons-template="#botonsTemplate" 
+				class="table table-bordered table-striped">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>	

@@ -39,7 +39,6 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -74,7 +73,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
-import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 import es.caib.distribucio.war.helper.RolHelper;
 
@@ -103,8 +101,6 @@ public class RegistreUserController extends BaseUserController {
 	private AplicacioService aplicacioService;	
 	@Autowired
 	private ConfigService configService;
-	@Autowired
-	private RegistreHelper registreHelper;
 
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -885,23 +881,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return response;
 	}
-
 	
-	
-	@RequestMapping(value = "/enviarIProcessarMultiple", method = RequestMethod.GET)
-	public String enviarIProcessarMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						false));
-		model.addAttribute(command);
-		return "registreUserEnviarIProcessar";
-	}
 	
 	/** Mètode per enviar i processar una anotació de registre. Petició Ajax des del les accions 
 	 * múltiples.
@@ -1299,6 +1279,48 @@ public class RegistreUserController extends BaseUserController {
 
 	}
 	
+	private void omplirModelPerReenviarMultiple(
+			HttpServletRequest request, 
+			EntitatDto entitatActual,
+			Model model) {
+
+		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
+				entitatActual.getId());
+		
+		boolean disableDeixarCopia = true;
+
+		
+		model.addAttribute(
+				"selectMultiple",
+				false);
+		
+		model.addAttribute(
+				"disableDeixarCopia",
+				disableDeixarCopia);
+		
+		model.addAttribute("maxLevel", getMaxLevelArbre());
+		
+		model.addAttribute(
+				"busties",
+				busties);
+		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
+		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
+		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
+		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+		model.addAttribute(
+				"arbreUnitatsOrganitzatives",
+				bustiaService.findArbreUnitatsOrganitzatives(
+						entitatActual.getId(),
+						true,
+						false,
+						true));
+		model.addAttribute("registres", 
+				registreService.findMultiple(
+						entitatActual.getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						false));
+	}
+	
 	@ResponseBody
 	@RequestMapping(value = "/registreReenviarAjax/{registreId}", method = RequestMethod.POST)
 	public AjaxFormResponse registreReenviarAjaxPost(
@@ -1437,20 +1459,6 @@ public class RegistreUserController extends BaseUserController {
 		}
 	}
 	
-	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
-	public String marcarPendentMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute("marcarPendentCommand", command);
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						getEntitatActualComprovantPermisUsuari(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						false));
-		return "registreUserMarcarPendent";
-	}
-	
 	@ResponseBody
 	@RequestMapping(value = "/marcarPendentAjax/{registreId}", method = RequestMethod.POST)
 	public AjaxFormResponse marcarPendentAjaxPost(
@@ -1536,22 +1544,6 @@ public class RegistreUserController extends BaseUserController {
 							new Object[] {re.getMessage()}));			
 			return "registreUserMarcarProcessat";
 		}
-	}
-	
-	
-	@RequestMapping(value = "/marcarProcessatMultiple", method = RequestMethod.GET)
-	public String marcarProcessatMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute("marcarProcessatCommand", command);
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						getEntitatActualComprovantPermisUsuari(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						false));
-		
-		return "registreUserMarcarProcessat";
 	}
 
 	@ResponseBody
@@ -1736,39 +1728,7 @@ public class RegistreUserController extends BaseUserController {
 				"redirect:/registreUser/registre/" + registreId,
 				"bustia.controller.pendent.contingut.classificat.ok");
 	}
-
-	@RequestMapping(value = "/classificarMultiple", method = RequestMethod.GET)
-	public String classificarMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		@SuppressWarnings("unchecked")
-		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO);
-		if (seleccio != null && !seleccio.isEmpty()) {
-			List<Long> seleccioList = new ArrayList<Long>();
-			seleccioList.addAll(seleccio);
-			boolean mateixPare = emplenarModelClassificarMultiple(
-					request,
-					seleccioList,
-					model);
-			if (mateixPare) {
-				RegistreClassificarCommand command = new RegistreClassificarCommand();
-				model.addAttribute(command);
-				return "registreClassificarMultiple";
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"bustia.controller.pendent.contingut.classificar.no.mateix.pare.error");
-			}
-		} else {
-			return getModalControllerReturnValueError(
-					request,
-					"redirect:../registreUser",
-					"bustia.controller.pendent.contingut.classificar.seleccio.buida");
-		}
-	}
+	
 
 	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
 	@ResponseBody
@@ -1915,33 +1875,6 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		return bustiaService.getUsuarisPerBustia(bustiaId);
 	}
-	
-	/** Mètode per exportar la selecció d'anotacions de registre en format CSV o ODT */
-	@RequestMapping(value="/exportar", method = RequestMethod.GET)
-	public String exportar(
-			HttpServletRequest request,
-			HttpServletResponse response, 
-			Model model, 
-			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
-		
-		List<RegistreDto> llistatRegistres = registreService.findMultiple(
-				getEntitatActual(request).getId(),
-				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
-				true);
-		try {
-			FitxerDto fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
-			writeFileToResponse(
-					fitxer.getNom(),
-					fitxer.getContingut(),
-					response);
-		} catch (Exception e) {
-			String errMsg = this.getMessage(request, "registre.user.accio.grup.exportar.error", new Object[] {e.getMessage()});
-			logger.error(errMsg, e);
-			MissatgesHelper.error(request, errMsg);
-			return "redirect:" + request.getHeader("referer");
-		}
-		return null;
-	}
 
 	
 	private void resetFiltreBustia(
@@ -2008,69 +1941,7 @@ public class RegistreUserController extends BaseUserController {
 	private boolean isPermesReservarAnotacions() {
 		return new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar"));
 	}
-	
-	private void omplirModelPerReenviarMultiple(
-			HttpServletRequest request, 
-			EntitatDto entitatActual,
-			Model model, 
-			boolean isVistaMoviments) {
 
-		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
-				entitatActual.getId());
-		
-		boolean disableDeixarCopia = true;
-
-		
-		model.addAttribute(
-				"selectMultiple",
-				false);
-		
-		model.addAttribute(
-				"disableDeixarCopia",
-				disableDeixarCopia);
-		
-		model.addAttribute("maxLevel", getMaxLevelArbre());
-		
-		model.addAttribute(
-				"busties",
-				busties);
-		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
-		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
-		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
-		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
-		model.addAttribute(
-				"arbreUnitatsOrganitzatives",
-				bustiaService.findArbreUnitatsOrganitzatives(
-						entitatActual.getId(),
-						true,
-						false,
-						true));
-		if (isVistaMoviments) {
-			Set<Long> seleccio = new HashSet<Long>();
-//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
-			@SuppressWarnings("unchecked")
-			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
-			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
-				for (String idVistaMoviment: seleccioMoviments) {
-					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
-				}
-			}
-
-			model.addAttribute("registres", registreService.findMultiple(
-					entitatActual.getId(),
-					new ArrayList<Long>(seleccio),
-					false));
-
-		} else {
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						false));
-		}
-	}
 
 	private int getMaxLevelArbre() {
 		String maxLevelStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.arbre.nivell");
@@ -2132,39 +2003,6 @@ public class RegistreUserController extends BaseUserController {
 						entitatActual.getId(),
 						registre.getPareId()));
 		return registre.getProcedimentCodi();
-	}
-
-	private boolean emplenarModelClassificarMultiple(
-			HttpServletRequest request,
-			List<Long> multipleRegistreIds,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		List<RegistreDto> registres = registreService.findMultiple(
-				entitatActual.getId(),
-				multipleRegistreIds,
-				false);
-		model.addAttribute("registres", registres);
-		boolean mateixPare = true;
-		Long bustiaIdActual = null;
-		if (!registres.isEmpty()) {
-			for (RegistreDto registre: registres) {
-				if (bustiaIdActual == null) {
-					bustiaIdActual = registre.getPareId();
-				}
-				if (!bustiaIdActual.equals(registre.getPareId())) {
-					mateixPare = false;
-					break;
-				}
-			}
-		}
-		if (mateixPare && bustiaIdActual != null) {
-			model.addAttribute(
-					"procediments",
-					registreService.classificarFindProcediments(
-							entitatActual.getId(),
-							bustiaIdActual));
-		}
-		return mateixPare;
 	}
 	
 	

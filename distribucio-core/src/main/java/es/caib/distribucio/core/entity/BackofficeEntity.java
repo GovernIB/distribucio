@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
@@ -44,6 +45,10 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	private Integer intents;
 	@Column(name = "temps_entre_intents")
 	private Integer tempsEntreIntents;
+	
+	@Column(name = "tipus")
+	@Enumerated(EnumType.STRING)
+	private BackofficeTipusEnumDto tipus;
 	
 	
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -78,15 +83,23 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	public EntitatEntity getEntitat() {
 	    return entitat;
 	}
+	public BackofficeTipusEnumDto getTipus() {
+		return tipus;
+	}
+	public void setTipus(BackofficeTipusEnumDto tipus) {
+		this.tipus = tipus;
+	}
 	public static Builder getBuilder(
 			String codi,
 			String nom,
 			String url,
+			BackofficeTipusEnumDto tipus,
 			EntitatEntity entitat) {
 		return new Builder(
 				codi,
 				nom,
 				url,
+				tipus,
 				entitat);
 	}
 	public static class Builder {
@@ -97,11 +110,13 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 				String codi,
 				String nom,
 				String url,
+				BackofficeTipusEnumDto tipus, 
 				EntitatEntity entitat) {
 			built = new BackofficeEntity();
 	        built.codi = codi;
 	        built.nom = nom;
 	        built.url = url;
+	        built.tipus = tipus;
 	        built.entitat = entitat;
 	    }
 
@@ -137,7 +152,8 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 			String usuari,
 			String contrasenya,
 			Integer intents,
-			Integer tempsEntreIntents) {
+			Integer tempsEntreIntents, 
+			BackofficeTipusEnumDto tipus) {
 		this.codi = codi;
 		this.nom = nom;
 		this.url = url;
@@ -145,6 +161,7 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 		this.contrasenya = contrasenya;
 		this.intents = intents;
 		this.tempsEntreIntents = tempsEntreIntents;
+		this.tipus = tipus;
 	}
 	
 	

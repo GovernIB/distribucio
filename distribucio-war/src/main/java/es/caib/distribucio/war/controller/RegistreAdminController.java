@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -35,7 +34,6 @@ import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
@@ -52,7 +50,6 @@ import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
-import es.caib.distribucio.war.command.MarcarProcessatCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
@@ -60,7 +57,6 @@ import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
-import es.caib.distribucio.war.helper.RegistreHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
 /**
@@ -85,8 +81,6 @@ public class RegistreAdminController extends BaseAdminController {
 	private ContingutService contingutService;
 	@Autowired
 	private BackofficeService backofficeService;
-	@Autowired
-	private RegistreHelper registreHelper;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -265,16 +259,20 @@ public class RegistreAdminController extends BaseAdminController {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
-			PaginaDto<ContingutDto> pagina = 
-				registreService.findRegistre(
-						entitatActual.getId(),
-						bustiesPermesesPerUsuari,
-						RegistreFiltreCommand.asDto(registreFiltreCommand),
-						paginacioParams, false);
+			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
+				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+			}
+			PaginaDto<ContingutDto> pagina = registreService.findRegistre(
+								entitatActual.getId(),
+								bustiesPermesesPerUsuari,
+								RegistreFiltreCommand.asDto(registreFiltreCommand),
+								paginacioParams,
+								false);
+			
 			// Posa les dades dels registres al model segons la consulta
-			if (!pagina.getContingut().isEmpty()) {
-				registre = pagina.getContingut().get(0);
-				ret = "redirect:/modal/registreUser/registre/" + registre.getId() + "?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
+			if (pagina != null && !pagina.getContingut().isEmpty()) {
+				registre = pagina.getContingut().get(0);///{registreId}/detall    /registre/{registreId}
+				ret = "redirect:/modal/registreAdmin/" + registre.getId() + "/detall?registreNumero=" + registreNumero + "&registreTotal=" + pagina.getElementsTotal() + "&ordreColumn=" + ordreColumn + "&ordreDir=" + ordreDir;
 			}
 		} catch (Exception e) {
 			String errMsg = getMessage(request, "contingut.navegacio.error") + ": " + e.getMessage();
@@ -754,20 +752,6 @@ public class RegistreAdminController extends BaseAdminController {
 		return isPendentArxiu;
 	}
 
-	@RequestMapping(value = "/marcarPendentMultiple", method = RequestMethod.GET)
-	public String marcarPendentMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		MarcarProcessatCommand command = new MarcarProcessatCommand();
-		model.addAttribute("marcarPendentCommand", command);
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						true));
-	return "registreUserMarcarPendent";
-	}
-
 
 	@RequestMapping(value = "/ajaxBustia/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody
@@ -820,34 +804,6 @@ public class RegistreAdminController extends BaseAdminController {
 		return bustiesFinals;
 	}	
 	
-	
-	/** Mètode per exportar la selecció d'anotacions de registre en format CSV o ODT */
-	@RequestMapping(value="/exportar", method = RequestMethod.GET)
-	public String exportar(
-			HttpServletRequest request,
-			HttpServletResponse response, 
-			Model model, 
-			@RequestParam String format) throws IllegalAccessException, NoSuchMethodException  {
-		
-		List<RegistreDto> llistatRegistres = registreService.findMultiple(
-				getEntitatActual(request).getId(),
-				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
-				true);
-		try {
-			FitxerDto fitxer = registreHelper.exportarAnotacions(request, response, llistatRegistres, format);
-			writeFileToResponse(
-					fitxer.getNom(),
-					fitxer.getContingut(),
-					response);
-		} catch (Exception e) {
-			String errMsg = this.getMessage(request, "registre.user.accio.grup.exportar.error", new Object[] {e.getMessage()});
-			logger.error(errMsg, e);
-			MissatgesHelper.error(request, errMsg);
-			return "redirect:" + request.getHeader("referer");
-		}
-		return null;
-	}
-	
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
 		RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
@@ -890,7 +846,8 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.validar.firmes.no.valides"));
 		}
 		return "redirect:" + request.getHeader("referer");
-	}
+	}	
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
 }

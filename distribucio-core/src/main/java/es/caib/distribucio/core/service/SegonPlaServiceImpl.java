@@ -32,6 +32,7 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.SemaphoreDto;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
+import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.core.api.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -77,6 +78,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private EntitatRepository entitatRepository;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;	
+	@Autowired
+	private ProcedimentService procedimentService;
 	
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -558,8 +561,15 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			}
 		}
 		
-		
-		
+	}
+	
+	
+	@Override
+	public void actualitzarProcediments() {
+		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+		for (EntitatEntity entitat : llistaEntitats) {
+			procedimentService.findAndUpdateProcediments(entitat.getId());
+		}			
 	}
 	
 	

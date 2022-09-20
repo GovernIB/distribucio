@@ -83,6 +83,7 @@ function formatSelectUnitat(item) {
 }
 
 $(document).ready(function() {
+	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 	$('#unitatId').on('change', function (e) {
@@ -223,6 +224,7 @@ $(document).ready(function() {
 				function(data) {
 					$("#seleccioCount").html(data);
 					$('#taulaDades').webutilDatatable('select-none');
+					$('#taulaDades').webutilDatatable('refresh');
 				}
 		);
 		return false;
@@ -350,15 +352,25 @@ $(document).ready(function() {
 		<div class="row">	
 			<div class="col-md-2"></div>
 			<div class="col-md-2"></div>
-			<div class="col-md-3"></div>
-			<div class="col-md-3">
+			<div class="col-md-3">			
+				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
+				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="procedimentCodi"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="registre.admin.list.filtre.procediment"
+					suggestValue="codiSia"
+					suggestText="codiNom" 
+					optionTemplateFunction="formatSelectUnitat" />
+			</div>
+			<div id="reintents" class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
 					</div>
-					<div class="col-md-2" style="padding-left: 0;">
-					</div>
-				</div>
+				</div>			
 			</div>
 			<div class="col-md-2">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -367,6 +379,7 @@ $(document).ready(function() {
 		</div>
 	</form:form>
 	
+	<c:set var="rol" value="admin"/>
 	<script id="botonsTemplate" type="text/x-jsrender">
 
 	
@@ -377,7 +390,7 @@ $(document).ready(function() {
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-				<ul class="dropdown-menu">
+				<ul class="dropdown-menu dropdown-left-medium">
 				  <c:if test="${isRolActualAdministrador}">
 					<li><a href="registreAdmin/reintentarProcessamentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></span>
@@ -388,16 +401,39 @@ $(document).ready(function() {
 					<li><a href="registreAdmin/marcarSobreescriureMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></span>
 					</a></li>
-					<li><a href="registreAdmin/marcarPendentMultiple" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+					<li><a href="registreComun/marcarPendentMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 						<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/> ...
 					</a></li>
 				  </c:if>	
-					<li><a href="registreAdmin/exportar?format=ods">
+					<li><a href="registreComun/exportar/${rol}?format=ods">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.ods"/>
 					</a></li>	
-					<li><a href="registreAdmin/exportar?format=csv">
+					<li><a href="registreComun/exportar/${rol}?format=csv">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
-					</a></li>			
+					</a></li>	
+
+					<li class="divider"></li>
+					<li class="divider"></li>
+
+						<li><a href="registreComun/classificarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.accio.classificar"/>
+						</a></li>
+						<li><a href="registreComun/registreReenviarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-send"></span> <spring:message code="bustia.pendent.accio.reenviar"/>
+						</a></li>
+						<li><a href="registreComun/marcarProcessatMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-check-circle-o"></span> <spring:message code="bustia.pendent.accio.marcar.processat"/>
+						</a></li>
+						<!--<li><a href="registreComun/marcarPendentMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/>
+						</a></li>-->
+						<li><a href="registreComun/enviarViaEmailMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-envelope"></span> <spring:message code="bustia.pendent.accio.enviarViaEmail"/>
+						</a></li>
+						<li><a href="registreComun/enviarIProcessarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-envelope"></span>+<span class="fa fa-check-circle-o"></span>
+							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
+						</a></li>		
 				</ul>
 			</div>
 		</div>
@@ -579,7 +615,7 @@ $(document).ready(function() {
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-							<ul class="dropdown-menu">
+							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
 								<li><a data-refresh-tancar="true" href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>

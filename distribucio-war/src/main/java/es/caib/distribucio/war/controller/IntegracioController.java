@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +17,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
+import es.caib.distribucio.war.command.IntegracioFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
@@ -70,6 +75,8 @@ public class IntegracioController extends BaseUserController {
 			@PathVariable String codi,
 			Model model) {
 		
+		IntegracioFiltreCommand filtreCommand = getFiltreCommand(request);
+				
 		String numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
 		if (numeroHoresPropietat == null) {
 			numeroHoresPropietat = "48";
@@ -83,16 +90,19 @@ public class IntegracioController extends BaseUserController {
 				"integracions",
 				integracions);
 		if (codi != null) {
+			filtreCommand.setCodi(codi);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
-					codi);
+					filtreCommand);
 		} else if (integracions.size() > 0) {
+			filtreCommand.setCodi(integracions.get(0).getCodi());
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
-					integracions.get(0).getCodi());
+					filtreCommand);
 		}
+		model.addAttribute(filtreCommand);
 		model.addAttribute(
 				"codiActual",
 				RequestSessionHelper.obtenirObjecteSessio(
@@ -101,8 +111,56 @@ public class IntegracioController extends BaseUserController {
 		
 		return "integracioList";
 	}
+	
+	@RequestMapping(value = "/{codi}", method = RequestMethod.POST)
+	public String getAmbCodiPost(
+			HttpServletRequest request, 
+			@PathVariable String codi,
+			@Valid IntegracioFiltreCommand integracioFiltreCommand, 
+			BindingResult bindingResult, 
+			@RequestParam(value = "accio", required = false) String accio, 
+			Model model) {
+		if ("netejar".equals(accio)) {
+			RequestSessionHelper.esborrarObjecteSessio(
+					request, 
+					SESSION_ATTRIBUTE_FILTRE);
+		} else {
+			if (!bindingResult.hasErrors()) {
+				RequestSessionHelper.actualitzarObjecteSessio(
+						request, 
+						SESSION_ATTRIBUTE_FILTRE, 
+						integracioFiltreCommand);
+				
+			}
+		}
+		return "redirect:/integracio/" + codi;
+	}
 
 	
+	private IntegracioFiltreCommand getFiltreCommand(
+			HttpServletRequest request) {
+		IntegracioFiltreCommand filtreCommand = new IntegracioFiltreCommand();
+		try {
+			filtreCommand = (IntegracioFiltreCommand) RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE);
+		}catch (Exception e) {
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
+		}
+		
+		if (filtreCommand == null) {
+			filtreCommand = new IntegracioFiltreCommand();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_FILTRE,
+					filtreCommand);
+		}
+		return filtreCommand;
+	}
+
 	/** Mètode per consultar les integracions i els errors.*/
 	@ResponseBody
 	@RequestMapping(value = "integracions", method = RequestMethod.GET)
@@ -133,13 +191,13 @@ public class IntegracioController extends BaseUserController {
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
-			HttpServletRequest request) {
-		String codi = (String)RequestSessionHelper.obtenirObjecteSessio(request,SESSION_ATTRIBUTE_FILTRE);
+			HttpServletRequest request) {		
+		IntegracioFiltreCommand filtreCommand = getFiltreCommand(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				monitorIntegracioService.findPaginat(
-						DatatablesHelper.getPaginacioDtoFromRequest(request),						
-						codi
+						DatatablesHelper.getPaginacioDtoFromRequest(request),	
+						IntegracioFiltreCommand.asDto(filtreCommand)
 				)				
 		);
 		return dtr;

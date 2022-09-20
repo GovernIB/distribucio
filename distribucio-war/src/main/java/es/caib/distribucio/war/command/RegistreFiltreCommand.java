@@ -59,6 +59,8 @@ public class RegistreFiltreCommand {
 
 	/** Per filtrar només les que tinguin annexos en estat esborrany. */
 	private boolean nomesAmbEsborranys;
+	
+	private String procedimentCodi;
 
 	public String getBackCodi() {
 		return backCodi;
@@ -204,6 +206,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setNomesAmbEsborranys(boolean nomesAmbEsborranys) {
 		this.nomesAmbEsborranys = nomesAmbEsborranys;
+	}
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 	
 }

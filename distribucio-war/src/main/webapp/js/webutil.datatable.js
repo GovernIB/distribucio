@@ -376,14 +376,27 @@
 					dataTableOptions['order'] = [[defaultOrder, defaultDir]];
 				}
 			}
+			var carregat = null;
 			$taula.on('processing.dt', function(e, settings_, processing) {
 				if (!$('tbody .datatable-dades-carregant', $taula).length) {
 					$('tbody', $taula).prepend('<tr class="datatable-dades-carregant"><td colspan="8"><div><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div></td></tr>');
 				}
 				if (processing) {
 					$('tbody .datatable-dades-carregant', $taula).show();
+					if (carregat != null) {
+						$('tbody .datatable-dades-carregant', $taula).css('position', 'absolute');
+					}
+					$('tbody', $taula).css('opacity', '0.5');
+					$('tbody', $taula).css('cursor', 'wait');
 				} else {
 					$('tbody .datatable-dades-carregant', $taula).hide();
+					if (carregat != null) {
+						$('tbody .datatable-dades-carregant', $taula).css('position', 'relative');
+					}else {
+						carregat = document.getElementsByClassName('selectable');
+					}
+					$('tbody', $taula).css('opacity', '1');
+					$('tbody', $taula).css('cursor', 'default');
 				}
 			});
 			if (plugin.settings.dragEnabled) {

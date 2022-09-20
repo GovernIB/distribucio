@@ -183,6 +183,16 @@ li[id^="anotacio_"] {
 	cursor: pointer;
 }
 
+.box-icon-spin {
+	display: none; 
+	position:fixed; 
+	top:50%; 
+	left: 50%; 
+	background-color:#fff; 
+	opacity: 1; 
+	z-index: 100
+}
+
 </style>
 <script type="text/javascript">
 	// <![CDATA[
@@ -277,6 +287,11 @@ li[id^="anotacio_"] {
 
     	//<c:if test="${registreTotal!=null}">
 	    	$('[name=btnAnterior],[name=btnSeguent]').click(function(){
+
+	    		$(".tab-header").css("opacity", "0.5");
+	    		$(".tab-content").css("opacity", "0.5");
+		        $(".box-icon-spin").css("display", "block");
+		        
 	    		try {
 	    			var registreNumero = $(this).data('registreNumero');
 	    			var registreTotal = ${registreTotal};
@@ -300,6 +315,7 @@ li[id^="anotacio_"] {
 	    		} catch(e) {
 	    			console.error("Error en la navegació de registre: " + e);
 	    		}
+
 	    		return false;
 	    	});
     	//</c:if>
@@ -472,9 +488,9 @@ li[id^="anotacio_"] {
 
 </head>
 <body>
-					
+		<div class="box-icon-spin"><span class="fa fa-circle-o-notch fa-spin btn" style="font-size: 5rem"></span></div>
+	<div class="tab-header">			
 	<dis:blocContenidorPath contingut="${registre}"/>
-	
 	<c:if test="${isContingutAdmin == null}">
 		<div class="dropdown" style="float: right;" id="dropAccions">
 			<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
@@ -618,7 +634,9 @@ li[id^="anotacio_"] {
 			</li>
 		</c:if>		
 		
-	</ul>
+	</ul>	
+	</div>
+	
 	<div class="tab-content">
 	
 	
@@ -1398,7 +1416,7 @@ li[id^="anotacio_"] {
 						</c:if>
 					</div>
 				</c:if>
-				<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents > 0)}">
+				<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null)}">
 					<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 			    </c:if>
 
@@ -1408,7 +1426,38 @@ li[id^="anotacio_"] {
 					<dl class="dl-horizontal">
 					
 						<dt><spring:message code="registre.detalls.camp.proces.estat"/></dt>
-						<dd>${registre.procesEstat}</dd>
+						<c:choose>
+							<c:when test="${registre.procesEstat == 'ARXIU_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'REGLA_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BUSTIA_PROCESSADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_PENDENT' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_PENDENT"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_COMUNICADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_REBUDA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_REBUDA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_PROCESSADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_REBUTJADA' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/></dd>
+							</c:when>
+							<c:when test="${registre.procesEstat == 'BACK_ERROR' }">
+								<dd><spring:message code="registre.proces.estat.enum.BACK_ERROR"/></dd>
+							</c:when>
+						</c:choose>
 						
 						<c:if test="${not empty registre.procesData}">
 							<dt><spring:message code="registre.detalls.camp.proces.data"/></dt>
@@ -1490,7 +1539,6 @@ li[id^="anotacio_"] {
 		</div>
 		
 		
-		
 	</div>
 	
 	<div id="modal-botons" class="well">
@@ -1499,12 +1547,13 @@ li[id^="anotacio_"] {
 							data-registre-numero="${registreNumero - 1}"
 							${registreNumero <= 1 ? "disabled='disabled'" : "" }>
 						&lt;&lt; <spring:message code="comuns.boto.previous"/></button>
-			<button name="btnNavegacio" class="btn btn-default pull-left" disabled="disabled"> ${registreNumero} / ${registreTotal}</button>
+			<button name="btnNavegacio" class="btn btn-default pull-left disable-events">
+				 ${registreNumero} / ${registreTotal}</button>
 			<button name="btnSeguent" class="btn btn-default pull-left" 
 							data-registre-numero="${registreNumero + 1}"
 							${registreNumero >= registreTotal ? "disabled='disabled'" : "" }>
 						<spring:message code="comuns.boto.next"/> &gt;&gt;</button>
-		</c:if>
+		</c:if>			
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>

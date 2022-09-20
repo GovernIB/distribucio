@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.entity.MonitorIntegracioEntity;
 
 /**
@@ -25,21 +26,36 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 
 	public List<MonitorIntegracioEntity> findByCodi(String codi);
 	
-	@Query(	"from " +
-			"    MonitorIntegracioEntity mon " +
-			"where " +
-			"lower(mon.codi) like lower(:codiMonitor) " +
-			"and (" +
-				":esNullFiltre = true " +			
-				" or (" +			
-					" lower(mon.codiUsuari) like lower('%'||:filtre||'%')" +		
-					" or lower(mon.descripcio) like lower('%'||:filtre||'%')" +
-					") " +
-			"	)")
+//	@Query(	"from " +
+//			"    MonitorIntegracioEntity mon " +
+//			"where " +
+//			"lower(mon.codi) like lower(:codiMonitor) " +
+//			"and (" +
+//				":esNullFiltre = true " +			
+//				" or (" +			
+//					" lower(mon.codiUsuari) like lower('%'||:filtre||'%')" +		
+//					" or lower(mon.descripcio) like lower('%'||:filtre||'%')" +
+//					") " +
+//			"	)")
+	@Query( "from " + 
+			"MonitorIntegracioEntity mon " + 
+			"where " + 
+			"lower(mon.codi) like lower(:codiMonitor) " + 
+			"and (:isDataNula = true or mon.data between :data and :dataFi) " + 
+			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " + 
+			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" + 
+			"and (:isNullEstat = true or mon.estat like :estat)")
 	Page<MonitorIntegracioEntity> findByFiltrePaginat(
-			@Param("esNullFiltre") boolean esNullFiltre,
-			@Param("filtre") String filtre,
-			@Param("codiMonitor") String codiMonitor,			
+			@Param("codiMonitor") String codiMonitor, 
+			@Param("isDataNula") boolean isDataNula, 
+			@Param("data") Date data, 
+			@Param("dataFi") Date dataFi, 
+			@Param("isNullDescripcio") boolean isNullDescripcio, 
+			@Param("descripcio") String descripcio, 
+			@Param("isNullUsuari") boolean isNullUsuari, 
+			@Param("usuari") String usuari, 
+			@Param("isNullEstat") boolean isNullEstat, 
+			@Param("estat") IntegracioAccioEstatEnumDto estat,
 			Pageable pageable);
 
 	@Query(	"select mon.codi, count(mon)" +
@@ -55,6 +71,13 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"where mon.data < :data ")
 	@Modifying
 	public void deleteDataBefore(@Param("data") Date data);
+	
+	/** Esborra les dades filtrant pel codi */
+	@Modifying
+	@Query("delete from MonitorIntegracioEntity mon " +
+			"where mon.codi = :codi")
+	public void deleteByCodiMonitor(
+			@Param("codi") String codi);
 
 	/** Consulta les dades antigues */
 	@Query(	"from MonitorIntegracioEntity mon " +

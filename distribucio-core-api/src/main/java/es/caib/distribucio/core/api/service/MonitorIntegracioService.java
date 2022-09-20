@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.core.api.dto.IntegracioDto;
+import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -60,7 +61,7 @@ public interface MonitorIntegracioService {
 	 * @return La pàgina d'items MonitorIntegracio.
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER')")
-	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, String codiMonitor);
+	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto);
 
 	/** Consulta el número d'errors per integració. */
 	@PreAuthorize("hasRole('DIS_SUPER')")

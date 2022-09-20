@@ -52,9 +52,10 @@
 		class="table table-striped table-bordered">
 		<thead>
 			<tr>
-				<th data-col-name="codi" data-orderable="false"><spring:message code="backoffice.list.columna.codi"/></th>
+				<th data-col-name="codi" data-orderable="true"><spring:message code="backoffice.list.columna.codi"/></th>
 				<th data-col-name="nom" data-orderable="false"><spring:message code="backoffice.list.columna.nom"/></th>
 				<th data-col-name="url" data-orderable="false"><spring:message code="backoffice.list.columna.url"/></th>
+				<th data-col-name="tipus" data-orderable="true"><spring:message code="backoffice.list.columna.tipus"/></th>
   				<c:if test="${isRolActualAdministrador}">
 					<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 						<script id="cellAccionsTemplate" type="text/x-jsrender">

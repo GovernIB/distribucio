@@ -448,6 +448,8 @@ public class RegistreServiceImpl implements RegistreService {
 					unitat,
 					filtre.getSobreescriure() == null,
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
+					filtre.getProcedimentCodi() == null, 
+					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
 
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -1803,6 +1805,10 @@ public class RegistreServiceImpl implements RegistreService {
 		FitxerDto zip = new FitxerDto();
 
 		RegistreEntity registre = registreRepository.findOne(registreId);
+		EntitatDto entitatDto = null;
+		if (rolActual == null) {
+			entitatDto = conversioTipusHelper.convertir(registre.getEntitat(), EntitatDto.class);
+		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);		
 		List<String> errors = new ArrayList<String>();	
@@ -1823,24 +1829,26 @@ public class RegistreServiceImpl implements RegistreService {
 					// Filtra documents tècnics si no s'és administrador
 					if (!"tothom".equalsIgnoreCase(rolActual)
 						|| annex.getSicresTipusDocument() == null 
-						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) 
+						|| rolActual.equals(null)) 
 					{
-						Runnable thread = 
-								new GetZipDocumentacioThread(
-								ConfigHelper.getEntitat(),
-								registreHelper,
-								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
-								registre.getNumero(),
-								annex.getId(),
-								annex.getTitol(),
-								annex.getFitxerNom(),
-								nomsArxius,
-								zos,
-								executor,
-								errors);
-						
-						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
-						executor.execute(wrappedRunnable);
+						if (!RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
+							Runnable thread = 
+									new GetZipDocumentacioThread(
+									rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
+									registreHelper,
+									registre.getJustificant() != null ? registre.getJustificant().getId() : null,
+									registre.getNumero(),
+									annex.getId(),
+									annex.getTitol(),
+									annex.getFitxerNom(),
+									nomsArxius,
+									zos,
+									executor,
+									errors);
+							
+							wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
+							executor.execute(wrappedRunnable);
+						}
 					}
 				}
 
@@ -2932,6 +2940,34 @@ public class RegistreServiceImpl implements RegistreService {
 			registresAnnexFirmesDto.add(registreAnnexFirmaDto);
 		}
 		return registresAnnexFirmesDto;
+	}
+
+	@Override
+	public String obtenirRegistreIdEncriptat(Long registreId) {
+
+		String clauSecreta = configHelper.getConfig(
+				"es.caib.distribucio.backoffice.integracio.clau");
+
+		String clau = null;
+		try {
+			clau = registreHelper.encriptar(String.valueOf(registreId), clauSecreta);
+		} catch (Exception e) {
+			logger.error("Error al encriptar l'id del registre: " + e.toString());
+		}
+		return clau;
+	}
+
+	@Override
+	public String obtenirRegistreIdDesencriptat(String clau) {
+		String clauSecreta = configHelper.getConfig(
+				"es.caib.distribucio.backoffice.integracio.clau");
+		try {
+			clau = registreHelper.desEncriptar(clau, clauSecreta);
+		} catch (Exception e) {
+			logger.error("Error al desencriptar l'id del registre: " + e.toString());
+			return null;
+		}
+		return clau;
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);

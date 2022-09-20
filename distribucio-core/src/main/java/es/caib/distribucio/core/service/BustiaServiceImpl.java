@@ -335,7 +335,6 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId){
 		return new ArrayList<>(this.getUsuarisPerBustia(bustiaId, true, true).values());
@@ -655,6 +654,25 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
 		List<String> codisUnitatsSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
+		// Es crean diferents llistes de 1000 com a màxim per evitar error a la consulta
+		List<String> llistaCodisUnitats1 = new ArrayList<>();
+		List<String> llistaCodisUnitats2 = new ArrayList<>();
+		List<String> llistaCodisUnitats3 = new ArrayList<>();
+		List<String> llistaCodisUnitats4 = new ArrayList<>();
+		List<String> llistaCodisUnitats5 = new ArrayList<>();
+		for(int i=0; i<codisUnitatsSuperiors.size(); i++) {
+			if (i>=0 && i<1000) {
+				llistaCodisUnitats1.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=1000 && i<2000) {
+				llistaCodisUnitats2.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=2000 && i<3000) {
+				llistaCodisUnitats3.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=3000 && i<4000) {
+				llistaCodisUnitats4.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=4000 && i<5000) {
+				llistaCodisUnitats5.add(codisUnitatsSuperiors.get(i));
+			}
+		}
 		if (codisUnitatsSuperiors.isEmpty())
 			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
 
@@ -667,6 +685,11 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getNom() != null ? filtre.getNom().trim() : "",
 						filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
 						codisUnitatsSuperiors,
+//						!llistaCodisUnitats1.isEmpty() ? llistaCodisUnitats1 : null,
+//						!llistaCodisUnitats2.isEmpty() ? llistaCodisUnitats2 : llistaCodisUnitats1,
+//						!llistaCodisUnitats3.isEmpty() ? llistaCodisUnitats3 : llistaCodisUnitats1,
+//						!llistaCodisUnitats4.isEmpty() ? llistaCodisUnitats4 : llistaCodisUnitats1,
+//						!llistaCodisUnitats5.isEmpty() ? llistaCodisUnitats5 : llistaCodisUnitats1,
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						filtre.getPerDefecte() != null && filtre.getPerDefecte(),
 						filtre.getActiva() != null && filtre.getActiva(),
@@ -760,17 +783,43 @@ public class BustiaServiceImpl implements BustiaService {
 		List<String> codisUnitatsSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
 		if (codisUnitatsSuperiors.isEmpty())
 			codisUnitatsSuperiors.add("-"); // per evitar error per llista buida
+		
+
+		// Es crean diferents llistes de 1000 com a màxim per evitar error a la consulta
+		List<String> llistaCodisUnitats1 = new ArrayList<>();
+		List<String> llistaCodisUnitats2 = new ArrayList<>();
+		List<String> llistaCodisUnitats3 = new ArrayList<>();
+		List<String> llistaCodisUnitats4 = new ArrayList<>();
+		List<String> llistaCodisUnitats5 = new ArrayList<>();
+		for(int i=0; i<codisUnitatsSuperiors.size(); i++) {
+			if (i>=0 && i<1000) {
+				llistaCodisUnitats1.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=1000 && i<2000) {
+				llistaCodisUnitats2.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=2000 && i<3000) {
+				llistaCodisUnitats3.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=3000 && i<4000) {
+				llistaCodisUnitats4.add(codisUnitatsSuperiors.get(i));
+			} else  if (i>=4000 && i<5000) {
+				llistaCodisUnitats5.add(codisUnitatsSuperiors.get(i));
+			}
+		}
 				
 		final Timer timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre"));
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
-		List<BustiaEntity> busties = bustiaRepository.findAmbEntitatAndFiltre(
+		List<BustiaEntity> busties = bustiaRepository.findAmbEntitatAndFiltreAmbLlistes(
 				entitat,
 				filtre.getUnitatIdFiltre() == null, 
 				unitat,
 				filtre.getNomFiltre() == null || filtre.getNomFiltre().isEmpty(), 
 				filtre.getNomFiltre() != null ? filtre.getNomFiltre().trim() : "",
 				filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
-				codisUnitatsSuperiors,
+				//codisUnitatsSuperiors,
+				!llistaCodisUnitats1.isEmpty() ? llistaCodisUnitats1 : null,
+				!llistaCodisUnitats2.isEmpty() ? llistaCodisUnitats2 : llistaCodisUnitats1,
+				!llistaCodisUnitats3.isEmpty() ? llistaCodisUnitats3 : llistaCodisUnitats1,
+				!llistaCodisUnitats4.isEmpty() ? llistaCodisUnitats4 : llistaCodisUnitats1,
+				!llistaCodisUnitats5.isEmpty() ? llistaCodisUnitats5 : llistaCodisUnitats1,
 				filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 				filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
 				filtre.getActiva() == null || filtre.getActiva() == false);
@@ -2293,6 +2342,15 @@ public class BustiaServiceImpl implements BustiaService {
 			DadesUsuari usuariActual, 
 			String motiu, 
 			String appBaseUrl) {
+		String idEncriptat = "";		
+
+		try {
+			String clauSecreta = configHelper.getConfig(
+					"es.caib.distribucio.backoffice.integracio.clau");
+			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()), clauSecreta);
+		} catch (Exception e) {
+		    logger.error("Error al encriptar l'identificador del registre: " + e.toString());
+		}
 		
 		StringBuilder html = new StringBuilder();
 		html.append("<!DOCTYPE html>")
@@ -2432,7 +2490,7 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.detalls.camp.fitxers")).append("</th>")
-					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/contingut/registre/" + registre.getId() + "/descarregarZip\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
+					.append("			    <td>").append("<a href=\"" + appBaseUrl + "/public/" + idEncriptat + "/descarregarZipPublic\"> " + messageHelper.getMessage("registre.detalls.descarregarJustificantAnnexos") + " </a>").append("</td>")
 					.append("			</tr>")
 					.append("		</table>")
 

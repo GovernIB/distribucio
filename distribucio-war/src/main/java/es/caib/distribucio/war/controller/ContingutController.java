@@ -267,7 +267,32 @@ public class ContingutController extends BaseUserController {
 		}
 		return null;
 	}
+	
+	/** Mètode públic per recuperar el contingut de tots els annexos i crea un ZIP per descarregar */
+	@RequestMapping(value = "/public/{key}/descarregarZipPublic", method = RequestMethod.GET)
+	public String descarregarZipDocumentacioPublic(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@PathVariable String key) throws IOException {
+		try {
+			String clau = registreService.obtenirRegistreIdDesencriptat(key);
+			Long registreId = Long.valueOf(clau);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null);
+			writeFileToResponse(
+					fitxer.getNom(),
+					fitxer.getContingut(),
+					response);
+		} catch (Exception ex) {
+			String errMsg = getMessage(
+					request, 
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
+			logger.error(errMsg, ex);
+		}
+		return null;
+	}
 
+	
 
 	@RequestMapping(value = "/contingut/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(

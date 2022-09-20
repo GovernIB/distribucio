@@ -137,6 +137,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	List<Object[]> countByParesAndNotRebutjat(
 			@Param("pares") List<? extends ContingutEntity> pares);
 
+	
+
 	RegistreEntity findByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndData(
 			String entitatCodi,
 			String llibreCodi,
@@ -347,5 +349,16 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"where ra.registre.id = :registreId")
 	public List<RegistreAnnexEntity> getDadesRegistreAnnex(
 			@Param("registreId") Long registreId);
+	
+	
+	/**
+	 * Consulta per retornar un llistat de registres filtrat pel seu
+	 * codi de backoffice (BACK_CODI) 
+	 **
+	 */
+	@Query("from RegistreEntity r " + 
+			"where r.backCodi = :backCodi")
+	public List<RegistreEntity> findRegistreBackCodi(
+			@Param("backCodi") String backCodi);
 	
 }

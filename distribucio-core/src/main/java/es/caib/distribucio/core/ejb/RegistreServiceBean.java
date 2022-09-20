@@ -171,7 +171,6 @@ public class RegistreServiceBean implements RegistreService {
 	}
 	
 	@Override
-	@RolesAllowed("tothom")
 	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception{
 		return delegate.getZipDocumentacio(registreId, rolActual);
 	}
@@ -376,6 +375,16 @@ public class RegistreServiceBean implements RegistreService {
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		return delegate.getDadesAnnexFirmesSenseDetall(annexId);
+	}
+
+	@Override
+	public String obtenirRegistreIdEncriptat(Long registreId) {
+		return delegate.obtenirRegistreIdEncriptat(registreId);
+	}
+
+	@Override
+	public String obtenirRegistreIdDesencriptat(String clau) {
+		return delegate.obtenirRegistreIdDesencriptat(clau);
 	}
 
 }

@@ -49,7 +49,7 @@ $(document).ready(function() {
 		<dis:inputText name="nif" textKey="usuari.form.camp.nif" disabled="true"/>
 		<dis:inputText name="email" textKey="usuari.form.camp.email" disabled="true"/>
 		<dis:inputText name="emailAlternatiu" textKey="usuari.form.camp.email.alternatiu" />
-		<dis:inputSelect name="rols" textKey="usuari.form.camp.rols" optionItems="${usuariCommand.rols}" disabled="true"/>
+		<dis:inputSelect name="rols" textKey="usuari.form.camp.rols" optionItems="${usuariCommand.rols}" multiple="true" disabled="true"/>
 		<dis:inputCheckbox name="rebreEmailsBustia" textKey="usuari.form.camp.rebre.emails.bustia"/>
 		<dis:inputCheckbox name="rebreEmailsAgrupats" textKey="usuari.form.camp.rebre.emails.agrupats"/>
 		<dis:inputSelect name="idioma" optionItems="${idiomaEnumOptions}" textKey="usuari.form.camp.idioma" optionValueAttribute="value" optionTextKeyAttribute="text" disabled="false"/>

@@ -326,7 +326,7 @@
 			<c:if test="${not empty concsvBaseUrl}">
 				<a class="btn btn-default btn-sm pull-right arxiu-download"
 					<c:choose>
-					    <c:when test="${annex.fitxerArxiuUuid != null}">
+					    <c:when test="${annex.fitxerArxiuUuid != null && annex.arxiuEstat != 'ESBORRANY'}">
 					    	href="<c:url value="/modal/contingut/registre/${registreId}/annex/${annex.id}/arxiu/DOCUMENT"/>" 
 						</c:when>    
 					    <c:otherwise>

@@ -510,7 +510,7 @@ $(document).ready(function() {
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-							<ul class="dropdown-menu">
+							<ul class="dropdown-menu dropdown-left-high">
 								<li>
 									<a id="detall-button"
 										href=".//registre/{{:id}}"

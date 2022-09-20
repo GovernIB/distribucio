@@ -35,6 +35,15 @@
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
+		<dis:inputSelect 
+				name="tipus" 
+				textKey="backoffice.form.camp.tipus" 
+				optionEnum="BackofficeTipusEnumDto" 
+				optionValueAttribute="id" 
+				optionTextAttribute="nom" 
+				placeholderKey="backoffice.form.camp.tipus"
+				required="true"
+				optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
 
