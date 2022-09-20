@@ -23,6 +23,9 @@ public class ReglaFiltreCommand {
 	private ReglaTipusEnumDto tipus;
 	private String codiSIA;
 	private Long backofficeId;
+	private String codiAssumpte;
+	private String bustia;
+	private boolean activa;
 	
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -60,6 +63,24 @@ public class ReglaFiltreCommand {
 	}
 	public void setBackofficeId(Long backofficeId) {
 		this.backofficeId = backofficeId;
+	}
+	public String getCodiAssumpte() {
+		return codiAssumpte;
+	}
+	public void setCodiAssumpte(String codiAssumpte) {
+		this.codiAssumpte = codiAssumpte;
+	}
+	public String getBustia() {
+		return bustia;
+	}
+	public void setBustia(String bustia) {
+		this.bustia = bustia;
+	}
+	public boolean isActiva() {
+		return activa;
+	}
+	public void setActiva(boolean activa) {
+		this.activa = activa;
 	}
 	public static ReglaFiltreCommand asCommand(ReglaFiltreDto dto) {
 		ReglaFiltreCommand command = ConversioTipusHelper.convertir(

@@ -53,7 +53,15 @@
 	
 	</style>
 	
-	<script type="text/javascript">
+	<script type="text/javascript">var bustiesInactives = [];
+
+	//Funció per donar format als items de la select de bústies segons si estan actives o no
+	function formatSelectBustia(item) {
+		if (bustiesInactives.includes(item.id))
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
+		else
+			return item.text;
+	}
 	
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
@@ -111,14 +119,31 @@
 		<div class="row">
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+			</div>		
+			<div class="col-md-3">
+				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
 			</div>			
 			<div class="col-md-3">
 				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
 			</div>
 			<div class="col-md-2">
+				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+			</div>	
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
+				<c:url value="/bustiaajax/busties" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="bustia" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="bustia.list.filtre.bustia"
+					suggestValue="id"
+					suggestText="nom" />
+			</div>
+			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
@@ -131,7 +156,7 @@
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect 
 					name="backofficeId" 
 					placeholderKey="bustia.list.filtre.backoffice" 
@@ -141,7 +166,18 @@
 					optionTextAttribute="nom" 
 					inline="true"
 					optionMinimumResultsForSearch="0"/>
+			</div>		
+			<div class="col-md-2">
+				<button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="regla.list.columna.activa"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+					<span class="fa-stack" aria-hidden="true">
+						<i class="fa fa-inbox fa-stack-1x"></i>
+    	    			<i class="fa fa-ban fa-stack-2x"></i>
+   					</span>
+				</button>
+				<dis:inputHidden name="activa"/>
 			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
