@@ -252,10 +252,11 @@ public class BustiaAdminController extends BaseAdminController {
 	 * 			Bústia orígen.
 	 * @return
 	 */
-	@RequestMapping(value = "/{bustiaId}/moureAnotacions", method = RequestMethod.GET)
+	@RequestMapping(value = "/{bustiaId}/moureAnotacions/{tipusVista}", method = RequestMethod.GET)
 	public String moureAnotacionsGet(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
+			@PathVariable String tipusVista,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		omplirModelPerMoureAnotacions(
@@ -265,6 +266,7 @@ public class BustiaAdminController extends BaseAdminController {
 		MoureAnotacionsCommand command = new MoureAnotacionsCommand();
 		command.setOrigenId(bustiaId);
 		model.addAttribute(command);
+		model.addAttribute("tipusVista", tipusVista);
 		return "bustiaAdminMoureAnotacions";
 	}
 	
@@ -277,10 +279,11 @@ public class BustiaAdminController extends BaseAdminController {
 	 * 			Bústia destí i comentaris.
 	 * @return
 	 */
-	@RequestMapping(value = "/{bustiaId}/moureAnotacions", method = RequestMethod.POST)
+	@RequestMapping(value = "/{bustiaId}/moureAnotacions/{tipusVista}", method = RequestMethod.POST)
 	public String moureAnotacionsPost(
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
+			@PathVariable String tipusVista, 
 			@Valid MoureAnotacionsCommand command,
 			BindingResult bindingResult,
 			Model model) {
@@ -319,9 +322,15 @@ public class BustiaAdminController extends BaseAdminController {
 					model);
 			return "bustiaAdminMoureAnotacions";	
 		}
+		String redirect = "";
+		if (tipusVista.equals("organigrama")) {
+			redirect = "redirect:/bustiaAdminOrganigrama";
+		}else {
+			redirect = "redirect:/bustiaAdmin";
+		}
 		return getModalControllerReturnValueSuccess(
 				request,
-				"redirect:/bustiaAdmin",
+				redirect,
 				"bustia.moure.anotacions.ok",
 				new Object[] {anotacionsMogudes});
 	}
