@@ -235,5 +235,16 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	List<BustiaEntity> findBustiesPerIdUnitatOrganitzativa(
 			@Param("isNullIdUnitatOrganitzativa") boolean isNullIdUnitatOrganitzativa, 
 			@Param("idUnitatOrganitzativa") Long idUnitatOrganitzativa);
+	
+	
+	@Query("from BustiaEntity b "
+			+ "where " 
+			//+ "b.entitat.id like :entitatId and "
+			+ ":isNullFiltre = true or lower(b.nom) like lower('%'||:filtre||'%') "
+			)
+	List<BustiaEntity> findAmbEntitatAndFiltreInput(
+			//@Param("entitatId") Long entitatId, 
+			@Param("isNullFiltre") boolean isNullFiltre, 
+			@Param("filtre") String filtre);
 
 }
