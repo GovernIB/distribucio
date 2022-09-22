@@ -99,6 +99,7 @@
 	
 	
 	$(document).ready(function() {
+		$("span#select2-activa-container span.select2-selection__clear").css("display", "none");
 		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 		$('#regles').on('dragupdate.dataTable', function (event, itemId, index) {
@@ -131,17 +132,16 @@
 			</div>	
 		</div>
 		<div class="row">
-			<div class="col-md-3">
-				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
-				<c:url value="/bustiaajax/busties" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="bustia" 
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="true" 
-					placeholderKey="bustia.list.filtre.bustia"
-					suggestValue="id"
-					suggestText="nom" />
+			<div class="col-md-3">					
+				<dis:inputSelect 
+					name="bustiaId" 
+					optionItems="${busties}" 
+					optionValueAttribute="id" 
+					optionTextAttribute="nom" 
+					emptyOption="true" 
+					placeholderKey="bustia.list.filtre.bustia" 
+					inline="true"
+					optionMinimumResultsForSearch="0" />  
 			</div>
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
@@ -168,13 +168,19 @@
 					optionMinimumResultsForSearch="0"/>
 			</div>		
 			<div class="col-md-2">
-				<button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="regla.list.columna.activa"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+				<dis:inputSelect 
+					name="activa" 
+					optionEnum="ReglaFiltreActivaEnumDto" 
+					emptyOption="false" 
+					placeholderKey="regla.list.columna.totes" 
+					inline="true"/>
+				<%-- <button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="regla.list.columna.activa"/>" class="btn btn-default btn-sm<c:if test="${reglaFiltreCommand.activa}"> active</c:if>" data-toggle="button">
 					<span class="fa-stack" aria-hidden="true">
 						<i class="fa fa-inbox fa-stack-1x"></i>
     	    			<i class="fa fa-ban fa-stack-2x"></i>
    					</span>
 				</button>
-				<dis:inputHidden name="activa"/>
+				<dis:inputHidden name="activa"/> --%> 
 			</div>
 		</div>
 		<div class="row">

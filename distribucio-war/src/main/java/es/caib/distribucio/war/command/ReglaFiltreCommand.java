@@ -5,6 +5,7 @@ package es.caib.distribucio.war.command;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
@@ -24,8 +25,9 @@ public class ReglaFiltreCommand {
 	private String codiSIA;
 	private Long backofficeId;
 	private String codiAssumpte;
-	private String bustia;
-	private boolean activa;
+	private Long bustiaId;
+//	private boolean activa = true;
+	private ReglaFiltreActivaEnumDto activa;
 	
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -70,18 +72,24 @@ public class ReglaFiltreCommand {
 	public void setCodiAssumpte(String codiAssumpte) {
 		this.codiAssumpte = codiAssumpte;
 	}
-	public String getBustia() {
-		return bustia;
+	public Long getBustiaId() {
+		return bustiaId;
 	}
-	public void setBustia(String bustia) {
-		this.bustia = bustia;
+	public void setBustiaId(Long bustiaId) {
+		this.bustiaId = bustiaId;
 	}
-	public boolean isActiva() {
+	public ReglaFiltreActivaEnumDto getActiva() {
 		return activa;
 	}
-	public void setActiva(boolean activa) {
+	public void setActiva(ReglaFiltreActivaEnumDto activa) {
 		this.activa = activa;
 	}
+//	public boolean isActiva() {
+//		return activa;
+//	}
+//	public void setActiva(boolean activa) {
+//		this.activa = activa;
+//	}
 	public static ReglaFiltreCommand asCommand(ReglaFiltreDto dto) {
 		ReglaFiltreCommand command = ConversioTipusHelper.convertir(
 				dto,
