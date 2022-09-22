@@ -367,11 +367,5 @@ public class BustiaServiceBean implements BustiaService {
 			String uoSuperior, Boolean rol, Boolean permis) {
 		return delegate.findBustiesUsuarisPerDadesObertes(usuari, id, uo, uoSuperior, rol, permis);
 	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<BustiaDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
-		return delegate.findPerEntitatIFiltreInput(entitatId, filtre);
-	}
 	
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -54,21 +53,32 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    r.entitat = :entitat " +
 			"and (:esNullFiltreUnitat = true or r.unitatOrganitzativaFiltre = :unitatOrganitzativaFiltre) " +
 			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
+			"and (:esNullCodiAssumpte = true or lower(r.assumpteCodiFiltre) like lower('%'||:codiAssumpte||'%')) " +
 			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " + 
-			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " + 			
-			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice)")
+			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " +
+			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
+			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice) " + 
+//			"and (r.activa = :isActiva) ") +
+			"and (:esNullActiva = true or r.activa = :activa)")
 	Page<ReglaEntity> findByFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
 			@Param("unitatOrganitzativaFiltre") UnitatOrganitzativaEntity unitatOrganitzativaFiltre, 
 			@Param("esNullFiltreNom") boolean esNullFiltreNom,
 			@Param("filtreNom") String filtreNom,
+			@Param("esNullCodiAssumpte") boolean esNullCodiAssumpte, 
+			@Param("codiAssumpte") String codiAssumpte, 
 			@Param("esNullFiltreCodiSIA") boolean esNullFiltreCodiSIA,
 			@Param("filtreCodiSIA") String filtreCodiSIA,
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
-			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,			
+			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,
+			@Param("esNullBustia") boolean esNullBustia, 
+			@Param("bustia") BustiaEntity bustia, 
 			@Param("esNullBackoffice") boolean esNullBackoffice,
 			@Param("backoffice") BackofficeEntity backoffice,
+//			@Param("isActiva") boolean isActiva,
+			@Param("esNullActiva") boolean esNullActiva, 
+			@Param("activa") boolean activa, 
 			Pageable pageable);
 	
 	

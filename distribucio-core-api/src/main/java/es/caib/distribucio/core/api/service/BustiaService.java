@@ -485,21 +485,5 @@ public interface BustiaService {
 			String usuari, Long id, 
 			String uo, String uoSuperior, 
 			Boolean rol, Boolean permis);
-	
-	
-	
-	/**
-	 * Llistat de les bústies segons el filtre de l'input.
-	 * 
-	 * @param entitatId
-	 *            Atribut id de l'entitat.
-	 * @param filtre
-	 * 			  Filtre afegit al inputSuggest.
-	 * @return Un llistat de bústies que coincideix amb el filtre.
-	 */
-	@PreAuthorize("hasRole('tothom')")	
-	public List<BustiaDto> findPerEntitatIFiltreInput(
-			Long entitatId, 
-			String filtre);
 
 }

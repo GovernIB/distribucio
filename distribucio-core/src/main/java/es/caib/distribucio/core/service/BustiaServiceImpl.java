@@ -78,7 +78,6 @@ import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
-import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
@@ -153,8 +152,6 @@ public class BustiaServiceImpl implements BustiaService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private MessageHelper messageHelper;
-	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
 
 	@Autowired
 	private RegistreService registreService;
@@ -3324,32 +3321,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		}
 		
 		return nomUnitatSuperior;
-	}
-	
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<BustiaDto> findPerEntitatIFiltreInput(Long entitatId, String filtre) {
-		EntitatEntity entitat = entitatRepository.findOne(entitatId);
-		List<BustiaEntity> busties = new ArrayList<>();
-		List<BustiaDto> bustiesDto = new ArrayList<>();
-		busties = bustiaRepository.findAmbEntitatAndFiltreInput(
-				//entitat.getId(), 
-				filtre == null || filtre.isEmpty(), 
-				filtre != null  ? filtre : "");		
-		
-		for (BustiaEntity bustia : busties) {
-			BustiaDto bustiaDto = conversioTipusHelper.convertir(bustia, BustiaDto.class);
-			bustiesDto.add(bustiaDto);
-		}
-		
-		return bustiesDto;
-		
-//		return conversioTipusHelper.convertirList(
-//				busties, 
-//				BustiaDto.class);
-	}
-	
+	}	
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

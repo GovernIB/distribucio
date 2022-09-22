@@ -21,6 +21,10 @@ public class ReglaFiltreDto implements Serializable {
 	private ReglaTipusEnumDto tipus;
 	private Long backofficeId;
 	private String codiSIA;
+	private String codiAssumpte;
+	private Long bustiaId;
+//	private boolean activa = true;
+	private ReglaFiltreActivaEnumDto activa;
 
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -59,6 +63,30 @@ public class ReglaFiltreDto implements Serializable {
 	public void setBackofficeId(Long backofficeId) {
 		this.backofficeId = backofficeId;
 	}
+	public String getCodiAssumpte() {
+		return codiAssumpte;
+	}
+	public void setCodiAssumpte(String codiAssumpte) {
+		this.codiAssumpte = codiAssumpte;
+	}
+	public Long getBustiaId() {
+		return bustiaId;
+	}
+	public void setBustiaId(Long bustiaId) {
+		this.bustiaId = bustiaId;
+	}
+	public ReglaFiltreActivaEnumDto getActiva() {
+		return activa;
+	}
+	public void setActiva(ReglaFiltreActivaEnumDto activa) {
+		this.activa = activa;
+	}
+	//	public boolean isActiva() {
+//		return activa;
+//	}
+//	public void setActiva(boolean activa) {
+//		this.activa = activa;
+//	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
