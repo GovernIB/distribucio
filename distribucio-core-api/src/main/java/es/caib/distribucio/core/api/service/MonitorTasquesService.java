@@ -27,13 +27,11 @@ public interface MonitorTasquesService {
 
 	public void updateObservacions(String codi, MonitorTascaEstatEnum estat);
 
-	public void inici(String codi);
+	public void updateDataInici(String codi);
 
-	public void fi(String codi);
+	public void updateDataFi(String codi);
 
-	public void error(String codi);
-
-	public void updateProperaExecucio(String codi, Date dataProperaExecucio);
+	public void updateProperaExecucio(String codi, long plusValue);
 
 	public List<MonitorTascaInfo> findAll();
 

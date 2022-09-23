@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
@@ -100,10 +101,17 @@ public class RegistreAdminController extends BaseAdminController {
 						RegistreTipusDocFisicaEnumDto.class,
 						"registre.tipus.doc.fisica.enum."));
 		model.addAttribute(filtreCommand);
-		model.addAttribute(
-				"backoffices",
-				backofficeService.findByEntitat(
-						entitatActual.getId()));
+		List<BackofficeDto> backoffices = backofficeService.findByEntitat(
+				entitatActual.getId());
+		BackofficeDto backNull = new BackofficeDto();
+		backNull.setNom("Sense backoffice");
+		backNull.setCodi("senseBackoffice");
+		backoffices.add(backNull);
+//		model.addAttribute(
+//				"backoffices",
+//				backofficeService.findByEntitat(
+//						entitatActual.getId()));
+		model.addAttribute("backoffices", backoffices);
 
 		return "registreAdminList";
 	}

@@ -301,7 +301,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<ContingutDto> findRegistre(
@@ -384,6 +383,11 @@ public class RegistreServiceImpl implements RegistreService {
 		if (filtre.getReintents() != null) {
 			maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 		}
+		boolean senseBackoffice = false;
+		if (filtre.getBackCodi() != null && 
+			filtre.getBackCodi().equals("senseBackoffice")) {
+			senseBackoffice = true;
+		}
 
 		logger.trace("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
@@ -409,9 +413,7 @@ public class RegistreServiceImpl implements RegistreService {
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
 		try {
-			
-			pagina = (Page<RegistreEntity>) this.findRegistresFiltrats(
-					false, // per retornar una pàgina
+			pagina = registreRepository.findRegistreByPareAndFiltre(
 					entitat,
 					totesLesbusties,
 					busties,
@@ -436,6 +438,7 @@ public class RegistreServiceImpl implements RegistreService {
 					tipusFisicaCodi == null,
 					tipusFisicaCodi,
 					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
+					senseBackoffice, 
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
 					filtre.getEstat() == null,
 					filtre.getEstat(),
@@ -450,8 +453,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
-					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
-
+					paginacioHelper.toSpringDataPageable(paginacioParams,
+							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
 			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");

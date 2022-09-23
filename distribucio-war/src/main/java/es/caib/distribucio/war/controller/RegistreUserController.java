@@ -1264,7 +1264,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			omplirModelPerReenviarMultiple(request, entitatActual, model, isVistaMoviments);
+			omplirModelPerReenviarMultiple(request, entitatActual, model);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			model.addAttribute(command);
 		} catch (Exception e) {
@@ -1384,7 +1384,8 @@ public class RegistreUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok");
+					"contingut.admin.controller.registre.reintentat.ok", 
+					new Object[] {registreReenviat.getBackCodi()});
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -1407,7 +1408,8 @@ public class RegistreUserController extends BaseUserController {
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok"));
+								"contingut.admin.controller.registre.reintentat.ok", 
+								new Object[] {registreReenviat.getBackCodi()}));
 			} else {
 				MissatgesHelper.error(request,
 						getMessage(request,
@@ -1948,7 +1950,6 @@ public class RegistreUserController extends BaseUserController {
 	private boolean isPermesReservarAnotacions() {
 		return new Boolean(aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar"));
 	}
-
 
 	private int getMaxLevelArbre() {
 		String maxLevelStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.arbre.nivell");
