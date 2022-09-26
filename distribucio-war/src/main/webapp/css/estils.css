@@ -120,7 +120,7 @@ table.dataTable tr.datatable-dades-carregant {
 }
 table.dataTable tr.datatable-dades-carregant {
 	color: black;
-	margin-top: 10rem;
+	margin-top: 0rem;
 }
 .ocult {
 	display: none;

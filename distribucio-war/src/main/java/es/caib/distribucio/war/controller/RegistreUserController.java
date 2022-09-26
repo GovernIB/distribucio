@@ -1377,8 +1377,7 @@ public class RegistreUserController extends BaseUserController {
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok", 
-					new Object[] {registreReenviat.getBackCodi()});
+					"contingut.admin.controller.registre.reintentat.ok");
 		} else {
 			MissatgesHelper.error(
 					request,
@@ -1401,7 +1400,7 @@ public class RegistreUserController extends BaseUserController {
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok", 
+								"contingut.admin.controller.registre.backoffice.reintentat.ok", 
 								new Object[] {registreReenviat.getBackCodi()}));
 			} else {
 				MissatgesHelper.error(request,

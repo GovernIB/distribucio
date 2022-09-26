@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
@@ -166,7 +165,10 @@ public class IntegracioController extends BaseUserController {
 	@RequestMapping(value = "integracions", method = RequestMethod.GET)
 	public List<IntegracioDto> getIntegracionsIErrors(String numeroHoresPropietat) {
 		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
-		int numeroHores = Integer.parseInt(numeroHoresPropietat);
+		if (numeroHoresPropietat == null) {
+			numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
+		}
+		int numeroHores = Integer.parseInt(numeroHoresPropietat != null ? numeroHoresPropietat : "48");
 		
 		// Consulta el número d'errors per codi d'integracio
 		Map<String, Integer> errors = monitorIntegracioService.countErrors(numeroHores);
@@ -229,7 +231,7 @@ public class IntegracioController extends BaseUserController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/{codi}/esborrar", method = RequestMethod.GET)
-	public int esborrar(
+	public String esborrar(
 			HttpServletRequest request,
 			@PathVariable String codi,
 			Model model) {
@@ -251,7 +253,7 @@ public class IntegracioController extends BaseUserController {
 			MissatgesHelper.error(request, errMsg);
 		}
 		
-		return n;
+		return "redirect:/integracio/" + codi;
 	}
 
 	@InitBinder

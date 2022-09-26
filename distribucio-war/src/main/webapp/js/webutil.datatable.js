@@ -387,6 +387,9 @@
 						$('tbody .datatable-dades-carregant', $taula).css('position', 'absolute');
 					}
 					$('tbody', $taula).css('opacity', '0.5');
+					$('#link-comentaris').css('pointer-events', 'none');
+					$('#btn-accions').css('pointer-events', 'none');
+					$('#taulaDades').css('pointer-events', 'none');
 					$('tbody', $taula).css('cursor', 'wait');
 				} else {
 					$('tbody .datatable-dades-carregant', $taula).hide();
@@ -397,6 +400,9 @@
 					}
 					$('tbody', $taula).css('opacity', '1');
 					$('tbody', $taula).css('cursor', 'default');
+					$('#link-comentaris').css('pointer-events', 'auto');
+					$('#btn-accions').css('pointer-events', 'auto');
+					$('#taulaDades').css('pointer-events', 'auto');
 				}
 			});
 			if (plugin.settings.dragEnabled) {

@@ -365,12 +365,8 @@ $(document).ready(function() {
 					suggestText="codiNom" 
 					optionTemplateFunction="formatSelectUnitat" />
 			</div>
-			<div id="reintents" class="col-md-3">
-				<div class="row">
-					<div class="col-md-10">
-						<dis:inputSelect name="reintents" netejar="false" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
-					</div>
-				</div>			
+			<div class="col-md-3">
+				<dis:inputSelect id="reintents" name="reintents" netejar="true" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>		
 			</div>
 			<div class="col-md-2">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -604,7 +600,7 @@ $(document).ready(function() {
 				</th>				
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
@@ -614,7 +610,7 @@ $(document).ready(function() {
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 

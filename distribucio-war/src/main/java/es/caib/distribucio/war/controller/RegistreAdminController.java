@@ -436,12 +436,13 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
 		boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 				registreId);
 		if (processatOk) {
 			MissatgesHelper.success(request,
 					getMessage(request,
-							"contingut.admin.controller.registre.reintentat.ok"));
+							"contingut.admin.controller.registre.backoffice.reintentat.ok", new Object[] {registreDto.getBackCodi()}));
 		} else {
 			MissatgesHelper.error(request,
 					getMessage(request,

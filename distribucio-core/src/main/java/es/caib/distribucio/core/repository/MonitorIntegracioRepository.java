@@ -24,7 +24,12 @@ import es.caib.distribucio.core.entity.MonitorIntegracioEntity;
  */
 public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegracioEntity, Long> {
 
-	public List<MonitorIntegracioEntity> findByCodi(String codi);
+	@Query( "from " + 
+			"	MonitorIntegracioEntity mon " +  
+			"where " + 
+			"lower(mon.codi) like lower(:codi)")
+	public List<MonitorIntegracioEntity> findByCodi(
+			@Param("codi") String codi);
 	
 //	@Query(	"from " +
 //			"    MonitorIntegracioEntity mon " +

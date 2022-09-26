@@ -72,7 +72,7 @@ function refrescarInformacio() {
 function esborrarEntrades() {
 	webutilClearMissatges();
 	$.ajax({
-		url: "<c:url value='/integracio'/>/${codiActual}/esborrar"
+		url: "<c:url value='/integracio'/>/${codiActual.codi}/esborrar"
 	}).done(function(){
 		refrescarInformacio()
     	$('#spin-btn-esborrar').css("display", "none");
