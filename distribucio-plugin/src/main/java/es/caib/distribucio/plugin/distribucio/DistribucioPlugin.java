@@ -30,7 +30,8 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 	 */
 	public String expedientCrear(
 			String expedientNumero,
-			String unitatArrelCodi) throws SistemaExternException;
+			String unitatArrelCodi, 
+			String codiProcediment) throws SistemaExternException;
 
 	/**
 	 * Crea (envia) els documents d'un assentament registral
@@ -50,7 +51,8 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
 			String contenidorArxiuUuid,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException;
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) throws SistemaExternException;
 
 	/**
 	 * Obté el document enviat prèviament al gestor d'arxius remot

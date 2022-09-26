@@ -136,7 +136,7 @@ import es.caib.plugins.arxiu.api.FirmaTipus;
 @Component
 public class RegistreHelper {
 
-	private static final String URL_API_BACKOFFICE = "/distribucio/api/rest/backoffice";
+//	private static final String URL_API_BACKOFFICE = "/distribucio/api/rest/backoffice";
 	private boolean autenticacioBasic = true;	
 
 	@Autowired
@@ -745,6 +745,10 @@ public class RegistreHelper {
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
+
+		
+		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
+		
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
 
 			String uuidExpedient = null;
@@ -773,14 +777,15 @@ public class RegistreHelper {
 				logger.debug("Guardant " + distribucioRegistreAnotacio.getAnnexos().size() + " annexos de l'anotació (" +
 						"anotacioId=" + distribucioRegistreAnotacio.getId() + ", " +
 						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
-						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");
+						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");				
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
 					try {
 						self.crearAnnexInArxiu(
 								annex.getId(), 
 								annex, 
 								unitatOrganitzativaCodi,
-								uuidExpedient);
+								uuidExpedient, 
+								registreEntity.getProcedimentCodi());
 					} catch (Exception ex) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
 										+ distribucioRegistreAnotacio.getNumero() + ": " + ex.getMessage(), ex );
@@ -1215,13 +1220,6 @@ public class RegistreHelper {
 		}
 	}
 	
-
-	
-	
-
-
-
-	@SuppressWarnings("unlikely-arg-type")
 	@Transactional
 	public void tancarExpedientArxiu(Long registreId) {
 		RegistreEntity registre = registreRepository.findOne(registreId);
@@ -2050,7 +2048,8 @@ public class RegistreHelper {
 			uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
 					registreEntity.getNumero(),
 					distribucioRegistreAnotacio.getNumero(),
-					unitatOrganitzativaCodi);
+					unitatOrganitzativaCodi, 
+					registreEntity.getProcedimentCodi());
 			registreEntity.updateExpedientArxiuUuid(uuidExpedient);
 			distribucioRegistreAnotacio.setArxiuUuid(uuidExpedient);
 			
@@ -2073,7 +2072,8 @@ public class RegistreHelper {
 			Long annexId, 
 			DistribucioRegistreAnnex distribucioAnnex, 
 			String unitatOrganitzativaCodi, 
-			String uuidExpedient) {
+			String uuidExpedient, 
+			String procedimentCodi) {
 
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		RegistreEntity registre = annex.getRegistre();
@@ -2104,7 +2104,8 @@ public class RegistreHelper {
 					distribucioAnnex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto);
+					documentEniRegistrableDto, 
+					procedimentCodi);
 			annex.updateFitxerArxiuUuid(uuidDocument);
 			
 			if (distribucioAnnex.getFirmes() != null) {

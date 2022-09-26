@@ -102,7 +102,10 @@
 	<c:forEach var="metaDada" items="${annex.metaDadesMap}">
 		<tr>
 			<td><strong>
-				<c:choose>
+				<c:choose>					
+					<c:when test="${metaDada.key=='eni:codi_procediment'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.codiProcediment"/>
+					</c:when>
 					<c:when test="${metaDada.key=='eni:resolucion'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.resolucion"/>
 					</c:when>
@@ -204,6 +207,9 @@
 					</c:when>
 					<c:when test="${metaDada.key=='eni:fecha_sellado'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.dataSegellat"/>
+					</c:when>
+					<c:when test="${metaDada.key=='eni:codi_procediment'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.codiProcediment"/>
 					</c:when>
 					<c:otherwise>
 						${fn:toUpperCase(metaDada.key)}
