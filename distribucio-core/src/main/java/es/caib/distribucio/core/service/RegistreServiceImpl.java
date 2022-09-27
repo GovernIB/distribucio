@@ -2133,6 +2133,7 @@ public class RegistreServiceImpl implements RegistreService {
 			arxiuDetall.setNom(arxiuExpedient.getNom());
 			ExpedientMetadades metadades = arxiuExpedient.getMetadades();
 			if (metadades != null) {
+				metadades.addMetadadaAddicional("eni:codi_procediment", registre.getProcedimentCodi());
 				arxiuDetall.setEniVersio(metadades.getVersioNti());
 				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
 				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());

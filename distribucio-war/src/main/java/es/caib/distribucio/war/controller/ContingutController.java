@@ -275,6 +275,8 @@ public class ContingutController extends BaseUserController {
 			HttpServletResponse response,
 			@PathVariable String key) throws IOException {
 		try {
+			key = key.replace("%2F", "/");
+			key = key + "==";
 			String clau = registreService.obtenirRegistreIdDesencriptat(key);
 			Long registreId = Long.valueOf(clau);
 			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null);

@@ -510,14 +510,13 @@ public class RegistreHelper {
 	public String encriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
 
 		try {
-			String encriptat = "";
-			do {
-				SecretKeySpec secretKey = obtenirClau(clauSecreta);
-			    Cipher cipher = Cipher.getInstance("AES");
-			    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-			    encriptat = new sun.misc.BASE64Encoder()
-			      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
-			}while (encriptat.contains("/"));
+			SecretKeySpec secretKey = obtenirClau(clauSecreta);
+		    Cipher cipher = Cipher.getInstance("AES");
+		    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		    String encriptat = new sun.misc.BASE64Encoder()
+		      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
+		    encriptat = encriptat.replace("/", "%2F");
+		    encriptat = encriptat.replace("==", "");
 		    return encriptat;
 		    } catch (Exception e) {
 		      logger.error("Error al encriptar l'identificador del registre: " + e.toString());

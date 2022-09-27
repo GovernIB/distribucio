@@ -73,7 +73,7 @@ public class RegistreHelper extends BaseController{
 			fila[2] = strData;
 			
 			if (registre.getJustificant() != null) {
-				fila[3] = registre.getJustificant().getDataCaptura().toString(); //TODO: data presentació, revisar amb en Daniel
+				fila[3] = registre.getDataOrigen().toString(); 
 			}else {
 				fila[3] = null;
 			}
