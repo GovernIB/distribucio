@@ -377,7 +377,15 @@ $(document).ready(function() {
 		</div>	
 		<div class="row">	
 			<div class="col-md-2"></div>
-			<div class="col-md-2"></div>
+			<div class="col-md-2">
+				<dis:inputSelect 
+					name="nombreAnnexes" 
+					netejar="true" 
+					optionEnum="RegistreNombreAnnexesEnumDto" 
+					placeholderKey="registre.filtre.camp.formulari" 
+					emptyOption="true" 
+					inline="true"/>
+			</div>
 			<div class="col-md-3">			
 				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
 				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>

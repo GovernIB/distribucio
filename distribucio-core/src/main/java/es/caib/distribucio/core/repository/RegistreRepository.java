@@ -231,7 +231,12 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " + 
 			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " + 
-			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi)")
+			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi) " +
+			"and (:esNullLlistaIdRegistresAnnex = true or "
+			+ "										(r.id in (:llista1) or r.id in (:llista2) or r.id in (:llista3) or r.id in (:llista4) or r.id in (:llista5) or r.id in (:llista6) or r.id in (:llista7) ) )")
+//			"and (:esNullNombreAnnexes = true or r.id in (select rae.registre.id from RegistreAnnexEntity rae "
+//			+ "										group by rae.registre.id "
+//			+ "										having count(*) = :nombreAnnexes))")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -272,7 +277,16 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("sobreescriure") Boolean sobreescriure,
 			@Param("esNullProcedimentCodi") boolean esNullProcedimentCodi, 
 			@Param("procedimentCodi") String procedimentCodi, 
+			@Param("esNullLlistaIdRegistresAnnex") boolean esNullLlistaIdRegistresAnnex, 
+			@Param("llista1") List<Long> llista1,
+			@Param("llista2") List<Long> llista2,
+			@Param("llista3") List<Long> llista3,
+			@Param("llista4") List<Long> llista4,
+			@Param("llista5") List<Long> llista5,
+			@Param("llista6") List<Long> llista6,
+			@Param("llista7") List<Long> llista7,
 			Pageable pageable);
+	
 	
 	
 	/** Consulta dels identificadors de registre per a la selecció en registre user */

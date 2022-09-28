@@ -71,6 +71,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -301,6 +302,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 
+	@SuppressWarnings("incomplete-switch")
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<ContingutDto> findRegistre(
@@ -412,6 +414,84 @@ public class RegistreServiceImpl implements RegistreService {
 
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
+		Long nombreAnnexes = 0L;
+		Long nombreAnnexesTope = 0L;
+		if (filtre.getNombreAnnexes() != null) {
+			switch (filtre.getNombreAnnexes()) {
+				case AMB_1:
+					nombreAnnexes = Long.valueOf(1);
+					nombreAnnexesTope = Long.valueOf(1);
+					break;
+				case AMB_2:
+					nombreAnnexes = Long.valueOf(2);
+					nombreAnnexesTope = Long.valueOf(2);
+					break;
+				case AMB_3:
+					nombreAnnexes = Long.valueOf(3);
+					nombreAnnexesTope = Long.valueOf(3);
+					break;
+				case AMB_4:
+					nombreAnnexes = Long.valueOf(4);
+					nombreAnnexesTope = Long.valueOf(4);
+					break;
+				case AMB_5:
+					nombreAnnexes = Long.valueOf(5);
+					nombreAnnexesTope = Long.valueOf(6);
+					break;
+				case DE_6_A_10:
+					nombreAnnexes = Long.valueOf(6);
+					nombreAnnexesTope = Long.valueOf(10);
+					break;
+				case DE_11_A_20:
+					nombreAnnexes = Long.valueOf(11);
+					nombreAnnexesTope = Long.valueOf(20);
+					break;
+				case DE_21_A_50:
+					nombreAnnexes = Long.valueOf(21);
+					nombreAnnexesTope = Long.valueOf(50);
+					break;
+				case DE_51_A_100:
+					nombreAnnexes = Long.valueOf(51);
+					nombreAnnexesTope = Long.valueOf(100);
+					break;
+				case MES_DE_100:
+					nombreAnnexes = Long.valueOf(101);
+					nombreAnnexesTope = Long.valueOf(1000);
+					break;					
+					
+			}
+		}
+		
+		List<Long> llistaRegistresAnnex = new ArrayList<>();
+		List<Long> llistaIdRegistres1 = new ArrayList<>();
+		List<Long> llistaIdRegistres2 = new ArrayList<>();
+		List<Long> llistaIdRegistres3 = new ArrayList<>();
+		List<Long> llistaIdRegistres4 = new ArrayList<>();
+		List<Long> llistaIdRegistres5 = new ArrayList<>();
+		List<Long> llistaIdRegistres6 = new ArrayList<>();
+		List<Long> llistaIdRegistres7 = new ArrayList<>();
+		
+		if (filtre.getNombreAnnexes() != null) {
+			llistaRegistresAnnex = registreAnnexRepository.findByNombreAnnexes(nombreAnnexes, nombreAnnexesTope);
+			for(int i=0; i<llistaRegistresAnnex.size(); i++) {
+				if (i>=0 && i<1000) {
+					llistaIdRegistres1.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=1000 && i<2000) {
+					llistaIdRegistres2.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=2000 && i<3000) {
+					llistaIdRegistres3.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=3000 && i<4000) {
+					llistaIdRegistres4.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=4000 && i<5000) {
+					llistaIdRegistres5.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=5000 && i<6000) {
+					llistaIdRegistres6.add(llistaRegistresAnnex.get(i));
+				} else  if (i>=6000 && i<7000) {
+					llistaIdRegistres7.add(llistaRegistresAnnex.get(i));
+				}
+			}
+		}
+		
 		try {
 			pagina = registreRepository.findRegistreByPareAndFiltre(
 					entitat,
@@ -453,6 +533,14 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
+					filtre.getNombreAnnexes() == null, 
+					!llistaIdRegistres1.isEmpty() ? llistaIdRegistres1 : null,
+					!llistaIdRegistres2.isEmpty() ? llistaIdRegistres2 : null,
+					!llistaIdRegistres3.isEmpty() ? llistaIdRegistres3 : null,
+					!llistaIdRegistres4.isEmpty() ? llistaIdRegistres4 : null,
+					!llistaIdRegistres5.isEmpty() ? llistaIdRegistres5 : null,
+					!llistaIdRegistres6.isEmpty() ? llistaIdRegistres6 : null,
+					!llistaIdRegistres7.isEmpty() ? llistaIdRegistres7 : null,
 					paginacioHelper.toSpringDataPageable(paginacioParams,
 							mapeigOrdenacio));
 			contextTotalfindRegistreByPareAndFiltre.stop();

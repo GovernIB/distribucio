@@ -55,6 +55,8 @@ public class RegistreFiltreDto implements Serializable {
 	private boolean nomesAmbEsborranys;
 	
 	private String procedimentCodi;
+	
+	private RegistreNombreAnnexesEnumDto nombreAnnexes;
 
 	
 	public String getBackCodi() {
@@ -195,6 +197,13 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}
+
+	public RegistreNombreAnnexesEnumDto getNombreAnnexes() {
+		return nombreAnnexes;
+	}
+	public void setNombreAnnexes(RegistreNombreAnnexesEnumDto nombreAnnexes) {
+		this.nombreAnnexes = nombreAnnexes;
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;
