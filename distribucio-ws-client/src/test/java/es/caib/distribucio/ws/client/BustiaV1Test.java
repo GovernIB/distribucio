@@ -83,7 +83,7 @@ public class BustiaV1Test {
 	    put("eni:descripcion", "Descripció de l'annex");
 	    put("eni:resolucion", "12");
 	    put("eni:profundidad_color", "6400");
-	    put("eni:id_tramite", PROCEDIMENT_CODI);
+//	    put("eni:id_tramite", PROCEDIMENT_CODI);
 //		put("cm:title", "Títol de l'annex");
 //	    put("eni:app_tramite_doc", "app tramite doc valor");
 //	    put("eni:organo", "Òrgan valor");

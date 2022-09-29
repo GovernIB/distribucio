@@ -2078,6 +2078,11 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreAnnexDto annex = conversioTipusHelper.convertir(
 				registreAnnexEntity,
 				RegistreAnnexDto.class);
+		if (annex.getFitxerNom().contains(".xml")) {
+			Map<String, String> metadadesMap = new HashMap<String, String>();
+			metadadesMap.put("eni:id_tramite", registre.getProcedimentCodi());
+			annex.setMetaDadesMap(metadadesMap);
+		}
 		return annex;
 	}
 	
@@ -2133,7 +2138,6 @@ public class RegistreServiceImpl implements RegistreService {
 			arxiuDetall.setNom(arxiuExpedient.getNom());
 			ExpedientMetadades metadades = arxiuExpedient.getMetadades();
 			if (metadades != null) {
-				metadades.addMetadadaAddicional("eni:id_tramite", registre.getProcedimentCodi());
 				arxiuDetall.setEniVersio(metadades.getVersioNti());
 				arxiuDetall.setEniIdentificador(metadades.getIdentificador());
 				arxiuDetall.setSerieDocumental(metadades.getSerieDocumental());
