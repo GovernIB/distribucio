@@ -30,8 +30,7 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 	 */
 	public String expedientCrear(
 			String expedientNumero,
-			String unitatArrelCodi, 
-			String codiProcediment) throws SistemaExternException;
+			String unitatArrelCodi) throws SistemaExternException;
 
 	/**
 	 * Crea (envia) els documents d'un assentament registral

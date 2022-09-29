@@ -2051,8 +2051,7 @@ public class RegistreHelper {
 			uuidExpedient = pluginHelper.saveRegistreAsExpedientInArxiu(
 					registreEntity.getNumero(),
 					distribucioRegistreAnotacio.getNumero(),
-					unitatOrganitzativaCodi, 
-					registreEntity.getProcedimentCodi());
+					unitatOrganitzativaCodi);
 			registreEntity.updateExpedientArxiuUuid(uuidExpedient);
 			distribucioRegistreAnotacio.setArxiuUuid(uuidExpedient);
 			

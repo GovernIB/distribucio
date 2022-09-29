@@ -208,8 +208,8 @@
 					<c:when test="${metaDada.key=='eni:fecha_sellado'}">
 						<spring:message code="registre.annex.detalls.camp.metaData.dataSegellat"/>
 					</c:when>
-					<c:when test="${metaDada.key=='eni:codi_procediment'}">
-						<spring:message code="registre.annex.detalls.camp.metaData.codiProcediment"/>
+					<c:when test="${metaDada.key=='eni:id_tramite'}">
+						<spring:message code="registre.annex.detalls.camp.metaData.idTramite"/>
 					</c:when>
 					<c:otherwise>
 						${fn:toUpperCase(metaDada.key)}

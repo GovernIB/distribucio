@@ -104,8 +104,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	@Override
 	public String expedientCrear(
 			String expedientNumero,
-			String unitatArrelCodi, 
-			String codiProcediment) throws SistemaExternException {
+			String unitatArrelCodi) throws SistemaExternException {
 
 		String identificador = null;
 		boolean duplicated = false;
@@ -143,8 +142,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 								classificacio,
 								ExpedientEstatEnumDto.OBERT,
 								null,
-								serieDocumental, 
-								codiProcediment));
+								serieDocumental));
 				integracioAddAccioOk(
 						integracioArxiuCodi,
 						accioDescripcio,
@@ -1124,8 +1122,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String ntiClassificacio,
 			ExpedientEstatEnumDto ntiEstat,
 			List<String> ntiInteressats,
-			String serieDocumental, 
-			String codiProcediment) {
+			String serieDocumental) {
 		Expedient expedient = new Expedient();
 		expedient.setNom(nom);
 		expedient.setIdentificador(identificador);
@@ -1149,7 +1146,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		metadades.setOrgans(ntiOrgans);
 		metadades.setInteressats(ntiInteressats);
 		metadades.setSerieDocumental(serieDocumental);
-		metadades.addMetadadaAddicional("eni:codi_procediment", codiProcediment);
 		expedient.setMetadades(metadades);
 		return expedient;
 	}
@@ -1379,7 +1375,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 		}		
 		if (format.equals(DocumentFormat.XML)) {
-			metaDadesAddicionals.put("eni:codi_procediment", procedimentCodi);
+			metaDadesAddicionals.put("eni:id_tramite", procedimentCodi);
 		}
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	

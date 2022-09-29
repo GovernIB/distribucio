@@ -51,7 +51,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = "873478"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Prova: posar codi procediment als metadades dels documents XML " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
@@ -68,7 +68,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
@@ -83,6 +83,7 @@ public class BustiaV1Test {
 	    put("eni:descripcion", "Descripció de l'annex");
 	    put("eni:resolucion", "12");
 	    put("eni:profundidad_color", "6400");
+	    put("eni:id_tramite", PROCEDIMENT_CODI);
 //		put("cm:title", "Títol de l'annex");
 //	    put("eni:app_tramite_doc", "app tramite doc valor");
 //	    put("eni:organo", "Òrgan valor");
