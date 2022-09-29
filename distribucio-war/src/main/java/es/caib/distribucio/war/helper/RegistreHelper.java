@@ -72,7 +72,7 @@ public class RegistreHelper extends BaseController{
 			String strData = dateFormat.format(data);
 			fila[2] = strData;
 			
-			if (registre.getJustificant() != null) {
+			if (registre.getDataOrigen() != null) {
 				fila[3] = registre.getDataOrigen().toString(); 
 			}else {
 				fila[3] = null;
