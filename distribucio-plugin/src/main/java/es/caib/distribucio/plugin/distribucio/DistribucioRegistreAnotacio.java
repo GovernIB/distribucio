@@ -23,6 +23,7 @@ public class DistribucioRegistreAnotacio {
 	private String extracte;
 	private String expedientArxiuUuid;
 	private String unitatOrganitzativaCodi;
+	private String procedimentCodi;
 	
 	
 	private List<DistribucioRegistreAnnex> annexos = new ArrayList<DistribucioRegistreAnnex>();
@@ -106,6 +107,14 @@ public class DistribucioRegistreAnotacio {
 
 	public void setAnnexos(List<DistribucioRegistreAnnex> annexos) {
 		this.annexos = annexos;
+	}
+
+	public String getProcedimentCodi() {
+		return procedimentCodi;
+	}
+
+	public void setProcedimentCodi(String procedimentCodi) {
+		this.procedimentCodi = procedimentCodi;
 	}
 
 }

@@ -512,15 +512,7 @@ tr.clicable {
 				<c:if test="${registre.procesError != null }">
 					<div class="alert well-sm alert-danger alert-dismissable">
 						<span class="fa fa-exclamation-triangle"></span>
-						<spring:message code="registre.detalls.info.errors"/>
-						
-						<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT'}">
-<%-- 							<a href="../registre/${registre.id}/reintentar" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentar"/></a> --%>
-						</c:if>
-						<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">						
-<%-- 							<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>					 --%>
-						</c:if>
-						
+						<spring:message code="registre.detalls.info.errors"/>						
 					</div>
 				</c:if>   
 

@@ -1362,31 +1362,6 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return response;
 	}
-
-	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
-	public String reintentar(
-			HttpServletRequest request,
-			@PathVariable Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		boolean processatOk = registreService.reintentarProcessamentUser(
-				entitatActual.getId(),
-				registreId);
-		if (processatOk) {
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../../../",
-					"contingut.admin.controller.registre.reintentat.ok");
-		} else {
-			MissatgesHelper.error(
-					request,
-					getMessage(
-							request, 
-							"contingut.admin.controller.registre.reintentat.error",
-							null));
-			return "redirect:../" + registreId;
-		}
-	}
 	
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,

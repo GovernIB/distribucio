@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <jboss>
 	<security-domain>java:/jaas/seycon</security-domain>
+	<enterprise-beans>
+		<session>
+			<ejb-name>RegistreServiceBean</ejb-name>
+			<jndi-name>distribucio/RegistreServiceBean/local</jndi-name>
+			<exception-on-rollback>true</exception-on-rollback>
+			<method-attributes>
+				<method>
+					<method-name>reintentarProcessamentAdmin</method-name>
+					<transaction-timeout>900</transaction-timeout>
+				</method>
+			</method-attributes>
+		</session>
+	</enterprise-beans>
 </jboss>

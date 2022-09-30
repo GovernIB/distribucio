@@ -381,23 +381,16 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		boolean processatOk = registreService.reintentarProcessamentAdmin(
-				entitatActual.getId(),
-				registreId);
-		if (processatOk) {
+		
+		AjaxFormResponse response = this.reintentarProcessament(request, registreId);		
+		if (response.isEstatOk()) {
 			MissatgesHelper.success(
 					request, 
-					getMessage(
-							request, 
-							"contingut.admin.controller.registre.reintentat.ok"));
+					response.getMissatge());
 		} else {
 			MissatgesHelper.error(
 					request,
-					getMessage(
-							request, 
-							"contingut.admin.controller.registre.reintentat.error",
-							null));
+					response.getMissatge());
 		}
 		return "redirect:../../" + registreId + "/detall";
 	}
@@ -667,7 +660,10 @@ public class RegistreAdminController extends BaseAdminController {
 			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
 			return response;
 		}
+
+		response = this.reintentarProcessament(request, registreId);
 		
+		/*
 		boolean correcte = false;
 		String missatge = null;
 		ContingutDto contingutDto = null;
@@ -728,11 +724,79 @@ public class RegistreAdminController extends BaseAdminController {
 			response = AjaxHelper.generarAjaxError(missatge);
 		}
 		
-		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha processat " + (correcte ? "correctament." : "amb error.") + missatge);
+		*/
+		logger.debug("L'anotació amb id " + registreId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
 
 		return response;
 	}
 	
+	private AjaxFormResponse reintentarProcessament(HttpServletRequest request, Long registreId) {
+
+		AjaxFormResponse response = null;
+		boolean correcte = false;
+		String missatge = null;
+		ContingutDto contingutDto = null;
+		RegistreDto registreDto = null;;
+		try {
+			logger.debug("Reprocessar anotació amb id " + registreId);
+			
+
+			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+			registreDto = (RegistreDto) contingutDto;
+			
+			if (registreDto.getPare() == null) {
+				// Restaura la bústia per defecte i la la regla aplicable si s'escau
+				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
+						registreId);
+				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
+			} 
+			else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
+			{
+				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
+					|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
+				{
+					// Pendent de processament d'arxiu o regla
+					correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
+							registreId);
+					missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
+				} else {
+					// Pendent d'enviar a backoffice
+					correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
+							registreId);
+					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+				}
+			} 
+			else if (this.isPendentArxiu(registreDto)) {
+				correcte = registreService.processarAnnexosAdmin(
+						entitatActual.getId(),
+						registreId);
+				missatge = getMessage(
+						request, 
+						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
+						null);
+			} else 
+			{
+				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
+				correcte = true;
+			}
+		} catch(Exception e) {
+			missatge = getMessage(request, "registre.admin.controller.reintentar.processament.error", new Object[] {registreId, e.getMessage()});
+			logger.error(missatge, e);
+			correcte = false;
+		}
+		
+		if (correcte) {
+			response = AjaxHelper.generarAjaxFormOk();
+			response.setMissatge(missatge.toString());
+		} else {
+			response = AjaxHelper.generarAjaxError(missatge);
+		}
+		
+		return response;
+	}
+
 	private boolean isPendentArxiu(RegistreDto registreDto) {
 		boolean isPendentArxiu = false;
 		if (registreDto.getExpedientArxiuUuid() == null) {

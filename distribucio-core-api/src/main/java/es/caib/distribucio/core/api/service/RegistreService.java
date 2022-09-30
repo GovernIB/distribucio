@@ -170,22 +170,6 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId) throws NotFoundException;
 
-	/**
-	 * Torna a processar una anotació de registre pendent o amb error.
-	 * 
-	 * @param entitatId
-	 *            Id de l'entitat.
-	 * @param registreId
-	 *            Atribut id de l'anotació de registre que es vol tornar a processar.
-	 * @return true si s'ha processat sense errors o false en cas contrari.
-	 * @throws NotFoundException
-	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-	 */
-	@PreAuthorize("hasRole('tothom')")
-	public boolean reintentarProcessamentUser(
-			Long entitatId,
-			Long registreId) throws NotFoundException;
-	
 	@PreAuthorize("hasRole('tothom')")
 	public FitxerDto getAnnexFitxer(
 			Long annexId, boolean ambVersioImprimible) throws NotFoundException;

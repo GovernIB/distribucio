@@ -734,7 +734,8 @@ public class RegistreHelper {
 	}
 
 	/**
-	 *  It saves anotacio with annexes in arxiu.
+	 *  Mètode no transaccional per guardar l'anotació i els annexos en diferents transaccions.
+	 *  
 	 * @param registreEntity
 	 * @param codiDir3
 	 * @param crearAutofirma
@@ -748,9 +749,6 @@ public class RegistreHelper {
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
-
-		
-		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
 		
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
 
@@ -788,7 +786,7 @@ public class RegistreHelper {
 								annex, 
 								unitatOrganitzativaCodi,
 								uuidExpedient, 
-								registreEntity.getProcedimentCodi());
+								distribucioRegistreAnotacio.getProcedimentCodi());
 					} catch (Exception ex) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
 										+ distribucioRegistreAnotacio.getNumero() + ": " + ex.getMessage(), ex );
@@ -812,7 +810,7 @@ public class RegistreHelper {
 	}	
 
 	
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void crearLogDistribucio(long anotacioId) {
 		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
 		List<String> params = new ArrayList<>();
@@ -2025,7 +2023,7 @@ public class RegistreHelper {
 	
 	// Mètodes per cridar de forma transaccional amb self
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(long registreId) {
 		
 		RegistreEntity registreEntity = registreRepository.findOne(registreId);		
@@ -2034,11 +2032,12 @@ public class RegistreHelper {
 																	DistribucioRegistreAnotacio.class);
 		distribucioRegistreAnotacio.setId(registreId);
 		distribucioRegistreAnotacio.setUnitatOrganitzativaCodi(registreEntity.getEntitat() != null ? registreEntity.getEntitat().getCodiDir3() : null);
+		distribucioRegistreAnotacio.setProcedimentCodi(registreEntity.getProcedimentCodi());
 		
 		return distribucioRegistreAnotacio;
 	}
 	
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public List<Exception> crearExpedientArxiu(
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio, 
 			String unitatOrganitzativaCodi, 
@@ -2137,7 +2136,7 @@ public class RegistreHelper {
 		}
 	}
 	
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateAnotacioEstat(long anotacioId, List<Exception> exceptionsGuardantAnnexos) {
 		
 		RegistreEntity anotacio = registreRepository.findOne(anotacioId);

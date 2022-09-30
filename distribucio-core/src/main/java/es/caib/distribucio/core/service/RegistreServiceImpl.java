@@ -1643,15 +1643,39 @@ public class RegistreServiceImpl implements RegistreService {
 		return success;
 	}
 	
+	/** Mètode per reintenta el reprocessament. Com que pot trigar molt s'ha hagut de 
+	 * configurar el timeout al jboss.xml.
+	 */
 	@Override
+	@Transactional(timeout=900)
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
+		
+		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null);
 
-		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
+		Exception exceptionProcessant = null;
+		if (pendentArxiu || pendentRegla) {
+			if (pendentArxiu) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+						registreId);
+			}
+			if (exceptionProcessant == null && pendentRegla) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
+						registreId);
+			}
+		} else {
+			throw new ValidationException(
+					registreId,
+					RegistreEntity.class,
+					"L'anotació de registre no es troba en estat pendent");
+		}
+		
 		return exceptionProcessant == null;
 	}
 	
@@ -1666,19 +1690,6 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
 		return exceptionProcessant == null;
 	}
-
-
-	@Override
-	public boolean reintentarProcessamentUser(
-			Long entitatId,
-			Long registreId) {
-		logger.debug("Reintentant processament d'anotació pendent per usuaris (" +
-				"entitatId=" + entitatId + ", " +
-				"registreId=" + registreId + ")");
-		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
-		return exceptionProcessant == null;
-	}
-	
 	
 	@Transactional
 	@Override
@@ -2853,31 +2864,6 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		
 		return interessatBase;
-	}
-
-	private Exception processarAnotacioPendent(long entitatId, long anotacioId) {
-		
-		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
-
-		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
-		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
-		Exception exceptionProcessant = null;
-		if (pendentArxiu || pendentRegla) {
-			if (pendentArxiu) {
-				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
-						anotacioId);
-			}
-			if (exceptionProcessant == null && pendentRegla) {
-				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
-						anotacioId);
-			}
-		} else {
-			throw new ValidationException(
-					anotacioId,
-					RegistreEntity.class,
-					"L'anotació de registre no es troba en estat pendent");
-		}
-		return exceptionProcessant;
 	}
 	
 	private RegistreAnnexDto getJustificantPerRegistre(

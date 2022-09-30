@@ -149,16 +149,6 @@ public class RegistreServiceBean implements RegistreService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public boolean reintentarProcessamentUser(
-			Long entitatId,
-			Long registreId) {
-		return delegate.reintentarProcessamentUser(
-				entitatId,
-				registreId);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) throws NotFoundException {
 		return delegate.getAnnexFitxer(annexId, ambVersioImprimible);
 	}
