@@ -2043,7 +2043,16 @@ public class RegistreHelper {
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient) {
 		
-		RegistreEntity registreEntity = registreRepository.findOne(distribucioRegistreAnotacio.getId());
+		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(distribucioRegistreAnotacio.getId());
+		
+		if (registreEntity.getArxiuUuid() != null) {
+			// Ja està guardat
+			logger.warn("L'anotació ja té uuid d'arxiu i per tant no es tornarà a crear un contenidor (" +
+					"anotacioId=" + registreEntity.getId() + ", " +
+					"anotacioNumero=" + registreEntity.getNumero() + ", " +
+					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient);
+			return null;
+		}
 
 		try {
 			// ============= SAVE REGISTRE AS EXPEDIENT IN ARXIU ============

@@ -6,9 +6,12 @@ package es.caib.distribucio.core.repository;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.LockModeType;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -365,5 +368,13 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"where r.backCodi = :backCodi")
 	public List<RegistreEntity> findRegistreBackCodi(
 			@Param("backCodi") String backCodi);
+
+	/** Per consultar l'expedient tipus amb bloqueig de BBDD per actualitzar les seqüències de números
+	 * @param expedientTipusId
+	 * @return
+	 */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("from REgistreEntity where id = :registreId")
+	public RegistreEntity findOneAmbBloqueig(@Param("registreId") Long registreId);
 	
 }
