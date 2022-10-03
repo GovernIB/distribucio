@@ -470,21 +470,7 @@ $(document).ready(function() {
 						</div>
 					</script>
 				</th>						
-				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
-				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
-					<script id="docFisTemplate" type="text/x-jsrender">
-						<center>
-						{{if documentacioFisicaCodi == '1'}}
-							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
-						{{else documentacioFisicaCodi == '2'}}
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-						{{else documentacioFisicaCodi == '3'}}
-							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
-						{{/if}}
-						</center>
-					</script>
-				</th>						
+				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate" data-visible="false"></th>						
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
 				<th data-col-name="darrerMovimentUsuari" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
@@ -559,9 +545,19 @@ $(document).ready(function() {
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
+						{{if documentacioFisicaCodi == '1'}}
+							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
+						{{else documentacioFisicaCodi == '2'}}
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+						{{else documentacioFisicaCodi == '3'}}
+							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
+						{{/if}}
+						<br>
 						{{if alerta}}
 							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
 						{{/if}}
+						<br>
 						{{if procesError != null}}
 							{{if procesEstat == 'ARXIU_PENDENT'}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"></span>
@@ -574,6 +570,18 @@ $(document).ready(function() {
 							{{else}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"></span>
 							{{/if}}
+						{{/if}}
+						</center>
+					</script>
+					<script id="docFisTemplate" type="text/x-jsrender">
+						<center>
+						{{if documentacioFisicaCodi == '1'}}
+							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
+						{{else documentacioFisicaCodi == '2'}}
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+						{{else documentacioFisicaCodi == '3'}}
+							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
 						{{/if}}
 						</center>
 					</script>

@@ -374,7 +374,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	 * @return
 	 */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	@Query("from REgistreEntity where id = :registreId")
+	@Query("from RegistreEntity where id = :registreId")
 	public RegistreEntity findOneAmbBloqueig(@Param("registreId") Long registreId);
 	
 }
