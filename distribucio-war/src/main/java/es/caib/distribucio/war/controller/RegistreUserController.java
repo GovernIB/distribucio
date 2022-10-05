@@ -47,6 +47,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
@@ -71,6 +72,7 @@ import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
+import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -114,6 +116,11 @@ public class RegistreUserController extends BaseUserController {
 //		###
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		model.addAttribute(filtreCommand);		
+		model.addAttribute(
+				"tipusDocumentacio",
+				EnumHelper.getOptionsForEnum(
+						RegistreTipusDocFisicaEnumDto.class,
+						"registre.tipus.doc.fisica.enum."));
 		model.addAttribute("isPermesReservarAnotacions", isPermesReservarAnotacions());
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		if (bustiaPerDefecte != null)
@@ -1362,6 +1369,34 @@ public class RegistreUserController extends BaseUserController {
 		}
 		return response;
 	}
+
+
+	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
+	public String reintentar(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
+		boolean processatOk = registreService.reintentarProcessamentUser(
+				entitatActual.getId(),
+				registreId);
+		if (processatOk) {
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../../",
+					"contingut.admin.controller.registre.reintentat.ok", 
+					new Object[] {registreReenviat.getBackCodi()});
+		} else {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"contingut.admin.controller.registre.reintentat.error",
+							null));
+			return "redirect:../" + registreId;
+		}
+	}
 	
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(HttpServletRequest request,
@@ -1374,7 +1409,7 @@ public class RegistreUserController extends BaseUserController {
 			if (processatOk) {
 				MissatgesHelper.success(request,
 						getMessage(request,
-								"contingut.admin.controller.registre.backoffice.reintentat.ok", 
+								"contingut.admin.controller.registre.reintentat.ok", 
 								new Object[] {registreReenviat.getBackCodi()}));
 			} else {
 				MissatgesHelper.error(request,

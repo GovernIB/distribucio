@@ -11,6 +11,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -61,6 +62,8 @@ public class RegistreFiltreCommand {
 	private boolean nomesAmbEsborranys;
 	
 	private String procedimentCodi;
+	
+	private RegistreNombreAnnexesEnumDto nombreAnnexes;
 
 	public String getBackCodi() {
 		return backCodi;
@@ -212,6 +215,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}
+	public RegistreNombreAnnexesEnumDto getNombreAnnexes() {
+		return nombreAnnexes;
+	}
+	public void setNombreAnnexes(RegistreNombreAnnexesEnumDto nombreAnnexes) {
+		this.nombreAnnexes = nombreAnnexes;
 	}
 	
 }

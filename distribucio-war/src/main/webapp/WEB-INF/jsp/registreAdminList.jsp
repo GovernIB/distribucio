@@ -26,7 +26,11 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/js/select2-locales/select2_locale_ca.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
@@ -62,6 +66,7 @@ div.extracteColumn {
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+var tipusDocumentacioFisica = '${tipusDocumentacio}';
 
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
@@ -69,6 +74,18 @@ function formatSelectBustia(item) {
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
 	else
 		return item.text;
+}
+
+function formatSelectTipusDocumentacio(item) {
+	if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-archive text-danger'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-warning'></span> <span class='fa fa-archive text-warning'></span></span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>'){
+		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-success'></span></span>");
+	}else {
+		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
+	}
 }
 
 function formatSelectUnitat(item) {
@@ -82,10 +99,10 @@ function formatSelectUnitat(item) {
 	}
 }
 
-$(document).ready(function() {
+$(document).ready(function() {	
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
-
+	
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
 	});
@@ -320,7 +337,16 @@ $(document).ready(function() {
 			<div class="col-md-2">
 				<div class="row">
 					<div class="col-sm-9">
-						<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
+						<dis:inputSelect 
+							name="tipusDocFisica" 
+							netejar="false" 
+							optionItems="${tipusDocumentacio}" 
+							optionValueAttribute="value" 
+							optionTextKeyAttribute="text" 
+							placeholderKey="bustia.list.filtre.tipusDocFisica" 
+							emptyOption="true" 
+							inline="true" 
+							optionTemplateFunction="formatSelectTipusDocumentacio"/>
 					</div>
 					<div class="col-sm-3" style="padding-left: 0;">
 						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
@@ -351,7 +377,15 @@ $(document).ready(function() {
 		</div>	
 		<div class="row">	
 			<div class="col-md-2"></div>
-			<div class="col-md-2"></div>
+			<div class="col-md-2">
+				<dis:inputSelect 
+					name="nombreAnnexes" 
+					netejar="true" 
+					optionEnum="RegistreNombreAnnexesEnumDto" 
+					placeholderKey="registre.filtre.camp.formulari" 
+					emptyOption="true" 
+					inline="true"/>
+			</div>
 			<div class="col-md-3">			
 				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
 				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>

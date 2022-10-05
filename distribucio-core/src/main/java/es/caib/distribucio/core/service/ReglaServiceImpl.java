@@ -22,6 +22,7 @@ import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -434,9 +435,18 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findOne(filtre.getUnitatId());
+		
+		BustiaEntity bustia = filtre.getBustiaId() == null ? null : bustiaRepository.findOne(filtre.getBustiaId());
 
 		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findOne(filtre.getBackofficeId());
 		
+		boolean totes = false;
+		boolean activa = false;
+		if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.TOTES)) {
+			totes = true;
+		}else if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.ACTIVES)) {
+			activa = true;
+		}
 		
 		PaginaDto<ReglaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				reglaRepository.findByFiltrePaginat(
@@ -445,12 +455,19 @@ public class ReglaServiceImpl implements ReglaService {
 						unitat,
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
 						filtre.getNom() != null ? filtre.getNom() : "",
+						filtre.getCodiAssumpte() == null, 
+						filtre.getCodiAssumpte() != null ? filtre.getCodiAssumpte() : "", 
 						filtre.getCodiSIA() == null || filtre.getCodiSIA().isEmpty(), 
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
+						bustia == null, 
+						bustia, 
 						backoffice == null ,
 						backoffice,
+//						filtre.isActiva(),
+						totes,
+						activa, 
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				ReglaDto.class);
 		

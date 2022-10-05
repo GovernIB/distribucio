@@ -3321,8 +3321,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		}
 		
 		return nomUnitatSuperior;
-	}
-	
+	}	
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

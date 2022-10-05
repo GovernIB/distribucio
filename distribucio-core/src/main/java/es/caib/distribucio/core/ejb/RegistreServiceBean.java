@@ -377,4 +377,9 @@ public class RegistreServiceBean implements RegistreService {
 		return delegate.obtenirRegistreIdDesencriptat(clau);
 	}
 
+	@Override
+	public boolean reintentarProcessamentUser(Long entitatId, Long registreId) {
+		return delegate.reintentarProcessamentUser(entitatId, registreId);
+	}
+
 }

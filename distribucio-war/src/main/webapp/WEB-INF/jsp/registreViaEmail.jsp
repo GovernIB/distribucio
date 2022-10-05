@@ -18,7 +18,10 @@
 	<title>${titol}</title>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script>

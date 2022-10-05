@@ -25,7 +25,10 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.full.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.full.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.full.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
@@ -173,6 +176,7 @@
 				</th>
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+				<c:set var="tipusVista" value="list"/>
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
@@ -184,7 +188,7 @@
 								{{else}}
 									<li {{if perDefecte}}class="disabled"{{/if}} ><a {{if !perDefecte}}href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable"{{/if}}  data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
 								{{/if}}
-								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/moureAnotacions" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></a></li>
+								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/moureAnotacions/${tipusVista}" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></a></li>
 								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="bustia.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
 							</ul>
 						</div>

@@ -11,7 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
+import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
@@ -235,5 +237,18 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	List<BustiaEntity> findBustiesPerIdUnitatOrganitzativa(
 			@Param("isNullIdUnitatOrganitzativa") boolean isNullIdUnitatOrganitzativa, 
 			@Param("idUnitatOrganitzativa") Long idUnitatOrganitzativa);
+	
+	
+	@Query("from ContingutEntity b "
+			+ "where "
+			+ "b.tipus = :tipus and "
+			+ "b.entitat.id like :entitatId and "
+			+ ":isNullFiltre = true or lower(b.nom) like lower('%'||:filtre||'%') "
+			)
+	List<ContingutEntity> findAmbEntitatAndFiltreInput(
+			@Param("entitatId") Long entitatId, 
+			@Param("tipus") ContingutTipusEnumDto tipus, 
+			@Param("isNullFiltre") boolean isNullFiltre, 
+			@Param("filtre") String filtre);
 
 }

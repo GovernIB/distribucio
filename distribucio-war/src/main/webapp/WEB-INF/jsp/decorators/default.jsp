@@ -208,9 +208,18 @@ body {
 									</a>
 								</li>
 								<li>
-									<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank">
-										<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari" />
-									</a>
+									<c:choose>
+										<c:when test="${isRolActualAdministrador or isRolActualAdminLectura or isRolActualSuperusuari}">
+											<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Administrador.pdf" rel="noopener noreferrer" target="_blank">
+												<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.administrador" />
+											</a>
+										</c:when>
+										<c:when test="${isRolActualUsuari}">
+											<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank">
+												<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari" />
+											</a>
+										</c:when>
+									</c:choose>
 								<li>
 									<a href="<c:url value="/usuari/logout"/>">
 										<i class="fa fa-power-off"></i> <spring:message code="decorator.menu.accions.desconectar"/>

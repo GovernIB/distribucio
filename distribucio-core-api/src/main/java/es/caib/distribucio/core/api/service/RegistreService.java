@@ -434,5 +434,9 @@ public interface RegistreService {
 	 **/
 	public String obtenirRegistreIdDesencriptat (
 			String clau);
+	
+
+
+	public boolean reintentarProcessamentUser(Long entitatId, Long registreId);
 
 }
