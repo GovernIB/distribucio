@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 
 /**
@@ -50,7 +51,11 @@ public class RolHelper {
 		String rolActual = (String)request.getSession().getAttribute(
 				SESSION_ATTRIBUTE_ROL_ACTUAL);
 		if (rolActual == null) {
-			rolActual = aplicacioService.getUsuariActual().getRolActual();
+			UsuariDto usuari = aplicacioService.getUsuariActual();
+			if (usuari != null) {
+				rolActual = aplicacioService.getUsuariActual().getRolActual();
+			}
+			
 		}
 		if (rolActual != null && !rolActual.isEmpty()) {
 			request.getSession().setAttribute(

@@ -84,7 +84,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 	
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed({"tothom", "DIS_REGLA"})
 	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,

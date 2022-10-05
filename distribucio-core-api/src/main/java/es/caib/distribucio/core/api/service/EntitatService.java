@@ -132,7 +132,7 @@ public interface EntitatService {
 	 * 
 	 * @return El llistat d'entitats.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
 	public List<EntitatDto> findAccessiblesUsuariActual();
 
 	/**

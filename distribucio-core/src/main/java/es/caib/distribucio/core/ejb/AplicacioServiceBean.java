@@ -47,13 +47,13 @@ public class AplicacioServiceBean implements AplicacioService {
 
 	
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA", "tothom"})
 	public void processarAutenticacioUsuari() {
 		delegate.processarAutenticacioUsuari();
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
+	//@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA", "tothom"})
 	public UsuariDto getUsuariActual() {
 		return delegate.getUsuariActual();
 	}

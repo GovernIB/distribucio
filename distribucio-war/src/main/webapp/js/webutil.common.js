@@ -748,7 +748,7 @@ function sessionTimeoutMessage(timeout_margin_ms){
 		var response = new Date();
 		if(response - popupdate > timeout_margin_ms){
 			alert("Has tardat massa a contestar, ja s'ha tancat la sessió. \nSe't redigirà a la pàgina de login.");
-			window.location.reload();
+			window.location.href = webutilContextPath() + "/usuari/logout";
 
 		}else{
 			pingServer();

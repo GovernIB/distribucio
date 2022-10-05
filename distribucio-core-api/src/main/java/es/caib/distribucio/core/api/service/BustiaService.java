@@ -202,7 +202,7 @@ public interface BustiaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('tothom') or hasRole('DIS_REGLA')")
 	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
 
