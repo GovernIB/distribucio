@@ -241,7 +241,7 @@
 					<c:when test="${annex.validacioFirmaEstat == 'SENSE_FIRMES'}"><span class="fa fa-ban"></span></c:when>
 					<c:when test="${annex.validacioFirmaEstat == 'FIRMA_VALIDA'}"><span class="fa fa-pencil-square text-success"></span></c:when>
 					<c:when test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA'}"><span class="fa fa-pencil-square text-danger"></span></c:when>
-					<c:when test="${annex.validacioFirmaEstat == 'ERROR_VALIDANT'}"><span class="fa fa-exclamation-triangle text-danger"></span></c:when>
+					<c:when test="${annex.validacioFirmaEstat == 'ERROR_VALIDANT'}"><span class="fa fa-exclamation-circle text-danger"></span></c:when>
 				</c:choose>
 				<spring:message code="validacio.firma.enum.${annex.validacioFirmaEstat}"></spring:message>
 			</c:if>
@@ -269,7 +269,7 @@
 					</c:when>
 					<c:when test="${annex.arxiuEstat == 'ESBORRANY'}">
 						<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany"></spring:message>
-						<span class="fa fa-exclamation-triangle text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany.info"></spring:message>"></span>
+						<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiuEstat.esborrany.info"></spring:message>"></span>
 					</c:when>
 					<c:otherwise>${annex.arxiuEstat}</c:otherwise>
 				</c:choose>

@@ -1313,7 +1313,7 @@ li[id^="anotacio_"] {
 				
 					<c:if test="${numeroAnnexosEstatEsborrany > 0 }">
 						<div class="alert well-sm alert-warning alert-dismissable">
-							<span class="fa fa-exclamation-triangle"></span>
+							<span class="fa fa-exclamation-circle"></span>
 							<spring:message code="registre.detalls.annexos.estat.esborrany" arguments="${numeroAnnexosEstatEsborrany}"/>
 						</div>
 					</c:if>
@@ -1327,7 +1327,7 @@ li[id^="anotacio_"] {
 					<!------ Processar desat d'annexos ------>
 					<c:if test="${numeroAnnexosPendentsArxiu > 0 }">
 						<div class="alert well-sm alert-warning alert-dismissable">
-							<span class="fa fa-exclamation-triangle"></span>							
+							<span class="fa fa-exclamation-circle"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
 							<c:if test="${isRolActualAdministrador}">
 								<a id="btnProcessarAnnexos" href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
@@ -1355,7 +1355,7 @@ li[id^="anotacio_"] {
 										<span class="fa fa-pencil-square text-warning" title="<spring:message code="registre.annex.detalls.camp.firma.invalida"/>"></span>
 									</c:if>
 									<c:if test="${annex.arxiuEstat == 'ESBORRANY'}">
-										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.estat.arxiu.esborrany"/>"></span>
+										<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.annex.detalls.camp.estat.arxiu.esborrany"/>"></span>
 									</c:if>
 									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
@@ -1404,7 +1404,7 @@ li[id^="anotacio_"] {
 				<!------ REINTENTAR PROCESSAMENT ------>
 				<c:if test="${registre.procesError != null }">
 					<div class="alert well-sm alert-danger alert-dismissable">
-						<span class="fa fa-exclamation-triangle"></span>
+						<span class="fa fa-exclamation-circle"></span>
 						<spring:message code="registre.detalls.info.errors"/> 
 						<c:if test="${isRolActualAdministrador}">
 							<c:if test="${registre.procesEstat == 'ARXIU_PENDENT' || registre.procesEstat == 'REGLA_PENDENT' || (registre.procesEstat == 'BUSTIA_PROCESSADA' && registre.procesError!= null)}">
