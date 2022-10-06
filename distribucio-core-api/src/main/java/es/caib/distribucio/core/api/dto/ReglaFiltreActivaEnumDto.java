@@ -7,6 +7,5 @@ package es.caib.distribucio.core.api.dto;
  */
 public enum ReglaFiltreActivaEnumDto {
 	ACTIVES, 
-	INACTIVES,
-	TOTES
+	INACTIVES
 }

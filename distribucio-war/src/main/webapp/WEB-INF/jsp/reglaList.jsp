@@ -56,7 +56,8 @@
 	
 	</style>
 	
-	<script type="text/javascript">var bustiesInactives = [];
+	<script type="text/javascript">
+	var bustiesInactives = [];
 
 	//Funció per donar format als items de la select de bústies segons si estan actives o no
 	function formatSelectBustia(item) {
@@ -135,16 +136,18 @@
 			</div>	
 		</div>
 		<div class="row">
-			<div class="col-md-3">					
-				<dis:inputSelect 
+			<div class="col-md-3">		
+				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
+				<c:url value="/bustiaajax/llistaBusties" var="urlConsultaLlistat"/>			
+				<dis:inputSuggest 
 					name="bustiaId" 
-					optionItems="${busties}" 
-					optionValueAttribute="id" 
-					optionTextAttribute="nom" 
-					emptyOption="true" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					suggestValue="id"
+					suggestText="nom" 
 					placeholderKey="bustia.list.filtre.bustia" 
 					inline="true"
-					optionMinimumResultsForSearch="0" />  
+					optionTemplateFunction="formatSelectBustia" />  
 			</div>
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
@@ -174,7 +177,7 @@
 				<dis:inputSelect 
 					name="activa" 
 					optionEnum="ReglaFiltreActivaEnumDto" 
-					emptyOption="false" 
+					emptyOption="true" 
 					placeholderKey="regla.list.columna.totes" 
 					inline="true"/>
 				<%-- <button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="regla.list.columna.activa"/>" class="btn btn-default btn-sm<c:if test="${reglaFiltreCommand.activa}"> active</c:if>" data-toggle="button">
@@ -207,8 +210,17 @@
 		</p>
 	  </c:if>
 	</script>
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="${isRolActualAdministrador}"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
-	data-botons-template="#botonsTemplate">
+	<table 
+		id="regles" 
+		data-toggle="datatable" 
+		data-url="<c:url value="/regla/datatable"/>" 
+		data-filter="#reglaFiltreCommand" 
+		data-drag-enabled="${isRolActualAdministrador}"  
+		data-default-order="0" 
+		data-default-dir="asc" 
+		class="table table-striped table-bordered" 
+		style="width:100%"
+		data-botons-template="#botonsTemplate">
 
 		<thead>
 			<tr>

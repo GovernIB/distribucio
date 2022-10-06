@@ -18,7 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class BustiaContingutDto implements Serializable {
 
 	private Long id;
-	private BustiaContingutPendentTipusEnumDto tipus;
+	private ContingutTipusEnumDto tipus;
 	private String nom;
 	private String remitent;
 	private Date recepcioData;
@@ -46,10 +46,10 @@ public class BustiaContingutDto implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public BustiaContingutPendentTipusEnumDto getTipus() {
+	public ContingutTipusEnumDto getTipus() {
 		return tipus;
 	}
-	public void setTipus(BustiaContingutPendentTipusEnumDto tipus) {
+	public void setTipus(ContingutTipusEnumDto tipus) {
 		this.tipus = tipus;
 	}
 	public String getNom() {

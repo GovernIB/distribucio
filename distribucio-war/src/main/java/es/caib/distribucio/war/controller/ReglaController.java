@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
-import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
@@ -76,10 +75,10 @@ public class ReglaController  extends BaseAdminController {
 		
 		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
 		
-		model.addAttribute(
-				"busties", 
-				bustiaService.findAmbEntitat(
-						entitatActual.getId()));
+//		model.addAttribute(
+//				"busties", 
+//				bustiaService.findAmbEntitat(
+//						entitatActual.getId()));
 		
 		model.addAttribute(
 				"backoffices",
@@ -88,6 +87,7 @@ public class ReglaController  extends BaseAdminController {
 		
 		return "reglaList";
 	}
+	
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -135,15 +135,12 @@ public class ReglaController  extends BaseAdminController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (reglaFiltreCommand == null) {
 			reglaFiltreCommand = new ReglaFiltreCommand();
-			reglaFiltreCommand.setActiva(ReglaFiltreActivaEnumDto.TOTES);
+			reglaFiltreCommand.setActiva(null);
 //			reglaFiltreCommand.setActiva(true);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
 					reglaFiltreCommand);
-		}
-		if (reglaFiltreCommand.getActiva() == null) {
-			reglaFiltreCommand.setActiva(ReglaFiltreActivaEnumDto.TOTES);
 		}
 		return reglaFiltreCommand;
 	}

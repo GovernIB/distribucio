@@ -442,7 +442,7 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		boolean totes = false;
 		boolean activa = false;
-		if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.TOTES)) {
+		if (filtre.getActiva() == null) {
 			totes = true;
 		}else if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.ACTIVES)) {
 			activa = true;

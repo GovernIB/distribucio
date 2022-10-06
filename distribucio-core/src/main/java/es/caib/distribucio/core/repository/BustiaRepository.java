@@ -239,11 +239,13 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("idUnitatOrganitzativa") Long idUnitatOrganitzativa);
 	
 	
-	@Query("from ContingutEntity b "
+	@Query(" select c from ContingutEntity c, "
+			+ "BustiaEntity b "
 			+ "where "
-			+ "b.tipus = :tipus and "
-			+ "b.entitat.id like :entitatId and "
-			+ ":isNullFiltre = true or lower(b.nom) like lower('%'||:filtre||'%') "
+			+ "b.id = c.id "
+			+ "and b.tipus = :tipus "
+			+ "and c.entitat.id like :entitatId "
+			+ "and (:isNullFiltre = true or lower(c.nom) like lower('%'||:filtre||'%')) "
 			)
 	List<ContingutEntity> findAmbEntitatAndFiltreInput(
 			@Param("entitatId") Long entitatId, 
