@@ -441,9 +441,10 @@ $(document).ready(function() {
 					<li><a href="registreComun/exportar/${rol}?format=csv">
 						<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
 					</a></li>	
-
-					<li class="divider"></li>
-					<li class="divider"></li>
+					
+					<c:if test="${isRolActualAdministrador}">
+						<li class="divider"></li>
+						<li class="divider"></li>
 
 						<li><a href="registreComun/classificarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.accio.classificar"/>
@@ -463,7 +464,8 @@ $(document).ready(function() {
 						<li><a href="registreComun/enviarIProcessarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-envelope"></span>+<span class="fa fa-check-circle-o"></span>
 							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
-						</a></li>		
+						</a></li>					
+				  </c:if>			
 				</ul>
 			</div>
 		</div>
