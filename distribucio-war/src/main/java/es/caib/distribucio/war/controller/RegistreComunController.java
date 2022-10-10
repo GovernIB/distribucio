@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
@@ -53,6 +55,24 @@ public class RegistreComunController extends BaseController{
 	private AplicacioService aplicacioService;
 	@Autowired
 	private RegistreHelper registreHelper;
+	
+
+	
+
+	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
+	@ResponseBody
+	public ClassificacioResultatDto classificarMultiplePost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable String codiProcediment,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "tothom");
+		ClassificacioResultatDto resultat = registreService.classificar(
+				entitatActual.getId(),
+				registreId,
+				codiProcediment);
+		return resultat;
+	}
 	
 	
 

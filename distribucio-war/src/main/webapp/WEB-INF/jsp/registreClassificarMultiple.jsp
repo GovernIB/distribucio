@@ -41,7 +41,7 @@ var processarRegistres = function(index, element) {
 	if (index < registres.length) {
 		let registre = registres[index];
 		let codiProcediment = $('select#codiProcediment').val();
-		let classificarUrl = 'classificarMultiple/' + registre.id + '/' + codiProcediment;
+		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "/" + codiProcediment;
 		$.get(classificarUrl, function(response) {
 			actualitzarEstatRegistre(index, true, response);
 			processarRegistres(index + 1, element);
