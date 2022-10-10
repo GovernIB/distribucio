@@ -515,7 +515,7 @@ public class RegistreHelper {
 		    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 		    String encriptat = new sun.misc.BASE64Encoder()
 		      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
-		    encriptat = encriptat.replace("/", "%2F");
+		    encriptat = encriptat.replace("/", "%252F");
 		    encriptat = encriptat.replace("==", "");
 		    return encriptat;
 		    } catch (Exception e) {
