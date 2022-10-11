@@ -56,6 +56,78 @@ div.extracteColumn {
     overflow-wrap: break-word;
     overflow-wrap: anywhere;
 }
+
+th, 
+td, 
+#link-comentaris span, 
+#div-btn-accions button span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+	font-size: 1.2rem;
+	width: 0%; 
+	/* width: fit-content; */
+} 
+
+#div-btn-accions button, 
+#link-comentaris {
+	white-space: normal;
+	word-wrap: break-word;
+	font-size: 1.5rem;
+	width: 100%; 
+}
+
+span.badge {
+	font-size: 1.2rem !important;
+	padding-right: 1.2rem !important;
+}
+
+span.fa-comments {
+	font-size: 2rem !important;
+	margin-right: 2rem
+}
+
+span.fa-cog {
+	margin: 4px 1.5rem 0 0; 
+}
+
+span.caret {
+	margin: 8px 0 0 2px; 
+}
+
+span.select2-container {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn, 
+button#nomesAmbEsborranysBtn, 
+button#mostrarInactivesBtn {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn span.fa-warning, 
+button#nomesAmbEsborranysBtn span.fa-warning, 
+button#mostrarInactivesBtn i{
+	position: relative !important;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-ban, button#mostrarInactivesBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 2.5rem;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 1.5rem;
+	margin-left: -5px !important;
+}
+
+button#netejarFiltre, 
+button#filtrar {
+	width: 50%;
+}
 	
 </style>
 	
@@ -302,7 +374,7 @@ $(document).ready(function() {
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
 					<div class="col-md-2" style="padding-left: 0;">
-						<button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+						<button id="mostrarInactivesBtn"  title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
 		    	    			<i class="fa fa-ban fa-stack-2x"></i>
@@ -368,7 +440,7 @@ $(document).ready(function() {
 			<div class="col-md-3">
 				<dis:inputSelect id="reintents" name="reintents" netejar="true" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>		
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-2 d-flex">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>	
@@ -461,19 +533,19 @@ $(document).ready(function() {
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="sobreescriure" data-visible="false">
 				<th data-col-name="arxiuTancat" data-visible="false">
-				<th data-col-name="numero" width="10%"><spring:message code="bustia.pendent.columna.numero"/></th>			
-				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
+				<th data-col-name="documentacioFisicaCodi" data-template="#docFisTemplate" data-visible="false"></th>	
+				<th data-col-name="numero" style="width:14%; min-width: 10%;"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				<th data-col-name="extracte" style="min-width:150px; width:5%;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
 					<script id="extracteTemplate" type="text/x-jsrender">
 						<div class="extracteColumn">
 							{{:extracte}}
 						</div>
 					</script>
-				</th>						
-				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate" data-visible="false"></th>						
-				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				</th>											
+				<th data-col-name="numeroOrigen" style="width:8%; min-width: 5%;"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
-				<th data-col-name="darrerMovimentUsuari" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" style="width:8%; min-width: 5%;" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -494,8 +566,8 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
+				<th data-col-name="data" data-converter="datetime" style="width:8%; min-width: 5%;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="procesEstat" data-orderable="true" style="width:8%; min-width: 5%;"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -530,7 +602,7 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" style="width:7%; min-width: 5%;" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -592,7 +664,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="bustiaActiva" data-visible="false"></th>
-				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%; min-width: 7%;" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{if path}}
@@ -608,22 +680,22 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false">
+				<th data-col-name="interessatsResum" data-orderable="false" style="width:13%; min-width: 10%;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:7%; min-width: 5%;">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
 
-				<th data-col-name="backCodi" data-orderable="true"><spring:message code="contingut.admin.columna.backoffice"/></th>
+				<th data-col-name="backCodi" data-orderable="true" style="width:15%; min-width: 13%;"><spring:message code="contingut.admin.columna.backoffice"/></th>
 				
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="width:10%; min-width: 8%;">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<div class="dropdown">
-							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+						<div id="div-btn-accions" class="dropdown">
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="font-size:1.5rem; display:flex; width:90%; font-size:1.2rem"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
