@@ -2086,6 +2086,14 @@ public class RegistreHelper {
 			String procedimentCodi) {
 
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+		if (annex.getFitxerNom().startsWith(".")) {
+			String fitxerNom = String.valueOf(new Date().getTime()) + annex.getFitxerNom();
+			annex.updateFitxerNom(fitxerNom);
+		}
+		if (annex.getTitol().startsWith(".")) {
+			String fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+			annex.updateTitol(fitxerTitol);
+		}
 		RegistreEntity registre = annex.getRegistre();
 		
 		
