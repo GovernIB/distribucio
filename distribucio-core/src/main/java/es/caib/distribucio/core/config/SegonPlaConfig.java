@@ -452,7 +452,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	monitorTasquesService.updateEstat(codiActualitzarProcediments, MonitorTascaEstatEnum.EN_EXECUCIO);
                     	//monitorTasquesService.updateObservacions(codiActualitzarProcediments, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
-                        	segonPlaService.reintentarProcessamentBackoffice();
+                        	segonPlaService.actualitzarProcediments();
                         	monitorTasquesService.updateDataFi(codiActualitzarProcediments);
                         	monitorTasquesService.updateEstat(codiActualitzarProcediments, MonitorTascaEstatEnum.EN_ESPERA);
                         } catch(Exception e) {                        	
