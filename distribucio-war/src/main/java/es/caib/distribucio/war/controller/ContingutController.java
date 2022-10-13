@@ -268,14 +268,16 @@ public class ContingutController extends BaseUserController {
 		return null;
 	}
 	
-	/** Mètode públic per recuperar el contingut de tots els annexos i crea un ZIP per descarregar */
+	/** Mètode públic per recuperar el contingut de tots els annexos i crea un ZIP per descarregar 
+	 * @throws Exception */
 	@RequestMapping(value = "/public/{key}/descarregarZipPublic", method = RequestMethod.GET)
-	public String descarregarZipDocumentacioPublic(
+	public void descarregarZipDocumentacioPublic(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable String key) throws IOException {
+			@PathVariable String key) throws Exception {
 		try {
-			key = key.replace("%252F", "/");
+			key = key.replaceAll("%", "/");
+			key = key.replaceAll("/2F", "/");
 			key = key + "==";
 			String clau = registreService.obtenirRegistreIdDesencriptat(key);
 			Long registreId = Long.valueOf(clau);
@@ -290,8 +292,8 @@ public class ContingutController extends BaseUserController {
 					"contingut.controller.document.descarregar.error",
 					new Object[] {ex.getMessage()});
 			logger.error(errMsg, ex);
+			throw new Exception(errMsg, ex);
 		}
-		return null;
 	}
 
 	@RequestMapping(value = "/contingut/{registreId}/log/moviments", method = RequestMethod.GET)

@@ -373,7 +373,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public String obtenirRegistreIdDesencriptat(String clau) {
+	public String obtenirRegistreIdDesencriptat(String clau) throws Exception{
 		return delegate.obtenirRegistreIdDesencriptat(clau);
 	}
 

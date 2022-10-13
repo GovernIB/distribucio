@@ -71,7 +71,6 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -1574,11 +1573,8 @@ public class RegistreServiceImpl implements RegistreService {
 
 		RegistreEntity registre = null;
 		
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-		if (clauSecreta == null)
-			throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
-
+		String clauSecreta = registreHelper.getClauSecretaProperty();
+				
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades		
 		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
 		if (registres.isEmpty()) {
@@ -1619,7 +1615,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 		return registre;
 	}
-
 
 	@Transactional
 	@Override
@@ -3066,27 +3061,21 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public String obtenirRegistreIdEncriptat(Long registreId) {
 
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-
 		String clau = null;
 		try {
-			clau = registreHelper.encriptar(String.valueOf(registreId), clauSecreta);
+			clau = registreHelper.encriptar(String.valueOf(registreId));
 		} catch (Exception e) {
-			logger.error("Error al encriptar l'id del registre: " + e.toString());
+			logger.error("Error al encriptar l'id del registre: " + e.toString(), e);
 		}
 		return clau;
 	}
 
 	@Override
-	public String obtenirRegistreIdDesencriptat(String clau) {
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
+	public String obtenirRegistreIdDesencriptat(String clau) throws Exception{
 		try {
-			clau = registreHelper.desEncriptar(clau, clauSecreta);
+			clau = registreHelper.desencriptar(clau);
 		} catch (Exception e) {
-			logger.error("Error al desencriptar l'id del registre: " + e.toString());
-			return null;
+			throw new Exception("Error al desencriptar l'id del registre: " + e.toString(), e);
 		}
 		return clau;
 	}

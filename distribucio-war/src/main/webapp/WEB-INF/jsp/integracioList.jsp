@@ -35,8 +35,9 @@ $(document).ready(function() {
     	refrescarInformacio();
     });
     $('#btnDelete').click(function() {
-    	$('#trash-btn-esborrar').css("display", "none");
-    	$('#spin-btn-esborrar').css("display", "block");
+    	$('#btnDelete').addClass('disabled');
+    	$('#trash-btn-esborrar').hide();
+    	$('#spin-btn-esborrar').show();
     	esborrarEntrades();
     });
     $('#netejarFiltre').click(function(e) {
@@ -78,8 +79,9 @@ function esborrarEntrades() {
 		url: "<c:url value='/integracio'/>/${codiActual.codi}/esborrar"
 	}).done(function(){
 		refrescarInformacio()
-    	$('#spin-btn-esborrar').css("display", "none");
-    	$('#trash-btn-esborrar').css("display", "block");
+    	$('#spin-btn-esborrar').hide();
+    	$('#trash-btn-esborrar').show();
+    	$('#btnDelete').removeClass('disabled');
 	});
 }
 
@@ -176,7 +178,15 @@ function esborrarEntrades() {
 		</thead>
 	</table>
 	
-		<button id="btnRefresh" type="button" class="btn btn-info pull-right" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
-		<button id="btnDelete" type="button" class="btn btn-danger pull-left" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px; display: flex"><span id="trash-btn-esborrar" class="fa fa-trash-o"></span><span id="spin-btn-esborrar" class="fa fa-circle-o-notch fa-spin d-none"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></button>
+	<table style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px; width:100%;">
+		<tr>
+			<td>
+				<button id="btnDelete" type="button" class="btn btn-danger pull-left"><span id="trash-btn-esborrar" class="fa fa-trash-o"></span><span id="spin-btn-esborrar" class="fa fa-cog fa-spin" style="display:none;"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></button>
+			</td>
+			<td>
+				<button id="btnRefresh" type="button" class="btn btn-info pull-right"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
+			</td>
+		</tr>
+	</table>
 	
 </body>

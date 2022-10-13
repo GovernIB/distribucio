@@ -433,7 +433,7 @@ public interface RegistreService {
 	 *  @param clau
 	 **/
 	public String obtenirRegistreIdDesencriptat (
-			String clau);
+			String clau) throws Exception;
 	
 
 

@@ -2369,11 +2369,9 @@ public class BustiaServiceImpl implements BustiaService {
 		String idEncriptat = "";		
 
 		try {
-			String clauSecreta = configHelper.getConfig(
-					"es.caib.distribucio.backoffice.integracio.clau");
-			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()), clauSecreta);
+			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()));
 		} catch (Exception e) {
-		    logger.error("Error al encriptar l'identificador del registre: " + e.toString());
+		    logger.error("Error al encriptar l'identificador del registre: " + e.toString(), e);
 		}
 		
 		StringBuilder html = new StringBuilder();

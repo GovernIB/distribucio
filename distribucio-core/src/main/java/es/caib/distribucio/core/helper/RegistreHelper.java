@@ -507,47 +507,33 @@ public class RegistreHelper {
 	}
 	
 	@SuppressWarnings("restriction")
-	public String encriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
-
-		try {
-			SecretKeySpec secretKey = obtenirClau(clauSecreta);
-		    Cipher cipher = Cipher.getInstance("AES");
-		    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		    String encriptat = new sun.misc.BASE64Encoder()
-		      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
-		    encriptat = encriptat.replace("/", "%252F");
-		    encriptat = encriptat.replace("==", "");
-		    return encriptat;
-		    } catch (Exception e) {
-		      logger.error("Error al encriptar l'identificador del registre: " + e.toString());
-		    }
-		    return null;
-
+	public String encriptar (String missatgeAEncriptar) throws Exception {
+		
+		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		String encriptat = new sun.misc.BASE64Encoder().encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
+		encriptat = encriptat.replace("/", "%252F");
+		encriptat = encriptat.replace("==", "");
+		return encriptat;
 	}
 	
 	@SuppressWarnings("restriction")
-	public String desEncriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
+	public String desencriptar (String missatgeADesencriptar) throws Exception {
 
-		try {
-			SecretKeySpec secretKey = obtenirClau(clauSecreta);
-		    Cipher cipher = Cipher.getInstance("AES");
-		    cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		    return new String(cipher.doFinal( new sun.misc.BASE64Decoder()
-		      .decodeBuffer(missatgeAEncriptar)));
-		    } catch (Exception e) {
-			      logger.error("Error al desencriptar l'identificador del registre: " + e.toString());
-		    }
-		    return null;
-		  		
+		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		return new String(cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(missatgeADesencriptar)));	
 	}
 	
 	
-	public static SecretKeySpec obtenirClau(String message) throws Exception {
+	public static SecretKeySpec generarClau(String clauSecreta) throws Exception {
 		SecretKeySpec secretKey = null;
 		byte[] key;
 		MessageDigest sha = null;
 	    try {
-	      key = message.getBytes("UTF-8");
+	      key = clauSecreta.getBytes("UTF-8");
 	      sha = MessageDigest.getInstance("SHA-1");
 	      key = sha.digest(key);
 	      key = Arrays.copyOf(key, 16);
@@ -1269,11 +1255,7 @@ public class RegistreHelper {
 			pendentsByRegla.add(pendent);
 		}
 
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-		if (clauSecreta == null) {
-			return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
-		}
+		String clauSecreta = this.getClauSecretaProperty();
 		
 		long t0 = System.currentTimeMillis();
 		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
@@ -2300,6 +2282,14 @@ public class RegistreHelper {
 		return registreAnotacio;
 	
 	}
+	
+	public String getClauSecretaProperty() {
+		String clauSecreta = configHelper.getConfig("es.caib.distribucio.backoffice.integracio.clau");
+		if (clauSecreta == null)
+			throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
+		return clauSecreta;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
 }
