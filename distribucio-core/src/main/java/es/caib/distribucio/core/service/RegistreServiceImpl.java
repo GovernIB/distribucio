@@ -2505,12 +2505,23 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	@Override
+	@Transactional
 	public ProcedimentDto procedimentFindByCodiSia(long entitatId, String codiSia) {
 
 		ProcedimentDto procedimentDto = null;
-		if (codiSia != null) {
-			procedimentDto = cacheHelper.procedimentFindByCodiSia(entitatId, codiSia);
-		}
+		
+		// Treu el procediment cridant a la bbdd
+		ProcedimentEntity procediment = procedimentRepository.findByCodiSia(
+				entitatId, 
+				codiSia == null || codiSia.isEmpty(), 
+				codiSia != null && !codiSia.isEmpty() ? codiSia : "");
+		
+		procedimentDto = conversioTipusHelper.convertir(procediment, ProcedimentDto.class);
+
+		// Treu el procediment cridant al PluginRolsack
+//		if (codiSia != null) {
+//			procedimentDto = cacheHelper.procedimentFindByCodiSia(entitatId, codiSia);
+//		}
 				
 		return procedimentDto;
 	}
