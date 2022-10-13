@@ -103,6 +103,7 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -131,6 +132,7 @@ import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.ProcedimentRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -205,6 +207,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private ConfigHelper configHelper;
 	@Autowired
 	private CacheHelper cacheHelper;
+	@Autowired
+	private ProcedimentRepository procedimentRepository;
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -2355,7 +2359,11 @@ public class RegistreServiceImpl implements RegistreService {
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+
+			// Cerca del llistat de procediments per codiDir3
+//			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+			// Cerca del llistat de procediments amb consulta a la bbdd
+			List<ProcedimentEntity> procediments = procedimentRepository.findAll();
 			if (procediments != null) {
 				getProcediments(dtos, procediments);
 			}
@@ -2364,7 +2372,8 @@ public class RegistreServiceImpl implements RegistreService {
 			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
 			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
 				try {
-					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
+					List<ProcedimentEntity> procedimentsFills = procedimentRepository.findByCodiDir3(uoEntity.getCodi());
+//					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
 					if (procedimentsFills != null) {
 						getProcediments(dtos, procedimentsFills);
 					}				
@@ -2395,15 +2404,15 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@SuppressWarnings("unlikely-arg-type")
-	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
-		for (Procediment procediment: procediments) {
-			if (procediment.getCodigoSIA() != null 
-					&& !procediment.getCodigoSIA().isEmpty()
-					&& !dtos.contains(procediment.getNombre())) {
+	private void getProcediments(List<ProcedimentDto> dtos, List<ProcedimentEntity> procediments) {
+		for (ProcedimentEntity procediment: procediments) {
+			if (procediment.getCodiSia() != null 
+					&& !procediment.getCodiSia().isEmpty()
+					&& !dtos.contains(procediment.getNom())) {
 				ProcedimentDto dto = new ProcedimentDto();
-				dto.setCodi(procediment.getCodigo());
-				dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
-				dto.setNom(procediment.getNombre());
+				dto.setCodi(procediment.getCodi());
+				dto.setCodiSia(procediment.getCodiSia() != null ? procediment.getCodiSia() : procediment.getCodiSia());
+				dto.setNom(procediment.getNom());
 				dtos.add(dto);
 			}
 		}

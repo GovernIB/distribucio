@@ -2114,8 +2114,7 @@ public class RegistreHelper {
 					distribucioAnnex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto, 
-					procedimentCodi);
+					documentEniRegistrableDto);
 			annex.updateFitxerArxiuUuid(uuidDocument);
 			
 			if (distribucioAnnex.getFirmes() != null) {

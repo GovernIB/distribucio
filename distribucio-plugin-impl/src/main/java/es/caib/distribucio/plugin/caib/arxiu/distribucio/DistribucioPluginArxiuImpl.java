@@ -189,8 +189,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DistribucioRegistreAnnex distribucioAnnex,
 			String unitatArrelCodi,
 			String uuidExpedient,
-			DocumentEniRegistrableDto documentEniRegistrableDto, 
-			String procedimentCodi) throws SistemaExternException {
+			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
 		
 		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;
@@ -347,8 +346,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirmes,
 					uuidExpedient,
 					documentEniRegistrableDto,
-					estatDocument, 
-					procedimentCodi);
+					estatDocument);
 		} catch (Exception se) {
 			
 			int maxReintents = getGuardarAnnexosMaxReintents();
@@ -370,8 +368,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						arxiuFirmes,
 						uuidExpedient,
 						documentEniRegistrableDto,
-						DocumentEstat.ESBORRANY, 
-						procedimentCodi);	
+						DocumentEstat.ESBORRANY);	
 			} else {
 				throw se;
 			}
@@ -570,8 +567,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			List<ArxiuFirmaDto> firmes,
 			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
-			DocumentEstat estatDocument, 
-			String procedimentCodi) throws SistemaExternException {
+			DocumentEstat estatDocument) throws SistemaExternException {
 		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
@@ -628,7 +624,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					toArxiuDocument(
 							null,
 							nom, 
-							procedimentCodi,
 							annex.getTitol(),
 							fitxer,
 							firmes,
@@ -1156,7 +1151,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private Document toArxiuDocument(
 			String identificador,
 			String nom, 
-			String procedimentCodi,
 			String descripcio,
 			FitxerDto fitxer,
 			List<ArxiuFirmaDto> firmes, 
@@ -1374,9 +1368,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				throw new RuntimeException(e);
 			}
 		}		
-		if (format.equals(DocumentFormat.XML)) {
-			metaDadesAddicionals.put("eni:id_tramite", procedimentCodi);
-		}
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);
 	
 		document.setMetadades(metadades);

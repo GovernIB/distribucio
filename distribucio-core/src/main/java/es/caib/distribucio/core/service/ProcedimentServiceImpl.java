@@ -86,7 +86,11 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findAll();
 		for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
 			try {
-				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
+				// Cerca del llistat de procediments per codiDir3
+//				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
+				// Cerca del llistat de procediments amb consulta a la bbdd
+				List<ProcedimentEntity> procedimentsEntity = procedimentRepository.findAll();
+				List<Procediment> procediments = conversioTipusHelper.convertirList(procedimentsEntity, Procediment.class);
 				updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
 			}catch (Exception e) {
 				logger.info("No s'han pogut consultar els procediments de ROLSAC (" +

@@ -50,6 +50,13 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
+			"where (pro.unitatOrganitzativa.codi = :codiDir3) ")
+	List<ProcedimentEntity> findByCodiDir3(
+			@Param("codiDir3") String codiDir3);
+	
+	
+	@Query( "from " + 
+			"ProcedimentEntity pro " + 
 			"where (pro.entitat.id = :entitatId) " + 
 			"and (:esNullCodiSia = true or pro.codiSia like '%'||:codiSia||'%' )")
 	ProcedimentEntity findByCodiSia(
