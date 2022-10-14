@@ -302,7 +302,6 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 
-	@SuppressWarnings("incomplete-switch")
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<ContingutDto> findRegistre(
@@ -2462,39 +2461,13 @@ public class RegistreServiceImpl implements RegistreService {
 			if (procediments != null) {
 				getProcediments(dtos, procediments);
 			}
-			List<UnitatOrganitzativaEntity> unitatsDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, bustia.getUnitatOrganitzativa().getCodi());
-			List<UnitatOrganitzativaEntity> llistatFinalUnitatsOrganitzatives = new ArrayList<>();
-			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
-			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
-				try {
-					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
-					if (procedimentsFills != null) {
-						getProcediments(dtos, procedimentsFills);
-					}				
-					
-				}catch (Exception e) {
-					logger.info("No s'han pogut consultar els procediments de ROLSAC (" +
-							"codiDir3=" + uoEntity.getCodi() + ")",
-							e);
-				}
-			}
+			
 		}
 		// Ordenar per codi SIA
 		if (!dtos.isEmpty()) {
 			Collections.sort(dtos);
 		}
 		return dtos;
-	}
-	
-	@SuppressWarnings("null")
-	private void getUnitatsFills(List<UnitatOrganitzativaEntity> llistaUnitats, List<UnitatOrganitzativaEntity> llistaFinal) {
-		for (UnitatOrganitzativaEntity uoEntity : llistaUnitats) {
-			llistaFinal.add(uoEntity);
-			List<UnitatOrganitzativaEntity> uoDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, uoEntity.getCodi());
-			if (uoDescendents != null || !uoDescendents.isEmpty()) {
-				getUnitatsFills(uoDescendents, llistaFinal);
-			}
-		}
 	}
 	
 	@SuppressWarnings("unlikely-arg-type")
