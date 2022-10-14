@@ -613,7 +613,8 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 			weekStart: 1,
 			autoclose: true,
 			orientation: 'bottom',
-			language: $(this).data('idioma')
+			language: $(this).data('idioma'), 
+			todayHighlight: true
 		}).on('show', function() {
 			webutilModalAdjustHeight();
 		}).on('hide', function() {

@@ -159,31 +159,7 @@ function formatSelectUnitat(item) {
 	}
 }
 
-function backgroundCurrentDay() {
-	const date = new Date();
-	const currentMonth = date.getMonth() + 1;
-	const currentDay = date.getDate();
-	alert(currentDay); 
-	alert(currentMonth); 
-	const monthDays = document.getElementsByClassName("day");
-	const monthCalendar = $(".datepicker-switch").text();
-	const month = monthCalendar.split(" ");
-	for (var i = 0; i < monthDays.length; i++) {
-		if (monthDays[i].innerText == currentDay) {
-			alert(monthDays[i].innerText);
-			alert(month[0]);
-			monthDays[i].classList.add("currentDay");
-		}
-	}
-	$(".currentDay").css("background", "yellow");
-}
-
 $(document).ready(function() {
-	
-	$(".datepicker-days .table-condensed thead th.prev").click(function(){
-		  alert("The paragraph was clicked.");
-	});
-	
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
@@ -368,7 +344,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-2" onclick="backgroundCurrentDay()">
+			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
 			</div>
 			<div class="col-md-2">
