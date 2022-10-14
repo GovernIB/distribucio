@@ -232,19 +232,6 @@ public class CacheHelper {
 			String usuariCodi) {
 	}
 
-
-	@Cacheable(value = "procedimentFindByCodiSia", key="{#entitat, #codiSia}")
-	public ProcedimentDto procedimentFindByCodiSia(
-			long entitatId,
-			String codiSia) {
-		return pluginHelper.procedimentFindByCodiSia(codiSia);
-	}
-
-	@CacheEvict(value = "procedimentFindByCodiSia", allEntries = true)
-	public void evictProcedimentFindByCodiSia() {
-	}
-
-
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 
 

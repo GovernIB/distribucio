@@ -103,6 +103,7 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
@@ -111,7 +112,6 @@ import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
-import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -131,6 +131,7 @@ import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.ProcedimentRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
@@ -204,7 +205,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Autowired
 	private ConfigHelper configHelper;
 	@Autowired
-	private CacheHelper cacheHelper;
+	private ProcedimentRepository procedimentRepository;
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -2572,13 +2573,17 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	@Override
+	@Transactional(readOnly=true)
 	public ProcedimentDto procedimentFindByCodiSia(long entitatId, String codiSia) {
 
 		ProcedimentDto procedimentDto = null;
 		if (codiSia != null) {
-			procedimentDto = cacheHelper.procedimentFindByCodiSia(entitatId, codiSia);
+			// Treu el procediment cridant a la bbdd
+			ProcedimentEntity procediment = procedimentRepository.findByCodiSia(
+					entitatId, 
+					codiSia);			
+			procedimentDto = conversioTipusHelper.convertir(procediment, ProcedimentDto.class);
 		}
-				
 		return procedimentDto;
 	}
 	

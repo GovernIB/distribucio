@@ -150,8 +150,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		return conversioTipusHelper.convertir(
 				procedimentRepository.findByCodiSia(
 						entitatId, 
-						codiSia == null, 
-						codiSia != null ? codiSia : ""), 
+						codiSia), 
 				ProcedimentDto.class);						
 	}
 
