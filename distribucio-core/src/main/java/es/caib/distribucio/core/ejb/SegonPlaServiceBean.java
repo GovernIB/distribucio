@@ -87,7 +87,7 @@ public class SegonPlaServiceBean implements SegonPlaService {
 	}
 
 	@Override
-	public void actualitzarProcediments() {
+	public void actualitzarProcediments() throws Exception {
 		delegate.actualitzarProcediments();
 	}
 

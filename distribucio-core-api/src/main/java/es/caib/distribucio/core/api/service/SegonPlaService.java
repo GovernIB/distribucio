@@ -62,6 +62,7 @@ public interface SegonPlaService {
 	
 	/**
 	 * Actualitza els procediments 
+	 * @throws Exception 
 	 **/
-	public void actualitzarProcediments();
+	public void actualitzarProcediments() throws Exception;
 }

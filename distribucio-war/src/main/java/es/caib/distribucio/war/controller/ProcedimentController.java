@@ -77,7 +77,7 @@ public class ProcedimentController extends BaseAdminController{
 	@RequestMapping(value = "/actualitzar", method = RequestMethod.GET)
 	public String actualitzacioPost(
 			HttpServletRequest request, 
-			Model model) {
+			Model model) throws Exception {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		

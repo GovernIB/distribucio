@@ -236,7 +236,6 @@ body {
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
-									<a href="<c:url value="/procediment"/>" class="btn btn-primary"><spring:message code="decorator.menu.procediments"/></a>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzar"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
@@ -276,6 +275,7 @@ body {
 											<c:if test="${isRolActualAdministrador}">
 												<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
 											</c:if>
+											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 										</ul>

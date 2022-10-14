@@ -81,7 +81,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	@Transactional
-	public void findAndUpdateProcediments(Long entitatId) {
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
 		int errors = 0;
 		int correctes = 0;
 		logger.debug("Actualitzant els procediments");
@@ -89,8 +89,12 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
 			try {
 				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
-				updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
-				correctes++;
+				if (procediments != null && !procediments.isEmpty()) { 
+					updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
+					correctes++;
+				} else {
+					logger.debug("No hi ha procediments associats al codiDir3 " + unitatOrganitzativa.getCodi());
+				}
 			}catch (Exception e) {
 				errors++;
 				logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
@@ -99,8 +103,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 			}
 		}
 		if (errors > 0) {
-			// TODO
-			// throw new Exception("S'han actualitzat correctament " + correctes + " unitats organitzatives i s'han produit " + errors + " errors.");
+			throw new Exception("S'han actualitzat correctament " + correctes + " unitats organitzatives i s'han produit " + errors + " errors.");
 		}
 	}
 	

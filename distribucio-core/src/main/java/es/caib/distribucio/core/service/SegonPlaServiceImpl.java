@@ -565,7 +565,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 	
 	@Override
-	public void actualitzarProcediments() {
+	public void actualitzarProcediments() throws Exception {
 		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
 		for (EntitatEntity entitat : llistaEntitats) {
 			procedimentService.findAndUpdateProcediments(entitat.getId());
