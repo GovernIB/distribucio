@@ -168,7 +168,6 @@ $(document).ready(function() {
 						function(data) {
 							$("#seleccioCount").html(data);
 							$('#taulaDades').webutilDatatable('select-none');
-							$('#taulaDades').webutilDatatable('refresh');
 						}
 				);
 				return false;

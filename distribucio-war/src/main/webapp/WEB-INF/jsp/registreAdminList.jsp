@@ -157,7 +157,6 @@ $(document).ready(function() {
 						function(data) {
 							$("#seleccioCount").html(data);
 							$('#taulaDades').webutilDatatable('select-none');
-							$('#taulaDades').webutilDatatable('refresh');
 						}
 				);
 				return false;
@@ -396,8 +395,7 @@ $(document).ready(function() {
 					inline="true" 
 					placeholderKey="registre.admin.list.filtre.procediment"
 					suggestValue="codiSia"
-					suggestText="codiNom" 
-					optionTemplateFunction="formatSelectUnitat" />
+					suggestText="codiNom" />
 			</div>
 			<div class="col-md-3">
 				<dis:inputSelect id="reintents" name="reintents" netejar="true" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>		

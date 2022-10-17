@@ -103,10 +103,6 @@ public class RegistreAdminController extends BaseAdminController {
 		backNull.setNom("Sense backoffice");
 		backNull.setCodi("senseBackoffice");
 		backoffices.add(backNull);
-//		model.addAttribute(
-//				"backoffices",
-//				backofficeService.findByEntitat(
-//						entitatActual.getId()));
 		model.addAttribute("backoffices", backoffices);
 
 		return "registreAdminList";

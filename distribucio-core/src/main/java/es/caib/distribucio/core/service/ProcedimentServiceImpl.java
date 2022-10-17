@@ -1,5 +1,6 @@
 package es.caib.distribucio.core.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,12 +157,14 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProcedimentDto> findByNom(Long entitatId, String nom) {
+	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String search) {
+		if (search == null || search.isEmpty()) {
+			return new ArrayList<>();
+		}			
 		return conversioTipusHelper.convertirList(
-				procedimentRepository.findByNom(
+				procedimentRepository.findByNomOrCodiSia(
 						entitatId, 
-						nom == null,
-						nom != null ? nom : ""), 
+						search != null ? search : ""), 
 				ProcedimentDto.class);
 	}
 	
