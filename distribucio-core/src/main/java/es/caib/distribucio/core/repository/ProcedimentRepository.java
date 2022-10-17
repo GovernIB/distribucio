@@ -51,7 +51,7 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
 			"where (pro.entitat.id = :entitatId) " + 
-			"and (pro.codiSia = :codiSia)")
+			"and (lower(pro.codiSia) = lower(:codiSia))")
 	ProcedimentEntity findByCodiSia(
 			@Param("entitatId") Long entitatId, 
 			@Param("codiSia") String codiSia);
@@ -60,10 +60,19 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
 			"where (pro.entitat.id = :entitatId) " + 
-			"and (:esNullNom = true or pro.nom like '%'||:nom||'%' )")
+			"and (:esNullNom = true or lower(pro.nom) like lower('%'||:nom||'%') )")
 	List<ProcedimentEntity> findByNom(
 			@Param("entitatId") Long entitatId, 
 			@Param("esNullNom") boolean esNullNom, 
 			@Param("nom") String nom);
+	
+	
+	@Query( "from " + 
+			"ProcedimentEntity pro " + 
+			"where (pro.entitat.id = :entitatId) " + 
+			"and pro.unitatOrganitzativa.codi = :unitatOrganitzativaCodi")
+	List<ProcedimentEntity> findByCodiUnitatOrganitzativa(
+			@Param("entitatId") Long entitatId, 
+			@Param("unitatOrganitzativaCodi") String unitatOrganitzativaCodi);
 
 }

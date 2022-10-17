@@ -138,7 +138,6 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.VistaMovimentRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
@@ -1770,6 +1769,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Override
+	@Transactional(timeout=900)
 	public boolean processarAnnexosAdmin(
 			Long entitatId,
 			Long registreId) {
@@ -2447,22 +2447,27 @@ public class RegistreServiceImpl implements RegistreService {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
 				"bustiaId=" + bustiaId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (bustiaId != null && bustiaId > 0) {
+			
+			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+					entitatId,
+					true,
+					false,
+					false);
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());
+			// Cerca del llistat de procediments per codiDir3 cridant al plugin
+//			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+			
+			// Cerca del llistat de procediments amb consulta a la bbdd
+			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
 			if (procediments != null) {
 				getProcediments(dtos, procediments);
 			}
-			
 		}
 		// Ordenar per codi SIA
 		if (!dtos.isEmpty()) {
@@ -2471,16 +2476,27 @@ public class RegistreServiceImpl implements RegistreService {
 		return dtos;
 	}
 	
+	
+	private List<ProcedimentEntity> getPerUnitatOrganitzativaIDescendents(Long entitatId, List<String> llistaUnitatsOrganitzatives) {
+		List<ProcedimentEntity> llistaProcediments = new ArrayList<>(); 
+		for (String codiUnitatOrganitzativa : llistaUnitatsOrganitzatives) {
+			List<ProcedimentEntity> procediments = procedimentRepository.findByCodiUnitatOrganitzativa(entitatId, codiUnitatOrganitzativa);
+			llistaProcediments.addAll(procediments);
+		}
+		
+		return llistaProcediments;
+	}
+	
 	@SuppressWarnings("unlikely-arg-type")
-	private void getProcediments(List<ProcedimentDto> dtos, List<Procediment> procediments) {
-		for (Procediment procediment: procediments) {
-			if (procediment.getCodigoSIA() != null 
-					&& !procediment.getCodigoSIA().isEmpty()
-					&& !dtos.contains(procediment.getNombre())) {
+	private void getProcediments(List<ProcedimentDto> dtos, List<ProcedimentEntity> procediments) {
+		for (ProcedimentEntity procediment: procediments) {
+			if (procediment.getCodiSia() != null 
+					&& !procediment.getCodiSia().isEmpty()
+					&& !dtos.contains(procediment.getNom())) {
 				ProcedimentDto dto = new ProcedimentDto();
-				dto.setCodi(procediment.getCodigo());
-				dto.setCodiSia(procediment.getCodigoSIA() != null ? procediment.getCodigoSIA() : procediment.getCodigoSia());
-				dto.setNom(procediment.getNombre());
+				dto.setCodi(procediment.getCodi());
+				dto.setCodiSia(procediment.getCodiSia() != null ? procediment.getCodiSia() : procediment.getCodiSia());
+				dto.setNom(procediment.getNom());
 				dtos.add(dto);
 			}
 		}
