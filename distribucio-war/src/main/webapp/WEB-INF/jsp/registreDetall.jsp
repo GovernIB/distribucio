@@ -1346,7 +1346,29 @@ li[id^="anotacio_"] {
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h3 class="panel-title">
-									<span class="fa fa-file"></span>
+									<c:choose>
+										<c:when test="${fn:contains(annex.fitxerTipusMime, 'pdf')}">										
+											<span class="fa fa-file-pdf-o"></span>
+										</c:when>
+										<c:when test="${fn:contains(annex.fitxerTipusMime, 'xml')}">										
+											<span class="fa fa-file-code-o"></span>
+										</c:when>
+										<c:when test="${fn:contains(annex.fitxerTipusMime, 'jpeg')}">										
+											<span class="fa fa-file-image-o"></span>
+										</c:when>
+										<c:when test="${fn:contains(annex.fitxerTipusMime, 'msword')}">										
+											<span class="fa fa-file-word-o"></span>
+										</c:when>
+										<c:when test="${fn:contains(annex.fitxerTipusMime, 'xsig')}">										
+											<span class="fa fa-file-o"></span>
+										</c:when>
+										<%-- <c:when test="${fn:contains(annex.fitxerTipusMime, 'octet')}">										
+											<span class="fa fa-file"></span>
+										</c:when> --%>
+										<c:otherwise>										
+											<span class="fa fa-file"></span>
+										</c:otherwise>
+									</c:choose>
 									${annex.titol}
 									<c:if test="${annex.fitxerArxiuUuid == null }">
 										<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
