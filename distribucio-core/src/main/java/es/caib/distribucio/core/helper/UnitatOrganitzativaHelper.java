@@ -71,9 +71,11 @@ public class UnitatOrganitzativaHelper {
 			
 			ArbreDto<UnitatOrganitzativaDto> arbre = this.getArbreOfUnitatsDescendants(entitat, codi);
 			// Agafa tots els identificadors
-			for (UnitatOrganitzativaDto uo : arbre.toDadesList()) {
-				codisOfUnitatsDescendants.add(uo.getCodi());
-			}			
+			if (arbre != null && !arbre.toList().isEmpty()) {
+				for (UnitatOrganitzativaDto uo : arbre.toDadesList()) {
+					codisOfUnitatsDescendants.add(uo.getCodi());
+				}			
+			}
 		}
 		return codisOfUnitatsDescendants;
 	}
