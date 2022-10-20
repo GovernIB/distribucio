@@ -81,10 +81,12 @@ public class RegistreHelper extends BaseController{
 			fila[4] = registre.getOficinaDescripcio();
 			
 			String presencial = "";
-			if (registre.getPresencial()) {
-				presencial = "Si";
-			}else {
-				presencial = "no";
+			if (registre.getPresencial() != null) {
+				if (registre.getPresencial()) {
+					presencial = "Si";
+				}else {
+					presencial = "no";
+				}
 			}
 			fila[5] = presencial;
 			
