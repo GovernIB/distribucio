@@ -115,25 +115,25 @@ public class BustiaHelper {
 			final Timer timerAcumulats = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.Acumulats"));
 			Timer.Context contextAcumulats = timerAcumulats.time();
 			// Consulta els contadors d'elements pendents per a totes les bústies
-			long[] countContenidors = contingutHelper.countFillsAmbPermisReadByContinguts(
-					entitat,
-					busties,
-					nomesAmbBustiesPermeses);
-			// Calcula els acumulats de pendents per a cada unitat
-			Map<String, Long> acumulats = new HashMap<String, Long>();
-			for (int i = 0; i < busties.size(); i++) {
-				BustiaEntity bustia = busties.get(i);
-				Long acumulat = acumulats.get(bustia.getUnitatOrganitzativa().getCodi());
-				if (acumulat == null) {
-					acumulats.put(
-							bustia.getUnitatOrganitzativa().getCodi(),
-							countContenidors[i]);
-				} else {
-					acumulats.put(
-							bustia.getUnitatOrganitzativa().getCodi(),
-							acumulat + countContenidors[i]);
-				}
-			}
+//			long[] countContenidors = contingutHelper.countFillsAmbPermisReadByContinguts(
+//					entitat,
+//					busties,
+//					nomesAmbBustiesPermeses);
+//			// Calcula els acumulats de pendents per a cada unitat
+//			Map<String, Long> acumulats = new HashMap<String, Long>();
+//			for (int i = 0; i < busties.size(); i++) {
+//				BustiaEntity bustia = busties.get(i);
+//				Long acumulat = acumulats.get(bustia.getUnitatOrganitzativa().getCodi());
+//				if (acumulat == null) {
+//					acumulats.put(
+//							bustia.getUnitatOrganitzativa().getCodi(),
+//							countContenidors[i]);
+//				} else {
+//					acumulats.put(
+//							bustia.getUnitatOrganitzativa().getCodi(),
+//							acumulat + countContenidors[i]);
+//				}
+//			}
 			contextAcumulats.stop();
 			
 			final Timer timerCalculaRecorr = metricRegistry.timer(MetricRegistry.name(BustiaHelper.class, "findArbreUnitatsOrganitzatives.CalculaRecorr"));
@@ -147,24 +147,24 @@ public class BustiaHelper {
 			}
 			// Recorr l'arbre per nivells en ordre invers per a actualitzar
 			// el contador d'elements pendents de cada node i dels seus pares
-			for (int nivell = nivellsCount; nivell > 0; nivell--) {
-				for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
-					if (node.getNivell() == nivell) {
-						// Actualitza el contador del node actual
-						String unitatCodi = node.getDades().getCodi();
-						Long acumulat = acumulats.get(unitatCodi);
-						if (acumulat != null) {
-							node.addCount(acumulat);
-							// Actualitza els contadors dels pares
-							ArbreNodeDto<UnitatOrganitzativaDto> pare = node.getPare();
-							while (pare != null) {
-								pare.addCount(node.getCount());
-								pare = pare.getPare();
-							}
-						}
-					}
-				}
-			}
+//			for (int nivell = nivellsCount; nivell > 0; nivell--) {
+//				for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
+//					if (node.getNivell() == nivell) {
+//						// Actualitza el contador del node actual
+//						String unitatCodi = node.getDades().getCodi();
+//						Long acumulat = acumulats.get(unitatCodi);
+//						if (acumulat != null) {
+//							node.addCount(acumulat);
+//							// Actualitza els contadors dels pares
+//							ArbreNodeDto<UnitatOrganitzativaDto> pare = node.getPare();
+//							while (pare != null) {
+//								pare.addCount(node.getCount());
+//								pare = pare.getPare();
+//							}
+//						}
+//					}
+//				}
+//			}
 			contextCalculaRecorr.stop();
 		}
 		return arbre;

@@ -78,11 +78,11 @@ function formatSelectBustia(item) {
 
 function formatSelectTipusDocumentacio(item) {
 	if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>'){
-		return $("<span>" + item.text + " <span class='fa fa-archive text-danger'></span></span>");
+		return $("<span> <span class='fa fa-archive text-danger'> </span> " + item.text + "</span>");
 	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>'){
-		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-warning'></span> <span class='fa fa-archive text-warning'></span></span>");
+		return $("<span> <span class='fa fa-file-code-o text-warning'> </span> <span class='fa fa-archive text-warning'> </span> " + item.text + "</span>");
 	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>'){
-		return $("<span>" + item.text + " <span class='fa fa-file-code-o text-success'></span></span>");
+		return $("<span> <span class='fa fa-file-code-o text-success'> </span> " + item.text + "</span>");
 	}else {
 		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
 	}

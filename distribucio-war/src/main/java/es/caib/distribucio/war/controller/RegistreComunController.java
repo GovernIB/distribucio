@@ -369,11 +369,22 @@ public class RegistreComunController extends BaseController{
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
-		
-		List<RegistreDto> llistatRegistres = registreService.findMultiple(
-				getEntitatActual(request).getId(),
-				this.getRegistresSeleccionats(request, sessionAttributeSeleccio), 
-				true);
+		List<Long> registresSeleccionatsIds = this.getRegistresSeleccionats(request, sessionAttributeSeleccio);
+		List<RegistreDto> llistatRegistres = new ArrayList<>();
+		List<RegistreDto> registres = new ArrayList<>();
+		if (registresSeleccionatsIds != null) {
+			// Consulta de 1000 en 1000
+			int i = 0;
+			int total = registresSeleccionatsIds.size();
+			while (i < total ) {
+				registres = registreService.findMultiple(
+						getEntitatActual(request).getId(),
+						registresSeleccionatsIds.subList(i, Math.min(i+1000, total)), 
+						true);
+				llistatRegistres.addAll(registres);
+				i += 1000;
+			}
+		}
 		try {
 			FitxerDto fitxer = registreHelper.exportarAnotacions(
 										request, 

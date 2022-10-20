@@ -22,14 +22,14 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
 			"where (pro.entitat.id = :entitatId) " + 
-			"and (:isNullUnitatOrganitzativa = true or pro.unitatOrganitzativa.id = :unitatOrganitzativaId) " + 
+			"and (:isNullUnitatOrganitzativa = true or pro.unitatOrganitzativa.codi = :unitatOrganitzativaCodi) " + 
 			"and (:isCodiNull = true or lower(pro.codi) like lower('%'||:codi||'%')) " + 
 			"and (:isNomNull = true or lower(pro.nom) like lower('%'||:nom||'%')) " + 
 			"and (:isCodiSiaNull = true or lower(pro.codiSia) like lower('%'||:codiSia||'%'))")
 	Page<ProcedimentEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
-			@Param("unitatOrganitzativaId") Long unitatorganitzativaId, 
+			@Param("unitatOrganitzativaCodi") String unitatorganitzativaCodi, 
 			@Param("isCodiNull") boolean isCodiNull, 
 			@Param("codi") String codi,
 			@Param("isNomNull") boolean isNomNull,

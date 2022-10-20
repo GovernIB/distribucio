@@ -608,10 +608,6 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.documentacioFisicaCodi = :documentacioFisicaCodi ");
 			parametres.put("documentacioFisicaCodi", documentacioFisicaCodi);
 		}
-		if (!esNullBackCodi) {
-			sqlWhere.append("and lower(r.backCodi) like lower('%'||:backCodi||'%') ");
-			parametres.put("backCodi", backCodi);
-		}
 		if (!esNullUnitatOrganitzativa) {
 			sqlWhere.append("and r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa) ");
 			parametres.put("unitatOrganitzativa", unitatOrganitzativa);
@@ -665,7 +661,9 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		if (nombreAnnexos != null) {
-			sqlWhere.append("and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos));
+//			sqlWhere.append("and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos));
+			sqlWhere.append("and ((r.justificant is not null and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos, true) + ")");
+			sqlWhere.append(" 		or (r.justificant is not null and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos, false) + "))");
 		}
 
 		StringBuilder sqlOrder = new StringBuilder();
@@ -732,17 +730,24 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 
-	private Object getNombreAnnexosSize(RegistreNombreAnnexesEnumDto nombreAnnexos) {
+	private Object getNombreAnnexosSize(RegistreNombreAnnexesEnumDto nombreAnnexos, boolean justificant) {
 		// 			sqlWhere.append("and r.annexos.size > 100 ");
 		String ret = "= 1";
+		Integer max = null;
+		Integer min = null;
+		int j = (justificant ? 1 : 0);
 		switch (nombreAnnexos) {
 			case AMB_1:
-				ret = "= 2 ";
+				min = 1;
+				max = 1;
 				break;
 			case AMB_2:
+				min = 2;
 				ret = "= 3 ";
 				break;
 			case AMB_3:
+				min = 3;
+
 				ret = "= 4 ";
 				break;
 			case AMB_4:
@@ -766,6 +771,15 @@ public class RegistreServiceImpl implements RegistreService {
 			case MES_DE_100:
 				ret = "> 101 ";
 				break;
+		}
+		if (justificant) {
+			min ++;
+			max ++;
+		}
+		if (min.equals(max)) {
+			ret = " = " + min;
+		} else {
+			
 		}
 		return ret;
 	}

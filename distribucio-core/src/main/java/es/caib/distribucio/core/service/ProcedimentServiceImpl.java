@@ -65,8 +65,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		llistaProcediments = paginacioHelper.toPaginaDto(
 				procedimentRepository.findAmbFiltrePaginat(
 						entitatId, 
-						filtre.getUnitatOrganitzativa().getId() == null, 
-						filtre.getUnitatOrganitzativa().getId() != null ? filtre.getUnitatOrganitzativa().getId() : 0L, 
+						filtre.getUnitatOrganitzativa().getCodi() == null || filtre.getUnitatOrganitzativa().getCodi().isEmpty(), 
+						filtre.getUnitatOrganitzativa().getCodi() != null ? filtre.getUnitatOrganitzativa().getCodi() : "", 
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi() != null ? filtre.getCodi() : "", 
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
