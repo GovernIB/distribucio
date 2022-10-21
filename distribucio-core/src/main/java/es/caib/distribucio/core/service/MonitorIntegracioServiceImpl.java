@@ -177,6 +177,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		if (data != null) {
 			n = monitorIntegracioRepository.countMonitorByDataBefore(data).size();
 			monitorIntegracioParamRepository.deleteDataBefore(data);
+			monitorIntegracioParamRepository.flush();
 			monitorIntegracioRepository.deleteDataBefore(data);
 		}
 		return n;
