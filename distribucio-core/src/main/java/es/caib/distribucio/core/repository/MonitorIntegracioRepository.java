@@ -80,7 +80,7 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
 	@Modifying
-	@Query(	"delete  from MonitorIntegracioEntity mon " +
+	@Query(	"delete from MonitorIntegracioEntity mon " +
 			"where mon.data < :data ")
 	public void deleteDataBefore(
 			@Param("data") Date data);
@@ -95,6 +95,7 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 	/** Consulta les dades antigues */
 	@Query(	"from MonitorIntegracioEntity mon " +
 			"where mon.data < :data ")
-	public List<MonitorIntegracioEntity> getDadesAntigues(@Param("data") Date data);
+	public List<MonitorIntegracioEntity> getDadesAntigues(
+			@Param("data") Date data);
 
 }

@@ -22,8 +22,11 @@ public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorI
 
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
 	@Modifying
-	@Query(	"delete from MonitorIntegracioParamEntity monParam " +
-			"where monParam.monitorIntegracio.data < :data ")
+	@Query("delete MonitorIntegracioParamEntity monParam " +
+			"where monParam.monitorIntegracio.id in " +
+			"( 	select mon.id " + 
+			"	from MonitorIntegracioEntity mon " +
+			"	where mon.data = :data )")
 	public void deleteDataBefore(
 			@Param("data") Date data);
 	
