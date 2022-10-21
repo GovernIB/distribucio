@@ -772,14 +772,14 @@ public class RegistreServiceImpl implements RegistreService {
 				ret = "> 101 ";
 				break;
 		}
-		if (justificant) {
-			min ++;
-			max ++;
-		}
-		if (min.equals(max)) {
-			ret = " = " + min;
-		} else {
-			
+		if (min != null && max != null) {
+			if (justificant) {
+				min ++;
+				max ++;
+			}
+			if (min.equals(max)) {
+				ret = " = " + min;
+			}
 		}
 		return ret;
 	}
