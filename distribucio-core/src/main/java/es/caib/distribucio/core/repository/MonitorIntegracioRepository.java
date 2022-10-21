@@ -63,6 +63,13 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("estat") IntegracioAccioEstatEnumDto estat,
 			Pageable pageable);
 
+	@Query(	"select count(mon)" +
+			"from MonitorIntegracioEntity mon " +
+			"where mon.data > :data " + 
+			"group by mon.codi ")
+	public List<Object[]> countMonitorByDataBefore(
+			@Param("data") Date data);
+
 	@Query(	"select mon.codi, count(mon)" +
 			"from MonitorIntegracioEntity mon " +
 			"where mon.estat = 'ERROR' " + 
@@ -72,10 +79,11 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("dataInici") Date dataInici);
 
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
+	@Modifying
 	@Query(	"delete  from MonitorIntegracioEntity mon " +
 			"where mon.data < :data ")
-	@Modifying
-	public void deleteDataBefore(@Param("data") Date data);
+	public void deleteDataBefore(
+			@Param("data") Date data);
 	
 	/** Esborra les dades filtrant pel codi */
 	@Modifying

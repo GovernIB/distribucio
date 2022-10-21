@@ -21,10 +21,11 @@ import es.caib.distribucio.core.entity.MonitorIntegracioParamEntity;
 public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorIntegracioParamEntity, Long> {
 
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
+	@Modifying
 	@Query(	"delete from MonitorIntegracioParamEntity monParam " +
 			"where monParam.monitorIntegracio.data < :data ")
-	@Modifying
-	public void deleteDataBefore(@Param("data") Date data);
+	public void deleteDataBefore(
+			@Param("data") Date data);
 	
 	
 	/** Esborra les dades filtrant per l'id del monitor d'integració */

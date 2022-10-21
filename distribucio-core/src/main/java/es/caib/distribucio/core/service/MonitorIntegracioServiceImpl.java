@@ -175,10 +175,13 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		logger.trace("Esborrant dades del monitor d'integració anteriors a : " + data);
 		int n = 0;
 		if (data != null) {
-			for (MonitorIntegracioEntity monitorIntegracio : monitorIntegracioRepository.getDadesAntigues(data)) {
-				monitorIntegracioRepository.delete(monitorIntegracio);
-				n++;
-			}
+//			for (MonitorIntegracioEntity monitorIntegracio : monitorIntegracioRepository.getDadesAntigues(data)) {
+//				monitorIntegracioRepository.delete(monitorIntegracio);
+//				n++;
+//			}
+			n = monitorIntegracioRepository.countMonitorByDataBefore(data).size();
+			monitorIntegracioParamRepository.deleteDataBefore(data);
+			monitorIntegracioRepository.deleteDataBefore(data);
 		}
 		return n;
 	}
