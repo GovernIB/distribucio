@@ -11,7 +11,7 @@ values
 Insert into DIS_CONFIG 
 	(KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI,LASTMODIFIEDDATE) 
 values 
-	('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments',null,'Interval de dies entre execucions de la tasca (per defecte 25 dies)','SCHEDULLED_PROCEDIMENT','7','0','INT', NULL, '1',null,null);
+	('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments',null,'Interval de dies entre execucions de la tasca (per defecte 25 dies)','SCHEDULLED_PROCEDIMENT','7','0','INT', NULL, '0',null,null);
 	
 	
 	
@@ -25,4 +25,4 @@ values
 Insert into DIS_CONFIG 
 	(KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI,LASTMODIFIEDDATE) 
 values 
-	('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments',null,'Interval de dies entre execucions de la tasca (per defecte 25 dies)','SCHEDULLED_PROCEDIMENT','7',false,'INT',NULL,true,null,null);
+	('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments',null,'Interval de dies entre execucions de la tasca (per defecte 25 dies)','SCHEDULLED_PROCEDIMENT','7',false,'INT',NULL,false,null,null);

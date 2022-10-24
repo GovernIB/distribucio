@@ -49,13 +49,10 @@ public class DistribucioController {
 			if (entitat == null)
 				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
 			if (RolHelper.isRolActualAdministrador(request) || RolHelper.isRolActualAdminLectura(request)) {
-				configService.reiniciarTasquesEnSegonPla();
 				return "redirect:registreAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
-				configService.reiniciarTasquesEnSegonPla();
 				return "redirect:registreUser";
 			} else {
-				configService.reiniciarTasquesEnSegonPla();
 				return "index";
 			}
 		}
