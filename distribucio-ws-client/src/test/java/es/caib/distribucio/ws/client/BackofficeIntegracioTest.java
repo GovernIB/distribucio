@@ -72,35 +72,11 @@ public class BackofficeIntegracioTest {
 		}
 	}
 	
-	
-
-
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"https://dev.caib.es/distribucio/ws/v1/bustia",
-				"u145691",				
-				"jhksFo54");				
-	}									
-	
-
-	/* DES */
-//	"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
-//	"admin",				
-//	"admin"
-	
-	/* DEV */
-//	"https://dev.caib.es/distribucio/ws/v1/bustia",
-//	"u145691",				
-//	"jhksFo54"
-	
-	/* PROVES AMB USUARI NOMÉS A SEYCON */
-//	usuari: provesFernando
-//	contrasenya: provesFernando
-	
-
-	
-
-
-	
+				"http://localhost:8080/distribucio/ws/backofficeIntegracio",
+				"admin",				
+				"admin");
+	}
 
 }
