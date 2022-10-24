@@ -91,7 +91,7 @@ span.fa-cog {
 	margin: 4px 1.5rem 0 0; 
 }
 
-span.caret {
+tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
 	margin: 8px 0 0 2px; 
 }
 
