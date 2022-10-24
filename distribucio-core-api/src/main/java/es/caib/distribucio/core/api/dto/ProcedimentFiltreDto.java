@@ -9,7 +9,7 @@ public class ProcedimentFiltreDto implements Serializable{
 	private String codi;
 	private String nom;
 	private String codiSia;
-	private UnitatOrganitzativaDto unitatOrganitzativa;
+	private String unitatOrganitzativa;
 	private EntitatDto entitat;	
 
 	
@@ -37,11 +37,11 @@ public class ProcedimentFiltreDto implements Serializable{
 		this.codiSia = codiSia;
 	}
 
-	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
+	public String getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
 
-	public void setUnitatOrganitzativa(UnitatOrganitzativaDto unitatOrganitzativa) {
+	public void setUnitatOrganitzativa(String unitatOrganitzativa) {
 		this.unitatOrganitzativa = unitatOrganitzativa;
 	}
 

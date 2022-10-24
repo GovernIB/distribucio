@@ -98,6 +98,10 @@ public class ProcedimentController extends BaseAdminController{
 		
 		EntitatDto entitat = getEntitatActualComprovantPermisAdminLectura(request);
 		ProcedimentFiltreCommand procedimentFiltreCommand = getFiltreCommand(request);
+//		if (procedimentFiltreCommand.getUnitatOrganitzativa() != null && 
+//				procedimentFiltreCommand.getUnitatOrganitzativa().getId() == null) {
+//			procedimentFiltreCommand.setUnitatOrganitzativa(null);
+//		}
 		return DatatablesHelper.getDatatableResponse(
 				request, 
 				procedimentService.findAmbFiltre(

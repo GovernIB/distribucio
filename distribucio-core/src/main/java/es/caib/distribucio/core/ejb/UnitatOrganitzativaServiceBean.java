@@ -141,6 +141,11 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	public List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId) {
 		return delegate.getNewFromWS(entitatId);
 	}
+
+	@Override
+	public List<UnitatOrganitzativaDto> findByCodiAndDenominacioFiltre(String filtre) {
+		return delegate.findByCodiAndDenominacioFiltre(filtre);
+	}
 	
 	/*@Autowired
 	UnitatsOrganitzativesService delegate;

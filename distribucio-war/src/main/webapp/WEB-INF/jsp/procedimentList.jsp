@@ -30,7 +30,20 @@
 		function actualitzarProcediments() {
 			$("#span-refresh").addClass('fa-circle-o-notch');
 			$("#span-refresh").addClass('fa-spin')
+			$("#actualitzarProcediments").css("pointer-events", "none");
 			window.location.href = '<c:url value="/procediment/actualitzar"/>';
+			$("#actualitzarProcediments").prop("pointer-events", "auto");
+		}
+
+		function formatSelectUnitat(item) {
+			if (!item.id) {
+			    return item.text;
+			}
+			if (item.data && item.data.estat=="V"){
+				return item.text;
+			} else {
+				return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='unitat.filtre.avis.obsoleta'/>\"></span></span>");
+			}
 		}
 	</script>
 </head>
@@ -41,7 +54,8 @@
 				<dis:inputText name="codiSia" inline="true" placeholderKey="procediment.list.columna.codiSia"/>
 			</div>
 			<div class="col-md-3">
-				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
+				<dis:inputText name="nom" inline="true" placeholderKey="registre.admin.list.filtre.procediment"/>
+				<%-- <c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
 				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="nom"
@@ -51,10 +65,21 @@
 					placeholderKey="registre.admin.list.filtre.procediment"
 					suggestValue="nom"
 					suggestText="codiNom" 
-					optionTemplateFunction="formatSelectUnitat" />
+					optionTemplateFunction="formatSelectProcediment" /> --%>
 			</div>			
 			<div class="col-md-3">
-				<dis:inputText name="unitatOrganitzativa.codi" inline="true" placeholderKey="procediment.list.columna.unitatOrganitzativa.codiDir3"/>
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/senseEntitat" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="unitatOrganitzativa"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="procediment.list.columna.unitatOrganitzativa.codiDir3"
+					suggestValue="codi"
+					suggestText="codiAndNom" 
+					optionTemplateFunction="formatSelectUnitat" /> 
+				<%-- <dis:inputText name="unitatOrganitzativa.codi" inline="true" placeholderKey="procediment.list.columna.unitatOrganitzativa.codiDir3"/> --%> 
 			</div>
 		</div>
 		<div class="row">		

@@ -82,6 +82,16 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("esNullFiltre") boolean esNullFiltreCodi,
 			@Param("filtre") String filtre,
 			@Param("ambArrel") boolean ambArrel);
+
+	
+	@Query(	"from " +
+			"    UnitatOrganitzativaEntity uo " +
+			"where " +
+			"(:esNullFiltreCodi = true or lower(uo.codi) like lower('%'||:filtre||'%') " +
+			"or (:esNullFiltreCodi = true or lower(uo.denominacio) like lower('%'||:filtre||'%'))) ")
+	List<UnitatOrganitzativaEntity> findByCodiAndDenominacioFiltre(
+			@Param("esNullFiltreCodi") boolean esNullFiltreCodi,
+			@Param("filtre") String filtre);
 	
 	@Query(	"from " +
 			"    UnitatOrganitzativaEntity uo " +

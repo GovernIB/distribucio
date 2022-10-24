@@ -64,8 +64,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		llistaProcediments = paginacioHelper.toPaginaDto(
 				procedimentRepository.findAmbFiltrePaginat(
 						entitatId, 
-						filtre.getUnitatOrganitzativa().getId() == null, 
-						filtre.getUnitatOrganitzativa().getId() != null ? filtre.getUnitatOrganitzativa().getId() : 0L, 
+						filtre.getUnitatOrganitzativa() == null || filtre.getUnitatOrganitzativa().isEmpty(), 
+						filtre.getUnitatOrganitzativa() != null ? filtre.getUnitatOrganitzativa() : "", 
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi() != null ? filtre.getCodi() : "", 
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
@@ -87,10 +87,10 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
 			try {
 				// Cerca del llistat de procediments per codiDir3
-//				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
+				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
 				// Cerca del llistat de procediments amb consulta a la bbdd
-				List<ProcedimentEntity> procedimentsEntity = procedimentRepository.findAll();
-				List<Procediment> procediments = conversioTipusHelper.convertirList(procedimentsEntity, Procediment.class);
+//				List<ProcedimentEntity> procedimentsEntity = procedimentRepository.findAll();
+//				List<Procediment> procediments = conversioTipusHelper.convertirList(procedimentsEntity, Procediment.class);
 				updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
 			}catch (Exception e) {
 				logger.info("No s'han pogut consultar els procediments de ROLSAC (" +

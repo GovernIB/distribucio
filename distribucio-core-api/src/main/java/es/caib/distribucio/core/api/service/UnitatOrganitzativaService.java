@@ -111,5 +111,7 @@ public interface UnitatOrganitzativaService {
 
 	UnitatOrganitzativaDto getLastHistoricos(UnitatOrganitzativaDto uo);
 
-	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);	
+	List<UnitatOrganitzativaDto> getNewFromWS(Long entitatId);
+
+	List<UnitatOrganitzativaDto> findByCodiAndDenominacioFiltre(String filtre);	
 }

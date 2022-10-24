@@ -276,6 +276,22 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 				unitats,
 				UnitatOrganitzativaDto.class);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnitatOrganitzativaDto> findByCodiAndDenominacioFiltre(
+			String filtre) {
+		
+		List<UnitatOrganitzativaEntity> unitats = null;
+		
+		unitats = unitatOrganitzativaRepository.findByCodiAndDenominacioFiltre(
+				filtre == null || filtre.isEmpty(), 
+				filtre != null ? filtre : "");		
+		
+		return conversioTipusHelper.convertirList(
+				unitats,
+				UnitatOrganitzativaDto.class);
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
