@@ -123,16 +123,31 @@ let guardarPropietat = (configKey, natejar) => {
 };
 
 
-function guardarAnotacionsPendents() {
+function reiniciarTasquesSegonPla() {
+	$("#btn-reiniciarTasquest #span-refresh").addClass('fa-circle-o-notch');
+	$("#btn-reiniciarTasquest #span-refresh").addClass('fa-spin')
+	$("#btn-reiniciarTasquest").css("pointer-events", "none");
 	var location = window.location.href;
 	const locationSplit = location.split("distribucio/");
-	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';		
+	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';
+	$("#btn-reiniciarTasquest").prop("pointer-events", "auto");		
+}
+
+
+function sincronitzar() {
+	$("#btn-sincronitzar #span-refresh").addClass('fa-circle-o-notch');
+	$("#btn-sincronitzar #span-refresh").addClass('fa-spin')
+	$("#btn-sincronitzar").css("pointer-events", "none");
+	var location = window.location.href;
+	const locationSplit = location.split("distribucio/");
+	window.location.href = '<c:url value="/config/synchronize?currentPage=' + locationSplit[1] + '"/>';
+	$("#btn-sincronitzar").prop("pointer-events", "auto");		
 }
 
 $(document).ready(function() {
 	
-	$("#header").append("<div style='float: right;'><a href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
-	$("#header").append("<div style='float: right;'><a onclick='guardarAnotacionsPendents()' href='' class='btn btn-default'><span class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' onclick='sincronitzar()' href='' class='btn btn-default'><span id='span-refresh' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasquest' onclick='reiniciarTasquesSegonPla()' href='' class='btn btn-default'><span id='span-refresh' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 
 	
 	$(".form-update-config").submit(function(e) {

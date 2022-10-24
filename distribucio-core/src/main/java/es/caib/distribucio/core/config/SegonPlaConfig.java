@@ -453,31 +453,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
         		new Trigger() {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
-//						Long value = null;
-//						try {
-//							value = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments");
-//						}catch (Exception e) {
-//							logger.warn("Error consultant la propietat per la propera execució per actualitzar la taula de procediments");
-//						}
-//						if (value == null) {
-//							value = new Long("2160000000");
-//						} else {
-//							value = value * (24*3600000);
-//						}
-//						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-//						Date nextExecution = trigger.nextExecutionTime(triggerContext);
-//        				monitorTasquesService.updateProperaExecucio(codiActualitzarProcediments, value);
-//						
-//						return nextExecution;
-						
-						
-                    	// Cada 1h a partir de les 20h:
-                    	//   0 0 20/1 * * *
-                    	// Cada 1h entre les 20h i les 6h
-                    	//    0 0 20-06 * * *
-                    	// Cada 1min entre les 11h i les 12h
-                    	// 0 0/1 11 * * *
-//                    	String value = "0 0 20-06 * * *";
 						
 						Long propertyValue = null;
 						try {
@@ -493,11 +468,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
         				monitorTasquesService.updateProperaExecucio(codiActualitzarProcediments, longNextExecution);
-                        
-                        // Cada 60s
-                    	//Long value = new Long("60000");
-                    	//PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-                        //Date nextExecution = trigger.nextExecutionTime(triggerContext);
 
                         return nextExecution;
 					}        			
