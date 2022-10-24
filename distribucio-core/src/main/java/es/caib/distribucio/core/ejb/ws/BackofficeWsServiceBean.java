@@ -8,7 +8,6 @@ package es.caib.distribucio.core.ejb.ws;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -42,10 +41,8 @@ import es.caib.distribucio.core.service.ws.backoffice.BackofficeWsServiceImpl;
 @WebContext(
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backoffice",
-		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"DIS_BSTWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BackofficeWsServiceBean implements BackofficeWsService {
@@ -58,22 +55,11 @@ public class BackofficeWsServiceBean implements BackofficeWsService {
 	@Autowired
 	private UsuariHelper usuariHelper;
 
-
-
-
-
-
-
-
 	@Override
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
-		int i = 0;
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		delegate.comunicarAnotacionsPendents(ids);
-		
+		delegate.comunicarAnotacionsPendents(ids);		
 	}
-
-
 }

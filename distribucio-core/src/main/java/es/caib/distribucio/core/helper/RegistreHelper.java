@@ -29,7 +29,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.naming.NamingException;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 
@@ -51,6 +50,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.sun.jersey.api.client.Client;
@@ -1292,28 +1292,24 @@ public class RegistreHelper {
 				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			
-		
-			logger.trace(">>> Abans de crear backoffice WS");
+			logger.trace(">>> Abans de generar backoffice WS " + backofficeDesti.getCodi());
 			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
-				for (AnotacioRegistreId anotacioRegistreId : ids) {
-					String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
-					Client jerseyClient = generarClient();
+				String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
+				Client jerseyClient = generarClient();
+				if (usuari != null && !usuari.trim().isEmpty()) {
 					autenticarClient(
 							jerseyClient, 
 							backofficeDesti.getUrl(), 
 							urlAmbMetode, 
-							backofficeDesti.getUsuari(), 
-							backofficeDesti.getContrasenya());
-					String identificador = anotacioRegistreId.getIndetificador();
-					String clauAcces = anotacioRegistreId.getClauAcces();
-					Form form = new Form();
-					form.putSingle("identificador", identificador);
-					form.putSingle("clauAcces", clauAcces);
-					jerseyClient
-							.resource(urlAmbMetode)
-							.type("application/json")
-							.post(form);
+							usuari, 
+							contrasenya);
 				}
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(ids);
+				jerseyClient
+						.resource(urlAmbMetode)
+						.type("application/json")
+						.post(json);
 			}else {
 				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 						getClass().getResource(
@@ -1327,7 +1323,7 @@ public class RegistreHelper {
 						null,
 						BackofficeWsService.class);			
 				
-				logger.trace(">>> Abans de cridar backoffice WS");
+				logger.trace(">>> Abans de cridar backoffice WS+ backofficeDesti.getCodi()"+ backofficeDesti.getCodi());
 				backofficeClient.comunicarAnotacionsPendents(ids);
 						
 				integracioHelper.addAccioOk (
@@ -1339,7 +1335,7 @@ public class RegistreHelper {
 						System.currentTimeMillis() - t0
 				);			
 			}
-			logger.trace(">>> Despres de cridar backoffice WS");			
+			logger.trace(">>> Despres de cridar backoffice WS " + backofficeDesti.getCodi());			
 			return null;
 			
 		} catch (Exception ex) {
@@ -1353,6 +1349,7 @@ public class RegistreHelper {
 	}
 
 	private Client generarClient() {
+		
 		Client jerseyClient = Client.create();
 		jerseyClient.addFilter(
 				new ClientFilter() {
@@ -1380,7 +1377,8 @@ public class RegistreHelper {
 						ClientHandler ch = getNext();
 				        ClientResponse resp = ch.handle(request);
 
-				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+				        if (resp.getStatus() / 100 != 3) {
+//					        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
 				            return resp;
 				        } else {
 				            String redirectTarget = resp.getHeaders().getFirst("Location");
@@ -1400,7 +1398,7 @@ public class RegistreHelper {
 			String username,
 			String password) throws InstanceNotFoundException, MalformedObjectNameException, RemoteException, NamingException {
 		if (!autenticacioBasic) {
-			System.out.println(
+			logger.trace(
 					"Autenticant client REST per a fer peticions cap a servei desplegat a damunt jBoss (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
 					"username=" + username +
@@ -1414,7 +1412,7 @@ public class RegistreHelper {
 			type("application/x-www-form-urlencoded").
 			post(form);
 		} else {
-			System.out.println(
+			logger.trace(
 					"Autenticant REST amb autenticació de tipus HTTP basic (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
 					"username=" + username +

@@ -144,7 +144,6 @@ public class BustiaServiceBean implements BustiaService {
 
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -158,7 +157,6 @@ public class BustiaServiceBean implements BustiaService {
 	}
 	
 	@Override
-	@RolesAllowed("DIS_BSTWS")
 	public long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,

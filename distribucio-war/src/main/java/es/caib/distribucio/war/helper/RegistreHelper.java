@@ -85,7 +85,7 @@ public class RegistreHelper extends BaseController{
 				if (registre.getPresencial()) {
 					presencial = "Si";
 				}else {
-					presencial = "no";
+					presencial = "No";
 				}
 			}
 			fila[5] = presencial;
