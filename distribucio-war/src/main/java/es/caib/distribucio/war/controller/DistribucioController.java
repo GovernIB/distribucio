@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.ModalHelper;
@@ -33,22 +34,28 @@ public class DistribucioController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
+	@Autowired
+	private ConfigService configService;
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request) {
 
 		if (RolHelper.isRolActualSuperusuari(request)) {
+			configService.reiniciarTasquesEnSegonPla();
 			return "redirect:integracio";
 		} else {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 			if (entitat == null)
 				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
 			if (RolHelper.isRolActualAdministrador(request) || RolHelper.isRolActualAdminLectura(request)) {
+				configService.reiniciarTasquesEnSegonPla();
 				return "redirect:registreAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
+				configService.reiniciarTasquesEnSegonPla();
 				return "redirect:registreUser";
 			} else {
+				configService.reiniciarTasquesEnSegonPla();
 				return "index";
 			}
 		}
