@@ -604,6 +604,10 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.enviatPerEmail = :enviatPerEmail ");
 			parametres.put("enviatPerEmail", enviatPerEmail);
 		}
+		if (!esNullSobreescriure) {
+			sqlWhere.append("and r.sobreescriure = :sobreescriure ");
+			parametres.put("sobreescriure", sobreescriure.booleanValue());
+		}
 		if (!esNullDocumentacioFisicaCodi) {
 			sqlWhere.append("and r.documentacioFisicaCodi = :documentacioFisicaCodi ");
 			parametres.put("documentacioFisicaCodi", documentacioFisicaCodi);
