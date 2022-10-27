@@ -501,7 +501,7 @@ public class RegistreServiceImpl implements RegistreService {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Transactional(readOnly = true)
 	private Object findRegistresFiltrats(
 			boolean nomesIds,

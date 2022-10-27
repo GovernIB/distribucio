@@ -9,7 +9,7 @@
 <c:set var="nRegistres">${multiple ? fn:length(registres) : 0 }</c:set>
 <c:set var="titol">
 	<c:choose>
-		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="registre.user.marcar.pendent.titol.multiple"/></c:when>
+		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="bustia.pendent.contingut.enviarViaEmail.multiple"/></c:when>
 		<c:otherwise><spring:message code="bustia.pendent.contingut.enviarViaEmail.titol"/></c:otherwise>
 	</c:choose>
 </c:set>
