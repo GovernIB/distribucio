@@ -57,6 +57,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 					sb.toString(),
 					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
 		} catch (Exception ex) {
+			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
+					"codiDir3=" + codiDir3 + ")",
+					ex);
 			throw new SistemaExternException(
 					"No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + ")",
@@ -66,6 +69,8 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		if (response != null && response.getStatus().equals("200")) {
 			return response.getResultado();
 		} else {
+			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
+					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 			throw new SistemaExternException(
 					"No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
@@ -129,6 +134,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 					params);
 			
 		} catch (Exception ex) {
+			logger.error("Error consultant el procediment de ROLSAC (" +
+					"codiSia=" + codiSia + "): " + ex.getMessage(),
+					ex);
 			throw new SistemaExternException(
 					"Error consultant el procediment de ROLSAC (" +
 					"codiSia=" + codiSia + "): " + ex.getMessage(),

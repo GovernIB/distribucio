@@ -153,33 +153,28 @@ public class UsuariHelper {
 	
 	/** Mètode públic per consultar si l'usuari actual és administrador d'entitat DIS_ADMIN. */
 	public boolean isAdmin() {
-		boolean isAdmin = false;
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null) {
-			for (GrantedAuthority ga : auth.getAuthorities())
-				if (ga.getAuthority().equals("DIS_ADMIN")) {
-					isAdmin = true;
-					break;
-				}
-		}
-		return isAdmin;
+		return this.hasRole("DIS_ADMIN");
 	}
 	
 	
 	/** Mètode públic per consultar si l'usuari actual és administrador d'entitat DIS_ADMIN_LECTURA. */
 	public boolean isAdminLectura() {
-		boolean isAdminLectura = false;
+		return this.hasRole("DIS_ADMIN_LECTURA");
+	}
+
+	/** Mètode públic per consultar si l'usuari actual té el rol passat per paràmetre. */
+	public boolean hasRole(String rol) {
+		boolean hasRole = false;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			for (GrantedAuthority ga : auth.getAuthorities())
-				if (ga.getAuthority().equals("DIS_ADMIN_LECTURA")) {
-					isAdminLectura = true;
+				if (ga.getAuthority().equals(rol)) {
+					hasRole = true;
 					break;
 				}
 		}
-		return isAdminLectura;
+		return hasRole;
 	}
-
 	private static final Logger logger = LoggerFactory.getLogger(UsuariHelper.class);
 
 }

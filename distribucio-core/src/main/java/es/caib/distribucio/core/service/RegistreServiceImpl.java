@@ -112,7 +112,6 @@ import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
-import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
@@ -139,7 +138,6 @@ import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.core.repository.VistaMovimentRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
-import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
@@ -205,8 +203,6 @@ public class RegistreServiceImpl implements RegistreService {
 	private EmailHelper emailHelper;
 	@Autowired
 	private ConfigHelper configHelper;
-	@Autowired
-	private CacheHelper cacheHelper;
 	@Autowired
 	private ProcedimentRepository procedimentRepository;
 	

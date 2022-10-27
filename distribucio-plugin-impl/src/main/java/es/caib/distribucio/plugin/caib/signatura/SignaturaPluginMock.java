@@ -65,7 +65,8 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 		} catch (IOException e) {
 			String errMsg = "Error llegint el fitxer mock de firma XAdES: " + e.getMessage();
 			Logger.getLogger(SignaturaPluginMock.class.getName()).log(Level.SEVERE, errMsg, e);
-			e.printStackTrace();
+//			e.printStackTrace();
+			throw new SistemaExternException(errMsg, e);
 		}		
 		return resposta;
 	}  

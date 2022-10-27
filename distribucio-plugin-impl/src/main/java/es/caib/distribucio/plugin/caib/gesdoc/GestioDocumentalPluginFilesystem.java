@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
@@ -53,6 +55,7 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 			outContent.close();
 			return id;
 		} catch (Exception ex) {
+			logger.error("No s'ha pogut crear l'arxiu", ex);
 			throw new SistemaExternException(
 					"No s'ha pogut crear l'arxiu",
 					ex);
@@ -76,6 +79,7 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 						"No s'ha trobat l'arxiu per actualitzar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
+			logger.error("No s'ha pogut actualitzar l'arxiu (id=" + id + ")", ex);
 			throw new SistemaExternException(
 					"No s'ha pogut actualitzar l'arxiu (id=" + id + ")",
 					ex);
@@ -92,10 +96,12 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 			if (fContent.exists()) {
 				fContent.delete();
 			} else {
+				logger.error("No s'ha trobat l'arxiu per esborrar (id=" + id + ")");
 				throw new SistemaExternException(
 						"No s'ha trobat l'arxiu per esborrar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
+			logger.error("No s'ha pogut esborrar l'arxiu (id=" + id + ")", ex);
 			throw new SistemaExternException(
 					"No s'ha pogut esborrar l'arxiu (id=" + id + ")",
 					ex);
@@ -114,10 +120,12 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 				FileInputStream contingutIn = new FileInputStream(fContent);
 				IOUtils.copy(contingutIn, contingutOut);
 			} else {
+				logger.error("No s'ha trobat l'arxiu per consultar (id=" + id + ")");
 				throw new SistemaExternException(
 						"No s'ha trobat l'arxiu per consultar (id=" + id + ")");
 			}
 		} catch (Exception ex) {
+			logger.error("No s'ha pogut llegir l'arxiu (id=" + id + ")", ex);
 			throw new SistemaExternException(
 					"No s'ha pogut llegir l'arxiu (id=" + id + ")",
 					ex);
@@ -138,4 +146,7 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 		}
 		return baseDir;
 	}
+
+
+	private static final Logger logger = LoggerFactory.getLogger(GestioDocumentalPluginFilesystem.class);
 }

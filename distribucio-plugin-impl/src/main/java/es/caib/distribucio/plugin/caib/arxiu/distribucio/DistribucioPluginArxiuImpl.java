@@ -325,9 +325,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 		// 4) Té una firma reconeguda per l'arxiu CAIB o la propietat  
 		// (es.caib.distribucio.tasca.guardar.annexos.perfils.tipus.no.caib.com.esborrany) està desactivada 
-		boolean existeixAlCaibProperty = getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib();		
+		boolean existeixAlCaibProperty = getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib();	
+		boolean firmesReconegudes = this.comprovarFirmesReconegudes(arxiuFirmes);
 		if (existeixAlCaibProperty) {
-			guardarDefinitiu = guardarDefinitiu && this.comprovarFirmesReconegudes(arxiuFirmes);			
+			guardarDefinitiu = guardarDefinitiu && firmesReconegudes;			
 		}
 		
 		if (guardarDefinitiu) {
@@ -346,20 +347,33 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirmes,
 					uuidExpedient,
 					documentEniRegistrableDto,
-					estatDocument);
+					estatDocument, 
+					firmesReconegudes);
 		} catch (Exception se) {
 			
 			int maxReintents = getGuardarAnnexosMaxReintents();
-			logger.error("Error guardant l'annex  \"" + distribucioAnnex.getFitxerNom() + "\" com a DEFINTIU. (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
-			+ ". MaxReintents = " + maxReintents + ", proces intents = " + distribucioAnnex.getProcesIntents() 
-			+ ", es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=" + getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() + ". ");
+			String errMsg = "Error guardant l'annex  \"" + distribucioAnnex.getFitxerNom() + "\" com a DEFINTIU. (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+							+ ". MaxReintents = " + maxReintents + ", proces intents = " + distribucioAnnex.getProcesIntents() 
+							+ ", es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=" + getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() + ". ";
+			String errMsg2 = "No s'han reconegut les firmes a l'Arxiu. ";
+			String errMsg3 = "Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany. ";
+			String errSistemaExtern = errMsg;
+			
+			logger.error(errMsg);
+			
+			if (!firmesReconegudes) {
+				errSistemaExtern = errSistemaExtern + "\n" + errMsg2;
+			}
 
 			// Si el document era definitiu, s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
 			if (DocumentEstat.DEFINITIU.equals(estatDocument)
 					&& distribucioAnnex.getProcesIntents() >= (maxReintents - 1) 
 					&& getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) 
 			{	
-				logger.error("Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+				
+				logger.error(errMsg3);
+
+				errSistemaExtern = errSistemaExtern + "\n" + errMsg3;
 				
 				uuidDocumentCreat = arxiuDocumentAnnexCrear(
 						distribucioAnnex,
@@ -368,9 +382,15 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						arxiuFirmes,
 						uuidExpedient,
 						documentEniRegistrableDto,
-						DocumentEstat.ESBORRANY);	
+						DocumentEstat.ESBORRANY, 
+						firmesReconegudes);	
+				
 			} else {
-				throw se;
+//				throw se;
+				throw new SistemaExternException(
+						integracioArxiuCodi,
+						errSistemaExtern,
+						se);
 			}
 		}
 		distribucioAnnex.setFitxerArxiuUuid(uuidDocumentCreat);
@@ -474,7 +494,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al esborrar rexpedient";
+			String errorDescripcio = "Error al esborrar l'expedient. ";
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,
@@ -513,7 +533,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						accioParams,
 						System.currentTimeMillis() - t0);
 			} catch (Exception ex) {
-				String errorDescripcio = "Error modificant el document a definitiu";
+				String errorDescripcio = "Error modificant el document a definitiu. ";
 				integracioAddAccioError(
 						integracioArxiuCodi,
 						accioDescripcio,
@@ -567,7 +587,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			List<ArxiuFirmaDto> firmes,
 			String identificadorPare,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
-			DocumentEstat estatDocument) throws SistemaExternException {
+			DocumentEstat estatDocument, 
+			boolean firmesReconegudes) throws SistemaExternException {
 		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
@@ -644,7 +665,16 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					System.currentTimeMillis() - t0);
 			return contingutFitxer.getIdentificador();
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al crear document annex";
+			
+			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + " i amb estat ";
+			if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
+				errorDescripcio = errorDescripcio + "esborrany. ";
+			} else {
+				errorDescripcio = errorDescripcio + "definitiu. ";
+			}
+			if (!firmesReconegudes) {
+				errorDescripcio = errorDescripcio + "\n" + "No s'han reconegut les firmes. ";
+			}
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,
@@ -949,7 +979,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					System.currentTimeMillis() - t0);
 			return signatura;
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al firmar document en servidor";
+			String errorDescripcio = "Error al firmar document en servidor. ";
 			integracioAddAccioError(
 					integracioSignaturaCodi,
 					accioDescripcio,
@@ -1056,7 +1086,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al generar la versió imprimible del document";
+			String errorDescripcio = "Error al generar la versió imprimible del document. ";
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,
@@ -1093,7 +1123,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					System.currentTimeMillis() - t0);
 			return baos.toByteArray();
 		} catch (Exception ex) {
-			String errorDescripcio = "Error al obtenir arxiu de la gestió documental";
+			String errorDescripcio = "Error al obtenir arxiu de la gestió documental. ";
 			integracioAddAccioError(
 					itegracioGesdocCodi,
 					accioDescripcio,
@@ -1162,7 +1192,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DocumentNtiTipoDocumentalEnumDto ntiTipusDocumental,
 			DocumentEstat estat,
 			DocumentEniRegistrableDto documentEniRegistrableDto,
-			String metaDades) {
+			String metaDades) throws SistemaExternException {
 		Document document = new Document();
 		document.setNom(nom);
 		document.setDescripcio(descripcio);
@@ -1365,7 +1395,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				}
 
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+//				throw new RuntimeException(e);
+				throw new SistemaExternException(
+						integracioArxiuCodi,
+						"No s'han pogut afegir les metadades adicionals. ",
+						e);
 			}
 		}		
 		metadades.setMetadadesAddicionals(metaDadesAddicionals);

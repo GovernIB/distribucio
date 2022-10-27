@@ -4,7 +4,6 @@
 package es.caib.distribucio.core.ejb.ws;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -39,7 +38,7 @@ import es.caib.distribucio.core.service.ws.backoffice.BackofficeIntegracioWsServ
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-@RolesAllowed({"DIS_BACKWS"})
+//@RolesAllowed({"DIS_BACKWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWsService {
@@ -56,9 +55,13 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 	@Override
 	public AnotacioRegistreEntrada consulta(
 			AnotacioRegistreId id) {
+		
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
+
+		usuariHelper.hasRole("DIS_BACKWS");
+		
 		return delegate.consulta(
 				id);
 		
@@ -70,9 +73,13 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 			AnotacioRegistreId id,
 			Estat estat,
 			String observacions) {
+		
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
+
+		usuariHelper.hasRole("DIS_BACKWS");
+		
 		delegate.canviEstat(id, estat, observacions);
 	}
 

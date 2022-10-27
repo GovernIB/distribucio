@@ -105,17 +105,20 @@ public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties i
 				llistaUsuaris.add(dadesUsuari);
 			}
 		} catch (Exception ex) {
-			throw new SistemaExternException(ex);
+			LOGGER.error("Error consultant les dades de l'usuari amb la base de dades", ex);
+			throw new SistemaExternException("Error consultant les dades de l'usuari amb la base de dades", ex);
 		} finally {
 			try {
 				if (ps != null) ps.close();
 			} catch (Exception ex) {
 				LOGGER.error("Error al tancar el PreparedStatement", ex);
+				throw new SistemaExternException("Error al tancar el PreparedStatement", ex);
 			}
 			try {
 				if (con != null) con.close();
 			} catch (Exception ex) {
 				LOGGER.error("Error al tancar la connexió", ex);
+				throw new SistemaExternException("Error al tancar la connexió",  ex);
 			}
 		}
 		return llistaUsuaris;

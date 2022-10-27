@@ -191,6 +191,7 @@ public class ContingutController extends BaseUserController {
 			MissatgesHelper.error(
 					request, 
 					errMsg);
+			// MissatgesHelper.error(request, getExceptionDescription(request, errMsg, ex));
 			return "redirect:" + request.getHeader("referer");
 		}
 		return null;

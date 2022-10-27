@@ -62,7 +62,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiGuardarAnotacionsPendents);
                     	monitorTasquesService.updateEstat(codiGuardarAnotacionsPendents, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiGuardarAnotacionsPendents, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.guardarAnotacionsPendentsEnArxiu();
                         	monitorTasquesService.updateDataFi(codiGuardarAnotacionsPendents);
@@ -105,7 +104,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiEnviarBackoffice);
                     	monitorTasquesService.updateEstat(codiEnviarBackoffice, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiEnviarBackoffice, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarIdsAnotacionsPendentsBackoffice();
                         	monitorTasquesService.updateDataFi(codiEnviarBackoffice);
@@ -145,7 +143,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiAplicarReglesBackoffice);
                     	monitorTasquesService.updateEstat(codiAplicarReglesBackoffice, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiAplicarReglesBackoffice, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.aplicarReglesPendentsBackoffice();
                         	monitorTasquesService.updateDataFi(codiAplicarReglesBackoffice);
@@ -185,7 +182,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiTancarContenidors);
                     	monitorTasquesService.updateEstat(codiTancarContenidors, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiTancarContenidors, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.tancarContenidorsArxiuPendents();
                         	monitorTasquesService.updateDataFi(codiTancarContenidors);
@@ -226,7 +222,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiEnviarEmailsNoAgrupats);
                     	monitorTasquesService.updateEstat(codiEnviarEmailsNoAgrupats, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiEnviarEmailsNoAgrupats, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarEmailsPendentsNoAgrupats();
                         	monitorTasquesService.updateDataFi(codiEnviarEmailsNoAgrupats);
@@ -268,7 +263,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiEnviarEmailsAgrupats);
                     	monitorTasquesService.updateEstat(codiEnviarEmailsAgrupats, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiEnviarEmailsAgrupats, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.enviarEmailsPendentsAgrupats();
                         	monitorTasquesService.updateDataFi(codiEnviarEmailsAgrupats);
@@ -312,7 +306,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiCalularDadesHistoriques);
                     	monitorTasquesService.updateEstat(codiCalularDadesHistoriques, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiCalularDadesHistoriques, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.calcularDadesHistoriques();
                         	monitorTasquesService.updateDataFi(codiCalularDadesHistoriques);
@@ -357,7 +350,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     public void run() {
                     	monitorTasquesService.updateDataInici(codiEsborrarDadesAntigues);
                     	monitorTasquesService.updateEstat(codiEsborrarDadesAntigues, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiEsborrarDadesAntigues, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.esborrarDadesAntigesMonitorIntegracio();
                         	monitorTasquesService.updateDataFi(codiEsborrarDadesAntigues);
@@ -400,7 +392,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					public void run() {
                     	monitorTasquesService.updateDataInici(codiReintentarProcessament);
                     	monitorTasquesService.updateEstat(codiReintentarProcessament, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiReintentarProcessament, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.reintentarProcessamentBackoffice();
                         	monitorTasquesService.updateDataFi(codiReintentarProcessament);
@@ -441,7 +432,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					public void run() {
                     	monitorTasquesService.updateDataInici(codiActualitzarProcediments);
                     	monitorTasquesService.updateEstat(codiActualitzarProcediments, MonitorTascaEstatEnum.EN_EXECUCIO);
-                    	//monitorTasquesService.updateObservacions(codiActualitzarProcediments, MonitorTascaEstat.EN_EXECUCIO);
                         try{ 
                         	segonPlaService.reintentarProcessamentBackoffice();
                         	monitorTasquesService.updateDataFi(codiActualitzarProcediments);

@@ -12,6 +12,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.war.helper.EnumHelper.HtmlOption;
 
@@ -104,7 +107,9 @@ public class AjaxUserController extends BaseUserController {
 		
 		try {
 			text = URLDecoder.decode(request.getRequestURI().split("/")[4], StandardCharsets.UTF_8.name());
-		} catch (UnsupportedEncodingException e) { }
+		} catch (UnsupportedEncodingException e) {
+			logger.error("No s'han pogut carregar les dades dels remitents al filtre. ");
+		}
 		
 		List<UsuariDto> remitentsList = aplicacioService.findUsuariAmbCodiAndNom(text);
 		
@@ -130,6 +135,7 @@ public class AjaxUserController extends BaseUserController {
 				c = Class.forName(enumPackages[i++] + "." + className);
 			} catch(ClassNotFoundException e) {
 				// Es provarà en el seguent package
+				throw new SistemaExternException("No s'ha trobat la classe per enumerar les diferents rutes al package " + enumPackages[i]);
 			}
 		}
 		if (c == null) {
@@ -137,5 +143,8 @@ public class AjaxUserController extends BaseUserController {
 		}
 		return c;
 	}
+
+	
+	private static final Logger logger = LoggerFactory.getLogger(AjaxUserController.class);
 
 }

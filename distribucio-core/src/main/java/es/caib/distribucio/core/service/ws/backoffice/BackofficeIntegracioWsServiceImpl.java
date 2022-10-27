@@ -16,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.service.RegistreService;
@@ -24,7 +23,6 @@ import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrad
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
 import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
-import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 
 /**

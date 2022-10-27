@@ -11,6 +11,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -82,6 +85,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			}
 			return paisos;
 		} catch (Exception ex) {
+			LOGGER.error(errorDescripcio, ex);
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -115,6 +119,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			
 			return comunitats;
 		} catch (Exception ex) {
+			LOGGER.error(errorDescripcio, ex);
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -148,6 +153,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			
 			return provincies;
 		} catch (Exception ex) {
+			LOGGER.error(errorDescripcio, ex);
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -183,6 +189,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			
 			return provincies;
 		} catch (Exception ex) {
+			LOGGER.error(errorDescripcio, ex);
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -218,6 +225,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			
 			return municipis;
 		} catch (Exception ex) {
+			LOGGER.error(errorDescripcio, ex);
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -349,5 +357,8 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 	public String getUsuariIntegracio() {
 		return "Caib";
 	}
+	
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DadesExternesPluginCaib.class);
 
 }

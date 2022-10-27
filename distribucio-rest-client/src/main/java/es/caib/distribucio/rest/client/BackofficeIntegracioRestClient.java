@@ -172,6 +172,22 @@ public class BackofficeIntegracioRestClient {
             throw new RuntimeException(ex);
         }
     }
+    
+    public AnotacioRegistreEntrada consultaXXX(AnotacioRegistreId id) {
+        try {
+            String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consultaXXX";
+            Client jerseyClient = generarClient(urlAmbMetode);
+            String json = jerseyClient.
+                    resource(urlAmbMetode).
+                    queryParam("indetificador", URLEncoder.encode(id.getIndetificador(), "UTF-8")).
+                    queryParam("clauAcces", URLEncoder.encode(id.getClauAcces(), "UTF-8")).
+                    type("application/json").
+                    get(String.class);
+            return getMapper().readValue(json, AnotacioRegistreEntrada.class);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     public void canviEstat(
             AnotacioRegistreId id,

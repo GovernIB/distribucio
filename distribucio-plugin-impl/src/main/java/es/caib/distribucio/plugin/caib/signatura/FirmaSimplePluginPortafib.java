@@ -86,7 +86,9 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 			
 			return resposta;
 		} catch (Exception e) {
-			throw new SistemaExternException(e);
+			String msgError = "No s'ha pogut signar el document. ";
+			logger.error(msgError, e);
+			throw new SistemaExternException(msgError, e);
 		}
 	}  
 	

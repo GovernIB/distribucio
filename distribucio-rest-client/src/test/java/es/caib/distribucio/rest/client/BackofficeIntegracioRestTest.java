@@ -19,14 +19,34 @@ import static org.junit.Assert.fail;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class BackofficeIntegracioRestTest {
-	private static final String URL_BASE = "http://10.35.3.232:8080/distribucioapi/interna";
-	private static final String USER = "admin";
-	private static final String PASS = "admin";
+	
+	private static final String URL_BASE = "http://localhost:8080/distribucioapi/interna";
+	private static final String USER = "danielm";
+	private static final String PASS = "danielm";
 
-	private static final String IDENTIFICADOR = "GOIBE1657117867882/2022";
-	private static final String CLAU_ACCESS = "AVtXSNHCgNEIC8XndUkSExtd7CQ1ecd81v1zBWVhTrE=";
+	private static final String IDENTIFICADOR = "GOIBE1666699669099/2022";
+	private static final String CLAU_ACCESS = "mCzbsQExMio96qpKqAqadXVP30eH7UPZ6LxV8PBjB4M=";
 
 	@Test
+	public void consultaXXX() throws DatatypeConfigurationException, IOException {
+
+		try {
+			
+			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
+			
+			
+			AnotacioRegistreEntrada response = getClientRest().consultaXXX(anotacioRegistreId);
+			System.out.println("Test: " + response);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail();
+		}
+	}
+
+//	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
 
 		try {
@@ -45,7 +65,7 @@ public class BackofficeIntegracioRestTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void canviEstat() throws DatatypeConfigurationException, IOException {
 
 		try {

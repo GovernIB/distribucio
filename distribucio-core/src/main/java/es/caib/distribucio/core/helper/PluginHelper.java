@@ -132,7 +132,7 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					IntegracioHelper.INTCODI_ARXIU,
 					errorDescripcio,
 					ex);
 		}
@@ -190,7 +190,7 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					IntegracioHelper.INTCODI_ARXIU,
 					errorDescripcio,
 					ex);
 		}
@@ -673,7 +673,7 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error posant com a definitiu un annexo per l'anotació " + annex.getRegistre().getNumero();
+			String errorDescripcio = "Error posant com a definitiu un annex per l'anotació " + annex.getRegistre().getNumero();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
@@ -1162,7 +1162,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_USUARIS,
-							"Error al crear la instància del plugin de dades d'usuari",
+							"Error al crear la instància del plugin de dades d'usuari amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1189,7 +1189,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_UNITATS,
-							"Error al crear la instància del plugin d'unitats organitzatives",
+							"Error al crear la instància del plugin d'unitats organitzatives amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1218,10 +1218,14 @@ public class PluginHelper {
 													Properties.class)
 							.newInstance("es.caib.distribucio.", properties);
 					arxiuPlugin.put(codiEntitat, plugin);
+					if (plugin == null) {
+						throw new SistemaExternException(
+								"No s'ha trobat la classe " + plugin);
+					}
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_ARXIU,
-							"Error al crear la instància del plugin d'arxiu digital",
+							"Error al crear la instància del plugin d'arxiu digital amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1247,7 +1251,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_DADESEXT,
-							"Error al crear la instància del plugin de consulta de dades externes",
+							"Error al crear la instància del plugin de consulta de dades externes amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1275,7 +1279,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_VALIDASIG,
-							"Error al crear la instància del plugin de validació de signatures",
+							"Error al crear la instància del plugin de validació de signatures amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1299,7 +1303,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_PROCEDIMENT,
-							"Error al crear la instància del plugin de procediments",
+							"Error al crear la instància del plugin de procediments amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1326,7 +1330,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_GESDOC,
-							"Error al crear la instància del plugin de gestió documental",
+							"Error al crear la instància del plugin de gestió documental amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {
@@ -1399,7 +1403,7 @@ public class PluginHelper {
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_DISTRIBUCIO,
-							"Error al crear la instància del plugin de distribucio",
+							"Error al crear la instància del plugin de distribucio amb el nom de la classe " + pluginClass,
 							ex);
 				}
 			} else {

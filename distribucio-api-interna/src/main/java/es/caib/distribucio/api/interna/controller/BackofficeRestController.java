@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+//import com.sun.jersey.api.client.Client;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import es.caib.distribucio.api.interna.model.InfoCanviEstat;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
@@ -28,6 +30,9 @@ import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWs
 @RequestMapping("/backoffice")
 public class BackofficeRestController {
 
+	@Autowired
+	EntitatService entitatService;
+	
     @Autowired
     BackofficeIntegracioWsService backofficeIntegracioWsService;
 
@@ -44,6 +49,24 @@ public class BackofficeRestController {
             final AnotacioRegistreId id) throws SistemaExternException {
         AnotacioRegistreEntrada respuesta = backofficeIntegracioWsService.consulta(id);
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
+    
+    
+    @RequestMapping(
+            value= "/consultaXXX",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    @ApiOperation(
+            value = "Consulta d'una anotació de registre pendent d'enviar al Backoffice",
+            notes = "Retorna totes les dades de l'anotació de registre pendents d'enviar al Backoffice consultada")
+    public ResponseEntity<AnotacioRegistreEntrada> consultaXXX(
+            HttpServletRequest request,
+            @ApiParam(name="id", value="Identificador de la anotació de registre")
+            final AnotacioRegistreId id) throws SistemaExternException {
+    	
+    	entitatService.findByCodi("XXX");
+    	
+        return new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
     }
 
     @RequestMapping(
