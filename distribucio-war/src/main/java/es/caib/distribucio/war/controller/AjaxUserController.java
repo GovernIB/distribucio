@@ -135,7 +135,6 @@ public class AjaxUserController extends BaseUserController {
 				c = Class.forName(enumPackages[i++] + "." + className);
 			} catch(ClassNotFoundException e) {
 				// Es provarà en el seguent package
-				throw new SistemaExternException("No s'ha trobat la classe per enumerar les diferents rutes al package " + enumPackages[i]);
 			}
 		}
 		if (c == null) {
