@@ -63,10 +63,15 @@ public class BackofficeRestController {
             HttpServletRequest request,
             @ApiParam(name="id", value="Identificador de la anotació de registre")
             final AnotacioRegistreId id) throws SistemaExternException {
+    	ResponseEntity<AnotacioRegistreEntrada> response = null;
+    	try {
+    		response = new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
+    	}catch (Exception ex){
+    		throw new SistemaExternException("No s'ha pogut fer la consulta de l'anotació amb id " + id, ex);
+    	}
     	
-    	entitatService.findByCodi("XXX");
-    	
-        return new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
+//        return new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
+    	return response;
     }
 
     @RequestMapping(
