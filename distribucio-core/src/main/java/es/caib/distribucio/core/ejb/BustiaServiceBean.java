@@ -240,8 +240,11 @@ public class BustiaServiceBean implements BustiaService {
 
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA", "tothom"})
-	public List<BustiaDto> findBustiesPermesesPerUsuari(Long entitatId, boolean mostrarInnactives) {
-		return delegate.findBustiesPermesesPerUsuari(entitatId, mostrarInnactives);
+	public List<BustiaDto> findBustiesPermesesPerUsuari(
+			Long entitatId, 
+			boolean mostrarInnactives, 
+			boolean isPermisAdmin) {
+		return delegate.findBustiesPermesesPerUsuari(entitatId, mostrarInnactives, isPermisAdmin);
 	}
 
 	@Override

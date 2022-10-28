@@ -270,14 +270,14 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
 			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives(), true);
 			}
 			PaginaDto<ContingutDto> pagina = registreService.findRegistre(
 								entitatActual.getId(),
 								bustiesPermesesPerUsuari,
 								RegistreFiltreCommand.asDto(registreFiltreCommand),
 								paginacioParams,
-								false);
+								true);
 			
 			// Posa les dades dels registres al model segons la consulta
 			if (pagina != null && !pagina.getContingut().isEmpty()) {

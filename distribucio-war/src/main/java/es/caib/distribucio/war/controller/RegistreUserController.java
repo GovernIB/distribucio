@@ -164,7 +164,7 @@ public class RegistreUserController extends BaseUserController {
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = null;
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives(), false);
 		}
 		return DatatablesHelper.getDatatableResponse(
 				request,
@@ -226,7 +226,8 @@ public class RegistreUserController extends BaseUserController {
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
 				entitatActual.getId(), 
-				registreFiltreCommand.isMostrarInactives());
+				registreFiltreCommand.isMostrarInactives(), 
+				false);
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findMovimentsRegistre(
@@ -271,7 +272,7 @@ public class RegistreUserController extends BaseUserController {
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesUsuari = null;
 			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
+				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives(), false);
 			}
 			seleccio.addAll(
 					registreService.findRegistreMovimentsIds(
@@ -319,7 +320,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactivesOrigen,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
+		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true, false);
 		List<BustiaDto> bustiesOrigen = bustiaService.consultaBustiesOrigen(
 				entitatActual.getId(), 
 				bustiesPermesesPerUsuari, 
@@ -494,7 +495,7 @@ public class RegistreUserController extends BaseUserController {
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesPermesesPerUsuari = null;
 			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
+				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives(), false);
 			}
 			PaginaDto<ContingutDto> pagina = null;
 			if (isVistaMoviments) {
@@ -643,7 +644,7 @@ public class RegistreUserController extends BaseUserController {
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			List<BustiaDto> bustiesUsuari = null;
 			if (filtreCommand.getBustia() == null || filtreCommand.getBustia().isEmpty()) {
-				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives());
+				bustiesUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), filtreCommand.isMostrarInactives(), false);
 			}
 			seleccio.addAll(
 					registreService.findRegistreIds(
@@ -1644,7 +1645,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
+		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives, false);
 	}
 	
 	/** Retorna el llistat de totes les bústies per filtrar el destí dels moviments. Pot incloure o no les innactives */
