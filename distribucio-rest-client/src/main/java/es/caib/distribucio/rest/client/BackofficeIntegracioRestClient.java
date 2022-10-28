@@ -7,6 +7,7 @@ import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.representation.Form;
@@ -173,7 +174,7 @@ public class BackofficeIntegracioRestClient {
         }
     }
     
-    public AnotacioRegistreEntrada consultaXXX(AnotacioRegistreId id) {
+    public AnotacioRegistreEntrada consultaXXX(AnotacioRegistreId id) throws UniformInterfaceException {
         try {
             String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consultaXXX";
             Client jerseyClient = generarClient(urlAmbMetode);
@@ -185,7 +186,7 @@ public class BackofficeIntegracioRestClient {
                     get(String.class);
             return getMapper().readValue(json, AnotacioRegistreEntrada.class);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("No s'ha pogut fer la consulta de l'anotació " + id.getIndetificador(), ex);
         }
     }
 
@@ -211,4 +212,5 @@ public class BackofficeIntegracioRestClient {
             throw new RuntimeException(ex);
         }
     }
+
 }

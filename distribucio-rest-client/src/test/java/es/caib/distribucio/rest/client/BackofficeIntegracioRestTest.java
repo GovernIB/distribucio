@@ -92,10 +92,4 @@ public class BackofficeIntegracioRestTest {
 		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS);
 	}
 	
-
-	
-
-
-	
-
 }
