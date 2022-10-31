@@ -20,6 +20,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
+import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.BackofficeRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 
@@ -38,6 +39,8 @@ public class BackofficeServiceImpl implements BackofficeService {
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private RegistreRepository registreRepository;
+	@Autowired
+	private RegistreHelper registreHelper;
 
 	
 	@Transactional
@@ -70,6 +73,18 @@ public class BackofficeServiceImpl implements BackofficeService {
 				backofficeRepository.save(enitity),
 				BackofficeDto.class);
 		return dto;
+	}
+
+
+	@Override
+	@Transactional
+	public Exception provar(
+			Long entitatId, 
+			Long backofficeId) throws NotFoundException {
+		
+		BackofficeEntity backoffice = backofficeRepository.getOne(backofficeId);
+
+		return registreHelper.provarConnexioBackoffice(backoffice);
 	}
 
 	@Transactional
@@ -220,16 +235,9 @@ public class BackofficeServiceImpl implements BackofficeService {
 
 		return listDto;
 	}
-	
 
 	
 	
-
-	
-
-	
-	
-	private static final Logger logger = LoggerFactory.getLogger(BackofficeServiceImpl.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(BackofficeServiceImpl.class);	
 	
 }

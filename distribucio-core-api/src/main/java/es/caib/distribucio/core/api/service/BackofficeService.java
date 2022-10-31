@@ -50,6 +50,23 @@ public interface BackofficeService {
 			BackofficeDto backoffice) throws NotFoundException;
 
 	/**
+	 * Prova la conexió del backoffice que tengui el mateix
+	 * id que l'especificat per paràmetre.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param backofficeId
+	 *            Id del backoffice a provar.
+	 * @return El backoffice provat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public Exception provar(
+			Long entitatId,
+			Long backofficeId) throws NotFoundException;
+
+	/**
 	 * Esborra el backoffice amb el mateix id que l'especificat.
 	 * 
 	 * @param entitatId

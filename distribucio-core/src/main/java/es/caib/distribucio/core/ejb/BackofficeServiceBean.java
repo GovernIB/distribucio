@@ -39,6 +39,14 @@ public class BackofficeServiceBean implements BackofficeService {
 
 	@Override
 	@RolesAllowed("DIS_ADMIN")
+	public Exception provar(
+			Long entitatId, 
+			Long backofficeId) throws NotFoundException {
+		return delegate.provar(entitatId, backofficeId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
 	public BackofficeDto update(
 			Long entitatId, 
 			BackofficeDto tipusDocumental) throws NotFoundException {
@@ -90,10 +98,7 @@ public class BackofficeServiceBean implements BackofficeService {
 			Long entitatId,
 			String backofficeCodi) throws NotFoundException {
 		return delegate.findByCodi(entitatId, backofficeCodi);
-	}
-
-
-    
+	}   
     
     
 }

@@ -21,6 +21,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.war.command.BackofficeCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 
 
@@ -119,6 +120,44 @@ public class BackofficeController extends BaseAdminController {
 					"redirect:../../backoffice",
 					ExceptionUtils.getRootCause(e).getMessage());
 		}
+		
+	}
+	
+	@RequestMapping(value = "/{backofficeId}/provar", method = RequestMethod.GET)
+	public String provar(
+			HttpServletRequest request, 
+			@PathVariable Long backofficeId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		
+		Exception exception = backofficeService.provar(
+				entitatActual.getId(), 
+				backofficeId);
+		
+		if (exception == null) {
+//			MissatgesHelper.success(
+//					request, 
+//					getMessage(
+//							request, 
+//							"backoffice.controller.provar.ok",
+//							null));
+			return getModalControllerReturnValueSuccess(
+					request,
+					"redirect:../../backoffice",
+					"backoffice.controller.provar.ok");
+		} else {
+//			MissatgesHelper.error(
+//					request,
+//					getMessage(
+//							request, 
+//							"backoffice.controller.provar.error",
+//							null));
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:../../backoffice",
+					"backoffice.controller.provar.error");
+		}
+		
+//		return "redirect:../../backoffice";
 		
 	}
 	

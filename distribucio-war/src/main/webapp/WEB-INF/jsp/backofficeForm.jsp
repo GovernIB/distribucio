@@ -20,10 +20,31 @@
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$("#link-provar").insertAfter("#btn-submit");
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 			if (${nou != true}) {
 				$("#codi").attr('readonly', true);
 			}
+			
+		    $("button#btn-provar").click(function() {
+		    	$.get(
+		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
+		    		function(success) {
+		    			alert(success);
+					}
+		    	);
+		    })
+		    
+		    $("#url").bind("change paste keyup", function() {
+		    	if ($(this).val() == '${backofficeCommand.url}'
+		    			|| $(this).val() == '') {
+	    	   		$("#btn-provar").css("pointer-events", "auto");
+	    	   		$("#btn-provar").css("opacity", "1");
+		    	}else {
+	    	   		$("#btn-provar").css("pointer-events", "none");
+		    		$("#btn-provar").css("opacity", "0.5");
+		    	}
+	    	});
 		});
 	</script>
 </head>
@@ -34,7 +55,7 @@
 		<form:hidden path="entitatId"/>
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
-		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>
+		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>  
 		<dis:inputSelect 
 				name="tipus" 
 				textKey="backoffice.form.camp.tipus" 
@@ -47,10 +68,23 @@
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
 
-		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
-			<a href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div>
+		<%-- <div id="modal-botons" class="well">
+			<a href="<c:url value="/backoffice/${backofficeCommand.id}/provar"/>" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></a>
+			<button id="btn-provar" type="button" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
+			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
+			<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+		</div> --%>
+		
+				
+					<div>
+						<a id="btn-provar" href="<c:url value="/backoffice/${backofficeCommand.id}/provar"/>" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></a>
+					</div>
+				<div id="modal-botons" class="well">
+					<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
+					<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+				</div>
+
+		
 	</form:form>
 </body>
 </html>

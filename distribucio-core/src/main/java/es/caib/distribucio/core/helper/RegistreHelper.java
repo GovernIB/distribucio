@@ -1275,12 +1275,9 @@ public class RegistreHelper {
 			return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
 		}
 		
-		long t0 = System.currentTimeMillis();
 		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
-		String accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi();
 		accioParams.put("Backoffice", backofficeDesti.getCodi());
 		List<AnotacioRegistreId> ids = new ArrayList<>();
-		String usuari = null;
 		for (RegistreEntity pendent : pendentsByRegla) {
 			
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
@@ -1299,29 +1296,55 @@ public class RegistreHelper {
 			ids.add(anotacioRegistreId);
 			accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
 		}
+		
+		return comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
+	}
+	
+	// Comprova conexió amb el backoffice
+	@Transactional(readOnly = true)
+	public Exception provarConnexioBackoffice(BackofficeEntity backoffice) {
+		List<AnotacioRegistreId> ids = new ArrayList<>();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("Backoffice", backoffice.getCodi());
+		
+		return comunicarAnotacionsAlBackoffice(backoffice, ids, accioParams);
+	}
+	
+	private Exception comunicarAnotacionsAlBackoffice(
+			BackofficeEntity backoffice, 
+			List<AnotacioRegistreId> ids, 
+			Map<String, String> accioParams) {
 
+		long t0 = System.currentTimeMillis();
+		String accioDescripcio = "";
+		if (ids.size() > 0) {
+			accioDescripcio = "Comunicar anotacions pendents " + backoffice.getCodi();
+		} else {
+			accioDescripcio = "Comunicació amb el backoffice " + backoffice.getCodi();
+		}
+		String usuari = null;
 		try {			
-			usuari = backofficeDesti.getUsuari();
-			String contrasenya = backofficeDesti.getContrasenya();
+			usuari = backoffice.getUsuari();
+			String contrasenya = backoffice.getContrasenya();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
-				usuari = configHelper.getConfig(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				usuari = configHelper.getConfig(backoffice.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
-				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				contrasenya = configHelper.getConfig(backoffice.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			
 		
 			logger.trace(">>> Abans de crear backoffice WS");
-			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
+			if (backoffice.getTipus().equals(BackofficeTipusEnumDto.REST)) {
 				for (AnotacioRegistreId anotacioRegistreId : ids) {
-					String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
+					String urlAmbMetode = backoffice.getUrl() + "/comunicarAnotacionsPendents";
 					Client jerseyClient = generarClient();
 					autenticarClient(
 							jerseyClient, 
-							backofficeDesti.getUrl(), 
+							backoffice.getUrl(), 
 							urlAmbMetode, 
-							backofficeDesti.getUsuari(), 
-							backofficeDesti.getContrasenya());
+							backoffice.getUsuari(), 
+							backoffice.getContrasenya());
 					String identificador = anotacioRegistreId.getIndetificador();
 					String clauAcces = anotacioRegistreId.getClauAcces();
 					Form form = new Form();
@@ -1336,7 +1359,7 @@ public class RegistreHelper {
 				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 						getClass().getResource(
 								"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-						backofficeDesti.getUrl(),
+						backoffice.getUrl(),
 						new QName(
 								"http://www.caib.es/distribucio/ws/backoffice",
 								"BackofficeService"),
@@ -1361,7 +1384,12 @@ public class RegistreHelper {
 			return null;
 			
 		} catch (Exception ex) {
-			String errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + backofficeDesti.getNom() + ":" + ex.getMessage();
+			String errorDescripcio = "";
+			if (ids.size() > 0) {
+				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backoffice.getNom() + ":" + ex.getMessage();
+			} else {
+				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice";
+			}
 			afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, usuari, accioParams, t0, ex);
 			return new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
