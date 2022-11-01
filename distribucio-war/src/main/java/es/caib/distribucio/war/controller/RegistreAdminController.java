@@ -175,22 +175,27 @@ public class RegistreAdminController extends BaseAdminController {
 
 				String codiSia = ((RegistreDto)registreDto).getProcedimentCodi();
 				if (codiSia != null) {
-					String procedimentNom = null;
+					List<String> procedimentNom = new ArrayList<>();
 					// Descripció del procediment
 					try {
-						ProcedimentDto procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
+						List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
 						if (procedimentDto != null) {
-							procedimentNom = procedimentDto.getNom();
+							for(ProcedimentDto procediment : procedimentDto) {
+//								procedimentNom = procedimentDto.getNom();
+								procedimentNom.add(procediment.getNom());
+							}
 						} else {
 							String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
 							MissatgesHelper.warning(request, errMsg);
-							procedimentNom = "(" + errMsg + ")";
+//							procedimentNom = "(" + errMsg + ")";
+							procedimentNom.add("(" + errMsg + ")");
 						}
 					}catch(NullPointerException e) {
 						String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
 						logger.error(errMsg, e);
 						MissatgesHelper.warning(request, errMsg);
-						procedimentNom = "(" + errMsg + ")";
+//						procedimentNom = "(" + errMsg + ")";
+						procedimentNom.add("(" + errMsg + ")");
 					}
 					model.addAttribute("procedimentNom", procedimentNom);
 				}

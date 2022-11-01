@@ -582,7 +582,7 @@ $(document).ready(function() {
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
 						{{else procesEstat == 'REGLA_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
+							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/> <br><br> <i>{{:regla.nom}}</i>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
@@ -740,6 +740,7 @@ $(document).ready(function() {
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="annexosEstatEsborrany" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="regla.nom" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>

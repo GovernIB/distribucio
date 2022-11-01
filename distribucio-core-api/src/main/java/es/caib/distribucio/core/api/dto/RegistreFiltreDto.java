@@ -33,6 +33,8 @@ public class RegistreFiltreDto implements Serializable {
 	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 
 	private String backCodi;
+	
+	private ReglaDto regla;
 
 	private RegistreMarcatPerSobreescriureEnumDto sobreescriure;
 	
@@ -62,6 +64,12 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setBackCodi(String backCodi) {
 		this.backCodi = backCodi;
+	}
+	public ReglaDto getRegla() {
+		return regla;
+	}
+	public void setRegla(ReglaDto regla) {
+		this.regla = regla;
 	}
 	public RegistreEnviatPerEmailEnumDto getEnviatPerEmail() {
 		return enviatPerEmail;

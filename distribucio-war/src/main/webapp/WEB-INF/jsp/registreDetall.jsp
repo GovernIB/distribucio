@@ -678,15 +678,25 @@ li[id^="anotacio_"] {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
 					<td colspan="5">${registre.procedimentCodi}
-						<c:if test="${procedimentNom != null}">
-							- ${procedimentNom}
-						</c:if>				
+						<c:forEach items="${procedimentNom}" var="procediment">
+							<c:if test="${procedimentNom != null}">
+								- ${procediment}
+							</c:if>				
+						</c:forEach>
 					</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
 					<td colspan="5">${registre.observacions}</td>
-				</tr>						
+				</tr>	
+				<c:if test="${registre.procesEstat == 'REGLA_PENDENT' }">
+					<c:if test="${registre.regla.nom != null || registre.regla.nom != '' }">				
+						<tr>
+							<td><strong><spring:message code="registre.detalls.camp.regla"/></strong></td>
+							<td colspan="5">${registre.regla.nom}</td>
+						</tr>
+					</c:if>		
+				</c:if>			
 				<tr>
 					<td style="width:16%;"><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>
 					<td style="width:16%;">${registre.numeroOrigen}</td>

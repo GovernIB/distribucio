@@ -403,7 +403,7 @@ public interface RegistreService {
 	 * @param codiSia
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
-	public ProcedimentDto procedimentFindByCodiSia(
+	public List<ProcedimentDto> procedimentFindByCodiSia(
 			long entitatId,
 			String codiSia);
 	

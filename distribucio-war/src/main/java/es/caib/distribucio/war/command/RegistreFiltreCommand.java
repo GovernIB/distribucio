@@ -13,6 +13,7 @@ import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
@@ -39,6 +40,8 @@ public class RegistreFiltreCommand {
 	
 	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 	private String backCodi;
+	
+	private ReglaDto regla;
 	
 	private RegistreMarcatPerSobreescriureEnumDto sobreescriure;
 	
@@ -67,6 +70,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setBackCodi(String backCodi) {
 		this.backCodi = backCodi;
+	}
+	public ReglaDto getRegla() {
+		return regla;
+	}
+	public void setRegla(ReglaDto regla) {
+		this.regla = regla;
 	}
 	public RegistreEnviatPerEmailEnumDto getEnviatPerEmail() {
 		return this.enviatPerEmail;
