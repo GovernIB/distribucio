@@ -207,8 +207,7 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('tothom') or hasRole('DIS_REGLA')")
 	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId, 
-			boolean mostrarInactives, 
-			boolean isPermisAdmin);
+			boolean mostrarInactives);
 
 	/**
 	 * Crea l'anotació de registre i la distribueix.

@@ -864,8 +864,7 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId,
-			boolean mostrarInactives, 
-			boolean isPermisAdmin) {
+			boolean mostrarInactives) {
 		logger.trace("Consulta de busties permeses per un usuari ("
 				+ "entitatId=" + entitatId + ")");
 		final Timer findPermesesPerUsuariTimer = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari"));
@@ -874,8 +873,8 @@ public class BustiaServiceImpl implements BustiaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
-				isPermisAdmin,
-				isPermisAdmin);
+				false,
+				false);
 		// Obté la llista d'id's amb permisos per a l'usuari
 		List<BustiaEntity> busties;		
 		if (mostrarInactives) {
@@ -896,14 +895,9 @@ public class BustiaServiceImpl implements BustiaService {
 					}
 				},
 				BustiaEntity.class,
-				isPermisAdmin ? 
-					new Permission[] { 
-							ExtendedPermission.READ,
-							ExtendedPermission.ADMIN_LECTURA, 
-							ExtendedPermission.ADMINISTRATION} : 
-					new Permission[] {
-							ExtendedPermission.READ						
-					},
+				new Permission[] {
+						ExtendedPermission.READ						
+				},
 				auth);
 		findPermesesPerUsuariContextfilterGrantedAll.stop();
 		

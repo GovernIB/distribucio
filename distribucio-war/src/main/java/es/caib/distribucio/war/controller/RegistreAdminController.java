@@ -268,10 +268,7 @@ public class RegistreAdminController extends BaseAdminController {
 			// Consulta la pàgina amb el registre anterior, actual i final
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
-			List<BustiaDto> bustiesPermesesPerUsuari = null;
-			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives(), true);
-			}
+			List<BustiaDto> bustiesPermesesPerUsuari = new ArrayList<BustiaDto>();
 			PaginaDto<ContingutDto> pagina = registreService.findRegistre(
 								entitatActual.getId(),
 								bustiesPermesesPerUsuari,
