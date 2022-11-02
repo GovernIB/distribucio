@@ -127,38 +127,39 @@ public class BackofficeController extends BaseAdminController {
 	public String provar(
 			HttpServletRequest request, 
 			@PathVariable Long backofficeId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		
-		Exception exception = backofficeService.provar(
-				entitatActual.getId(), 
-				backofficeId);
-		
-		if (exception == null) {
-//			MissatgesHelper.success(
-//					request, 
-//					getMessage(
-//							request, 
-//							"backoffice.controller.provar.ok",
-//							null));
-			return getModalControllerReturnValueSuccess(
-					request,
-					"redirect:../../backoffice",
-					"backoffice.controller.provar.ok");
-		} else {
-//			MissatgesHelper.error(
-//					request,
-//					getMessage(
-//							request, 
-//							"backoffice.controller.provar.error",
-//							null));
-			return getModalControllerReturnValueError(
-					request,
-					"redirect:../../backoffice",
-					"backoffice.controller.provar.error");
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			
+			Exception exception = backofficeService.provar(
+					entitatActual.getId(), 
+					backofficeId);
+			
+			if (exception == null) {
+				MissatgesHelper.success(
+						request, 
+						getMessage(
+								request, 
+								"backoffice.controller.provar.ok",
+								null));
+			} else {
+				MissatgesHelper.error(
+				request,
+				getMessage(
+						request, 
+						"backoffice.controller.provar.error",
+						new Object[] {exception.getMessage()}));				
+			}
+			
+		} catch (Exception e) {
+			MissatgesHelper.error(
+			request,
+			getMessage(
+					request, 
+					"backoffice.controller.provar.error",
+					new Object[] {e.getMessage()}));
+
 		}
-		
-//		return "redirect:../../backoffice";
-		
+		return "/";
 	}
 	
 	@RequestMapping(value = "/{backofficeId}/delete", method = RequestMethod.GET)

@@ -24,17 +24,7 @@
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 			if (${nou != true}) {
 				$("#codi").attr('readonly', true);
-			}
-			
-		    $("button#btn-provar").click(function() {
-		    	$.get(
-		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
-		    		function(success) {
-		    			alert(success);
-					}
-		    	);
-		    })
-		    
+			}		    
 		    $("#url").bind("change paste keyup", function() {
 		    	if ($(this).val() == '${backofficeCommand.url}'
 		    			|| $(this).val() == '') {
@@ -45,6 +35,18 @@
 		    		$("#btn-provar").css("opacity", "0.5");
 		    	}
 	    	});
+		    $('button[name="btn-provar"]').click(function(e) {
+		    	e.preventDefault();
+		    	e.stopPropagation();
+		    	$.get(
+		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
+		    		function(success) {
+		    			webutilRefreshMissatges();
+		    			//alert(success);
+					}
+		    	);
+		    	return false;
+		    })
 		});
 	</script>
 </head>
@@ -76,10 +78,8 @@
 		</div> --%>
 		
 				
-					<div>
-						<a id="btn-provar" href="<c:url value="/backoffice/${backofficeCommand.id}/provar"/>" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></a>
-					</div>
 				<div id="modal-botons" class="well">
+					<button id="btn-provar" name="btn-provar" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
 					<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 					<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 				</div>
