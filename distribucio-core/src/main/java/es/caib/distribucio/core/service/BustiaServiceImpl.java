@@ -896,10 +896,14 @@ public class BustiaServiceImpl implements BustiaService {
 					}
 				},
 				BustiaEntity.class,
-				new Permission[] { 
-						ExtendedPermission.READ,
-						isPermisAdmin ? ExtendedPermission.ADMIN_LECTURA : ExtendedPermission.READ, 
-						isPermisAdmin ? ExtendedPermission.ADMINISTRATION : ExtendedPermission.READ},
+				isPermisAdmin ? 
+					new Permission[] { 
+							ExtendedPermission.READ,
+							ExtendedPermission.ADMIN_LECTURA, 
+							ExtendedPermission.ADMINISTRATION} : 
+					new Permission[] {
+							ExtendedPermission.READ						
+					},
 				auth);
 		findPermesesPerUsuariContextfilterGrantedAll.stop();
 		
