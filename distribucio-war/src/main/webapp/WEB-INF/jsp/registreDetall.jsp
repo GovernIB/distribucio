@@ -1023,39 +1023,39 @@ li[id^="anotacio_"] {
 								<c:when test="${registre.procesEstat ==  'ARXIU_PENDENT'} ">
 									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
-								<c:when test="${registre.procesEstat ==  'REGLA_PENDENT'}">
+								<c:when test="${registre.procesEstat == 'REGLA_PENDENT'}">
 									<c:if test="${registre.regla.nom != null || registre.regla.nom != '' }">
 										- ${registre.regla.nom}
 									</c:if>	
 									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>										
 								</c:when>
-								<c:when test="${registre.procesEstat ==  'BACK_PENDENT'}">
+								<c:when test="${registre.procesEstat == 'BACK_PENDENT'}">
 									<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
 										- ${registre.backCodi}
 									</c:if>	
 									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
-								<c:when test="${registre.procesEstat ==  'BACK_ERROR'}">
+								<c:when test="${registre.procesEstat == 'BACK_ERROR'}">
 									<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
 										- ${registre.backCodi}
 									</c:if>	
 									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:when>
-								<c:when test="${registre.procesEstat ==  'BACK_PENDENT' || 
-											registre.procesEstat == 'BACK_COMUNICADA' || 
-											registre.procesEstat == 'BACK_REBUDA' || 								 
-											registre.procesEstat == 'BACK_PROCESSADA' || 								 
-											registre.procesEstat == 'BACK_REBUTJADA'}">
-									<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
-										- ${registre.backCodi}
-									</c:if>	
-									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
-								</c:when>
 								<c:otherwise>
 									<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>:<c:out value="${registre.procesError}" escapeXml="true"/>"></span>
 								</c:otherwise>
 							</c:choose>
-						</c:if>						
+						</c:if>	
+						
+						<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || 
+									registre.procesEstat == 'BACK_REBUDA' || 								 
+									registre.procesEstat == 'BACK_PROCESSADA' || 								 
+									registre.procesEstat == 'BACK_REBUTJADA' || 
+									registre.procesEstat == 'BACK_ERROR'}">
+							<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
+								- ${registre.backCodi}
+							</c:if>	
+						</c:if>					
 					</td>
 				</tr>
 				<tr>
@@ -1532,7 +1532,7 @@ li[id^="anotacio_"] {
 							
 						<c:if test="${registre.procesEstat == 'BACK_PENDENT'}">
 							<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
-								<dt><spring:message code="registre.detalls.camp.regla"/></dt>
+								<dt><spring:message code="registre.detalls.camp.backoffice"/></dt>
 								<dd>${registre.backCodi}</dd>
 							</c:if>		
 						</c:if>	
