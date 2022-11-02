@@ -582,7 +582,7 @@ $(document).ready(function() {
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
 						{{else procesEstat == 'REGLA_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/> <br><br> <i>{{:regla.nom}}</i>
+							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
@@ -598,12 +598,19 @@ $(document).ready(function() {
 						{{else procesEstat == 'BACK_REBUTJADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
 						{{else procesEstat == 'BACK_ERROR'}}
-							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>		
+							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>
 							
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>					
 						{{/if}}
+
+						{{if procesEstat == 'BACK_PENDENT' || procesEstat == 'BACK_COMUNICADA' || procesEstat == 'BACK_REBUDA' || procesEstat == 'BACK_PROCESSADA' || procesEstat == 'BACK_REBUTJADA' || procesEstat == 'BACK_ERROR'}}
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+						{{else procesEstat == 'REGLA_PENDENT'}}
+							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
+						{{/if}}
+
 					</script>
 
 				</th>
@@ -741,6 +748,7 @@ $(document).ready(function() {
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="annexosEstatEsborrany" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="regla.nom" data-visible="false"></th>
+				<th data-col-name="backCodi" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>
