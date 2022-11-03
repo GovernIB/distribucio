@@ -35,8 +35,8 @@ import es.caib.distribucio.war.controller.BaseUserController;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/api/rest/backoffice")
-@Api(value = "/api/rest/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla.")
+@RequestMapping("/public/backoffice")
+@Api(value = "/public/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla per provar backoffices de tipus API REST.")
 public class BackofficeRestController extends BaseUserController {
 	
 	@Autowired

@@ -36,7 +36,6 @@
 		<sec:intercept-url pattern="/images/**" access="isAnonymous()"/>
 		
 		<sec:intercept-url pattern="/public/**" access="isAnonymous()"/>
-		<sec:intercept-url pattern="/api/rest/**" access="isAnonymous()"/>
 		
 		<sec:intercept-url pattern="/rest/v0/bustia" access="hasRole('DIS_BSTWS')"/>
 		<sec:intercept-url pattern="/rest/v1/bustia" access="hasRole('DIS_BSTWS')"/>
