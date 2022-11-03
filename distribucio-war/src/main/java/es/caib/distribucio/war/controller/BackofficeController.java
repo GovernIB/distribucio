@@ -127,8 +127,9 @@ public class BackofficeController extends BaseAdminController {
 	public String provar(
 			HttpServletRequest request, 
 			@PathVariable Long backofficeId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			
 			Exception exception = backofficeService.provar(
 					entitatActual.getId(), 
@@ -140,14 +141,17 @@ public class BackofficeController extends BaseAdminController {
 						getMessage(
 								request, 
 								"backoffice.controller.provar.ok",
-								null));
+								new Object[] {
+										backoffice.getCodi()}));
 			} else {
 				MissatgesHelper.error(
 				request,
 				getMessage(
 						request, 
 						"backoffice.controller.provar.error",
-						new Object[] {exception.getMessage()}));				
+						new Object[] {
+								backoffice.getCodi(),
+								exception.getMessage()}));				
 			}
 			
 		} catch (Exception e) {
@@ -156,10 +160,12 @@ public class BackofficeController extends BaseAdminController {
 			getMessage(
 					request, 
 					"backoffice.controller.provar.error",
-					new Object[] {e.getMessage()}));
+					new Object[] {
+							backoffice.getCodi(),
+							e.getMessage()}));
 
 		}
-		return "/";
+		return "redirect:../../backoffice";
 	}
 	
 	@RequestMapping(value = "/{backofficeId}/delete", method = RequestMethod.GET)

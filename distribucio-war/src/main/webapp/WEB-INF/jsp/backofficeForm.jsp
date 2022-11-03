@@ -38,6 +38,11 @@
 		    $('button[name="btn-provar"]').click(function(e) {
 		    	e.preventDefault();
 		    	e.stopPropagation();
+
+		    	$("#btn-provar").css("pointer-events", "none");
+				$("#span-spinner").addClass('fa-circle-o-notch');
+				$("#span-spinner").addClass('fa-spin');
+	    		
 		    	$.get(
 		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
 		    		function(success) {
@@ -79,7 +84,7 @@
 		
 				
 				<div id="modal-botons" class="well">
-					<button id="btn-provar" name="btn-provar" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
+					<button id="btn-provar" name="btn-provar" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
 					<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 					<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 				</div>

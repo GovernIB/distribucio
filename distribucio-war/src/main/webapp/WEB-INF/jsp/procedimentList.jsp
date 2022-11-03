@@ -29,7 +29,7 @@
 	<script>
 		function actualitzarProcediments() {
 			$("#span-refresh").addClass('fa-circle-o-notch');
-			$("#span-refresh").addClass('fa-spin')
+			$("#span-refresh").addClass('fa-spin');
 			$("#actualitzarProcediments").css("pointer-events", "none");
 			window.location.href = '<c:url value="/procediment/actualitzar"/>';
 			$("#actualitzarProcediments").prop("pointer-events", "auto");
