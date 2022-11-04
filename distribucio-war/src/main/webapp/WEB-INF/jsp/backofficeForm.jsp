@@ -5,8 +5,14 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <c:choose>
-	<c:when test="${empty backofficeCommand.id}"><c:set var="titol"><spring:message code="backoffice.form.titol.crear"/></c:set></c:when>
-	<c:otherwise><c:set var="titol"><spring:message code="backoffice.form.titol.modificar"/></c:set></c:otherwise>
+	<c:when test="${empty backofficeCommand.id}">
+		<c:set var="titol"><spring:message code="backoffice.form.titol.crear"/></c:set>
+		<c:set var="nou" value="true"></c:set>
+	</c:when>
+	<c:otherwise>
+		<c:set var="titol"><spring:message code="backoffice.form.titol.modificar"/></c:set>		
+		<c:set var="nou" value="false"></c:set>
+	</c:otherwise>
 </c:choose>
 <html>
 <head>
@@ -20,14 +26,32 @@
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
+		    $("#div-alert").css("display", "none");
 			$("#link-provar").insertAfter("#btn-submit");
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 			if (${nou != true}) {
 				$("#codi").attr('readonly', true);
 			}		    
 		    $("#url").bind("change paste keyup", function() {
-		    	if ($(this).val() == '${backofficeCommand.url}'
-		    			|| $(this).val() == '') {
+		    	if ($(this).val() == '${backofficeCommand.url}') {
+	    	   		$("#btn-provar").css("pointer-events", "auto");
+	    	   		$("#btn-provar").css("opacity", "1");
+		    	}else {
+	    	   		$("#btn-provar").css("pointer-events", "none");
+		    		$("#btn-provar").css("opacity", "0.5");
+		    	}
+	    	});		    
+		    $("#nom").bind("change paste keyup", function() {
+		    	if ($(this).val() == '${backofficeCommand.nom}') {
+	    	   		$("#btn-provar").css("pointer-events", "auto");
+	    	   		$("#btn-provar").css("opacity", "1");
+		    	}else {
+	    	   		$("#btn-provar").css("pointer-events", "none");
+		    		$("#btn-provar").css("opacity", "0.5");
+		    	}
+	    	});		    
+		    $("#tipus").bind("change paste keyup", function() {
+		    	if ($(this).val() == '${backofficeCommand.tipus}') {
 	    	   		$("#btn-provar").css("pointer-events", "auto");
 	    	   		$("#btn-provar").css("opacity", "1");
 		    	}else {
@@ -36,30 +60,58 @@
 		    	}
 	    	});
 		    $('button[name="btn-provar"]').click(function(e) {
-		    	e.preventDefault();
-		    	e.stopPropagation();
-
-		    	$("#btn-provar").css("pointer-events", "none");
-				$("#span-spinner").addClass('fa-circle-o-notch');
-				$("#span-spinner").addClass('fa-spin');
+		    	 e.preventDefault();
+		    	 e.stopPropagation();
+			     $("#div-alert").css("display", "none");
+		    	 $("#btn-provar").css("opacity", "0.5");
+		    	 $("#btn-provar").css("pointer-events", "none");
+				 $("#span-spinner").addClass('fa-circle-o-notch');
+				 $("#span-spinner").addClass('fa-spin');
 	    		
 		    	$.get(
 		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
 		    		function(success) {
-		    			webutilRefreshMissatges();
-		    			//alert(success);
+	    			     $("#div-alert").css("display", "block");
+		    			 //webutilRefreshMissatges();
+		    			 if (success.includes("alert-danger")) {
+		    				 $("#div-alert").removeClass("alert-success");
+		    				 $("#div-alert").addClass("alert-danger");
+		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
+		    			 }else if (success.includes("alert-success")) {
+		    				 $("#div-alert").removeClass("alert-danger");
+		    				 $("#div-alert").addClass("alert-success");
+		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");		    				 
+		    			 }
+				    	 $("#btn-provar").css("opacity", "1"); 
+				    	 $("#btn-provar").css("pointer-events", "auto");
+						 $("#span-spinner").removeClass('fa-circle-o-notch');
+						 $("#span-spinner").removeClass('fa-spin');
 					}
 		    	);
-		    	return false;
 		    })
 		});
 	</script>
+	
+	<style>
+		.modal-botons-backoffice {
+			display: flex;
+			justify-content: right;
+			background-color: white;
+			border: none;
+			position: fixed;
+		    left: 0;
+		    bottom: 0;
+		    margin-bottom: 0px;
+		    width: 100%; 
+		}
+	</style>
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/backoffice/save"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
+		<div id="div-alert" class="alert "></div>
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
 		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>  
@@ -74,20 +126,22 @@
 				optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
-
-		<%-- <div id="modal-botons" class="well">
-			<a href="<c:url value="/backoffice/${backofficeCommand.id}/provar"/>" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></a>
-			<button id="btn-provar" type="button" class="btn btn-primary"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
+					
+		<%-- <div id="modal-botons" class="well">				
+			<c:if test="${!nou}">
+				<button id="btn-provar" name="btn-provar" value="${backofficeComman.id}" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
+			</c:if>
 			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div> --%>
-		
-				
-				<div id="modal-botons" class="well">
-					<button id="btn-provar" name="btn-provar" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
-					<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
-					<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-				</div>
+		<br><br><br><br>
+		<div id="modal-botons2" class="well modal-botons-backoffice">	
+			<c:if test="${!nou}">
+				<button id="btn-provar" name="btn-provar" value="${backofficeComman.id}" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
+			</c:if>
+			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
+			<a id="btn-cancel" href="" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
+		</div>
 
 		
 	</form:form>
