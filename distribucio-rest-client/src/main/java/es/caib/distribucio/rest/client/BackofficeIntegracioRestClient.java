@@ -32,7 +32,9 @@ public class BackofficeIntegracioRestClient {
     protected boolean autenticacioBasic = true;
     protected int connecTimeout = 20000;
     protected int readTimeout = 120000;
-
+    
+    private static Client jerseyClient;
+    
     public BackofficeIntegracioRestClient(String baseUrl, String username, String password) {
         this.baseUrl = baseUrl;
         this.username = username;
@@ -64,15 +66,18 @@ public class BackofficeIntegracioRestClient {
     }
 
     protected Client generarClient(String urlAmbMetode) throws Exception {
-        Client jerseyClient = generarClient();
-        if (username != null) {
+//        Client jerseyClient = generarClient();
+    	if (BackofficeIntegracioRestClient.jerseyClient == null) {
+    		BackofficeIntegracioRestClient.jerseyClient = generarClient();
+    	}
+    	if (username != null) {
             autenticarClient(
-                    jerseyClient,
+            		BackofficeIntegracioRestClient.jerseyClient,
                     urlAmbMetode,
                     username,
                     password);
         }
-        return jerseyClient;
+        return BackofficeIntegracioRestClient.jerseyClient;
     }
 
     protected Client generarClient() {

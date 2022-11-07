@@ -24,8 +24,8 @@ public class BackofficeIntegracioRestTest {
 	private static final String USER = "danielm";
 	private static final String PASS = "danielm";
 
-	private static final String IDENTIFICADOR = "GOIBE1666699669099/2022";
-	private static final String CLAU_ACCESS = "mCzbsQExMio96qpKqAqadXVP30eH7UPZ6LxV8PBjB4M=";
+	private static final String IDENTIFICADOR = "GOIBE1666190094533/2022";
+	private static final String CLAU_ACCESS = "tVAlOof5XxL64l1hOeaAmMXyKxmIcNtPUmWqUSIC05A=";
 
 	@Test
 	public void consultaXXX() throws DatatypeConfigurationException, IOException {
