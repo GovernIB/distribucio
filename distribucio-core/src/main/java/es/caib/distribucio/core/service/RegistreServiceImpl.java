@@ -1941,30 +1941,26 @@ public class RegistreServiceImpl implements RegistreService {
 				DelegatingSecurityContextRunnable wrappedRunnable;
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
-					// Filtra documents tècnics si no s'és administrador
-					if (!"tothom".equalsIgnoreCase(rolActual)
-						|| annex.getSicresTipusDocument() == null 
-						|| rolActual.equals(null)) 
-					{
-						if (!RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
-							Runnable thread = 
-									new GetZipDocumentacioThread(
-									rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
-									registreHelper,
-									registre.getJustificant() != null ? registre.getJustificant().getId() : null,
-									registre.getNumero(),
-									annex.getId(),
-									annex.getTitol(),
-									annex.getFitxerNom(),
-									nomsArxius,
-									zos,
-									executor,
-									errors);
-							
-							wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
-							executor.execute(wrappedRunnable);
-						}
-					}
+					// S'exclouen els documents tècnics de la descàrrega
+					if (annex.getSicresTipusDocument() == null
+							|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
+
+						Runnable thread = 
+								new GetZipDocumentacioThread(
+								rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
+								registreHelper,
+								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
+								registre.getNumero(),
+								annex.getId(),
+								annex.getTitol(),
+								annex.getFitxerNom(),
+								nomsArxius,
+								zos,
+								executor,
+								errors);
+						
+						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
+						executor.execute(wrappedRunnable);					}
 				}
 
 				try {Thread.sleep(200);} catch(Exception e) {};				
