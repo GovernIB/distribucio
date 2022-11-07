@@ -2463,10 +2463,8 @@ public class RegistreServiceImpl implements RegistreService {
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());
-			// Cerca del llistat de procediments per codiDir3 cridant al plugin
-//			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
-			
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());			
+			llistaUnitatsDescendents.add(bustia.getUnitatOrganitzativa().getCodi());
 			// Cerca del llistat de procediments amb consulta a la bbdd
 			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
 			if (procediments != null) {
@@ -2478,6 +2476,19 @@ public class RegistreServiceImpl implements RegistreService {
 			Collections.sort(dtos);
 		}
 		return dtos;
+	}
+	
+	@Transactional
+	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
+		if (unitatOrganitzativa == null) {
+			return codiUnitat;		
+		} 
+		if (!unitatOrganitzativa.getCodi().equals(unitatOrganitzativa.getCodiUnitatArrel())) {
+			return getCodiUnitatOrganitzativaArrel(unitatOrganitzativa.getCodiUnitatSuperior());
+		}
+		return unitatOrganitzativa.getCodi();
+		
 	}
 	
 	

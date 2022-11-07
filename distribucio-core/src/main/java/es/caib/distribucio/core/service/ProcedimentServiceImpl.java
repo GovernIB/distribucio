@@ -16,6 +16,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
@@ -86,7 +87,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 //		int errors = 0;
 //		int correctes = 0;
 		logger.debug("Actualitzant els procediments");
-		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findAll();
+		EntitatEntity entitat = entitatRepository.findOne(entitatId);
+		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
 		for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
 			try {
 				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
