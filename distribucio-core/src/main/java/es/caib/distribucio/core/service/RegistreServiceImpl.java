@@ -1941,10 +1941,10 @@ public class RegistreServiceImpl implements RegistreService {
 				DelegatingSecurityContextRunnable wrappedRunnable;
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
-					// Filtra documents tècnics si no s'és administrador
-					if (!"tothom".equalsIgnoreCase(rolActual)
-						|| annex.getSicresTipusDocument() == null 
-						|| rolActual.equals(null)) 
+					// S'exclouen els documents tècnics de la descàrrega
+					if (!rolActual.equals(null)
+						|| rolActual.equals(null)
+						|| annex.getSicresTipusDocument() == null ) 
 					{
 						if (!RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
 							Runnable thread = 
@@ -2463,7 +2463,8 @@ public class RegistreServiceImpl implements RegistreService {
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());
+			String codiUnitatOrganitzativaArrel = getCodiUnitatOrganitzativaArrel(bustia.getUnitatOrganitzativa().getCodi());
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, codiUnitatOrganitzativaArrel);
 			// Cerca del llistat de procediments per codiDir3 cridant al plugin
 //			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
 			
@@ -2478,6 +2479,19 @@ public class RegistreServiceImpl implements RegistreService {
 			Collections.sort(dtos);
 		}
 		return dtos;
+	}
+	
+	@Transactional
+	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
+		if (unitatOrganitzativa == null) {
+			return codiUnitat;		
+		} 
+		if (!unitatOrganitzativa.getCodi().equals(unitatOrganitzativa.getCodiUnitatArrel())) {
+			return getCodiUnitatOrganitzativaArrel(unitatOrganitzativa.getCodiUnitatSuperior());
+		}
+		return unitatOrganitzativa.getCodi();
+		
 	}
 	
 	
