@@ -1942,29 +1942,25 @@ public class RegistreServiceImpl implements RegistreService {
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
 					// S'exclouen els documents tècnics de la descàrrega
-					if (!rolActual.equals(null)
-						|| rolActual.equals(null)
-						|| annex.getSicresTipusDocument() == null ) 
-					{
-						if (!RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
-							Runnable thread = 
-									new GetZipDocumentacioThread(
-									rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
-									registreHelper,
-									registre.getJustificant() != null ? registre.getJustificant().getId() : null,
-									registre.getNumero(),
-									annex.getId(),
-									annex.getTitol(),
-									annex.getFitxerNom(),
-									nomsArxius,
-									zos,
-									executor,
-									errors);
-							
-							wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
-							executor.execute(wrappedRunnable);
-						}
-					}
+					if (annex.getSicresTipusDocument() == null
+							|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
+
+						Runnable thread = 
+								new GetZipDocumentacioThread(
+								rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
+								registreHelper,
+								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
+								registre.getNumero(),
+								annex.getId(),
+								annex.getTitol(),
+								annex.getFitxerNom(),
+								nomsArxius,
+								zos,
+								executor,
+								errors);
+						
+						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
+						executor.execute(wrappedRunnable);					}
 				}
 
 				try {Thread.sleep(200);} catch(Exception e) {};				
@@ -2463,11 +2459,8 @@ public class RegistreServiceImpl implements RegistreService {
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			String codiUnitatOrganitzativaArrel = getCodiUnitatOrganitzativaArrel(bustia.getUnitatOrganitzativa().getCodi());
-			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, codiUnitatOrganitzativaArrel);
-			// Cerca del llistat de procediments per codiDir3 cridant al plugin
-//			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
-			
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());			
+			llistaUnitatsDescendents.add(bustia.getUnitatOrganitzativa().getCodi());
 			// Cerca del llistat de procediments amb consulta a la bbdd
 			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
 			if (procediments != null) {
