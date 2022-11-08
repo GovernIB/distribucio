@@ -404,14 +404,12 @@ public class RegistreUserController extends BaseUserController {
 					} else {
 						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
 						MissatgesHelper.warning(request, errMsg);
-//						procedimentNom = "(" + errMsg + ")";
 						procedimentNom.add("(" + errMsg + ")");
 					}
 				}catch(Exception e) {
 					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
 					logger.error(errMsg, e);
 					MissatgesHelper.warning(request, errMsg);
-//					procedimentNom = "(" + errMsg + ")";
 					procedimentNom.add("(" + errMsg + ")");
 				}
 				model.addAttribute("procedimentNom", procedimentNom);
@@ -430,6 +428,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("numeroAnnexosFirmaInvalida", this.numeroAnnexosFirmaInvalida(registre));
 			model.addAttribute("numeroAnnexosEstatEsborrany", this.numeroAnnexosEstatEsborrany(registre));
 		} catch (Exception e) {
+			logger.error("No s'ha pogut mostrar el detall del registre " + registreId, e);
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
 				NotFoundException exc = (NotFoundException) thr;
@@ -546,8 +545,9 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("concsvBaseUrl", configService.getConcsvBaseUrl());
 			model.addAttribute("gestioDocumentalFirmes", registreService.getDadesAnnexFirmesSenseDetall(annexId)); // CANVIAR NOM
 		} catch(Exception ex) {
-			logger.error("Error recuperant informació de l'annex", ex);
-			model.addAttribute("missatgeError", ex.getMessage());
+			String msgError = "Error recuperant informació de l'annex";
+			logger.error(msgError, ex);
+			model.addAttribute("missatgeError", msgError + ". " +  ex.getMessage());
 			return "ajaxErrorPage";
 		}
 		return "registreAnnex";
@@ -577,8 +577,9 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isResum", isResum);
 			
 		} catch(Exception ex) {
-			logger.error("Error recuperant informació de firma", ex);
-			model.addAttribute("missatgeError", ex.getMessage());
+			String msgError = "Error recuperant informació de firma";
+			logger.error(msgError, ex);
+			model.addAttribute("missatgeError", msgError + ". " +  ex.getMessage());
 			return "ajaxErrorPage";
 		}
 
@@ -602,8 +603,9 @@ public class RegistreUserController extends BaseUserController {
 							annexId,
 							isVistaMoviments);
 		} catch(Exception ex) {
-			logger.error("Error recuperant informació de firma", ex);
-			model.addAttribute("missatgeError", ex.getMessage());
+			String msgError = "Error recuperant informació de firma";
+			logger.error(msgError, ex);
+			model.addAttribute("missatgeError", msgError + ". " +  ex.getMessage());
 		}
 
 		return annexFirmes;
