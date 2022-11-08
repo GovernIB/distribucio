@@ -4,6 +4,8 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -498,10 +500,15 @@ public class ContingutController extends BaseUserController {
 			RegistreDto registre, 
 			List<ContingutLogDetallsDto> logsResum) throws Exception{
 		Locale locale = new RequestContext(request).getLocale();
-
-
+		
+		String plantilla = getPlantillaInformeTrasabilitat(locale.getLanguage());
+		
 		// 1) Load ODT file and set Velocity template engine and cache it to the registry					
-    	InputStream in= this.getClass().getResourceAsStream("/plantilles/informe_" + locale.getLanguage() + ".odt");
+    	InputStream in = null;
+    	if (plantilla != null)
+    		in = new FileInputStream(new File(plantilla));
+    	else
+    		in = this.getClass().getResourceAsStream("/plantilles/informe_" + locale.getLanguage() + ".odt");
     	IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,TemplateEngineKind.Velocity);
 
     	// 2) Create Java model context 
@@ -543,7 +550,11 @@ public class ContingutController extends BaseUserController {
 	    c[0] = Character.toLowerCase(c[0]);
 	    return new String(c);
 	}
-
+	
+	private String getPlantillaInformeTrasabilitat(String idioma) {
+		return aplicacioService.propertyFindByNom("es.caib.distribucio.plantilla.informe.trasabilitat." + idioma);
+	}
+	
 	/** Mètode per crear la descripció per a una línia del log
 	 * @param request 
 	 * 

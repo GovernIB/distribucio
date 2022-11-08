@@ -1,6 +1,8 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
@@ -56,6 +58,7 @@ import es.caib.distribucio.core.api.dto.historic.HistoricBustiaDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
 import es.caib.distribucio.core.api.dto.historic.HistoricEstatDto;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.HistoricService;
 import es.caib.distribucio.war.command.HistoricFiltreCommand;
 import es.caib.distribucio.war.helper.JsonDades;
@@ -76,7 +79,9 @@ public class HistoricController extends BaseAdminController {
 
 	@Autowired
 	private HistoricService historicService;
-
+	@Autowired
+	private AplicacioService aplicacioService;
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(HttpServletRequest request, 
 			Model model) {	
@@ -718,8 +723,14 @@ public class HistoricController extends BaseAdminController {
 	private byte[] dadesToOdt(HttpServletRequest request, HistoricDadesDto dades) throws Exception {
 		Locale locale = new RequestContext(request).getLocale();
 
+		String plantilla = getPlantillaHistoric(locale.getLanguage());
+		
 		// 1) Load ODT file and set Velocity template engine and cache it to the registry					
-    	InputStream in= this.getClass().getResourceAsStream("/plantilles/historic_" + locale.getLanguage() + ".odt");
+    	InputStream in = null;
+    	if (plantilla != null)
+    		in = new FileInputStream(new File(plantilla));
+    	else
+    		in = this.getClass().getResourceAsStream("/plantilles/historic_" + locale.getLanguage() + ".odt");
     	IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,TemplateEngineKind.Velocity);
 
     	// 2) Create Java model context 
@@ -740,6 +751,10 @@ public class HistoricController extends BaseAdminController {
     	return bos.toByteArray();
 
     }
+
+	private String getPlantillaHistoric(String idioma) {
+		return aplicacioService.propertyFindByNom("es.caib.distribucio.plantilla.historic." + idioma);
+	}
 	
 	private Map<RegistreProcesEstatEnum, String> getEstatLiterals(HttpServletRequest request) {
 		Map<RegistreProcesEstatEnum, String> estats = new HashMap<>();
