@@ -181,17 +181,20 @@ public class RegistreAdminController extends BaseAdminController {
 						List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
 						if (procedimentDto != null) {
 							for(ProcedimentDto procediment : procedimentDto) {
+//								procedimentNom = procedimentDto.getNom();
 								procedimentNom.add(procediment.getNom());
 							}
 						} else {
 							String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
 							MissatgesHelper.warning(request, errMsg);
+//							procedimentNom = "(" + errMsg + ")";
 							procedimentNom.add("(" + errMsg + ")");
 						}
 					}catch(NullPointerException e) {
 						String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
 						logger.error(errMsg, e);
 						MissatgesHelper.warning(request, errMsg);
+//						procedimentNom = "(" + errMsg + ")";
 						procedimentNom.add("(" + errMsg + ")");
 					}
 					model.addAttribute("procedimentNom", procedimentNom);
@@ -207,7 +210,7 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
 			model.addAttribute("numeroAnnexosEstatEsborrany", numeroAnnexosEstatEsborrany);
 		} catch (Exception e) {
-			logger.error("No s'ha pogut mostrar el detall del registre " + registreId, e);
+			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
 				NotFoundException exc = (NotFoundException) thr;

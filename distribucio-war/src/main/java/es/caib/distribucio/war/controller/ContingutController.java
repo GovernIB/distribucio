@@ -89,9 +89,8 @@ public class ContingutController extends BaseUserController {
 					justificant);
 			
 		} catch(Exception ex) {
-			String msgError = "Error recuperant informació del justificant";
-			logger.error(msgError, ex);
-			model.addAttribute("missatgeError", msgError + ". " + ex.getMessage());
+			logger.error("Error recuperant informació del justificant", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
 			return "ajaxErrorPage";
 		}
 		return "registreJustificant";
@@ -114,9 +113,8 @@ public class ContingutController extends BaseUserController {
 					"arxiuDetall",
 					arxiuDetall);
 		} catch(Exception ex) {
-			String msgError = "Error recuperant informació de l'arxiu";
-			logger.error(msgError, ex);
-			model.addAttribute("missatgeError", msgError + ". " +  ex.getMessage());
+			logger.error("Error recuperant informació de l'arxiu", ex);
+			model.addAttribute("missatgeError", ex.getMessage());
 			return "ajaxErrorPage";
 		}
 		return "arxiuInfo";
@@ -150,7 +148,6 @@ public class ContingutController extends BaseUserController {
 		try {
 			fitxer = registreService.getAnnexFitxer(annexId, true);
 		} catch (Exception ex) {
-			logger.error("No s'ha pogut fer la descàrrega a base64", ex);
 			fitxer.setError(true);
 			fitxer.setErrorMsg(ex.getMessage());
 			fitxer.setNom("");
