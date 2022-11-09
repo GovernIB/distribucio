@@ -1,6 +1,5 @@
 package es.caib.distribucio.war.controller;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -80,14 +79,29 @@ public class ProcedimentController extends BaseAdminController{
 			Model model) throws Exception {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		StringBuilder errors = new StringBuilder();
 		
-		procedimentService.findAndUpdateProcediments(entitatActual.getId());
-		
-		return getModalControllerReturnValueSuccess(
-                request,
-                "redirect:.",
-                "procediment.controller.actualitzar.ok");
-		
+		try {
+			errors = procedimentService.findAndUpdateProcediments(entitatActual.getId());
+			if (!errors.toString().equals("")) {
+				return getAjaxControllerReturnValueError(
+		                request,
+		                "redirect:.",
+		                "procediment.controller.actualitzar.error",
+		                new Object[] {errors.toString()});	
+			}
+			
+			return getAjaxControllerReturnValueSuccess(
+	                request,
+	                "redirect:.",
+	                "procediment.controller.actualitzar.ok");
+		} catch (Exception e) {
+			return getAjaxControllerReturnValueError(
+	                request,
+	                "redirect:.",
+	                "procediment.controller.actualitzar.error.generic");			
+		}
+			
 	}
 	
 	

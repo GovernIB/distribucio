@@ -926,7 +926,7 @@ public class PluginHelper {
 
 	public List<Procediment> procedimentFindByCodiDir3(
 			String codiDir3) {
-		String accioDescripcio = "Consulta dels procediments pel codi DIR3";
+		String accioDescripcio = "Consulta dels procediments pel codi DIR3 " + codiDir3;
 
 		ProcedimentPlugin procedimentPlugin = this.getProcedimentPlugin();
 		String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();

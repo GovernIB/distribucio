@@ -567,9 +567,19 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Override
 	public void actualitzarProcediments() throws Exception {
 		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+		StringBuilder errors = new StringBuilder();
 		for (EntitatEntity entitat : llistaEntitats) {
-			procedimentService.findAndUpdateProcediments(entitat.getId());
-		}			
+			try {
+				procedimentService.findAndUpdateProcediments(entitat.getId());
+			} catch (Exception e) {
+				String stringError = "Error sincronitzant l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage(); 
+				errors.append("<p>" + stringError + "</p>");
+				logger.error(errors.toString());
+			}			
+		}
+		if (errors.length() != 0) {
+			throw new Exception(errors.toString());
+		}
 	}
 	
 	
