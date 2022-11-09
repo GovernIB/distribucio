@@ -181,20 +181,17 @@ public class RegistreAdminController extends BaseAdminController {
 						List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
 						if (procedimentDto != null) {
 							for(ProcedimentDto procediment : procedimentDto) {
-//								procedimentNom = procedimentDto.getNom();
 								procedimentNom.add(procediment.getNom());
 							}
 						} else {
 							String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
 							MissatgesHelper.warning(request, errMsg);
-//							procedimentNom = "(" + errMsg + ")";
 							procedimentNom.add("(" + errMsg + ")");
 						}
 					}catch(NullPointerException e) {
 						String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
 						logger.error(errMsg, e);
 						MissatgesHelper.warning(request, errMsg);
-//						procedimentNom = "(" + errMsg + ")";
 						procedimentNom.add("(" + errMsg + ")");
 					}
 					model.addAttribute("procedimentNom", procedimentNom);

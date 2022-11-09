@@ -85,7 +85,7 @@ public class ProcedimentController extends BaseAdminController{
 		
 		return getModalControllerReturnValueSuccess(
                 request,
-                "redirect:.",
+                "redirect:../../procediment",
                 "procediment.controller.actualitzar.ok");
 		
 	}

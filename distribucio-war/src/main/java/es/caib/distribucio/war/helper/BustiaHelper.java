@@ -136,7 +136,7 @@ public class BustiaHelper {
 			response.setContentType(new MimetypesFileTypeMap().getContentType(fileName));
 			wb.write( response.getOutputStream() );
 		} catch (Exception e) {
-			logger.error("No s'ha pogut realitzar la exportació.");
+			logger.error("No s'ha pogut realitzar la exportació.", e);
 		}
 	}
 	
