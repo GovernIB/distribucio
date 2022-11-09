@@ -14,8 +14,11 @@ function webutilClearMissatges(divMissatges) {
 	}
 	$(divMissatges).empty();
 }
-function webutilRefreshMissatges() {
-	$('#contingut-missatges').load(webutilContextPath() + "/nodeco/missatges");
+function webutilRefreshMissatges(divMissatges) {
+	if (!divMissatges) {		
+		divMissatges = '#contingut-missatges';
+	}
+	$(divMissatges).load(webutilContextPath() + "/nodeco/missatges");
 }
 function webutilMissatgeError(missatge, divMissatges) {
 	if (!divMissatges) {
