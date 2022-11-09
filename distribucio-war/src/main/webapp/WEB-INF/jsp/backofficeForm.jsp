@@ -79,57 +79,6 @@
 		    	 e.preventDefault();
 		    	 e.stopPropagation();
 				 $("#div-alert").css("display", "none");
-		    	 /*$("#div-alert").css("display", "none");
-		    	 $("#btn-provar").css("opacity", "0.5");
-		    	 $("#btn-provar").css("pointer-events", "none");
-				 $("#span-spinner").addClass('fa-circle-o-notch');
-				 $("#span-spinner").addClass('fa-spin');  */
-				 
-				/*  $.ajax({
-					url: "<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
-					type: "get", 
-					success: function(resposta) {
-						webutilRefreshMissatges('#modal-missatges');
-						
-						$("#div-alert").css("display", "block");
-		    			 if (resposta.includes("alert-danger")) {
-		    				 $("#div-alert").removeClass("alert-success");
-		    				 $("#div-alert").addClass("alert-danger");
-		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
-		    			 }else if (resposta.includes("alert-success")) {
-		    				 $("#div-alert").removeClass("alert-danger");
-		    				 $("#div-alert").addClass("alert-success");
-		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");		    				 
-		    			 }
-				    	 $("#btn-provar").css("opacity", "1"); 
-				    	 $("#btn-provar").css("pointer-events", "auto");
-						 $("#span-spinner").removeClass('fa-circle-o-notch');
-						 $("#span-spinner").removeClass('fa-spin');
-					}
-				});	 */
-	    		
-		    	/* $.get(
-		    		"<c:url value='/backoffice/" + ${backofficeCommand.id} + "/provar'/>", 
-		    		function(success) {
-		    			
-		    			 webutilRefreshMissatges('#modal-missatges'); */
-		    			 
-	    			     /* $("#div-alert").css("display", "block");
-		    			 if (success.includes("alert-danger")) {
-		    				 $("#div-alert").removeClass("alert-success");
-		    				 $("#div-alert").addClass("alert-danger");
-		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
-		    			 }else if (success.includes("alert-success")) {
-		    				 $("#div-alert").removeClass("alert-danger");
-		    				 $("#div-alert").addClass("alert-success");
-		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");		    				 
-		    			 }
-				    	 $("#btn-provar").css("opacity", "1"); 
-				    	 $("#btn-provar").css("pointer-events", "auto");
-						 $("#span-spinner").removeClass('fa-circle-o-notch');
-						 $("#span-spinner").removeClass('fa-spin'); */
-				/* 	}
-		    	); */
 		    })
 		});
 	</script>
@@ -167,14 +116,6 @@
 			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div> 
-		<%-- <br><br><br><br>
-		<div id="modal-botons2" class="well modal-botons-backoffice">	
-			<c:if test="${!nou}">
-				<button id="btn-provar" name="btn-provar" value="${backofficeComman.id}" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
-			</c:if>
-			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
-			<a id="btn-cancel" href="" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
-		</div> --%>
 
 		
 	</form:form>
