@@ -11,12 +11,19 @@ package es.caib.distribucio.core.api.dto;
  */
 public class ProcedimentDto implements Comparable<ProcedimentDto>{
 
+	private Long id;
 	private String codi;
 	private String nom;
 	private String codiSia;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 	private EntitatDto entitat;
 
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCodi() {
 		return codi;
 	}
