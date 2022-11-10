@@ -83,45 +83,46 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	@Transactional
-	public StringBuilder findAndUpdateProcediments(Long entitatId) throws Exception {
-		int errors = 0;
-		int correctes = 0;
-		logger.debug("Actualitzant els procediments");
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
+		int max_intents = 5;
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
-		List<UnitatOrganitzativaEntity> unitatsAmbErrors = new ArrayList<>();
-		StringBuilder msgErrors = new StringBuilder();
-		int reintents = 0;
+		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
 		
+		List<UnitatOrganitzativaEntity> unitatsAmbErrors = new ArrayList<>();
+		int reintents = 0;
 		do {
+			unitatsAmbErrors = new ArrayList<>();
 			for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
-				errors = 0;
 				try {
 					List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
 					if (procediments != null && !procediments.isEmpty()) { 
 						updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
-						correctes++;
 					} else {
 						logger.debug("No hi ha procediments associats al codiDir3 " + unitatOrganitzativa.getCodi());
 					}
 				}catch (Exception e) {
-					errors++;
-					String msgErr = "No s'han pogut consultar els procediments de ROLSAC (" +
-							"codiDir3=" + unitatOrganitzativa.getCodi() + ")";
-					msgErrors.append("<p>" + unitatOrganitzativa.getCodi() + "</p>");
-					llistaUnitatsOrganitzatives = unitatsAmbErrors;
-					unitatsAmbErrors.clear();
-					logger.error(msgErr,e);
+					logger.error("Error consultant els procediments de la UO " + unitatOrganitzativa.getCodiAndNom() + " intent " + reintents + " de " + max_intents + ": " + e.getMessage(), e);
+					unitatsAmbErrors.add(unitatOrganitzativa);
 				}
 			}
+			llistaUnitatsOrganitzatives = unitatsAmbErrors;
 			reintents++;
-		}while (reintents < 5 && !llistaUnitatsOrganitzatives.isEmpty());
+		} while (reintents <= max_intents 
+				&& !llistaUnitatsOrganitzatives.isEmpty());
 		
-		if (errors > 0) {
-			throw new Exception("S'han actualitzat correctament " + correctes + " unitats organitzatives i s'han produit " + errors + " errors.");
-		}
-		
-		return msgErrors;
+		if (llistaUnitatsOrganitzatives.size() > 0) {
+			// Llença excepció
+			StringBuilder errMsg = new StringBuilder("No S'han pogut consultar i actualitzar correctament els procediments per les següents unitats organitzatives després de " + max_intents + " reintents :[");
+			for (int i=0; i < llistaUnitatsOrganitzatives.size(); i++) {
+				errMsg.append(llistaUnitatsOrganitzatives.get(i).getCodiAndNom());
+				if (i < llistaUnitatsOrganitzatives.size()-1) {
+					errMsg.append(", ");
+				}
+			}
+			errMsg.append("]");
+			throw new Exception(errMsg.toString());
+		}		
 	}
 	
 

@@ -34,7 +34,7 @@ public interface ProcedimentService {
 	 * 
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
-	public StringBuilder findAndUpdateProcediments(Long entitatId) throws Exception;
+	public void findAndUpdateProcediments(Long entitatId) throws Exception;
 	
 
 	/** 

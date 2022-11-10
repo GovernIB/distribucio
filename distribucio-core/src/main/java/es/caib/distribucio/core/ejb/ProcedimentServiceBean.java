@@ -37,8 +37,8 @@ public class ProcedimentServiceBean implements ProcedimentService {
 
 	@Override
 	@RolesAllowed("DIS_ADMIN")
-	public StringBuilder findAndUpdateProcediments(Long entitatId) throws Exception {
-		return delegate.findAndUpdateProcediments(entitatId);
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
+		delegate.findAndUpdateProcediments(entitatId);
 	}
 
 	@Override

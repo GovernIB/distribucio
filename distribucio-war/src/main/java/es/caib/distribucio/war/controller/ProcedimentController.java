@@ -16,6 +16,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.war.command.ProcedimentFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -73,35 +74,29 @@ public class ProcedimentController extends BaseAdminController{
 	}
 	
 	
-	@RequestMapping(value = "/actualitzar", method = RequestMethod.GET)
-	public String actualitzacioPost(
+	@RequestMapping(value = "/actualitzar")
+	public String actualitzar(
 			HttpServletRequest request, 
 			Model model) throws Exception {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		StringBuilder errors = new StringBuilder();
-		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
 		try {
-			errors = procedimentService.findAndUpdateProcediments(entitatActual.getId());
-			if (!errors.toString().equals("")) {
-				return getAjaxControllerReturnValueError(
-		                request,
-		                "redirect:.",
-		                "procediment.controller.actualitzar.error",
-		                new Object[] {errors.toString()});	
-			}
+			procedimentService.findAndUpdateProcediments(entitatActual.getId());
 			
-			return getAjaxControllerReturnValueSuccess(
-	                request,
-	                "redirect:.",
-	                "procediment.controller.actualitzar.ok");
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"procediment.controller.actualitzar.ok"));
 		} catch (Exception e) {
-			return getAjaxControllerReturnValueError(
-	                request,
-	                "redirect:.",
-	                "procediment.controller.actualitzar.error.generic");			
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							"procediment.controller.actualitzar.error", 
+							new Object[] {e.getMessage()}));
 		}
-			
+		return "redirect:/procediment";
 	}
 	
 	
