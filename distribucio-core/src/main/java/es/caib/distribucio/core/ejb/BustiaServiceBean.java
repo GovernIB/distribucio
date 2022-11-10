@@ -15,9 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
+import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PermisDto;
@@ -121,6 +123,17 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
+	public List<BustiaContingutDto> findAmbEntitatAndFiltrePerInput(
+			Long entitatId, 
+			ContingutTipusEnumDto tipus, 
+			String filtre) {
+		return delegate.findAmbEntitatAndFiltrePerInput(
+				entitatId, 
+				tipus, 
+				filtre);
+	}
+
+	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) {
@@ -131,7 +144,6 @@ public class BustiaServiceBean implements BustiaService {
 
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -145,7 +157,6 @@ public class BustiaServiceBean implements BustiaService {
 	}
 	
 	@Override
-	@RolesAllowed("DIS_BSTWS")
 	public long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -228,8 +239,10 @@ public class BustiaServiceBean implements BustiaService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
-	public List<BustiaDto> findBustiesPermesesPerUsuari(Long entitatId, boolean mostrarInnactives) {
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA", "tothom"})
+	public List<BustiaDto> findBustiesPermesesPerUsuari(
+			Long entitatId, 
+			boolean mostrarInnactives) {
 		return delegate.findBustiesPermesesPerUsuari(entitatId, mostrarInnactives);
 	}
 

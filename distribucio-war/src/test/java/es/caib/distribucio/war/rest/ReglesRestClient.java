@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.naming.NamingException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriBuilder;
 
 import com.sun.jersey.api.client.Client;
@@ -80,9 +78,10 @@ public class ReglesRestClient {
 					.resource(urlAmbMetode)
 					.post(ClientResponse.class);
 			
-			System.out.println("Resposta de la creació de la regla " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase() + ": " 
+			System.out.println("Resposta de la creació de la regla " + response.getStatus() + ": " 
 								+ response.getEntity(String.class));
-			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+            if (response.getStatus()/100 != 2) {
+			//if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
 				ret = true;
 			}
 		} catch (Exception ex) {
@@ -113,10 +112,10 @@ public class ReglesRestClient {
 					.post(ClientResponse.class);
 			
 			System.out.println("Resposta de l'actualització de la regla " + response.getStatus() 
-								+ " " + response.getStatusInfo().getReasonPhrase() 
 								+ ": " + response.getEntity(String.class));
 
-			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+            if (response.getStatus()/100 != 2) {
+			//if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
 				ret = true;
 			}
 		} catch (Exception ex) {
@@ -146,10 +145,10 @@ public class ReglesRestClient {
 					.get(ClientResponse.class);
 			
 			System.out.println("Resposta de la consulta de la regla " + response.getStatus() 
-								+ " " + response.getStatusInfo().getReasonPhrase() 
 								+ ": " + response.getEntity(String.class));
 
-			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+            if (response.getStatus()/100 != 2) {
+			//if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
 				ret = true;
 			}
 		} catch (Exception ex) {
@@ -191,7 +190,8 @@ public class ReglesRestClient {
 						ClientHandler ch = getNext();
 				        ClientResponse resp = ch.handle(request);
 
-				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+			            if (resp.getStatus()/100 != 3) {
+			    			//if (resp.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
 				            return resp;
 				        } else {
 				            String redirectTarget = resp.getHeaders().getFirst("Location");

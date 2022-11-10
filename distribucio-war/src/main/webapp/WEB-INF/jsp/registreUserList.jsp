@@ -16,7 +16,10 @@
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
@@ -105,12 +108,25 @@ function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
 
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
+var tipusDocumentacioFisica = '${tipusDocumentacio}';
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
 	else
 		return item.text;
+}
+
+function formatSelectTipusDocumentacio(item) {
+	if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>'){
+		return $("<span><span class='fa fa-archive text-danger'></span> " + item.text + " </span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>'){
+		return $("<span><span class='fa fa-file-code-o text-warning'></span> <span class='fa fa-archive text-warning'></span> " + item.text + " </span>");
+	}else if (item.text == '<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>'){
+		return $("<span><span class='fa fa-file-code-o text-success'></span> " + item.text + " </span>");
+	}else {
+		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
+	}
 }
 
 $(document).ready(function() {
@@ -152,7 +168,6 @@ $(document).ready(function() {
 						function(data) {
 							$("#seleccioCount").html(data);
 							$('#taulaDades').webutilDatatable('select-none');
-							$('#taulaDades').webutilDatatable('refresh');
 						}
 				);
 				return false;
@@ -384,9 +399,30 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 			</div>
 		</div>
 		<div class="row">			
-			<div class="col-md-4">
-				<dis:inputSelect name="tipusDocFisica"  netejar="false" optionEnum="RegistreTipusDocFisicaEnumDto" placeholderKey="bustia.list.filtre.tipusDocFisica" emptyOption="true" inline="true"/>
-			</div>			
+			<div class="col-md-4">			
+				<dis:inputSelect 
+					name="tipusDocFisica" 
+					netejar="false" 
+					optionItems="${tipusDocumentacio}" 
+					optionValueAttribute="value" 
+					optionTextKeyAttribute="text" 
+					placeholderKey="bustia.list.filtre.tipusDocFisica" 
+					emptyOption="true" 
+					inline="true" 
+					optionTemplateFunction="formatSelectTipusDocumentacio"/>
+			</div>	
+			<div class="col-md-3">			
+				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
+				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="procedimentCodi"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="registre.admin.list.filtre.procediment"
+					suggestValue="codiSia"
+					suggestText="codiNom" />
+			</div>		
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

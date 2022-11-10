@@ -51,10 +51,10 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "873478"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = "BACK_DIST_232"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova: posar codi procediment als metadades dels documents XML " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova backoffice distribucio WS  " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -199,8 +199,29 @@ public class BustiaV1Test {
 	        int nAnnexos = N_ANNEXOS;
 	        for (int j=1; j<=nAnnexos; j++) {
 		        if (TEST_ANNEX_FIRMAT ) {
-		        	
-		        	if (TEST_ANNEX_FIRMAT_XADES_ENVELOPED) {
+		        	if (TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED) {
+		        		
+		        		firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setTipusMime("application/xml");
+			            firma.setContingut(
+			            		IOUtils.toByteArray(getContingutWithFirmaXadesDettached()));
+			            firma.setTipus("TF02");
+			            firma.setPerfil("BES");
+			            firmes.add(firma);
+			            annex = crearAnnex(
+				        		"Annex signat XADES dettached" + j,
+				        		"formulario.xml_xades_detached.xsig",
+				        		"application/xml",
+				        		null,
+				        		null,
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+		        		
+		        	} else if (TEST_ANNEX_FIRMAT_XADES_ENVELOPED) {
 		        		
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
@@ -211,8 +232,8 @@ public class BustiaV1Test {
 			            firmes.add(firma);
 			            annex = crearAnnex(
 				        		"Annex signat XADES enveloped" + j,
-				        		"annex_firmat_xades.xsig",
-				        		"application/xsig",
+				        		"formulari.xml_xades_enveloped.xsig",
+				        		"application/xml",
 				        		null,
 				        		getContingutWithFirmaXadesEnveloped(),
 				        		"0",
@@ -540,9 +561,16 @@ public class BustiaV1Test {
 	}
 
 	/** TF02 - XAdES internally detached signature */
+	
+	private InputStream getContingutWithFirmaXadesDettached() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/formulario.xml_xades_detached.xsig");
+		return is;
+	}
+
 	private InputStream getContingutWithFirmaXadesEnveloped() {
 		InputStream is = getClass().getResourceAsStream(
-        		"/formulario.xml_signed.xsig");
+        		"/formulari.xml_xades_enveloped.xsig");
 		return is;
 	}
 	

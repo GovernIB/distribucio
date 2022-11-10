@@ -3,15 +3,17 @@
  */
 package es.caib.distribucio.rest.client;
 
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.junit.Test;
+
 import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
 import es.caib.distribucio.rest.client.domini.AnotacioRegistreId;
 import es.caib.distribucio.rest.client.domini.Estat;
-import org.junit.Test;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import java.io.IOException;
-
-import static org.junit.Assert.fail;
 
 /**
  * Client de test per al servei bustia de RIPEA.
@@ -84,12 +86,8 @@ public class BackofficeIntegracioRestTest {
 			fail();
 		}
 	}
-	
-	
-
 
 	private BackofficeIntegracioRestClient getClientRest() {
-		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS);
+		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS, false);
 	}
-	
 }

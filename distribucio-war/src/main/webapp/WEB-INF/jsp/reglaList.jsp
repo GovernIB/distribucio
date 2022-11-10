@@ -21,7 +21,10 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/webjars/Sortable/1.4.2/Sortable.min.js"/>"></script>
@@ -54,6 +57,15 @@
 	</style>
 	
 	<script type="text/javascript">
+	var bustiesInactives = [];
+
+	//Funció per donar format als items de la select de bústies segons si estan actives o no
+	function formatSelectBustia(item) {
+		if (bustiesInactives.includes(item.id))
+			return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
+		else
+			return item.text;
+	}
 	
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
@@ -91,6 +103,7 @@
 	
 	
 	$(document).ready(function() {
+		$("span#select2-activa-container span.select2-selection__clear").css("display", "none");
 		$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
 		$('#regles').on('dragupdate.dataTable', function (event, itemId, index) {
@@ -111,14 +124,32 @@
 		<div class="row">
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+			</div>		
+			<div class="col-md-3">
+				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
 			</div>			
 			<div class="col-md-3">
 				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
 			</div>
 			<div class="col-md-2">
+				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+			</div>	
+		</div>
+		<div class="row">
+			<div class="col-md-3">		
+				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
+				<c:url value="/bustiaajax/llistaBusties" var="urlConsultaLlistat"/>			
+				<dis:inputSuggest 
+					name="bustiaId" 
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					suggestValue="id"
+					suggestText="nom" 
+					placeholderKey="bustia.list.filtre.bustia" 
+					inline="true"
+					optionTemplateFunction="formatSelectBustia" />  
+			</div>
+			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
@@ -131,7 +162,7 @@
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect 
 					name="backofficeId" 
 					placeholderKey="bustia.list.filtre.backoffice" 
@@ -141,7 +172,24 @@
 					optionTextAttribute="nom" 
 					inline="true"
 					optionMinimumResultsForSearch="0"/>
+			</div>		
+			<div class="col-md-2">
+				<dis:inputSelect 
+					name="activa" 
+					optionEnum="ReglaFiltreActivaEnumDto" 
+					emptyOption="true" 
+					placeholderKey="regla.list.columna.totes" 
+					inline="true"/>
+				<%-- <button id="mostrarInactivesBtn" style="width: 45px;" title="<spring:message code="regla.list.columna.activa"/>" class="btn btn-default btn-sm<c:if test="${reglaFiltreCommand.activa}"> active</c:if>" data-toggle="button">
+					<span class="fa-stack" aria-hidden="true">
+						<i class="fa fa-inbox fa-stack-1x"></i>
+    	    			<i class="fa fa-ban fa-stack-2x"></i>
+   					</span>
+				</button>
+				<dis:inputHidden name="activa"/> --%> 
 			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-2 pull-right">
 				<div class="pull-right">
 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
@@ -162,8 +210,17 @@
 		</p>
 	  </c:if>
 	</script>
-	<table id="regles" data-toggle="datatable" data-url="<c:url value="/regla/datatable"/>" data-filter="#reglaFiltreCommand" data-drag-enabled="${isRolActualAdministrador}"  data-default-order="0" data-default-dir="asc" class="table table-striped table-bordered" style="width:100%"
-	data-botons-template="#botonsTemplate">
+	<table 
+		id="regles" 
+		data-toggle="datatable" 
+		data-url="<c:url value="/regla/datatable"/>" 
+		data-filter="#reglaFiltreCommand" 
+		data-drag-enabled="${isRolActualAdministrador}"  
+		data-default-order="0" 
+		data-default-dir="asc" 
+		class="table table-striped table-bordered" 
+		style="width:100%"
+		data-botons-template="#botonsTemplate">
 
 		<thead>
 			<tr>

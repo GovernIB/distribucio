@@ -128,8 +128,7 @@ public class DadesObertesRestClient {
 					public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
 						ClientHandler ch = getNext();
 				        ClientResponse resp = ch.handle(request);
-
-				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+				        if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
 				            return resp;
 				        } else {
 				            String redirectTarget = resp.getHeaders().getFirst("Location");

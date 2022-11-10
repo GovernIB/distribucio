@@ -470,6 +470,7 @@ CREATE TABLE DIS_BACKOFFICE
     ID BIGSERIAL NOT NULL,
     CODI CHARACTER VARYING(20) NOT NULL,
     NOM CHARACTER VARYING(64) NOT NULL,
+    TIPUS CHARACTER VARYING(32) DEFAULT 'SOAP' NOT NULL,
     URL CHARACTER VARYING(256) NOT NULL,
     USUARI CHARACTER VARYING(64),
     CONTRASENYA CHARACTER VARYING(64),
@@ -600,4 +601,18 @@ CREATE TABLE DIS_MON_INT_PARAM
    	MON_INT_ID			BIGSERIAL				NOT NULL,
 	NOM		 			character varying(64) 	NOT NULL,
 	DESCRIPCIO 			character varying(1024)
+);
+
+CREATE TABLE DIS_PROCEDIMENT 
+(
+  ID						BIGSERIAL	    	NOT NULL,
+  CODI          			character varying(64),		NOT NULL,
+  NOM						character varying(256),
+  CODISIA					character varying(64),
+  ID_UNITAT_ORGANITZATIVA	BIGSERIAL,
+  ENTITAT					BIGSERIAL,
+  CREATEDBY_CODI       		character varying(64),
+  CREATEDDATE          		timestamp without time zone,
+  LASTMODIFIEDBY_CODI  		character varying(64),
+  LASTMODIFIEDDATE     		timestamp without time zone
 );

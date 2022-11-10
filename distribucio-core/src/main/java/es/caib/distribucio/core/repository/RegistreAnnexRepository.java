@@ -16,5 +16,5 @@ import es.caib.distribucio.core.entity.RegistreEntity;
  */
 public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEntity, Long> {
 
-	public RegistreAnnexEntity findByRegistreAndId(RegistreEntity registre, Long annexId);
+	public RegistreAnnexEntity findByRegistreAndId(RegistreEntity registre, Long annexId);	
 }

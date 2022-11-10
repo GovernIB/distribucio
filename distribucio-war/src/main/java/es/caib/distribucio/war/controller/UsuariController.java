@@ -6,9 +6,11 @@ package es.caib.distribucio.war.controller;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,14 +52,22 @@ public class UsuariController  extends BaseAdminController {
 	
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession(false);
+		SecurityContextHolder.clearContext();
 		// Només per Jboss
+		session = request.getSession();
+		if (session != null) 
+			// Esborrar la sessió
+			session.invalidate();
 		// Es itera sobre totes les cookies
 		for(Cookie c : request.getCookies()) {
 			// Es sobre escriu el valor de cada cookie a NULL
 			Cookie ck = new Cookie(c.getName(), null);
 			ck.setPath(request.getContextPath());
 			response.addCookie(ck);
-		}
+		}		
+		
+		// Redirigeix al login
 		return "redirect:/";
 	}
 

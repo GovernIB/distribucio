@@ -189,7 +189,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DistribucioRegistreAnnex distribucioAnnex,
 			String unitatArrelCodi,
 			String uuidExpedient,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException {
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) throws SistemaExternException {
 		
 		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;

@@ -27,12 +27,12 @@ ALTER TABLE DIS_PROCEDIMENT ADD CONSTRAINT DIS_PROCEDIMENT_ENTITAT_FK
 -- Postgres --	
 CREATE TABLE DIS_PROCEDIMENT 
 (
-  ID						BIGSERIAL(19)	    	NOT NULL,
+  ID						BIGSERIAL	    	NOT NULL,
   CODI          			character varying(64),		NOT NULL,
   NOM						character varying(256),
   CODISIA					character varying(64),
-  ID_UNITAT_ORGANITZATIVA	BIGSERIAL(19),
-  ENTITAT					BIGSERIAL(19),
+  ID_UNITAT_ORGANITZATIVA	BIGSERIAL,
+  ENTITAT					BIGSERIAL,
   CREATEDBY_CODI       		character varying(64),
   CREATEDDATE          		timestamp without time zone,
   LASTMODIFIEDBY_CODI  		character varying(64),

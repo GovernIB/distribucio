@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.war.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +35,8 @@ import es.caib.distribucio.war.controller.BaseUserController;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Controller
-@RequestMapping("/api/rest/backoffice")
-@Api(value = "/api/rest/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla.")
+@RequestMapping("/public/backoffice")
+@Api(value = "/public/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla per provar backoffices de tipus API REST.")
 public class BackofficeRestController extends BaseUserController {
 	
 	@Autowired
@@ -50,6 +49,7 @@ public class BackofficeRestController extends BaseUserController {
 		return "apidoc";
 	}
 
+	
 	@RequestMapping(value = "/comunicarAnotacionsPendents", method = RequestMethod.POST)
 	@ApiOperation(
 			value = "Comunicar anotacions als backoffice", 
@@ -59,27 +59,17 @@ public class BackofficeRestController extends BaseUserController {
 	@ResponseBody
 	public ResponseEntity<Object> comunicarAnotacionsPendents(			
 			HttpServletRequest request,
-
-			@ApiParam(name="anotacioRegistreIdClau", value="Identificador i clau d'accés de l'anotació que s'ha de comunicar al backoffice")
-			@RequestBody(required = true) String anotacioRegistreIdClau) {
-		String[] anotacioRegistreId = anotacioRegistreIdClau.split("&");
-		String[] identificador = anotacioRegistreId[1].split("identificador=");
-		String[] clauAcces = anotacioRegistreId[0].split("clauAcces=");
-		AnotacioRegistreId id = new AnotacioRegistreId();
-		id.setIndetificador(identificador[1]);
-		id.setClauAcces(clauAcces[1]);
-		List<AnotacioRegistreId> ids = new ArrayList<>();
-		ids.add(id);
-		
+			@ApiParam(name="ids", value="Llista de identificadors d'anotacions comunicades.")
+			@RequestBody(required = true) List<AnotacioRegistreId> ids) {
 		try {
-			logger.trace(">>> Abans de cridar backoffice WS");
+			logger.debug("S'ha rebut una comunicació de " + ids.size() + " anotacions pendents: " + ids);
 			backofficeWs.comunicarAnotacionsPendents(ids);
-			String msg = "L'anotació amb id " + id.getIndetificador() + " s'ha comunicat correctament al backoffice";
+			String msg = "La comunicació de les anotacions pendents s'ha processat correctament.";
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);
 		} catch(Exception e) {
-			String errorDescripcio = "Error " + e.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions als seus backoffices :" + e.getMessage();
-			logger.error(errorDescripcio + e.getMessage());
+			String errorDescripcio = "La comunicació de les anotacions pendents s'ha processat amb error: " + e.getMessage();
+			logger.error(errorDescripcio, e);
 			return new ResponseEntity<Object>(errorDescripcio, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

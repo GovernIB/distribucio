@@ -72,7 +72,27 @@
 			<artifactId>apifirmasimple-jersey</artifactId>
 			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
 			<version>1.0.3</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jettison</groupId>
+					<artifactId>jettison</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		
 		<dependency>
 			<groupId>es.caib.regweb3</groupId>
@@ -142,6 +162,10 @@
 				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-client</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

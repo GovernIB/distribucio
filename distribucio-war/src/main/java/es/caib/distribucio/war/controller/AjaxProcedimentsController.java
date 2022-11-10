@@ -40,9 +40,12 @@ public class AjaxProcedimentsController extends BaseAdminController{
 			Model model) {
 
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		return procedimentService.findByCodiSia(
-				entitatActual.getId(), 
-				procedimentCodi);		
+		ProcedimentDto procediment = procedimentService.findByCodiSia( entitatActual.getId(), 
+																	   procedimentCodi);
+		if (procediment == null) {
+			procediment = this.getProcedimentNoTrobat(request, procedimentCodi);
+		}
+		return procediment;
 	}
 	
 	@RequestMapping(value = "/procediments/{text}", method = RequestMethod.GET)
@@ -61,12 +64,24 @@ public class AjaxProcedimentsController extends BaseAdminController{
 			throw new SistemaExternException(msgError);
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);		
-		List<ProcedimentDto> procediments = procedimentService.findByNom(
+		List<ProcedimentDto> procediments = procedimentService.findByNomOrCodiSia(
 				entitatActual.getId(), 
 				decodedToUTF8);
 		
+		if (procediments.isEmpty()) {
+			procediments.add(this.getProcedimentNoTrobat(request, text));
+		}
 		return procediments;
 	}
+	
+	private ProcedimentDto getProcedimentNoTrobat(HttpServletRequest request, String procedimentCodi) {
+		ProcedimentDto noTrobat = new ProcedimentDto();
+		noTrobat.setCodi(procedimentCodi);
+		noTrobat.setCodiSia(procedimentCodi);
+		noTrobat.setNom("(" + getMessage(request, "comu.no.trobat") + ")");
+		return noTrobat;
+	}
+
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(AjaxProcedimentsController.class);

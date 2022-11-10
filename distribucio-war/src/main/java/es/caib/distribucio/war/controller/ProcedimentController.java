@@ -1,6 +1,5 @@
 package es.caib.distribucio.war.controller;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -17,6 +16,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.war.command.ProcedimentFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -74,20 +74,29 @@ public class ProcedimentController extends BaseAdminController{
 	}
 	
 	
-	@RequestMapping(value = "/actualitzar", method = RequestMethod.GET)
-	public String actualitzacioPost(
+	@RequestMapping(value = "/actualitzar")
+	public String actualitzar(
 			HttpServletRequest request, 
-			Model model) {
+			Model model) throws Exception {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		
-		procedimentService.findAndUpdateProcediments(entitatActual.getId());
-		
-		return getModalControllerReturnValueSuccess(
-                request,
-                "redirect:../../procediment",
-                "procediment.controller.actualitzar.ok");
-		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
+		try {
+			procedimentService.findAndUpdateProcediments(entitatActual.getId());
+			
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"procediment.controller.actualitzar.ok"));
+		} catch (Exception e) {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							"procediment.controller.actualitzar.error", 
+							new Object[] {e.getMessage()}));
+		}
+		return "redirect:/procediment";
 	}
 	
 	
@@ -98,10 +107,6 @@ public class ProcedimentController extends BaseAdminController{
 		
 		EntitatDto entitat = getEntitatActualComprovantPermisAdminLectura(request);
 		ProcedimentFiltreCommand procedimentFiltreCommand = getFiltreCommand(request);
-//		if (procedimentFiltreCommand.getUnitatOrganitzativa() != null && 
-//				procedimentFiltreCommand.getUnitatOrganitzativa().getId() == null) {
-//			procedimentFiltreCommand.setUnitatOrganitzativa(null);
-//		}
 		return DatatablesHelper.getDatatableResponse(
 				request, 
 				procedimentService.findAmbFiltre(

@@ -51,6 +51,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.sun.jersey.api.client.Client;
@@ -507,47 +508,33 @@ public class RegistreHelper {
 	}
 	
 	@SuppressWarnings("restriction")
-	public String encriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
-
-		try {
-			SecretKeySpec secretKey = obtenirClau(clauSecreta);
-		    Cipher cipher = Cipher.getInstance("AES");
-		    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		    String encriptat = new sun.misc.BASE64Encoder()
-		      .encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
-		    encriptat = encriptat.replace("/", "%2F");
-		    encriptat = encriptat.replace("==", "");
-		    return encriptat;
-		    } catch (Exception e) {
-		      logger.error("Error al encriptar l'identificador del registre: " + e.toString());
-		    }
-		    return null;
-
+	public String encriptar (String missatgeAEncriptar) throws Exception {
+		
+		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		String encriptat = new sun.misc.BASE64Encoder().encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8")));
+		encriptat = encriptat.replace("/", "%252F");
+		encriptat = encriptat.replace("==", "");
+		return encriptat;
 	}
 	
 	@SuppressWarnings("restriction")
-	public String desEncriptar (String missatgeAEncriptar, String clauSecreta) throws Exception {
+	public String desencriptar (String missatgeADesencriptar) throws Exception {
 
-		try {
-			SecretKeySpec secretKey = obtenirClau(clauSecreta);
-		    Cipher cipher = Cipher.getInstance("AES");
-		    cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		    return new String(cipher.doFinal( new sun.misc.BASE64Decoder()
-		      .decodeBuffer(missatgeAEncriptar)));
-		    } catch (Exception e) {
-			      logger.error("Error al desencriptar l'identificador del registre: " + e.toString());
-		    }
-		    return null;
-		  		
+		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		return new String(cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(missatgeADesencriptar)));	
 	}
 	
 	
-	public static SecretKeySpec obtenirClau(String message) throws Exception {
+	public static SecretKeySpec generarClau(String clauSecreta) throws Exception {
 		SecretKeySpec secretKey = null;
 		byte[] key;
 		MessageDigest sha = null;
 	    try {
-	      key = message.getBytes("UTF-8");
+	      key = clauSecreta.getBytes("UTF-8");
 	      sha = MessageDigest.getInstance("SHA-1");
 	      key = sha.digest(key);
 	      key = Arrays.copyOf(key, 16);
@@ -1311,40 +1298,40 @@ public class RegistreHelper {
 	}
 	
 	private Exception comunicarAnotacionsAlBackoffice(
-			BackofficeEntity backoffice, 
+			BackofficeEntity backofficeDesti, 
 			List<AnotacioRegistreId> ids, 
 			Map<String, String> accioParams) {
 
 		long t0 = System.currentTimeMillis();
 		String accioDescripcio = "";
 		if (ids.size() > 0) {
-			accioDescripcio = "Comunicar anotacions pendents " + backoffice.getCodi();
+			accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi();
 		} else {
-			accioDescripcio = "Comunicació amb el backoffice " + backoffice.getCodi();
+			accioDescripcio = "Comunicació amb el backoffice " + backofficeDesti.getCodi();
 		}
 		String usuari = null;
 		try {			
-			usuari = backoffice.getUsuari();
-			String contrasenya = backoffice.getContrasenya();
+			usuari = backofficeDesti.getUsuari();
+			String contrasenya = backofficeDesti.getContrasenya();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
-				usuari = configHelper.getConfig(backoffice.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				usuari = configHelper.getConfig(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
-				contrasenya = configHelper.getConfig(backoffice.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			
 		
 			logger.trace(">>> Abans de crear backoffice WS");
-			if (backoffice.getTipus().equals(BackofficeTipusEnumDto.REST)) {
+			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
 				for (AnotacioRegistreId anotacioRegistreId : ids) {
-					String urlAmbMetode = backoffice.getUrl() + "/comunicarAnotacionsPendents";
+					String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
 					Client jerseyClient = generarClient();
 					autenticarClient(
 							jerseyClient, 
-							backoffice.getUrl(), 
+							backofficeDesti.getUrl(), 
 							urlAmbMetode, 
-							backoffice.getUsuari(), 
-							backoffice.getContrasenya());
+							backofficeDesti.getUsuari(), 
+							backofficeDesti.getContrasenya());
 					String identificador = anotacioRegistreId.getIndetificador();
 					String clauAcces = anotacioRegistreId.getClauAcces();
 					Form form = new Form();
@@ -1359,7 +1346,7 @@ public class RegistreHelper {
 				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 						getClass().getResource(
 								"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-						backoffice.getUrl(),
+						backofficeDesti.getUrl(),
 						new QName(
 								"http://www.caib.es/distribucio/ws/backoffice",
 								"BackofficeService"),
@@ -1368,7 +1355,7 @@ public class RegistreHelper {
 						null,
 						BackofficeWsService.class);			
 				
-				logger.trace(">>> Abans de cridar backoffice WS");
+				logger.trace(">>> Abans de cridar backoffice WS "+ backofficeDesti.getCodi());
 				backofficeClient.comunicarAnotacionsPendents(ids);
 						
 				integracioHelper.addAccioOk (
@@ -1380,13 +1367,13 @@ public class RegistreHelper {
 						System.currentTimeMillis() - t0
 				);			
 			}
-			logger.trace(">>> Despres de cridar backoffice WS");			
+			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());			
 			return null;
 			
 		} catch (Exception ex) {
 			String errorDescripcio = "";
 			if (ids.size() > 0) {
-				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backoffice.getNom() + ":" + ex.getMessage();
+				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom() + ":" + ex.getMessage();
 			} else {
 				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice";
 			}
@@ -1399,6 +1386,7 @@ public class RegistreHelper {
 	}
 
 	private Client generarClient() {
+		
 		Client jerseyClient = Client.create();
 		jerseyClient.addFilter(
 				new ClientFilter() {
@@ -1426,7 +1414,8 @@ public class RegistreHelper {
 						ClientHandler ch = getNext();
 				        ClientResponse resp = ch.handle(request);
 
-				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+				        if (resp.getStatus() / 100 != 3) {
+//					        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
 				            return resp;
 				        } else {
 				            String redirectTarget = resp.getHeaders().getFirst("Location");
@@ -1446,7 +1435,7 @@ public class RegistreHelper {
 			String username,
 			String password) throws InstanceNotFoundException, MalformedObjectNameException, RemoteException, NamingException {
 		if (!autenticacioBasic) {
-			System.out.println(
+			logger.trace(
 					"Autenticant client REST per a fer peticions cap a servei desplegat a damunt jBoss (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
 					"username=" + username +
@@ -1460,7 +1449,7 @@ public class RegistreHelper {
 			type("application/x-www-form-urlencoded").
 			post(form);
 		} else {
-			System.out.println(
+			logger.trace(
 					"Autenticant REST amb autenticació de tipus HTTP basic (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
 					"username=" + username +
@@ -2150,7 +2139,8 @@ public class RegistreHelper {
 					distribucioAnnex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto);
+					documentEniRegistrableDto, 
+					procedimentCodi);
 			annex.updateFitxerArxiuUuid(uuidDocument);
 			
 			if (distribucioAnnex.getFirmes() != null) {
@@ -2335,6 +2325,14 @@ public class RegistreHelper {
 		return registreAnotacio;
 	
 	}
+	
+	public String getClauSecretaProperty() {
+		String clauSecreta = configHelper.getConfig("es.caib.distribucio.backoffice.integracio.clau");
+		if (clauSecreta == null)
+			throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
+		return clauSecreta;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
 }

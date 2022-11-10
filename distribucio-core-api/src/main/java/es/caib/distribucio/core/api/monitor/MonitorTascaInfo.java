@@ -54,7 +54,11 @@ public class MonitorTascaInfo {
 		String temps = "-";
 		if (this.dataInici != null) {
 			Date dataFi = this.dataFi != null ? this.dataFi : new Date();
-			temps = String.valueOf((dataFi.getTime() - dataInici.getTime())/1000) + "s";
+			long tempsTotal = (dataFi.getTime() - dataInici.getTime()) /1000;
+			if (tempsTotal < 0) {
+				tempsTotal = (dataInici.getTime() - dataFi.getTime())  /10000;
+			}
+			temps = String.valueOf((tempsTotal)) + "s";
 		}
 		return temps;
 	}

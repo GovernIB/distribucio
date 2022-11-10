@@ -50,7 +50,8 @@ public interface DistribucioPlugin extends IntegracioPlugin {
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
 			String contenidorArxiuUuid,
-			DocumentEniRegistrableDto documentEniRegistrableDto) throws SistemaExternException;
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) throws SistemaExternException;
 
 	/**
 	 * Obté el document enviat prèviament al gestor d'arxius remot

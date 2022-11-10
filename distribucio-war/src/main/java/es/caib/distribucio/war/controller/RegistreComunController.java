@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
+import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
@@ -54,6 +56,24 @@ public class RegistreComunController extends BaseController{
 	@Autowired
 	private RegistreHelper registreHelper;
 	
+
+	
+
+	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
+	@ResponseBody
+	public ClassificacioResultatDto classificarMultiplePost(
+			HttpServletRequest request,
+			@PathVariable Long registreId,
+			@PathVariable String codiProcediment,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "tothom");
+		ClassificacioResultatDto resultat = registreService.classificar(
+				entitatActual.getId(),
+				registreId,
+				codiProcediment);
+		return resultat;
+	}
+	
 	
 
 	@RequestMapping(value = "/classificarMultiple/{rol}", method = RequestMethod.GET)
@@ -62,8 +82,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			@PathVariable String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -71,7 +93,7 @@ public class RegistreComunController extends BaseController{
 				registreService.findMultiple(
 						getEntitatActualComprovantPermis(request, rol).getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						true);
+						isAdmin);
 		if (seleccio != null && !seleccio.isEmpty()) {
 			List<Long> seleccioList = new ArrayList<Long>();
 			for (RegistreDto registreDto : seleccio) {
@@ -106,11 +128,15 @@ public class RegistreComunController extends BaseController{
 			List<Long> multipleRegistreIds,
 			Model model, 
 			String rol) {
+		boolean isAdmin = false;
+		if ("admin".equals(rol)) {
+			isAdmin = true;
+		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 		List<RegistreDto> registres = registreService.findMultiple(
 				entitatActual.getId(),
 				multipleRegistreIds,
-				false);
+				isAdmin);
 		model.addAttribute("registres", registres);
 		boolean mateixPare = true;
 		Long bustiaIdActual = null;
@@ -173,8 +199,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -213,7 +241,7 @@ public class RegistreComunController extends BaseController{
 				registreService.findMultiple(
 						entitatActual.getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						false));
+						isAdmin));
 	}
 
 	private int getMaxLevelArbre() {
@@ -250,8 +278,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			@PathVariable String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -261,7 +291,7 @@ public class RegistreComunController extends BaseController{
 				registreService.findMultiple(
 						getEntitatActualComprovantPermis(request, rol).getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						false));
+						isAdmin));
 		
 		return "registreUserMarcarProcessat";
 	}	
@@ -272,8 +302,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			@PathVariable String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -283,7 +315,7 @@ public class RegistreComunController extends BaseController{
 				registreService.findMultiple(
 						getEntitatActualComprovantPermis(request, rol).getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						false));
+						isAdmin));
 		return "registreUserMarcarPendent";
 	}
 	
@@ -294,8 +326,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			@PathVariable String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -306,7 +340,7 @@ public class RegistreComunController extends BaseController{
 		registres = registreService.findMultiple(
 						getEntitatActual(request).getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						false);
+						isAdmin);
 		model.addAttribute("registres", registres);
 		return "registreViaEmail";
 	}
@@ -318,8 +352,10 @@ public class RegistreComunController extends BaseController{
 			Model model, 
 			@PathVariable String rol) {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
@@ -329,7 +365,7 @@ public class RegistreComunController extends BaseController{
 				registreService.findMultiple(
 						entitatActual.getId(),
 						this.getRegistresSeleccionats(request, sessionAttributeSeleccio),
-						false));
+						isAdmin));
 		model.addAttribute(command);
 		return "registreUserEnviarIProcessar";
 	}	
@@ -344,16 +380,29 @@ public class RegistreComunController extends BaseController{
 			@RequestParam String format, 
 			@PathVariable String rol) throws IllegalAccessException, NoSuchMethodException  {
 		String sessionAttributeSeleccio = "";
+		boolean isAdmin = false;
 		if ("admin".equals(rol)) {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_ADMIN;
+			isAdmin = true;
 		}else {
 			sessionAttributeSeleccio = SESSION_ATTRIBUTE_SELECCIO_USER;
 		}
-		
-		List<RegistreDto> llistatRegistres = registreService.findMultiple(
-				getEntitatActual(request).getId(),
-				this.getRegistresSeleccionats(request, sessionAttributeSeleccio), 
-				true);
+		List<Long> registresSeleccionatsIds = this.getRegistresSeleccionats(request, sessionAttributeSeleccio);
+		List<RegistreDto> llistatRegistres = new ArrayList<>();
+		List<RegistreDto> registres = new ArrayList<>();
+		if (registresSeleccionatsIds != null) {
+			// Consulta de 1000 en 1000
+			int i = 0;
+			int total = registresSeleccionatsIds.size();
+			while (i < total ) {
+				registres = registreService.findMultiple(
+						getEntitatActual(request).getId(),
+						registresSeleccionatsIds.subList(i, Math.min(i+1000, total)), 
+						isAdmin);
+				llistatRegistres.addAll(registres);
+				i += 1000;
+			}
+		}
 		try {
 			FitxerDto fitxer = registreHelper.exportarAnotacions(
 										request, 

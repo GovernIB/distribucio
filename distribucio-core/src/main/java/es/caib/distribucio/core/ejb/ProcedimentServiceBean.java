@@ -36,14 +36,19 @@ public class ProcedimentServiceBean implements ProcedimentService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
-	public void findAndUpdateProcediments(Long entitatId) {
+	@RolesAllowed("DIS_ADMIN")
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
 		delegate.findAndUpdateProcediments(entitatId);
 	}
 
 	@Override
 	public ProcedimentDto findByCodiSia(Long entitatId, String codiSia) {
 		return delegate.findByCodiSia(entitatId, codiSia);		
+	}
+
+	@Override
+	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom) {
+		return delegate.findByNomOrCodiSia(entitatId, nom);
 	}
 
 	@Override

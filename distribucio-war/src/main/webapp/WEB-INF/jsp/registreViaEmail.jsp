@@ -9,7 +9,7 @@
 <c:set var="nRegistres">${multiple ? fn:length(registres) : 0 }</c:set>
 <c:set var="titol">
 	<c:choose>
-		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="registre.user.marcar.pendent.titol.multiple"/></c:when>
+		<c:when test="${multiple}"><spring:message arguments="${nRegistres}" code="bustia.pendent.contingut.enviarViaEmail.multiple"/></c:when>
 		<c:otherwise><spring:message code="bustia.pendent.contingut.enviarViaEmail.titol"/></c:otherwise>
 	</c:choose>
 </c:set>
@@ -18,7 +18,10 @@
 	<title>${titol}</title>
 	<link href="<c:url value="/css/select2.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/css/select2-bootstrap.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script>

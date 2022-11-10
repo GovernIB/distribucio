@@ -120,7 +120,7 @@ public class BustiaHelper {
 //					busties,
 //					nomesAmbBustiesPermeses);
 			// Calcula els acumulats de pendents per a cada unitat
-			Map<String, Long> acumulats = new HashMap<String, Long>();
+//			Map<String, Long> acumulats = new HashMap<String, Long>();
 //			for (int i = 0; i < busties.size(); i++) {
 //				BustiaEntity bustia = busties.get(i);
 //				Long acumulat = acumulats.get(bustia.getUnitatOrganitzativa().getCodi());
@@ -147,24 +147,24 @@ public class BustiaHelper {
 			}
 			// Recorr l'arbre per nivells en ordre invers per a actualitzar
 			// el contador d'elements pendents de cada node i dels seus pares
-			for (int nivell = nivellsCount; nivell > 0; nivell--) {
-				for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
-					if (node.getNivell() == nivell) {
-						// Actualitza el contador del node actual
-						String unitatCodi = node.getDades().getCodi();
-						Long acumulat = acumulats.get(unitatCodi);
-						if (acumulat != null) {
-							node.addCount(acumulat);
-							// Actualitza els contadors dels pares
-							ArbreNodeDto<UnitatOrganitzativaDto> pare = node.getPare();
-							while (pare != null) {
-								pare.addCount(node.getCount());
-								pare = pare.getPare();
-							}
-						}
-					}
-				}
-			}
+//			for (int nivell = nivellsCount; nivell > 0; nivell--) {
+//				for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbre.toList()) {
+//					if (node.getNivell() == nivell) {
+//						// Actualitza el contador del node actual
+//						String unitatCodi = node.getDades().getCodi();
+//						Long acumulat = acumulats.get(unitatCodi);
+//						if (acumulat != null) {
+//							node.addCount(acumulat);
+//							// Actualitza els contadors dels pares
+//							ArbreNodeDto<UnitatOrganitzativaDto> pare = node.getPare();
+//							while (pare != null) {
+//								pare.addCount(node.getCount());
+//								pare = pare.getPare();
+//							}
+//						}
+//					}
+//				}
+//			}
 			contextCalculaRecorr.stop();
 		}
 		return arbre;

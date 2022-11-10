@@ -73,29 +73,11 @@ public class BackofficeIntegracioTest {
 	}
 	
 	
-
-
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
 				"http://localhost:8080/distribucio/ws/backofficeIntegracio",
 				"admin",				
 				"admin");				
-	}									
-	
-
-	/* DES */
-//	"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
-//	"admin",				
-//	"admin"
-		
-	/* PROVES AMB USUARI NOMÉS A SEYCON */
-//	usuari: provesFernando
-//	contrasenya: provesFernando
-	
-
-	
-
-
-	
+	}	
 
 }

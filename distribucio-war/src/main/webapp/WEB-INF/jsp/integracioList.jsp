@@ -13,7 +13,10 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
@@ -32,8 +35,9 @@ $(document).ready(function() {
     	refrescarInformacio();
     });
     $('#btnDelete').click(function() {
-    	$('#trash-btn-esborrar').css("display", "none");
-    	$('#spin-btn-esborrar').css("display", "block");
+    	$('#btnDelete').addClass('disabled');
+    	$('#trash-btn-esborrar').hide();
+    	$('#spin-btn-esborrar').show();
     	esborrarEntrades();
     });
     $('#netejarFiltre').click(function(e) {
@@ -75,8 +79,9 @@ function esborrarEntrades() {
 		url: "<c:url value='/integracio'/>/${codiActual.codi}/esborrar"
 	}).done(function(){
 		refrescarInformacio()
-    	$('#spin-btn-esborrar').css("display", "none");
-    	$('#trash-btn-esborrar').css("display", "block");
+    	$('#spin-btn-esborrar').hide();
+    	$('#trash-btn-esborrar').show();
+    	$('#btnDelete').removeClass('disabled');
 	});
 }
 
@@ -173,7 +178,15 @@ function esborrarEntrades() {
 		</thead>
 	</table>
 	
-		<button id="btnRefresh" type="button" class="btn btn-info pull-right" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px;"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
-		<button id="btnDelete" type="button" class="btn btn-danger pull-left" style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px; display: flex"><span id="trash-btn-esborrar" class="fa fa-trash-o"></span><span id="spin-btn-esborrar" class="fa fa-circle-o-notch fa-spin d-none"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></button>
+	<table style="margin-top: 25px; margin-bottom: 20px; margin-right: 10px; width:100%;">
+		<tr>
+			<td>
+				<button id="btnDelete" type="button" class="btn btn-danger pull-left"><span id="trash-btn-esborrar" class="fa fa-trash-o"></span><span id="spin-btn-esborrar" class="fa fa-cog fa-spin" style="display:none;"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></button>
+			</td>
+			<td>
+				<button id="btnRefresh" type="button" class="btn btn-info pull-right"><span class="fa fa-refresh"></span>&nbsp;&nbsp;<spring:message code="comu.boto.refrescar"/></button>
+			</td>
+		</tr>
+	</table>
 	
 </body>

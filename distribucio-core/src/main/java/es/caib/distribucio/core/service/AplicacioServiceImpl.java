@@ -143,7 +143,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 		if (auth != null) {
 			logger.trace("Obtenint usuari actual \"" + auth.getName() + "\"");
 			return toUsuariDtoAmbRols(
-					usuariRepository.findOne(auth.getName()));
+					usuariRepository.findByCodi(auth.getName()));
 		}
 		return usuari;
 	}
@@ -324,14 +324,16 @@ public class AplicacioServiceImpl implements AplicacioService {
 		UsuariDto dto = conversioTipusHelper.convertir(
 				usuari,
 				UsuariDto.class);
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth.getAuthorities() != null) {
-			String[] rols = new String[auth.getAuthorities().size()];
-			int index = 0;
-			for (GrantedAuthority grantedAuthority: auth.getAuthorities()) {
-				rols[index++] = grantedAuthority.getAuthority();
+		if (dto != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (auth.getAuthorities() != null) {
+				String[] rols = new String[auth.getAuthorities().size()];
+				int index = 0;
+				for (GrantedAuthority grantedAuthority: auth.getAuthorities()) {
+					rols[index++] = grantedAuthority.getAuthority();
+				}
+				dto.setRols(rols);
 			}
-			dto.setRols(rols);
 		}
 		return dto;
 	}

@@ -97,6 +97,7 @@ public class BackofficeController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("nou", true);
 			return "backofficeForm";
 		}
 		

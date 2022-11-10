@@ -22,7 +22,7 @@ public interface ProcedimentService {
 	 * @param paginacioParams
 	 * @return La pàgina de procediments que compleixen el filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<ProcedimentDto> findAmbFiltre(
 			Long entitatId, 
 			ProcedimentFiltreDto filtre, 
@@ -30,10 +30,11 @@ public interface ProcedimentService {
 
 	/** 
 	 * Mètode per actualitzar la llista de procediments disponibles.
+	 * @throws Exception 
 	 * 
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
-	public void findAndUpdateProcediments(Long entitatId);
+	@PreAuthorize("hasRole('DIS_ADMIN')")
+	public void findAndUpdateProcediments(Long entitatId) throws Exception;
 	
 
 	/** 
@@ -47,6 +48,8 @@ public interface ProcedimentService {
 	 * Mètode per cercar procediments pel seu nom.
 	 * 
 	 */
+	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom);
+
 	public List<ProcedimentDto> findByNom(Long entitatId, String nom);
 
 }

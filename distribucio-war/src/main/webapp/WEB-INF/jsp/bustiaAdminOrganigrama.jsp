@@ -26,7 +26,10 @@
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
-	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.full.min.js"/>"></script>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.full.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.full.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
@@ -178,12 +181,17 @@
 
 	function deleteBustia() {
 		if (confirm('<spring:message code="contingut.confirmacio.esborrar.node"/>')) {
-	  location.href="bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
+	  location.href="${unitatCodiUrlPrefix}bustiaAdminOrganigrama/" + $('#id').val() + "/delete";		
 		}
 	}
 
 	function marcarPerDefecte() {
 		location.href = "bustiaAdminOrganigrama/" + $('#id').val() + "/default";
+	}
+
+	function moureAnotacions(tipusVista) {
+		var linkMoureAnotacions = document.getElementById("moureAnotacionsBtn").href="bustiaAdmin/" + $('#id').val() + "/moureAnotacions/" + tipusVista;
+		linkMoureAnotacions.click();
 	}
 
 	function activar() {
@@ -400,7 +408,7 @@
 					<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
 						<form:hidden path="id"/>
 						<form:hidden path="pareId"/>
-
+						
 						<dis:inputSuggest 
 							name="unitatId" 
 							urlConsultaInicial="${urlConsultaInicial}" 
@@ -456,22 +464,28 @@
 								</table>
 							</div>
 						</div>
-						<c:if test="${isRolActualAdministrador}">
-						<div class="row">
-							<div class="col-md-4">
+						<c:if test="${isRolActualAdministrador}">			 
+						<div class="d-flex justify-content-center">
+							<c:set var="tipusVista" value="organigrama"/>
+							<div class="">
+								<a id="moureAnotacionsBtn" onclick="moureAnotacions('${tipusVista}')" href="" class="btn btn-default" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>
+									&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/>
+								</a> 
+							</div>		
+							<div class="ml-6">
 								<button id="marcarPerDefecteBtn" type="button" onclick="marcarPerDefecte()" class="btn btn-default"><span class="fa fa-check-square-o"></span> <spring:message code="bustia.list.accio.per.defecte"/></button>
-							</div>
-						
-							<div class="col-md-2">
+							</div>		
+							
+							<div class="ml-6">
 								<button id="activarBtn" type="button" onclick="activar()" style="display: none;" class="btn btn-default"><span class="fa fa-check"></span> <spring:message code="comu.boto.activar"/></button>
 								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default" ><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
 							</div>
 						
-							<div class="col-md-3" style="margin-left: 15px;">
+							<div class="ml-6" style="margin-left: 15px;">
 								<button type="button" class="btn btn-default" onclick="deleteBustia()"><span class="fa fa-trash-o"></span> <spring:message code="contingut.admin.boto.esborrar"/></button>
 							</div>
 						
-							<div class="col-md-2">
+							<div class="ml-6">
 								<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 							</div>
 						</div>	

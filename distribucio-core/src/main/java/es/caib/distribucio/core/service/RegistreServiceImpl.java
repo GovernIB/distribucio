@@ -71,6 +71,7 @@ import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
 import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
@@ -301,6 +302,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 
+	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<ContingutDto> findRegistre(
@@ -383,6 +385,11 @@ public class RegistreServiceImpl implements RegistreService {
 		if (filtre.getReintents() != null) {
 			maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 		}
+		boolean senseBackoffice = false;
+		if (filtre.getBackCodi() != null && 
+			filtre.getBackCodi().equals("senseBackoffice")) {
+			senseBackoffice = true;
+		}
 
 		logger.trace("Consultant el contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
@@ -407,8 +414,11 @@ public class RegistreServiceImpl implements RegistreService {
 
 		Timer.Context contextTotalfindRegistreByPareAndFiltre = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "findRegistreUser.findRegistreByPareAndFiltre")).time();
 		long beginTime = new Date().getTime();
+		
 		try {
-			pagina = registreRepository.findRegistreByPareAndFiltre(
+			
+			pagina = (Page<RegistreEntity>) this.findRegistresFiltrats(
+					false, // per retornar una pàgina
 					entitat,
 					totesLesbusties,
 					busties,
@@ -434,6 +444,7 @@ public class RegistreServiceImpl implements RegistreService {
 					tipusFisicaCodi,
 					filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
 					filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+					senseBackoffice,
 					filtre.getEstat() == null,
 					filtre.getEstat(),
 					filtre.getReintents() == null, 
@@ -447,8 +458,9 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
-					paginacioHelper.toSpringDataPageable(paginacioParams,
-							mapeigOrdenacio));
+					filtre.getNombreAnnexes(),
+					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
+
 			contextTotalfindRegistreByPareAndFiltre.stop();
 			long endTime = new Date().getTime();
 			logger.trace("findRegistreByPareAndFiltre executed with no errors in: " + (endTime - beginTime) + "ms");
@@ -518,6 +530,7 @@ public class RegistreServiceImpl implements RegistreService {
 			String documentacioFisicaCodi,
 			boolean esNullBackCodi,
 			String backCodi,
+			boolean senseBackoffice, 
 			boolean esNullProcesEstat, 
 			RegistreProcesEstatEnum procesEstat,
 			boolean esNullReintentsPendents,
@@ -529,6 +542,9 @@ public class RegistreServiceImpl implements RegistreService {
 			UnitatOrganitzativaEntity unitatOrganitzativa,
 			boolean esNullSobreescriure,
 			Boolean sobreescriure,
+			boolean esNullProcedimentCodi,
+			String procedimentCodi,
+			RegistreNombreAnnexesEnumDto nombreAnnexos, 
 			Pageable pageable) {
 		
 		Object ret = null; // Retorna una llista d'identificadors o una pàgina
@@ -536,7 +552,12 @@ public class RegistreServiceImpl implements RegistreService {
 		// Construeix la select
 		String sqlFrom = "from RegistreEntity r ";
 		if (!esNullRemitent) {
-			sqlFrom += 		"		left outer join r.darrerMoviment.remitent as remitent ";
+			sqlFrom += 		" left outer join r.darrerMoviment.remitent as remitent ";
+		}
+		if (nombreAnnexos != null) {
+			sqlFrom += 		" left outer join r.annexos as annex ";
+								//" with (r.justificant.id <> annex.id and r.justificantArxiuUuid <> annex.fitxerArxiuUuid) ";
+
 		}
 
 		// Where
@@ -583,13 +604,13 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.enviatPerEmail = :enviatPerEmail ");
 			parametres.put("enviatPerEmail", enviatPerEmail);
 		}
+		if (!esNullSobreescriure) {
+			sqlWhere.append("and r.sobreescriure = :sobreescriure ");
+			parametres.put("sobreescriure", sobreescriure.booleanValue());
+		}
 		if (!esNullDocumentacioFisicaCodi) {
 			sqlWhere.append("and r.documentacioFisicaCodi = :documentacioFisicaCodi ");
 			parametres.put("documentacioFisicaCodi", documentacioFisicaCodi);
-		}
-		if (!esNullBackCodi) {
-			sqlWhere.append("and lower(r.backCodi) like lower('%'||:backCodi||'%') ");
-			parametres.put("backCodi", backCodi);
 		}
 		if (!esNullUnitatOrganitzativa) {
 			sqlWhere.append("and r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa) ");
@@ -620,7 +641,33 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("					) > 0 ");
 			parametres.put("interessat", interessat);
 		}
-				
+		
+		if (!esNullBackCodi) {
+			if (senseBackoffice) {
+				sqlWhere.append("and r.backCodi is null ");
+			} else {
+				sqlWhere.append("and lower(r.backCodi) like lower('%'||:backCodi||'%') ");
+				parametres.put("backCodi", backCodi);
+			}
+		}
+		if (!esNullReintentsPendents) {
+			if (reintentsPendents) {
+				sqlWhere.append("and r.procesIntents < :maxReintents ");
+			} else {
+				sqlWhere.append("and r.procesIntents >= :maxReintents ");				
+			}
+			parametres.put("maxReintents", maxReintents);
+		}
+		
+		if (!esNullProcedimentCodi) {
+			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");				
+			parametres.put("procedimentCodi", procedimentCodi);
+		}
+		
+		if (nombreAnnexos != null) {
+			sqlWhere.append("and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos));
+		}
+
 		StringBuilder sqlOrder = new StringBuilder();
 		if (pageable != null && pageable.getSort() != null) {
 			Iterator<Order> orders = pageable.getSort().iterator();
@@ -637,7 +684,7 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 		
-		String sqlSelect = (nomesIds ? "select r.id " : "") + sqlFrom + sqlWhere + sqlOrder;
+		String sqlSelect = "select " + (nomesIds ? " r.id " : "r ") + sqlFrom + sqlWhere + sqlOrder;
 		String sqlCount = "select count(r.id) " + sqlFrom + sqlWhere;
 
 
@@ -681,6 +728,45 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			ret = pagina;			
 		}		
+		return ret;
+	}
+
+
+	private Object getNombreAnnexosSize(RegistreNombreAnnexesEnumDto nombreAnnexos) {
+		// 			sqlWhere.append("and r.annexos.size > 100 ");
+		String ret = "= 1";
+		switch (nombreAnnexos) {
+			case AMB_1:
+				ret = "= 2 ";
+				break;
+			case AMB_2:
+				ret = "= 3 ";
+				break;
+			case AMB_3:
+				ret = "= 4 ";
+				break;
+			case AMB_4:
+				ret = "= 5 ";
+				break;
+			case AMB_5:
+				ret = "= 6 ";
+				break;
+			case DE_6_A_10:
+				ret = "between 7 and 11 ";
+				break;
+			case DE_11_A_20:
+				ret = "between 12 and 21 ";
+				break;
+			case DE_21_A_50:
+				ret = "between 22 and 51 ";
+				break;
+			case DE_51_A_100:
+				ret = "between 52 and 101 ";
+				break;
+			case MES_DE_100:
+				ret = "> 101 ";
+				break;
+		}
 		return ret;
 	}
 
@@ -945,6 +1031,12 @@ public class RegistreServiceImpl implements RegistreService {
 			maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
 		}
 
+		boolean senseBackoffice = false;
+		if (filtre.getBackCodi() != null && 
+			filtre.getBackCodi().equals("senseBackoffice")) {
+			senseBackoffice = true;
+		}
+
 		logger.debug("Consultant els identificadors del contingut de l'usuari ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaId=" + filtre.getBustia() + ", "
@@ -993,6 +1085,7 @@ public class RegistreServiceImpl implements RegistreService {
 				tipusFisicaCodi,
 				filtre.getBackCodi() == null || filtre.getBackCodi().isEmpty(),
 				filtre.getBackCodi() != null ? filtre.getBackCodi().trim() : "",
+				senseBackoffice,
 				filtre.getEstat() == null,
 				filtre.getEstat(),
 				filtre.getReintents() == null, 
@@ -1004,6 +1097,9 @@ public class RegistreServiceImpl implements RegistreService {
 				unitat,
 				filtre.getSobreescriure() == null,
 				filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
+				filtre.getProcedimentCodi() == null, 
+				filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
+				filtre.getNombreAnnexes(),
 				null);
 	
 
@@ -1479,11 +1575,8 @@ public class RegistreServiceImpl implements RegistreService {
 
 		RegistreEntity registre = null;
 		
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-		if (clauSecreta == null)
-			throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
-
+		String clauSecreta = registreHelper.getClauSecretaProperty();
+				
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades		
 		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
 		if (registres.isEmpty()) {
@@ -1680,6 +1773,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Override
+	@Transactional(timeout=900)
 	public boolean processarAnnexosAdmin(
 			Long entitatId,
 			Long registreId) {
@@ -1690,6 +1784,19 @@ public class RegistreServiceImpl implements RegistreService {
 		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
 		return exceptionProcessant == null;
 	}
+
+
+	@Override
+	public boolean reintentarProcessamentUser(
+			Long entitatId,
+			Long registreId) {
+		logger.debug("Reintentant processament d'anotació pendent per usuaris (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ")");
+		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
+		return exceptionProcessant == null;
+	}
+	
 	
 	@Transactional
 	@Override
@@ -1834,30 +1941,26 @@ public class RegistreServiceImpl implements RegistreService {
 				DelegatingSecurityContextRunnable wrappedRunnable;
 				for (RegistreAnnexEntity annex : registre.getAnnexos()) {						
 
-					// Filtra documents tècnics si no s'és administrador
-					if (!"tothom".equalsIgnoreCase(rolActual)
-						|| annex.getSicresTipusDocument() == null 
-						|| rolActual.equals(null)) 
-					{
-						if (!RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
-							Runnable thread = 
-									new GetZipDocumentacioThread(
-									rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
-									registreHelper,
-									registre.getJustificant() != null ? registre.getJustificant().getId() : null,
-									registre.getNumero(),
-									annex.getId(),
-									annex.getTitol(),
-									annex.getFitxerNom(),
-									nomsArxius,
-									zos,
-									executor,
-									errors);
-							
-							wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
-							executor.execute(wrappedRunnable);
-						}
-					}
+					// S'exclouen els documents tècnics de la descàrrega
+					if (annex.getSicresTipusDocument() == null
+							|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
+
+						Runnable thread = 
+								new GetZipDocumentacioThread(
+								rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
+								registreHelper,
+								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
+								registre.getNumero(),
+								annex.getId(),
+								annex.getTitol(),
+								annex.getFitxerNom(),
+								nomsArxius,
+								zos,
+								executor,
+								errors);
+						
+						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
+						executor.execute(wrappedRunnable);					}
 				}
 
 				try {Thread.sleep(200);} catch(Exception e) {};				
@@ -2344,41 +2447,24 @@ public class RegistreServiceImpl implements RegistreService {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
 				"bustiaId=" + bustiaId + ")");
-		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-				entitatId,
-				true,
-				false,
-				false);
 		List<ProcedimentDto> dtos = new ArrayList<ProcedimentDto>();
 		if (bustiaId != null && bustiaId > 0) {
+			
+			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+					entitatId,
+					true,
+					false,
+					false);
 			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-
-			// Cerca del llistat de procediments per codiDir3
-//			List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(bustia.getUnitatOrganitzativa().getCodi());
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());			
+			llistaUnitatsDescendents.add(bustia.getUnitatOrganitzativa().getCodi());
 			// Cerca del llistat de procediments amb consulta a la bbdd
-			List<ProcedimentEntity> procediments = procedimentRepository.findAll();
+			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
 			if (procediments != null) {
 				getProcediments(dtos, procediments);
-			}
-			List<UnitatOrganitzativaEntity> unitatsDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, bustia.getUnitatOrganitzativa().getCodi());
-			List<UnitatOrganitzativaEntity> llistatFinalUnitatsOrganitzatives = new ArrayList<>();
-			getUnitatsFills(unitatsDescendents, llistatFinalUnitatsOrganitzatives);
-			for (UnitatOrganitzativaEntity uoEntity : llistatFinalUnitatsOrganitzatives) {
-				try {
-					List<ProcedimentEntity> procedimentsFills = procedimentRepository.findByCodiDir3(uoEntity.getCodi());
-//					List<Procediment> procedimentsFills = pluginHelper.procedimentFindByCodiDir3(uoEntity.getCodi());
-					if (procedimentsFills != null) {
-						getProcediments(dtos, procedimentsFills);
-					}				
-					
-				}catch (Exception e) {
-					logger.info("No s'han pogut consultar els procediments de ROLSAC (" +
-							"codiDir3=" + uoEntity.getCodi() + ")",
-							e);
-				}
 			}
 		}
 		// Ordenar per codi SIA
@@ -2388,16 +2474,30 @@ public class RegistreServiceImpl implements RegistreService {
 		return dtos;
 	}
 	
-	@SuppressWarnings("null")
-	private void getUnitatsFills(List<UnitatOrganitzativaEntity> llistaUnitats, List<UnitatOrganitzativaEntity> llistaFinal) {
-		for (UnitatOrganitzativaEntity uoEntity : llistaUnitats) {
-			llistaFinal.add(uoEntity);
-			List<UnitatOrganitzativaEntity> uoDescendents = unitatOrganitzativaRepository.findByCodiUnitatSuperior(false, uoEntity.getCodi());
-			if (uoDescendents != null || !uoDescendents.isEmpty()) {
-				getUnitatsFills(uoDescendents, llistaFinal);
-			}
+	@Transactional
+	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
+		if (unitatOrganitzativa == null) {
+			return codiUnitat;		
+		} 
+		if (!unitatOrganitzativa.getCodi().equals(unitatOrganitzativa.getCodiUnitatArrel())) {
+			return getCodiUnitatOrganitzativaArrel(unitatOrganitzativa.getCodiUnitatSuperior());
 		}
+		return unitatOrganitzativa.getCodi();
+		
 	}
+	
+	
+	private List<ProcedimentEntity> getPerUnitatOrganitzativaIDescendents(Long entitatId, List<String> llistaUnitatsOrganitzatives) {
+		List<ProcedimentEntity> llistaProcediments = new ArrayList<>(); 
+		for (String codiUnitatOrganitzativa : llistaUnitatsOrganitzatives) {
+			List<ProcedimentEntity> procediments = procedimentRepository.findByCodiUnitatOrganitzativa(entitatId, codiUnitatOrganitzativa);
+			llistaProcediments.addAll(procediments);
+		}
+		
+		return llistaProcediments;
+	}
+
 	
 	@SuppressWarnings("unlikely-arg-type")
 	private void getProcediments(List<ProcedimentDto> dtos, List<ProcedimentEntity> procediments) {
@@ -2501,7 +2601,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	@Override
-	@Transactional
+	@Transactional(readOnly=true)
 	public List<ProcedimentDto> procedimentFindByCodiSia(long entitatId, String codiSia) {
 
 		List<ProcedimentDto> procedimentDto = new ArrayList<>();
@@ -2514,10 +2614,6 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		procedimentDto = conversioTipusHelper.convertirList(procediments, ProcedimentDto.class);
 
-		// Treu el procediment cridant al PluginRolsack
-//		if (codiSia != null) {
-//			procedimentDto = cacheHelper.procedimentFindByCodiSia(entitatId, codiSia);
-//		}
 				
 		return procedimentDto;
 	}
@@ -2881,6 +2977,31 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		return interessatBase;
 	}
+
+	private Exception processarAnotacioPendent(long entitatId, long anotacioId) {
+		
+		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
+
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
+		Exception exceptionProcessant = null;
+		if (pendentArxiu || pendentRegla) {
+			if (pendentArxiu) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+						anotacioId);
+			}
+			if (exceptionProcessant == null && pendentRegla) {
+				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
+						anotacioId);
+			}
+		} else {
+			throw new ValidationException(
+					anotacioId,
+					RegistreEntity.class,
+					"L'anotació de registre no es troba en estat pendent");
+		}
+		return exceptionProcessant;
+	}
 	
 	private RegistreAnnexDto getJustificantPerRegistre(
 			EntitatEntity entitat,
@@ -2949,27 +3070,21 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public String obtenirRegistreIdEncriptat(Long registreId) {
 
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-
 		String clau = null;
 		try {
-			clau = registreHelper.encriptar(String.valueOf(registreId), clauSecreta);
+			clau = registreHelper.encriptar(String.valueOf(registreId));
 		} catch (Exception e) {
-			logger.error("Error al encriptar l'id del registre: " + e.toString());
+			logger.error("Error al encriptar l'id del registre: " + e.toString(), e);
 		}
 		return clau;
 	}
 
 	@Override
-	public String obtenirRegistreIdDesencriptat(String clau) {
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
+	public String obtenirRegistreIdDesencriptat(String clau) throws Exception{
 		try {
-			clau = registreHelper.desEncriptar(clau, clauSecreta);
+			clau = registreHelper.desencriptar(clau);
 		} catch (Exception e) {
-			logger.error("Error al desencriptar l'id del registre: " + e.toString());
-			return null;
+			throw new Exception("Error al desencriptar l'id del registre: " + e.toString(), e);
 		}
 		return clau;
 	}

@@ -208,9 +208,18 @@ body {
 									</a>
 								</li>
 								<li>
-									<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank">
-										<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari" />
-									</a>
+									<c:choose>
+										<c:when test="${isRolActualAdministrador or isRolActualAdminLectura or isRolActualSuperusuari}">
+											<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Administrador.pdf" rel="noopener noreferrer" target="_blank">
+												<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.administrador" />
+											</a>
+										</c:when>
+										<c:when test="${isRolActualUsuari}">
+											<a href="https://github.com/GovernIB/distribucio/raw/dis-0.9/doc/pdf/02_Distribucio_Manual_Usuari.pdf" rel="noopener noreferrer" target="_blank">
+												<span class="fa fa-download"></span> <spring:message code="decorator.menu.manual.usuari" />
+											</a>
+										</c:when>
+									</c:choose>
 								<li>
 									<a href="<c:url value="/usuari/logout"/>">
 										<i class="fa fa-power-off"></i> <spring:message code="decorator.menu.accions.desconectar"/>
@@ -227,7 +236,6 @@ body {
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>
-									<a href="<c:url value="/procediment"/>" class="btn btn-primary"><spring:message code="decorator.menu.procediments"/></a>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.monitoritzar"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
@@ -267,6 +275,7 @@ body {
 											<c:if test="${isRolActualAdministrador}">
 												<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
 											</c:if>
+											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 										</ul>

@@ -60,7 +60,7 @@ public class BackofficeWsServiceBean implements BackofficeWsService {
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
-				true);		
+				true);		 
 		delegate.comunicarAnotacionsPendents(ids);
 	}
 

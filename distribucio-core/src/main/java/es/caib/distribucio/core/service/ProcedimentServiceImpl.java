@@ -1,5 +1,6 @@
 package es.caib.distribucio.core.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
@@ -80,25 +82,47 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	}
 
 	@Override
-	@Transactional
-	public void findAndUpdateProcediments(Long entitatId) {
-		logger.debug("Actualitzant els procediments");
-		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findAll();
-		for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
-			try {
-				// Cerca del llistat de procediments per codiDir3
-				List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
-				// Cerca del llistat de procediments amb consulta a la bbdd
-//				List<ProcedimentEntity> procedimentsEntity = procedimentRepository.findAll();
-//				List<Procediment> procediments = conversioTipusHelper.convertirList(procedimentsEntity, Procediment.class);
-				updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
-			}catch (Exception e) {
-				logger.info("No s'han pogut consultar els procediments de ROLSAC (" +
-						"codiDir3=" + unitatOrganitzativa.getCodi() + ")",
-						e);
+	@Transactional	
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
+		int max_intents = 5;
+		EntitatEntity entitat = entitatRepository.findOne(entitatId);
+		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
+		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
+		
+		List<UnitatOrganitzativaEntity> unitatsAmbErrors = new ArrayList<>();
+		int reintents = 0;
+		do {
+			unitatsAmbErrors = new ArrayList<>();
+			for (UnitatOrganitzativaEntity unitatOrganitzativa : llistaUnitatsOrganitzatives) {
+				try {
+					List<Procediment> procediments = pluginHelper.procedimentFindByCodiDir3(unitatOrganitzativa.getCodi());
+					if (procediments != null && !procediments.isEmpty()) { 
+						updateProcediments(procediments, entitatId, unitatOrganitzativa.getId());
+					} else {
+						logger.debug("No hi ha procediments associats al codiDir3 " + unitatOrganitzativa.getCodi());
+					}
+				}catch (Exception e) {
+					logger.error("Error consultant els procediments de la UO " + unitatOrganitzativa.getCodiAndNom() + " intent " + reintents + " de " + max_intents + ": " + e.getMessage(), e);
+					unitatsAmbErrors.add(unitatOrganitzativa);
+				}
 			}
-		}
-		logger.debug("Procediments actualitzats correctament");
+			llistaUnitatsOrganitzatives = unitatsAmbErrors;
+			reintents++;
+		} while (reintents <= max_intents 
+				&& !llistaUnitatsOrganitzatives.isEmpty());
+		
+		if (llistaUnitatsOrganitzatives.size() > 0) {
+			// Llença excepció
+			StringBuilder errMsg = new StringBuilder("No S'han pogut consultar i actualitzar correctament els procediments per les següents unitats organitzatives després de " + max_intents + " reintents :[");
+			for (int i=0; i < llistaUnitatsOrganitzatives.size(); i++) {
+				errMsg.append(llistaUnitatsOrganitzatives.get(i).getCodiAndNom());
+				if (i < llistaUnitatsOrganitzatives.size()-1) {
+					errMsg.append(", ");
+				}
+			}
+			errMsg.append("]");
+			throw new Exception(errMsg.toString());
+		}		
 	}
 	
 
@@ -157,6 +181,19 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 						entitatId, 
 						nom == null,
 						nom != null ? nom : ""), 
+				ProcedimentDto.class);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String search) {
+		if (search == null || search.isEmpty()) {
+			return new ArrayList<>();
+		}			
+		return conversioTipusHelper.convertirList(
+				procedimentRepository.findByNomOrCodiSia(
+						entitatId, 
+						search != null ? search : ""), 
 				ProcedimentDto.class);
 	}
 	

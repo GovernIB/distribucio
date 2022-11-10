@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
@@ -41,6 +42,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
@@ -55,6 +57,7 @@ import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.war.helper.EnumHelper;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -87,13 +90,20 @@ public class RegistreAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-		model.addAttribute(filtreCommand);
 		model.addAttribute(
-				"backoffices",
-				backofficeService.findByEntitat(
-						entitatActual.getId()));
+				"tipusDocumentacio",
+				EnumHelper.getOptionsForEnum(
+						RegistreTipusDocFisicaEnumDto.class,
+						"registre.tipus.doc.fisica.enum."));
+		model.addAttribute(filtreCommand);
+		List<BackofficeDto> backoffices = backofficeService.findByEntitat(
+				entitatActual.getId());
+		BackofficeDto backNull = new BackofficeDto();
+		backNull.setNom("Sense backoffice");
+		backNull.setCodi("senseBackoffice");
+		backoffices.add(backNull);
+		model.addAttribute("backoffices", backoffices);
 
 		return "registreAdminList";
 	}
@@ -260,16 +270,13 @@ public class RegistreAdminController extends BaseAdminController {
 			// Consulta la pàgina amb el registre anterior, actual i final
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
-			List<BustiaDto> bustiesPermesesPerUsuari = null;
-			if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
-				bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
-			}
+			List<BustiaDto> bustiesPermesesPerUsuari = new ArrayList<BustiaDto>();
 			PaginaDto<ContingutDto> pagina = registreService.findRegistre(
 								entitatActual.getId(),
 								bustiesPermesesPerUsuari,
 								RegistreFiltreCommand.asDto(registreFiltreCommand),
 								paginacioParams,
-								false);
+								true);
 			
 			// Posa les dades dels registres al model segons la consulta
 			if (pagina != null && !pagina.getContingut().isEmpty()) {

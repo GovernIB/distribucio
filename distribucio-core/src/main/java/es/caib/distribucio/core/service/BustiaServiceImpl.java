@@ -39,9 +39,11 @@ import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.core.api.dto.BustiaContingutDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
 import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
@@ -78,6 +80,7 @@ import es.caib.distribucio.core.helper.CacheHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ContingutHelper;
 import es.caib.distribucio.core.helper.ContingutLogHelper;
+import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.MessageHelper;
@@ -172,6 +175,8 @@ public class BustiaServiceImpl implements BustiaService {
 	private VistaMovimentRepository vistaMovimentRepository;
 	@Autowired
 	private BustiaDefaultRepository bustiaDefaultRepository;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 
 	@Autowired
 	private ConfigHelper configHelper;
@@ -835,6 +840,25 @@ public class BustiaServiceImpl implements BustiaService {
 		contexttoBustiaDto.stop();
 		return bustiesDto;
 	}
+	
+	@Override
+	@Transactional
+	public List<BustiaContingutDto> findAmbEntitatAndFiltrePerInput(
+			Long entitatId, 
+			ContingutTipusEnumDto tipus, 
+			String filtre) {
+		List<ContingutEntity> busties = null;
+		
+		busties = bustiaRepository.findAmbEntitatAndFiltreInput(
+				entitatId, 
+				tipus,  
+				filtre == null || filtre.isEmpty(), 
+				filtre != null ? filtre : "");
+		
+		return conversioTipusHelper.convertirList(
+				busties, 
+				BustiaContingutDto.class);
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -871,7 +895,9 @@ public class BustiaServiceImpl implements BustiaService {
 					}
 				},
 				BustiaEntity.class,
-				new Permission[] {ExtendedPermission.READ},
+				new Permission[] {
+						ExtendedPermission.READ						
+				},
 				auth);
 		findPermesesPerUsuariContextfilterGrantedAll.stop();
 		
@@ -2345,11 +2371,9 @@ public class BustiaServiceImpl implements BustiaService {
 		String idEncriptat = "";		
 
 		try {
-			String clauSecreta = configHelper.getConfig(
-					"es.caib.distribucio.backoffice.integracio.clau");
-			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()), clauSecreta);
+			idEncriptat = registreHelper.encriptar(String.valueOf(registre.getId()));
 		} catch (Exception e) {
-		    logger.error("Error al encriptar l'identificador del registre: " + e.toString());
+		    logger.error("Error al encriptar l'identificador del registre: " + e.toString(), e);
 		}
 		
 		StringBuilder html = new StringBuilder();
@@ -3321,8 +3345,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		}
 		
 		return nomUnitatSuperior;
-	}
-	
+	}	
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);

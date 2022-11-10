@@ -114,7 +114,7 @@
 			<role-name>tothom</role-name>
 		</auth-constraint>
 	</security-constraint>
-	 <security-constraint>
+	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
 			<url-pattern>/public/*</url-pattern>
@@ -131,7 +131,7 @@
 			<url-pattern>/webjars/*</url-pattern>
 			<url-pattern>/images/*</url-pattern>
 		</web-resource-collection>
-	</security-constraint> 
+	</security-constraint>
 
 	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>

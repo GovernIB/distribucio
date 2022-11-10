@@ -37,5 +37,16 @@ public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorI
 			"where monParam.monitorIntegracio.id = :idMonitorIntegracio")
 	public void deleteByIdMonitorIntegracio(
 			@Param("idMonitorIntegracio") long idMonitorIntegracio);
+			
+				
+	/** Esborra els paràmetres per codi el monitor. */
+	@Modifying
+	@Query("delete MonitorIntegracioParamEntity monParam " +
+			"where monParam.monitorIntegracio.id in " +
+			"( 	select mon.id " + 
+			"	from MonitorIntegracioEntity mon " +
+			"	where mon.codi = :codi )")
+	public void deleteByMonitorIntegracioCodi(
+			@Param("codi") String codi);
 
 }

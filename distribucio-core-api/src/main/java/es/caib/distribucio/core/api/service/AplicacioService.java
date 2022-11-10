@@ -43,7 +43,7 @@ public interface AplicacioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'usuari amb el codi de l'usuari autenticat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
 	public void processarAutenticacioUsuari() throws NotFoundException;
 	
 	/**
@@ -59,7 +59,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	//@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
 	public UsuariDto getUsuariActual();
 	
 	/**

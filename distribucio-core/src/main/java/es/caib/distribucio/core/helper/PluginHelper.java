@@ -144,7 +144,8 @@ public class PluginHelper {
 			DistribucioRegistreAnnex annex,
 			String unitatOrganitzativaCodi,
 			String uuidExpedient,
-			DocumentEniRegistrableDto documentEniRegistrableDto) {
+			DocumentEniRegistrableDto documentEniRegistrableDto, 
+			String procedimentCodi) {
 		String accioDescripcio = "Creant document annex a dins el contenidor";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -169,7 +170,8 @@ public class PluginHelper {
 					annex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
-					documentEniRegistrableDto);
+					documentEniRegistrableDto, 
+					procedimentCodi);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
@@ -190,7 +192,7 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_ARXIU,
+					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					errorDescripcio,
 					ex);
 		}
@@ -924,7 +926,7 @@ public class PluginHelper {
 
 	public List<Procediment> procedimentFindByCodiDir3(
 			String codiDir3) {
-		String accioDescripcio = "Consulta dels procediments pel codi DIR3";
+		String accioDescripcio = "Consulta dels procediments pel codi DIR3 " + codiDir3;
 
 		ProcedimentPlugin procedimentPlugin = this.getProcedimentPlugin();
 		String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();
@@ -961,6 +963,42 @@ public class PluginHelper {
 		}
 	}
 	
+	public ProcedimentDto procedimentFindByCodiSia(String codiSia) {
+		
+		String accioDescripcio = "Consulta dels procediments pel codi SIA";
+		String usuariIntegracio = getProcedimentPlugin().getUsuariIntegracio();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiSia", codiSia);
+		long t0 = System.currentTimeMillis();
+		
+		try {
+			// codiDir3="A04003003" 		codiSia="874123"
+			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiSia);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return procediment;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+							IntegracioHelper.INTCODI_PROCEDIMENT,
+							errorDescripcio,
+							ex);
+		}	
+	}	
 	
 	public void gestioDocumentalGet(
 			String id,
@@ -1090,42 +1128,7 @@ public class PluginHelper {
 	
 	
 	
-	public ProcedimentDto procedimentFindByCodiSia(String codiSia) {
-		
-		String accioDescripcio = "Consulta dels procediments pel codi SIA";
-		String usuariIntegracio = getProcedimentPlugin().getUsuariIntegracio();
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("codiSia", codiSia);
-		long t0 = System.currentTimeMillis();
-		
-		try {
-			// codiDir3="A04003003" 		codiSia="874123"
-			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiSia);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_PROCEDIMENT,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return procediment;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_PROCEDIMENT,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-							IntegracioHelper.INTCODI_PROCEDIMENT,
-							errorDescripcio,
-							ex);
-		}	
-	}
+
 
 
 	private Long toLongValue(String text) {
@@ -1145,10 +1148,6 @@ public class PluginHelper {
 		 gestioDocumentalPlugin.clear();
 		 distribucioPlugin.clear();
 	}
-	
-	
-	
-	
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {
 		loadPluginProperties("USUARIS");

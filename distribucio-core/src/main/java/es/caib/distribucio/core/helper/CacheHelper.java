@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.helper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -24,12 +23,10 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.MunicipiDto;
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.entity.BustiaEntity;
-import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -161,7 +158,6 @@ public class CacheHelper {
 	@CacheEvict(value = "unitatsOrganitzativesArbreByPare", key="{#pareCodi}")
 	public void evictUnitatsOrganitzativesFindArbreByPare(
 			String pareCodi) {
-		System.out.println();
 	}	
 	
 	
@@ -231,19 +227,6 @@ public class CacheHelper {
 			EntitatEntity entitat,
 			String usuariCodi) {
 	}
-
-
-	@Cacheable(value = "procedimentFindByCodiSia", key="{#entitat, #codiSia}")
-	public ProcedimentDto procedimentFindByCodiSia(
-			long entitatId,
-			String codiSia) {
-		return pluginHelper.procedimentFindByCodiSia(codiSia);
-	}
-
-	@CacheEvict(value = "procedimentFindByCodiSia", allEntries = true)
-	public void evictProcedimentFindByCodiSia() {
-	}
-
 
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);
 

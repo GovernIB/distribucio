@@ -11,6 +11,10 @@
 					<method-name>reintentarProcessamentAdmin</method-name>
 					<transaction-timeout>900</transaction-timeout>
 				</method>
+				<method>
+					<method-name>processarAnnexosAdmin</method-name>
+					<transaction-timeout>900</transaction-timeout>
+				</method>
 			</method-attributes>
 		</session>
 	</enterprise-beans>

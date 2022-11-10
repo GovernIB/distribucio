@@ -75,12 +75,19 @@ public class ReglaController  extends BaseAdminController {
 		
 		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
 		
+//		model.addAttribute(
+//				"busties", 
+//				bustiaService.findAmbEntitat(
+//						entitatActual.getId()));
+		
 		model.addAttribute(
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
+		
 		return "reglaList";
 	}
+	
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -128,6 +135,8 @@ public class ReglaController  extends BaseAdminController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (reglaFiltreCommand == null) {
 			reglaFiltreCommand = new ReglaFiltreCommand();
+			reglaFiltreCommand.setActiva(null);
+//			reglaFiltreCommand.setActiva(true);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,

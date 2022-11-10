@@ -84,7 +84,7 @@ public class RegistreServiceBean implements RegistreService {
 	}
 	
 	@Override
-	@RolesAllowed("tothom")
+	@RolesAllowed({"tothom", "DIS_REGLA"})
 	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
@@ -373,8 +373,13 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public String obtenirRegistreIdDesencriptat(String clau) {
+	public String obtenirRegistreIdDesencriptat(String clau) throws Exception{
 		return delegate.obtenirRegistreIdDesencriptat(clau);
+	}
+
+	@Override
+	public boolean reintentarProcessamentUser(Long entitatId, Long registreId) {
+		return delegate.reintentarProcessamentUser(entitatId, registreId);
 	}
 
 }

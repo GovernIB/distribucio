@@ -87,7 +87,7 @@ public class EntitatServiceBean implements EntitatService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
+	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA", "tothom"})
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		return delegate.findAccessiblesUsuariActual();
 	}
