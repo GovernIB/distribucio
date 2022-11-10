@@ -28,11 +28,8 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<script>
 		function actualitzarProcediments() {
-			$("#span-refresh").addClass('fa-circle-o-notch');
 			$("#span-refresh").addClass('fa-spin');
-			$("#actualitzarProcediments").css("pointer-events", "none");
-			window.location.href = '<c:url value="/procediment/actualitzar"/>';
-			$("#actualitzarProcediments").prop("pointer-events", "auto");
+			$("#actualitzarProcediments").addClass('disabled');
 		}
 
 		function formatSelectUnitat(item) {
@@ -95,7 +92,7 @@
 
 <script id="botonsTemplate" type="text/x-jsrender">
 	<div class="f-right"> 
-		<button onclick="actualitzarProcediments()" id="actualitzarProcediments" class="btn btn-default"><span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/></button>
+		<a href="<c:url value='/procediment/actualitzar'/>" onclick="actualitzarProcediments()" id="actualitzarProcediments" class="btn btn-default"><span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/></a>
 	</div>
 </script>
 <table
