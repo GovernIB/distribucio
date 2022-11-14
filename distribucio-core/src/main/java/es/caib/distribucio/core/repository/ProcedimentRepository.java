@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 
 /**
@@ -25,7 +26,8 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 			"and (:isNullUnitatOrganitzativa = true or pro.unitatOrganitzativa.codi = :unitatOrganitzativaCodi) " + 
 			"and (:isCodiNull = true or lower(pro.codi) like lower('%'||:codi||'%')) " + 
 			"and (:isNomNull = true or lower(pro.nom) like lower('%'||:nom||'%')) " + 
-			"and (:isCodiSiaNull = true or lower(pro.codiSia) like lower('%'||:codiSia||'%'))")
+			"and (:isCodiSiaNull = true or lower(pro.codiSia) like lower('%'||:codiSia||'%'))" + 
+			"and (:isEstatNull = true or pro.estat = :estat)")
 	Page<ProcedimentEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
@@ -36,6 +38,8 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 			@Param("nom") String nom, 
 			@Param("isCodiSiaNull") boolean isCodiSiaNull, 
 			@Param("codiSia") String codiSia, 
+			@Param("isEstatNull") boolean isEstatNull, 
+			@Param("estat") ProcedimentEstatEnumDto estat,
 			Pageable pageable);
 	
 	

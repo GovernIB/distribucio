@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -74,6 +75,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 						filtre.getNom() != null ? filtre.getNom() : "", 
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
+						filtre.getEstat() == null, 
+						filtre.getEstat(),						
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ProcedimentDto.class);
 
@@ -88,6 +91,20 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
 		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
 		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
+		
+		// Marca'm els procediments de Distribució com a extingits
+		List<ProcedimentEntity> llistaProcedimentsDistribucio = procedimentRepository.findAll();
+		for (ProcedimentEntity procedimentDistribucio : llistaProcedimentsDistribucio) {
+			procedimentDistribucio.update(
+					procedimentDistribucio.getCodi(), 
+					procedimentDistribucio.getNom(), 
+					procedimentDistribucio.getCodiSia(),
+					ProcedimentEstatEnumDto.EXTINGIT,
+					procedimentDistribucio.getUnitatOrganitzativa(), 
+					entitatRepository.findOne(entitatId));
+			
+			procedimentRepository.save(procedimentDistribucio);
+		}
 		
 		List<UnitatOrganitzativaEntity> unitatsAmbErrors = new ArrayList<>();
 		int reintents = 0;
@@ -109,7 +126,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 			llistaUnitatsOrganitzatives = unitatsAmbErrors;
 			reintents++;
 		} while (reintents <= max_intents 
-				&& !llistaUnitatsOrganitzatives.isEmpty());
+				&& !llistaUnitatsOrganitzatives.isEmpty());	
 		
 		if (llistaUnitatsOrganitzatives.size() > 0) {
 			// Llença excepció
@@ -131,6 +148,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 			List<Procediment> procediments, 
 			Long entitatId, 
 			Long unitatOrganitzativaId) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findOne(unitatOrganitzativaId);
+		
 		for (Procediment procediment: procediments) {
 			if (procediment.getCodigo() != null 
 					&& !procediment.getCodigo().isEmpty()) {
@@ -142,21 +161,24 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							procediment.getCodigo(), 
 							procediment.getNombre(), 
 							procediment.getCodigoSIA(),
-							unitatOrganitzativaRepository.findOne(unitatOrganitzativaId), 
+							ProcedimentEstatEnumDto.VIGENT,
+							unitatOrganitzativa, 
 							entitatRepository.findOne(entitatId)).built();
 					
 					procedimentRepository.save(procedimentEntity);
 				
-				}else {
+				}else {		
 					procedimentEntity.update(
 							procediment.getCodigo(), 
 							procediment.getNombre(), 
 							procediment.getCodigoSIA(),
-							unitatOrganitzativaRepository.findOne(unitatOrganitzativaId), 
+							ProcedimentEstatEnumDto.VIGENT,
+							unitatOrganitzativa, 
 							entitatRepository.findOne(entitatId));
 					
 					procedimentRepository.save(procedimentEntity);
-				}
+				}	
+				
 			}
 		}
 	}

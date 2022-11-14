@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.war.command.ProcedimentFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
@@ -30,6 +31,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
 public class ProcedimentController extends BaseAdminController{
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ProcedimentController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "ProcedimentController.session.seleccio";
 	
 	@Autowired
 	private ProcedimentService procedimentService;
@@ -113,7 +115,8 @@ public class ProcedimentController extends BaseAdminController{
 						entitat.getId(), 
 						ProcedimentFiltreCommand.asDto(procedimentFiltreCommand), 
 						DatatablesHelper.getPaginacioDtoFromRequest(request)), 
-				"id");
+				"id", 
+				SESSION_ATTRIBUTE_SELECCIO);
 	}
 	
 	private ProcedimentFiltreCommand getFiltreCommand(
@@ -123,6 +126,7 @@ public class ProcedimentController extends BaseAdminController{
 				SESSION_ATTRIBUTE_FILTRE);
 		if (procedimentFiltreCommand == null) {
 			procedimentFiltreCommand = new ProcedimentFiltreCommand();
+			procedimentFiltreCommand.setEstat(ProcedimentEstatEnumDto.VIGENT);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request, 
 					SESSION_ATTRIBUTE_FILTRE, 

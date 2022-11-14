@@ -15,6 +15,7 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	private String codi;
 	private String nom;
 	private String codiSia;
+	private ProcedimentEstatEnumDto estat;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 	private EntitatDto entitat;
 
@@ -42,6 +43,12 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	public void setCodiSia(String codiSia) {
 		this.codiSia = codiSia;
 	}
+	public ProcedimentEstatEnumDto getEstat() {
+		return estat;
+	}
+	public void setEstat(ProcedimentEstatEnumDto estat) {
+		this.estat = estat;
+	}
 	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
@@ -56,6 +63,9 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	}
 	public String getCodiNom() {
 		return codiSia + " - " + nom;
+	}
+	public String getCodiNomEstat() {
+		return codiSia + " - " + nom + " => " + estat;
 	}
 	
 	@Override

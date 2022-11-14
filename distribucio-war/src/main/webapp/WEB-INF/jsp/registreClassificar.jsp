@@ -19,6 +19,17 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script>
+
+//Funció per advertir a l'usuari dels procediments que estàn obsolets
+function formatProcedimentSelect(item) {
+	const procedimentSplit = item.text.split(" => ");
+	if (procedimentSplit[1] == '<spring:message code="procediment.estat.enum.EXTINGIT"/>'.toUpperCase()) {
+		return $("<span>" + procedimentSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='No es troba al llistat de procediments de Rolsac'> </span> </span>");
+	}else {
+		return $("<span>" + procedimentSplit[0] + " </span>");
+	}
+}
+
 $(document).ready(function() {
 	if (${fn:length(procediments)} > 0) {
 		$('#accio-classificar').removeAttr('disabled');
@@ -89,7 +100,15 @@ $(document).ready(function() {
 				</dis:inputFixed>
 			</c:when>
 			<c:otherwise>
-				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="codiNom" optionMinimumResultsForSearch="0" required="true"/>
+				<dis:inputSelect 
+					name="codiProcediment" 
+					textKey="bustia.pendent.classificar.camp.codi.procediment" 
+					optionItems="${procediments}" 
+					optionValueAttribute="codiSia" 
+					optionTextAttribute="codiNomEstat" 
+					optionMinimumResultsForSearch="0" 
+					required="true"
+					optionTemplateFunction="formatProcedimentSelect"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

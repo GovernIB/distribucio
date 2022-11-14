@@ -52,17 +52,6 @@
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="registre.admin.list.filtre.procediment"/>
-				<%-- <c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
-				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="nom"
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="true" 
-					placeholderKey="registre.admin.list.filtre.procediment"
-					suggestValue="nom"
-					suggestText="codiNom" 
-					optionTemplateFunction="formatSelectProcediment" /> --%>
 			</div>			
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
@@ -76,7 +65,9 @@
 					suggestValue="codi"
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" /> 
-				<%-- <dis:inputText name="unitatOrganitzativa.codi" inline="true" placeholderKey="procediment.list.columna.unitatOrganitzativa.codiDir3"/> --%> 
+			</div>
+			<div class="col-md-3">
+				<dis:inputSelect name="estat"  netejar="false" optionEnum="ProcedimentEstatEnumDto" placeholderKey="procediment.list.columna.estat" emptyOption="true" inline="true"/>			
 			</div>
 		</div>
 		<div class="row">		
@@ -110,7 +101,8 @@
 			<th data-col-name="id" data-visible="false" width="4%">#</th>
 			<th data-col-name="codiSia" data-orderable="true"><spring:message code="procediment.list.columna.codiSia"/></th>
 			<th data-col-name="nom" data-orderable="true"><spring:message code="procediment.list.columna.nom"/></th>
-			<th data-col-name="unitatOrganitzativa.codi" data-orderable="true"><spring:message code="procediment.list.columna.unitatOrganitzativa.codiDir3"/></th> 
+			<th data-col-name="unitatOrganitzativa.codi" data-orderable="true"><spring:message code="procediment.list.columna.unitatOrganitzativa.codiDir3"/></th>
+			<th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th> 
 		</tr>
 	</thead>
 </table>

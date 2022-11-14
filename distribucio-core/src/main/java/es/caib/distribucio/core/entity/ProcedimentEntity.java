@@ -3,6 +3,8 @@ package es.caib.distribucio.core.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -11,6 +13,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**
@@ -32,6 +35,10 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 	
 	@Column(name = "codisia", length = 64)
 	private String codiSia;
+	
+	@Column(name = "estat", length = 20) 
+	@Enumerated(EnumType.STRING)
+	private ProcedimentEstatEnumDto estat; // Vigente, Extinguido
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY) 
 	@JoinColumn(name = "id_unitat_organitzativa")
@@ -74,6 +81,16 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 	}
 
 
+	public ProcedimentEstatEnumDto getEstat() {
+		return estat;
+	}
+
+
+	public void setEstat(ProcedimentEstatEnumDto estat) {
+		this.estat = estat;
+	}
+
+
 	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
@@ -98,11 +115,13 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 			String codi, 
 			String nom, 
 			String codiSia, 
+			ProcedimentEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
 			EntitatEntity entitat) {
 		this.codi = codi;
 		this.nom = nom;
 		this.codiSia = codiSia;
+		this.estat = estat;
 		this.unitatOrganitzativa = unitatOrganitzativa;
 		this.entitat = entitat;
 	}
@@ -113,12 +132,14 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 			String codi, 
 			String nom, 
 			String codiSia, 
+			ProcedimentEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
 			EntitatEntity entitat) {
 		return new Builder(
 				codi, 
 				nom, 
 				codiSia, 
+				estat, 
 				unitatOrganitzativa, 
 				entitat);
 	}
@@ -129,12 +150,14 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 				String codi, 
 				String nom, 
 				String codiSia, 
+				ProcedimentEstatEnumDto estat, 
 				UnitatOrganitzativaEntity unitatOrganitzativa, 
 				EntitatEntity entitat) {
 			built = new ProcedimentEntity();
 			built.codi = codi;
 			built.nom = nom;
 			built.codiSia = codiSia;
+			built.estat = estat;
 			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.entitat = entitat;
 		}

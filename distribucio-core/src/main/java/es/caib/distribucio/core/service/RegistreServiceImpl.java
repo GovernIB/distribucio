@@ -2464,7 +2464,8 @@ public class RegistreServiceImpl implements RegistreService {
 			// Cerca del llistat de procediments amb consulta a la bbdd
 			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
 			if (procediments != null) {
-				getProcediments(dtos, procediments);
+//				getProcediments(dtos, procediments);
+				dtos = conversioTipusHelper.convertirList(procediments, ProcedimentDto.class);
 			}
 		}
 		// Ordenar per codi SIA
@@ -2509,6 +2510,7 @@ public class RegistreServiceImpl implements RegistreService {
 				dto.setCodi(procediment.getCodi());
 				dto.setCodiSia(procediment.getCodiSia() != null ? procediment.getCodiSia() : procediment.getCodiSia());
 				dto.setNom(procediment.getNom());
+				dto.setEstat(procediment.getEstat());
 				dtos.add(dto);
 			}
 		}
