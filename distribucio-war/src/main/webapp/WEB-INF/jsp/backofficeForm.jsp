@@ -30,65 +30,82 @@
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-		    $("#div-alert").css("display", "none"); 
+			var nom = $("#nom").val();
+			var url = $("#url").val();
+			var tipus = $("#tipus").val();
+			$("#contingut-missatges").hide();
+			$("#div-alert").hide();
+		    $('button[name=btn-provar]').click(function(e) {
+		    	 e.preventDefault();
+		    	 e.stopPropagation();
+				 $("#div-alert").css("display", "none");
+				 $("button[name='btn-provar']", window.parent.document).find('#fa-refresh').addClass('fa-circle-o-notch');
+				 $("button[name='btn-provar']", window.parent.document).find('#fa-refresh').addClass('fa-spin');		
+				 $("button[name='btn-provar']", window.parent.document).attr('disabled', true).find('.fa-refresh').addClass("fa-spin");		
+				 //webutilClearMissatges('#modal-missatges');
+				
+				// Consulta les dades
+				$.ajax({
+					url: "/distribucio/backoffice/" + e.target.value + "/provarajax", 
+		            type : 'GET',
+		            dataType : 'json',
+		            success : function(data) {
+						 //webutilClearMissatges('#modal-missatges');
+						 $("#div-alert").css("display", "block");
+		    			 if (data == false) {
+		    				 $("#div-alert").removeClass("alert-success");
+		    				 $("#div-alert").addClass("alert-danger");
+		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
+		    			 }else if (data == true) {
+		    				 $("#div-alert").removeClass("alert-danger");
+		    				 $("#div-alert").addClass("alert-success");
+		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");		    				 
+		    			 }
+		            },
+		            error: function (request, status, error) {
+		            	// Mostra l'error
+		            	//webutilMissatgeError(request.responseText, '#modal-missatges');
+		            },
+		            complete: function() {
+		            	// Treu els spinners
+		    			$("button[name='btn-provar']", window.parent.document).attr('disabled', false).find('.fa-refresh').removeClass("fa-spin");
+		    			$("button[name='btn-provar']", window.parent.document).find('#fa-refresh').removeClass('fa-circle-o-notch');
+					 	$("button[name='btn-provar']", window.parent.document).find('#fa-refresh').removeClass('fa-spin');
+		            }
+		        });
+		    });
+			
+		    //$("#div-alert").css("display", "none"); 
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 			if (${nou != true}) {
 				$("#codi").attr('readonly', true);
 			}		    
 		    $("#url").bind("change paste keyup", function() {
-		    	if ($(this).val() == '${backofficeCommand.url}') {
-	    	   		$("#btn-provar").css("pointer-events", "auto");
-	    	   		$("#btn-provar").css("opacity", "1");
+		    	if ($(this).val() == url && $("#nom").val() == nom && $("#tipus").val() == tipus) {
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', false).find('.fa-refresh').removeClass("fa-spin");
 		    	}else {
-	    	   		$("#btn-provar").css("pointer-events", "none");
-		    		$("#btn-provar").css("opacity", "0.5");
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', true).find('.fa-refresh').removeClass("fa-spin");
 		    	}
 	    	});		    
 		    $("#nom").bind("change paste keyup", function() {
-		    	if ($(this).val() == '${backofficeCommand.nom}') {
-	    	   		$("#btn-provar").css("pointer-events", "auto");
-	    	   		$("#btn-provar").css("opacity", "1");
+		    	if ($(this).val() == nom && $("#url").val() == url && $("#tipus").val() == tipus) {
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', false).find('.fa-refresh').removeClass("fa-spin");
 		    	}else {
-	    	   		$("#btn-provar").css("pointer-events", "none");
-		    		$("#btn-provar").css("opacity", "0.5");
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', true).find('.fa-refresh').removeClass("fa-spin");
 		    	}
 	    	});		    
 		    $("#tipus").bind("change paste keyup", function() {
-		    	if ($(this).val() == '${backofficeCommand.tipus}') {
-	    	   		$("#btn-provar").css("pointer-events", "auto");
-	    	   		$("#btn-provar").css("opacity", "1");
+		    	if ($(this).val() == tipus && $("#nom").val() == nom && $("#url").val() == url) {
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', false).find('.fa-refresh').removeClass("fa-spin");
 		    	}else {
-	    	   		$("#btn-provar").css("pointer-events", "none");
-		    		$("#btn-provar").css("opacity", "0.5");
+		    		$("button[name='btn-provar']", window.parent.document).attr('disabled', true).find('.fa-refresh').removeClass("fa-spin");
 		    	}
 	    	});
-		    $('button[name="btn-provar-failed"]').click(function(e) {
-		    	 e.preventDefault();
-		    	 e.stopPropagation();
-				 $("#div-alert").css("display", "block");
-				 $("#div-alert").removeClass("alert-success");
-				 $("#div-alert").addClass("alert-danger");
-			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
-		    });
-		    $('button[name="btn-provar-success"]').click(function(e) {
-		    	 e.preventDefault();
-		    	 e.stopPropagation();
-				 $("#div-alert").css("display", "block");
-				 $("#div-alert").removeClass("alert-danger");
-				 $("#div-alert").addClass("alert-success");
-			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");
-		    });
-		    $('button[name="btn-provar"]').click(function(e) {
-		    	 e.preventDefault();
-		    	 e.stopPropagation();
-				 $("#div-alert").css("display", "none");
-		    })
 		});
 	</script>
 	
 </head>
 <body>
-	<div id="#modal-missatges"></div>
 	<div id="div-alert" class="alert "></div>
 	<c:set var="formAction"><dis:modalUrl value="/backoffice/save"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
@@ -112,9 +129,7 @@
 		<div id="modal-botons" class="well">				
 			<c:if test="${!nou}">
 				<c:set var="backId" value="${backofficeCommand.id}"/>
-				<button id="btn-provar" name="btn-provar" value="${backId}" class="btn btn-primary"><span id="span-spinner" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
-				<button type="button" id="btn-provar-failed" name="btn-provar-failed" class="btn btn-primary d-none"></button>
-				<button type="button" id="btn-provar-success" name="btn-provar-success" class="btn btn-primary d-none"></button>
+				<button id="btn-provar" name="btn-provar" value="${backId}" class="btn btn-primary"><span id="fa-refresh" class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.provar"/></button>
 			</c:if> 
 			<button id="btn-submit" type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a id="btn-cancel" href="<c:url value="/backoffice"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

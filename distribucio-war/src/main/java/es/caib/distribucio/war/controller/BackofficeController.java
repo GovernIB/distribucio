@@ -173,6 +173,38 @@ public class BackofficeController extends BaseAdminController {
 		return "redirect:../../backoffice";
 	}
 	
+	@RequestMapping(value = "/{backofficeId}/provarajax", method = RequestMethod.GET)
+	@ResponseBody
+	public boolean provarajax(
+			HttpServletRequest request, 
+			@PathVariable Long backofficeId) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
+		boolean response = false;
+		try {
+			
+			Exception exception = backofficeService.provar(
+					entitatActual.getId(), 
+					backofficeId);
+			
+			if (exception == null) {
+				response = true;
+			}
+		} catch (Exception e) {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request, 
+							"backoffice.controller.provar.error",
+							new Object[] {
+									backoffice.getCodi(),
+									e.getMessage()}));
+		}
+		
+		
+		return response;
+	}
+	
 	@RequestMapping(value = "/{backofficeId}/delete", method = RequestMethod.GET)
 	public String delete(
 			HttpServletRequest request,

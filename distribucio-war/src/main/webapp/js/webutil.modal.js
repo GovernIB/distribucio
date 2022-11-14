@@ -170,30 +170,6 @@
 									});
 								} else {
 										clon.on('click', function (e) {
-											if (e.target.name == 'btn-provar') {
-												 $("#btn-provar").css("opacity", "0.5");
-										    	 $("#btn-provar").css("pointer-events", "none");
-												 $("#span-spinner").addClass('fa-circle-o-notch');
-												 $("#span-spinner").addClass('fa-spin');
-												 $.ajax({
-													url: "/distribucio/backoffice/" + e.target.value + "/provar", 
-													type: "get",
-													success: function(resposta) {
-//														webutilRefreshMissatges('#modal-missatges');
-										    			 if (resposta.includes("alert-danger")) {
-															 $("#btn-provar-failed").click();
-										    			 }else if (resposta.includes("alert-success")) {
-															 $("#btn-provar-success").click();		    				 
-										    			 }
-
-												    	 $("#btn-provar").css("opacity", "1"); 
-												    	 $("#btn-provar").css("pointer-events", "auto");
-														 $("#span-spinner").removeClass('fa-circle-o-notch');
-														 $("#span-spinner").removeClass('fa-spin');
-													}
-												});
-											}
-											
 											// When click submit show loading
 											if (clon.attr('type') === 'submit' && !clon.data('nosubmit')) {
 												iframe.hide();
