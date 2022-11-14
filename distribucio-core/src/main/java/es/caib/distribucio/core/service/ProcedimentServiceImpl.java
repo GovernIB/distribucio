@@ -67,8 +67,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		llistaProcediments = paginacioHelper.toPaginaDto(
 				procedimentRepository.findAmbFiltrePaginat(
 						entitatId, 
-						filtre.getUnitatOrganitzativa() == null || filtre.getUnitatOrganitzativa().isEmpty(), 
-						filtre.getUnitatOrganitzativa() != null ? filtre.getUnitatOrganitzativa() : "", 
+						filtre.getUnitatOrganitzativa() == null, 
+						filtre.getUnitatOrganitzativa() != null ? filtre.getUnitatOrganitzativa() : null, 
 						filtre.getCodi() == null || filtre.getCodi().isEmpty(), 
 						filtre.getCodi() != null ? filtre.getCodi() : "", 
 						filtre.getNom() == null || filtre.getNom().isEmpty(), 
@@ -93,7 +93,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
 		
 		// Marca'm els procediments de Distribució com a extingits
-		List<ProcedimentEntity> llistaProcedimentsDistribucio = procedimentRepository.findAll();
+		List<ProcedimentEntity> llistaProcedimentsDistribucio = procedimentRepository.findByEntitat(entitat);
 		for (ProcedimentEntity procedimentDistribucio : llistaProcedimentsDistribucio) {
 			procedimentDistribucio.update(
 					procedimentDistribucio.getCodi(), 

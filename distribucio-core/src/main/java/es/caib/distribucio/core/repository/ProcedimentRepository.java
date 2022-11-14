@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 
 /**
@@ -20,10 +22,13 @@ import es.caib.distribucio.core.entity.ProcedimentEntity;
 
 public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, Long>{
 	
+	List<ProcedimentEntity> findByEntitat(
+			@Param("entitat") EntitatEntity entitat);
+	
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
 			"where (pro.entitat.id = :entitatId) " + 
-			"and (:isNullUnitatOrganitzativa = true or pro.unitatOrganitzativa.codi = :unitatOrganitzativaCodi) " + 
+			"and (:isNullUnitatOrganitzativa = true or pro.unitatOrganitzativa = :unitatOrganitzativa) " + 
 			"and (:isCodiNull = true or lower(pro.codi) like lower('%'||:codi||'%')) " + 
 			"and (:isNomNull = true or lower(pro.nom) like lower('%'||:nom||'%')) " + 
 			"and (:isCodiSiaNull = true or lower(pro.codiSia) like lower('%'||:codiSia||'%'))" + 
@@ -31,7 +36,7 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	Page<ProcedimentEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
-			@Param("unitatOrganitzativaCodi") String unitatorganitzativaCodi, 
+			@Param("unitatOrganitzativa") UnitatOrganitzativaDto unitatorganitzativa, 
 			@Param("isCodiNull") boolean isCodiNull, 
 			@Param("codi") String codi,
 			@Param("isNomNull") boolean isNomNull,

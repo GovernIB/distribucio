@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
+import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 public class ProcedimentFiltreCommand {
@@ -13,7 +14,7 @@ public class ProcedimentFiltreCommand {
 	private String nom;
 	private String codiSia;
 	private ProcedimentEstatEnumDto estat;
-	private String unitatOrganitzativa;
+	private UnitatOrganitzativaDto unitatOrganitzativa;
 	private EntitatDto entitat;
 	
 	
@@ -41,10 +42,10 @@ public class ProcedimentFiltreCommand {
 	public void setEstat(ProcedimentEstatEnumDto estat) {
 		this.estat = estat;
 	}
-	public String getUnitatOrganitzativa() {
+	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
 		return unitatOrganitzativa;
 	}
-	public void setUnitatOrganitzativa(String unitatOrganitzativa) {
+	public void setUnitatOrganitzativa(UnitatOrganitzativaDto unitatOrganitzativa) {
 		this.unitatOrganitzativa = unitatOrganitzativa;
 	}
 	public EntitatDto getEntitat() {

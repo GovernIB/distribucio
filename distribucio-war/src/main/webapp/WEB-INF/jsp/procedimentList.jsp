@@ -61,7 +61,7 @@
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
-					placeholderKey="procediment.list.columna.unitatOrganitzativa.codiDir3"
+					placeholderKey="procediment.list.columna.unitatOrganitzativa"
 					suggestValue="codi"
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" /> 
@@ -101,7 +101,17 @@
 			<th data-col-name="id" data-visible="false" width="4%">#</th>
 			<th data-col-name="codiSia" data-orderable="true"><spring:message code="procediment.list.columna.codiSia"/></th>
 			<th data-col-name="nom" data-orderable="true"><spring:message code="procediment.list.columna.nom"/></th>
-			<th data-col-name="unitatOrganitzativa.codi" data-orderable="true"><spring:message code="procediment.list.columna.unitatOrganitzativa.codiDir3"/></th>
+			<th data-col-name="unitatOrganitzativa.codi" data-template="#uoTemplate">
+				<spring:message code="procediment.list.columna.unitatOrganitzativa"/>
+				<script id="uoTemplate" type="text/x-jsrender">
+					{{:unitatOrganitzativa.codi}} -  {{:unitatOrganitzativa.denominacio}}
+
+						{{if unitatOrganitzativa.estat!='V'}}
+							<span class="fa fa-warning text-warning  pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.filtre.avis.obsoleta"/>"></span>
+						{{/if}}
+
+				</script>
+			</th>
 			<th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th> 
 		</tr>
 	</thead>
