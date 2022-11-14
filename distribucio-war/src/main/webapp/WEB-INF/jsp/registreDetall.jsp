@@ -678,10 +678,13 @@ li[id^="anotacio_"] {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
 					<td colspan="5">${registre.procedimentCodi}
-						<c:forEach items="${procedimentNom}" var="procediment">
-							<c:if test="${procedimentNom != null}">
-								- ${procediment}
-							</c:if>				
+						<c:forEach items="${procedimentDades}" var="procediment">
+							<c:if test="${procedimentDades != null}">
+								- ${procediment.key} 
+							</c:if>		
+							<c:if test="${procediment.value == 'EXTINGIT'}">
+								 <span class='fa fa-exclamation-triangle text-warning' title='No es troba al llistat de procediments de Rolsac'> </span>
+							</c:if>		
 						</c:forEach>
 					</td>
 				</tr>				

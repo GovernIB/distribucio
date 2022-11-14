@@ -5,10 +5,15 @@ package es.caib.distribucio.war.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -25,10 +30,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.core.api.dto.ContingutDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.ContingutFiltreCommand;
 import es.caib.distribucio.war.command.ContingutFiltreCommand.ContenidorFiltreOpcionsEsborratEnum;
 import es.caib.distribucio.war.helper.DatatablesHelper;
+import es.caib.distribucio.war.helper.MissatgesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
 
@@ -45,6 +55,8 @@ public class ContingutAdminController extends BaseAdminController {
 
 	@Autowired
 	private ContingutService contingutService;
+	@Autowired
+	private RegistreService registreService;
 
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -131,6 +143,31 @@ public class ContingutAdminController extends BaseAdminController {
 			model.addAttribute(
 					"isContingutAdmin",
 					true);
+			
+			// Dades del procediment
+			String codiSia = ((RegistreDto)contingutDto).getProcedimentCodi();
+			if (codiSia != null) {
+				Map<String, ProcedimentEstatEnumDto> procedimentDades = new HashMap<String, ProcedimentEstatEnumDto>();
+				// Descripció del procediment
+				try {
+					List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
+					if (!procedimentDto.isEmpty()) {
+						for(ProcedimentDto procediment : procedimentDto) {
+							procedimentDades.put(procediment.getNom(), procediment.getEstat());
+						}
+					} else {
+						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
+						MissatgesHelper.warning(request, errMsg);
+						procedimentDades.put("(" + errMsg + ")", null);
+					}
+				}catch(NullPointerException e) {
+					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
+					logger.error(errMsg, e);
+					MissatgesHelper.warning(request, errMsg);
+					procedimentDades.put("(" + errMsg + ")", null);
+				}
+				model.addAttribute("procedimentDades", procedimentDades);
+			}
 
 			return "registreDetall";
 		}
@@ -207,4 +244,6 @@ public class ContingutAdminController extends BaseAdminController {
 		}
 		return filtreCommand;
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ContingutAdminController.class);
 }

@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +46,7 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -399,26 +402,26 @@ public class RegistreUserController extends BaseUserController {
 
 			String codiSia = registre.getProcedimentCodi();
 			if (codiSia != null) {
-				List<String> procedimentNom = new ArrayList<>();
+				Map<String, ProcedimentEstatEnumDto> procedimentDades = new HashMap<String, ProcedimentEstatEnumDto>();
 				// Descripció del procediment
 				try {
 					List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
-					if (procedimentDto != null) {
+					if (!procedimentDto.isEmpty()) {
 						for(ProcedimentDto procediment : procedimentDto) {
-							procedimentNom.add(procediment.getNom());
+							procedimentDades.put(procediment.getNom(), procediment.getEstat());
 						}
 					} else {
 						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
 						MissatgesHelper.warning(request, errMsg);
-						procedimentNom.add("(" + errMsg + ")");
+						procedimentDades.put("(" + errMsg + ")", null);
 					}
 				}catch(Exception e) {
 					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
 					logger.error(errMsg, e);
 					MissatgesHelper.warning(request, errMsg);
-					procedimentNom.add("(" + errMsg + ")");
+					procedimentDades.put("(" + errMsg + ")", null);
 				}
-				model.addAttribute("procedimentNom", procedimentNom);
+				model.addAttribute("procedimentDades", procedimentDades);
 			}
 
 			model.addAttribute("registre", registre);
