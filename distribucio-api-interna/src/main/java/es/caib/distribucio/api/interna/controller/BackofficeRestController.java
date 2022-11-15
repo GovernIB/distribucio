@@ -51,28 +51,6 @@ public class BackofficeRestController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
     
-    
-    @RequestMapping(
-            value= "/consultaXXX",
-            method = RequestMethod.GET,
-            produces = "application/json")
-    @ApiOperation(
-            value = "Consulta d'una anotació de registre pendent d'enviar al Backoffice",
-            notes = "Retorna totes les dades de l'anotació de registre pendents d'enviar al Backoffice consultada")
-    public ResponseEntity<AnotacioRegistreEntrada> consultaXXX(
-            HttpServletRequest request,
-            @ApiParam(name="id", value="Identificador de la anotació de registre")
-            final AnotacioRegistreId id) throws SistemaExternException {
-    	ResponseEntity<AnotacioRegistreEntrada> response = null;
-    	try {
-    		response = new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
-    	}catch (Exception ex){
-    		throw new SistemaExternException("No s'ha pogut fer la consulta de l'anotació amb id " + id, ex);
-    	}
-    	
-//        return new ResponseEntity<>(new AnotacioRegistreEntrada(), HttpStatus.OK);
-    	return response;
-    }
 
     @RequestMapping(
             value= "/canviEstat",

@@ -33,7 +33,7 @@ public class BackofficeIntegracioRestClient {
     protected int connecTimeout = 20000;
     protected int readTimeout = 120000;
     
-    private static Client jerseyClient;
+    private Client jerseyClient;
     
     public BackofficeIntegracioRestClient(String baseUrl, String username, String password) {
         this.baseUrl = baseUrl;
@@ -66,25 +66,23 @@ public class BackofficeIntegracioRestClient {
     }
 
     protected Client generarClient(String urlAmbMetode) throws Exception {
-//        Client jerseyClient = generarClient();
-    	if (BackofficeIntegracioRestClient.jerseyClient == null) {
-    		BackofficeIntegracioRestClient.jerseyClient = generarClient();
+    	if (this.jerseyClient == null) {
+    		this.jerseyClient = generarClient();
     	}
     	if (username != null) {
             autenticarClient(
-            		BackofficeIntegracioRestClient.jerseyClient,
+            		this.jerseyClient,
                     urlAmbMetode,
                     username,
                     password);
         }
-        return BackofficeIntegracioRestClient.jerseyClient;
+        return this.jerseyClient;
     }
 
     protected Client generarClient() {
-        Client jerseyClient = Client.create();
+        this.jerseyClient = Client.create();
         jerseyClient.setConnectTimeout(connecTimeout);
         jerseyClient.setReadTimeout(readTimeout);
-        //jerseyClient.addFilter(new LoggingFilter(System.out));
         jerseyClient.addFilter(
                 new ClientFilter() {
                     private ArrayList<Object> cookies;
@@ -112,7 +110,6 @@ public class BackofficeIntegracioRestClient {
                         ClientResponse resp = ch.handle(request);
 
                         if (resp.getStatus()/100 != 3) {
-//				        if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
                             return resp;
                         } else {
                             String redirectTarget = resp.getHeaders().getFirst("Location");
@@ -178,22 +175,7 @@ public class BackofficeIntegracioRestClient {
             throw new RuntimeException(ex);
         }
     }
-    
-    public AnotacioRegistreEntrada consultaXXX(AnotacioRegistreId id) throws UniformInterfaceException {
-        try {
-            String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consultaXXX";
-            Client jerseyClient = generarClient(urlAmbMetode);
-            String json = jerseyClient.
-                    resource(urlAmbMetode).
-                    queryParam("indetificador", URLEncoder.encode(id.getIndetificador(), "UTF-8")).
-                    queryParam("clauAcces", URLEncoder.encode(id.getClauAcces(), "UTF-8")).
-                    type("application/json").
-                    get(String.class);
-            return getMapper().readValue(json, AnotacioRegistreEntrada.class);
-        } catch (Exception ex) {
-            throw new RuntimeException("No s'ha pogut fer la consulta de l'anotació " + id.getIndetificador(), ex);
-        }
-    }
+
 
     public void canviEstat(
             AnotacioRegistreId id,

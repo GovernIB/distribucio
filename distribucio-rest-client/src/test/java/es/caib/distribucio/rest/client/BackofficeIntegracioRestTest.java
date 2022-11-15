@@ -29,26 +29,8 @@ public class BackofficeIntegracioRestTest {
 	private static final String IDENTIFICADOR = "GOIBE1666190094533/2022";
 	private static final String CLAU_ACCESS = "tVAlOof5XxL64l1hOeaAmMXyKxmIcNtPUmWqUSIC05A=";
 
+
 	@Test
-	public void consultaXXX() throws DatatypeConfigurationException, IOException {
-
-		try {
-			
-			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
-			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
-			
-			
-			AnotacioRegistreEntrada response = getClientRest().consultaXXX(anotacioRegistreId);
-			System.out.println("Test: " + response);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail();
-		}
-	}
-
-//	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
 
 		try {
@@ -67,7 +49,7 @@ public class BackofficeIntegracioRestTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void canviEstat() throws DatatypeConfigurationException, IOException {
 
 		try {
@@ -88,6 +70,6 @@ public class BackofficeIntegracioRestTest {
 	}
 
 	private BackofficeIntegracioRestClient getClientRest() {
-		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS, false);
+		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS);
 	}
 }
