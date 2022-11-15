@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrganitzativa> {
 
+	private Long id;
 	private String codi;
 	private String denominacio;
 	private String nifCif;
@@ -50,6 +51,13 @@ public class UnitatOrganitzativa implements Serializable, Comparable<UnitatOrgan
 	
 	
 
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public UnitatOrganitzativa(
 			String codi,
 			String denominacio,

@@ -55,7 +55,7 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 			StringBuilder sb = new StringBuilder(getServiceUrl());
 			response = findProcedimentsRolsac(
 					sb.toString(),
-					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"0\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
+					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"No s'han pogut consultar els procediments de ROLSAC (" +
