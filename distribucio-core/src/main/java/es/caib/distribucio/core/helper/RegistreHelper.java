@@ -17,9 +17,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
@@ -183,6 +185,27 @@ public class RegistreHelper {
 	private RegistreHelper self;
     @Autowired
     private ApplicationContext applicationContext;
+
+    /** Objecte amb les anotacions que s'estan processant en un moment donat ver evitar processaments a la vegada. */
+    private Set<Long> processing = new HashSet<Long>();
+    
+    public boolean startProcessing(long registreId) {
+    	boolean ret = false;
+    	synchronized (this.processing) {
+        	if (!this.processing.contains(registreId)) {
+        		ret = true;
+        		this.processing.add(registreId);
+        	}
+		}
+    	return ret;
+    }
+    
+    public void finishProcessing(long registreId) {
+    	synchronized (this.processing) {
+        	this.processing.remove(registreId);
+    	}
+    }
+    
 
     @PostConstruct
     public void postContruct(){
@@ -1536,7 +1559,7 @@ public class RegistreHelper {
 				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT) 
 						|| (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_ERROR) 
 								&& dataComunicacio.after(pend.getBackProcesRebutjErrorData()))) {
-					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy").format(dataComunicacio));
+					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(dataComunicacio));
 				}
 			} else { // if excepion occured during sending anotacions ids to backoffice
 				// add exception message and increment procesIntents
@@ -2099,8 +2122,9 @@ public class RegistreHelper {
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient, 
 			String procedimentCodi) {
-
+		
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+		
 		if (annex.getFitxerNom().startsWith(".")) {
 			String fitxerNom = String.valueOf(new Date().getTime()) + annex.getFitxerNom();
 			annex.updateFitxerNom(fitxerNom);
