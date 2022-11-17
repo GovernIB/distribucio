@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb.ws;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -36,7 +37,7 @@ import es.caib.distribucio.core.service.ws.bustia.BustiaV1WsServiceImpl;
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-//@RolesAllowed({"DIS_BSTWS"})
+@RolesAllowed({"DIS_BSTWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BustiaV1WsServiceBean implements BustiaV1WsService {
@@ -56,9 +57,9 @@ public class BustiaV1WsServiceBean implements BustiaV1WsService {
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
-		
-		usuariHelper.hasRole("DIS_BSTWS");
-		
+		usuariHelper.generarUsuariAutenticatEjb(
+				sessionContext,
+				true);
 		delegate.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,

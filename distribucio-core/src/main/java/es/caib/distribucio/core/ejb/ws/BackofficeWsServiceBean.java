@@ -41,7 +41,7 @@ import es.caib.distribucio.core.service.ws.backoffice.BackofficeWsServiceImpl;
 @WebContext(
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backoffice",
-		authMethod = "WSBASIC",
+//		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
 @SecurityDomain("seycon")
@@ -60,9 +60,7 @@ public class BackofficeWsServiceBean implements BackofficeWsService {
 	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
-				true);		 
-		delegate.comunicarAnotacionsPendents(ids);
+				true);
+		delegate.comunicarAnotacionsPendents(ids);		
 	}
-
-
 }
