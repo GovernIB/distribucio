@@ -645,7 +645,7 @@ public class RegistreHelper {
 	}
 	
 	
-	public void processarAnotacioPendentArxiuInThreadExecutor(Long registreId) {
+	public void processarAnotacioPendentArxiuInThreadExecutor(Long entitatId, Long registreId) {
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
 		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
@@ -654,7 +654,7 @@ public class RegistreHelper {
     	
     	Exception excepcio = null;
         try {
-			excepcio = processarAnotacioPendentArxiu(registreId);
+			excepcio = processarAnotacioPendentArxiu(entitatId, registreId);
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
@@ -683,7 +683,7 @@ public class RegistreHelper {
 	 * @param anotacioId
 	 * @return
 	 */
-	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
+	public Exception processarAnotacioPendentArxiu(Long entitatId, Long anotacioId) {
 
 		if (TransactionSynchronizationManager.isActualTransactionActive()) {
 			logger.warn("La transacció actual està activa, es desactiva per poder tractar anotació i annexos per separat.");
@@ -691,10 +691,10 @@ public class RegistreHelper {
 		}
 		
 		// PROCESSAR ARXIU
-		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(anotacioId);
+		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(entitatId, anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 
-			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(anotacioId);
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(entitatId, anotacioId);
 			boolean allRegistresWithSameNumeroSavedInArxiu = true;
 			if (distribucioRegistreAnotacio.getAnnexos() != null ) {
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
@@ -750,10 +750,11 @@ public class RegistreHelper {
 	 * @return
 	 */
 	public List<Exception> createRegistreAndAnnexosInArxiu(
+			Long entitatId,
 			long anotacioId) {
 		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
-				self.getDistribucioRegistreAnotacio(anotacioId);
+				self.getDistribucioRegistreAnotacio(entitatId, anotacioId);
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
@@ -2062,9 +2063,9 @@ public class RegistreHelper {
 	// Mètodes per cridar de forma transaccional amb self
 	
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(long registreId) {
+	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(Long entitatId, long registreId) {
 		
-		RegistreEntity registreEntity = registreRepository.findOne(registreId);		
+		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(entitatId, registreId);		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 																	registreEntity, 
 																	DistribucioRegistreAnotacio.class);
@@ -2122,7 +2123,8 @@ public class RegistreHelper {
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient, 
 			String procedimentCodi) {
-		
+
+		/** TODO: findOneAmbBloqueig */		
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		
 		if (annex.getFitxerNom().startsWith(".")) {

@@ -186,7 +186,7 @@
 	        .always(function() {
 	            $("body").removeClass("loading");
 				$("#span-refresh").removeClass('fa-circle-o-notch');
-				$("#span-refresh").removeClass('fa-spin')
+				$("#span-refresh").removeClass('fa-spin');
 	        });
 		}
 		

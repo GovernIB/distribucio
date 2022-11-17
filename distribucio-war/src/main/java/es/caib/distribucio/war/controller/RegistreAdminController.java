@@ -387,6 +387,15 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
 	
+	/** Estats que permeten el renviament al backoffice */
+	private static RegistreProcesEstatEnum[] estatsReenviablesBackoffices = {
+			RegistreProcesEstatEnum.BACK_PENDENT,
+			RegistreProcesEstatEnum.BACK_COMUNICADA,
+			RegistreProcesEstatEnum.BACK_REBUDA,
+			RegistreProcesEstatEnum.BACK_ERROR,
+			RegistreProcesEstatEnum.BACK_PROCESSADA,
+			RegistreProcesEstatEnum.BACK_REBUTJADA,
+	};
 	
 	
 	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
@@ -507,17 +516,11 @@ public class RegistreAdminController extends BaseAdminController {
 			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 			registreDto = (RegistreDto) contingutDto;
 			
-			if (registreDto.getPare() == null) {
-				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(), registreId);
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
-			
-			}else if (ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
+			if (ArrayUtils.contains(estatsReenviablesBackoffices, registreDto.getProcesEstat())) {
 				correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
-				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
-			
+				missatge = "Anotació reenviada al backoffice " + (registreDto.getBackCodi()) + " " + (correcte ? "correctament" : "amb error");
 			}else {
-				missatge = getMessage(request, "");
+				missatge = getMessage(request, "registre.admin.reintentar.enviament.backoffice.estat.incompatible", new Object[] {registreDto.getId()}); 
 				correcte = true;
 			}
 		

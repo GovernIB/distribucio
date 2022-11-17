@@ -1276,10 +1276,11 @@ public class PluginHelper {
 								.newInstance("es.caib.distribucio.", properties);
 					validaSignaturaPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_VALIDASIG,
-							"Error al crear la instància del plugin de validació de signatures amb el nom de la classe " + pluginClass,
-							ex);
+//					throw new SistemaExternException(
+//							IntegracioHelper.INTCODI_VALIDASIG,
+//							"Error al crear la instància del plugin de validació de signatures amb el nom de la classe " + pluginClass,
+//							ex);
+					return null;
 				}
 			} else {
 				return null;

@@ -1756,6 +1756,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+						entitatId, 
 						registreId);
 			}
 			if (exceptionProcessant == null && pendentRegla) {
@@ -1781,7 +1782,7 @@ public class RegistreServiceImpl implements RegistreService {
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
 
-		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
+		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(entitatId, registreId);
 		return exceptionProcessant == null;
 	}
 
@@ -2335,10 +2336,8 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		
-		RegistreEntity registre = registreRepository.findByEntitatAndId(
-				entitat,
-				registreId);
+				
+		RegistreEntity registre = registreRepository.findOneAmbBloqueig(entitatId, registreId);
 		
 		if (isPermesReservarAnotacions())
 			registreHelper.comprovarRegistreAlliberat(registre);
@@ -2497,23 +2496,6 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		return llistaProcediments;
-	}
-
-	
-	@SuppressWarnings("unlikely-arg-type")
-	private void getProcediments(List<ProcedimentDto> dtos, List<ProcedimentEntity> procediments) {
-		for (ProcedimentEntity procediment: procediments) {
-			if (procediment.getCodiSia() != null 
-					&& !procediment.getCodiSia().isEmpty()
-					&& !dtos.contains(procediment.getNom())) {
-				ProcedimentDto dto = new ProcedimentDto();
-				dto.setCodi(procediment.getCodi());
-				dto.setCodiSia(procediment.getCodiSia() != null ? procediment.getCodiSia() : procediment.getCodiSia());
-				dto.setNom(procediment.getNom());
-				dto.setEstat(procediment.getEstat());
-				dtos.add(dto);
-			}
-		}
 	}
 
 	/** Retorna true si no és administrador nii admin lectura. */
@@ -2990,6 +2972,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+						entitatId, 
 						anotacioId);
 			}
 			if (exceptionProcessant == null && pendentRegla) {

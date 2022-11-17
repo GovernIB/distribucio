@@ -469,5 +469,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("from RegistreEntity where id = :registreId")
 	public RegistreEntity findOneAmbBloqueig(@Param("registreId") Long registreId);
-	
+
+	/** Per consultar l'expedient tipus amb bloqueig de BBDD per actualitzar les seqüències de números
+	 * @param expedientTipusId
+	 * @return
+	 */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("from RegistreEntity r where r.id = :registreId and r.entitat.id = :entitatId ")
+	public RegistreEntity findOneAmbBloqueig(
+			@Param("entitatId") Long entitatId, 
+			@Param("registreId") Long registreId);
+
 }
