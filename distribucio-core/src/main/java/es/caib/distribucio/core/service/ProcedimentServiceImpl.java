@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.core.api.dto.ArbreDto;
 import es.caib.distribucio.core.api.dto.ArbreNodeDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
@@ -23,6 +24,7 @@ import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PluginHelper;
@@ -95,6 +97,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	public void findAndUpdateProcediments(Long entitatId) throws Exception {
 		int max_intents = 5;
 		EntitatEntity entitat = entitatRepository.findOne(entitatId);
+		ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
 		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
 		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
 		
