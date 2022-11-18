@@ -85,8 +85,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-                        
-        				monitorTasquesService.updateProperaExecucio(codiGuardarAnotacionsPendents, value);
+
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiGuardarAnotacionsPendents, longNextExecution);
 
                         return nextExecution;
                     }
@@ -128,7 +129,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEnviarBackoffice, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiEnviarBackoffice, longNextExecution);
                         
                         return nextExecution;
                     }
@@ -167,7 +170,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, longNextExecution);
                         
                         return nextExecution;
                     }
@@ -205,10 +210,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						}
                     	if (value == null) 
                     		value = new Long("60000");
+                    	
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiTancarContenidors, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiTancarContenidors, longNextExecution);
                         
                         
                         return nextExecution;
@@ -246,10 +253,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						}
                     	if (value == null) 
                     		value = new Long("60000");
+                    	
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsNoAgrupats, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiEnviarEmailsNoAgrupats, longNextExecution);
         				
         				
                         return nextExecution;
@@ -379,9 +388,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	if (value == null) {
                     		value = new Long("3600000"); // Per defecte un cop cada hora per defecte
                     	}
+                    	
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiEsborrarDadesAntigues, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiEsborrarDadesAntigues, longNextExecution);
         				
         				
                         return nextExecution;
@@ -423,7 +435,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						}
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
-        				monitorTasquesService.updateProperaExecucio(codiReintentarProcessament, value);
+                        
+                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+        				monitorTasquesService.updateProperaExecucio(codiReintentarProcessament, longNextExecution);
 						
 						return nextExecution;
 					}        			
