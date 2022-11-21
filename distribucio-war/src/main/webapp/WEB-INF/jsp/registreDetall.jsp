@@ -1372,7 +1372,7 @@ li[id^="anotacio_"] {
 					<!------ Processar desat d'annexos ------>
 					<c:if test="${numeroAnnexosPendentsArxiu > 0 }">
 						<div class="alert well-sm alert-warning alert-dismissable">
-							<span class="fa fa-exclamation-circle"></span>							
+							<span class="fa fa-warning"></span>							
 							<spring:message code="registre.detalls.annexos.pendents" arguments="${numeroAnnexosPendentsArxiu}"/>						 
 							<c:if test="${isRolActualAdministrador}">
 								<a id="btnProcessarAnnexos" href="../../registreAdmin/registre/${registre.id}/processarAnnexos" class="btn btn-xs btn-default pull-right processarBtn"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.desat.annexos"/></a>				
