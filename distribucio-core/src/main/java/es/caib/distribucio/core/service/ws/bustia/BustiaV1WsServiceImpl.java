@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.service.ws.bustia;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,6 +97,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
 				if (!first) {
 					ambFirma.append(", ");
+				}
+				if (annex.getTitol().equals("")) {
+					String fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+					annex.setTitol(fitxerTitol);
 				}
 				ambFirma.append(Boolean.toString(annex.getFirmes() != null));
 				first = false;
