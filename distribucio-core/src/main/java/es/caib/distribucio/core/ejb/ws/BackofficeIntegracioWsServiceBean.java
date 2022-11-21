@@ -13,6 +13,8 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -22,7 +24,8 @@ import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.service.ws.backoffice.BackofficeIntegracioWsServiceImpl;
 
 /**
- * Implementació dels mètodes per al servei de bústies de DISTRIBUCIO.
+ * Implementació dels mètodes per al servei de bústies de DISTRIBUCIO. L'usuari que invoca
+ * el servei ha de tenir el rol DIS_BACKWS.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -38,7 +41,6 @@ import es.caib.distribucio.core.service.ws.backoffice.BackofficeIntegracioWsServ
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
-//@RolesAllowed({"DIS_BACKWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWsService {
@@ -59,14 +61,13 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-
-		usuariHelper.hasRole("DIS_BACKWS");
+		
+		this.checkRole();
 		
 		return delegate.consulta(
 				id);
 		
 	}
-
 
 	@Override
 	public void canviEstat(
@@ -78,10 +79,16 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 				sessionContext,
 				true);
 
-		usuariHelper.hasRole("DIS_BACKWS");
+		this.checkRole();
 		
 		delegate.canviEstat(id, estat, observacions);
 	}
 
+	private void checkRole() {
+		if (!usuariHelper.hasRole("DIS_BACKWS")) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			throw new RuntimeException("L'usuari " + (auth != null ? auth.getName() : "(null)") + " no té el rol requerit DIS_BACKWS.");
+		}		
+	}
 
 }
