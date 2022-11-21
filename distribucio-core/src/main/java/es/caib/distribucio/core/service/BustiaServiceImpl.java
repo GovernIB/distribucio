@@ -1050,9 +1050,6 @@ public class BustiaServiceImpl implements BustiaService {
 				null,
 				false,
 				null);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				bustia.getEntitat(),
-				bustia);
 		logger.debug("Bústia per defecte de l'anotació (" +
 				"anotacioNumero=" + anotacioEntity.getNumero() + ", "  +
 				"bustia=" + bustia.getId() + ")");
@@ -1518,9 +1515,30 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return cacheHelper.countElementsPendentsBustiesUsuari(
-				entitat,
-				auth.getName());
+		
+		// Obté la llista d'id's amb permisos per a l'usuari
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+		// Filtra la llista de bústies segons els permisos
+		permisosHelper.filterGrantedAll(
+				busties,
+				new ObjectIdentifierExtractor<BustiaEntity>() {
+					@Override
+					public Long getObjectIdentifier(BustiaEntity bustia) {
+						return bustia.getId();
+					}
+				},
+				BustiaEntity.class,
+				new Permission[] {ExtendedPermission.READ},
+				auth);
+		
+		long count;
+		if (!busties.isEmpty()) {
+			count = contingutRepository.countPendentsByPares(
+					busties);
+		}else {
+			count = 0;
+		}
+		return count;
 	}
 
 	@Transactional
@@ -1735,10 +1753,6 @@ public class BustiaServiceImpl implements BustiaService {
 				}
 			}
 		}
-		// Refrescam cache d'elements pendents de les bústies
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustiaOrigen);
 	}
 	
 	private void updateMovimentDetail(
@@ -1774,9 +1788,6 @@ public class BustiaServiceImpl implements BustiaService {
 				bustia,
 				registrePerReenviar,
 				contingutMoviment);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustia);
 		nousContinguts.add(registrePerReenviar);
 	}
 	
@@ -1861,9 +1872,6 @@ public class BustiaServiceImpl implements BustiaService {
 				id,
 				BustiaEntity.class,
 				permisId);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustia);
 	}
 
 	@Override
@@ -2946,9 +2954,6 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 				id,
 				BustiaEntity.class,
 				permis);
-		bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-				entitat,
-				bustia);
 	}
 
 

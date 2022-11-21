@@ -339,20 +339,7 @@ public class ReglaHelper {
 								registre,
 								LogTipusEnumDto.REGLA_APLICAR,
 								params,
-								false);
-	
-						BustiaEntity pendentBustia = null;
-						ContingutEntity pare = registre.getPare();
-						if (HibernateHelper.isProxy(pare))
-							pare = HibernateHelper.deproxy(pare);
-						if (pare instanceof BustiaEntity) {
-							pendentBustia = (BustiaEntity) pare;
-							if (pendentBustia != null) {
-								bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-										regla.getEntitat(),
-										pendentBustia);
-							}
-						}
+								false);	
 					}
 				} else {
 					registre.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
@@ -401,21 +388,7 @@ public class ReglaHelper {
 				} else {
 					estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
 				}
-				registre.setNewProcesEstat(estat);
-				
-				// ------ evict -----------
-				BustiaEntity pendentBustia = null;
-				ContingutEntity pare = registre.getPare();
-				if (HibernateHelper.isProxy(pare))
-					pare = HibernateHelper.deproxy(pare);
-				if (pare instanceof BustiaEntity) {
-					pendentBustia = (BustiaEntity) pare;
-					if (pendentBustia != null) {
-						bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-								regla.getEntitat(),
-								pendentBustia);
-					}
-				}
+				registre.setNewProcesEstat(estat);				
 				break;
 			}
 

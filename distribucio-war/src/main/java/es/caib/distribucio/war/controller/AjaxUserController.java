@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.war.helper.EnumHelper.HtmlOption;
 

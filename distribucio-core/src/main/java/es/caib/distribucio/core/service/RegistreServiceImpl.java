@@ -1717,10 +1717,6 @@ public class RegistreServiceImpl implements RegistreService {
 						false,
 						null);
 				
-				bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-						bustia.getEntitat(),
-						bustia);				
-
 				if (reglaAplicable == null 
 						&& anotacio.getPare() != null) {
 					emailHelper.createEmailsPendingToSend(
@@ -1818,7 +1814,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (!rolActual.equals("DIS_ADMIN") && !rolActual.equals("DIS_ADMIN_LECTURA")) {
 			findRol = true;
 		}
-		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), findRol /*!rolActual.equals("DIS_ADMIN")*/);
+		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), findRol /*!rolActual.equals("DIS_ADMIN")*/);
 
 		registre.setProces(RegistreProcesEstatEnum.BUSTIA_PENDENT);
 
@@ -1827,11 +1823,6 @@ public class RegistreServiceImpl implements RegistreService {
 			registre.updateDataTancament(null);
 		}
 		
-		if (registre.getPare() != null) {
-			// Marca per desalojar la cache de la bustia
-			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
-		}
-
 		List<String> params = new ArrayList<>();
 		params.add(registre.getNom());
 		params.add(null);
@@ -2363,9 +2354,6 @@ public class RegistreServiceImpl implements RegistreService {
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
 		if (reglaAplicable != null) {
 			registre.updateRegla(reglaAplicable);
-			bustiaHelper.evictCountElementsPendentsBustiesUsuari(
-					entitat,
-					bustia);
 			List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
 			Exception ex = reglaHelper.aplicarControlantException(registre, reglesApplied);
 

@@ -4,10 +4,8 @@
 package es.caib.distribucio.core.helper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -271,18 +269,6 @@ public class BustiaHelper {
 					"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ")");
 		}
 		return bustiaDesti;
-	}
-
-	public void evictCountElementsPendentsBustiesUsuari(
-			EntitatEntity entitat,
-			BustiaEntity bustia) {
-		Set<String> usuaris = contingutHelper.findUsuarisCodisAmbPermisReadPerContenidor(bustia);
-		if (usuaris != null) {
-			for (String usuari: usuaris)
-				cacheHelper.evictCountElementsPendentsBustiesUsuari(
-						entitat,
-						usuari);
-		}
 	}
 
 	public boolean isProcessamentAsincronProperty() {

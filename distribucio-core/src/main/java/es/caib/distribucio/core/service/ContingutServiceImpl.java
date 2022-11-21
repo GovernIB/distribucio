@@ -510,12 +510,10 @@ public class ContingutServiceImpl implements ContingutService {
 		if (contingut.getPare() != null) {
 			// Marca per evitar la cache de la bustia
 			Long bustiaId = contingut.getPareId();
-			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+			entityComprovarHelper.comprovarBustia(
 					entitat,
 					bustiaId,
 					findRol);
-					//!rolActual.equals("DIS_ADMIN"));
-			bustiaHelper.evictCountElementsPendentsBustiesUsuari(entitat, bustia);
 		}
 		// Si el contingut és una anotació de registre s'ha de 
 		// tancar l'expedient temporal 

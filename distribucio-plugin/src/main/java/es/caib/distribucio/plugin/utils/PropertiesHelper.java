@@ -4,6 +4,7 @@
 package es.caib.distribucio.plugin.utils;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 //import org.slf4j.Logger;
@@ -31,22 +32,24 @@ public class PropertiesHelper extends Properties {
 			if (propertiesPath != null) {
 				instance.llegirSystem = false;
 				//logger.debug("Llegint les propietats de l'aplicació del path: " + propertiesPath);
+				InputStream is = null;
 				try {
 					if (propertiesPath.startsWith("classpath:")) {
-						instance.load(
+						is = 
 								PropertiesHelper.class.getClassLoader().getResourceAsStream(
-										propertiesPath.substring("classpath:".length())));
+										propertiesPath.substring("classpath:".length()));
 					} else if (propertiesPath.startsWith("file://")) {
-						FileInputStream fis = new FileInputStream(
+						is = new FileInputStream(
 								propertiesPath.substring("file://".length()));
-						instance.load(fis);
 					} else {
-						FileInputStream fis = new FileInputStream(propertiesPath);
-						instance.load(fis);
+						is = new FileInputStream(propertiesPath);
 					}
+					instance.load(is);
 				} catch (Exception ex) {
+					System.err.println("No s'han pogut llegir els properties: " + ex.getMessage());
 					ex.printStackTrace();
-//					logger.error("No s'han pogut llegir els properties", ex);
+				} finally {
+					try {is.close(); }catch(Exception e) {}
 				}
 			}
 		}

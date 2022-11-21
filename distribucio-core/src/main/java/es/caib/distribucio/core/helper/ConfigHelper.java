@@ -2,6 +2,7 @@ package es.caib.distribucio.core.helper;
 
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -261,21 +262,28 @@ public class ConfigHelper {
                 if (propertiesPath != null) {
                     instance.llegirSystem = false; //a jboss no entrem aquí
                     logger.info("Llegint les propietats de l'aplicació del path: " + propertiesPath);
+                    InputStream is = null;
                     try {
                         if (propertiesPath.startsWith("classpath:")) {
-                            instance.load(
-                                    JBossPropertiesHelper.class.getClassLoader().getResourceAsStream(
-                                            propertiesPath.substring("classpath:".length())));
+                        	is = JBossPropertiesHelper.class.getClassLoader().getResourceAsStream(
+                                    propertiesPath.substring("classpath:".length()));
                         } else if (propertiesPath.startsWith("file://")) {
-                            FileInputStream fis = new FileInputStream(
+                            is = new FileInputStream(
                                     propertiesPath.substring("file://".length()));
-                            instance.load(fis);
                         } else {
-                            FileInputStream fis = new FileInputStream(propertiesPath);
-                            instance.load(fis);
+                            is = new FileInputStream(propertiesPath);
                         }
+                        instance.load(is);
                     } catch (Exception ex) {
                         logger.error("No s'han pogut llegir els properties", ex);
+                    } finally {
+                    	if (is != null) {
+                    		try {
+                    			is.close();
+                    		} catch(Exception e) {
+                    			logger.error("Error tancant l'input stream " + is.toString() + ": " + e.getMessage(), e);;
+                    		}
+                    	} 
                     }
                 }
             }

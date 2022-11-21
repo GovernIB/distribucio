@@ -26,7 +26,6 @@ import es.caib.distribucio.core.api.dto.MunicipiDto;
 import es.caib.distribucio.core.api.dto.ProvinciaDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.helper.PermisosHelper.ObjectIdentifierExtractor;
@@ -186,46 +185,6 @@ public class CacheHelper {
 		return conversioTipusHelper.convertirList(
 				pluginHelper.dadesExternesMunicipisFindAmbProvincia(provinciaCodi),
 				MunicipiDto.class);
-	}
-
-	@Cacheable(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
-	public long countElementsPendentsBustiesUsuari(
-			EntitatEntity entitat,
-			String usuariCodi) {
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
-		// Filtra la llista de bústies segons els permisos
-		permisosHelper.filterGrantedAll(
-				busties,
-				new ObjectIdentifierExtractor<BustiaEntity>() {
-					@Override
-					public Long getObjectIdentifier(BustiaEntity bustia) {
-						return bustia.getId();
-					}
-				},
-				BustiaEntity.class,
-				new Permission[] {ExtendedPermission.READ},
-				auth);
-		
-		long count;
-		if (!busties.isEmpty()) {
-			count = contingutRepository.countPendentsByPares(
-					busties);
-		}else {
-			count = 0;
-		}
-		return count;
-	}
-	
-	
-	
-	
-	@CacheEvict(value = "elementsPendentsBustiesUsuari", key="{#entitat.id, #usuariCodi}")
-	public void evictCountElementsPendentsBustiesUsuari(
-			EntitatEntity entitat,
-			String usuariCodi) {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CacheHelper.class);

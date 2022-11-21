@@ -13,11 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
-import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.RegistreEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base

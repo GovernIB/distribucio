@@ -165,12 +165,6 @@ public class ContingutHelper {
 				final Timer timerToContingutDtoUnitatOrganitzativa = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto.UnitatOrganitzativa"));
 				Timer.Context contextToContingutDtoUnitatOrganitzativa  = timerToContingutDtoUnitatOrganitzativa.time();
 				
-				UnitatOrganitzativaDto unitatConselleria = unitatOrganitzativaHelper.findConselleria(
-						bustiaEntity.getEntitat().getCodiDir3(),
-						bustiaEntity.getUnitatOrganitzativa().getCodi());
-				if (unitatConselleria != null) {
-					bustiaDto.setUnitatConselleriaCodi(unitatConselleria.getCodi());
-				}
 				UnitatOrganitzativaEntity unitatEntity = bustiaEntity.getUnitatOrganitzativa();
 				UnitatOrganitzativaDto unitatDto = conversioTipusHelper.convertir(unitatEntity,
 						UnitatOrganitzativaDto.class);

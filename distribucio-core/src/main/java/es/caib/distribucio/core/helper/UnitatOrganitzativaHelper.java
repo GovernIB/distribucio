@@ -549,40 +549,6 @@ public class UnitatOrganitzativaHelper {
 	}
 
 	/**
-	 * Returns unitat pare (of unitat: @param unitatOrganitzativaCodi) that is first child of the root unitat (given by: @param unitatPare) 
-	 * @param unitatPare
-	 * @param unitatOrganitzativaCodi
-	 * @return
-	 */
-	public UnitatOrganitzativaDto findConselleria(
-			String unitatPare,
-			String unitatOrganitzativaCodi) {
-		
-		UnitatOrganitzativaDto unitatConselleria = null;
-		ArbreDto<UnitatOrganitzativaDto> arbre = unitatsOrganitzativesFindArbreByPare(unitatPare);
-		
-		if (arbre != null) {
-			ArbreDto<UnitatOrganitzativaDto> arbreClone = arbre.clone();
-			
-			for (ArbreNodeDto<UnitatOrganitzativaDto> node: arbreClone.toList()) {
-				UnitatOrganitzativaDto uo = node.getDades();
-				if (uo.getCodi().equals(unitatOrganitzativaCodi)) {
-					ArbreNodeDto<UnitatOrganitzativaDto> nodeActual = node;
-					while (nodeActual.getNivell() > 1) {
-						nodeActual = nodeActual.getPare();
-					}
-					if (nodeActual.getNivell() == 1)
-						unitatConselleria = nodeActual.getDades();
-					break;
-				}
-			}
-		}
-
-		return unitatConselleria;
-	}
-
-
-	/**
 	 * Takes the list of unitats from database and converts it to the tree
 	 * 
 	 * @param pareCodi 

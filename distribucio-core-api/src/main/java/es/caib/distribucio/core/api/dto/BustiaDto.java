@@ -18,7 +18,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class BustiaDto extends ContingutDto {
 
 	private String unitatCodi;
-	private String unitatConselleriaCodi;
 	private boolean activa;
 	private boolean perDefecte;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
@@ -45,12 +44,6 @@ public class BustiaDto extends ContingutDto {
 	}
 	public void setUnitatCodi(String unitatCodi) {
 		this.unitatCodi = unitatCodi;
-	}
-	public String getUnitatConselleriaCodi() {
-		return unitatConselleriaCodi;
-	}
-	public void setUnitatConselleriaCodi(String unitatConselleriaCodi) {
-		this.unitatConselleriaCodi = unitatConselleriaCodi;
 	}
 	public boolean isActiva() {
 		return activa;
