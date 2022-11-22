@@ -98,7 +98,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				if (!first) {
 					ambFirma.append(", ");
 				}
-				if (annex.getTitol().equals("")) {
+				if (annex.getTitol().equals("") || 
+						annex.getTitol().startsWith(".")) {
 					String fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
 					annex.setTitol(fitxerTitol);
 				}
