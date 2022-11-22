@@ -67,7 +67,7 @@
 					optionTemplateFunction="formatSelectUnitat" /> 
 			</div>
 			<div class="col-md-3">
-				<dis:inputSelect name="estat"  netejar="false" optionEnum="ProcedimentEstatEnumDto" placeholderKey="procediment.list.columna.estat" emptyOption="true" inline="true"/>			
+				<dis:inputSelect name="estat"  netejar="true" optionEnum="ProcedimentEstatEnumDto" placeholderKey="procediment.list.columna.estat" emptyOption="true" inline="true"/>			
 			</div>
 		</div>
 		<div class="row">		
@@ -104,11 +104,12 @@
 			<th data-col-name="unitatOrganitzativa.codi" data-template="#uoTemplate">
 				<spring:message code="procediment.list.columna.unitatOrganitzativa"/>
 				<script id="uoTemplate" type="text/x-jsrender">
-					{{:unitatOrganitzativa.codi}} -  {{:unitatOrganitzativa.denominacio}}
 
-						{{if unitatOrganitzativa.estat!='V'}}
-							<span class="fa fa-warning text-warning  pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.filtre.avis.obsoleta"/>"></span>
-						{{/if}}
+					{{if unitatOrganitzativa.estat!='V'}}
+						<span class="fa fa-warning text-warning  pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.filtre.avis.obsoleta"/>"></span>
+					{{/if}}
+ 
+					{{:unitatOrganitzativa.codi}} -  {{:unitatOrganitzativa.denominacio}}
 
 				</script>
 			</th>

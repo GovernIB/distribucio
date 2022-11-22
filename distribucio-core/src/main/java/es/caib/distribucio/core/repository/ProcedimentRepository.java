@@ -12,6 +12,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
+import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 
 /**
  * Definició dels mètodes necessaris per a gestionar una entitat de base
@@ -36,7 +37,7 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	Page<ProcedimentEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
-			@Param("unitatOrganitzativa") UnitatOrganitzativaDto unitatorganitzativa, 
+			@Param("unitatOrganitzativa") UnitatOrganitzativaEntity unitatorganitzativa, 
 			@Param("isCodiNull") boolean isCodiNull, 
 			@Param("codi") String codi,
 			@Param("isNomNull") boolean isNomNull,
