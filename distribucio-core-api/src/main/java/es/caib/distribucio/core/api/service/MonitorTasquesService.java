@@ -29,12 +29,18 @@ public interface MonitorTasquesService {
 
 	public void updateDataInici(String codi);
 
-	public void updateDataFi(String codi);
+	public void updateDataFi(String codi, boolean iniciant);
 
 	public void updateProperaExecucio(String codi, long plusValue);
 
 	public List<MonitorTascaInfo> findAll();
 
-	public MonitorTascaInfo findByCodi(String codi);	
+	public MonitorTascaInfo findByCodi(String codi);
+
+	public void inici(String codiTasca);
+
+	public void fi(String codiTasca);
+
+	public void error(String codiTasca);	
 
 }

@@ -2,7 +2,6 @@ package es.caib.distribucio.core.ejb;
 
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
@@ -36,7 +35,6 @@ public class ProcedimentServiceBean implements ProcedimentService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
 	public void findAndUpdateProcediments(Long entitatId) throws Exception {
 		delegate.findAndUpdateProcediments(entitatId);
 	}

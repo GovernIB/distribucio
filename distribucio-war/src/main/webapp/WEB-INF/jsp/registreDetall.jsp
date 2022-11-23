@@ -1053,8 +1053,7 @@ li[id^="anotacio_"] {
 						<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || 
 									registre.procesEstat == 'BACK_REBUDA' || 								 
 									registre.procesEstat == 'BACK_PROCESSADA' || 								 
-									registre.procesEstat == 'BACK_REBUTJADA' || 
-									registre.procesEstat == 'BACK_ERROR'}">
+									registre.procesEstat == 'BACK_REBUTJADA'}">
 							<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
 								- ${registre.backCodi}
 							</c:if>	

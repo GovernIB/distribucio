@@ -63,11 +63,10 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("estat") IntegracioAccioEstatEnumDto estat,
 			Pageable pageable);
 
-	@Query(	"select count(mon)" +
-			"from MonitorIntegracioEntity mon " +
-			"where mon.data > :data " + 
-			"group by mon.codi ")
-	public List<Object[]> countMonitorByDataBefore(
+	@Query(	" 	select mon.id " + 
+			"	from MonitorIntegracioEntity mon " +
+			"	where mon.data < :data ")
+	public List<MonitorIntegracioEntity> countMonitorByDataBefore(
 			@Param("data") Date data);
 
 	@Query(	"select mon.codi, count(mon)" +

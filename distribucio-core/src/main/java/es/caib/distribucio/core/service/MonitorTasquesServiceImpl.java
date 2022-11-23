@@ -68,10 +68,10 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateDataFi(String codi) {
+	public void updateDataFi(String codi, boolean iniciant) {
 		Date dataFi = updateData(0);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
-		monitorTascaInfo.setDataFi(dataFi);
+		monitorTascaInfo.setDataFi(iniciant ? null : dataFi);
 		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
 	}
 
@@ -103,7 +103,28 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	public MonitorTascaInfo findByCodi(String codi) {
 		return MonitorTasquesServiceImpl.tasques.get(codi);
 	}
+
+	@Override
+	public void inici(String codiTasca) {
+    	this.updateDataInici(codiTasca);
+    	this.updateDataFi(codiTasca, true);
+    	this.updateEstat(codiTasca, MonitorTascaEstatEnum.EN_EXECUCIO);		
+	}
+
+	@Override
+	public void fi(String codiTasca) {
+		this.updateEstat(codiTasca, MonitorTascaEstatEnum.EN_ESPERA);
+		this.updateDataFi(codiTasca, false);		
+	}
+
+	@Override
+	public void error(String codiTasca) {
+		this.updateEstat(codiTasca, MonitorTascaEstatEnum.ERROR);
+		this.updateDataFi(codiTasca, false);
+	}
 	
+	
+		
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);
 
 }

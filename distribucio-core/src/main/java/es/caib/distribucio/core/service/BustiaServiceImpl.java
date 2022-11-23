@@ -1154,7 +1154,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"tipus=" + tipus + ", " +
 					"unitatOrganitzativa=" + unitatOrganitzativaCodi + ", " +
 					"anotacio=" + registreAnotacio.getNumero() + ")");
-			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(entitat.getId(), anotacioEntity.getId());
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(entitat.getCodi(), anotacioEntity.getId());
 			if (exceptionProcessant == null) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 			}
@@ -1276,7 +1276,7 @@ public class BustiaServiceImpl implements BustiaService {
 					"tipus=" + anotacioEntity.getTipus() + ", " +
 					"unitatOrganitzativa=" + anotacioEntity.getUnitatAdministrativa() + ", " +
 					"anotacio=" + anotacioEntity.getIdentificador() + ")");
-			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getEntitat().getId(), anotacioEntity.getId());
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(anotacioEntity.getEntitat().getCodi(), anotacioEntity.getId());
 			if (exceptionProcessant == null) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 			}

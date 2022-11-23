@@ -49,7 +49,7 @@ public class BackofficeIntegracioRestTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void canviEstat() throws DatatypeConfigurationException, IOException {
 
 		try {

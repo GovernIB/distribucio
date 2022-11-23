@@ -616,32 +616,32 @@ $(document).ready(function() {
 							</span>
 						{{else procesEstat == 'REGLA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
+							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/>
 						{{else procesEstat == 'BACK_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_COMUNICADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_REBUDA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_PROCESSADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_REBUTJADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_ERROR'}}
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>
-							
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>					
-						{{/if}}
-
-						{{if procesEstat == 'BACK_PENDENT' || procesEstat == 'BACK_COMUNICADA' || procesEstat == 'BACK_REBUDA' || procesEstat == 'BACK_PROCESSADA' || procesEstat == 'BACK_REBUTJADA' || procesEstat == 'BACK_ERROR'}}
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
-						{{else procesEstat == 'REGLA_PENDENT'}}
-							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
 						{{/if}}
 
 					</script>
@@ -665,7 +665,7 @@ $(document).ready(function() {
 							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
 							<br><br>
 						{{else documentacioFisicaCodi == '2'}}
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/><br><br>
 							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
 							<br><br>
 						{{else documentacioFisicaCodi == '3'}}

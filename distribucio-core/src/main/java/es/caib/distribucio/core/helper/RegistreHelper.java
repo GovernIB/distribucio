@@ -109,6 +109,7 @@ import es.caib.distribucio.core.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UsuariEntity;
+import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
 import es.caib.distribucio.core.repository.RegistreFirmaDetallRepository;
@@ -150,6 +151,8 @@ public class RegistreHelper {
 	private RegistreInteressatRepository registreInteressatRepository;
 	@Autowired
 	RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	EntitatRepository entitatRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
@@ -645,7 +648,7 @@ public class RegistreHelper {
 	}
 	
 	
-	public void processarAnotacioPendentArxiuInThreadExecutor(Long entitatId, Long registreId) {
+	public void processarAnotacioPendentArxiuInThreadExecutor(String entitatCodi, Long registreId) {
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
 		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
@@ -654,7 +657,7 @@ public class RegistreHelper {
     	
     	Exception excepcio = null;
         try {
-			excepcio = processarAnotacioPendentArxiu(entitatId, registreId);
+			excepcio = processarAnotacioPendentArxiu(entitatCodi, registreId);
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
@@ -683,7 +686,7 @@ public class RegistreHelper {
 	 * @param anotacioId
 	 * @return
 	 */
-	public Exception processarAnotacioPendentArxiu(Long entitatId, Long anotacioId) {
+	public Exception processarAnotacioPendentArxiu(String entitatCodi, Long anotacioId) {
 
 		if (TransactionSynchronizationManager.isActualTransactionActive()) {
 			logger.warn("La transacció actual està activa, es desactiva per poder tractar anotació i annexos per separat.");
@@ -691,10 +694,10 @@ public class RegistreHelper {
 		}
 		
 		// PROCESSAR ARXIU
-		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(entitatId, anotacioId);
+		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(entitatCodi, anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 
-			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(entitatId, anotacioId);
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(entitatCodi, anotacioId);
 			boolean allRegistresWithSameNumeroSavedInArxiu = true;
 			if (distribucioRegistreAnotacio.getAnnexos() != null ) {
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
@@ -750,11 +753,11 @@ public class RegistreHelper {
 	 * @return
 	 */
 	public List<Exception> createRegistreAndAnnexosInArxiu(
-			Long entitatId,
+			String entitatCodi,
 			long anotacioId) {
 		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
-				self.getDistribucioRegistreAnotacio(entitatId, anotacioId);
+				self.getDistribucioRegistreAnotacio(entitatCodi, anotacioId);
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
@@ -1560,7 +1563,7 @@ public class RegistreHelper {
 				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT) 
 						|| (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_ERROR) 
 								&& dataComunicacio.after(pend.getBackProcesRebutjErrorData()))) {
-					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(dataComunicacio));
+					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataComunicacio));
 				}
 			} else { // if excepion occured during sending anotacions ids to backoffice
 				// add exception message and increment procesIntents
@@ -2063,9 +2066,10 @@ public class RegistreHelper {
 	// Mètodes per cridar de forma transaccional amb self
 	
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(Long entitatId, long registreId) {
+	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(String entitatCodi, long registreId) {
 		
-		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(entitatId, registreId);		
+		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
+		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(entitat.getId(), registreId);		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 																	registreEntity, 
 																	DistribucioRegistreAnotacio.class);
@@ -2123,8 +2127,7 @@ public class RegistreHelper {
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient, 
 			String procedimentCodi) {
-
-		/** TODO: findOneAmbBloqueig */		
+	
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		
 		if (annex.getFitxerNom().startsWith(".")) {

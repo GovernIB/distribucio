@@ -1745,6 +1745,11 @@ public class RegistreServiceImpl implements RegistreService {
 				"registreId=" + registreId + ")");
 		
 		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null);
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
 
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
@@ -1752,7 +1757,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
-						entitatId, 
+						entitat.getCodi(), 
 						registreId);
 			}
 			if (exceptionProcessant == null && pendentRegla) {
@@ -1778,7 +1783,12 @@ public class RegistreServiceImpl implements RegistreService {
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
 
-		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(entitatId, registreId);
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(entitat.getCodi(), registreId);
 		return exceptionProcessant == null;
 	}
 
@@ -2953,6 +2963,11 @@ public class RegistreServiceImpl implements RegistreService {
 	private Exception processarAnotacioPendent(long entitatId, long anotacioId) {
 		
 		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
 
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
@@ -2960,7 +2975,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
-						entitatId, 
+						entitat.getCodi(), 
 						anotacioId);
 			}
 			if (exceptionProcessant == null && pendentRegla) {

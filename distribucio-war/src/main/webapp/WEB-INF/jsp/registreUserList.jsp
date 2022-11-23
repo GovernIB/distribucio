@@ -95,6 +95,82 @@ div.extracteColumn {
 li[id^="anotacio_"] {
 	cursor: pointer;
 }
+
+
+
+th, 
+td, 
+#link-comentaris span, 
+#div-btn-accions button span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+	font-size: 1.2rem;
+	width: 0%; 
+	/* width: fit-content; */
+} 
+
+#div-btn-accions button, 
+#link-comentaris {
+	white-space: normal;
+	word-wrap: break-word;
+	font-size: 1.5rem;
+	width: 100%; 
+}
+
+span.badge {
+	font-size: 1.2rem !important;
+	padding-right: 1.2rem !important;
+}
+
+span.fa-comments {
+	font-size: 2rem !important;
+	margin-right: 2rem
+}
+
+span.fa-cog {
+	margin: 4px 1.5rem 0 0; 
+}
+
+tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+	margin: 8px 0 0 2px; 
+}
+
+span.select2-container {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn, 
+button#nomesAmbEsborranysBtn, 
+button#mostrarInactivesBtn {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn span.fa-warning, 
+button#nomesAmbEsborranysBtn span.fa-warning, 
+button#mostrarInactivesBtn i{
+	position: relative !important;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-ban, button#mostrarInactivesBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 2.5rem;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 1.5rem;
+	margin-left: -5px !important;
+}
+
+button#netejarFiltre, 
+button#filtrar {
+	width: 50%;
+}
+
+
 </style>
 <script>
 $.views.helpers({
@@ -380,7 +456,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 							optionMinimumResultsForSearch="0" 
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
-					<div class="col-md-2">
+					<div class="col-md-2" style="padding-left: 0;">
 						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
@@ -423,11 +499,10 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					suggestValue="codiSia"
 					suggestText="codiNom" />
 			</div>		
-			<div class="col-md-2 pull-right">
-				<div class="pull-right">
-					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+			<div class="col-md-3"></div>
+			<div class="col-md-2 d-flex">
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>
@@ -498,6 +573,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="reactivat"  data-visible="false">
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
+				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="numero" width="10%"><spring:message code="bustia.pendent.columna.numero"/></th>
 				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
@@ -508,21 +584,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						</div>
 					</script>
 				</th>			
-				<th data-col-name="documentacioFisicaCodi" data-orderable="true" width="3%"  data-template="#docFisTemplate">
-				<spring:message code="bustia.pendent.columna.tipusDocFisica"/>
-					<script id="docFisTemplate" type="text/x-jsrender">
-						<center>
-						{{if documentacioFisicaCodi == '1'}}
-							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
-						{{else documentacioFisicaCodi == '2'}}
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-						{{else documentacioFisicaCodi == '3'}}
-							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
-						{{/if}}
-						</center>
-					</script>
-				</th>						
+														
 				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
 
 				<th data-col-name="darrerMovimentUsuari" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
@@ -550,11 +612,6 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
-						{{if enviatPerEmail}}
-							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
-							{{for enviamentsPerEmail}} {{>}} 
-							{{/for}}"></span>
-						{{/if}}
 						{{if procesEstat == 'ARXIU_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
 
@@ -582,15 +639,36 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
 						{{/if}}
 					</script>
-					
-
 				</th>
+				
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
+						{{if enviatPerEmail}}
+							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
+							{{for enviamentsPerEmail}} {{>}} 
+							{{/for}}"></span>
+							<br><br>
+						{{/if}}
+						{{if documentacioFisicaCodi == '1'}}
+							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
+							<br><br>
+						{{else documentacioFisicaCodi == '2'}}
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/><br><br>
+							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							<br><br>
+						{{else documentacioFisicaCodi == '3'}}
+							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
+							<br><br>
+						{{/if}}
+						{{if annexosEstatEsborrany > 0}}
+							<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
+							<br><br>
+						{{/if}}
 						{{if alerta}}
 							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
+							<br><br>
 						{{/if}}
 						{{if procesError != null}}
 							{{if procesEstat == 'ARXIU_PENDENT'}}

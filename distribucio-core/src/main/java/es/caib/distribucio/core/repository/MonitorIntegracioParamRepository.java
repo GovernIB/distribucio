@@ -26,7 +26,7 @@ public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorI
 			"where monParam.monitorIntegracio.id in " +
 			"( 	select mon.id " + 
 			"	from MonitorIntegracioEntity mon " +
-			"	where mon.data = :data )")
+			"	where mon.data < :data )")
 	public void deleteDataBefore(
 			@Param("data") Date data);
 	

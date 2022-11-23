@@ -55,6 +55,86 @@ button:focus[aria-pressed="false"] {
 	background-color: #efefef;
 	padding: 5px;
 }
+
+
+th, 
+td, 
+#link-comentaris span, 
+#div-btn-accions button span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+	font-size: 1.2rem;
+	width: 0%; 
+	/* width: fit-content; */
+} 
+
+#div-btn-accions button, 
+#link-comentaris {
+	white-space: normal;
+	word-wrap: break-word;
+	font-size: 1.5rem;
+	width: 100%; 
+}
+
+span.badge {
+	font-size: 1.2rem !important;
+	padding-right: 1.2rem !important;
+}
+
+span.fa-comments {
+	font-size: 2rem !important;
+	margin-right: 2rem
+}
+
+span.fa-cog {
+	margin: 4px 1.5rem 0 0; 
+}
+
+tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+	margin: 8px 0 0 2px; 
+}
+
+span.select2-container {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn, 
+button#nomesAmbEsborranysBtn, 
+button#mostrarInactivesBtn, 
+button#mostrarInactivesOrigenBtn {
+	width: 100% !important;
+}
+
+button#nomesAmbErrorsBtn span.fa-warning, 
+button#nomesAmbEsborranysBtn span.fa-warning, 
+button#mostrarInactivesBtn i, 
+button#mostrarInactivesOrigenBtn i{
+	position: relative !important;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-ban, 
+button#mostrarInactivesBtn i.fa-inbox,
+button#mostrarInactivesOrigenBtn i.fa-ban, 
+button#mostrarInactivesOrigenBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 2.5rem;
+	margin-left: -5px !important;
+}
+
+button#mostrarInactivesBtn i.fa-inbox,
+button#mostrarInactivesOrigenBtn i.fa-inbox {
+	position: absolute !important;
+	font-size: 1.5rem;
+	margin-left: -5px !important;
+}
+
+button#netejarFiltre, 
+button#filtrar {
+	width: 50%;
+}
+
 </style>
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
@@ -287,7 +367,7 @@ $(document).ready(function() {
 									optionMinimumResultsForSearch="0" 
 									optionTemplateFunction="formatSelectBustia" />
 					</div>
-					<div class="col-md-2">
+					<div class="col-md-2" style="padding-left: 0;">
 						<button id="mostrarInactivesOrigenBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
@@ -312,7 +392,7 @@ $(document).ready(function() {
 									optionMinimumResultsForSearch="0" 
 									optionTemplateFunction="formatSelectBustia" />
 					</div>
-					<div class="col-md-2">
+					<div class="col-md-2" style="padding-left: 0;">
 						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
@@ -320,16 +400,6 @@ $(document).ready(function() {
 							</span>
 						</button>
 						<dis:inputHidden name="mostrarInactives"/>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<div class="row">
-					<div class="col-md-10 pull-right">
-						<div class="pull-right">
-							<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-							<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -341,6 +411,12 @@ $(document).ready(function() {
 			<div class="col-md-2">
 				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
 			</div>	
+			<div class="col-md-3"></div>
+			<div class="col-md-3"></div>
+			<div class="col-md-2 d-flex">
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+			</div>
 		</div>
 	</form:form>
 	

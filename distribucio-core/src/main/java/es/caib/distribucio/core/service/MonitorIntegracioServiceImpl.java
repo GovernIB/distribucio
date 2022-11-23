@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -173,14 +174,14 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	@Override
 	public int esborrarDadesAntigues(Date data) {
 		logger.trace("Esborrant dades del monitor d'integració anteriors a : " + data);
-		int n = 0;
+		List<MonitorIntegracioEntity> toDeleted = new ArrayList<>();
 		if (data != null) {
-			n = monitorIntegracioRepository.countMonitorByDataBefore(data).size();
+			toDeleted = monitorIntegracioRepository.countMonitorByDataBefore(data);
 			monitorIntegracioParamRepository.deleteDataBefore(data);
 			monitorIntegracioParamRepository.flush();
 			monitorIntegracioRepository.deleteDataBefore(data);
 		}
-		return n;
+		return toDeleted.size();
 	}
 
 	@Transactional
