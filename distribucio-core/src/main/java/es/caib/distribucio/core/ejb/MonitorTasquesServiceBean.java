@@ -39,26 +39,6 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateEstat(String codi, MonitorTascaEstatEnum estat) {
-		delegate.updateEstat(codi, estat);
-	}
-
-	@Override
-	public void updateObservacions(String codi, MonitorTascaEstatEnum estat) {
-		delegate.updateObservacions(codi, estat);
-	}
-
-	@Override
-	public void updateDataInici(String codi) {
-		delegate.updateDataInici(codi);
-	}
-
-	@Override
-	public void updateDataFi(String codi, boolean iniciant) {
-		delegate.updateDataFi(codi, iniciant);
-	}
-
-	@Override
 	public List<MonitorTascaInfo> findAll() {
 		return delegate.findAll();
 	}

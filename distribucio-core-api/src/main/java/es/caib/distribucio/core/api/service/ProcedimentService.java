@@ -49,6 +49,4 @@ public interface ProcedimentService {
 	 */
 	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom);
 
-	public List<ProcedimentDto> findByNom(Long entitatId, String nom);
-
 }

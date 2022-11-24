@@ -48,10 +48,4 @@ public class ProcedimentServiceBean implements ProcedimentService {
 	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom) {
 		return delegate.findByNomOrCodiSia(entitatId, nom);
 	}
-
-	@Override
-	public List<ProcedimentDto> findByNom(Long entitatId, String nom) {
-		return delegate.findByNom(entitatId, nom);
-	}
-
 }

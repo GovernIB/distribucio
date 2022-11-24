@@ -42,7 +42,6 @@ public class DistribucioController {
 			HttpServletRequest request) {
 
 		if (RolHelper.isRolActualSuperusuari(request)) {
-			configService.reiniciarTasquesEnSegonPla();
 			return "redirect:integracio";
 		} else {
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);

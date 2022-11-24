@@ -44,31 +44,21 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 
 	}
 
-	@Override
-	public void updateEstat(String codi, MonitorTascaEstatEnum estat) {
+	private void updateEstat(String codi, MonitorTascaEstatEnum estat) {
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setEstat(estat);
 		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
 
 	}
 
-	@Override
-	public void updateObservacions(String codi, MonitorTascaEstatEnum estat) {
-		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
-		monitorTascaInfo.setObservacions("");
-
-	}
-
-	@Override
-	public void updateDataInici(String codi) {
+	private void updateDataInici(String codi) {
 		Date dataInici = updateData(0L);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setDataInici(dataInici);
 		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
 	}
 
-	@Override
-	public void updateDataFi(String codi, boolean iniciant) {
+	private void updateDataFi(String codi, boolean iniciant) {
 		Date dataFi = updateData(0L);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setDataFi(iniciant ? null : dataFi);

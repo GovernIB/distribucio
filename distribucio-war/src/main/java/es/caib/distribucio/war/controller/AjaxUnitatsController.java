@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 
@@ -59,10 +58,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		try {
 			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
@@ -81,10 +77,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		try {
 			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + e.getMessage());
 		}
 
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
@@ -104,10 +97,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		try {
 			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
@@ -127,10 +117,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		try {
 			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
@@ -167,10 +154,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 			if (query != null)
 				decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
@@ -189,10 +173,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		try {
 			decodedToUTF8 = new String(text.getBytes("ISO-8859-1"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-			String msgError = "No s'ha pogut consultar el text " + text;
-			logger.error(msgError);
-			throw new SistemaExternException(msgError);
+			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService

@@ -10,9 +10,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
@@ -56,8 +53,6 @@ public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPlug
 			return (List<UnitatOrganitzativa>)deserialize(
 					"/es/caib/distribucio/plugin/unitat/ArbreUnitatsCaib.ser");
 		} catch (Exception ex) {
-			logger.error("No s'han pogut consultar les unitats organitzatives via WS (" +
-					"pareCodi=" + pareCodi + ")", ex);
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
 					"pareCodi=" + pareCodi + ")",
@@ -117,8 +112,5 @@ public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPlug
 	public String getUsuariIntegracio() {
 		return "CaibMock";
 	}
-
-
-	private static final Logger logger = LoggerFactory.getLogger(UnitatsOrganitzativesPluginCaibMock.class);
 
 }

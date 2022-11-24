@@ -21,14 +21,10 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class BackofficeIntegracioTest {
-	// autofirma wih PADES
-	private static final String IDENTIFICADOR = "GOIBE4347/2022"; //"L11E1646737371605/2022"; //DES: "GOIBE4347/2022" 
-	private static final String CLAU_ACCESS = "dwWOGZgn0kTPVex5QNdsymYR8MwFv01arTjJIOodgQQ="; //"iqV8SiGk90e9sv2DqQfdCC0E4r//5M/WyG0K0fE19dg="; //DES: "dwWOGZgn0kTPVex5QNdsymYR8MwFv01arTjJIOodgQQ="
 	
-//	// autofirma wih CADES
-//	private static final String IDENTIFICADOR = "L11E1557470209883/2019";
-//	private static final String CLAU_ACCESS = "oj8hh9dnK7GojsCALPK1UfKibLbmJ64CMnpNfXXPdDo=";
-
+	private static final String IDENTIFICADOR = "GOIBE1666190094533/2022"; 
+	private static final String CLAU_ACCESS = "tVAlOof5XxL64l1hOeaAmMXyKxmIcNtPUmWqUSIC05A=";
+	
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
 

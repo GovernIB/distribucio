@@ -17,11 +17,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
@@ -188,27 +186,6 @@ public class RegistreHelper {
 	private RegistreHelper self;
     @Autowired
     private ApplicationContext applicationContext;
-
-    /** Objecte amb les anotacions que s'estan processant en un moment donat ver evitar processaments a la vegada. */
-    private Set<Long> processing = new HashSet<Long>();
-    
-    public boolean startProcessing(long registreId) {
-    	boolean ret = false;
-    	synchronized (this.processing) {
-        	if (!this.processing.contains(registreId)) {
-        		ret = true;
-        		this.processing.add(registreId);
-        	}
-		}
-    	return ret;
-    }
-    
-    public void finishProcessing(long registreId) {
-    	synchronized (this.processing) {
-        	this.processing.remove(registreId);
-    	}
-    }
-    
 
     @PostConstruct
     public void postContruct(){
@@ -648,7 +625,7 @@ public class RegistreHelper {
 	}
 	
 	
-	public void processarAnotacioPendentArxiuInThreadExecutor(String entitatCodi, Long registreId) {
+	public void processarAnotacioPendentArxiuInThreadExecutor(Long registreId) {
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(GuardarAnotacioPendentThread.class, "processarAnotacioPendentArxiu")).time();
 		logger.debug("Processant anotacio pendent de guardar a l'arxiu (registreId=" + registreId + ")");
@@ -657,7 +634,7 @@ public class RegistreHelper {
     	
     	Exception excepcio = null;
         try {
-			excepcio = processarAnotacioPendentArxiu(entitatCodi, registreId);
+			excepcio = processarAnotacioPendentArxiu(registreId);
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
@@ -686,7 +663,7 @@ public class RegistreHelper {
 	 * @param anotacioId
 	 * @return
 	 */
-	public Exception processarAnotacioPendentArxiu(String entitatCodi, Long anotacioId) {
+	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
 
 		if (TransactionSynchronizationManager.isActualTransactionActive()) {
 			logger.warn("La transacció actual està activa, es desactiva per poder tractar anotació i annexos per separat.");
@@ -694,10 +671,10 @@ public class RegistreHelper {
 		}
 		
 		// PROCESSAR ARXIU
-		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(entitatCodi, anotacioId);
+		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 
-			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(entitatCodi, anotacioId);
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(anotacioId);
 			boolean allRegistresWithSameNumeroSavedInArxiu = true;
 			if (distribucioRegistreAnotacio.getAnnexos() != null ) {
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
@@ -753,11 +730,10 @@ public class RegistreHelper {
 	 * @return
 	 */
 	public List<Exception> createRegistreAndAnnexosInArxiu(
-			String entitatCodi,
 			long anotacioId) {
 		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
-				self.getDistribucioRegistreAnotacio(entitatCodi, anotacioId);
+				self.getDistribucioRegistreAnotacio(anotacioId);
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		List<Exception> exceptions = new ArrayList<>();
@@ -2069,10 +2045,9 @@ public class RegistreHelper {
 	// Mètodes per cridar de forma transaccional amb self
 	
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(String entitatCodi, long registreId) {
+	public DistribucioRegistreAnotacio getDistribucioRegistreAnotacio(long registreId) {
 		
-		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
-		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(entitat.getId(), registreId);		
+		RegistreEntity registreEntity = registreRepository.findOneAmbBloqueig(registreId);		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = conversioTipusHelper.convertir(
 																	registreEntity, 
 																	DistribucioRegistreAnotacio.class);

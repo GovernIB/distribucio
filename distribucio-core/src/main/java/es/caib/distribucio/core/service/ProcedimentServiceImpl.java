@@ -244,17 +244,6 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProcedimentDto> findByNom(Long entitatId, String nom) {
-		return conversioTipusHelper.convertirList(
-				procedimentRepository.findByNom(
-						entitatId, 
-						nom == null,
-						nom != null ? nom : ""), 
-				ProcedimentDto.class);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
 	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String search) {
 		if (search == null || search.isEmpty()) {
 			return new ArrayList<>();

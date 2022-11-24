@@ -387,7 +387,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						firmesReconegudes);	
 				
 			} else {
-//				throw se;
 				throw new SistemaExternException(
 						integracioArxiuCodi,
 						errSistemaExtern,

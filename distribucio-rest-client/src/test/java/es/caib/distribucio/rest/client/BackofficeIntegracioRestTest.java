@@ -23,8 +23,8 @@ import es.caib.distribucio.rest.client.domini.Estat;
 public class BackofficeIntegracioRestTest {
 	
 	private static final String URL_BASE = "http://localhost:8080/distribucioapi/interna";
-	private static final String USER = "danielm";
-	private static final String PASS = "danielm";
+	private static final String USER = "admin";
+	private static final String PASS = "admin";
 
 	private static final String IDENTIFICADOR = "GOIBE1666190094533/2022";
 	private static final String CLAU_ACCESS = "tVAlOof5XxL64l1hOeaAmMXyKxmIcNtPUmWqUSIC05A=";
@@ -49,7 +49,7 @@ public class BackofficeIntegracioRestTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void canviEstat() throws DatatypeConfigurationException, IOException {
 
 		try {

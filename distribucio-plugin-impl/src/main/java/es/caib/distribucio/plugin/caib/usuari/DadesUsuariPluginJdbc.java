@@ -112,13 +112,11 @@ public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties i
 				if (ps != null) ps.close();
 			} catch (Exception ex) {
 				LOGGER.error("Error al tancar el PreparedStatement", ex);
-				throw new SistemaExternException("Error al tancar el PreparedStatement", ex);
 			}
 			try {
 				if (con != null) con.close();
 			} catch (Exception ex) {
 				LOGGER.error("Error al tancar la connexió", ex);
-				throw new SistemaExternException("Error al tancar la connexió",  ex);
 			}
 		}
 		return llistaUsuaris;

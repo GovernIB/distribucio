@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb.ws;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -13,8 +14,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
@@ -41,6 +40,7 @@ import es.caib.distribucio.core.service.ws.backoffice.BackofficeIntegracioWsServ
 		authMethod = "WSBASIC",
 		transportGuarantee = "NONE",
 		secureWSDLAccess = false)
+@RolesAllowed({"DIS_BACKWS"})
 @SecurityDomain("seycon")
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWsService {
@@ -61,12 +61,8 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-		
-		this.checkRole();
-		
 		return delegate.consulta(
 				id);
-		
 	}
 
 	@Override
@@ -78,17 +74,6 @@ public class BackofficeIntegracioWsServiceBean implements BackofficeIntegracioWs
 		usuariHelper.generarUsuariAutenticatEjb(
 				sessionContext,
 				true);
-
-		this.checkRole();
-		
 		delegate.canviEstat(id, estat, observacions);
 	}
-
-	private void checkRole() {
-		if (!usuariHelper.hasRole("DIS_BACKWS")) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			throw new RuntimeException("L'usuari " + (auth != null ? auth.getName() : "(null)") + " no té el rol requerit DIS_BACKWS.");
-		}		
-	}
-
 }

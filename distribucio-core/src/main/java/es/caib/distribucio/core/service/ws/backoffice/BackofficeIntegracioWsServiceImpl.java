@@ -48,10 +48,9 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	@Override
 	public AnotacioRegistreEntrada consulta(
 		AnotacioRegistreId id) {
-
+		
 		AnotacioRegistreEntrada anotacioRegistreEntrada;
 		String accioDescripcio = "Consulta d'anotació pendent";
-//		String usuariIntegracio = "Obtenir l'usuari integracio";
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		
@@ -172,16 +171,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 		logger.debug("");
 	}
 
-	private String getUsuariIntegracio() {
-//		String usuari;
-//		UsuariDto usuariDto =  aplicacioService.getUsuariActual();
-//		if (usuariDto != null) {
-//			usuari = usuariDto.getCodi();
-//		} else {
-//			usuari = "-";
-//		}
-//		return usuari;
-		
+	private String getUsuariIntegracio() {		
 		String usuari = null;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {

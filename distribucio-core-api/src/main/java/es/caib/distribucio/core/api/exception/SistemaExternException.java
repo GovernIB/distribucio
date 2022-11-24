@@ -46,8 +46,7 @@ public class SistemaExternException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "Error amb el sistema extern " + this.getSistemaExternCodi() + ": " + super.getMessage() 
-				 + "Torni a intentar-ho o reporteu l'error al vostre administrador. ";
+		return "Error amb el sistema extern " + this.getSistemaExternCodi() + ": " + super.getMessage();
 	}
 
 }

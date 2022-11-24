@@ -23,13 +23,6 @@ public interface MonitorTasquesService {
 							Date properaExecucio, 
 							String observacions);
 
-	public void updateEstat(String codi, MonitorTascaEstatEnum estat);
-
-	public void updateObservacions(String codi, MonitorTascaEstatEnum estat);
-
-	public void updateDataInici(String codi);
-
-	public void updateDataFi(String codi, boolean iniciant);
 
 	public void updateProperaExecucio(String codi, Long plusValue);
 
@@ -41,6 +34,5 @@ public interface MonitorTasquesService {
 
 	public void fi(String codiTasca);
 
-	public void error(String codiTasca);	
-
+	public void error(String codiTasca);
 }

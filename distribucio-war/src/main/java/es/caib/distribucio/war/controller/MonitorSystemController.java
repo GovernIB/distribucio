@@ -4,10 +4,8 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
 import es.caib.distribucio.core.api.monitor.MonitorTascaInfo;
 import es.caib.distribucio.core.api.service.MonitorTasquesService;
 import es.caib.distribucio.war.helper.MonitorHelper;
@@ -146,6 +145,7 @@ public class MonitorSystemController extends BaseController {
 		JSONArray identificadors = new JSONArray();
 		
 		List<MonitorTascaInfo> monitorTasques = monitortasquesService.findAll();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		for(MonitorTascaInfo monitorTasca : monitorTasques) {
 			identificadors.add(monitorTasca.getCodi());
 			
@@ -155,9 +155,7 @@ public class MonitorSystemController extends BaseController {
 			
 			String strDataInici = "-";
 			if (monitorTasca.getDataInici() != null) {
-				Date dataInici = monitorTasca.getDataInici();
-				DateFormat dateFormatInici = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				strDataInici = dateFormatInici.format(dataInici);
+				strDataInici = sdf.format(monitorTasca.getDataInici());
 			}
 			iniciExecucio.add(getMessage(request, "monitor.tasques.darrer.inici") + ": " + strDataInici);
 			
@@ -170,10 +168,9 @@ public class MonitorSystemController extends BaseController {
 			tempsExecucio.add(getMessage(request, "monitor.tasques.temps.execucio") + ": " + monitorTasca.getTempsExecucio());
 
 			String strProperaExecucio = "-";
-			if (monitorTasca.getProperaExecucio() != null) {
-				Date dataProperaExecucio = monitorTasca.getProperaExecucio();
-				DateFormat dateFormatProperaExecucio = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				strProperaExecucio = dateFormatProperaExecucio.format(dataProperaExecucio);
+			if ( ! MonitorTascaEstatEnum.EN_EXECUCIO.equals(monitorTasca.getEstat()) 
+					&& monitorTasca.getProperaExecucio() != null) {
+				strProperaExecucio = sdf.format(monitorTasca.getProperaExecucio());
 			}
 			properaExecucio.add(getMessage(request, "monitor.tasques.propera.execucio") + ": " + strProperaExecucio);
 			
