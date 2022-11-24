@@ -31,7 +31,7 @@ public interface MonitorTasquesService {
 
 	public void updateDataFi(String codi, boolean iniciant);
 
-	public void updateProperaExecucio(String codi, long plusValue);
+	public void updateProperaExecucio(String codi, Long plusValue);
 
 	public List<MonitorTascaInfo> findAll();
 

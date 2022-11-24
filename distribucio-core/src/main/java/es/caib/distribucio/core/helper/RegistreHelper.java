@@ -1288,6 +1288,9 @@ public class RegistreHelper {
 		}
 		
 		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
+		if (backofficeDesti == null) {
+			return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + pendentsByRegla.get(0).getRegla().getNom());
+		}
 		accioParams.put("Backoffice", backofficeDesti.getCodi());
 		List<AnotacioRegistreId> ids = new ArrayList<>();
 		for (RegistreEntity pendent : pendentsByRegla) {

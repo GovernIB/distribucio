@@ -61,7 +61,7 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 
 	@Override
 	public void updateDataInici(String codi) {
-		Date dataInici = updateData(0);
+		Date dataInici = updateData(0L);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setDataInici(dataInici);
 		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
@@ -69,14 +69,14 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 
 	@Override
 	public void updateDataFi(String codi, boolean iniciant) {
-		Date dataFi = updateData(0);
+		Date dataFi = updateData(0L);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setDataFi(iniciant ? null : dataFi);
 		MonitorTasquesServiceImpl.tasques.put(codi, monitorTascaInfo);
 	}
 
 	@Override
-	public void updateProperaExecucio(String codi, long plusValue) {
+	public void updateProperaExecucio(String codi, Long plusValue) {
 		Date dataProperaExecucio = updateData(plusValue);
 		MonitorTascaInfo monitorTascaInfo = MonitorTasquesServiceImpl.tasques.get(codi);
 		monitorTascaInfo.setProperaExecucio(dataProperaExecucio);
@@ -84,9 +84,9 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	}
 	
 
-	private Date updateData(long plusValue) {
-		Date data = new Date(System.currentTimeMillis() + plusValue);
-		return data;
+	private Date updateData(Long plusValue) {
+		
+		return plusValue != null ? new Date(System.currentTimeMillis() + plusValue) : null;
 	}
 
 	@Override
@@ -108,7 +108,8 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 	public void inici(String codiTasca) {
     	this.updateDataInici(codiTasca);
     	this.updateDataFi(codiTasca, true);
-    	this.updateEstat(codiTasca, MonitorTascaEstatEnum.EN_EXECUCIO);		
+    	this.updateEstat(codiTasca, MonitorTascaEstatEnum.EN_EXECUCIO);	
+    	this.updateProperaExecucio(codiTasca, null);
 	}
 
 	@Override

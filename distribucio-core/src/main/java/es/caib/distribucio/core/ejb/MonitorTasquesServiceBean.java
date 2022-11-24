@@ -69,7 +69,7 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateProperaExecucio(String codi, long plusValue) {
+	public void updateProperaExecucio(String codi, Long plusValue) {
 		delegate.updateProperaExecucio(codi, plusValue);		
 	}
 
