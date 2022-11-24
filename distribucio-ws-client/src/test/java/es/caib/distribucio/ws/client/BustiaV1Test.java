@@ -43,18 +43,18 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV | A04019281 DES
-	private static final String UNITAT_ADM_CODI = "A04026923"; //A04026923 DEV | A04032369 DES
+	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 DES
+	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 DES
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "1234"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova backoffice Helium NO integrat amb l'Arxiu " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -67,15 +67,15 @@ public class BustiaV1Test {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
 	
 
-	private static final int N_ANOTACIONS = 1000;
-	private static final int N_ANNEXOS = 0;
+	private static final int N_ANOTACIONS = 1;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
 	private static final boolean TEST_ANNEX_PDF = true;
-	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
+	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
 	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
@@ -148,7 +148,7 @@ public class BustiaV1Test {
 		RegistreAnotacio anotacio; 
 		int nAnotacions = N_ANOTACIONS;
 		for (int i=1; i<=nAnotacions; i++) {
-			System.out.println("Enviant l'anotació " + i + " de " + N_ANOTACIONS);
+			System.out.println("Enviant l'anotació " + i);
 			anotacio = new RegistreAnotacio(); 
 			anotacio.setTipusES(REGISTRE_TIPUS);
 			anotacio.setAplicacioCodi(APLICACIO_CODI);
@@ -165,7 +165,7 @@ public class BustiaV1Test {
 	        //calendar.setTime(new SimpleDateFormat("dd-MM-yyyy").parse("29-11-2021"));
 	        calendar.setTime(new Date());
 	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
-	        anotacio.setExtracte(EXTRACTE + " " + i + " de " + N_ANOTACIONS);
+	        anotacio.setExtracte(EXTRACTE + " " + i);
 	        anotacio.setEntitatCodi(ENTITAT_CODI);
 	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
 	        anotacio.setOficinaCodi(OFICINA_CODI);
@@ -354,47 +354,6 @@ public class BustiaV1Test {
 		        }
 		        anotacio.getAnnexos().add(annex);
 		    }
-	        
-	        // ANE01.pdf
-	        annex = crearAnnex(
-	        		"Annex ANE01",
-	        		"ANE01.pdf",				        		
-	        		"application/pdf",
-	        		null,
-	        		getContingutAltre("ANE01.pdf"),
-	        		"0",
-	        		"EE01",
-	        		"TD01",
-	        		"01",
-	        		new ArrayList<Firma>());
-	        anotacio.getAnnexos().add(annex);
-
-	        // Document firmat
-	        firmes= new ArrayList<Firma>();
-	        
-        	firmes = new ArrayList<Firma>();
-            Firma firma = new Firma();
-            firma.setFitxerNom("Document firmat.pdf");
-            firma.setTipusMime("application/pdf");
-            firma.setContingut(
-            		IOUtils.toByteArray(getContingutAltre("Document firmat.pdf")));
-//            firma.setContingut(null);
-            firma.setTipus("TF06");
-            firma.setPerfil("EPES");
-            firmes.add(firma);
-            annex = crearAnnex(
-	        		"Document firmat",
-	        		"Document firmat.pdf",
-	        		"application/pdf",
-	        		null,
-	        		null,
-	        		"0",
-	        		"EE01",
-	        		"TD01",
-	        		"01",
-	        		firmes);
-	        anotacio.getAnnexos().add(annex);
-            
 	        if (TEST_ANNEX_DOC_TECNIC) {
 	        	// FORMULARIO
 		        anotacio.getAnnexos().add(		        

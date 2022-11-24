@@ -320,3 +320,15 @@ table.dataTable tr.datatable-dades-carregant {
 .dropdown-left-medium {
 	margin-left:-5rem;
 }
+
+.justify-content-end {
+	justify-content: end;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.justify-content-start {
+	justify-content: start;
+}
