@@ -190,12 +190,13 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		logger.debug("Esborrant dades del monitor d'integració per la integració amb codi : " + codi);
 		int n = 0;
 		if (codi != null) {
+			Date ara = new Date();
 			// Total
-			n = monitorIntegracioRepository.findByCodi(codi).size();
+			n = monitorIntegracioRepository.countByCodi(codi).intValue();
 			// Paràmetres
-			monitorIntegracioParamRepository.deleteByMonitorIntegracioCodi(codi);
+			monitorIntegracioParamRepository.deleteByMonitorIntegracioCodiAndData(codi, ara);
 			// Entrades
-			monitorIntegracioRepository.deleteByCodiMonitor(codi);
+			monitorIntegracioRepository.deleteByCodiMonitorAndData(codi, ara);
 		}
 		return n;
 	}

@@ -22,8 +22,8 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  */
 public class BackofficeIntegracioTest {
 	
-	private static final String IDENTIFICADOR = "GOIBE1666190094533/2022"; 
-	private static final String CLAU_ACCESS = "tVAlOof5XxL64l1hOeaAmMXyKxmIcNtPUmWqUSIC05A=";
+	private static final String IDENTIFICADOR = "GOIBE1669628521530/2022"; 
+	private static final String CLAU_ACCESS = "IsCo71eGcWiq14eEP3USG8GD7pt0OYusdLP1DB7EIAM=";
 	
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
@@ -71,9 +71,9 @@ public class BackofficeIntegracioTest {
 	
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"http://localhost:8080/distribucio/ws/backofficeIntegracio",
-				"admin",				
-				"admin");				
+				"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
+				"danielm",				
+				"danielm");				
 	}	
 
 }
