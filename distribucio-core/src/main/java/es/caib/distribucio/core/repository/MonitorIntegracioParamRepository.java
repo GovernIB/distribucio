@@ -29,15 +29,7 @@ public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorI
 			"	where mon.data < :data )")
 	public void deleteDataBefore(
 			@Param("data") Date data);
-	
-	
-	/** Esborra les dades filtrant per l'id del monitor d'integració */
-	@Modifying
-	@Query("delete from MonitorIntegracioParamEntity monParam " +
-			"where monParam.monitorIntegracio.id = :idMonitorIntegracio")
-	public void deleteByIdMonitorIntegracio(
-			@Param("idMonitorIntegracio") long idMonitorIntegracio);
-			
+				
 				
 	/** Esborra els paràmetres per codi el monitor. */
 	@Modifying
@@ -45,8 +37,10 @@ public interface MonitorIntegracioParamRepository extends JpaRepository<MonitorI
 			"where monParam.monitorIntegracio.id in " +
 			"( 	select mon.id " + 
 			"	from MonitorIntegracioEntity mon " +
-			"	where mon.codi = :codi )")
-	public void deleteByMonitorIntegracioCodi(
-			@Param("codi") String codi);
+			"	where mon.codi = :codi" +
+			"         and mon.data < :data )")
+	public void deleteByMonitorIntegracioCodiAndData(
+			@Param("codi") String codi,
+			@Param("data") Date data);
 
 }
