@@ -170,6 +170,10 @@ button#filtrar {
 	width: 50%;
 }
 
+.datepicker td, 
+.datepicker th {
+	width: 4rem !important;
+}
 
 </style>
 <script>
@@ -207,6 +211,7 @@ function formatSelectTipusDocumentacio(item) {
 
 $(document).ready(function() {
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
+	$("#contingutBusties").addClass('active');
 	$("#canviVistaReenvios").removeClass('active');
 	
 	$('#netejarFiltre').click(function(e) {

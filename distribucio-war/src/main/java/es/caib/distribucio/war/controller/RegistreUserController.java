@@ -1332,7 +1332,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registres", 
 				registreService.findMultiple(
 						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS),
 						false));
 	}
 	

@@ -135,6 +135,11 @@ button#filtrar {
 	width: 50%;
 }
 
+.datepicker td, 
+.datepicker th {
+	width: 4rem !important;
+}
+
 </style>
 <script>
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
@@ -150,6 +155,7 @@ function formatSelectBustia(item) {
 $(document).ready(function() {
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	$("#canviVistaReenvios").addClass('active');
+	$("#contingutBusties").removeClass('active');
 	
 	$('#netejarFiltre').click(function(e) {
 		$('#bustia').val('');
