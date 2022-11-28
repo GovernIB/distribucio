@@ -87,14 +87,15 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 	/** Esborra les dades filtrant pel codi */
 	@Modifying
 	@Query("delete from MonitorIntegracioEntity mon " +
-			"where mon.codi = :codi")
-	public void deleteByCodiMonitor(
-			@Param("codi") String codi);
-
-	/** Consulta les dades antigues */
-	@Query(	"from MonitorIntegracioEntity mon " +
-			"where mon.data < :data ")
-	public List<MonitorIntegracioEntity> getDadesAntigues(
+			"where mon.codi = :codi " +
+			"     and mon.data < :data")
+	public void deleteByCodiMonitorAndData(
+			@Param("codi") String codi,
 			@Param("data") Date data);
 
+	@Query("select count(mon) " +
+			"from MonitorIntegracioEntity mon " +
+			"where mon.codi = :codi ")
+	public Long countByCodi(
+			@Param("codi") String codi);
 }
