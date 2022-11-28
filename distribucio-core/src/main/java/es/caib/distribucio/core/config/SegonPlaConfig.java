@@ -447,18 +447,25 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
 						
-						Long propertyValue = null;
+//						Long propertyValue = null;
+						String propertyValue = null;
 						try {
-							propertyValue = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments");
+//							propertyValue = configHelper.getAsLong("es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments");
+							propertyValue = configHelper.getConfig("es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments");
 						}catch (Exception e) {
 							logger.warn("Error consultant la propietat per la propera execució per actualitzar la taula de procediments");
 						}
 						if (propertyValue == null) {
-							propertyValue = 25L;
-						}
-						PeriodicTrigger trigger = new PeriodicTrigger(propertyValue, TimeUnit.DAYS);
-						Date nextExecution = trigger.nextExecutionTime(triggerContext);
 
+							propertyValue = "0 30 15 * * 5";
+//							propertyValue = 25L;
+						}
+//						PeriodicTrigger trigger = new PeriodicTrigger(propertyValue, TimeUnit.DAYS);
+//						Date nextExecution = trigger.nextExecutionTime(triggerContext);
+//                        Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+
+                    	CronTrigger trigger = new CronTrigger(propertyValue);
+                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
         				monitorTasquesService.updateProperaExecucio(codiActualitzarProcediments, longNextExecution);
 
