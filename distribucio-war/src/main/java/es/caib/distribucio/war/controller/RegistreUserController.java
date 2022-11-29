@@ -831,31 +831,10 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("registreEnviarViaEmailCommand", command);
 		model.addAttribute("isVistaMoviments", isVistaMoviments);
 		
-		List<RegistreDto> registres;
-		if (isVistaMoviments) {
-			Set<Long> seleccio = new HashSet<Long>();
-//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
-			@SuppressWarnings("unchecked")
-			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
-					request,
-					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
-			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
-				for (String idVistaMoviment: seleccioMoviments) {
-					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
-				}
-			}
-			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			registres = registreService.findMultiple(
-					entitatActual.getId(),
-					new ArrayList<Long>(seleccio),
-					false);
 
-		} else {
-			registres = registreService.findMultiple(
-							getEntitatActual(request).getId(),
-							this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-							false);
-		}
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		List<RegistreDto> registres = obtenirRegistresSeleccioMoviments(request, entitatActual, isVistaMoviments);
+		
 		model.addAttribute("registres", registres);
 		return "registreViaEmail";
 	}
@@ -1272,7 +1251,7 @@ public class RegistreUserController extends BaseUserController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-			omplirModelPerReenviarMultiple(request, entitatActual, model);
+			omplirModelPerReenviarMultiple(request, entitatActual, model, isVistaMoviments);
 			ContingutReenviarCommand command = new ContingutReenviarCommand();
 			model.addAttribute(command);
 		} catch (Exception e) {
@@ -1297,7 +1276,8 @@ public class RegistreUserController extends BaseUserController {
 	private void omplirModelPerReenviarMultiple(
 			HttpServletRequest request, 
 			EntitatDto entitatActual,
-			Model model) {
+			Model model, 
+			boolean isVistaMoviments) {
 
 		List<BustiaDto> busties = bustiaService.findActivesAmbEntitat(
 				entitatActual.getId());
@@ -1329,13 +1309,44 @@ public class RegistreUserController extends BaseUserController {
 						true,
 						false,
 						true));
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						entitatActual.getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS),
-						false));
+		
+		List<RegistreDto> registres = obtenirRegistresSeleccioMoviments(request, entitatActual, isVistaMoviments);
+		
+		model.addAttribute("registres", registres);
+		
 	}
 	
+	private List<RegistreDto> obtenirRegistresSeleccioMoviments(
+			HttpServletRequest request, 
+			EntitatDto entitatActual,
+			boolean isVistaMoviments) {
+		List<RegistreDto> registres = new ArrayList<>();
+		if (isVistaMoviments) {
+			Set<Long> seleccio = new HashSet<Long>();
+//			## ID = ID_REGISTRE + ID_DESTI (extreure registre)
+			@SuppressWarnings("unchecked")
+			Set<String> seleccioMoviments = (Set<String>) RequestSessionHelper.obtenirObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS);
+			if (seleccioMoviments != null && !seleccioMoviments.isEmpty()) {
+				for (String idVistaMoviment: seleccioMoviments) {
+					seleccio.add(Long.valueOf(idVistaMoviment.split("_")[0]));
+				}
+			}
+			registres = registreService.findMultiple(
+					entitatActual.getId(),
+					new ArrayList<Long>(seleccio),
+					false);
+
+		} else {
+			registres = registreService.findMultiple(
+							getEntitatActual(request).getId(),
+							this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+							false);
+		}
+		return registres;
+	}
+
 	@ResponseBody
 	@RequestMapping(value = "/registreReenviarAjax/{registreId}", method = RequestMethod.POST)
 	public AjaxFormResponse registreReenviarAjaxPost(

@@ -50,6 +50,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.sun.jersey.api.client.Client;
@@ -1324,28 +1325,24 @@ public class RegistreHelper {
 				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			
-		
-			logger.trace(">>> Abans de crear backoffice WS");
+			logger.trace(">>> Abans de generar backoffice WS " + backofficeDesti.getCodi());
 			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
-				for (AnotacioRegistreId anotacioRegistreId : ids) {
-					String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
-					Client jerseyClient = generarClient();
+				String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
+				Client jerseyClient = generarClient();
+				if (usuari != null && !usuari.trim().isEmpty()) {
 					autenticarClient(
 							jerseyClient, 
 							backofficeDesti.getUrl(), 
 							urlAmbMetode, 
-							backofficeDesti.getUsuari(), 
-							backofficeDesti.getContrasenya());
-					String identificador = anotacioRegistreId.getIndetificador();
-					String clauAcces = anotacioRegistreId.getClauAcces();
-					Form form = new Form();
-					form.putSingle("identificador", identificador);
-					form.putSingle("clauAcces", clauAcces);
-					jerseyClient
-							.resource(urlAmbMetode)
-							.type("application/json")
-							.post(form);
+							usuari, 
+							contrasenya);
 				}
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(ids);
+				jerseyClient
+						.resource(urlAmbMetode)
+						.type("application/json")
+						.post(json);
 			}else {
 				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 						getClass().getResource(
