@@ -137,7 +137,7 @@
 				                        	'<input class="ml-6" id="chRefrescarTasques" type="checkbox" name="refrescarTasquesCadaSegon">' +
 					                        '<label class="ml-1" for="refrescarTasquesCadaSegon">' + 					                        					                        
 					                        '<spring:message code="monitor.tasques.check.refresh"/></label>' +   
-					                        '<span id="span-refresh" class="ml-2 fa fa-refresh" style="visibylity-hidden"></span>' + 
+					                        '<span id="span-refresh-tasques" class="ml-2 fa fa-refresh" style="visibylity-hidden"></span>' + 
 		       		                    '</div>'+  
 		    		                    '</div>'+
 		                        
@@ -169,8 +169,8 @@
 		
 		
 		function carregaTasques() {
-			$("#span-refresh").addClass('fa-circle-o-notch');
-			$("#span-refresh").addClass('fa-spin');
+			$("#span-refresh-tasques").addClass('fa-circle-o-notch');
+			$("#span-refresh-tasques").addClass('fa-spin');
 		    $.ajax({
 		        url: "monitor/tasques",
 		        dataType: 'json',
@@ -185,8 +185,8 @@
 		    })
 	        .always(function() {
 	            $("body").removeClass("loading");
-				$("#span-refresh").removeClass('fa-circle-o-notch');
-				$("#span-refresh").removeClass('fa-spin');
+				$("#span-refresh-tasques").removeClass('fa-circle-o-notch');
+				$("#span-refresh-tasques").removeClass('fa-spin');
 	        });
 		}
 		

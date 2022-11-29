@@ -81,6 +81,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	if (value == null) 
                     		value = new Long("60000");
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        trigger.setInitialDelay(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
 
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -123,6 +124,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                    	trigger.setInitialDelay(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -162,7 +164,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	if (value == null) 
                     		value = new Long("60000");
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-                        Date nextExecution = trigger.nextExecutionTime(triggerContext);
+                    	trigger.setInitialDelay(value);                        
+                    	Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
         				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, longNextExecution);
@@ -203,6 +206,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                    	trigger.setInitialDelay(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -244,6 +248,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     		value = new Long("60000");
                     	
                     	PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                    	trigger.setInitialDelay(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -286,7 +291,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							value = "* * * * * *";
                     	
                     	CronTrigger trigger = new CronTrigger(value);
-
+                    	
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
                         
@@ -373,6 +378,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	}
                     	
                         PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+                        trigger.setInitialDelay(value);
                         Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -415,6 +421,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							value = new Long("60000");
 						}
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+						trigger.setInitialDelay(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -456,7 +463,6 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							logger.warn("Error consultant la propietat per la propera execució per actualitzar la taula de procediments");
 						}
 						if (propertyValue == null) {
-
 							propertyValue = "0 30 15 * * 5";
 //							propertyValue = 25L;
 						}
