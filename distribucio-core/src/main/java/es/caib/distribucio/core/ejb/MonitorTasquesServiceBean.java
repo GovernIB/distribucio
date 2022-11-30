@@ -88,4 +88,9 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 		delegate.error(codiTasca);
 	}
 
+	@Override
+	public void reiniciarTasquesEnSegonPla() {
+		delegate.reiniciarTasquesEnSegonPla();
+	}
+
 }

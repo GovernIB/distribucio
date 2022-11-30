@@ -126,8 +126,8 @@ let guardarPropietat = (configKey, natejar) => {
 };
 
 $(document).ready(function() { 
-	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize?paginaActual=config'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
-	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='<c:url value='/config/reiniciarTasquesSegonPla?paginaActual=config'/>' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='<c:url value='/config/reiniciarTasquesSegonPla'/>' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 
 	$('#btn-reiniciarTasques').click(function(e) {
 		$("#btn-reiniciarTasques #span-refresh-reiniciar-tasques").addClass('fa-circle-o-notch');

@@ -55,13 +55,9 @@
 <script>
 
 $(document).ready(function() {
-	var location = window.location.href;
-	const locationSplit = location.split("distribucio/");
-	urlSynchronize = '<c:url value="/config/synchronize?paginaActual=' + locationSplit[1] + '"/>';
-	urlReiniciarTasques = '<c:url value="/config/reiniciarTasquesSegonPla?paginaActual=' + locationSplit[1] + '"/>';
 	
-	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='" + urlSynchronize + "' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
-	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='" + urlReiniciarTasques + "' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='<c:url value='/config/reiniciarTasquesSegonPla'/>' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 	$("#header h2").append(" - ${entitatDto.nom}");
 
 	$('#btn-reiniciarTasques').click(function(e) {

@@ -27,6 +27,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.core.api.service.MonitorTasquesService;
 import es.caib.distribucio.war.command.ConfigCommand;
 import es.caib.distribucio.war.helper.ExceptionHelper;
 import es.caib.distribucio.war.helper.JsonResponse;
@@ -48,6 +49,8 @@ public class ConfigController extends BaseUserController{
     private ConfigService configService;
     @Autowired
     private EntitatService entitatService;
+    @Autowired
+    private MonitorTasquesService monitorTasquesService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(
@@ -171,19 +174,19 @@ public class ConfigController extends BaseUserController{
     @RequestMapping(value="/reiniciarTasquesSegonPla", method = RequestMethod.GET)
     public String reiniciarTasquesSegonPla(
     		HttpServletRequest request, 
-    		Model model, 
-    		@RequestParam("paginaActual") String paginaActual) {
+    		Model model) {
     	
     	try {
+    		monitorTasquesService.reiniciarTasquesEnSegonPla();
     		configService.reiniciarTasquesEnSegonPla();
     		return getAjaxControllerReturnValueSuccess(
     				request,
-    				"redirect:../" + paginaActual,
+    				"redirect:" + request.getHeader("referer"),
     				"config.reiniciar.tasques.segon.pla.ok");
     	}catch(Exception e) {
     		return getAjaxControllerReturnValueError(
     				request,
-    				"redirect:../" + paginaActual,
+    				"redirect:" + request.getHeader("referer"),
     				"config.reiniciar.tasques.segon.pla.error", 
     				new Object[] {e.getMessage()});    		
     	}

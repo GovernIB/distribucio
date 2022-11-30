@@ -123,6 +123,15 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 		this.updateEstat(codiTasca, MonitorTascaEstatEnum.ERROR);
 		this.updateDataFi(codiTasca, false);
 	}
+
+	@Override
+	public void reiniciarTasquesEnSegonPla() {
+		List<MonitorTascaInfo> tasques = this.findAll();
+		for (MonitorTascaInfo tasca : tasques) {
+			this.updateEstat(tasca.getCodi(), MonitorTascaEstatEnum.EN_ESPERA);
+		}
+		
+	}
 	
 	
 		

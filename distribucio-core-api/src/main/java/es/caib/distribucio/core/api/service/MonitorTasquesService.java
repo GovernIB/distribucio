@@ -41,6 +41,12 @@ public interface MonitorTasquesService {
 
 	public void fi(String codiTasca);
 
-	public void error(String codiTasca);	
+	public void error(String codiTasca);
+
+	/** Mètode per posar totes les tasques en espera abans de reiniciar les tasques des de la 
+	 * configuració dels paràmetres i la configuracío.
+	 * 
+	 */
+	public void reiniciarTasquesEnSegonPla();	
 
 }
