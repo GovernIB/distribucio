@@ -611,6 +611,7 @@ CREATE TABLE DIS_PROCEDIMENT
   CODISIA					character varying(64),
   ID_UNITAT_ORGANITZATIVA	BIGSERIAL,
   ENTITAT					BIGSERIAL,
+  ESTAT                     character varying(20) default 'VIGENT' NOT NULL,
   CREATEDBY_CODI       		character varying(64),
   CREATEDDATE          		timestamp without time zone,
   LASTMODIFIEDBY_CODI  		character varying(64),

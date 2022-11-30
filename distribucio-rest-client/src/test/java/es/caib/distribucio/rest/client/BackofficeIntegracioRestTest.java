@@ -22,11 +22,9 @@ import es.caib.distribucio.rest.client.domini.Estat;
  */
 public class BackofficeIntegracioRestTest {
 	
-	private static final String URL_BASE = "http://localhost:8080/distribucioapi/interna";
-//	private static final String USER = "$helium_dist";
-//	private static final String PASS = "helium_dist";
-	private static final String USER = "danielm";
-	private static final String PASS = "danielm";
+	private static final String URL_BASE = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String USER = "admin";
+	private static final String PASS = "admin";
 
 	private static final String IDENTIFICADOR = "GOIBE1669628521530/2022";
 	private static final String CLAU_ACCESS = "IsCo71eGcWiq14eEP3USG8GD7pt0OYusdLP1DB7EIAM=";
@@ -71,6 +69,32 @@ public class BackofficeIntegracioRestTest {
 		}
 	}
 
+	@Test
+	public void consulta_i_canviEstat() throws DatatypeConfigurationException, IOException {
+
+		try {
+			BackofficeIntegracioRestClient client = getClientRest();
+			
+			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
+
+			// Consulta
+			AnotacioRegistreEntrada response = client.consulta(anotacioRegistreId);
+			System.out.println("Test: " + response);
+			
+			// Canvi estat
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail();
+		}
+	}
+
+	
 	private BackofficeIntegracioRestClient getClientRest() {
 		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS);
 	}

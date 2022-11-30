@@ -18,6 +18,8 @@ Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SC
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_EMAILS_AGRUPATS','SCHEDULLED','19','Tasca periòdica de enviar emails agrupats');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_MON_INT','SCHEDULLED','20','Tasca periòdica d''esborrat de dades antigues del Monitor d''Integracions');
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_BACKOFFICE_ERRORS', 'SCHEDULLED', '21', 'Tasca periòdica de reintentar anotacions processades amb errors al backoffice');
+Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_PROCEDIMENT', 'SCHEDULLED', '22', 'Tasca periòdica per actualitzar la taula de procediments');
+
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
@@ -117,6 +119,11 @@ Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PRO
 Insert into DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE) values ('es.caib.distribucio.backoffice.reintentar.processament.max.reintents', null, 'Nombre màxim de reintents per reintentar el processament al backoffice', 'SCHEDULLED_BACKOFFICE_ERRORS', '2', 'false', 'INT', null, 'false', null, null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.monitor.integracio.errors.temps','48','Indica el temps que es tindrà en compte per mostrar el número d''errors (per defecte 48h.)','GENERAL','15',false,'INT',null, false, null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,CONFIGURABLE,ENTITAT_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tasca.guardar.annexos.com.esborrany.si.perfils.o.tipus.no.existeix.al.caib',false,'Guardar els annexos com a esborranys quan els tipus i perfils de firma no estàn contemplades a l''Arxiu CAIB','SCHEDULLED_ARXIU','6',false,'BOOL',null,false,null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments',null,'Especificar l''expressió ''cron'' indicant l''interval de temps de les actualitzacions dels procediments en segon pla. Per defecte s''aplicarà el cron corresponent per actualitzar cada divendres a les 15:30h','SCHEDULLED_PROCEDIMENT','7',false,'TEXT',NULL,false,null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plantilla.informe.trasabilitat.ca',null,'Ruta plantilla informe de traçabilitat en català','GENERAL','16',false,'TEXT',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plantilla.informe.trasabilitat.es',null,'Ruta plantilla informe de traçabilitat en castellà','GENERAL','17',false,'TEXT',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plantilla.historic.ca',null,'Ruta plantilla històric en català','GENERAL','18',false,'TEXT',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plantilla.historic.es',null,'Ruta plantilla històric en castellà','GENERAL','19',false,'TEXT',null,null);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 
