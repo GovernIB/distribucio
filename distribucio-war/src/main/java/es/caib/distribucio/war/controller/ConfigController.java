@@ -147,21 +147,22 @@ public class ConfigController extends BaseUserController{
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
     public String synchronize(
             HttpServletRequest request,
-            Model model) {
+            Model model, 
+            @RequestParam("paginaActual") String paginaActual) {
     	
     	try {
 			configService.synchronize();
 			
 	        return getModalControllerReturnValueSuccess(
 	                request,
-	                "redirect:.",
+	                "redirect:../" + paginaActual,
 	                "config.controller.synchronize.ok");
 			
 		} catch (Exception e) {
 			logger.error("Error al sincronitzar properties", e);
 	        return getModalControllerReturnValueErrorNoKey(
 	                request,
-	                "redirect:.",
+	                "redirect:../" + paginaActual,
 	                getMessage(request,"config.controller.synchronize.error") + ": " + ExceptionHelper.getRootCauseOrItself(e).getMessage());
 		}
 
@@ -171,7 +172,7 @@ public class ConfigController extends BaseUserController{
     public String reiniciarTasquesSegonPla(
     		HttpServletRequest request, 
     		Model model, 
-    		@RequestParam("currentPage") String paginaActual) {
+    		@RequestParam("paginaActual") String paginaActual) {
     	
     	try {
     		configService.reiniciarTasquesEnSegonPla();
