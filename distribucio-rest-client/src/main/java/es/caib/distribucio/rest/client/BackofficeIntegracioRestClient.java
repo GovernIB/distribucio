@@ -15,6 +15,7 @@ import es.caib.distribucio.rest.client.domini.AnotacioRegistreId;
 import es.caib.distribucio.rest.client.domini.Estat;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ public class BackofficeIntegracioRestClient {
     protected Client generarClient(String urlAmbMetode) throws Exception {
     	if (this.jerseyClient == null) {
     		this.jerseyClient = generarClient();
+    	} else {
+    		return this.jerseyClient;
     	}
     	if (username != null) {
             autenticarClient(
@@ -88,7 +91,13 @@ public class BackofficeIntegracioRestClient {
                     @Override
                     public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
                         if (cookies != null) {
-                            request.getHeaders().put("Cookie", cookies);
+                        	for (Object cookie : cookies) {
+                        		NewCookie newCookie = (NewCookie) cookie;
+                        		if (!newCookie.getName().equals("JSESSIONID")) {
+                        			request.getHeaders().add("Cookie", newCookie);
+                        		}
+                        	}
+                            
                         }
                         ClientResponse response = getNext().handle(request);
                         if (response.getCookies() != null) {
