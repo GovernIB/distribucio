@@ -1,5 +1,12 @@
 package es.caib.distribucio.rest.client;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.UriBuilder;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
@@ -10,15 +17,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.representation.Form;
+
 import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
 import es.caib.distribucio.rest.client.domini.AnotacioRegistreId;
 import es.caib.distribucio.rest.client.domini.Estat;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 
 @Slf4j
 public class BackofficeIntegracioRestClient {
@@ -81,30 +84,39 @@ public class BackofficeIntegracioRestClient {
         return this.jerseyClient;
     }
 
+    private static final String SESSION_COOKIE_NAME = "JSESSIONID";
+    
     protected Client generarClient() {
         this.jerseyClient = Client.create();
         jerseyClient.setConnectTimeout(connecTimeout);
         jerseyClient.setReadTimeout(readTimeout);
         jerseyClient.addFilter(
                 new ClientFilter() {
-                    private ArrayList<Object> cookies;
+                    private List<Object> cookies  = new ArrayList<Object>();
                     @Override
                     public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
-                        if (cookies != null) {
-                        	for (Object cookie : cookies) {
-                        		NewCookie newCookie = (NewCookie) cookie;
-                        		if (!newCookie.getName().equals("JSESSIONID")) {
-                        			request.getHeaders().add("Cookie", newCookie);
+
+                    	synchronized(cookies) {
+                            if (!cookies.isEmpty()) {
+                                request.getHeaders().put("Cookie", cookies);
+                            }
+                    	}
+                        
+                    	ClientResponse response = getNext().handle(request);
+                        
+                        if (response.getCookies() != null) {
+                        	List<Object> novesCookies = new ArrayList<>();
+                        	for (Object cookie : response.getCookies()) {
+                        		if (! SESSION_COOKIE_NAME.equals( ((NewCookie) cookie).getName()) ) {
+                        			novesCookies.add(cookie);
                         		}
                         	}
-                            
-                        }
-                        ClientResponse response = getNext().handle(request);
-                        if (response.getCookies() != null) {
-                            if (cookies == null) {
-                                cookies = new ArrayList<Object>();
-                            }
-                            cookies.addAll(response.getCookies());
+                        	if (!novesCookies.isEmpty()) {
+                            	synchronized(cookies) {
+                            		cookies.clear();
+                            		cookies.addAll(novesCookies);
+                            	}
+                        	}
                         }
                         return response;
                     }
@@ -168,44 +180,35 @@ public class BackofficeIntegracioRestClient {
     // MÈTODES
     // ////////////////////////////////////////////////
 
-    public AnotacioRegistreEntrada consulta(AnotacioRegistreId id) {
-        try {
-            String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consulta";
-            Client jerseyClient = generarClient(urlAmbMetode);
-            String json = jerseyClient.
-                    resource(urlAmbMetode).
-                    queryParam("indetificador", URLEncoder.encode(id.getIndetificador(), "UTF-8")).
-                    queryParam("clauAcces", URLEncoder.encode(id.getClauAcces(), "UTF-8")).
-                    type("application/json").
-                    get(String.class);
-            return getMapper().readValue(json, AnotacioRegistreEntrada.class);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+    public AnotacioRegistreEntrada consulta(AnotacioRegistreId id) throws Exception {
+        String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consulta";
+        Client jerseyClient = generarClient(urlAmbMetode);
+        String json = jerseyClient.
+                resource(urlAmbMetode).
+                queryParam("indetificador", URLEncoder.encode(id.getIndetificador(), "UTF-8")).
+                queryParam("clauAcces", URLEncoder.encode(id.getClauAcces(), "UTF-8")).
+                type("application/json").
+                get(String.class);
+        return getMapper().readValue(json, AnotacioRegistreEntrada.class);
     }
 
 
     public void canviEstat(
             AnotacioRegistreId id,
             Estat estat,
-            String observacions) {
+            String observacions) throws Exception {
         InfoCanviEstat infoCanviEstat = InfoCanviEstat.builder()
                 .id(id)
                 .estat(estat)
                 .observacions(observacions).build();
-        try {
-            String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/canviEstat";
-            ObjectMapper mapper  = getMapper();
-            String body = mapper.writeValueAsString(infoCanviEstat);
-            Client jerseyClient = generarClient(urlAmbMetode);
-            jerseyClient.
-                    resource(urlAmbMetode).
-                    type("application/json").
-                    post(body);
-            log.debug("Missatge REST rebut");
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/canviEstat";
+        ObjectMapper mapper  = getMapper();
+        String body = mapper.writeValueAsString(infoCanviEstat);
+        Client jerseyClient = generarClient(urlAmbMetode);
+        jerseyClient.
+                resource(urlAmbMetode).
+                type("application/json").
+                post(body);
     }
 
 }
