@@ -28,6 +28,18 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<dis:modalHead/>
 	
+	<style>
+		.bc-red-error{
+			border-color: #a94442;
+		}
+		.color-red{
+			color: #a94442;
+		}
+		.comentari-codi-missatge-espai {
+			margin-top: 5px;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		$(document).ready(function() {
 			var nom = $("#nom").val();
@@ -35,6 +47,10 @@
 			var tipus = $("#tipus").val();
 			$("#contingut-missatges").hide();
 			$("#div-alert").hide();
+			if (${codiEmpySpace == true}) {
+				$("#codi").addClass("bc-red-error");
+				$('<p class="comentari-codi-missatge-espai color-red"><span class="fa fa-exclamation-triangle"></span>&nbsp;<span id="codi-espai"><spring:message code="backoffice.form.camp.codi.espai.blanc"/></span></p>').insertBefore($(".comentari-codi"));
+			}
 		    $('button[name=btn-provar]').click(function(e) {
 		    	 e.preventDefault();
 		    	 e.stopPropagation();

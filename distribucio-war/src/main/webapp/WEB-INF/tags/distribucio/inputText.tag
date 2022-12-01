@@ -22,7 +22,7 @@
 <div class="form-group<c:if test="${not empty campErrors}"> has-error</c:if>"<c:if test="${multiple}"> data-toggle="multifield"</c:if>>
 <c:choose>
 	<c:when test="${not inline}">
-		<label class="control-label col-xs-${campLabelSize}" for="${campPath}">${campLabelText}</label>
+		<label class="control-label col-xs-${campLabelSize} label-${campPath}" for="${campPath}">${campLabelText}</label>
 		<div class="col-xs-${campInputSize}">
 		<c:choose>
 			<c:when test="${picker}">
@@ -30,13 +30,13 @@
 					<form:input path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}"/>
 					<span class="input-group-addon"><i></i></span>
 					<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
-					<c:if test="${not empty comment}"><p class="comentari col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
+					<c:if test="${not empty comment}"><p class="comentari comentari-${campPath} col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
 				</div>
 			</c:when>
 			<c:otherwise>
 				<form:input path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}"/>
 				<c:if test="${not empty campErrors}"><p class="help-block"><span class="fa fa-exclamation-triangle"></span>&nbsp;<form:errors path="${campPath}"/></p></c:if>
-				<c:if test="${not empty comment}"><p class="comentari col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
+				<c:if test="${not empty comment}"><p class="comentari comentari-${campPath} col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
 			</c:otherwise>
 		</c:choose>
 		</div>
@@ -44,7 +44,7 @@
 	<c:otherwise>
    		<label class="sr-only" for="${campPath}">${campLabelText}</label>
    		<form:input path="${campPath}" cssClass="form-control" id="${campPath}" placeholder="${campPlaceholder}" disabled="${disabled}"/>
-		<c:if test="${not empty comment}"><p class="comentari col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
+		<c:if test="${not empty comment}"><p class="comentari comentari-${campPath} col-xs-${12 - labelSize} col-xs-offset-${labelSize}"><spring:message code="${comment}"/></p></c:if>
 	</c:otherwise>
 </c:choose>
 </div>
