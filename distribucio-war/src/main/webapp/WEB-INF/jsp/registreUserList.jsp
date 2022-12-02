@@ -175,6 +175,10 @@ button#filtrar {
 	width: 4rem !important;
 }
 
+.btn-default .badge {
+  padding-right: 2rem !important;
+}
+
 </style>
 <script>
 $.views.helpers({
@@ -580,8 +584,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
 				<th data-col-name="procesError" data-visible="false">#</th>
-				<th data-col-name="numero" width="10%"><spring:message code="bustia.pendent.columna.numero"/></th>
-				<th data-col-name="extracte" width="25%" style="min-width:150px;" data-template="#extracteTemplate">
+				<th data-col-name="numero" style="width:10%;"><spring:message code="bustia.pendent.columna.numero"/></th>
+				<th data-col-name="extracte" style="width:10%;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
 					<script id="extracteTemplate" type="text/x-jsrender">
 						<div class="extracteColumn">
@@ -590,9 +594,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</script>
 				</th>			
 														
-				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="numeroOrigen" style="width:10%;"><spring:message code="bustia.list.filtre.origen.num"/></th>
 
-				<th data-col-name="darrerMovimentUsuari" width="15%" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" style="width:10%;" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -613,8 +617,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</script>
 				</th>
 
-				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
+				<th data-col-name="data" data-converter="datetime" style="width:10%;"><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="procesEstat" data-orderable="true" style="width:10%;"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -646,34 +650,35 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</script>
 				</th>
 				
-				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate" style="width:10%;">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
+						<div class="llista-avisos d-flex">
+						<p>
 						{{if enviatPerEmail}}
 							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
 							{{for enviamentsPerEmail}} {{>}} 
 							{{/for}}"></span>
-							<br><br>
 						{{/if}}
 						{{if documentacioFisicaCodi == '1'}}
 							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
-							<br><br>
+							
 						{{else documentacioFisicaCodi == '2'}}
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/><br><br>
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
 							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							<br><br>
+							
 						{{else documentacioFisicaCodi == '3'}}
 							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
-							<br><br>
+							
 						{{/if}}
 						{{if annexosEstatEsborrany > 0}}
 							<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
-							<br><br>
+							
 						{{/if}}
 						{{if alerta}}
 							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
-							<br><br>
+							
 						{{/if}}
 						{{if procesError != null}}
 							{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -688,10 +693,12 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"></span>
 							{{/if}}
 						{{/if}}
+						</p>
+						</div>
 						</center>
 					</script>
 				</th>
-				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%;" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
@@ -703,15 +710,15 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false">
+				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
-				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
+				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="width:10%;">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
 							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && agafat}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>

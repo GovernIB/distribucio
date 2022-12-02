@@ -770,12 +770,20 @@ public class RegistreHelper {
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");				
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
 					try {
+						boolean titolRepetit = false;
+						List<String> titolsAnnexes = new ArrayList<>();
+						if (titolsAnnexes.contains(annex.getTitol())) {
+							titolRepetit = true;
+						}else {
+							titolsAnnexes.add(annex.getTitol());
+						}
 						self.crearAnnexInArxiu(
 								annex.getId(), 
 								annex, 
 								unitatOrganitzativaCodi,
 								uuidExpedient, 
-								distribucioRegistreAnotacio.getProcedimentCodi());
+								distribucioRegistreAnotacio.getProcedimentCodi(), 
+								titolRepetit);
 					} catch (Exception ex) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
 										+ distribucioRegistreAnotacio.getNumero() + ": " + ex.getMessage(), ex );
@@ -2101,16 +2109,25 @@ public class RegistreHelper {
 			DistribucioRegistreAnnex distribucioAnnex, 
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient, 
-			String procedimentCodi) {
+			String procedimentCodi, 
+			boolean titolRepetit) {
 	
 		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
 		
-		if (annex.getFitxerNom().startsWith(".")) {
-			String fitxerNom = String.valueOf(new Date().getTime()) + annex.getFitxerNom();
-			annex.updateFitxerNom(fitxerNom);
+		String fitxerTitol = "";
+		String titolData = ""; 
+		if (titolRepetit) {
+			do {
+				fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+			}while(fitxerTitol.equals(titolData));
+			annex.updateTitol(fitxerTitol);
 		}
-		if (annex.getTitol().startsWith(".")) {
-			String fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+		
+		if (annex.getTitol().equals("") || 
+				annex.getTitol().startsWith(".")) {
+			do {
+				fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+			}while(fitxerTitol.equals(titolData));
 			annex.updateTitol(fitxerTitol);
 		}
 		RegistreEntity registre = annex.getRegistre();

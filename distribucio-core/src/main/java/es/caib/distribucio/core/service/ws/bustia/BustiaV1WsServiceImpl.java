@@ -94,13 +94,19 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		StringBuilder ambFirma = new StringBuilder();
 		if (registreEntrada != null && registreEntrada.getAnnexos() != null) {
 			boolean first = true;
+			String fitxerTitol = "";
+			String titolData = "";
 			for (RegistreAnnex annex: registreEntrada.getAnnexos()) {
 				if (!first) {
 					ambFirma.append(", ");
 				}
 				if (annex.getTitol().equals("") || 
 						annex.getTitol().startsWith(".")) {
-					String fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+					do {
+						fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
+					}while (fitxerTitol.equals(titolData));
+					
+					titolData = fitxerTitol;
 					annex.setTitol(fitxerTitol);
 				}
 				ambFirma.append(Boolean.toString(annex.getFirmes() != null));

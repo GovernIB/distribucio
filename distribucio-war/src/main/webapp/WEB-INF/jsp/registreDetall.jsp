@@ -894,7 +894,32 @@ li[id^="anotacio_"] {
 						<tbody>
 							<c:forEach var="annex" items="${registre.annexos}" varStatus="status">
 									<tr title="<spring:message code="registre.annex.detalls.previsualitzar"/>" <c:choose><c:when test="${annex.fitxerExtension == 'pdf' }">onclick="showViewer(event, ${annex.id}, '${annex.observacions}', '${annex.dataCaptura}', '${annex.origenCiutadaAdmin}')"</c:when><c:otherwise>class="invalid-format"</c:otherwise></c:choose>>
-										<td>${annex.titol}</td>
+										<td>
+										<c:choose>
+											<c:when test="${fn:contains(annex.fitxerTipusMime, 'pdf')}">										
+												<span class="fa fa-file-pdf-o"></span>
+											</c:when>
+											<c:when test="${fn:contains(annex.fitxerTipusMime, 'xml')}">										
+												<span class="fa fa-file-code-o"></span>
+											</c:when>
+											<c:when test="${fn:contains(annex.fitxerTipusMime, 'jpeg')}">										
+												<span class="fa fa-file-image-o"></span>
+											</c:when>
+											<c:when test="${fn:contains(annex.fitxerTipusMime, 'msword')}">										
+												<span class="fa fa-file-word-o"></span>
+											</c:when>
+											<c:when test="${fn:contains(annex.fitxerTipusMime, 'xsig')}">										
+												<span class="fa fa-file-o"></span>
+											</c:when>
+											<%-- <c:when test="${fn:contains(annex.fitxerTipusMime, 'octet')}">										
+												<span class="fa fa-file"></span>
+											</c:when> --%>
+											<c:otherwise>										
+												<span class="fa fa-file"></span>
+											</c:otherwise>
+										</c:choose>
+										${annex.titol}
+										</td>
 										<td><c:if test="${not empty annex.ntiTipusDocument}"><spring:message code="registre.annex.detalls.camp.ntiTipusDocument.${annex.ntiTipusDocument}"/></c:if></td>
 										<td>${annex.observacions}</td>
 										<td><c:if test="${not empty annex.dataCaptura}"><fmt:formatDate value="${annex.dataCaptura}" pattern="dd/MM/yyyy HH:mm:ss"/></c:if></td>

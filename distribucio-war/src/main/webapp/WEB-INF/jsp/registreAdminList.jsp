@@ -137,6 +137,10 @@ button#filtrar {
 .datepicker th {
 	width: 4rem !important;
 }
+
+.btn-default .badge {
+  padding-right: 2rem !important;
+}
 	
 </style>
 	
@@ -572,8 +576,8 @@ $(document).ready(function() {
 				<th data-col-name="sobreescriure" data-visible="false">
 				<th data-col-name="arxiuTancat" data-visible="false">
 				<th data-col-name="documentacioFisicaCodi" data-template="#docFisTemplate" data-visible="false"></th>	
-				<th data-col-name="numero" style="width:14%; min-width: 10%;"><spring:message code="bustia.pendent.columna.numero"/></th>			
-				<th data-col-name="extracte" style="min-width:150px; width:5%;" data-template="#extracteTemplate">
+				<th data-col-name="numero" style="width:8%;"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				<th data-col-name="extracte" style="width:8%;" data-template="#extracteTemplate">
 					<spring:message code="bustia.pendent.columna.titol"/>
 					<script id="extracteTemplate" type="text/x-jsrender">
 						<div class="extracteColumn">
@@ -581,9 +585,9 @@ $(document).ready(function() {
 						</div>
 					</script>
 				</th>											
-				<th data-col-name="numeroOrigen" style="width:8%; min-width: 5%;"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="numeroOrigen" style="width:8%;"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
-				<th data-col-name="darrerMovimentUsuari" style="width:8%; min-width: 5%;" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" style="width:8%;" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -604,8 +608,8 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" data-converter="datetime" style="width:8%; min-width: 5%;" ><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" data-orderable="true" style="width:8%; min-width: 5%;"  data-template="#estatTemplate">
+				<th data-col-name="data" data-converter="datetime" style="width:8%;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -647,40 +651,43 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" data-orderable="false" style="width:7%; min-width: 5%;" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" style="width:8%;" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
-						{{if sobreescriure}}
+						<div class="llista-avisos d-flex">
+						<p>
+						{{if sobreescriure}}							
 							<span class="fa fa-history" title="<spring:message code="registre.admin.list.icon.marcat.sobreescriure"/>"></span>
-							<br><br>
+							 
 						{{/if}}
-						{{if enviatPerEmail}}
+						{{if enviatPerEmail}}							
 							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
 							{{for enviamentsPerEmail}} {{>}} 
 							{{/for}}"></span>
-							<br><br>
+							 
 						{{/if}}
-						{{if documentacioFisicaCodi == '1'}}
+						{{if documentacioFisicaCodi == '1'}}							
 							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
-							<br><br>
-						{{else documentacioFisicaCodi == '2'}}
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/><br><br>
+							
+						{{else documentacioFisicaCodi == '2'}}							
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
+							
 							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							<br><br>
-						{{else documentacioFisicaCodi == '3'}}
+							 
+						{{else documentacioFisicaCodi == '3'}}							
 							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
-							<br><br>
+							
 						{{/if}}
-						{{if annexosEstatEsborrany > 0}}
+						{{if annexosEstatEsborrany > 0}}							
 							<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
-							<br><br>
+							
 						{{/if}}
-						{{if alerta}}
+						{{if alerta}}							
 							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
-							<br><br>
+							
 						{{/if}}
-						{{if procesError != null}}
+						{{if procesError != null}}							
 							{{if procesEstat == 'ARXIU_PENDENT'}}
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"></span>
 							{{else procesEstat == 'REGLA_PENDENT'}}
@@ -693,6 +700,8 @@ $(document).ready(function() {
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"></span>
 							{{/if}}
 						{{/if}}
+						</p>
+						</div>
 						</center>
 					</script>
 					<script id="docFisTemplate" type="text/x-jsrender">
@@ -725,19 +734,19 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="width:13%; min-width: 10%;">
+				<th data-col-name="interessatsResum" data-orderable="false" style="width:8%;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:7%; min-width: 5%;">
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:8%;">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
 
-				<th data-col-name="backCodi" data-orderable="true" style="width:15%; min-width: 13%;"><spring:message code="contingut.admin.columna.backoffice"/></th>
+				<th data-col-name="backCodi" data-orderable="true" style="width:8%;"><spring:message code="contingut.admin.columna.backoffice"/></th>
 				
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="width:10%; min-width: 8%;">
+				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="width:8%;">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div id="div-btn-accions" class="dropdown">
 							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="font-size:1.5rem; display:flex; width:90%; font-size:1.2rem"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
