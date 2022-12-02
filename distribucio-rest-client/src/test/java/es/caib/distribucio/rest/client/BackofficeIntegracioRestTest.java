@@ -88,6 +88,33 @@ public class BackofficeIntegracioRestTest {
 					anotacioRegistreId, 
 					Estat.ERROR,
 					"Error");
+			
+			client.consulta(anotacioRegistreId);
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+			client.consulta(anotacioRegistreId);
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+			client.consulta(anotacioRegistreId);
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+			client.consulta(anotacioRegistreId);
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+			client.consulta(anotacioRegistreId);
+			client.canviEstat(
+					anotacioRegistreId, 
+					Estat.ERROR,
+					"Error");
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail();

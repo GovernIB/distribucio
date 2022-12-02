@@ -96,6 +96,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					ArxiuResultat arxiuResultat;
 					int intent = 0;
 					String expedientUuid = null;
+					Expedient expedientDetalls = null;
 					do {
 						// Crida al mètode de creació de la llibreria
 						arxiuResultat = backofficeArxiuUtils.crearExpedientAmbAnotacioRegistre(
@@ -117,7 +118,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 
 					// Consultem el nou expedient a l'Arxiu
 					if (expedientUuid != null) {
-						Expedient expedientDetalls = getArxiuPlugin().expedientDetalls(arxiuResultat.getIdentificadorExpedient(), null);
+						expedientDetalls = getArxiuPlugin().expedientDetalls(arxiuResultat.getIdentificadorExpedient(), null);
 						logger.debug("S'ha creat l'expedient \"" + expedientDetalls.getNom() + "\" amb id=" + expedientDetalls.getIdentificador() + " per l'anotació " + anotacio.getIdentificador() + " amb els següents continguts:");
 						for (ContingutArxiu contingut : expedientDetalls.getContinguts()) {
 							logger.debug("- " + contingut.getIdentificador() + " " + contingut.getNom() + " amb " + (contingut.getFirmes() != null? contingut.getFirmes().size() : 0) + " firmes.");
@@ -164,7 +165,11 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Es comunica el resultat a DISTRIBUCIO
 					switch(arxiuResultat.getErrorCodi()) {
 						case 0:
-							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.domini.Estat.PROCESSADA, "Processada");
+							backofficeClient.canviEstat(idWs, 
+														es.caib.distribucio.rest.client.domini.Estat.PROCESSADA, 
+														"Processada correctament, s'ha creat l'expedient " 
+																+ (expedientDetalls != null ? expedientDetalls.getNom() : "-") 
+																+ " amb uuid " + expedientUuid);
 							break;
 						default:
 							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.domini.Estat.ERROR, arxiuResultat.getErrorCodi() + " " + arxiuResultat.getErrorMessage());
