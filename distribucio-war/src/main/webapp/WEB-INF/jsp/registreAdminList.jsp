@@ -658,46 +658,46 @@ $(document).ready(function() {
 						<div class="llista-avisos d-flex">
 						<p>
 						{{if sobreescriure}}							
-							<span class="fa fa-history" title="<spring:message code="registre.admin.list.icon.marcat.sobreescriure"/>"></span>
-							 
+							<span class="fa fa-history" title="<spring:message code="registre.admin.list.icon.marcat.sobreescriure"/>"> </span>
+							 &nbsp;
 						{{/if}}
 						{{if enviatPerEmail}}							
 							<span class="fa fa-envelope" title="<spring:message code="contingut.registre.enviatPerEmail"/>:
 							{{for enviamentsPerEmail}} {{>}} 
 							{{/for}}"></span>
-							 
+							 &nbsp;
 						{{/if}}
 						{{if documentacioFisicaCodi == '1'}}							
-							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/>
-							
+							<span class="fa fa-archive" style="color: #D9534F;" title="<spring:message code="registre.tipus.doc.fisica.enum.PAPER"/>"/> </span>
+							&nbsp;
 						{{else documentacioFisicaCodi == '2'}}							
-							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							
-							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/>
-							 
+							<span class="fa fa-file-code-o" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/> </span>
+							&nbsp;
+							<span class="fa fa-archive" style="color: #F0AD4E;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT_PAPER"/>"/> </span>
+							 &nbsp;
 						{{else documentacioFisicaCodi == '3'}}							
-							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/>
-							
+							<span class="fa fa-file-code-o" style="color: #5CB85C;" title="<spring:message code="registre.tipus.doc.fisica.enum.DIGIT"/>"/> </span>
+							&nbsp;
 						{{/if}}
 						{{if annexosEstatEsborrany > 0}}							
-							<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"></span>
-							
+							<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.admin.list.icon.annexos.estat.esborrany"/>"> </span>
+							&nbsp;
 						{{/if}}
 						{{if alerta}}							
-							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"></span>
-							
+							<span class="fa fa-sticky-note-o text-warning" title="<spring:message code="contingut.errors.registre.regles.segonpla"/>"> </span>
+							&nbsp;
 						{{/if}}
 						{{if procesError != null}}							
 							{{if procesEstat == 'ARXIU_PENDENT'}}
-								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"></span>
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT.error"/>"> </span>&nbsp;
 							{{else procesEstat == 'REGLA_PENDENT'}}
-								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>"></span>
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.REGLA_PENDENT.error"/>"> </span>&nbsp;
 							{{else procesEstat == 'BACK_PENDENT'}}
-								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>"></span>
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_PENDENT.error"/>"> </span>&nbsp;
 							{{else procesEstat == 'BACK_ERROR'}}
-								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>"></span>
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.BACK_ERROR.error"/>"> </span>&nbsp;
 							{{else}}
-								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"></span>
+								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"> </span>&nbsp;
 							{{/if}}
 						{{/if}}
 						</p>

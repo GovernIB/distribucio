@@ -86,9 +86,11 @@
 	</form:form>
 
 <script id="botonsTemplate" type="text/x-jsrender">
-	<div class="f-right"> 
-		<a href="<c:url value='/procediment/actualitzar'/>" onclick="actualitzarProcediments()" id="actualitzarProcediments" class="btn btn-default"><span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/></a>
-	</div>
+	<c:if test="${isRolActualAdministrador}">
+		<div class="f-right"> 
+			<a href="<c:url value='/procediment/actualitzar'/>" onclick="actualitzarProcediments()" id="actualitzarProcediments" class="btn btn-default"><span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/></a>
+		</div>
+	</c:if>
 </script>
 <table
 	id="procediments"
