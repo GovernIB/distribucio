@@ -508,8 +508,8 @@ public class RegistreAdminController extends BaseAdminController {
 		String missatge = null;
 		ContingutDto contingutDto = null;
 		RegistreDto registreDto = null;
-		
 		try {
+			this.entrarSemafor(registreId);
 			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
 			
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
@@ -523,7 +523,6 @@ public class RegistreAdminController extends BaseAdminController {
 				missatge = getMessage(request, "registre.admin.reintentar.enviament.backoffice.estat.incompatible", new Object[] {registreDto.getId()}); 
 				correcte = true;
 			}
-		
 		}catch (Exception e) {
 			logger.error("Error incontrolat enviant al backoffice l'anotació amb id " + registreId + ": " + e.getMessage(), e);
 			String errMsg = getMessage(
@@ -531,6 +530,8 @@ public class RegistreAdminController extends BaseAdminController {
 					"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat", 
 					new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
 			response = AjaxHelper.generarAjaxError(errMsg);
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		
 		if (correcte) {
@@ -610,6 +611,7 @@ public class RegistreAdminController extends BaseAdminController {
 		String missatge = null;
 		RegistreDto registreDto = null;
 		try {
+			this.entrarSemafor(registreId);
 			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);			
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			
@@ -636,6 +638,8 @@ public class RegistreAdminController extends BaseAdminController {
 										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
 										new Object[] {(registreDto != null ? registreDto.getIdentificador() : String.valueOf(registreId)), e.getMessage()});
 			response = AjaxHelper.generarAjaxError(errMsg);
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		return response;
 	}
@@ -677,75 +681,19 @@ public class RegistreAdminController extends BaseAdminController {
 			return response;
 		}
 
-		response = this.reintentarProcessament(request, registreId);
-		
-		/*
-		boolean correcte = false;
-		String missatge = null;
-		ContingutDto contingutDto = null;
-		RegistreDto registreDto = null;;
 		try {
-			logger.debug("Reprocessar anotació amb id " + registreId);
-			
-			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
-			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-			registreDto = (RegistreDto) contingutDto;
-			
-			if (registreDto.getPare() == null) {
-				// Restaura la bústia per defecte i la la regla aplicable si s'escau
-				correcte = registreService.reintentarBustiaPerDefecte(entitatActual.getId(),
-						registreId);
-				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
-			} 
-			else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
-			{
-				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
-					|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
-				{
-					// Pendent de processament d'arxiu o regla
-					correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
-							registreId);
-					missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
-				} else {
-					// Pendent d'enviar a backoffice
-					correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
-							registreId);
-					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
-				}
-			} 
-			else if (this.isPendentArxiu(registreDto)) {
-				correcte = registreService.processarAnnexosAdmin(
-						entitatActual.getId(),
-						registreId);
-				missatge = getMessage(
-						request, 
-						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
-						null);
-			} else 
-			{
-				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
-				correcte = true;
-			}
+			this.entrarSemafor(registreId);
+			response = this.reintentarProcessament(request, registreId);
 		} catch(Exception e) {
-			missatge = getMessage(request, "registre.admin.controller.reintentar.processament.error", new Object[] {registreId, e.getMessage()});
-			logger.error(missatge, e);
-			correcte = false;
+			response = AjaxHelper.generarAjaxError("Error no controlat reintentant el processament: " + e.getMessage());
+		} finally {
+			this.sortirSemafor(registreId);
 		}
-		
-		if (correcte) {
-			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(missatge.toString());
-		} else {
-			response = AjaxHelper.generarAjaxError(missatge);
-		}
-		
-		*/
 		logger.debug("L'anotació amb id " + registreId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
 
 		return response;
 	}
-	
+
 	private AjaxFormResponse reintentarProcessament(HttpServletRequest request, Long registreId) {
 
 		AjaxFormResponse response = null;

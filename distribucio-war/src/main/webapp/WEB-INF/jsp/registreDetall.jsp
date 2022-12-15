@@ -1044,8 +1044,23 @@ li[id^="anotacio_"] {
 				</tr>
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
-					<td class="${registre.procesEstat}">
-						<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>
+					<td class="${registre.procesEstat}">					
+					
+						<c:choose>
+							<c:when test="${registre.procesEstat == 'BACK_PROCESSADA'}">
+								<spring:message code="registre.proces.estat.detall.${registre.procesEstat}"/> ${registre.backCodi}
+							</c:when>
+							<c:when test="${registre.procesEstat == 'REGLA_PENDENT'}">
+								<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>
+								<c:if test="${registre.regla.nom != null || registre.regla.nom != '' }">
+									- ${registre.regla.nom}
+								</c:if>										
+							</c:when>
+							<c:otherwise>
+								<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>	
+							</c:otherwise>
+						</c:choose>
+
 						<c:if test="${! empty registre.procesError }">
 							<c:choose>
 								<c:when test="${registre.procesEstat ==  'ARXIU_PENDENT'} ">
@@ -1076,8 +1091,7 @@ li[id^="anotacio_"] {
 						</c:if>	
 						
 						<c:if test="${registre.procesEstat == 'BACK_COMUNICADA' || 
-									registre.procesEstat == 'BACK_REBUDA' || 								 
-									registre.procesEstat == 'BACK_PROCESSADA' || 								 
+									registre.procesEstat == 'BACK_REBUDA' || 									 
 									registre.procesEstat == 'BACK_REBUTJADA'}">
 							<c:if test="${registre.backCodi != null || registre.backCodi != '' }">
 								- ${registre.backCodi}

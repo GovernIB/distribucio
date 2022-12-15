@@ -856,6 +856,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
+			this.entrarSemafor(registreId);
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
@@ -872,6 +873,8 @@ public class RegistreUserController extends BaseUserController {
 						request, 
 						"bustia.controller.pendent.contingut.enviat.email.ko",
 						new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		return response;
 	}
@@ -913,6 +916,7 @@ public class RegistreUserController extends BaseUserController {
 		StringBuilder missatge = new StringBuilder();
 		// Envia per correu
 		try {
+			this.entrarSemafor(registreId);
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					registreDto.getId(),
@@ -928,6 +932,8 @@ public class RegistreUserController extends BaseUserController {
 							request, 
 							"bustia.controller.pendent.contingut.enviat.email.ko",
 							new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		missatge.append(". ");
 		
@@ -1368,6 +1374,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
+			this.entrarSemafor(registreId);
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			bustiaService.registreReenviar(
 					entitatActual.getId(),
@@ -1385,6 +1392,8 @@ public class RegistreUserController extends BaseUserController {
 						request, 
 						"registre.user.controller.reenviar.massiva.error",
 						new Object[] {String.valueOf(registreId), exception.getMessage()}));
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		return response;
 	}
@@ -1503,6 +1512,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 		
 		try {
+			this.entrarSemafor(registreId);
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			String rolActual = RolHelper.getRolActual(request);
 			registreService.marcarPendent(
@@ -1523,6 +1533,8 @@ public class RegistreUserController extends BaseUserController {
 						request, 
 						"registre.user.controller.marcat.pendent.error",
 						new Object[] {exception.getMessage()}));
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		return response;
 	}
@@ -1590,6 +1602,7 @@ public class RegistreUserController extends BaseUserController {
 		}
 
 		try {
+			this.entrarSemafor(registreId);
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			String rolActual = RolHelper.getRolActual(request);
 			contingutService.marcarProcessat(
@@ -1609,6 +1622,8 @@ public class RegistreUserController extends BaseUserController {
 						request, 
 						"bustia.pendent.accio.marcar.processat.error",
 						new Object[] {exception.getMessage()}));
+		} finally {
+			this.sortirSemafor(registreId);
 		}
 		return response;
 	}

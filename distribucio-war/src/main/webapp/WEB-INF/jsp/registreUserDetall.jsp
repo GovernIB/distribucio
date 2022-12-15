@@ -137,7 +137,16 @@ tr.clicable {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.proces.estat"/></strong></td>
 					<td class="${registre.procesEstat}">
-						<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>
+					
+						<c:choose>
+							<c:when test="${registre.procesEstat == 'BACK_PROCESSADA'}">
+								<spring:message code="registre.proces.estat.detall.${registre.procesEstat}"/>
+							</c:when>
+							<c:otherwise>
+								<spring:message code="registre.proces.estat.enum.${registre.procesEstat}"/>	
+							</c:otherwise>
+						</c:choose>
+						
 						<c:if test="${! empty registre.procesError }">
 							<c:choose>
 								<c:when test="${registre.procesEstat ==  'ARXIU_PENDENT'} ">

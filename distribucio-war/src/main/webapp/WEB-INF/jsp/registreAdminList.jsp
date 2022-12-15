@@ -618,7 +618,7 @@ $(document).ready(function() {
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
-						{{else procesEstat == 'REGLA_PENDENT'}}
+						{{else procesEstat == 'REGLA_PENDENT' && regla != null}}
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
 							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
@@ -635,8 +635,8 @@ $(document).ready(function() {
 							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_PROCESSADA'}}
-							<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+							<spring:message code="registre.proces.estat.detall.BACK_PROCESSADA"/>
+							<br> <span class="" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_REBUTJADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>

@@ -46,7 +46,11 @@ public class SistemaExternException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "Error amb el sistema extern " + this.getSistemaExternCodi() + ": " + super.getMessage();
+		StringBuilder message = new StringBuilder("Error amb el sistema extern " + this.getSistemaExternCodi() + ": " + super.getMessage());
+		if (this.getCause() != null) {
+			message.append(": ").append(this.getCause().getMessage());
+		}
+		return message.toString();
 	}
 
 }

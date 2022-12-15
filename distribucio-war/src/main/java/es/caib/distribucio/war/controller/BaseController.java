@@ -5,8 +5,11 @@ package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
@@ -335,6 +338,43 @@ public class BaseController implements MessageSourceAware {
 				throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
 			return entitat;			
 		}
+	}
+	
+
+	
+	private Map<Long, Semaphore> semafors = new HashMap<Long, Semaphore>();
+
+	protected void entrarSemafor(Long registreId) throws InterruptedException {
+		Semaphore semafor = null;
+		synchronized(semafors) {
+			if (semafors.containsKey(registreId)) {
+				semafor = semafors.get(registreId);
+			} else {
+				semafor = new Semaphore(1);
+				semafors.put(registreId, semafor);
+			}
+		}
+		semafor.acquire();
+	}
+	
+	protected void sortirSemafor(Long registreId) {
+		synchronized(semafors) {
+			Semaphore semafor = semafors.get(registreId);
+			if (semafor != null) {
+				if (semafor.getQueueLength()==0) {
+					semafors.remove(registreId);
+				}
+				semafor.release();
+			}
+		}
+		
+		/*
+		try {
+			semafors.getSemafor(registreId);
+		} finally {
+			semafors.release(registreId);
+		}
+		*/
 	}
 	
 

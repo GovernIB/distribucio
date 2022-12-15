@@ -201,11 +201,11 @@
 			var content = '';
 	            for (var i = 0; i < tasca.length; i++) {
 	               content +=  '<tr class="monitor_fila">' +
-	                            '<td id="tasca-' + identificadors[i] + '">' + tasca[i].replace("Tasca: ", "") + '</td>' +
-	                           '<td class="text-center" id="estat-' + identificadors[i] + '">' + estat[i].replace("Estat: ", "") + '</td>' +
-	                           '<td class="text-center" id="inici-execucio-' + identificadors[i] + '">' + iniciExecucio[i].replace("Darrer inici: ", "") + '</td>' +
-	                           '<td class="text-right" id ="temps-execucio-' + identificadors[i] + '">' + tempsExecucio[i].replace("Temps en execució: ", "") + '</td>' +
-	                           '<td class="text-center" id="propera-execucio-' + identificadors[i] + '">' + properaExecucio[i].replace("Propera execució: ", "") + '</td>' +
+	                            '<td id="tasca-' + identificadors[i] + '">' + tasca[i].replace("<spring:message code='monitor.tasques.tasca'/>: ", "") + '</td>' +
+	                           '<td class="text-center" id="estat-' + identificadors[i] + '">' + estat[i].replace("<spring:message code='monitor.tasques.estat'/>: ", "") + '</td>' +
+	                           '<td class="text-center" id="inici-execucio-' + identificadors[i] + '">' + iniciExecucio[i].replace("<spring:message code='monitor.tasques.darrer.inici'/>: ", "") + '</td>' +
+	                           '<td class="text-right" id ="temps-execucio-' + identificadors[i] + '">' + tempsExecucio[i].replace("<spring:message code='monitor.tasques.temps.execucio'/>: ", "") + '</td>' +
+	                           '<td class="text-center" id="propera-execucio-' + identificadors[i] + '">' + properaExecucio[i].replace("<spring:message code='monitor.tasques.propera.execucio'/>: ", "") + '</td>' +
 	                           '</tr>';
 	           }  
 	     	return content;

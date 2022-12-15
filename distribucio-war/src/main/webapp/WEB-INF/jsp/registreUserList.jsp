@@ -558,7 +558,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 	<script id="rowhrefTemplate" type="text/x-jsrender">registreUser/registre/{{:id}}</script>
 	<table 
 		id="taulaDades" 
-		class="table table-bordered table-striped"style="width:100%"
+		class="table table-bordered table-striped" 
+		style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreUser/datatable"/>"
 		data-filter="#registreFiltreCommand"
@@ -630,22 +631,33 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 
 						{{else procesEstat == 'REGLA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
+							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/>
 						{{else procesEstat == 'BACK_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_COMUNICADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_REBUDA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_PROCESSADA'}}
-							<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
+							{{if backCodi == null}}
+								<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
+							{{else backCodi != null}}
+								<spring:message code="registre.proces.estat.detall.BACK_PROCESSADA"/>
+								<br> <span class="" style="font-size:1rem">{{:backCodi}}</span>
+							{{/if}}
 						{{else procesEstat == 'BACK_REBUTJADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 						{{else procesEstat == 'BACK_ERROR'}}
-							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>							
+							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>		
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>					
 						{{/if}}
 					</script>
 				</th>
@@ -778,6 +790,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="maxReintents" data-visible="false"></th>
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
+				<th data-col-name="backCodi" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>
