@@ -184,9 +184,154 @@
                     <groupId>slf4j-api</groupId>
                 </exclusion>
             </exclusions>
-
         </dependency>
     </dependencies>
+    
+    
+    
+
+	<profiles>
+		<profile>
+			<id>tomcat</id>
+			<properties>
+				<application.context>application-context-tomcat.xml</application.context>
+				<enable.tomcat.ws.start>--&gt;</enable.tomcat.ws.start>
+				<enable.tomcat.ws.end>&lt;!--</enable.tomcat.ws.end>
+				<webjars.classpath>classpath:</webjars.classpath>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.jvnet.jax-ws-commons.spring</groupId>
+					<artifactId>jaxws-spring</artifactId>
+					<version>1.9</version>
+					<exclusions>
+						<exclusion>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-core</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-beans</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-context</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-web</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>javax.transaction</groupId>
+					<artifactId>jta</artifactId>
+					<version>1.1</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-core</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-core-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-plugin-impl</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-lib-common</artifactId>
+					<version>${project.version}</version>
+					<type>pom</type>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-war</artifactId>
+					<version>${project.version}</version>
+					<type>pom</type>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>META-INF/context.xml</packagingExcludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jboss</id>
+			<properties>
+				<application.context>application-context-jboss.xml</application.context>
+				<webjars.classpath></webjars.classpath>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
+					<version>${hibernate.validator.version}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>distribucio-lib-common</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+					<type>pom</type>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>
+								META-INF/context.xml,
+								WEB-INF/classes/log4j.xml,
+								WEB-INF/lib/jquery*,
+								WEB-INF/lib/bootstrap*,
+								WEB-INF/lib/font-awesome*,
+								WEB-INF/lib/datatables*,
+								WEB-INF/lib/select2*,
+								WEB-INF/lib/bootstrap-datepicker*,
+								WEB-INF/lib/jsrender*,
+								WEB-INF/lib/jstree*
+								WEB-INF/lib/Sortable*
+							</packagingExcludes>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeGroupIds>org.webjars</includeGroupIds>
+									<includes>**/*</includes>
+									<outputDirectory>${project.build.directory}/distribucioapi</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+    
+    
     <build>
         <plugins>
             <plugin>

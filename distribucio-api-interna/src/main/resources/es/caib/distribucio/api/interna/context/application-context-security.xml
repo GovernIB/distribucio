@@ -22,7 +22,8 @@
 
 	<sec:http create-session="never" use-expressions="false" auto-config="false" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
 		<sec:intercept-url pattern="/backoffice/**" access="ROLE_BACKWS"/>
-		<sec:intercept-url pattern="/**" access="ROLE_BACKWS,ROLE_DELEG"/>
+		<sec:intercept-url pattern="/regla/**" access="ROLE_REGLA"/>
+		<sec:intercept-url pattern="/**" access="ROLE_BACKWS,ROLE_REGLA,ROLE_DELEG"/>
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
 		<sec:session-management session-fixation-protection="none"/>
@@ -47,6 +48,7 @@
 						<property name="defaultMappableAttributes">
 							<set>
 								<value>DIS_BACKWS</value>
+								<value>DIS_REGLA</value>
 								<value>tothom</value>
 							</set>
 						</property>
@@ -57,6 +59,7 @@
 						<property name="baseRoleMapping">
 							<map>
 								<entry key="DIS_BACKWS" value="ROLE_BACKWS"/>
+								<entry key="DIS_REGLA" value="ROLE_REGLA"/>
 								<entry key="tothom" value="ROLE_DELEG"/>
 							</map>
 						</property>
@@ -68,5 +71,6 @@
 	</bean>
 
 	<bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+	<bean class="es.caib.distribucio.api.security.DefaultRolesPrefixPostProcessor"/>
 
 </beans>

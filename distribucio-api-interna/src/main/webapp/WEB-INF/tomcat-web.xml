@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tomcat-web>
+	<context-root>/distribucioapi/interna</context-root>
+	<security-domain>java:/jaas/seycon</security-domain>
+</tomcat-web>
