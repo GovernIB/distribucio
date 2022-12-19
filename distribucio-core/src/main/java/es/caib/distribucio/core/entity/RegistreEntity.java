@@ -567,6 +567,8 @@ public class RegistreEntity extends ContingutEntity {
 		this.backProcesRebutjErrorData = backProcesRebutjErrorData;
 	}
 	public void updateBackEstat(RegistreProcesEstatEnum procesEstat, String backObservacions) {
+		if (procesEstat.equals(RegistreProcesEstatEnum.BACK_ERROR)) 
+			this.procesIntents = 0;
 		this.procesEstat = procesEstat;
 		this.backObservacions = backObservacions;
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
