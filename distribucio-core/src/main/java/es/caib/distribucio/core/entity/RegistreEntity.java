@@ -527,7 +527,6 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateProces(
 			RegistreProcesEstatEnum procesEstat,
 			Exception exception) {
-		this.procesIntents = 0;
 		updateProcesMultipleExcepcions(procesEstat, Arrays.asList(exception));
 	}
 	
