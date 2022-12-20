@@ -628,10 +628,13 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
-
 						{{else procesEstat == 'REGLA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
-							<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
+							{{if regla != null}}
+								<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
+							{{else}}
+								<span class="fa fa-exclamation-triangle text-danger" title="<spring:message code="registre.admin.list.icon.annexos.estat.pendent.regla.sense.regla"/>"> </span>
+							{{/if}}
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
