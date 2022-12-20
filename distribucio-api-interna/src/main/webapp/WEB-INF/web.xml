@@ -36,11 +36,7 @@
 	</listener>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>WEB-INF/application-context-jboss.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>WEB-INF/application-context-tomcat.xml</param-value>
+		<param-value>WEB-INF/application-context.xml</param-value>
 	</context-param>
 
 	<servlet>
@@ -69,9 +65,9 @@
 	<security-role>
 		<role-name>DIS_REGLA</role-name>
 	</security-role>
-<!--	<security-role>-->
-<!--		<role-name>tothom</role-name>-->
-<!--	</security-role>-->
+	<security-role>
+		<role-name>tothom</role-name>
+	</security-role>
 
 	<security-constraint>
 		<web-resource-collection>

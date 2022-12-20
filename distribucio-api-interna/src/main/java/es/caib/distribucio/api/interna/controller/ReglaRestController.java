@@ -77,7 +77,7 @@ public class ReglaRestController{
 			@RequestParam(required = false) String backoffice) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
+		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
 			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per crear regles.", HttpStatus.UNAUTHORIZED);
 		}
 		// Obtenim el nom de l'usuari que ha fet la petició
@@ -173,7 +173,7 @@ public class ReglaRestController{
 			@RequestParam(required = false) Boolean activa){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
+		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
 			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
 		}
 
@@ -221,7 +221,7 @@ public class ReglaRestController{
 			@RequestParam(required = true) String sia) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
+		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
 			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
 		}
 		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
