@@ -147,7 +147,7 @@ body {
 			<div class="navbar-collapse collapse">
 				<div class="nav navbar-nav navbar-right">
 					<ul class="list-inline pull-right">
-						<c:if test="${hiHaEntitats}">
+						<c:if test="${hiHaEntitats && (isRolActualAdministrador or isRolActualAdminLectura or isRolActualUsuari)}">
 							<li class="dropdown">
 								<c:if test="${hiHaMesEntitats}"><a href="#" data-toggle="dropdown"></c:if>
 		         				<span class="fa fa-institution"></span> ${entitatActual.nom} <c:if test="${hiHaMesEntitats}"><b class="caret caret-white"></b></c:if>
