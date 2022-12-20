@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.service;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -2354,6 +2355,9 @@ public class RegistreServiceImpl implements RegistreService {
 				registre.getPareId(),
 				this.comprovarPermisLectura());
 		
+		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) 
+			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+		
 		registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
@@ -2456,7 +2460,8 @@ public class RegistreServiceImpl implements RegistreService {
 															entitat,
 															bustiaId,
 															this.comprovarPermisLectura());
-			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, bustia.getUnitatOrganitzativa().getCodi());			
+			String codiUnitatOrganitzativaBustia = bustia.getUnitatOrganitzativa().getCodi();	//Per depurar a DES: codiUnitatOrganitzativaBustia="A04025121";
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, codiUnitatOrganitzativaBustia);		
 			llistaUnitatsDescendents.add(bustia.getUnitatOrganitzativa().getCodi());
 			// Cerca del llistat de procediments amb consulta a la bbdd
 			List<ProcedimentEntity> procediments = getPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);

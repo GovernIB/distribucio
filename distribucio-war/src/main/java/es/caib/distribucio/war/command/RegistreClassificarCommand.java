@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class RegistreClassificarCommand {
 	
 	Long contingutId;
-	@NotEmpty(groups = {Classificar.class})
+	//@NotEmpty(groups = {Classificar.class})
 	String codiProcediment;
 	
 	public Long getContingutId() {

@@ -106,8 +106,10 @@ $(document).ready(function() {
 					optionItems="${procediments}" 
 					optionValueAttribute="codiSia" 
 					optionTextAttribute="codiNomEstat" 
+					emptyOption="true"
+					required="false"
+					placeholderKey="bustia.pendent.classificar.camp.codi.procediment"
 					optionMinimumResultsForSearch="0" 
-					required="true"
 					optionTemplateFunction="formatProcedimentSelect"/>
 			</c:otherwise>
 		</c:choose>
