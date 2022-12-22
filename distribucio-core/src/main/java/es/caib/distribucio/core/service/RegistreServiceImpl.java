@@ -2327,7 +2327,8 @@ public class RegistreServiceImpl implements RegistreService {
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
-			String procedimentCodi)
+			String procedimentCodi,
+			String titol)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
@@ -2357,8 +2358,10 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) 
 			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
-		
-		registre.updateProcedimentCodi(procedimentCodi);
+		if (titol != null)
+			registre.updateTitol(titol);
+		if (procedimentCodi != null)
+			registre.updateProcedimentCodi(procedimentCodi);
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
@@ -2392,8 +2395,10 @@ public class RegistreServiceImpl implements RegistreService {
 			} else {
 				classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_ERROR);
 			}
-		} else {
+		} else if (titol == null) {
 			classificacioResultat.setResultat(ClassificacioResultatEnumDto.SENSE_CANVIS);
+		} else {
+			classificacioResultat.setResultat(ClassificacioResultatEnumDto.TITOL_MODIFICAT);
 		}
 		
 		

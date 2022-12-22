@@ -4,10 +4,17 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class RegistreClassificarCommand {
 	
+	String titol;
 	Long contingutId;
 	//@NotEmpty(groups = {Classificar.class})
 	String codiProcediment;
 	
+	public String getTitol() {
+		return titol;
+	}
+	public void setTitol(String titol) {
+		this.titol = titol;
+	}
 	public Long getContingutId() {
 		return contingutId;
 	}

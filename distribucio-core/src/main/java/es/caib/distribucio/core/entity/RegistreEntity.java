@@ -582,6 +582,9 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateIdentificadorProcedimentSistra(String identificadorProcediment) {
 		this.identificadorProcedimentSistra = identificadorProcediment;
 	}
+	public void updateTitol(String titol) {
+		this.extracte = titol;
+	}
 	public void updateProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
 	}

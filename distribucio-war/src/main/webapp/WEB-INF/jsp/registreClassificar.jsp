@@ -89,7 +89,9 @@ $(document).ready(function() {
 		</table>
 	</div>
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreClassificarCommand">
-
+		<c:if test="${isPermesModificarTitol}">
+			<dis:inputText name="titol" textKey="bustia.pendent.classificar.camp.titol" />
+		</c:if>
 		<form:hidden path="contingutId"/>
 		<c:choose>
 			<c:when test="${empty procediments}">

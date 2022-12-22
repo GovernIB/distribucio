@@ -1708,7 +1708,8 @@ public class RegistreUserController extends BaseUserController {
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				command.getCodiProcediment());
+				command.getCodiProcediment(),
+				command.getTitol());
 		switch (resultat.getResultat()) {
 		case SENSE_CANVIS:
 			break;
@@ -1740,6 +1741,14 @@ public class RegistreUserController extends BaseUserController {
 							"bustia.controller.pendent.contingut.classificat.error",
 							null));
 			break;
+		case TITOL_MODIFICAT:
+			MissatgesHelper.info(
+					request, 
+					getMessage(
+							request, 
+							"bustia.controller.pendent.contingut.classificat.titol",
+							null));
+			break;
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
@@ -1759,7 +1768,8 @@ public class RegistreUserController extends BaseUserController {
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				codiProcediment);
+				codiProcediment,
+				null);
 		return resultat;
 	}
 	
@@ -1976,7 +1986,6 @@ public class RegistreUserController extends BaseUserController {
 		return Boolean.parseBoolean(isReenviarBustiaDefaultEntitatDisabled);
 	}
 
-	
 	private boolean isFavoritsPermes() {
 		String isFavoritsPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.favorits");
 		return Boolean.parseBoolean(isFavoritsPermesStr);
@@ -1985,6 +1994,11 @@ public class RegistreUserController extends BaseUserController {
 	private boolean isMostrarPermisosBustiaPermes() {
 		String isMostrarPermisosBustiaPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.mostrar.permisos");
 		return Boolean.parseBoolean(isMostrarPermisosBustiaPermesStr);
+	}
+
+	private boolean isPermesModificarTitol() {
+		String isModificarTitolActivat = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.modificar.titol");
+		return Boolean.parseBoolean(isModificarTitolActivat);
 	}
 	
 	private RegistreFiltreCommand getFiltreCommand(
@@ -2019,6 +2033,7 @@ public class RegistreUserController extends BaseUserController {
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
 						registre.getPareId()));
+		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
 		return registre.getProcedimentCodi();
 	}
 	

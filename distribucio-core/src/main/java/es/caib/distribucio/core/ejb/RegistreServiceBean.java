@@ -231,11 +231,13 @@ public class RegistreServiceBean implements RegistreService {
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
-			String procedimentCodi) throws NotFoundException {
+			String procedimentCodi,
+			String titol) throws NotFoundException {
 		return delegate.classificar(
 				entitatId,
 				registreId,
-				procedimentCodi);
+				procedimentCodi,
+				titol);
 	}
 
 	@Override
