@@ -95,6 +95,7 @@ $(document).ready(function() {
 		<dis:inputSelect name="bustiaId" textKey="regla.simulador.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="procedimentCodi" textKey="regla.simulador.form.camp.procediment.codi"/>
 		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
+		<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 		
 		<div class="col-xs-4"></div><div class="col-xs-8"><button id="simularBtn" type="submit" class="btn btn-primary" style="margin-bottom: 35px;"><span class="fa fa-cog"></span> <spring:message code="comu.boto.simular"/></button></div>
 		

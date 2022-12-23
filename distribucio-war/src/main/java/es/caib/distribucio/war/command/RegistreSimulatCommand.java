@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 
@@ -28,6 +29,7 @@ public class RegistreSimulatCommand {
 	@Size(max = 64)
 	private String procedimentCodi;
 	private Long bustiaId;
+	private ReglaPresencialEnumDto presencial;
 
 
 	public Long getUnitatId() {
@@ -56,6 +58,12 @@ public class RegistreSimulatCommand {
 	}
 	
 	
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
+	}
 	public static RegistreSimulatCommand asCommand(RegistreSimulatDto dto) {
 		RegistreSimulatCommand command = ConversioTipusHelper.convertir(
 				dto,

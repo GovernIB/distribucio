@@ -75,6 +75,7 @@ import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -1702,6 +1703,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	@Transactional
 	public boolean reintentarBustiaPerDefecte(
@@ -1729,12 +1731,18 @@ public class RegistreServiceImpl implements RegistreService {
 				
 				ReglaEntity reglaAplicable = null;
 				if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat())) {
+
+					Boolean presencial = null;
+					if (anotacio.getPresencial() != null) {
+						presencial = anotacio.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
+					}
 					reglaAplicable = reglaHelper.findAplicable(
 							entitat,
 							unitat.getId(),
 							bustia.getId(),
 							anotacio.getProcedimentCodi(),
-							anotacio.getAssumpteCodi());
+							anotacio.getAssumpteCodi(), 
+							presencial);
 					anotacio.updateRegla(reglaAplicable);
 				}
 				
@@ -2395,7 +2403,8 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
-				registre.getAssumpteCodi());
+				registre.getAssumpteCodi(), 
+				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
 		if (reglaAplicable != null) {
 			registre.updateRegla(reglaAplicable);

@@ -28,6 +28,7 @@ import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.exception.AplicarReglaException;
 import es.caib.distribucio.core.api.exception.ScheduledTaskException;
@@ -81,16 +82,23 @@ public class ReglaHelper {
 			Long unitatId,
 			Long bustiaId,
 			String procedimentCodi,
-			String assumpteCodi
+			String assumpteCodi, 
+			Boolean presencial
 			) {
 		ReglaEntity reglaAplicable = null;
 		
+		ReglaPresencialEnumDto esPresencial = null;
+		if (presencial != null) {
+			esPresencial = presencial == true ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
+		}
 		List<ReglaEntity> regles = reglaRepository.findAplicables(
 					entitat,
 					unitatId,
 					bustiaId,
 					procedimentCodi != null ? procedimentCodi : "",
-					assumpteCodi != null ? assumpteCodi : "");
+					assumpteCodi != null ? assumpteCodi : "", 
+					esPresencial == null,
+					esPresencial);
 		if (regles.size() > 0) {
 			reglaAplicable = regles.get(0);
 		}
@@ -229,7 +237,8 @@ public class ReglaHelper {
 			RegistreSimulatDto registreSimulatDto,
 			ReglaEntity reglaToApply,
 			List<ReglaEntity> reglasApplied,
-			List<RegistreSimulatAccionDto> simulatAccions) {
+			List<RegistreSimulatAccionDto> simulatAccions, 
+			Boolean presencial) {
 		
 		
 			logger.debug("Simular aplicació regla=" + reglaToApply.getNom() + ", tipus=" + reglaToApply.getTipus());
@@ -268,12 +277,17 @@ public class ReglaHelper {
 			
 			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
 			reglasApplied.add(reglaToApply);
+//			Boolean presencial = null;
+//			if (registreSimulatDto.getPresencial() != null) {
+//				presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
+//			}
 			ReglaEntity nextReglaToApply = findAplicable(
 					entitatEntity,
 					registreSimulatDto.getUnitatId(),
 					registreSimulatDto.getBustiaId(),
 					registreSimulatDto.getProcedimentCodi(),
-					registreSimulatDto.getAssumpteCodi());
+					registreSimulatDto.getAssumpteCodi(), 
+					presencial);
 			
 			if (nextReglaToApply != null) {
 				boolean alreadyApplied = false;
@@ -288,7 +302,8 @@ public class ReglaHelper {
 							registreSimulatDto,
 							nextReglaToApply,
 							reglasApplied,
-							simulatAccions);
+							simulatAccions, 
+							presencial);
 					
 				} else {
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.LOOP_DETECTED, null, nextReglaToApply.getNom()));
@@ -398,12 +413,21 @@ public class ReglaHelper {
 			if (HibernateHelper.isProxy(pare))
 				pare = HibernateHelper.deproxy(pare);
 			BustiaEntity bustia = (BustiaEntity)pare;
+//			Boolean presencial = null;
+//			if (regla.getPresencial() != null) {
+//				presencial = regla.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
+//			}
+			Boolean presencial = null;
+			if (registre.getPresencial() != null) {
+				presencial = registre.getPresencial();
+			}
 			ReglaEntity nextReglaToApply = findAplicable(
 					registre.getEntitat(),
 					bustia.getUnitatOrganitzativa().getId(),
 					bustia.getId(),
 					registre.getProcedimentCodi(),
-					registre.getAssumpteCodi());
+					registre.getAssumpteCodi(), 
+					presencial);
 			
 			if (nextReglaToApply != null) {
 				boolean alreadyApplied = false;

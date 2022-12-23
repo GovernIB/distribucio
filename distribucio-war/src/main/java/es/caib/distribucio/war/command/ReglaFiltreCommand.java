@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
@@ -28,6 +29,7 @@ public class ReglaFiltreCommand {
 	private Long bustiaId;
 //	private boolean activa = true;
 	private ReglaFiltreActivaEnumDto activa;
+	private ReglaPresencialEnumDto presencial;
 	
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -84,7 +86,13 @@ public class ReglaFiltreCommand {
 	public void setActiva(ReglaFiltreActivaEnumDto activa) {
 		this.activa = activa;
 	}
-//	public boolean isActiva() {
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
+	}
+	//	public boolean isActiva() {
 //		return activa;
 //	}
 //	public void setActiva(boolean activa) {

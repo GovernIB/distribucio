@@ -25,6 +25,7 @@ public class ReglaFiltreDto implements Serializable {
 	private Long bustiaId;
 //	private boolean activa = true;
 	private ReglaFiltreActivaEnumDto activa;
+	private ReglaPresencialEnumDto presencial;
 
 	
 	public ReglaTipusEnumDto getTipus() {
@@ -80,6 +81,12 @@ public class ReglaFiltreDto implements Serializable {
 	}
 	public void setActiva(ReglaFiltreActivaEnumDto activa) {
 		this.activa = activa;
+	}
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
 	}
 	//	public boolean isActiva() {
 //		return activa;

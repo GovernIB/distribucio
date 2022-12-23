@@ -14,6 +14,7 @@ public class RegistreSimulatDto {
 	private Long bustiaId;
 	private String assumpteCodi;
 	private String procedimentCodi;
+	private ReglaPresencialEnumDto presencial;
 
 
 	public Long getUnitatId() {
@@ -39,5 +40,11 @@ public class RegistreSimulatDto {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
 	}
 }

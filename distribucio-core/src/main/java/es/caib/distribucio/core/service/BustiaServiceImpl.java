@@ -1097,7 +1097,8 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat.getId(),
 				bustia.getId(),
 				registreAnotacio.getProcedimentCodi(),
-				registreAnotacio.getAssumpteCodi());
+				registreAnotacio.getAssumpteCodi(), 
+				registreAnotacio.isPresencial());
 		RegistreProcesEstatEnum estat;
 		if (registreAnotacio.getAnnexos() != null && !registreAnotacio.getAnnexos().isEmpty()) {
 			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
@@ -1202,7 +1203,8 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat.getId(),
 				bustia.getId(),
 				registreAnotacio.getProcedimentCodi(),
-				registreAnotacio.getAssumpteCodi());
+				registreAnotacio.getAssumpteCodi(), 
+				registreAnotacio.isPresencial());
 		RegistreProcesEstatEnum estat;
 		if (registreAnotacio.getAnnexos() != null && !registreAnotacio.getAnnexos().isEmpty()) {
 			estat = RegistreProcesEstatEnum.ARXIU_PENDENT;

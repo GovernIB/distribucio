@@ -24,6 +24,7 @@ import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -93,10 +94,12 @@ public class ReglaServiceImpl implements ReglaService {
 				false,
 				false);
 		int ordre = reglaRepository.countByEntitat(entitat);
+
 		ReglaEntity reglaEntity = ReglaEntity.getBuilder(
 				entitat,
 				reglaDto.getNom(),
 				reglaDto.getTipus(),
+				reglaDto.getPresencial(),
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findOne(reglaDto.getUnitatOrganitzativaFiltre().getId()) : null,
@@ -156,6 +159,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getNom(),
 				reglaDto.getDescripcio(),
 				reglaDto.getTipus(),
+				reglaDto.getPresencial(),
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findOne(reglaDto.getUnitatOrganitzativaFiltre().getId()) : null,
@@ -355,10 +359,19 @@ public class ReglaServiceImpl implements ReglaService {
 			bustiesUnitatOrganitzativaIds.add(0L);
 		}
 		
+		Boolean registrePresencial = null;
+		if (regla.getPresencial().equals(ReglaPresencialEnumDto.NO)) {
+			registrePresencial = false;
+		}else if (regla.getPresencial().equals(ReglaPresencialEnumDto.SI)) {
+			registrePresencial = true;
+		}
+		
 		for(RegistreEntity registre : reglaRepository.findRegistres(
 				entitat, 
 				regla.getUnitatOrganitzativaFiltre() == null, 
 				bustiesUnitatOrganitzativaIds,
+				registrePresencial == null, 
+				registrePresencial != null ? registrePresencial : null,
 				regla.getBustiaFiltre() == null, 
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
 				regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(), 
@@ -447,7 +460,7 @@ public class ReglaServiceImpl implements ReglaService {
 		}else if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.ACTIVES)) {
 			activa = true;
 		}
-		
+
 		PaginaDto<ReglaDto> resultPagina =  paginacioHelper.toPaginaDto(
 				reglaRepository.findByFiltrePaginat(
 						entitat,
@@ -461,6 +474,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
+						filtre.getPresencial() == null,
+						filtre.getPresencial(),
 						bustia == null, 
 						bustia, 
 						backoffice == null ,
@@ -533,6 +548,7 @@ public class ReglaServiceImpl implements ReglaService {
 				+ "unitatId=" + registreSimulatDto.getUnitatId() + ", "
 				+ "bustiaId=" + registreSimulatDto.getBustiaId() + ", "
 				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
+				+ "presencial=" + registreSimulatDto.getPresencial() + ", "
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
 		
 		
@@ -553,13 +569,17 @@ public class ReglaServiceImpl implements ReglaService {
 		} else { 
 			bustiaDesti = bustiaRepository.findOne(registreSimulatDto.getBustiaId());
 		}
-		
+		Boolean presencial = null;
+		if (registreSimulatDto.getPresencial() != null) {
+			presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
+		}
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitatEntity,
 				unitatOrganitzativaEntity.getId(),
 				bustiaDesti.getId(),
 				registreSimulatDto.getProcedimentCodi(),
-				registreSimulatDto.getAssumpteCodi());
+				registreSimulatDto.getAssumpteCodi(), 
+				presencial);
 	
 		registreSimulatDto.setBustiaId(bustiaDesti.getId());
 		
@@ -569,7 +589,8 @@ public class ReglaServiceImpl implements ReglaService {
 					registreSimulatDto,
 					reglaAplicable,
 					new ArrayList<ReglaEntity>(),
-					simulatAccions);
+					simulatAccions, 
+					presencial);
 		}
 
 		

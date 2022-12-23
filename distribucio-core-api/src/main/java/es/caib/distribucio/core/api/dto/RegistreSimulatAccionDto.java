@@ -18,6 +18,7 @@ public class RegistreSimulatAccionDto {
 	private RegistreSimulatAccionEnumDto accion;
 	private String param;
 	private String reglaNom;
+	private Boolean presencial;
 	
 
 	public RegistreSimulatAccionDto(
@@ -45,6 +46,12 @@ public class RegistreSimulatAccionDto {
 	}
 	public void setParam(String param) {
 		this.param = param;
+	}
+	public Boolean getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(Boolean presencial) {
+		this.presencial = presencial;
 	}
 	@Override
 	public String toString() {

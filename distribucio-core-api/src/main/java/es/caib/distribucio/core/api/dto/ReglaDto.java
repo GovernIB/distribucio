@@ -25,6 +25,7 @@ public class ReglaDto extends AuditoriaDto {
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private Long bustiaFiltreId;
 	private String bustiaFiltreNom;
+	private ReglaPresencialEnumDto presencial;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
@@ -40,6 +41,7 @@ public class ReglaDto extends AuditoriaDto {
 	
 	private Long entitatId;
 	private String entitatNom;
+	
 
 
 	
@@ -78,6 +80,12 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setTipus(ReglaTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
 	}
 	public String getAssumpteCodiFiltre() {
 		return assumpteCodiFiltre;

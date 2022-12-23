@@ -20,6 +20,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
@@ -65,6 +66,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bustia_filtre_id")
 	protected BustiaEntity bustiaFiltre;
+	
+	@Column(name = "presencial", nullable = false)
+	@Enumerated(EnumType.ORDINAL)
+	protected ReglaPresencialEnumDto presencial;
 	
 	
 	// ------------- ACCIO  ----------------------
@@ -117,6 +122,9 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public ReglaTipusEnumDto getTipus() {
 		return tipus;
 	}
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
 	public String getAssumpteCodiFiltre() {
 		return assumpteCodiFiltre;
 	}
@@ -150,6 +158,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String nom,
 			String descripcio,
 			ReglaTipusEnumDto tipus,
+			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
@@ -158,6 +167,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.nom = nom;
 		this.descripcio = descripcio;
 		this.tipus = tipus;
+		this.presencial = presencial;
 		this.assumpteCodiFiltre = assumpteCodiFiltre;
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
@@ -188,6 +198,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			EntitatEntity entitat,
 			String nom,
 			ReglaTipusEnumDto tipus,
+			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
@@ -197,6 +208,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				entitat,
 				nom,
 				tipus,
+				presencial, 
 				assumpteCodiFiltre,
 				procedimentCodiFiltre,
 				unitatOrganitzativaFiltre,
@@ -209,6 +221,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				EntitatEntity entitat,
 				String nom,
 				ReglaTipusEnumDto tipus,
+				ReglaPresencialEnumDto presencial, 
 				String assumpteCodiFiltre,
 				String procedimentCodiFiltre,
 				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
@@ -218,6 +231,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.entitat = entitat;
 			built.nom = nom;
 			built.tipus = tipus;
+			built.presencial = presencial;
 			built.assumpteCodiFiltre = assumpteCodiFiltre;
 			built.procedimentCodiFiltre = procedimentCodiFiltre;
 			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;

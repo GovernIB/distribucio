@@ -178,6 +178,8 @@ $(document).ready(function() {
 				optionMinimumResultsForSearch="0"/>
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
+			
+			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 
 			<legend><spring:message code="regla.form.legend.accio"/></legend>
 			<dis:inputSelect name="tipus" textKey="regla.form.camp.tipus" optionItems="${reglaTipusEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" required="true"/>

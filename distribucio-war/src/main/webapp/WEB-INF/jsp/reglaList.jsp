@@ -203,7 +203,10 @@
 			</div>
 		</div>
 		<div class="row">
-		<div class="col-md-9"></div>
+			<div class="col-md-3">
+				<dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
+			</div>
+			<div class="col-md-6"></div>
 			<div class="col-md-3 d-flex pull-right justify-content-end">
 				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
 				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -254,6 +257,17 @@
 				<th data-col-name="bustiaFiltreNom" data-orderable="false"><spring:message code="regla.list.columna.bustia.nom"/></th>
 				
 				
+				<th data-col-name="presencial" data-orderable="true" data-template="#presencialTemplate">
+					<spring:message code="regla.list.columna.presencial"/>
+					<script id="presencialTemplate" type="text/x-jsrender">
+						{{if presencial == 'SI'}}
+							<spring:message code="regla.presencial.enum.SI"/>
+						{{else presencial == 'NO'}}
+							<spring:message code="regla.presencial.enum.NO"/>
+						{{/if}}
+					</script>
+				</th>
+				
 				<th data-col-name="tipus" data-orderable="false" data-template="#tipusTemplate">
 					<spring:message code="regla.list.columna.destinacio"/>
 					<script id="tipusTemplate" type="text/x-jsrender">
@@ -284,6 +298,13 @@
 						{{if activa}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
+				
+				<!-- <th data-col-name="presencial" data-template="#cellPresencialTemplate" data-orderable="false">
+					<spring:message code="regla.list.columna.presencial"/>
+					<script id="cellPresencialTemplate" type="text/x-jsrender">
+						{{if presencial}}<span class="fa fa-check"></span>{{/if}}
+					</script>
+				</th>-->
 				<c:if test="${isRolActualAdministrador}">
 					<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
 						<script id="cellAccionsTemplate" type="text/x-jsrender">

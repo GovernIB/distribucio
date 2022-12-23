@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -56,6 +57,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullCodiAssumpte = true or lower(r.assumpteCodiFiltre) like lower('%'||:codiAssumpte||'%')) " +
 			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " + 
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " +
+			"and (:esNullPresencial = true or r.presencial = :isPresencial) " +
 			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
 			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice) " + 
 //			"and (r.activa = :isActiva) ") +
@@ -72,6 +74,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("filtreCodiSIA") String filtreCodiSIA,
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,
+			@Param("esNullPresencial") boolean esNullPresencial, 
+			@Param("isPresencial") ReglaPresencialEnumDto isPresencial, 
 			@Param("esNullBustia") boolean esNullBustia, 
 			@Param("bustia") BustiaEntity bustia, 
 			@Param("esNullBackoffice") boolean esNullBackoffice,
@@ -104,14 +108,17 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (r.unitatOrganitzativaFiltre is null or r.unitatOrganitzativaFiltre.id = :unitatOrganitzativaFiltreId) " + 
 			"and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " + 
 			"and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))) " +
-			"and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " + 
+			"and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
+			"and ((r.presencial is null) or (:isPresencialNull is true or r.presencial = :presencial)) " +
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
 			@Param("entitat") EntitatEntity entitat, 
 			@Param("unitatOrganitzativaFiltreId") Long unitatOrganitzativaFiltreId, 
 			@Param("bustiaId") Long bustiaId,
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre, 
-			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
+			@Param("assumpteCodiFiltre") String assumpteCodiFiltre, 
+			@Param("isPresencialNull") boolean isPresencialNull, 
+			@Param("presencial") ReglaPresencialEnumDto presencial);
 
 	/** Mètode per trobar els registres als quals se'ls pot aplicar la regla manualment
 	 * a l'acció de l'administrador d'aplicar la regla manualment.
@@ -130,6 +137,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    r.entitat = :entitat " +
 			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
 			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
+			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " + 
 			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " + 
 			"and (:procedimentsCodisFiltreIsEmpty = true or r.procedimentCodi in (:procedimentsCodisFiltre)) " +
 			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " + 
@@ -138,6 +146,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativaFiltreIsNull") boolean unitatOrganitzativaFiltreIsNull,
 			@Param("bustiesUnitatOrganitzativaIds") List<Long> bustiesUnitatOrganitzativaIds,
+			@Param("isRegistrePresencialNull") boolean isRegistrePresencialNull, 
+			@Param("registrePresencial") boolean registrePresencial,
 			@Param("bustiaFiltreIsNull") boolean bustiaFiltreIsNull,
 			@Param("bustiaFiltreId") Long bustiaFiltreId,
 			@Param("procedimentsCodisFiltreIsEmpty") boolean procedimentsCodisFiltreIsEmpty,

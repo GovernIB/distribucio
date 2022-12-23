@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.war.command.ReglaCommand.CreateUpdate;
@@ -38,6 +39,7 @@ public class ReglaCommand {
 	private String procedimentCodiFiltre;
 	private Long unitatFiltreId;
 	private Long bustiaFiltreId;
+	private ReglaPresencialEnumDto presencial;
 
 	// ------------- ACCIO  ----------------------
 	private ReglaTipusEnumDto tipus;
@@ -69,6 +71,12 @@ public class ReglaCommand {
 	}
 	public void setTipus(ReglaTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	public ReglaPresencialEnumDto getPresencial() {
+		return presencial;
+	}
+	public void setPresencial(ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
 	}
 	public Long getBustiaDestiId() {
 		return bustiaDestiId;
