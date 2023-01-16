@@ -76,18 +76,18 @@ public class ReglaRestController{
 			@ApiParam(name="backoffice", value="Codi Backoffice per la regla")
 			@RequestParam(required = false) String backoffice) {
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per crear regles.", HttpStatus.UNAUTHORIZED);
-		}
-		// Obtenim el nom de l'usuari que ha fet la petició
-		Object usuariContext = auth.getPrincipal();
-		String usuari;
-		if (usuariContext instanceof UserDetails ) {
-			usuari = ((UserDetails)usuariContext).getUsername();
-		}else {
-			usuari = usuariContext.toString();
-		}
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
+//			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per crear regles.", HttpStatus.UNAUTHORIZED);
+//		}
+//		// Obtenim el nom de l'usuari que ha fet la petició
+//		Object usuariContext = auth.getPrincipal();
+//		String usuari;
+//		if (usuariContext instanceof UserDetails ) {
+//			usuari = ((UserDetails)usuariContext).getUsername();
+//		}else {
+//			usuari = usuariContext.toString();
+//		}
 		
 		// CREAR Regla AMB TOTES LES VALIDACIONS
 		
@@ -97,7 +97,7 @@ public class ReglaRestController{
 		
 		// Definim els valors que no hi son als paràmetres
 		String nom = backoffice + " " + sia;
-		String descripcio = "Creació de regla per part de " + usuari + " en data de " + dataAra + " pel backoffice amb codi " + backoffice + " i codi de procediment " + sia;
+		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice + " i codi de procediment " + sia;
 		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
 		
 		// Validar que la entitat existeix
@@ -171,11 +171,11 @@ public class ReglaRestController{
 			@RequestParam(required = true) String sia,
 			@ApiParam(name="activa", value="Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
 			@RequestParam(required = false) Boolean activa){
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
-		}
+//		
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
+//			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
+//		}
 
 		List<ReglaDto> regles = reglaService.findReglaBackofficeByProcediment(sia);
 		ReglaDto regla;
@@ -219,11 +219,11 @@ public class ReglaRestController{
 			HttpServletRequest request, 
 			@ApiParam(name="sia", value="Codi SIA de la regla que identifica la regla de tipus backoffice.")
 			@RequestParam(required = true) String sia) {
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
-		}
+//		
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
+//			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
+//		}
 		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
 		if (reglesDto.size() > 1) {
 			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi de procediment " + sia + ".");
