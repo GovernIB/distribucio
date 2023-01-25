@@ -224,6 +224,15 @@
 			<bean class="es.caib.distribucio.war.interceptor.AccesAdminInterceptor"/>
 		</mvc:interceptor>
 		
+		<!-- Rutes només accessibles amb el rol d'administrador i una propietat activada -->
+		<mvc:interceptor>
+			<mvc:mapping path="/metaDada**"/>
+			<mvc:mapping path="/metaDada/**"/>
+			<mvc:mapping path="/domini**"/>
+			<mvc:mapping path="/domini/**"/>
+			<bean class="es.caib.distribucio.war.interceptor.AccesMetadadaInterceptor"/>
+		</mvc:interceptor>
+		
 		<!-- Rutes només accessibles amb el rol de superusuari -->
 		<mvc:interceptor>
 			<mvc:mapping path="/entitat**"/>

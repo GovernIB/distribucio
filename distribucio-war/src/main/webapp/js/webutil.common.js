@@ -205,6 +205,11 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 
 (function($) {
 
+	webutilMostrarExemple = function(anchor) {
+		var $exempleDiv = $(anchor).next();
+		if ($exempleDiv != null)
+			$exempleDiv.toggle();
+	};
 	$.fn.webutilClonarElementAmbInputs = function(clonId, clonValor) {
 		var $contingutOrigen = $(this);
 		$contingutOrigen.webutilDestroyInputComponents();

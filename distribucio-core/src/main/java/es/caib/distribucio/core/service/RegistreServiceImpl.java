@@ -57,6 +57,7 @@ import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.DadaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
@@ -104,7 +105,9 @@ import es.caib.distribucio.core.api.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
+import es.caib.distribucio.core.entity.DadaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.MetaDadaEntity;
 import es.caib.distribucio.core.entity.ProcedimentEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexFirmaEntity;
@@ -133,6 +136,8 @@ import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
+import es.caib.distribucio.core.repository.DadaRepository;
+import es.caib.distribucio.core.repository.MetaDadaRepository;
 import es.caib.distribucio.core.repository.ProcedimentRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.core.repository.RegistreAnnexRepository;
@@ -207,6 +212,10 @@ public class RegistreServiceImpl implements RegistreService {
 	private ConfigHelper configHelper;
 	@Autowired
 	private ProcedimentRepository procedimentRepository;
+	@Autowired
+	private DadaRepository dadaRepository;
+	@Autowired
+	private MetaDadaRepository metaDadaRepository;
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -239,7 +248,27 @@ public class RegistreServiceImpl implements RegistreService {
 		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 	}
 
-
+	@Transactional(readOnly = true)
+	@Override
+	public RegistreDto findOneAmbDades(
+			Long entitatId,
+			Long registreId,
+			boolean isVistaMoviments,
+			String rolActual) throws NotFoundException {
+		
+		RegistreDto registre = registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
+		
+		List<DadaEntity> dades = dadaRepository.findByRegistreId(registre.getId());
+		
+		registre.setDades(conversioTipusHelper.convertirList(dades, DadaDto.class));
+		
+		for (int i = 0; i < dades.size(); i++) {
+			registre.getDades().get(i).setValor(dades.get(i).getValor());
+		}
+		
+		return registre;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<RegistreDto> findMultiple(
@@ -3085,6 +3114,93 @@ public class RegistreServiceImpl implements RegistreService {
 			throw new Exception("Error al desencriptar l'id del registre: " + e.toString(), e);
 		}
 		return clau;
+	}
+
+	@Transactional
+	@Override
+	public void dadaSave(Long entitatId, Long registreId, Map<String, Object> valors) throws NotFoundException {
+		logger.debug("Guardant dades del registre (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ", " +
+				"valors=" + valors + ")");
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		List<DadaEntity> dades = dadaRepository.findByRegistre(registre);
+		
+		// Esborra les dades no especificades
+		for (DadaEntity dada: dades) {
+			if (!valors.keySet().contains(dada.getMetaDada().getCodi())) {
+				dadaRepository.delete(dada);
+			}
+		}
+		
+		// Modifica les dades existents
+		for (String dadaCodi: valors.keySet()) {
+			nodeDadaGuardar(
+					registre,
+					dadaCodi,
+					valors.get(dadaCodi));
+		}
+	}
+	
+	private void nodeDadaGuardar(
+			RegistreEntity registre,
+			String dadaCodi,
+			Object dadaValor) {
+		MetaDadaEntity metaDada = metaDadaRepository.findByCodi(dadaCodi);
+		if (metaDada == null) {
+			throw new ValidationException(
+					registre.getId(),
+					RegistreEntity.class,
+					"No s'ha trobat la metaDada amb el codi " + dadaCodi);
+		}
+		List<DadaEntity> dades = dadaRepository.findByRegistreAndMetaDadaOrderByOrdreAsc(
+				registre,
+				metaDada);
+		Object[] valors = (dadaValor instanceof Object[]) ? (Object[])dadaValor : new Object[] {dadaValor};
+		// Esborra els valors nulls
+		List<Object> valorsSenseNull = new ArrayList<Object>();
+		for (Object o: valors) {
+			if (o != null)
+				valorsSenseNull.add(o);
+		}
+		// Esborra les dades ja creades que sobren
+		if (dades.size() > valorsSenseNull.size()) {
+			for (int i = valorsSenseNull.size(); i < dades.size(); i++) {
+				dadaRepository.delete(dades.get(i));
+			}
+		}
+		// Modifica o crea les dades
+		for (int i = 0; i < valorsSenseNull.size(); i++) {
+			List<String> params = new ArrayList<String>();
+			DadaEntity dada = (i < dades.size()) ? dades.get(i) : null;
+			
+			if (dada != null) {
+				params.add(dadaCodi);
+				params.add(dada.getValorComString());
+				dada.update(
+						valorsSenseNull.get(i),
+						i);
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.MODIFICACIO,
+						params,
+						false);
+			} else {
+				dada = DadaEntity.getBuilder(
+						metaDada,
+						registre,
+						valorsSenseNull.get(i),
+						i).build();
+				params.add(dadaCodi);
+				params.add(dada.getValorComString());
+				dadaRepository.save(dada);
+				contingutLogHelper.log(
+						registre,
+						LogTipusEnumDto.MODIFICACIO,
+						params,
+						false);
+			}
+		}
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreServiceImpl.class);

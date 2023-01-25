@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -242,6 +243,8 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "annexos_estat_esborrany")
 	private int annexosEstatEsborrany;
 
+	@OneToMany(mappedBy = "registre", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+	protected Set<DadaEntity> dades;
 	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;

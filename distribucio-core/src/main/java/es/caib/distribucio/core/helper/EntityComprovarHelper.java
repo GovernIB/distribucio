@@ -21,11 +21,13 @@ import es.caib.distribucio.core.api.exception.ValidationException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.MetaDadaEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.repository.BustiaRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.MetaDadaRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.security.ExtendedPermission;
@@ -53,7 +55,9 @@ public class EntityComprovarHelper {
 	private PermisosHelper permisosHelper;
 	@Autowired
 	private MetricRegistry metricRegistry;
-
+	@Resource
+	private MetaDadaRepository metaDadaRepository;
+	
 	@Transactional
 	public EntitatEntity comprovarEntitat(
 			Long entitatId,
@@ -284,6 +288,24 @@ public class EntityComprovarHelper {
 					"La regla especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la regla");
 		}
 		return regla;
+	}
+	
+	public MetaDadaEntity comprovarMetaDada(
+			EntitatEntity entitat,
+			Long metaDadaId) {
+		MetaDadaEntity metadada = metaDadaRepository.findOne(metaDadaId);
+		if (metadada == null) {
+			throw new NotFoundException(
+					metaDadaId,
+					MetaDadaEntity.class);
+		}
+		if (!metadada.getEntitat().equals(entitat)) {
+			throw new ValidationException(
+					metaDadaId,
+					ReglaEntity.class,
+					"La metadada especificada (id=" + entitat.getId() + ") no coincideix amb l'entitat de la metadada");
+		}
+		return metadada;
 	}
 
 }

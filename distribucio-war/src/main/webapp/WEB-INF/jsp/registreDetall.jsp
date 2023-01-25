@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <% 
 	pageContext.setAttribute(
@@ -22,6 +23,14 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	<script src="<c:url value="/webjars/pdf-js/2.5.207/build/pdf.js"/>"></script>
+	<script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
 	<!------------------------------------------- Contant interessats sense incloure representants --------------------------------------------->
 	<c:set var="countInteressats" value="0"/>
 	<c:if test="${not empty registre.interessats}">
@@ -193,6 +202,18 @@ li[id^="anotacio_"] {
 	z-index: 100
 }
 
+#nodeDades .form-group {
+	margin-bottom: 6px;
+}
+#nodeDades input.form-control {
+	width: 322px;
+}
+#nodeDades input.multiple {
+	width: 280px;
+	!
+	important
+}
+
 </style>
 <script type="text/javascript">
 	// <![CDATA[
@@ -319,7 +340,145 @@ li[id^="anotacio_"] {
 	    		return false;
 	    	});
     	//</c:if>
+    	
+		//#### DADES ###	
+		var nodeDadesInputChange = function() {
+			var $pare = $(this).parent();
+			$pare.removeClass('has-success');
+			$pare.removeClass('has-warning');
+			$pare.removeClass('has-error');
+			$pare.addClass('has-warning has-feedback');
+			$(this).next().removeClass().addClass('glyphicon glyphicon-pencil form-control-feedback');
+			$(this).attr('title', 'Valor modificat pendent de guardar');
+		}
+		
+		function setCheckboxFalse($checkbox, isDisabled) {
+			var hiddenCheckbox = $checkbox.clone(true);
+			hiddenCheckbox.attr('type', 'hidden');
+			hiddenCheckbox.attr('value', 'false');
+			hiddenCheckbox.removeAttr('data-toggle');
+			hiddenCheckbox.insertAfter($checkbox);
+			if (!isDisabled)
+				hiddenCheckbox.removeAttr('disabled')
+			
+			$checkbox.removeAttr('checked')
+			$checkbox.attr('value', 'false');
+		}
+		
+		function setCheckboxTrue($checkbox)	{
+			$checkbox.attr('value', 'true');
+			$checkbox.attr('checked', 'checked');
+			console.log("set to true");
+			console.log($checkbox.next());
+			$checkbox.next().remove();
+		}
+
+		$('input[data-toggle="checkbox"]', this).each(function() {
+			$(this).attr('type', 'checkbox');
+			var isDisabled = $(this).closest('div.form-group').data('toggle') == "multifield";
+			if($(this).attr('value') == 'true'){
+				$(this).attr('checked', 'checked');		
+			}else{
+				setCheckboxFalse($(this), isDisabled);
+			}
+		});
+		
+		$('form#nodeDades').on('change', 'input[data-toggle="checkbox"]', function() {
+			if($(this).attr('value') == 'true'){
+				setCheckboxFalse($(this), false);			
+			} else{
+				setCheckboxTrue($(this));
+			}		
+		});
+			
+		$('form#nodeDades').on('DOMNodeInserted', 'div[data-multifield-clon="true"]', function () {
+			$(this).find('input').prop('disabled', '');
+		});
+			
+		$('#nodeDades input').change(nodeDadesInputChange);
+		$('#dades').on('submit', 'form#nodeDades', function() {
+			showLoadingModal('<spring:message code="contingut.dades.form.processant"/>');
+			$.post(
+					'../../ajax/registreDada/${registre.id}/save',
+					$(this).serialize(),
+					function (data) {
+						if (data.estatOk) {
+							$('#nodeDades input').each(function() {
+								var $pare = $(this).parent();
+								if ($pare.hasClass('has-warning') || $pare.hasClass('has-error')) {
+									$pare.removeClass('has-success');
+									$pare.removeClass('has-warning');
+									$pare.removeClass('has-error');
+									$pare.addClass('has-success has-feedback');
+									$(this).next().removeClass().addClass('glyphicon glyphicon-ok form-control-feedback');
+									$(this).attr('title', 'Valor guardat correctament');
+								} else {
+									$pare.removeClass('has-success');
+									$pare.removeClass('has-feedback');
+									$(this).next().removeClass();
+									$(this).removeAttr('title');
+								}
+							});	
+						} else {
+							$('#nodeDades input').each(function() {
+								for (var i = 0; i < data.errorsCamps.length; i++) {
+									var error = data.errorsCamps[i];
+									if (error.camp == $(this).attr('name')) {
+										var $pare = $(this).parent();
+										$pare.removeClass('has-success');
+										$pare.removeClass('has-warning');
+										$pare.removeClass('has-error');
+										$pare.addClass('has-error has-feedback');
+										$(this).next().removeClass().addClass('glyphicon glyphicon-warning-sign form-control-feedback');
+										$(this).attr('title', error.missatge);
+										break;
+									}
+								}
+							});
+						}
+						location.reload();
+					});
+			return false;
+		});
+										
+		$('form#nodeDades td .form-group').on('clone.multifield', function(event, clon) {
+			$('input', clon).change(nodeDadesInputChange);
+		});
+		
 	});
+	
+	function modalLoading(modalDivId, modalData, message) {
+		return  '<div id="' + modalDivId + '"' + modalData + '>' +
+				'	<div class="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">' +
+				'		<div class="modal-dialog modal-sm" role="document">' +
+			    '			<div class="modal-content" style="border-radius: 0px;box-shadow: 0 0 20px 8px rgba(0, 0, 0, 0.7);">' +
+			    '				<div class="modal-body text-center">' +
+			    '					<div class="loader"></div>' +
+				'					<div clas="loader-txt">' +
+				'						<p>' + message + '</p>' +
+				'					</div>' +
+				'				</div>' +
+			    '			</div>' +
+				'		</div>' +
+				'	</div>' +
+				'</div>';
+	}	
+	
+	function showLoadingModal(message) {
+		var modalDivId = "modalLoading";
+				
+		modalData = "";
+		if ($('#' + modalDivId).length == 0 ) {
+			$('body').append(modalLoading(modalDivId, modalData, message));
+		} 
+		var modalobj = $('#' + modalDivId + ' > div.modal');
+		modalobj.modal({
+		      backdrop: "static", //remove ability to close modal with click
+		      keyboard: false, //remove option to close with keyboard
+		      show: true //Display loader!
+		    });
+	}
+	
     // ]]>
 	var previousAnnex;
 	function showViewer(event, annexId, observacions, dataCaptura, origen) {
@@ -484,6 +643,88 @@ li[id^="anotacio_"] {
 			confirmed = true;
 		}
 	}
+	let pageSizeDominis = 20;
+	function recuperarResultatDomini(
+			metaDadaCodi,
+			dadaValor,
+			noAplica) {
+		var dadaValorUrl = '<c:url value="/registreUser/domini/' + metaDadaCodi + '/valor"/>';
+		var multipleUrl = '<c:url value="/registreUser/domini/' + metaDadaCodi + '"/>';
+		var selDomini = $("#" + metaDadaCodi);
+
+		if (dadaValor != '' && dadaValor != 'NO_APLICA') {
+			$.ajax({
+		        type: "GET",
+		        url: dadaValorUrl,
+		        data: {dadaValor: dadaValor},
+		        success: function (resultat) {
+		        	var newOption = new Option(resultat.text, resultat.id, false, false);
+		        	selDomini.append(newOption);
+		        	selDomini.val(resultat.id).trigger('change');
+				}
+		    });
+		}
+		
+		selDomini.empty();
+		var select2Options = {
+				language: "${requestLocale}",
+		        theme: 'bootstrap',
+				allowClear: true,
+				placeholder: "",
+		        ajax: {
+		            url: multipleUrl,
+		            dataType: 'json',
+		            delay: 250,
+	                global: false,
+		            data: function (params) {
+		                params.page = params.page || 1;
+		                return {
+		                	filter: params.term ? params.term : '',
+		                	pageSize: pageSizeDominis,
+		                	page: params.page
+		                };
+		            },
+		            processResults: function (data, params) {
+		                params.page = params.page || 1;
+		                var dominis = [];
+		                // empty option
+		                dominis.push({
+	                        id: "", 
+	                        text: ""
+	                    })
+	                    if (JSON.parse(noAplica)) {
+	                    	dominis.push({
+		                        id: "NO_APLICA", 
+		                        text: "<spring:message code="registre.dada.form.valor.noaplica"/>"
+		                    })
+						}
+		                for (let i = 0; i < data.resultat.length; i++) {
+		                	dominis.push({
+		                        id: data.resultat[i].id, 
+		                        text: data.resultat[i].text
+		                    })
+		                }
+		                return {
+		                    results: dominis,
+		                    pagination: {
+		                        more: params.term ? (params.page * data.totalElements < data.totalElements) : ((params.page * pageSizeDominis < data.totalElements) || (data.resultat.length > 0))
+		                    }
+		                };
+		            },
+		            cache: true
+		        },
+		        width: '100%',
+		        minimumInputLength: 0
+	    };
+		
+		if (dadaValor == 'NO_APLICA') {
+	    	var newOption = new Option('<spring:message code="registre.dada.form.valor.noaplica"/>', 'NO_APLICA', false, false);
+	    	selDomini.append(newOption);
+	    	selDomini.val('NO_APLICA').trigger('change');
+		}
+		
+		selDomini.select2(select2Options);
+	}
 </script>
 
 </head>
@@ -632,8 +873,12 @@ li[id^="anotacio_"] {
 					<spring:message code="registre.detalls.pipella.proces.backoffice"/>
 				</a>
 			</li>
-		</c:if>		
-		
+		</c:if>	
+		<c:if test="${metadadesActives}">
+			<li role="presentation">
+				<a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.dades"/>&nbsp;<span class="badge" id="dades-count">${registre.dadesCount}</span></a>
+			</li>
+		</c:if>
 	</ul>	
 	</div>
 	
@@ -1650,11 +1895,124 @@ li[id^="anotacio_"] {
 			</div>
 		</c:if>	
 		
+		<c:if test="${metadadesActives}">
+			<!------------------------------ TABPANEL PROCESSAMENT_AUTOMATIC ------------------------------------->
+			<div class="tab-pane" id="dades" role="tabpanel">
+				<c:if test="${not empty metaDades}">
+					<form:form id="nodeDades" commandName="dadesCommand" cssClass="form-inline">
+						<table class="table table-striped table-bordered"
+							style="width: 100%">
+							<thead>
+								<tr>
+									<th><spring:message code="contingut.dades.columna.dada" /></th>
+									<th width="340"><spring:message code="contingut.dades.columna.valor" /></th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach var="metaDada" items="${metaDades}">
+									<c:set var="dadaValor"></c:set>
+									<c:forEach var="dada" items="${registre.dades}">
+										<c:if test="${dada.metaDada.codi == metaDada.codi}">
+											<c:set var="dadaValor">${dada.valorMostrar}</c:set>
+										</c:if>
+									</c:forEach>
+									<c:set var="isMultiple" value="${metaDada.multiplicitat == 'M_0_N' or metaDada.multiplicitat == 'M_1_N'}" />
+									<c:set var="multipleClass" value="" />
+									<c:if test="${isMultiple}">
+										<c:set var="multipleClass" value=" multiple" />
+									</c:if>
+									<tr>
+										<td>${metaDada.nom}</td>
+										<td ${metaDada.tipus == 'DOMINI' ? 'style="width: 30%;"' :''}>
+										<c:choose>
+											<c:when test="${registre.estatPendent}">
+												<div
+													class="form-group ${metaDada.tipus == 'DOMINI' ? '' :''}"
+													${metaDada.tipus == 'DOMINI' ? 'style="width: 100%;"' :''}
+													<c:if test="${isMultiple}"> data-toggle="multifield" data-nou="true"</c:if>>
+													<label class="hidden" for="${metaDada.codi}"></label>
+													<div class="controls">
+														<c:choose>
+															<c:when test="${metaDada.tipus == 'SENCER'}">
+																<form:input path="${metaDada.codi}" id="${metaDada.codi}"
+																	data-toggle="autonumeric" data-a-dec="," data-a-sep=""
+																	data-m-dec="0" class="form-control text-right${multipleClass}"></form:input>
+															</c:when>
+															<c:when test="${metaDada.tipus == 'FLOTANT'}">
+																<form:input path="${metaDada.codi}" id="${metaDada.codi}"
+																	data-toggle="autonumeric" data-a-dec="," data-a-sep=""
+																	data-m-dec="10" data-a-pad="false" class="form-control text-right${multipleClass}"></form:input>
+															</c:when>
+															<c:when test="${metaDada.tipus == 'IMPORT'}">
+																<form:input path="${metaDada.codi}" id="${metaDada.codi}"
+																	data-toggle="autonumeric" data-a-dec="," data-a-sep="."
+																	data-m-dec="2" class="form-control text-right${multipleClass}"></form:input>
+															</c:when>
+															<c:when test="${metaDada.tipus == 'DATA'}">
+																<form:input path="${metaDada.codi}" id="${metaDada.codi}"
+																	data-toggle="datepicker" data-idioma="${requestLocale}"
+																	data-a-dec="," data-a-sep="." data-m-dec="2" cssClass="form-control text-right${multipleClass}"></form:input>
+															</c:when>
+															<c:when test="${metaDada.tipus == 'BOOLEA'}">
+																<label> <form:input path="${metaDada.codi}"
+																		id="${metaDada.codi}" data-toggle="checkbox"
+																		data-a-dec="," data-a-sep="." data-m-dec="2" class="${multipleClass}"></form:input>
+																</label>
+															</c:when>
+															<c:when test="${metaDada.tipus == 'DOMINI'}"> 
+																<form:select path="${metaDada.codi}"
+																	id="${metaDada.codi}" cssStyle="width: 100%"
+																	cssClass="form-control${multipleClass} dominis"
+																	multiple="false" />
+																<script type="text/javascript">
+																			recuperarResultatDomini(
+																					"${metaDada.codi}",
+																					"${dadaValor}",
+																					"${metaDada.noAplica}");
+																			</script>
+															</c:when>
+															<c:otherwise>
+																<form:input path="${metaDada.codi}" id="${metaDada.codi}"
+																	cssClass="form-control${multipleClass}"></form:input>
+															</c:otherwise>
+														</c:choose>
+														<span class="" aria-hidden="true"></span>
+													</div>
+												</div> 
+												</c:when>
+												<c:when test="${metaDada.tipus == 'DOMINI'}">
+													<form:select path="${metaDada.codi}" id="${metaDada.codi}"
+														cssStyle="width: 100%" data-toggle="select2"
+														cssClass="form-control${multipleClass} dominis"
+														multiple="false" disabled="true" />
+													<script type="text/javascript">
+																	recuperarResultatDomini(
+																			"${metaDada.codi}",
+																			"${dadaValor}",
+																			"${metaDada.noAplica}");					
+																</script>
+												</c:when>
+												<c:otherwise>
+													${dadaValor}
+												</c:otherwise>
+											</c:choose>
+										</td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+						<button type="submit" class="btn btn-default pull-right"
+							style="margin-top: -14px">
+							<span class="fa fa-save"></span>
+							<spring:message code="comu.boto.guardar" />
+						</button>
+					</form:form>
+				</c:if>
+			</div>
+		</c:if>
 		<div class="col-md-12 datatable-dades-carregant" style="display: none; text-align: center; margin-top: 50px;">
 			<span class="fa fa-circle-o-notch fa-spin fa-3x"></span>
 		</div>
-		
-		
 	</div>
 	
 	<div id="modal-botons" class="well">

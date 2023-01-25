@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.ContingutComentariDto;
+import es.caib.distribucio.core.api.dto.MetaDadaDto;
+import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.entity.AlertaEntity;
 import es.caib.distribucio.core.entity.ContingutComentariEntity;
+import es.caib.distribucio.core.entity.DadaEntity;
+import es.caib.distribucio.core.entity.MetaDadaEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import ma.glasnost.orika.CustomConverter;
@@ -129,6 +134,39 @@ public class ConversioTipusHelper {
 						
 						target.setGesdocDocumentId(source.getGesdocDocumentId());
 
+						return target;
+					}
+				});
+		
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<MetaDadaEntity, MetaDadaDto>() {
+					public MetaDadaDto convert(MetaDadaEntity source, Type<? extends MetaDadaDto> destinationClass) {
+						MetaDadaDto target = new MetaDadaDto();
+						target.setId(source.getId());
+						target.setCodi(source.getCodi());
+						target.setNom(source.getNom());
+						target.setTipus(source.getTipus());
+						target.setDescripcio(source.getDescripcio());
+						target.setMultiplicitat(source.getMultiplicitat());
+						target.setReadOnly(source.isReadOnly());
+						target.setOrdre(source.getOrdre());
+						target.setActiva(source.isActiva());
+						target.setNoAplica(source.isNoAplica());
+						
+						if (source.getTipus()==MetaDadaTipusEnumDto.BOOLEA) {
+							target.setValorBoolea((Boolean) DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						} else if (source.getTipus()==MetaDadaTipusEnumDto.DATA) {
+							target.setValorData((Date) DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						} else if (source.getTipus()==MetaDadaTipusEnumDto.FLOTANT) {
+							target.setValorFlotant((Double) DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						} else if (source.getTipus()==MetaDadaTipusEnumDto.IMPORT) {
+							target.setValorImport((BigDecimal)DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						} else if (source.getTipus()==MetaDadaTipusEnumDto.SENCER) {
+							target.setValorSencer((Long) DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						}  else if (source.getTipus()==MetaDadaTipusEnumDto.TEXT) {
+							target.setValorString((String) DadaEntity.getDadaValorPerRetornar(source, source.getValor()));
+						}						
+						
 						return target;
 					}
 				});

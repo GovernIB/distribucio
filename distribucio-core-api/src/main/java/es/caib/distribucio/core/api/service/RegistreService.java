@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.api.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -441,5 +442,51 @@ public interface RegistreService {
 
 
 	public boolean reintentarProcessamentUser(Long entitatId, Long registreId);
+
+	/**
+	 * Modifica els valors de les dades d'un registre.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el contingut.
+	 * @param registreId
+	 *            Atribut id del registre del qual es vol consultar el contingut.
+	 * @param valors
+	 *            Valors de les dades.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasRole('tothom')")
+	public void dadaSave(
+			Long entitatId,
+			Long registreId,
+			Map<String, Object> valors) throws NotFoundException;
+
+//	/**
+//	 * Recupera els valors de les dades d'un registre.
+//	 * 
+//	 * @param entitatId
+//	 *            Atribut id de l'entitat a la qual pertany el contingut.
+//	 * @param registreId
+//	 *            Atribut id del registre del qual es vol consultar el contingut.
+//	 * @throws NotFoundException
+//	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+//	 */
+//	List<DadaDto> obtenirDadesByRegistre(Long entitatId, Long registreId) throws NotFoundException;
+
+	/**
+	 * Retorna la informació d'una anotació de registre situada dins un contenidor amb les seves meta-dades. 
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param registreId
+	 *            Atribut id del l'anotació que es vol consultar.
+	 * @param isVistaMoviments
+	 * 			  Atribut per detectar si està en la vista de moviments, llavors no comprovar permisos bústia
+	 * @return els detalls de l'anotació.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	RegistreDto findOneAmbDades(Long entitatId, Long registreId, boolean isVistaMoviments, String rolActual)
+			throws NotFoundException;
 
 }

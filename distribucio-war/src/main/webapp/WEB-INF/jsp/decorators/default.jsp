@@ -45,6 +45,10 @@
 	pageContext.setAttribute(
 			"avisos",
 			es.caib.distribucio.war.helper.AvisHelper.getAvisos(request));
+	pageContext.setAttribute(
+			"isMetadadesActives",
+			es.caib.distribucio.war.helper.MetadadaHelper.isMetadadesActives(request));
+	
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
 <c:set var="hiHaMesEntitats" value="${fn:length(sessionEntitats) > 1}"/>
@@ -266,6 +270,12 @@ body {
 											<li><a href="<c:url value="/backoffice"/>"><spring:message code="decorator.menu.backoffices"/></a></li>
 											<c:if test="${isRolActualAdministrador}">
 												<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
+												
+												<c:if test="${isMetadadesActives}">
+													<li class="divider"></li>
+													<li><a href="<c:url value="/metaDada"/>"><spring:message code="decorator.menu.meta.dades"/></a></li>
+													<li><a href="<c:url value="/domini"/>"><spring:message code="decorator.menu.domini"/></a></li>
+												</c:if>
 											</c:if>
 										</ul>
 									</div>

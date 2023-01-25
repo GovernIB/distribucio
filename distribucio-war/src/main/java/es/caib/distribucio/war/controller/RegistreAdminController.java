@@ -50,13 +50,16 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.MetaDadaService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
+import es.caib.distribucio.war.helper.BeanGeneratorHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
@@ -87,7 +90,13 @@ public class RegistreAdminController extends BaseAdminController {
 	private ContingutService contingutService;
 	@Autowired
 	private BackofficeService backofficeService;
-
+	@Autowired
+	private MetaDadaService metaDadaService;
+	@Autowired
+	private BeanGeneratorHelper beanGeneratorHelper;
+	@Autowired
+	private AplicacioService aplicacioService;
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
 			HttpServletRequest request,
@@ -220,6 +229,12 @@ public class RegistreAdminController extends BaseAdminController {
 			model.addAttribute("numeroAnnexosPendentsArxiu", numeroAnnexosPendentsArxiu);
 			model.addAttribute("numeroAnnexosFirmaInvalida", numeroAnnexosFirmaInvalida);
 			model.addAttribute("numeroAnnexosEstatEsborrany", numeroAnnexosEstatEsborrany);
+			model.addAttribute("metaDades", metaDadaService.findByEntitat(entitatActual.getId()));
+			model.addAttribute("dadesCommand",
+					beanGeneratorHelper.generarCommandDadesRegistre(
+							entitatActual.getId(),
+							((RegistreDto)registreDto).getDades()));
+			model.addAttribute("metadadesActives", isMetadadesActives());
 		} catch (Exception e) {
 			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
@@ -929,6 +944,9 @@ public class RegistreAdminController extends BaseAdminController {
 		return "redirect:" + request.getHeader("referer");
 	}	
 	
+	private boolean isMetadadesActives() {
+		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.permetre.metadades.registre"));
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
 }
