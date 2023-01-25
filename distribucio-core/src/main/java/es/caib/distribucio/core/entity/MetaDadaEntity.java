@@ -29,7 +29,7 @@ import es.caib.distribucio.core.audit.DistribucioAuditable;;
 @Table(
 		name = "dis_metadada",
 		uniqueConstraints = {
-				@UniqueConstraint(name = "dis_metadada_metanode_codi_uk", columnNames = { "codi" })
+				@UniqueConstraint(name = "dis_metadada_codi_uk", columnNames = { "codi" })
 		}
 )
 @EntityListeners(AuditingEntityListener.class)
