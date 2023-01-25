@@ -16,7 +16,7 @@ import javax.validation.Payload;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy=CodiMetaDadaNomValidValidator.class)
 public @interface CodiMetaDadaNomValid {

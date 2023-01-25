@@ -11,7 +11,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.war.helper.MetadadaHelper;
 import es.caib.distribucio.war.helper.RolHelper;
 
 /**
@@ -41,9 +40,6 @@ public class AccesMetadadaInterceptor extends HandlerInterceptorAdapter {
 		if (!isMetadadesActives) {
 			throw new SecurityException("Es necessari activar la propietat 'es.caib.distribucio.permetre.metadades.registre' per accedir a aquesta página.", null);
 		}
-		MetadadaHelper.setMetadadesActives(
-				request, 
-				aplicacioService);
 		return true;
 	}
 	

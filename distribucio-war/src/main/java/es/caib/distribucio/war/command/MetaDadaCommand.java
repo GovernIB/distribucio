@@ -26,7 +26,6 @@ import es.caib.distribucio.war.validation.CodiMetaDadaNomValid;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-@CodiMetaDadaNomValid
 @CodiMetaDadaNoRepetit(
 		campId = "id",
 		campCodi = "codi",
@@ -35,7 +34,7 @@ public class MetaDadaCommand {
 
 	private Long id;
 
-	@NotEmpty @Size(max=64)
+	@NotEmpty @Size(max=64) @CodiMetaDadaNomValid
 	private String codi;
 	@NotEmpty @Size(max=256)
 	private String nom;

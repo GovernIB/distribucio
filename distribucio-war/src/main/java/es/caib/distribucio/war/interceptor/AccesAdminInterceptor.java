@@ -11,6 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.war.helper.MetadadaHelper;
 import es.caib.distribucio.war.helper.RolHelper;
 
 /**
@@ -37,6 +38,9 @@ public class AccesAdminInterceptor extends HandlerInterceptorAdapter {
 			throw new SecurityException("Es necessari ser administrador per accedir a aquesta página. " +
 					"L'usuari actual " + usuariActual.getCodi() + " no té el rol requerit.", null);
 		}
+		MetadadaHelper.setMetadadesActives(
+				request, 
+				aplicacioService);
 		return true;
 	}
 	

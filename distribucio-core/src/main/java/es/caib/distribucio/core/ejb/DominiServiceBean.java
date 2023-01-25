@@ -17,6 +17,12 @@ import es.caib.distribucio.core.api.dto.ResultatDominiDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.DominiService;
 
+/**
+ * Implementació de DominiService com a EJB que empra una clase
+ * delegada per accedir a la funcionalitat del servei.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
 @Stateless
 @Interceptors(SpringBeanAutowiringInterceptor.class)
 public class DominiServiceBean implements DominiService {

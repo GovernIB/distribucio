@@ -6,14 +6,13 @@ package es.caib.distribucio.war.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import es.caib.distribucio.war.command.MetaDadaCommand;
 
 /**
  * Constraint de validació que controla que el nom del codi de meta-dada es valid.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class CodiMetaDadaNomValidValidator implements ConstraintValidator<CodiMetaDadaNomValid, MetaDadaCommand> {
+public class CodiMetaDadaNomValidValidator implements ConstraintValidator<CodiMetaDadaNomValid, String> {
 
 	@Override
 	public void initialize(CodiMetaDadaNomValid constraintAnnotation) {
@@ -22,10 +21,11 @@ public class CodiMetaDadaNomValidValidator implements ConstraintValidator<CodiMe
 
 	@Override
 	public boolean isValid(
-			MetaDadaCommand value,
+			String value,
 			ConstraintValidatorContext context) {
-		
-		return checkIfNameIsValidPartJava(value.getCodi());
+		if (value == null || value.isEmpty())
+			return true;
+		return checkIfNameIsValidPartJava(value);
 	}
 	
 	

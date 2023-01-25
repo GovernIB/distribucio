@@ -30,7 +30,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public MetaDadaDto create(
 			Long entitatId,
 			MetaDadaDto metaDada) throws NotFoundException;
@@ -47,7 +47,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public MetaDadaDto update(
 			Long entitatId,
 			MetaDadaDto metaDada) throws NotFoundException;
@@ -63,7 +63,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public MetaDadaDto delete(
 			Long entitatId,
 			Long metaDadaId) throws NotFoundException;
@@ -83,7 +83,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public MetaDadaDto updateActiva(
 			Long entitatId,
 			Long metaDadaId,
@@ -99,7 +99,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void moveUp(
 			Long entitatId,
 			Long metaDadaId) throws NotFoundException;
@@ -114,7 +114,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void moveDown(
 			Long entitatId,
 			Long metaDadaId) throws NotFoundException;
@@ -131,7 +131,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void moveTo(
 			Long entitatId,
 			Long metaDadaId,
@@ -148,7 +148,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public MetaDadaDto findById(
 			Long entitatId,
 			Long metaDadaId) throws NotFoundException;
@@ -180,7 +180,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<MetaDadaDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
@@ -194,43 +194,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("hasRole('tothom')")
 	public List<MetaDadaDto> findByEntitat(Long entitatId);
-
-//	/**
-//	 * Llistat amb les meta-dades actives per a un meta-node.
-//	 * 
-//	 * @param entitatId
-//	 *            Id de l'entitat.
-//	 * @param metaNodeId
-//	 *            Id del meta-node.
-//	 * @return La pàgina de meta-dades.
-//	 * @throws NotFoundException
-//	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-//	 */
-//	@PreAuthorize("hasRole('tothom')")
-//	public List<MetaDadaDto> findActiveByMetaNode(
-//			Long entitatId,
-//			Long metaNodeId) throws NotFoundException;
-//
-//	/**
-//	 * Llistat amb les meta-dades associades a un node.
-//	 * 
-//	 * @param entitatId
-//	 *            Id de l'entitat.
-//	 * @param nodeId
-//	 *            Id del node.
-//	 * @return la llista amb les meta-dades del node.
-//	 * @throws NotFoundException
-//	 *             Si no s'ha trobat l'objecte amb l'id especificat.
-//	 */
-//	@PreAuthorize("hasRole('tothom')")
-//	public List<MetaDadaDto> findByNode(
-//			Long entitatId,
-//			Long nodeId) throws NotFoundException;
-//
-//	@PreAuthorize("hasRole('tothom')")
-//	Long findMetaNodeIdByNodeId(
-//			Long entitatId,
-//			Long nodeId);
 
 }
