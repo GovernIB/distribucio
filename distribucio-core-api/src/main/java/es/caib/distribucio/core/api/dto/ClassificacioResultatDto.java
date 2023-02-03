@@ -38,7 +38,8 @@ public class ClassificacioResultatDto {
 		REGLA_BUSTIA,
 		REGLA_BACKOFFICE,
 		REGLA_ERROR,
-		REGLA_UNITAT
+		REGLA_UNITAT,
+		TITOL_MODIFICAT
 	}
 
 }

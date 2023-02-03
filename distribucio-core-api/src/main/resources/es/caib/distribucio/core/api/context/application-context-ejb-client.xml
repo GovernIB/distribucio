@@ -85,4 +85,12 @@
 			id="procedimentService"
 			jndi-name="distribucio/ProcedimentServiceBean/local"
 			business-interface="es.caib.distribucio.core.api.service.ProcedimentService"/>
+	<jee:local-slsb
+			id="metaDadaService"
+			jndi-name="distribucio/MetaDadaServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.MetaDadaService"/>
+	<jee:local-slsb
+			id="dominiService"
+			jndi-name="distribucio/DominiServiceBean/local"
+			business-interface="es.caib.distribucio.core.api.service.DominiService"/>
 </beans>

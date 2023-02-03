@@ -63,6 +63,9 @@
 		<role-name>DIS_BACKWS</role-name>
 	</security-role>
 	<security-role>
+		<role-name>DIS_REGLA</role-name>
+	</security-role>
+	<security-role>
 		<role-name>tothom</role-name>
 	</security-role>
 

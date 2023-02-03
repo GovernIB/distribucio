@@ -53,6 +53,19 @@
 			cursor: not-allowed;
 			color: grey !important;
 		}
+		
+		tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+			margin: 8px 0 0 2px; 
+		}
+		
+		span.select2-container {
+			width: 100% !important;
+		}
+		
+		button#netejarFiltre, 
+		button#filtrar {
+			width: 50%;
+		}
 	
 	</style>
 	
@@ -131,7 +144,7 @@
 			<div class="col-md-3">
 				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
 			</div>	
 		</div>
@@ -173,7 +186,7 @@
 					inline="true"
 					optionMinimumResultsForSearch="0"/>
 			</div>		
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect 
 					name="activa" 
 					optionEnum="ReglaFiltreActivaEnumDto" 
@@ -190,12 +203,11 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-2 pull-right">
-				<div class="pull-right">
-					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+		<div class="col-md-9"></div>
+			<div class="col-md-3 d-flex pull-right justify-content-end">
+				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
+				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>
@@ -275,7 +287,7 @@
 				<c:if test="${isRolActualAdministrador}">
 					<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
 						<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<div class="dropdown">
+						<div class="dropdown d-flex justify-content-center">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="regla/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>

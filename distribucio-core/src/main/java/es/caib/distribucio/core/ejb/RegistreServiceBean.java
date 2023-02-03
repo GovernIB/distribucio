@@ -4,6 +4,7 @@
 package es.caib.distribucio.core.ejb;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -231,11 +232,13 @@ public class RegistreServiceBean implements RegistreService {
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
-			String procedimentCodi) throws NotFoundException {
+			String procedimentCodi,
+			String titol) throws NotFoundException {
 		return delegate.classificar(
 				entitatId,
 				registreId,
-				procedimentCodi);
+				procedimentCodi,
+				titol);
 	}
 
 	@Override
@@ -380,6 +383,33 @@ public class RegistreServiceBean implements RegistreService {
 	@Override
 	public boolean reintentarProcessamentUser(Long entitatId, Long registreId) {
 		return delegate.reintentarProcessamentUser(entitatId, registreId);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN"})
+	public void dadaSave(
+			Long entitatId, 
+			Long registreId, 
+			Map<String, Object> valors) throws NotFoundException {
+		delegate.dadaSave(
+				entitatId, 
+				registreId, 
+				valors);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public RegistreDto findOneAmbDades(
+			Long entitatId, 
+			Long registreId, 
+			boolean isVistaMoviments, 
+			String rolActual)
+			throws NotFoundException {
+		return delegate.findOneAmbDades(
+				entitatId,
+				registreId, 
+				isVistaMoviments, 
+				rolActual);
 	}
 
 }

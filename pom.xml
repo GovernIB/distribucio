@@ -31,7 +31,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<version.revision>47</version.revision>
+		<version.revision>48</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
 		<version.date>2022.12.20 08:00h</version.date>
 	</properties>

@@ -22863,7 +22863,7 @@ SwaggerUi.Views.OperationView = Backbone.View.extend({
     'submit .sandbox'         : 'submitOperation',
     'click .submit'           : 'submitOperation',
     'click .response_hider'   : 'hideResponse',
-    'click .toggleOperation'  : 'toggleOperationContent',
+//    'click .toggleOperation'  : 'toggleOperationContent',
     'mouseenter .api-ic'      : 'mouseEnter',
     'dblclick .curl'          : 'selectText',
     'change [name=responseContentType]' : 'showSnippet'

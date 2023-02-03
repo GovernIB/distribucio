@@ -30,6 +30,31 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<style type="text/css">
+		span.badge {
+			font-size: 1.2rem !important;
+			padding-right: 1.2rem !important;
+		}
+		
+		span.fa-cog {
+			margin: 4px 1.5rem 0 0; 
+		}
+		
+		tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+			margin: 8px 0 0 2px; 
+		}
+		
+		span.select2-container {
+			width: 100% !important;
+		}
+		
+		button#netejarFiltre, 
+		button#filtrar {
+			width: 50%;
+		}
+	</style>
+	
 	<script>
 		function actualitzarProcediments() {
 			$("#span-refresh").addClass('fa-spin');
@@ -75,12 +100,11 @@
 			</div>
 		</div>
 		<div class="row">		
-			<div class="col-md-2 pull-right">
-				<div class="pull-right">
-					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+			<div class="col-md-9"></div>
+			<div class="col-md-3 d-flex justify-content-end">
+				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
+				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>

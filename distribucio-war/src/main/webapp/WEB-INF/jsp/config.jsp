@@ -125,33 +125,22 @@ let guardarPropietat = (configKey, natejar) => {
     });
 };
 
+$(document).ready(function() { 
+	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
+	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='<c:url value='/config/reiniciarTasquesSegonPla'/>' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
 
-function reiniciarTasquesSegonPla() {
-	$("#btn-reiniciarTasquest #span-refresh").addClass('fa-circle-o-notch');
-	$("#btn-reiniciarTasquest #span-refresh").addClass('fa-spin')
-	$("#btn-reiniciarTasquest").css("pointer-events", "none");
-	var location = window.location.href;
-	const locationSplit = location.split("distribucio/");
-	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';
-	$("#btn-reiniciarTasquest").prop("pointer-events", "auto");		
-}
-
-
-function sincronitzar() {
-	$("#btn-sincronitzar #span-refresh").addClass('fa-circle-o-notch');
-	$("#btn-sincronitzar #span-refresh").addClass('fa-spin')
-	$("#btn-sincronitzar").css("pointer-events", "none");
-	var location = window.location.href;
-	const locationSplit = location.split("distribucio/");
-	window.location.href = '<c:url value="/config/synchronize?currentPage=' + locationSplit[1] + '"/>';
-	$("#btn-sincronitzar").prop("pointer-events", "auto");		
-}
-
-$(document).ready(function() {
-	
-	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' onclick='sincronitzar()' href='' class='btn btn-default'><span id='span-refresh' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
-	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasquest' onclick='reiniciarTasquesSegonPla()' href='' class='btn btn-default'><span id='span-refresh' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
-
+	$('#btn-reiniciarTasques').click(function(e) {
+		$("#btn-reiniciarTasques #span-refresh-reiniciar-tasques").addClass('fa-circle-o-notch');
+		$("#btn-reiniciarTasques #span-refresh-reiniciar-tasques").addClass('fa-spin');
+		$("#btn-reiniciarTasques").addClass('disabled');
+		$("#btn-reiniciarTasques").css("pointer-events", "none");
+	});
+	$('#btn-sincronitzar').click(function(e) {
+		$("#btn-sincronitzar #span-refresh-synchronize").addClass('fa-circle-o-notch');
+		$("#btn-sincronitzar #span-refresh-synchronize").addClass('fa-spin');
+		$("#btn-sincronitzar").addClass('disabled');
+		$("#btn-sincronitzar").css("pointer-events", "none");
+	});
 	
 	$(".form-update-config").submit(function(e) {
 	    e.preventDefault();

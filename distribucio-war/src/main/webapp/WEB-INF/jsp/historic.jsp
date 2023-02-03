@@ -52,6 +52,53 @@
 	    position: absolute;
 	    top: 50%;
 	}
+	
+	
+	th, 
+	td, 
+	#div-btn-accions button span {
+	    word-wrap: break-word;
+	    overflow-wrap: break-word;
+	    overflow-wrap: anywhere;
+		font-size: 1.2rem;
+		width: 0%; 
+		/* width: fit-content; */
+	}
+	
+	span.badge {
+		font-size: 1.2rem !important;
+		padding-right: 1.2rem !important;
+	}
+	
+	span.fa-comments {
+		font-size: 2rem !important;
+		margin-right: 2rem
+	}
+	
+	span.fa-cog {
+		margin: 4px 1.5rem 0 0; 
+	}
+	
+	tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+		margin: 8px 0 0 2px; 
+	}
+	
+	span.select2-container, 
+	#div-link-btnExportar, 
+	#btnExportar, 
+	#div-btns-actual-dia-mes {
+		width: 100% !important;
+	}
+	
+	#export-format-div, 
+	#btnExportar-div {
+		width: 50%;
+	}
+	
+	#btn-netejar-filtre, 
+	#btn-filtrar-filtre {
+		width: 32%;	 
+	}
 	</style>
 	
 	<script type="text/javascript">
@@ -849,49 +896,45 @@
 			
 			</div>
 			<div class="col-md-4">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.actualitzar == true}">active</c:if>"> 
+				<div id="div-btns-actual-dia-mes" class="btn-group" data-toggle="buttons">
+					<label class="col-md-4 btn btn-default form-check-label <c:if test="${historicFiltreCommand.actualitzar == true}">active</c:if>"> 
 						<form:radiobutton id="rbTipusAgrupamentDiari" path="tipusAgrupament" value="DIARI"/>
 						<i class="fa fa-clock-o"></i> <spring:message code="historic.filtre.mostraDadesActual"/>
 					</label> 
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI' && !historicFiltreCommand.actualitzar == true}">active</c:if>"> 
+					<label class="col-md-4 btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'DIARI' && !historicFiltreCommand.actualitzar == true}">active</c:if>"> 
 						<form:radiobutton path="tipusAgrupament" value="DIARI"/>
 						<i class="fa fa-calendar"></i> <spring:message code="historic.filtre.mostraDadesPerDia"/>
 					</label> 
-					<label class="btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'MENSUAL'}">active</c:if>"> 
+					<label class="col-md-4 btn btn-default form-check-label <c:if test="${historicFiltreCommand.tipusAgrupament == 'MENSUAL'}">active</c:if>"> 
 						<form:radiobutton path="tipusAgrupament" value="MENSUAL"/>						 
 						<i class="fa fa-calendar-o"></i> <spring:message code="historic.filtre.mostraDadesPerMes"/>
 					</label>
 				</div>
 				<form:hidden path="actualitzar" id="hdActualitzar" />			
-			</div>		
-			<div id="export-format-div" class="col-md-1" style="display: none;">
-				<select id="exportFormat"  name="format" class="form-control" style="width:100%"
-						data-minimumresults="-1"
-						data-toggle="select2">
-							<option value="JSON">JSON</option>
-							<option value="XLSX">XLSX</option>
-							<option value="ODT">ODT</option>
-							<option value="XML">XML</option>
-				</select>
-			</div>
-			<div id="btnExportar-div" class="col-md-1" style="display: none;">
-				<div class="pull-right">
-					<a id="btnExportar" href="<c:url value="/historic/exportar"/>" class="btn btn-success">
-						<span class="fa fa-download"></span>&nbsp; <spring:message code="historic.exportacio.boto.exportar"/>
-					</a>
+			</div>	
+			<div class="col-md-4 d-flex">
+				<div id="export-format-div" class="" style="display: none;">
+					<select id="exportFormat"  name="format" class="form-control" style="width:100%"
+							data-minimumresults="-1"
+							data-toggle="select2">
+								<option value="JSON">JSON</option>
+								<option value="XLSX">XLSX</option>
+								<option value="ODT">ODT</option>
+								<option value="XML">XML</option>
+					</select>
 				</div>
-			</div>
-			<div class="col-md-2 pull-right">
-				<div class="pull-right">
-					<button id="btn-netejar-filtre" type="button" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button id="btn-filtrar-filtre" type="submit" name="accio" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+				<div id="btnExportar-div" class="ml-2" style="display: none;">
+					<div id="div-link-btnExportar" class="pull-right">
+						<a id="btnExportar" href="<c:url value="/historic/exportar"/>" class="btn btn-success">
+							<span class="fa fa-download"></span>&nbsp; <spring:message code="historic.exportacio.boto.exportar"/>
+						</a>
+					</div>
+				</div>			
 			</div>
 		</div>
 		<div class="row form-filtre-visualitzacio">
-			<div class="col-md-2">
-				<div class="btn-group" data-toggle="buttons">
+			<div class="col-md-3">
+				<div class="btn-group d-flex" data-toggle="buttons">
 					<label class="btn btn-default form-check-label"> 
 						<input type="radio" value="mostraGrafics" name="graficsOTaula">
 						<i class="fa fa-bar-chart" aria-hidden="true"></i> <spring:message code="historic.filtre.mostraGrafics"/>
@@ -901,6 +944,12 @@
 						<i class="fa fa-table" aria-hidden="true"></i> <spring:message code="historic.filtre.mostraTaules"/>
 					</label> 
 				</div>
+			</div>
+			
+			<div class="col-md-6"></div>
+			<div class="col-md-3 d-flex justify-content-end">
+				<button id="btn-netejar-filtre" type="button" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="btn-filtrar-filtre" type="submit" name="accio" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>

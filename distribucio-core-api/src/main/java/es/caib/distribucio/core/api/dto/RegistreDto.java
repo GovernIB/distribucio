@@ -110,6 +110,14 @@ public class RegistreDto extends ContingutDto {
 	
 	private ReglaDto regla;
 
+	private List<DadaDto> dades;
+	
+	public int getDadesCount() {
+		if (dades == null)
+			return 0;
+		else
+			return dades.size();
+	}
 	
 	public boolean isAgafat() {
 		return agafatPer != null;
@@ -294,6 +302,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setProcesIntents(Integer procesIntents) {
 		this.procesIntents = procesIntents;
+	}
+	public List<DadaDto> getDades() {
+		return dades;
+	} 
+	public void setDades(List<DadaDto> dades) {
+		this.dades = dades;
 	}
 
 	protected RegistreDto copiarContenidor(ContingutDto original) {
@@ -627,4 +641,7 @@ public class RegistreDto extends ContingutDto {
 		this.regla = regla;
 	}
 	
+	public boolean isEstatPendent() {
+		return RegistreProcesEstatEnum.isPendent(procesEstat);
+	}
 }

@@ -39,6 +39,31 @@ pageContext.setAttribute(
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	
+	<style type="text/css">
+		
+		span.badge {
+			font-size: 1.2rem !important;
+			padding-right: 1.2rem !important;
+		}
+		
+		span.fa-cog {
+			margin: 4px 1.5rem 0 0; 
+		}
+		
+		tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+			margin: 8px 0 0 2px; 
+		}
+		
+		span.select2-container {
+			width: 100% !important;
+		}
+		
+		button#netejarFiltre, 
+		button#filtrar {
+			width: 50%;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
@@ -51,7 +76,7 @@ pageContext.setAttribute(
 			<div class="col-md-7">
 				<dis:inputText name="nom" inline="true" placeholderKey="contingut.admin.filtre.nom"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect name="tipus" optionEnum="ContingutTipusEnumDto" emptyOption="true" placeholderKey="contingut.admin.filtre.tipus" inline="true"/>
 			</div>
 		</div>
@@ -65,12 +90,10 @@ pageContext.setAttribute(
 			<div class="col-md-3">
 				<dis:inputSelect name="opcionsEsborrat" optionItems="${contingutAdminOpcionsEsborratEnumOptions}" optionValueAttribute="value" optionTextKeyAttribute="text" emptyOption="false" inline="true"/>
 			</div>
-			<div class="col-md-5 pull-right">
-				<div class="pull-right">
-					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
+			<div class="col-md-5 d-flex justify-content-end">
+				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
+				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>
@@ -116,7 +139,7 @@ pageContext.setAttribute(
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<div class="dropdown">
+						<div class="dropdown d-flex justify-content-center ">
 							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="contingutAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>

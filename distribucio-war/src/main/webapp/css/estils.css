@@ -132,6 +132,16 @@ table.dataTable tr.datatable-dades-carregant {
 	margin-bottom: 0px;
 }
 
+a.exemple_boto {
+	margin-top: 2px;
+	background-color: #d9d9d9;
+}
+
+div.exemple {
+	display: none;
+	margin-top: 2px;
+}
+
 .boto-nou-permis-organigrama {
     position: relative!important;
     height: 0px!important;
@@ -319,4 +329,16 @@ table.dataTable tr.datatable-dades-carregant {
 
 .dropdown-left-medium {
 	margin-left:-5rem;
+}
+
+.justify-content-end {
+	justify-content: end;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.justify-content-start {
+	justify-content: start;
 }

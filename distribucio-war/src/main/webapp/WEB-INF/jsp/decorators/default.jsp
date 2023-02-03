@@ -45,6 +45,10 @@
 	pageContext.setAttribute(
 			"avisos",
 			es.caib.distribucio.war.helper.AvisHelper.getAvisos(request));
+	pageContext.setAttribute(
+			"isMetadadesActives",
+			es.caib.distribucio.war.helper.MetadadaHelper.isMetadadesActives(request));
+	
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
 <c:set var="hiHaMesEntitats" value="${fn:length(sessionEntitats) > 1}"/>
@@ -147,7 +151,7 @@ body {
 			<div class="navbar-collapse collapse">
 				<div class="nav navbar-nav navbar-right">
 					<ul class="list-inline pull-right">
-						<c:if test="${hiHaEntitats}">
+						<c:if test="${hiHaEntitats && (isRolActualAdministrador or isRolActualAdminLectura or isRolActualUsuari)}">
 							<li class="dropdown">
 								<c:if test="${hiHaMesEntitats}"><a href="#" data-toggle="dropdown"></c:if>
 		         				<span class="fa fa-institution"></span> ${entitatActual.nom} <c:if test="${hiHaMesEntitats}"><b class="caret caret-white"></b></c:if>
@@ -266,6 +270,12 @@ body {
 											<li><a href="<c:url value="/backoffice"/>"><spring:message code="decorator.menu.backoffices"/></a></li>
 											<c:if test="${isRolActualAdministrador}">
 												<li><a href="<c:url value="/permis"/>"><spring:message code="decorator.menu.permisos.entitat"/></a></li>
+												
+												<c:if test="${isMetadadesActives}">
+													<li class="divider"></li>
+													<li><a href="<c:url value="/metaDada"/>"><spring:message code="decorator.menu.meta.dades"/></a></li>
+													<li><a href="<c:url value="/domini"/>"><spring:message code="decorator.menu.domini"/></a></li>
+												</c:if>
 											</c:if>
 										</ul>
 									</div>

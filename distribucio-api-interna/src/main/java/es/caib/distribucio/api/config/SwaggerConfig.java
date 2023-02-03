@@ -28,7 +28,9 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .apiVersion("1.0")
                 .ignoredParameterTypes(ResponseEntity.class)
-				.includePatterns(".*/backoffice/*.*");
+				.includePatterns(
+						".*/backoffice/*.*", 
+						".*/regla/*.*");
     }
  
 	private ApiInfo apiInfo() {

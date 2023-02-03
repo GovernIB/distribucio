@@ -98,10 +98,23 @@ public class BackofficeController extends BaseAdminController {
 		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("nou", true);
+			if (command.getCodi() != null &&
+					!command.getCodi().isEmpty() &&
+					command.getCodi().contains(" ")) {
+				model.addAttribute("codiEmpySpace", true);
+			}
 			return "backofficeForm";
 		}
 		
 		try {
+			model.addAttribute("codiEmpySpace", false);
+			if (command.getCodi().contains(" ")) {
+				model.addAttribute("codiEmpySpace", true);
+				return getAjaxControllerReturnValueErrorMessage(
+						request,
+						"backofficeForm", 
+						"backoffice.form.camp.codi.espai.blanc");
+			}
 			if (command.getId() != null) {
 				backofficeService.update(
 						entitatActual.getId(), 

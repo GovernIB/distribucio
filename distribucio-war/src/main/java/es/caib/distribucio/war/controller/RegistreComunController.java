@@ -70,7 +70,8 @@ public class RegistreComunController extends BaseController{
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				codiProcediment);
+				codiProcediment,
+				null);
 		return resultat;
 	}
 	

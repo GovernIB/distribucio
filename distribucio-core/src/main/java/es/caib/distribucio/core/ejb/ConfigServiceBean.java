@@ -63,6 +63,7 @@ public class ConfigServiceBean implements ConfigService {
 		return delegate.findEntitatsConfigByKey(key);
 	}
 	@Override
+	@RolesAllowed({"DIS_SUPER"})
 	public void reiniciarTasquesEnSegonPla() {
 		delegate.reiniciarTasquesEnSegonPla();
 		

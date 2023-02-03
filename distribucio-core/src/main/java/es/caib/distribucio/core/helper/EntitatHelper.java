@@ -39,6 +39,10 @@ public class EntitatHelper {
 			File fContent = new File(getLogosDir() + "/" + entitatCodi + "/" + fileName);
 			fContent.getParentFile().mkdirs();
 			
+			if(fContent.getParentFile().listFiles() == null) 
+				throw new RuntimeException("No s'ha pogut crear la ruta pel logo. Per favor, reviseu els permisos o canvieu el directori. ");
+			
+			
 //			## Esborrar logos antics
 			for(File file: fContent.getParentFile().listFiles()) 
 			    if (!file.isDirectory()) 

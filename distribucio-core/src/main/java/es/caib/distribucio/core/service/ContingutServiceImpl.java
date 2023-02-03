@@ -30,9 +30,11 @@ import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.core.api.dto.ContingutLogDto;
 import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
 import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.core.api.dto.DadaDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
 import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
@@ -43,6 +45,7 @@ import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
+import es.caib.distribucio.core.entity.DadaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
@@ -64,6 +67,7 @@ import es.caib.distribucio.core.repository.AlertaRepository;
 import es.caib.distribucio.core.repository.ContingutComentariRepository;
 import es.caib.distribucio.core.repository.ContingutLogRepository;
 import es.caib.distribucio.core.repository.ContingutRepository;
+import es.caib.distribucio.core.repository.DadaRepository;
 import es.caib.distribucio.core.repository.EntitatRepository;
 import es.caib.distribucio.core.repository.RegistreRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
@@ -120,7 +124,8 @@ public class ContingutServiceImpl implements ContingutService {
 	private ConfigHelper configHelper;
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-
+	@Autowired
+	private DadaRepository dadaRepository;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -195,7 +200,7 @@ public class ContingutServiceImpl implements ContingutService {
 				entitat,
 				contingutId,
 				null);
-		return contingutHelper.toContingutDto(
+		ContingutDto contingutDto = contingutHelper.toContingutDto(
 				contingut,
 				true,
 				ambFills,
@@ -204,6 +209,21 @@ public class ContingutServiceImpl implements ContingutService {
 				true,
 				true,
 				true);
+		
+		if (contingutDto instanceof RegistreDto) {
+			RegistreDto registre = ((RegistreDto)contingutDto);
+			List<DadaEntity> dades = dadaRepository.findByRegistreId(registre.getId());
+			
+			registre.setDades(conversioTipusHelper.convertirList(dades, DadaDto.class));
+			
+			for (int i = 0; i < dades.size(); i++) {
+				registre.getDades().get(i).setValor(dades.get(i).getValor());
+			}
+			
+			contingutDto = registre;
+		}
+		
+		return contingutDto;
 	}
 
 	

@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,7 @@ import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
 import es.caib.distribucio.core.api.dto.ContingutDto;
+import es.caib.distribucio.core.api.dto.DominiDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
@@ -51,8 +53,11 @@ import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.core.api.dto.ResultatConsultaDto;
+import es.caib.distribucio.core.api.dto.ResultatDominiDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
+import es.caib.distribucio.core.api.exception.DominiException;
 import es.caib.distribucio.core.api.exception.EmptyMailException;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.PermissionDeniedException;
@@ -62,6 +67,8 @@ import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.core.api.service.DominiService;
+import es.caib.distribucio.core.api.service.MetaDadaService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
@@ -72,6 +79,7 @@ import es.caib.distribucio.war.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
+import es.caib.distribucio.war.helper.BeanGeneratorHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.ElementsPendentsBustiaHelper;
@@ -106,7 +114,12 @@ public class RegistreUserController extends BaseUserController {
 	private AplicacioService aplicacioService;	
 	@Autowired
 	private ConfigService configService;
-
+	@Autowired
+	private MetaDadaService metaDadaService;
+	@Autowired
+	private BeanGeneratorHelper beanGeneratorHelper;
+	@Autowired
+	private DominiService dominiService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -361,7 +374,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@RequestParam(required=false) Long destiLogic,
-			Model model) {
+			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		return getRegistreDetall(
 				request, 
 				registreId, 
@@ -383,11 +396,11 @@ public class RegistreUserController extends BaseUserController {
 			Integer registreTotal,
 			String ordreColumn,
 			String ordreDir,
-			Model model) {
+			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
 		try {
-			RegistreDto registre = registreService.findOne(
+			RegistreDto registre = registreService.findOneAmbDades(
 							entitatActual.getId(),
 							registreId,
 							isVistaMoviments,
@@ -436,6 +449,13 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("numeroAnnexosPendentsArxiu", this.numeroAnnexosPendentsArxiu(registre));
 			model.addAttribute("numeroAnnexosFirmaInvalida", this.numeroAnnexosFirmaInvalida(registre));
 			model.addAttribute("numeroAnnexosEstatEsborrany", this.numeroAnnexosEstatEsborrany(registre));
+			model.addAttribute("metaDades", metaDadaService.findByEntitat(entitatActual.getId()));
+			model.addAttribute("dadesCommand",
+					beanGeneratorHelper.generarCommandDadesRegistre(
+							entitatActual.getId(),
+							((RegistreDto)registre).getDades()));
+			model.addAttribute("metadadesActives", isMetadadesActives());
+			
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -1734,7 +1754,8 @@ public class RegistreUserController extends BaseUserController {
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				command.getCodiProcediment());
+				command.getCodiProcediment(),
+				command.getTitol());
 		switch (resultat.getResultat()) {
 		case SENSE_CANVIS:
 			break;
@@ -1766,6 +1787,14 @@ public class RegistreUserController extends BaseUserController {
 							"bustia.controller.pendent.contingut.classificat.error",
 							null));
 			break;
+		case TITOL_MODIFICAT:
+			MissatgesHelper.info(
+					request, 
+					getMessage(
+							request, 
+							"bustia.controller.pendent.contingut.classificat.titol",
+							null));
+			break;
 		}
 		return getModalControllerReturnValueSuccess(
 				request,
@@ -1785,7 +1814,8 @@ public class RegistreUserController extends BaseUserController {
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				codiProcediment);
+				codiProcediment,
+				null);
 		return resultat;
 	}
 	
@@ -1920,6 +1950,46 @@ public class RegistreUserController extends BaseUserController {
 		return bustiaService.getUsuarisPerBustia(bustiaId);
 	}
 
+	@RequestMapping(value = "/domini/{dominiCodi}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultatDominiDto getDomini(
+			HttpServletRequest request,
+			@PathVariable String dominiCodi,
+			@RequestParam(value="filter", required = false) String filter,
+			@RequestParam(value="pageSize", required = false) int pageSize,
+			@RequestParam(value="page", required = false) int page){
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		ResultatDominiDto resultatDomini = null;
+		DominiDto domini = dominiService.findByCodiAndEntitat(dominiCodi,entitatActual.getId());
+		try {
+			resultatDomini = dominiService.getResultDomini(
+						entitatActual.getId(),
+						domini,
+						filter != null ? filter : "",
+						page,
+						pageSize);
+		} catch (DominiException e) {
+			e.printStackTrace();
+		}
+		
+		return resultatDomini;
+	}
+	
+	@RequestMapping(value = "/domini/{dominiCodi}/valor", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultatConsultaDto getDomini(
+			HttpServletRequest request,
+			@PathVariable String dominiCodi,
+			@RequestParam(value="dadaValor", required = false) String dadaValor){
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		ResultatConsultaDto resultatConsulta = null;
+		DominiDto domini = dominiService.findByCodiAndEntitat(dominiCodi, entitatActual.getId());
+		resultatConsulta = dominiService.getSelectedDomini(
+					entitatActual.getId(),
+					domini,
+					dadaValor);
+		return resultatConsulta;
+	}
 	
 	private void resetFiltreBustia(
 			HttpServletRequest request, 
@@ -2002,7 +2072,6 @@ public class RegistreUserController extends BaseUserController {
 		return Boolean.parseBoolean(isReenviarBustiaDefaultEntitatDisabled);
 	}
 
-	
 	private boolean isFavoritsPermes() {
 		String isFavoritsPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.favorits");
 		return Boolean.parseBoolean(isFavoritsPermesStr);
@@ -2011,6 +2080,15 @@ public class RegistreUserController extends BaseUserController {
 	private boolean isMostrarPermisosBustiaPermes() {
 		String isMostrarPermisosBustiaPermesStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.mostrar.permisos");
 		return Boolean.parseBoolean(isMostrarPermisosBustiaPermesStr);
+	}
+
+	private boolean isPermesModificarTitol() {
+		String isModificarTitolActivat = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.modificar.titol");
+		return Boolean.parseBoolean(isModificarTitolActivat);
+	}
+	
+	private boolean isMetadadesActives() {
+		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.permetre.metadades.registre"));
 	}
 	
 	private RegistreFiltreCommand getFiltreCommand(
@@ -2045,6 +2123,7 @@ public class RegistreUserController extends BaseUserController {
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
 						registre.getPareId()));
+		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
 		return registre.getProcedimentCodi();
 	}
 	
