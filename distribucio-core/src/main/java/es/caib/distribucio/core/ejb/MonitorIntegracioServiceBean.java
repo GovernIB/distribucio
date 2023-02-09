@@ -14,11 +14,13 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
+import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 
@@ -39,6 +41,12 @@ public class MonitorIntegracioServiceBean implements MonitorIntegracioService {
 	@RolesAllowed({"DIS_SUPER"})
 	public List<IntegracioDto> integracioFindAll() {
 		return delegate.integracioFindAll();
+	}
+
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public List<IntegracioDto> findPerDiagnostic() {
+		return delegate.findPerDiagnostic();
 	}
 
 	@Override
@@ -73,6 +81,12 @@ public class MonitorIntegracioServiceBean implements MonitorIntegracioService {
 	@RolesAllowed({"DIS_SUPER"})
 	public int delete(String codi) {
 		return delegate.delete(codi);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_SUPER"})
+	public IntegracioDiagnosticDto diagnostic(String codiIntegracio, UsuariDto usuari) {
+		return delegate.diagnostic(codiIntegracio, usuari);
 	}
 
 }

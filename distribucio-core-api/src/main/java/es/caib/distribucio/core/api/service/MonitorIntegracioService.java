@@ -9,11 +9,13 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
 /**
@@ -30,6 +32,13 @@ public interface MonitorIntegracioService {
 	 */
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public List<IntegracioDto> integracioFindAll();
+
+	/** Mètode per treure el llistat d'integracions
+	 *  per comprovar la conexió amb el plugin.
+	 * 
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public List<IntegracioDto> findPerDiagnostic();
 
 	/**
 	 * Crea un nou item monitorIntegracio.
@@ -77,5 +86,15 @@ public interface MonitorIntegracioService {
 	 */
 	public int delete(String codi);
 
-
+	/**Mètode per comprovar la situació de la integració
+	 * 
+	 * @param codiIntegracio a diagnosticar
+	 * @param objecte usuari 
+	 * @return
+	 */
+	@PreAuthorize("hasRole('DIS_SUPER')")
+	public IntegracioDiagnosticDto diagnostic(String codiIntegracio, UsuariDto usuari);
+	
+	
+	
 }

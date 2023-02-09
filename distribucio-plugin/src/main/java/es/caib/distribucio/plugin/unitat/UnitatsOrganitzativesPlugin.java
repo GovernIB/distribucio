@@ -90,7 +90,6 @@ public interface UnitatsOrganitzativesPlugin extends IntegracioPlugin{
 			Long comunitatAutonoma, 
 			Boolean ambOficines, 
 			Boolean esUnitatArrel,
-			Long provincia, 
-			String municipi) throws SistemaExternException;
+			Long provincia,String codiLocalitat) throws SistemaExternException;
 
 }
