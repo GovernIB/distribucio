@@ -3,7 +3,10 @@
  */
 package es.caib.distribucio.war.controller;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -17,7 +20,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.UsuariPermisDto;
@@ -96,6 +102,26 @@ public class RegistreUserAssignarController extends BaseUserController {
 				"bustia.controller.pendent.contingut.assignat",
 				new Object[] {command.getUsuariCodi()});
 	}
+	
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	@RequestMapping(value = "/assignar/usuaris", method = RequestMethod.GET)
+	@ResponseBody
+	public List<UsuariPermisDto> usuarisAssignats(
+			HttpServletRequest request,
+			@RequestParam(required = false, defaultValue = "false") boolean mostrarInactives,
+			Model model) {
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		Set<UsuariPermisDto> usuarisAssignats = new HashSet<UsuariPermisDto>();
+		List<BustiaDto> bustiesPermeses = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), false);
+		
+		for (BustiaDto bustiaDto : bustiesPermeses) {
+			List<UsuariPermisDto> usuarisBustia = bustiaService.getUsuarisPerBustia(bustiaDto.getId());
+			usuarisAssignats.addAll(usuarisBustia);
+		}
+		
+		return new ArrayList<UsuariPermisDto>(usuarisAssignats);
+	}
+	
 	
 	private void emplenarModelAssignar(
 			HttpServletRequest request,

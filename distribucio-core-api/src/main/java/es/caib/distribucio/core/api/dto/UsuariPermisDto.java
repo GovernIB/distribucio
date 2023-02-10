@@ -7,7 +7,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.EqualsAndHashCode;
 
+
+@EqualsAndHashCode
 public class UsuariPermisDto implements Serializable {
 
 	private String codi;

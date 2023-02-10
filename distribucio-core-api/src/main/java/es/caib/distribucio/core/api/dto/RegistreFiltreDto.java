@@ -60,6 +60,7 @@ public class RegistreFiltreDto implements Serializable {
 	
 	private RegistreNombreAnnexesEnumDto nombreAnnexes;
 
+	private String usuariAssignatCodi;
 	
 	public String getBackCodi() {
 		return backCodi;
@@ -212,6 +213,13 @@ public class RegistreFiltreDto implements Serializable {
 	}
 	public void setNombreAnnexes(RegistreNombreAnnexesEnumDto nombreAnnexes) {
 		this.nombreAnnexes = nombreAnnexes;
+	}
+
+	public String getUsuariAssignatCodi() {
+		return usuariAssignatCodi;
+	}
+	public void setUsuariAssignatCodi(String usuariAssignatCodi) {
+		this.usuariAssignatCodi = usuariAssignatCodi;
 	}
 
 	private static final long serialVersionUID = -139254994389509932L;

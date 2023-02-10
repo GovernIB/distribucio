@@ -494,6 +494,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 					filtre.getNombreAnnexes(),
+					filtre.getUsuariAssignatCodi() == null,
+					filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
 
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -579,7 +581,9 @@ public class RegistreServiceImpl implements RegistreService {
 			Boolean sobreescriure,
 			boolean esNullProcedimentCodi,
 			String procedimentCodi,
-			RegistreNombreAnnexesEnumDto nombreAnnexos, 
+			RegistreNombreAnnexesEnumDto nombreAnnexos,
+			boolean esNullUsuariAssignatCodi,
+			String usuariAssignatCodi,
 			Pageable pageable) {
 		
 		Object ret = null; // Retorna una llista d'identificadors o una pàgina
@@ -697,6 +701,11 @@ public class RegistreServiceImpl implements RegistreService {
 		if (!esNullProcedimentCodi) {
 			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");				
 			parametres.put("procedimentCodi", procedimentCodi);
+		}
+		
+		if (!esNullUsuariAssignatCodi) {
+			sqlWhere.append("and r.agafatPer is not null and r.agafatPer.codi = :usuariAssignatCodi ");				
+			parametres.put("usuariAssignatCodi", usuariAssignatCodi);
 		}
 		
 		if (nombreAnnexos != null) {
@@ -1135,6 +1144,8 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getProcedimentCodi() == null, 
 				filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 				filtre.getNombreAnnexes(),
+				filtre.getUsuariAssignatCodi() == null,
+				filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 				null);
 	
 

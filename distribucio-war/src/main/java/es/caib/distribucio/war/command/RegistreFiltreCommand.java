@@ -68,6 +68,8 @@ public class RegistreFiltreCommand {
 	
 	private RegistreNombreAnnexesEnumDto nombreAnnexes;
 
+	private String usuariAssignatCodi;
+	
 	public String getBackCodi() {
 		return backCodi;
 	}
@@ -230,6 +232,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setNombreAnnexes(RegistreNombreAnnexesEnumDto nombreAnnexes) {
 		this.nombreAnnexes = nombreAnnexes;
+	}
+	public String getUsuariAssignatCodi() {
+		return usuariAssignatCodi;
+	}
+	public void setUsuariAssignatCodi(String usuariAssignatCodi) {
+		this.usuariAssignatCodi = usuariAssignatCodi;
 	}
 	
 }

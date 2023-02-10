@@ -380,6 +380,24 @@ $(document).ready(function() {
 		);
 		return false;
 	});
+	
+	if (${isPermesAssignarAnotacions}) {
+		var baseUrl = "<c:url value='/registreUser/assignar/usuaris'/>";
+		$.get(baseUrl)
+			.done(function(data) {
+				$('#usuariAssignatCodi').select2('val', '', true);
+				$('#usuariAssignatCodi option[value!=""]').remove();
+				for (var i = 0; i < data.length; i++) {
+					if ('${registreFiltreCommand.usuariAssignatCodi}' == data[i].codi)
+						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '" selected>' + data[i].nom + '</option>');
+					else
+						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '">' + data[i].nom + '</option>');
+				}
+			})
+			.fail(function() {
+				alert("<spring:message code="error.jquery.ajax"/>");
+			});
+	}
 });
 
 function bloquejar(anotacioId) {
@@ -508,8 +526,21 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					placeholderKey="registre.admin.list.filtre.procediment"
 					suggestValue="codiSia"
 					suggestText="codiNom" />
-			</div>		
-			<div class="col-md-3"></div>
+			</div>
+			<c:if test="${isPermesAssignarAnotacions}">
+				<div class="col-md-3">
+					<dis:inputSelect 
+						name="usuariAssignatCodi" 
+						optionItems="${replacedByJquery}" 
+						optionValueAttribute="codi" 
+						optionTextAttribute="nom" 
+						emptyOption="true" 
+						placeholderKey="bustia.list.filtre.usuari.assignat" 
+						inline="true"
+						optionMinimumResultsForSearch="0" />
+				</div>
+			</c:if>
+			<div class="${isPermesAssignarAnotacions ? 'col-md-1' : 'col-md-3'}"></div>
 			<div class="col-md-2 d-flex">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
@@ -728,7 +759,10 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				</th>
 				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
-				</th>				
+				</th>
+				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}" style="width:15%;">
+					<spring:message code="bustia.pendent.columna.agafat"/>
+				</th>			
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>

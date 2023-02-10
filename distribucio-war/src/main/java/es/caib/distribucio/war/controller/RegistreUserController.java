@@ -183,7 +183,7 @@ public class RegistreUserController extends BaseUserController {
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
 			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 		}
-		return DatatablesHelper.getDatatableResponse(
+ 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
 						entitatActual.getId(),
