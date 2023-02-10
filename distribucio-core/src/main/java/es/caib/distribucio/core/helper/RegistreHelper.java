@@ -454,14 +454,19 @@ public class RegistreHelper {
 	}
 	
 	
-	
-	
-	
-	
-	
+	public void assignar(UsuariEntity usuari, UsuariEntity usuariActual, RegistreEntity registreEntity) {
+		registreEntity.updateAgafatPer(usuari);
+		List<String> params = new ArrayList<>();
+		params.add(usuariActual.getNom());
+		params.add(usuari.getNom());
+		contingutLogHelper.log(
+				registreEntity,
+				LogTipusEnumDto.ASSIGNAR,
+				params,
+				false);
+	}
 	
 	public void bloquejar(RegistreEntity registreEntity, String usuariCodi) {
-		// Agafa l'expedient. Si l'expedient pertany a un altre usuari li pren
 		UsuariEntity usuariNou = usuariHelper.getUsuariByCodi(usuariCodi);
 		registreEntity.updateAgafatPer(usuariNou);
 		List<String> params = new ArrayList<>();

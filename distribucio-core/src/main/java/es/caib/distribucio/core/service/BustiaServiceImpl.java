@@ -1552,6 +1552,7 @@ public class BustiaServiceImpl implements BustiaService {
 			boolean opcioDeixarCopiaSelectada,
 			String comentari,
 			Long[] perConeixement,
+			Map<Long, String> destinsUsuari,
 			Long destiLogic) throws NotFoundException {
 		
 		logger.debug("Reenviant contingut pendent de la bústia ("
@@ -1723,6 +1724,15 @@ public class BustiaServiceImpl implements BustiaService {
 				assentamentsPerConeixement.add(bustia.getNom());
 			} else {
 				assentamentsPerTramitar.add(bustia.getNom());
+			}
+			if (isPermesAssignarAnotacions()) {
+				String usuari = destinsUsuari.get(bustia.getId());
+				if (usuari != null && !usuari.isEmpty() && !usuari.equals("|")) {
+					String[] usuariArr = usuari.split("\\|");
+					String usuariCodi = usuariArr[0];
+					String comentariUsuari = usuariArr.length > 1 ? usuariArr[1] : null;
+					registreService.assignar(entitatId, registrePerReenviar.getId(), usuariCodi, comentariUsuari);	
+				}
 			}
 		}
 		
@@ -3177,7 +3187,9 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
 	}
 	
-	
+	private boolean isPermesAssignarAnotacions() {
+		return configHelper.getAsBoolean("es.caib.distribucio.assignar.anotacions");
+	}
 	
 	@Override
 	@Transactional(readOnly = true)

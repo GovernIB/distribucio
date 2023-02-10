@@ -116,6 +116,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -2573,6 +2574,37 @@ public class RegistreServiceImpl implements RegistreService {
 		registreHelper.bloquejar(
 				registre, 
 				usuariHelper.getUsuariAutenticat().getCodi());
+	}
+
+	@Transactional
+	@Override
+	public void assignar(Long entitatId, Long registreId, String usuariCodi, String comentari) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UsuariEntity usuari = usuariHelper.getUsuariByCodi(usuariCodi);
+		UsuariEntity usuariActual = usuariHelper.getUsuariByCodi(auth.getName());
+		logger.debug("Assignant l'anotació a l'usuari (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", " + "usuari=" + usuari.getNom() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		if (!isPermesReservarAnotacions()) {
+			throw new ValidationException(
+					registreId, 
+					RegistreEntity.class, 
+					"La funcionalitat de reserva d'anotacions no està activa");
+		}
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), false);
+		
+		registreHelper.assignar(usuari, usuariActual, registre);
+
+		if (comentari != null)
+			contingutHelper.publicarComentariPerContingut(entitatId, registreId, comentari);
+		
+		emailHelper.sendEmailAvisAssignacio(usuari.getEmail(), usuariActual, registre, comentari);
 	}
 	
 	@Transactional

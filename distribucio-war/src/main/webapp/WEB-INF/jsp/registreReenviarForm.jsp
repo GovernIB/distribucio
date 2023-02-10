@@ -31,6 +31,13 @@
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/webjars/Sortable/1.4.2/Sortable.min.js"/>"></script>
+	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+	<c:if test="${requestLocale == 'en'}">
+		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
+	</c:if>
+	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
@@ -103,11 +110,11 @@
 			margin: 2% 0 0 1%;
 		}
 		
-		.taules_container div:nth-child(2) {
+		.taules_container div#taula_tramitacio_parent {
 			margin-bottom: 0;
 		}
 		
-		.taules_container div:nth-child(3) {
+		.taules_container div#taula_coneixement_parent {
 			display: flex;
 			align-items: center;
 		}
@@ -257,6 +264,32 @@
 		.disabled-bustia a, .disabled-bustia span {
 			pointer-events: none;
 		}
+		
+		td[id^='bustia_desti_'] {
+			display: flex;
+		}
+		
+		td[id^='bustia_desti_'] p {
+			margin:0;
+			margin-right: 15px;
+			align-self: center;
+			flex-basis: 25%;
+		}
+		
+		td[id^='bustia_desti_'] div:nth-child(2) {
+			display:none;
+			flex-basis: 30%;
+		}
+		
+		td[id^='bustia_desti_'] div:nth-child(3) {
+			flex-basis: 40%;
+			margin-left: 15px;
+		}
+		
+		td[id^='bustia_delete_'] {
+			vertical-align: middle !important;
+		}
+		
 	</style>
 	<script type="text/javascript">
 		var multiple = ${registres != null};
@@ -345,12 +378,29 @@
 				}
 			});
 			favoritsCheckbox.trigger('change');
-			$("button[name='btnReenviarSubmit']").click(function(){
+			$("button[name='btnReenviarSubmit']").click(function(e){
+				if (${isPermesAssignarAnotacions}) {
+					mapBustiaUsuari();				
+				}
 				if (multiple) {
 					processaAnotacions();
 				}
 		    });
 		});
+		
+		function mapBustiaUsuari() {			
+			$('#taula_tramitacio > tbody  > tr').each(function(e, tr) {
+				var bustiaId = $(tr).attr('id');
+				var bustiaTr = $(tr).find('td[id="bustia_desti_' + bustiaId + '"]');
+				
+				var usuariAssignat = $(bustiaTr).find('select').val();
+				var comentari = $(bustiaTr).find('textarea').val();
+				
+				var $destinsUsuari = $('<input name="destinsUsuari[' + bustiaId + ']" value="' + usuariAssignat + '|' + comentari + '" type="hidden"/>');
+				
+				$('#contingutReenviarCommand').append($destinsUsuari);
+			});			
+		}
 
 		var unitats = [];
 		function actualitzarArbreAmbFavorits($arbre) {
@@ -625,8 +675,13 @@
 			var existsInTable = $taulaTramitacio.find('tr#' + idNode).length > 0;
 			
 			if (!existsInTable) {
-				$tbody.append('<tr id="' + idNode + '"><td>' + node.text + '</td><td width="55px"><button type="button" id ="' + idNode + '"class="btn btn-danger"\
+				$tbody.append('<tr id="' + idNode + '"><td id="${isPermesAssignarAnotacions ? "bustia_desti_' + idNode + '" : ""}"><p>' + node.text + '</p></td><td width="55px" id="bustia_delete_' + idNode + '"><button type="button" id ="' + idNode + '"class="btn btn-danger"\
 						onclick="actualitzarTaulaTramitacio(this.id, true)"><span class="fa fa-trash"/></button></td></tr>');
+				
+
+				if (${isPermesAssignarAnotacions}) {
+					mostrarUsuarisComentar(idNode, $taulaTramitacio);
+				}
 			} else {
 				if (deselect) {
 					$arbre.jstree('deselect_node', idNode);
@@ -634,6 +689,53 @@
 				$taulaTramitacio.find('tr#' + idNode).remove();
 			}
 			actualitzarFilaBuida($tbody, false);
+		}
+		
+		function mostrarUsuarisComentar(idNode, $taulaTramitacio) {
+			// Recuperar usuaris amb permís sobre bústia i mostrar-los
+			var $selectUsuaris = $('<select id="usuaris_' + idNode + '"></select>');
+			$selectUsuaris.empty();
+			$selectUsuaris.append("<option value=\"\" selected><spring:message code="comu.empty.option"/></option>");
+			$.ajax({
+				type: 'GET',
+		        url: '<c:url value="/registreUser/' + idNode + '/usersPermitted"/>',
+		        async: false,
+		        success: function(usersPermitted) {
+		        	$.each(usersPermitted, function(i, user) {
+		        		$selectUsuaris.append('<option value="' + user.codi + '">' + user.nom + '</option>');
+		        	});
+		        },
+		        error: function(e) {
+		        	contant += 'Hi ha hagut un error recuperant els usuarios amb permís sobre la bústia ' + bustiaId;
+		        }
+			});
+			
+			var $td = $taulaTramitacio.find('#bustia_desti_' + idNode);
+			var $usuaris_parent = '<div id="usuaris_' + idNode + '_parent"> \
+									<label for="usuari_' + idNode + '">Assignar a:</label> \
+								  </div>'
+			$td.append($usuaris_parent);
+			var $div = $td.find('#usuaris_' + idNode + '_parent');
+			$div.append($selectUsuaris);
+			var select2Options = {
+					width: '100%',
+					theme: 'bootstrap', 
+					minimumResultsForSearch: "6"};
+			$selectUsuaris.select2(select2Options);
+			$('#usuaris_' + idNode + '_parent').css('display','block');
+			
+			// Comentari
+			var $comentari = '<div> \
+								<label for="comentari_' + idNode + '">Comentari</label> \
+								<textarea class="form-control" id="comentari_' + idNode + '" rows="3"></textarea> \
+							  </div>'
+			$td.append($comentari);
+		}
+		
+		function ocultarUsuarisComentar(idNode) {
+			if (${isPermesAssignarAnotacions}){
+				
+			}
 		}
 		
 		function actualitzarTaulaConeixement(idNode, selected, deselect) {
@@ -772,7 +874,7 @@
 			    				<label><spring:message code="contingut.enviar.seleccionats"/></label>
 			    			</div>
 			    			
-			    			<div class="col-xs-12">
+			    			<div id="taula_tramitacio_parent" class="col-xs-12">
 			    				<table id="taula_tramitacio" class="table table-bordered">
 			    					<thead>
 			    						<tr>
@@ -785,7 +887,7 @@
 			    					</tbody>
 			    				</table>
 			    			</div>
-			    			<div class="col-xs-12">
+			    			<div id="taula_coneixement_parent" class="col-xs-12">
 			    				<table id="taula_coneixement" class="table table-bordered">
 			    					<thead>
 			    						<tr>

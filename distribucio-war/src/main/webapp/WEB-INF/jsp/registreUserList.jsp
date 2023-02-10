@@ -183,7 +183,8 @@ button#filtrar {
 <script>
 $.views.helpers({
 	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
-	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat
+	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat,
+	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions}
 });
 
 function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
@@ -776,8 +777,14 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 									<li role="separator" class="divider"></li>
 									{{if !agafat}}
 										<li id="anotacio_{{:id}}"><a onClick="bloquejar({{:id}})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
+										{{if ~hlpIsPermesAssignarAnotacions}}
+											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.assignar"/> ...</a></li>
+										{{/if}}
 									{{else}}
-											<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
+										<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
+										{{if ~hlpIsPermesAssignarAnotacions}}
+											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
+										{{/if}}
 										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
 											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}

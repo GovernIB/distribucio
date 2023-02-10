@@ -489,4 +489,18 @@ public interface RegistreService {
 	RegistreDto findOneAmbDades(Long entitatId, Long registreId, boolean isVistaMoviments, String rolActual)
 			throws NotFoundException;
 
+	/**
+	 * Assigna el registre a l'usuari seleccionat.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat a la qual pertany el registre.
+	 * @param registreId
+	 *            Atribut id del registre/anotació.
+	 * @param usuariCodi
+	 *            Atribut codi de l'usuari.
+	 * @param comentari
+	 *            Comentari assignació.
+	 */
+	void assignar(Long entitatId, Long registreId, String usuariCodi, String comentari);
+
 }
