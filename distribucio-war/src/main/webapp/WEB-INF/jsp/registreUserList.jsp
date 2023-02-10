@@ -760,7 +760,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>
-				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}" style="width:15%;">
+				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}" style="width:8%;">
 					<spring:message code="bustia.pendent.columna.agafat"/>
 				</th>			
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;">
