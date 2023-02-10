@@ -127,6 +127,7 @@ import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
+import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
@@ -218,6 +219,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private DadaRepository dadaRepository;
 	@Autowired
 	private MetaDadaRepository metaDadaRepository;
+	@Autowired
+	private MessageHelper messageHelper;
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -2600,9 +2603,10 @@ public class RegistreServiceImpl implements RegistreService {
 		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), false);
 		
 		registreHelper.assignar(usuari, usuariActual, registre);
-
+		
+		String comentariAssignat = messageHelper.getMessage("registre.comentari.usuari.assigant", new Object[] {usuari.getNom()}) + comentari;
 		if (comentari != null)
-			contingutHelper.publicarComentariPerContingut(entitatId, registreId, comentari);
+			contingutHelper.publicarComentariPerContingut(entitatId, registreId, comentariAssignat);
 		
 		emailHelper.sendEmailAvisAssignacio(usuari.getEmail(), usuariActual, registre, comentari);
 	}

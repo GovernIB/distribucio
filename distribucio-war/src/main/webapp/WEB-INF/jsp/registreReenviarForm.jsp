@@ -290,6 +290,10 @@
 			vertical-align: middle !important;
 		}
 		
+		textarea[id^='comentari_'] {
+			height: 35px !important;
+		}
+		
 	</style>
 	<script type="text/javascript">
 		var multiple = ${registres != null};
@@ -712,7 +716,7 @@
 			
 			var $td = $taulaTramitacio.find('#bustia_desti_' + idNode);
 			var $usuaris_parent = '<div id="usuaris_' + idNode + '_parent"> \
-									<label for="usuari_' + idNode + '">Assignar a:</label> \
+									<label for="usuari_' + idNode + '"><spring:message code="bustia.pendent.assignar.camp.assignar"/></label> \
 								  </div>'
 			$td.append($usuaris_parent);
 			var $div = $td.find('#usuaris_' + idNode + '_parent');
@@ -726,16 +730,10 @@
 			
 			// Comentari
 			var $comentari = '<div> \
-								<label for="comentari_' + idNode + '">Comentari</label> \
+								<label for="comentari_' + idNode + '"><spring:message code="bustia.pendent.assignar.camp.comentari"/></label> \
 								<textarea class="form-control" id="comentari_' + idNode + '" rows="3"></textarea> \
 							  </div>'
 			$td.append($comentari);
-		}
-		
-		function ocultarUsuarisComentar(idNode) {
-			if (${isPermesAssignarAnotacions}){
-				
-			}
 		}
 		
 		function actualitzarTaulaConeixement(idNode, selected, deselect) {
