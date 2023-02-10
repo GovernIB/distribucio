@@ -7,10 +7,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.EqualsAndHashCode;
-
-
-@EqualsAndHashCode
 public class UsuariPermisDto implements Serializable {
 
 	private String codi;
@@ -45,7 +41,26 @@ public class UsuariPermisDto implements Serializable {
 		this.rols = rols;
 	}
 
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		UsuariPermisDto other = (UsuariPermisDto) obj;
+		if (codi == null) {
+			if (other.codi != null)
+				return false;
+		} else if (codi != null) {
+			if (!codi.equals(other.codi)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) codi.hashCode();
+	}
 
 	private static final long serialVersionUID = -139254994389509932L;
 
