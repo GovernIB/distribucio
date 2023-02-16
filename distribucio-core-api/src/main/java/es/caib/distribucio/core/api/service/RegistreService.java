@@ -398,20 +398,7 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
 			Long annexId);
-	
-	
-	/**
-	 * Cerca el procediment pel seu codi SIA
-	 * 
-	 * @param codiDir3
-	 * @param codiSia
-	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
-	public List<ProcedimentDto> procedimentFindByCodiSia(
-			long entitatId,
-			String codiSia);
-	
-	
+		
 	/**
 	 * Cerca les dades (sense detall) de les firmes d'un annex. 
 	 *  

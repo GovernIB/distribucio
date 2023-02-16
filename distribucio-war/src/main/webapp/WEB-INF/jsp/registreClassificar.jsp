@@ -23,9 +23,9 @@
 //Funció per advertir a l'usuari dels procediments que estàn obsolets
 function formatProcedimentSelect(item) {
 	const procedimentSplit = item.text.split(" => ");
-	if (procedimentSplit[1] == '<spring:message code="procediment.estat.enum.EXTINGIT"/>'.toUpperCase()) {
-		return $("<span>" + procedimentSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='No es troba al llistat de procediments de Rolsac'> </span> </span>");
-	}else {
+	if (procedimentSplit[1] == 'EXTINGIT') {
+		return $("<span>" + procedimentSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span> </span>");
+	}else{
 		return $("<span>" + procedimentSplit[0] + " </span>");
 	}
 }
@@ -38,6 +38,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
 	<div class="alert alert-warning" role="alert">
 		<span class="fa fa-warning"></span>
 		<spring:message code="bustia.pendent.classificar.warning"/>

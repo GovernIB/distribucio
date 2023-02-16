@@ -2627,27 +2627,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return validacioFirma;
 	}
 	
-
-
-	@Override
-	@Transactional(readOnly=true)
-	public List<ProcedimentDto> procedimentFindByCodiSia(long entitatId, String codiSia) {
-
-		List<ProcedimentDto> procedimentDto = new ArrayList<>();
-		
-		// Treu el procediment cridant a la bbdd
-		List<ProcedimentEntity> procediments = procedimentRepository.findByCodiSia(
-				entitatId, 
-				codiSia == null || codiSia.isEmpty(), 
-				codiSia != null && !codiSia.isEmpty() ? codiSia : "");
-		
-		procedimentDto = conversioTipusHelper.convertirList(procediments, ProcedimentDto.class);
-
-				
-		return procedimentDto;
-	}
-	
-	
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
 		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
 		RegistreEntity registre = registreRepository.findOne(registreId);
