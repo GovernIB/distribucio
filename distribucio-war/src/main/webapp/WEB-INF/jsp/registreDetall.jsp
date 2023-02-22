@@ -816,15 +816,24 @@ li[id^="anotacio_"] {
 					<c:choose>
 						<c:when test="${!registre.agafat}">
 							<li id="anotacio_${registre.id}"><a onClick="bloquejar(${registre.id})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
+							<c:if test="${isPermesAssignarAnotacions}">
+								<li><a href="<c:url value="/registreUser/assignar/${registre.id}"/>" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.assignar"/> ...</a></li>
+							</c:if>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
 								<c:when test="${!registreAgafatPerUsuariActual}">
 									<li id="anotacio_${registre.id}"><a onClick="alliberar(${registre.id})"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									<c:if test="${isPermesAssignarAnotacions}">
+										<li><a href="<c:url value="/registreUser/assignar/${registre.id}"/>" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
+									</c:if>
 									<li class="opt_agafat_${registre.id} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;${registre.agafatPer.codi}</li>
 								</c:when>
 								<c:otherwise>
 									<li id="anotacio_${registre.id}"><a onClick="alliberar(${registre.id})"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>
+									<c:if test="${isPermesAssignarAnotacions}">
+										<li><a href="<c:url value="/registreUser/assignar/${registre.id}"/>" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
+									</c:if>
 								</c:otherwise>
 							</c:choose>
 						</c:otherwise>

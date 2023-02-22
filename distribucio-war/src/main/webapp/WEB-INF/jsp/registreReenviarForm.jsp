@@ -731,9 +731,20 @@
 			// Comentari
 			var $comentari = '<div> \
 								<label for="comentari_' + idNode + '"><spring:message code="bustia.pendent.assignar.camp.comentari"/></label> \
-								<textarea class="form-control" id="comentari_' + idNode + '" rows="3"></textarea> \
+								<textarea class="form-control" id="comentari_' + idNode + '" rows="3" disabled></textarea> \
 							  </div>'
 			$td.append($comentari);
+							  
+			$('#usuaris_' + idNode).on('change', function() {
+				var current_user = $(this).val();
+				
+				if (current_user) {
+					$('#comentari_' + idNode).removeAttr('disabled');
+				} else {
+					$('#comentari_' + idNode).val('');
+					$('#comentari_' + idNode).attr('disabled', 'disabled');
+				}
+			});
 		}
 		
 		function actualitzarTaulaConeixement(idNode, selected, deselect) {
