@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -74,6 +75,11 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		//NEW
 		unitats.add(new UnitatOrganitzativa("A99999907", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		unitats.add(new UnitatOrganitzativa("A99999908", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+
+		//SUBSTITUTION BY ITSLEF
+		unitats.add(new UnitatOrganitzativa("A04032353", "Direcció General D'innovació", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", null));
+		unitats.add(new UnitatOrganitzativa("A04032353", "Direcció General D'innovació " + new Date().getTime(), CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+
 		
 		return unitats;
 	}

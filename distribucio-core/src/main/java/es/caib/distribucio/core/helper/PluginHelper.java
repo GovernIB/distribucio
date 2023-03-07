@@ -7,12 +7,14 @@ import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.fundaciobit.plugins.certificate.InformacioCertificat;
@@ -158,7 +160,7 @@ public class PluginHelper {
 		accioParams.put("fitxerNom", annex.getFitxerNom());
 		accioParams.put("uuidExpedient", uuidExpedient);
 		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
-		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
+		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError()!= null ? annex.getValidacioFirmaError().toString() : "-");
 		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
 		long t0 = System.currentTimeMillis();
@@ -355,7 +357,9 @@ public class PluginHelper {
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
-			
+			// Remove from list unitats that are substituted by itself
+			removeUnitatsSubstitutedByItself(arbol);
+
 			if (arbol != null && !arbol.isEmpty()) {
 				
 				logger.info("Consulta d'unitats a WS [tot camps](" +
@@ -1564,7 +1568,30 @@ public class PluginHelper {
 		return authentication != null ? authentication.getName() : null;
 	}
 
-	
+	/**
+	 * Remove from list unitats that are substituted by itself
+	 * for example if webservice returns two elements:
+	 * 
+	 * UnitatOrganitzativa(codi=A00000010, estat=E, historicosUO=[A00000010])
+	 * UnitatOrganitzativa(codi=A00000010, estat=V, historicosUO=null)
+	 * 
+	 * then remove the first one.
+	 * That way this transition can be treated by application the same way as transition CANVI EN ATRIBUTS
+	 */
+	private void removeUnitatsSubstitutedByItself(List<UnitatOrganitzativa> unitatsOrganitzatives) {
+		if (!unitatsOrganitzatives.isEmpty()) {
+			Iterator<UnitatOrganitzativa> i = unitatsOrganitzatives.iterator();
+			while (i.hasNext()) {
+				UnitatOrganitzativa unitatOrganitzativa = i.next();
+				if (unitatOrganitzativa.getHistoricosUO()!=null 
+						&& !unitatOrganitzativa.getHistoricosUO().isEmpty() 
+						&& unitatOrganitzativa.getHistoricosUO().size() == 1 
+						&& unitatOrganitzativa.getHistoricosUO().get(0).equals(unitatOrganitzativa.getCodi())) {
+					i.remove();
+				}
+			}
+		}
+	}
 	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
 
 }
