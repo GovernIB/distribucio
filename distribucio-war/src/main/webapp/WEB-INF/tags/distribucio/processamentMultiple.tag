@@ -8,6 +8,7 @@
 <%@ attribute name="btnSubmit" required="true" rtexprvalue="true"%>
 <%@ attribute name="btnTancar" required="false" rtexprvalue="true"%>
 <%@ attribute name="postUrl" required="true" rtexprvalue="true"%>
+<%@ attribute name="deselectUrl" required="false" rtexprvalue="true"%>
 
 <c:set var="nRegistres">${fn:length(registres)}</c:set>
 
@@ -103,7 +104,19 @@
 	
 	function processaAnotacions() {
 		(async() => {
-			processaAnotacionsAsync();
+			processaAnotacionsAsync().then((data) => {
+				// Deseleccionar elements en completar l'acció
+				if ("${deselectUrl}" != "") {
+					$.ajax({
+						type: 'GET',
+			        	url: '<c:url value="${deselectUrl}"></c:url>',
+			        	async: false,
+			        	success: function(data) {
+			        		sessionStorage.setItem('selectedElements', data);
+						} 
+					});
+				}
+			});
 		})();	
 	}
 	

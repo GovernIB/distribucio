@@ -845,7 +845,8 @@
 			registres="${registres}"
 			btnSubmit="button[name='btnReenviarSubmit']"
 			form="#contingutReenviarCommand"
-			postUrl="/registreUser/registreReenviarAjax/"></dis:processamentMultiple>
+			postUrl="/registreUser/registreReenviarAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
 	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand" onsubmit="updateConeixement()">

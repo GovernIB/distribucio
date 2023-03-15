@@ -41,7 +41,8 @@
 			start="true"
 			btnSubmit="button[name='btnReintentarProcessamentSubmit']"
 			form="#reintentarProcessamentCommand"
-			postUrl="/registreAdmin/reintentarProcessamentAjax/"></dis:processamentMultiple>
+			postUrl="/registreAdmin/reintentarProcessamentAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 	
 	<form:form action="" class="form-horizontal" commandName="reintentarProcessamentCommand">

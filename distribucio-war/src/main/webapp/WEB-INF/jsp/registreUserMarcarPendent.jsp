@@ -44,7 +44,8 @@
 			registres="${registres}"
 			btnSubmit="button[name='btnMarcarPendentSubmit']"
 			form="#marcarPendentCommand"
-			postUrl="/registreUser/marcarPendentAjax/"></dis:processamentMultiple>
+			postUrl="/registreUser/marcarPendentAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 	
 	<form:form action="" class="form-horizontal" commandName="marcarPendentCommand">
