@@ -931,7 +931,7 @@ li[id^="anotacio_"] {
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td colspan="5">${registre.procedimentCodi}
+					<td colspan="3">${registre.procedimentCodi}
 						<c:forEach items="${procedimentDades}" var="procediment">
 							<c:if test="${procedimentDades != null}">
 								- ${procediment.key} 
@@ -941,6 +941,8 @@ li[id^="anotacio_"] {
 							</c:if>		
 						</c:forEach>
 					</td>
+					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
+					<td>${registre.expedientNumero}</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
