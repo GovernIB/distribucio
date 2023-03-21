@@ -68,23 +68,10 @@
 			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
 			<version>1.0.3</version>
 		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.fundaciobit.apisib.jerseycore</groupId> -->
-		<!-- <artifactId>apisib-jerseycore</artifactId> -->
-		<!-- <version>1.0.0</version> -->
-		<!-- </dependency> -->
-		<!-- https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-apache-client4 -->
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-apache-client4</artifactId>
-			<version>1.19.4</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.fundaciobit.apisib.jerseycore</groupId>
 			<artifactId>apisib-jerseycore</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<artifactId>apifirmasimple-api</artifactId>
@@ -96,25 +83,15 @@
 			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
 			<version>1.0.3</version>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.jersey</groupId> -->
-		<!-- <artifactId>jersey-core</artifactId> -->
-		<!-- <version>1.19.3</version> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.8</version>
+			<version>1.19.3</version>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.jersey</groupId> -->
-		<!-- <artifactId>jersey-client</artifactId> -->
-		<!-- <version>1.19.3</version> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>1.8</version>
+			<version>1.19.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -225,48 +202,49 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.1.1</version>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.1.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-base</artifactId>
+			<version>2.4.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.1</version>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.voodoodyne.jackson.jsog</groupId>
+			<artifactId>jackson-jsog</artifactId>
+			<version>1.1.2</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.fasterxml.jackson.datatype</groupId> -->
-<!-- 			<artifactId>jackson-datatype-joda</artifactId> -->
-<!-- 			<version>2.1.5</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.fasterxml.jackson.jaxrs</groupId> -->
-<!-- 			<artifactId>jackson-jaxrs-base</artifactId> -->
-<!-- 			<version>2.4.2</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.fasterxml.jackson.jaxrs</groupId> -->
-<!-- 			<artifactId>jackson-jaxrs-json-provider</artifactId> -->
-<!-- 			<version>2.4.2</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.voodoodyne.jackson.jsog</groupId> -->
-<!-- 			<artifactId>jackson-jsog</artifactId> -->
-<!-- 			<version>1.1.2</version> -->
-<!-- 		</dependency> -->
-
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.jersey.contribs</groupId> -->
-		<!-- <artifactId>jersey-multipart</artifactId> -->
-		<!-- <version>1.7</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.codehaus.jettison</groupId> -->
-		<!-- <artifactId>jettison</artifactId> -->
-		<!-- <version>1.1</version> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+			<version>1.7</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jvnet</groupId>
+					<artifactId>mimepull</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 
 	</dependencies>
