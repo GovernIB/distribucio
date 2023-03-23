@@ -1261,8 +1261,9 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					// El plugin Arxiu CAIB té un constructor amb la key base i les propietats
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					//Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+					//properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 													String.class, 
 													Properties.class)
@@ -1376,8 +1377,9 @@ public class PluginHelper {
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+//					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+//					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(String.class, Properties.class)
 								.newInstance(configHelper.getAllEntityProperties(codiEntitat));
 					validaSignaturaPlugin.put(codiEntitat, plugin);
@@ -1438,8 +1440,9 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+//					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+//					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (DistribucioPlugin)clazz.getDeclaredConstructor(Properties.class)
 								.newInstance(properties);
 					
