@@ -1381,7 +1381,7 @@ public class PluginHelper {
 //					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
 					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(String.class, Properties.class)
-								.newInstance(configHelper.getAllEntityProperties(codiEntitat));
+								.newInstance("es.caib.distribucio.", properties);
 					validaSignaturaPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(
