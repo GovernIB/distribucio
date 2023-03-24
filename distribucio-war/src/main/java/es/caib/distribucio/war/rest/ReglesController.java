@@ -151,7 +151,7 @@ public class ReglesController extends BaseUserController {
 			regla.put("backofficeDesti", backofficeDesti.getNom());
 			regla.put("codiSia", sia);
 			Date data = novaReglaDto.getCreatedDate();
-			DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			regla.put("data", dateFormat.format(data));
 			
 			
@@ -244,7 +244,7 @@ public class ReglesController extends BaseUserController {
 			r.put("id", regla.getId());
 			r.put("nom", regla.getNom());
 			Date data = regla.getCreatedDate();
-			DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			r.put("data", dateFormat.format(data));
 			r.put("entitat", regla.getEntitatNom());
 			r.put("activa", regla.isActiva());
