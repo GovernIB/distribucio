@@ -26,16 +26,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
 import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
-import es.caib.distribucio.core.helper.PluginHelper;
-import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.war.command.IntegracioFiltreCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;

@@ -14,7 +14,6 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.fundaciobit.plugins.certificate.InformacioCertificat;
@@ -90,7 +89,6 @@ public class PluginHelper {
 	@Autowired
 	private ConfigHelper configHelper;
 	
-	
 	/** Mètode per consultar el codi de l'entitat actual */
  	private String getCodiEntitatActual() {
 
@@ -102,7 +100,7 @@ public class PluginHelper {
 	}
 
 
-	/* Mètode per crear un novo expedient*/
+	/* Mètode per crear un nou expedient*/
 	public String saveRegistreAsExpedientInArxiu(
 			String registreNumero,
 			String expedientNumero,

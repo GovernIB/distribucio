@@ -243,14 +243,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
-			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
-									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
-									&& format != null;
+//			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+//									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
+//									&& format != null;
 			
 
 			// Mira si firmar en servidor
 			if (!annexFirmat 
-					&& documentValid
+				//	&& documentValid
 					&& isRegistreSignarAnnexos()) {
 				
 				try {
@@ -341,7 +341,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// SAVE IN ARXIU
 		String uuidDocumentCreat = null;
 		try {
-			uuidDocumentCreat = arxiuDocumentAnnexCrear(
+			uuidDocumentCreat = arxiuDocumentAnnexCrearActualizar(
 					distribucioAnnex,
 					unitatArrelCodi,
 					fitxerContingut,
@@ -376,7 +376,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 				errSistemaExtern = errSistemaExtern + "\n" + errMsg3;
 				
-				uuidDocumentCreat = arxiuDocumentAnnexCrear(
+				uuidDocumentCreat = arxiuDocumentAnnexCrearActualizar(
 						distribucioAnnex,
 						unitatArrelCodi,
 						fitxerContingut,
@@ -580,7 +580,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 	}
 
-	private String arxiuDocumentAnnexCrear(
+	private String arxiuDocumentAnnexCrearActualizar(
 			DistribucioRegistreAnnex annex,
 			String unitatArrelCodi,
 			FitxerDto fitxer,
@@ -599,7 +599,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		
 		//creating info for integracio logs
-		String accioDescripcio = "Creant document annex";
+		String accioDescripcio = annex.getFitxerArxiuUuid() != null && DocumentEstat.DEFINITIU.equals(estatDocument) ?
+				"Modificar documenta annex"
+				: "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", annex.getId().toString());
 		accioParams.put("titol", annex.getTitol());
@@ -636,33 +638,60 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		long t0 = System.currentTimeMillis();
 		try {
-			
-			String nom = this.uniqueNameArxiu(
-					annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
-					identificadorPare);
-						
-			ContingutArxiu contingutFitxer = getArxiuPlugin().documentCrear(
-					toArxiuDocument(
-							null,
-							nom, 
-							annex.getTitol(),
-							fitxer,
-							firmes,
-							null,
-							(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
-							Arrays.asList(unitatArrelCodi),
-							annex.getDataCaptura(),
-							(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
-							(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
-							estatDocument,
-							documentEniRegistrableDto,
-							annex.getMetaDades()),
-					identificadorPare);
-			integracioAddAccioOk(
-					integracioArxiuCodi,
-					accioDescripcio,
-					accioParams,
-					System.currentTimeMillis() - t0);
+			ContingutArxiu contingutFitxer;
+			if (annex.getFitxerArxiuUuid() == null) {
+				String nom = this.uniqueNameArxiu(
+						annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
+						identificadorPare);
+							
+				contingutFitxer = getArxiuPlugin().documentCrear(
+						toArxiuDocument(
+								null,
+								nom, 
+								annex.getTitol(),
+								fitxer,
+								firmes,
+								null,
+								(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
+								Arrays.asList(unitatArrelCodi),
+								annex.getDataCaptura(),
+								(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
+								(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
+								estatDocument,
+								documentEniRegistrableDto,
+								annex.getMetaDades()),
+						identificadorPare);
+				integracioAddAccioOk(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0);
+			} else if (DocumentEstat.DEFINITIU.equals(estatDocument)) {
+				// Actualitza l'annex com a definitiu
+				contingutFitxer = getArxiuPlugin().documentModificar(
+						toArxiuDocument(
+								null,
+								annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
+								annex.getTitol(),
+								fitxer,
+								firmes,
+								null,
+								(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
+								Arrays.asList(unitatArrelCodi),
+								annex.getDataCaptura(),
+								(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
+								(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
+								estatDocument,
+								documentEniRegistrableDto,
+								annex.getMetaDades()));
+				integracioAddAccioOk(
+						integracioArxiuCodi,
+						accioDescripcio,
+						accioParams,
+						System.currentTimeMillis() - t0);
+			}else {
+				contingutFitxer = null;
+			}
 			return contingutFitxer.getIdentificador();
 		} catch (Exception ex) {
 			

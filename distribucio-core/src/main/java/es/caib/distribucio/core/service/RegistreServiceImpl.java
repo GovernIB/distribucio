@@ -1778,6 +1778,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {
+		
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
@@ -1793,10 +1794,10 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
 		Exception exceptionProcessant = null;
 		if (pendentArxiu || pendentRegla) {
-			if (pendentArxiu) {
-				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+			
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
 						registreId);
-			}
+			
 			if (exceptionProcessant == null && pendentRegla) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
 						registreId);

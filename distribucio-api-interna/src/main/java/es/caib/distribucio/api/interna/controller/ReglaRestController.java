@@ -248,27 +248,7 @@ public class ReglaRestController{
 		}
 		return new ResponseEntity<Object>(regles, HttpStatus.OK);
 	}
-	
-	
-
-	/** Comprova que l'usuari autenticat tingui el rol.
-	 * 
-	 * @param auth
-	 * @param rol
-	 * @return
-	 */
-	private boolean comprovarRol(Authentication auth, String rol) {
-		boolean ret = false;
-		if (auth != null) {
-			for (GrantedAuthority a : auth.getAuthorities()) {
-				if (a.getAuthority().equals(rol)) {
-					ret = true;
-					break;
-				}
-			}
-		}
-		return ret;
-	}
+		
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaRestController.class);
 }

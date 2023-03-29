@@ -119,6 +119,7 @@ import es.caib.distribucio.core.service.SegonPlaServiceImpl.GuardarAnotacioPende
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
+import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutTipus;
@@ -454,10 +455,7 @@ public class RegistreHelper {
 	}
 	
 	
-	
-	
-	
-	
+		
 	
 	
 	public void bloquejar(RegistreEntity registreEntity, String usuariCodi) {
@@ -2132,15 +2130,20 @@ public class RegistreHelper {
 		}
 		RegistreEntity registre = annex.getRegistre();
 		
+		DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+		documentEniRegistrableDto.setNumero(registre.getNumero());
+		documentEniRegistrableDto.setData(registre.getData());
+		documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
+		documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
 		
-		// Només crea l'annex a dins el contenidor si encara no s'ha creat
-		if (annex.getFitxerArxiuUuid() == null) {
+		// Només crea l'annex a dins el contenidor si encara no s'ha creat o s'ha creat i té documents com a esborrany i no té error de firmes
+		
+		if (annex.getFitxerArxiuUuid() == null || 
+				(annex.getFitxerArxiuUuid()!=null &&
+					annex.getArxiuEstat() == AnnexEstat.ESBORRANY)) {
+					// && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) )) {
 									
-			DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-			documentEniRegistrableDto.setNumero(registre.getNumero());
-			documentEniRegistrableDto.setData(registre.getData());
-			documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
-			documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
+			
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
@@ -2153,6 +2156,7 @@ public class RegistreHelper {
 			distribucioAnnex.setValidacioFirma(validacioFirma);
 			
 			// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
+			
 			String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
 					registre.getNumero(),
 					distribucioAnnex,
@@ -2183,8 +2187,7 @@ public class RegistreHelper {
 			if (!annex.isSignaturaDetallsDescarregat()) {
 				this.loadSignaturaDetallsToDB(annex);
 			}
-		}
-		if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+		}else if(annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {			
 			registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
 		}
 	}
@@ -2352,6 +2355,8 @@ public class RegistreHelper {
 		return clauSecreta;
 	}
 
+		
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
 }
