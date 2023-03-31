@@ -87,11 +87,11 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 	background-color: #c3c2c1;
 }
 
-div.extracteColumn {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    overflow-wrap: anywhere;
-}
+/* div.extracteColumn { */
+/*     word-wrap: break-word; */
+/*     overflow-wrap: break-word; */
+/*     overflow-wrap: anywhere; */
+/* } */
 li[id^="anotacio_"] {
 	cursor: pointer;
 }
@@ -559,7 +559,6 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 	<table 
 		id="taulaDades" 
 		class="table table-bordered table-striped" 
-		style="width:100%"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreUser/datatable"/>"
 		data-filter="#registreFiltreCommand"
@@ -584,20 +583,28 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
-				<th data-col-name="procesError" data-visible="false">#</th>
-				<th data-col-name="numero" style="width:10%;"><spring:message code="bustia.pendent.columna.numero"/></th>
-				<th data-col-name="extracte" style="width:10%;" data-template="#extracteTemplate">
+				<th data-col-name="procesError" data-orderable="false" style="width:6%;  min-width: 55px;" data-template="#procesErrorTemplate"></th>
+			
+<!-- 				<th data-col-name="procesError" data-visible="false">#</th> -->
+				<th data-col-name="numero" style="max-width: 10%; min-width: 70px"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				
+<!-- 				<th data-col-name="numero" style="width:10%;"><spring:message code="bustia.pendent.columna.numero"/></th> -->
+<!-- 				<th data-col-name="extracte" style="width:10%;" data-template="#extracteTemplate"> -->
+				<th data-col-name="extracte" style="width:16%; min-width: 150px"><spring:message code="bustia.pendent.columna.titol"/>											
+				
 					<spring:message code="bustia.pendent.columna.titol"/>
-					<script id="extracteTemplate" type="text/x-jsrender">
-						<div class="extracteColumn">
-							{{:extracte}}
-						</div>
-					</script>
+<!-- 					<script id="extracteTemplate" type="text/x-jsrender"> -->
+<!-- 						<div class="extracteColumn"> -->
+<!-- 							{{:extracte}} -->
+<!-- 						</div> -->
+<!-- 					</script> -->
 				</th>			
+				<th data-col-name="numeroOrigen" style="width:8%; min-width: 55px"><spring:message code="bustia.list.filtre.origen.num"/></th>
 														
-				<th data-col-name="numeroOrigen" style="width:10%;"><spring:message code="bustia.list.filtre.origen.num"/></th>
+<!-- 				<th data-col-name="numeroOrigen" style="width:10%;"><spring:message code="bustia.list.filtre.origen.num"/></th> -->
+				<th data-col-name="darrerMovimentUsuari" style="width:8%; min-width: 55px;" data-orderable="false" data-template="#darrerMovimentTemplate">
 
-				<th data-col-name="darrerMovimentUsuari" style="width:10%;" data-orderable="false" data-template="#darrerMovimentTemplate">
+<!-- 				<th data-col-name="darrerMovimentUsuari" style="width:10%;" data-orderable="false" data-template="#darrerMovimentTemplate"> -->
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -617,9 +624,12 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
  						{{/if}}
 					</script>
 				</th>
+				<th data-col-name="data" data-converter="datetime" style="width:8%; min-width: 55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
 
-				<th data-col-name="data" data-converter="datetime" style="width:10%;"><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" data-orderable="true" style="width:10%;"  data-template="#estatTemplate">
+<!-- 				<th data-col-name="data" data-converter="datetime" style="width:10%;"><spring:message code="bustia.pendent.columna.data"/></th> -->
+				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
+			
+<!-- 				<th data-col-name="procesEstat" data-orderable="true" style="width:10%;"  data-template="#estatTemplate"> -->
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -664,8 +674,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				
-				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate" style="width:10%;">
+				<th data-col-name="procesError" data-orderable="false" style="width:6%;  min-width: 55px;" data-template="#procesErrorTemplate">
+
+<!-- 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate" style="width:10%;"> -->
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -713,7 +724,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						</center>
 					</script>
 				</th>
-				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%;" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%; min-width: 55px;" data-orderable="false">
+				
+<!-- 				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%;" data-orderable="false"> -->
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
@@ -725,12 +738,17 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;">
+				<th data-col-name="interessatsResum" data-orderable="false" style="width:8%;  min-width: 55px;">
+				
+<!-- 				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;"> -->
 					<spring:message code="bustia.pendent.columna.interessats"/>
-				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;">
+				</th>	
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:4%;">
+							
+<!-- 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;"> -->
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="width:10%;">
