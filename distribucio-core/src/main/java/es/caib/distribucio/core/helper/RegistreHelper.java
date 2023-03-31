@@ -455,7 +455,10 @@ public class RegistreHelper {
 	}
 	
 	
-		
+	
+	
+	
+	
 	
 	
 	public void bloquejar(RegistreEntity registreEntity, String usuariCodi) {
@@ -2355,8 +2358,6 @@ public class RegistreHelper {
 		return clauSecreta;
 	}
 
-		
-	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
 }

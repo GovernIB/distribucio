@@ -24,24 +24,14 @@ import es.caib.distribucio.core.entity.MonitorIntegracioEntity;
  */
 public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegracioEntity, Long> {
 
-	@Query( "from " + 
+	@Query( "select count(mon) " +
+			"from " + 
 			"	MonitorIntegracioEntity mon " +  
 			"where " + 
 			"lower(mon.codi) like lower(:codi)")
-	public List<MonitorIntegracioEntity> findByCodi(
+	public Integer countByCodi(
 			@Param("codi") String codi);
 	
-//	@Query(	"from " +
-//			"    MonitorIntegracioEntity mon " +
-//			"where " +
-//			"lower(mon.codi) like lower(:codiMonitor) " +
-//			"and (" +
-//				":esNullFiltre = true " +			
-//				" or (" +			
-//					" lower(mon.codiUsuari) like lower('%'||:filtre||'%')" +		
-//					" or lower(mon.descripcio) like lower('%'||:filtre||'%')" +
-//					") " +
-//			"	)")
 	@Query( "from " + 
 			"MonitorIntegracioEntity mon " + 
 			"where " + 
@@ -63,10 +53,10 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("estat") IntegracioAccioEstatEnumDto estat,
 			Pageable pageable);
 
-	@Query(	" 	select mon.id " + 
+	@Query(	" 	select count(mon) " + 
 			"	from MonitorIntegracioEntity mon " +
 			"	where mon.data < :data ")
-	public List<MonitorIntegracioEntity> countMonitorByDataBefore(
+	public Integer countMonitorByDataBefore(
 			@Param("data") Date data);
 
 	@Query(	"select mon.codi, count(mon)" +
@@ -90,11 +80,4 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"where mon.codi = :codi")
 	public void deleteByCodiMonitor(
 			@Param("codi") String codi);
-
-	/** Consulta les dades antigues */
-	@Query(	"from MonitorIntegracioEntity mon " +
-			"where mon.data < :data ")
-	public List<MonitorIntegracioEntity> getDadesAntigues(
-			@Param("data") Date data);
-
 }

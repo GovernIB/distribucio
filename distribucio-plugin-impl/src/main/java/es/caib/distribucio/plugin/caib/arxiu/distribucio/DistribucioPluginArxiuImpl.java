@@ -243,14 +243,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
-//			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
-//									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
-//									&& format != null;
+			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
+									&& format != null;
 			
 
 			// Mira si firmar en servidor
 			if (!annexFirmat 
-				//	&& documentValid
+					&& documentValid
 					&& isRegistreSignarAnnexos()) {
 				
 				try {

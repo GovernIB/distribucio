@@ -738,10 +738,6 @@ public class RegistreAdminController extends BaseAdminController {
 			else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
 				correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
 						registreId);
-				
-//				correcte = registreService.processarAnnexosAdmin(
-//						entitatActual.getId(),
-//						registreId);
 				missatge = getMessage(
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),

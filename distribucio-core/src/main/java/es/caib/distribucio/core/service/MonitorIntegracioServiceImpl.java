@@ -3,14 +3,11 @@
  */
 package es.caib.distribucio.core.service;
 
-import java.awt.Image;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,9 +17,7 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,14 +193,14 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	@Override
 	public int esborrarDadesAntigues(Date data) {
 		logger.trace("Esborrant dades del monitor d'integració anteriors a : " + data);
-		List<MonitorIntegracioEntity> toDeleted = new ArrayList<>();
+		int total = 0;
 		if (data != null) {
-			toDeleted = monitorIntegracioRepository.countMonitorByDataBefore(data);
+			total = monitorIntegracioRepository.countMonitorByDataBefore(data);
 			monitorIntegracioParamRepository.deleteDataBefore(data);
 			monitorIntegracioParamRepository.flush();
 			monitorIntegracioRepository.deleteDataBefore(data);
 		}
-		return toDeleted.size();
+		return total;
 	}
 
 	@Transactional
@@ -215,7 +210,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		int n = 0;
 		if (codi != null) {
 			// Total
-			n = monitorIntegracioRepository.findByCodi(codi).size();
+			n = monitorIntegracioRepository.countByCodi(codi);
 			// Paràmetres
 			monitorIntegracioParamRepository.deleteByMonitorIntegracioCodi(codi);
 			// Entrades

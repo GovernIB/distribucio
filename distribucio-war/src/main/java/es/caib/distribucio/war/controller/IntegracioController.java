@@ -244,7 +244,6 @@ public class IntegracioController extends BaseAdminController {
 		
 		return "integracioDiagnostic";
 	}
-
 	
 	@RequestMapping(value = "/diagnosticAjax/{codiIntegracio}", method = RequestMethod.GET)
 	public @ResponseBody IntegracioDiagnosticDto diagnosticAjax(
@@ -252,23 +251,8 @@ public class IntegracioController extends BaseAdminController {
 			@PathVariable String codiIntegracio,
 			Model model) {
 		
-		/**
-		 * TODO: Daniel, no m'ha donat temps d'acabar aquesta tasca. 
-		 * Veuràs que la modal amb la resposta surt quan ja ha fet totes les consultes, 
-		 * l'idea era que surti el llistat i vagi fent 'check' a mesura que fa les consultes. 
-		 * Tampoc he pogut comprovar que les consultes siguin les bones per aquesta tasca.
-		 * 
-		 * */
-		
-		/**
-		 * Gràcies per tota la paciència que has tingut amb jo. He après molt i he treballat molt a gust.
-		 * Això és mèrit teu
-		 * 
-		 * */
-		UsuariDto usuari = aplicacioService.getUsuariActual();		
-
-		return 		monitorIntegracioService.diagnostic(codiIntegracio, usuari);
-
+		UsuariDto usuari = aplicacioService.getUsuariActual();
+		return monitorIntegracioService.diagnostic(codiIntegracio, usuari);
 	}
 	
 	@ResponseBody

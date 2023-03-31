@@ -67,7 +67,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@JoinColumn(name = "bustia_filtre_id")
 	protected BustiaEntity bustiaFiltre;
 	
-	@Column(name = "presencial", nullable = false)
+	@Column(name = "presencial", nullable = true)
 	@Enumerated(EnumType.ORDINAL)
 	protected ReglaPresencialEnumDto presencial;
 	

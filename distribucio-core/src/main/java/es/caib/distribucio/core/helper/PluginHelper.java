@@ -1259,8 +1259,6 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					// El plugin Arxiu CAIB té un constructor amb la key base i les propietats
-					//Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					//properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
 					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 													String.class, 
