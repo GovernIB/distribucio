@@ -742,9 +742,11 @@ $(document).ready(function() {
 				</th>
 
 
-				<th data-col-name="backCodi" data-orderable="true" style="width:8%;  min-width: 55px;"><spring:message code="contingut.admin.columna.backoffice"/></th>
+				<th data-col-name="backCodi" data-orderable="true" style="width:8%;  min-width: 30px;">
+					<spring:message code="contingut.admin.columna.backoffice"/>
+				</th>
 				
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="width:8%;  min-width: 55px;">
+				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="min-width:130px">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div id="div-btn-accions" class="dropdown">
 							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="font-size:1.5rem; display:flex; width:90%; font-size:1.2rem"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
