@@ -103,7 +103,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 		
 		BackofficeEntity backofficeEntity = backofficeRepository.findOne(backofficeDto.getId());
 		
-		List<RegistreEntity> llistatRegistres = registreRepository.findRegistreBackCodi(backofficeEntity.getCodi());
+		//List<RegistreEntity> llistatRegistres = registreRepository.findRegistreBackCodi(backofficeEntity.getCodi());
 		
 		backofficeEntity.update(
 				backofficeDto.getCodi(),
@@ -120,10 +120,10 @@ public class BackofficeServiceImpl implements BackofficeService {
 				backofficeEntity,
 				BackofficeDto.class);
 		
-		for(RegistreEntity registreEntity : llistatRegistres) {
-			registreEntity.updateBackCodi(dto.getCodi());
-		}
-		
+//		for (RegistreEntity registreEntity : llistatRegistres) {
+//			registreEntity.updateBackCodi(dto.getCodi());
+//		}
+
 		return dto;
 	}
 
