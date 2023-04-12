@@ -243,8 +243,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
 			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
-			boolean documentValid = (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.FIRMA_INVALIDA)
-									&& (distribucioAnnex.getValidacioFirma() != ValidacioFirmaEnum.ERROR_VALIDANT)
+			boolean documentValid = (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+									&& (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.ERROR_VALIDANT)
 									&& format != null;
 			
 
@@ -318,7 +318,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// 1) El document té firmes
 		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
 		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
-		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) 
+		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) 
 				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
 		// 3) Format no reconegut
 		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
@@ -633,7 +633,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			accioParams.put("firmesPerfil", firmesPerfil.toString());
 			accioParams.put("firmesContingut", firmesContingut.toString());
 		}
-		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
+		accioParams.put("validacioFirma", annex.getValidacioFirmaEstat() != null ? annex.getValidacioFirmaEstat().toString() : "-");
 		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
 		
 		long t0 = System.currentTimeMillis();
@@ -670,8 +670,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				// Actualitza l'annex com a definitiu
 				contingutFitxer = getArxiuPlugin().documentModificar(
 						toArxiuDocument(
-								null,
-								annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
+								annex.getFitxerArxiuUuid(),
+								null, // No actualitza el nom 
 								annex.getTitol(),
 								fitxer,
 								firmes,

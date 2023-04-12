@@ -109,7 +109,7 @@ function esborrarEntrades() {
 			</div>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
-					<a href="<c:url value='/integracio'/>/diagnostic" class="btn btn-success" data-toggle="modal"><spring:message code="integracio.boto.diagnostic"/></a>
+					<a href="<c:url value='/integracio'/>/diagnostic" class="btn btn-success" data-toggle="modal" data-maximized="true"><span class="fa fa-th-list"></span> <spring:message code="integracio.boto.diagnostic"/></a>
 					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>

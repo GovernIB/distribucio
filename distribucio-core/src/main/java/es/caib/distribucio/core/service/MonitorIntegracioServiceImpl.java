@@ -272,7 +272,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				diagnostic.setCorrecte(true); 
 				break;
 			case "VALIDASIG":
-				byte[] bytes2 = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat_invalid.pdf"));	
+				byte[] bytes2 = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf"));	
 				pluginHelper.validaSignaturaObtenirDetalls(null, bytes2);
 				accioDescripcio = "Obtenir informació de document firmat";
 				diagnostic.setProva(accioDescripcio);

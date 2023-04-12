@@ -119,7 +119,6 @@ import es.caib.distribucio.core.service.SegonPlaServiceImpl.GuardarAnotacioPende
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
-import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutTipus;
@@ -2144,7 +2143,7 @@ public class RegistreHelper {
 		if (annex.getFitxerArxiuUuid() == null || 
 				(annex.getFitxerArxiuUuid()!=null 
 					&& annex.getArxiuEstat() == AnnexEstat.ESBORRANY
-					&& ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) )) {
+					&& ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) )) {
 									
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
@@ -2155,7 +2154,7 @@ public class RegistreHelper {
 			distribucioAnnex.setPocesIntents(registre.getProcesIntents());
 			
 			// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
-			distribucioAnnex.setValidacioFirma(validacioFirma);
+			distribucioAnnex.setValidacioFirmaEstat(validacioFirma);
 			
 			// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
 			
@@ -2167,6 +2166,10 @@ public class RegistreHelper {
 					documentEniRegistrableDto, 
 					procedimentCodi);
 			annex.updateFitxerArxiuUuid(uuidDocument);
+			if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+				// Marca l'annex per a que es revalidin les firmes i l'estat
+				annex.updateSignaturaDetallsDescarregat(false);
+			}
 			
 			if (distribucioAnnex.getFirmes() != null) {
 				for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {

@@ -32,14 +32,14 @@
 						    let t = document.createTextNode("    "+data.prova);
 						    h.style.cssText = 'display:inline';
 						    h.appendChild(t);
-						    $("#span-refresh-" + integracio).append(h);
+						    $("#span-refresh-" + integracio).after(h);
 						}else {
 							$("#span-refresh-" + integracio).addClass("fa-times text-danger");
 						    let h = document.createElement("p");
 						    let t = document.createTextNode("    "+data.errMsg);
 						    h.style.cssText = 'display:inline';
 						    h.appendChild(t);
-						    $("#span-refresh-" + integracio).append(h);
+						    $("#span-refresh-" + integracio).after(h);
 
 						}						
 			        }

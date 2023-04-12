@@ -157,7 +157,7 @@ public class PluginHelper {
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("fitxerNom", annex.getFitxerNom());
 		accioParams.put("uuidExpedient", uuidExpedient);
-		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
+		accioParams.put("validacioFirma", annex.getValidacioFirmaEstat() != null ? annex.getValidacioFirmaEstat().toString() : "-");
 		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError()!= null ? annex.getValidacioFirmaError().toString() : "-");
 		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
