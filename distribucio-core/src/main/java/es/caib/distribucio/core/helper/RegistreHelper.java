@@ -2142,11 +2142,10 @@ public class RegistreHelper {
 		// Només crea l'annex a dins el contenidor si encara no s'ha creat o s'ha creat i té documents com a esborrany i no té error de firmes
 		
 		if (annex.getFitxerArxiuUuid() == null || 
-				(annex.getFitxerArxiuUuid()!=null &&
-					annex.getArxiuEstat() == AnnexEstat.ESBORRANY)) {
-					// && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) )) {
+				(annex.getFitxerArxiuUuid()!=null 
+					&& annex.getArxiuEstat() == AnnexEstat.ESBORRANY
+					&& ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirma()) )) {
 									
-			
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);

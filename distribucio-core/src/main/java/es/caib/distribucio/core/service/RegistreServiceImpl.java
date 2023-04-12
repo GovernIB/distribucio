@@ -1790,10 +1790,17 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false);
 
-		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		// Comprova si l'anotació està pendent de guardar a l'arxiu
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) 
+							|| RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		// Comprova si l'anotació està pendent d'executar alguna reggla
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
+		// Comprova si l'annex té esborranys per firmar  i que estigui en la bústia pendent
+		boolean annexEsborrany = RegistreProcesEstatEnum.BUSTIA_PENDENT.equals(anotacio.getProcesEstat())
+									&& anotacio.getAnnexosEstatEsborrany() > 0;
+		
 		Exception exceptionProcessant = null;
-		if (pendentArxiu || pendentRegla) {
+		if (pendentArxiu || pendentRegla || annexEsborrany) {
 			
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
 						registreId);
