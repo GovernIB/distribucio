@@ -2190,8 +2190,9 @@ public class RegistreHelper {
 			if (!annex.isSignaturaDetallsDescarregat()) {
 				this.loadSignaturaDetallsToDB(annex);
 			}
-		}else if(annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {			
-			registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
+		}
+		if(annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {			
+				registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
 		}
 	}
 	
