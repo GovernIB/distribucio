@@ -1,6 +1,6 @@
 package es.caib.distribucio.core.api.dto;
 
-public class BackofficeDto {
+public class BackofficeDto implements Comparable<BackofficeDto> {
 
     private Long id;
     private String codi;
@@ -73,6 +73,11 @@ public class BackofficeDto {
 	}
 	public void setTipus(BackofficeTipusEnumDto tipus) {
 		this.tipus = tipus;
+	}
+	@Override
+	public int compareTo(BackofficeDto o) {
+		
+		return this.getNom().compareTo(o.getNom());
 	}
 
 }
