@@ -343,6 +343,8 @@ CREATE TABLE DIS_REGLA
   PROCEDIMENT_CODI     CHARACTER VARYING(1024),
   BACKOFFICE_CODI      CHARACTER VARYING(64),
   BUSTIA_FILTRE_ID BIGINT,
+  BUSTIA_ID            bigint,
+  PRESENCIAL           smallint,
   BACKOFFICE_DESTI_ID BIGINT,
   UNITAT_DESTI_ID BIGINT
 );
@@ -616,4 +618,55 @@ CREATE TABLE DIS_PROCEDIMENT
   CREATEDDATE          		timestamp without time zone,
   LASTMODIFIEDBY_CODI  		character varying(64),
   LASTMODIFIEDDATE     		timestamp without time zone
+);
+
+CREATE TABLE DIS_METADADA
+(
+  ID                    BIGSERIAL              			NOT NULL,
+  CODI                  character varying(64)           NOT NULL,
+  NOM                   character varying(256)          NOT NULL,
+  TIPUS                 BIGSERIAL              			NOT NULL,
+  MULTIPLICITAT         BIGSERIAL              			NOT NULL,
+  ACTIVA                boolean               			NOT NULL,
+  READ_ONLY             boolean               			NOT NULL,
+  ORDRE                 BIGSERIAL              			NOT NULL,
+  DESCRIPCIO            character varying(1024),
+  ENTITAT_ID            BIGSERIAL              			NOT NULL,
+  NO_APLICA				boolean               			DEFAULT 0,
+  VERSION               bigint              			NOT NULL,
+  VALOR 				character varying(255),
+  CREATEDBY_CODI        character varying(64),
+  CREATEDDATE           timestamp without time zone,
+  LASTMODIFIEDBY_CODI   character varying(64),
+  LASTMODIFIEDDATE      timestamp without time zone
+);
+
+CREATE TABLE DIS_DADA
+(
+  ID                   BIGSERIAL               			NOT NULL,
+  ORDRE                BIGSERIAL,
+  VALOR                character varying(256 CHAR)      NOT NULL,
+  VERSION              bigint               			NOT NULL,
+  METADADA_ID          BIGSERIAL              			NOT NULL,
+  REGISTRE_ID          BIGSERIAL               			NOT NULL,
+  CREATEDBY_CODI       character varying(64 CHAR),
+  CREATEDDATE          timestamp without time zone,
+  LASTMODIFIEDBY_CODI  character varying(64 CHAR),
+  LASTMODIFIEDDATE     timestamp without time zone
+);
+
+CREATE TABLE DIS_DOMINI
+(
+  ID                   BIGSERIAL           				NOT NULL,
+  CODI                 character varying(64 CHAR)		NOT NULL,
+  NOM                  character varying(256 CHAR)	    NOT NULL,
+  DESCRIPCIO           character varying(256 CHAR),
+  CONSULTA             character varying(256 CHAR)      NOT NULL,
+  CADENA               character varying(256 CHAR)      NOT NULL,
+  CONTRASENYA          character varying(256 CHAR)      NOT NULL,
+  ENTITAT_ID           BIGSERIAL          				NOT NULL,
+  CREATEDDATE          timestamp without time zone,
+  CREATEDBY_CODI       character varying(64 CHAR),
+  LASTMODIFIEDDATE     timestamp without time zone,
+  LASTMODIFIEDBY_CODI  character varying(64 CHAR)
 );

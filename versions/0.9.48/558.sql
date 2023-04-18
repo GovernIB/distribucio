@@ -1,4 +1,4 @@
---#538 Agafar plantilla informe de traçabilitat i històric de filesystem
+--#558 Poder canviar títol en classificar
 
 -- Insereix les propietats:
 -- es.caib.distribucio.contingut.modificar.titol=
