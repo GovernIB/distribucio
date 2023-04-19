@@ -366,8 +366,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				errSistemaExtern = errSistemaExtern + "\n" + errMsg2;
 			}
 
-			// Si el document era definitiu, s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
+			// Si el document era definitiu, no existeix a l'Arxiu i s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
 			if (DocumentEstat.DEFINITIU.equals(estatDocument)
+					&& distribucioAnnex.getFitxerArxiuUuid() == null
 					&& distribucioAnnex.getProcesIntents() >= (maxReintents - 1) 
 					&& getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) 
 			{	
@@ -399,6 +400,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 	private boolean comprovarFirmesReconegudes(List<ArxiuFirmaDto> arxiuFirmes) {
 
+		if (arxiuFirmes == null) {
+			return false;
+		}
 		// comprovar si la firma està reconeguda
 		for (ArxiuFirmaDto arxiuFirma : arxiuFirmes) {
 			// comprova que el tipus i el perfil estiguin reconeguts pel model CAIb
@@ -599,7 +603,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		
 		//creating info for integracio logs
-		String accioDescripcio = annex.getFitxerArxiuUuid() != null && DocumentEstat.DEFINITIU.equals(estatDocument) ?
+		String accioDescripcio = annex.getFitxerArxiuUuid() != null ?
 				"Modificar documenta annex"
 				: "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -638,7 +642,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		long t0 = System.currentTimeMillis();
 		try {
-			ContingutArxiu contingutFitxer;
+			ContingutArxiu contingutFitxer = null;
 			if (annex.getFitxerArxiuUuid() == null) {
 				String nom = this.uniqueNameArxiu(
 						annex.getFitxerNom() != null ? annex.getFitxerNom() : annex.getTitol(), 
@@ -689,10 +693,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						accioDescripcio,
 						accioParams,
 						System.currentTimeMillis() - t0);
-			}else {
-				contingutFitxer = null;
 			}
-			return contingutFitxer.getIdentificador();
+			return contingutFitxer != null? contingutFitxer.getIdentificador() : null;
 		} catch (Exception ex) {
 			
 			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + " i amb estat ";

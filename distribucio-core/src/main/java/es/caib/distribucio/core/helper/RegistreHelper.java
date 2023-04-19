@@ -792,6 +792,9 @@ public class RegistreHelper {
 				}				
 			}
 		}
+		// Actualitza el número d'annexos en estat esborrany
+		self.comptarAnnexosEstatEsborrany(anotacioId);
+		
 		if (exceptions != null && !exceptions.isEmpty()) {
 			return exceptions;
 		} else {
@@ -806,7 +809,16 @@ public class RegistreHelper {
 		}
 	}	
 
-	
+
+	/** Compta el número d'annexos de l'anotació en estat esborrany i ho informa a l'anotació. */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void comptarAnnexosEstatEsborrany(long anotacioId) {
+		RegistreEntity registre = registreRepository.findOne(anotacioId);
+		registre.setAnnexosEstatEsborrany(
+				registreAnnexRepository.countByRegistreAndArxiuEstat(registre, AnnexEstat.ESBORRANY).intValue());
+		registreRepository.save(registre);
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void crearLogDistribucio(long anotacioId) {
 		RegistreEntity registreEntity = registreRepository.findOne(anotacioId);
@@ -2141,9 +2153,9 @@ public class RegistreHelper {
 		// Només crea l'annex a dins el contenidor si encara no s'ha creat o s'ha creat i té documents com a esborrany i no té error de firmes
 		
 		if (annex.getFitxerArxiuUuid() == null || 
-				(annex.getFitxerArxiuUuid()!=null 
-					&& annex.getArxiuEstat() == AnnexEstat.ESBORRANY
-					&& ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) )) {
+				( annex.getArxiuEstat() == AnnexEstat.ESBORRANY
+					&& annex.getFirmes().isEmpty()
+					&& ValidacioFirmaEnum.FIRMA_INVALIDA != distribucioAnnex.getValidacioFirmaEstat()) ) {
 									
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla

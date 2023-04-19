@@ -5,6 +5,7 @@ package es.caib.distribucio.core.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 
@@ -17,4 +18,6 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEntity, Long> {
 
 	public RegistreAnnexEntity findByRegistreAndId(RegistreEntity registre, Long annexId);	
+	
+	public Long countByRegistreAndArxiuEstat(RegistreEntity registre, AnnexEstat arxiuEstat );
 }

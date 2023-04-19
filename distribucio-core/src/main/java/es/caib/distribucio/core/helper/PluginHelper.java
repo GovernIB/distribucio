@@ -149,7 +149,7 @@ public class PluginHelper {
 			String uuidExpedient,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
 			String procedimentCodi) {
-		String accioDescripcio = "Creant document annex a dins el contenidor";
+		String accioDescripcio = "Guardant document annex a dins el contenidor";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("registreNumero", registreNumero);
