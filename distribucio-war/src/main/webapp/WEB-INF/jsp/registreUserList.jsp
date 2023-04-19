@@ -583,7 +583,6 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
-				<th data-col-name="procesError" data-orderable="false" style="width:6%;  min-width: 55px;" data-template="#procesErrorTemplate"></th>
 			
 <!-- 				<th data-col-name="procesError" data-visible="false">#</th> -->
 				<th data-col-name="numero" style="max-width: 10%; min-width: 70px"><spring:message code="bustia.pendent.columna.numero"/></th>			

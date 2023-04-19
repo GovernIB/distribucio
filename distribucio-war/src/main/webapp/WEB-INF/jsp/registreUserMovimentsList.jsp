@@ -479,7 +479,7 @@ $(document).ready(function() {
 				<th data-col-name="procesEstatSimple"  data-visible="false">
 				<th data-col-name="procesError" data-visible="false">#</th>
 				<th data-col-name="destiLogic" data-visible="false">#</th>
-				<th data-col-name="numero" width="10%" data-template="#contingutTemplate">
+				<th data-col-name="numero"style="max-width: 10%; min-width: 70px" data-template="#contingutTemplate">
 					<spring:message code="bustia.pendent.columna.numero"/>
 					<script id="contingutTemplate" type="text/x-jsrender">
 						<span class="fa fa-book" title="<spring:message code="bustia.pendent.tipus.enum.REGISTRE"/>"></span>
@@ -489,14 +489,14 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="extracte" width="25%" style="min-width:150px;">
+				<th data-col-name="extracte" style="max-width: 10%; min-width: 70px" style="min-width:150px;">
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>							
-				<th data-col-name="numeroOrigen" width="5%"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom" data-orderable="false"><spring:message code="bustia.pendent.columna.remitent"/></th>
-				<th data-col-name="data" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="numeroOrigen" style="max-width: 10%; min-width: 50px"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="darrerMovimentUsuari.nom"style="max-width: 10%; min-width: 50px" data-orderable="false"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="data" style="max-width: 10%; min-width: 50px" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				
-				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" style="max-width: 10%; min-width: 50px" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="comu.error"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -516,7 +516,7 @@ $(document).ready(function() {
 						</center>
 					</script>
 				</th>
-				<th data-col-name="pathInicial" data-template="#cellPathInicialTemplate" width="15%" data-orderable="false">
+				<th data-col-name="pathInicial" style="max-width: 10%; min-width: 70px" data-template="#cellPathInicialTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio.inicial"/>
 					<script id="cellPathInicialTemplate" type="text/x-jsrender">
 						{{if pathInicial}}
@@ -540,7 +540,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				 --%>
-				<th data-col-name="path" data-template="#cellPathTemplate" width="15%" data-orderable="false">
+				<th data-col-name="path" style="max-width: 10%; min-width: 70px" data-template="#cellPathTemplate" width="15%" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio.actual"/>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{for path}}/
@@ -552,10 +552,10 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false">
+				<th data-col-name="interessatsResum" style="max-width: 10%; min-width: 70px" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>
-				<th data-col-name="procesEstat" data-orderable="true" width="10%"  data-template="#estatTemplate">
+				<th data-col-name="procesEstat" data-orderable="true" style="max-width: 10%; min-width: 70px"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if enviatPerEmail}}
@@ -597,9 +597,9 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>			
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
+				<th data-col-name="numComentaris" style="max-width: 10%; min-width: 70px" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="../contingut/{{:id}}/comentaris?isVistaMoviments=true" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
