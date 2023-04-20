@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -40,6 +41,7 @@ import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
+import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.dadesext.DadesExternesPlugin;
 import es.caib.distribucio.plugin.dadesext.Municipi;
 import es.caib.distribucio.plugin.dadesext.Provincia;
@@ -76,6 +78,7 @@ public class PluginHelper {
 	private Map<String, ProcedimentPlugin> procedimentPlugin = new HashMap<>();
 	private Map<String, GestioDocumentalPlugin> gestioDocumentalPlugin = new HashMap<>();
 	private Map<String, DistribucioPlugin> distribucioPlugin = new HashMap<>();
+	private Map<String, SignaturaPlugin> signaturaPlugin = new HashMap<>();
 	
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
@@ -87,7 +90,7 @@ public class PluginHelper {
 	private ConfigHelper configHelper;
 	
 	/** Mètode per consultar el codi de l'entitat actual */
-	private String getCodiEntitatActual() {
+ 	private String getCodiEntitatActual() {
 
 		String codiEntitat = ConfigHelper.getEntitatActualCodi();
 		if (StringUtils.isEmpty(codiEntitat)) {
@@ -97,7 +100,7 @@ public class PluginHelper {
 	}
 
 
-	
+	/* Mètode per crear un nou expedient*/
 	public String saveRegistreAsExpedientInArxiu(
 			String registreNumero,
 			String expedientNumero,
@@ -154,8 +157,8 @@ public class PluginHelper {
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("fitxerNom", annex.getFitxerNom());
 		accioParams.put("uuidExpedient", uuidExpedient);
-		accioParams.put("validacioFirma", annex.getValidacioFirma() != null ? annex.getValidacioFirma().toString() : "-");
-		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError());
+		accioParams.put("validacioFirma", annex.getValidacioFirmaEstat() != null ? annex.getValidacioFirmaEstat().toString() : "-");
+		accioParams.put("validacioFirmaError", annex.getValidacioFirmaError()!= null ? annex.getValidacioFirmaError().toString() : "-");
 		boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 		accioParams.put("annexFirmat", new Boolean(annexFirmat).toString());
 		long t0 = System.currentTimeMillis();
@@ -272,6 +275,10 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public boolean isActiuPluginUnitatsOrganitzatives() {
+		return getUnitatsOrganitzativesPlugin() != null;
+	}
 
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
@@ -348,7 +355,9 @@ public class PluginHelper {
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
-			
+			// Remove from list unitats that are substituted by itself
+			removeUnitatsSubstitutedByItself(arbol);
+
 			if (arbol != null && !arbol.isEmpty()) {
 				
 				logger.info("Consulta d'unitats a WS [tot camps](" +
@@ -773,7 +782,39 @@ public class PluginHelper {
 		}
 	}
 
+	public Boolean signarDocument(String id,
+			String nom,
+			String motiu,
+			byte[] contingut, 
+			String mime,
+			String tipusDocumental
+			) {
+		SignaturaPlugin pluginSignar = this.signaturaPlugin();
 
+		try {
+
+			pluginSignar.signar(id,
+					nom, 
+					motiu, 
+					contingut, 
+					mime, 
+					tipusDocumental);
+
+			return true;
+		}catch (Exception e){
+			String msgError = "No s'ha pogut signar el document. ";
+			logger.error(msgError, e);
+		}
+		
+		return false;
+	}
+
+	
+
+
+	public boolean isDadesExternesPluginActiu() {
+		return getDadesExternesPlugin() != null;
+	}
 
 	public List<TipusViaDto> dadesExternesTipusViaAll() {
 		String accioDescripcio = "Consulta de tipus de via";
@@ -923,6 +964,10 @@ public class PluginHelper {
 					ex);
 		}
 	}
+	
+	public boolean isProcedimentPluginActiu() {
+		return getProcedimentPlugin() != null;
+	}
 
 	public List<Procediment> procedimentFindByCodiDir3(
 			String codiDir3) {
@@ -999,6 +1044,10 @@ public class PluginHelper {
 							ex);
 		}	
 	}	
+	
+	public boolean isGestioDocumentalPluginActiu() {
+		return getGestioDocumentalPlugin() != null;
+	}
 	
 	public void gestioDocumentalGet(
 			String id,
@@ -1210,8 +1259,7 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					// El plugin Arxiu CAIB té un constructor amb la key base i les propietats
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
 													String.class, 
 													Properties.class)
@@ -1261,32 +1309,7 @@ public class PluginHelper {
 		}
 		return plugin;
 	}
-	private IValidateSignaturePlugin getValidaSignaturaPlugin() {
-		loadPluginProperties("VALID_SIGN");
-		String codiEntitat = getCodiEntitatActual();
-		IValidateSignaturePlugin plugin = validaSignaturaPlugin.get(codiEntitat);
-		if (plugin == null) {
-			String pluginClass = getPropertyPluginValidaSignatura();
-			if (pluginClass != null && pluginClass.length() > 0) {
-				try {
-					Class<?> clazz = Class.forName(pluginClass);
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
-					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(String.class, Properties.class)
-								.newInstance("es.caib.distribucio.", properties);
-					validaSignaturaPlugin.put(codiEntitat, plugin);
-				} catch (Exception ex) {
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_VALIDASIG,
-							"Error al crear la instància del plugin de validació de signatures amb el nom de la classe " + pluginClass,
-							ex);
-				}
-			} else {
-				return null;
-			}
-		}
-		return plugin;
-	}
+
 	private ProcedimentPlugin getProcedimentPlugin() {
 		loadPluginProperties("PROCEDIMENTS");
 		String codiEntitat = getCodiEntitatActual();
@@ -1341,6 +1364,66 @@ public class PluginHelper {
 		return plugin;
 	}
 	
+	private IValidateSignaturePlugin getValidaSignaturaPlugin() {
+		loadPluginProperties("VALID_SIGN");
+		String codiEntitat = getCodiEntitatActual();
+		IValidateSignaturePlugin plugin = validaSignaturaPlugin.get(codiEntitat);
+		if (plugin == null) {
+			String pluginClass = getPropertyPluginValidaSignatura();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+//					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+//					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
+					plugin = (IValidateSignaturePlugin)clazz.getDeclaredConstructor(String.class, Properties.class)
+								.newInstance("es.caib.distribucio.", properties);
+					validaSignaturaPlugin.put(codiEntitat, plugin);
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_VALIDASIG,
+							"Error al crear la instància del plugin de validació de signatures amb el nom de la classe " + pluginClass,
+							ex);
+				}
+			} else {
+				return null;
+			}
+		}
+		return plugin;
+	}
+	
+	private SignaturaPlugin signaturaPlugin() {
+		loadPluginProperties("SIGNATURA");
+		String codiEntitat = getCodiEntitatActual();
+		SignaturaPlugin plugin = signaturaPlugin.get(codiEntitat);
+		if (plugin == null) {
+			String pluginClass = getPropertyPluginSignatura();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					plugin = (SignaturaPlugin)clazz.getDeclaredConstructor(Properties.class)
+								.newInstance(configHelper.getAllEntityProperties(codiEntitat));					
+					signaturaPlugin.put(codiEntitat, plugin);
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_GESDOC,
+							"Error al crear la instància del plugin de signatura amb el nom de la classe " + pluginClass,
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_GESDOC,
+						"No està configurada la classe per al plugin de signatura");
+			}
+			
+			
+			}
+		return plugin;
+
+		}	
+
+	
+	
 	private DistribucioPlugin getDistribucioPlugin() {
 		loadPluginProperties("ARXIU");
 		loadPluginProperties("GES_DOC");
@@ -1353,8 +1436,9 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					
-					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+//					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+//					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
+					Properties properties = configHelper.getAllProperties(codiEntitat);
 					plugin = (DistribucioPlugin)clazz.getDeclaredConstructor(Properties.class)
 								.newInstance(properties);
 					
@@ -1475,13 +1559,38 @@ public class PluginHelper {
 			return pluginClass;
 		}
 	}
-	
+	private String getPropertyPluginSignatura() {
+		return configHelper.getConfig("es.caib.distribucio.plugin.signatura.class");
+	}
 	private String getUsuariAutenticat() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication != null ? authentication.getName() : null;
 	}
 
-	
+	/**
+	 * Remove from list unitats that are substituted by itself
+	 * for example if webservice returns two elements:
+	 * 
+	 * UnitatOrganitzativa(codi=A00000010, estat=E, historicosUO=[A00000010])
+	 * UnitatOrganitzativa(codi=A00000010, estat=V, historicosUO=null)
+	 * 
+	 * then remove the first one.
+	 * That way this transition can be treated by application the same way as transition CANVI EN ATRIBUTS
+	 */
+	private void removeUnitatsSubstitutedByItself(List<UnitatOrganitzativa> unitatsOrganitzatives) {
+		if (!unitatsOrganitzatives.isEmpty()) {
+			Iterator<UnitatOrganitzativa> i = unitatsOrganitzatives.iterator();
+			while (i.hasNext()) {
+				UnitatOrganitzativa unitatOrganitzativa = i.next();
+				if (unitatOrganitzativa.getHistoricosUO()!=null 
+						&& !unitatOrganitzativa.getHistoricosUO().isEmpty() 
+						&& unitatOrganitzativa.getHistoricosUO().size() == 1 
+						&& unitatOrganitzativa.getHistoricosUO().get(0).equals(unitatOrganitzativa.getCodi())) {
+					i.remove();
+				}
+			}
+		}
+	}
 	private static final Logger logger = LoggerFactory.getLogger(PluginHelper.class);
 
 }

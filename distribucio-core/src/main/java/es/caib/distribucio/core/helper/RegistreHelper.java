@@ -2137,15 +2137,19 @@ public class RegistreHelper {
 		}
 		RegistreEntity registre = annex.getRegistre();
 		
+		DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+		documentEniRegistrableDto.setNumero(registre.getNumero());
+		documentEniRegistrableDto.setData(registre.getData());
+		documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
+		documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
 		
-		// Només crea l'annex a dins el contenidor si encara no s'ha creat
-		if (annex.getFitxerArxiuUuid() == null) {
+		// Només crea l'annex a dins el contenidor si encara no s'ha creat o s'ha creat i té documents com a esborrany i no té error de firmes
+		
+		if (annex.getFitxerArxiuUuid() == null || 
+				(annex.getFitxerArxiuUuid()!=null 
+					&& annex.getArxiuEstat() == AnnexEstat.ESBORRANY
+					&& ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) )) {
 									
-			DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-			documentEniRegistrableDto.setNumero(registre.getNumero());
-			documentEniRegistrableDto.setData(registre.getData());
-			documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
-			documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
@@ -2155,9 +2159,10 @@ public class RegistreHelper {
 			distribucioAnnex.setPocesIntents(registre.getProcesIntents());
 			
 			// Es considera que la firma és vàlida si no té firmes o la firma és vàlida o no s'ha validat perquè el plugin no està configurat.
-			distribucioAnnex.setValidacioFirma(validacioFirma);
+			distribucioAnnex.setValidacioFirmaEstat(validacioFirma);
 			
 			// ================= SAVE ANNEX AS DOCUMENT IN ARXIU ============== sign it if unsigned an save it with firma in arxiu
+			
 			String uuidDocument = pluginHelper.saveAnnexAsDocumentInArxiu(
 					registre.getNumero(),
 					distribucioAnnex,
@@ -2166,6 +2171,10 @@ public class RegistreHelper {
 					documentEniRegistrableDto, 
 					procedimentCodi);
 			annex.updateFitxerArxiuUuid(uuidDocument);
+			if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+				// Marca l'annex per a que es revalidin les firmes i l'estat
+				annex.updateSignaturaDetallsDescarregat(false);
+			}
 			
 			if (distribucioAnnex.getFirmes() != null) {
 				for (DistribucioRegistreFirma distribucioFirma: distribucioAnnex.getFirmes()) {
@@ -2189,8 +2198,8 @@ public class RegistreHelper {
 				this.loadSignaturaDetallsToDB(annex);
 			}
 		}
-		if (annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
-			registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
+		if(annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {			
+				registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
 		}
 	}
 	

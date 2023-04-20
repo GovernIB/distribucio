@@ -83,6 +83,36 @@ public class IntegracioHelper {
 		return integracions;
 	}
 
+	public List<IntegracioDto> findPerDiagnostic() {
+		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
+		integracions.add(
+				novaIntegracio(
+						INTCODI_USUARIS));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_UNITATS));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_ARXIU));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_DADESEXT));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_SIGNATURA));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_VALIDASIG));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_GESDOC));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_PROCEDIMENT));
+				
+		return integracions;
+	}
+
 	public void addAccioOk(
 			String integracioCodi,
 			String descripcio,

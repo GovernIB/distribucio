@@ -293,7 +293,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 		return client;
 	}
 
-	private String getServiceUrl() {
+	public String getServiceUrl() {
 		return getProperty(
 				"es.caib.distribucio.plugin.dadesext.service.url");
 	}

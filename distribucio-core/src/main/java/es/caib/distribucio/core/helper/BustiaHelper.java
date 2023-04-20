@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.tools.ant.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +214,10 @@ public class BustiaHelper {
 							filtrarFillsSegonsPermisRead,
 							ambUnitatOrganitzativa));
 		}
-		return resposta;
+		//si la query a la base de dades porta dades repetides s'eliminen
+	    Set<BustiaDto> conjuntBustia = new HashSet<>(resposta);
+	    List<BustiaDto> respostaDistinct = new ArrayList<>(conjuntBustia);
+		return respostaDistinct;
 	}
 	
 	public UsuariBustiaFavoritDto toUsuariBustiaFavoritDto(UsuariBustiaFavoritEntity source) {

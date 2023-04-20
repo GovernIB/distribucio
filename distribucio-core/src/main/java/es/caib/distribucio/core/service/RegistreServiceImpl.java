@@ -1793,6 +1793,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {
+		
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
@@ -1804,14 +1805,21 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false);
 
-		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		// Comprova si l'anotació està pendent de guardar a l'arxiu
+		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) 
+							|| RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
+		// Comprova si l'anotació està pendent d'executar alguna reggla
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
+		// Comprova si l'annex té esborranys per firmar  i que estigui en la bústia pendent
+		boolean annexEsborrany = RegistreProcesEstatEnum.BUSTIA_PENDENT.equals(anotacio.getProcesEstat())
+									&& anotacio.getAnnexosEstatEsborrany() > 0;
+		
 		Exception exceptionProcessant = null;
-		if (pendentArxiu || pendentRegla) {
-			if (pendentArxiu) {
-				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
+		if (pendentArxiu || pendentRegla || annexEsborrany) {
+			
+			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
 						registreId);
-			}
+			
 			if (exceptionProcessant == null && pendentRegla) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentRegla(
 						registreId);
@@ -2673,27 +2681,6 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		return validacioFirma;
 	}
-	
-
-
-	@Override
-	@Transactional(readOnly=true)
-	public List<ProcedimentDto> procedimentFindByCodiSia(long entitatId, String codiSia) {
-
-		List<ProcedimentDto> procedimentDto = new ArrayList<>();
-		
-		// Treu el procediment cridant a la bbdd
-		List<ProcedimentEntity> procediments = procedimentRepository.findByCodiSia(
-				entitatId, 
-				codiSia == null || codiSia.isEmpty(), 
-				codiSia != null && !codiSia.isEmpty() ? codiSia : "");
-		
-		procedimentDto = conversioTipusHelper.convertirList(procediments, ProcedimentDto.class);
-
-				
-		return procedimentDto;
-	}
-	
 	
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
 		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");

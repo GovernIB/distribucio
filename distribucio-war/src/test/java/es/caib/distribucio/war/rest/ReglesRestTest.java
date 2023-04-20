@@ -18,7 +18,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class ReglesRestTest {
 
-	private static final String URL = "http://localhost:8080/distribucio";
+	private static final String URL = "http://10.35.3.232:8080/distribucioapi/interna";
 	// Usuari amb només el rol de DIS_REGLA
 	private static final String USERNAME = "disregla";
 	private static final String PASSWORD = "disregla";
@@ -35,7 +35,7 @@ public class ReglesRestTest {
 				URL,
 				USERNAME,
 				PASSWORD,
-				false);
+				true);
 		
 		// Dades del test
 		String entitat = "A04019281";

@@ -26,9 +26,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.core.api.dto.IntegracioDto;
 import es.caib.distribucio.core.api.dto.IntegracioEnumDto;
 import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
+import es.caib.distribucio.core.api.dto.UsuariDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.MonitorIntegracioService;
 import es.caib.distribucio.war.command.IntegracioFiltreCommand;
@@ -45,7 +48,7 @@ import es.caib.distribucio.war.helper.RequestSessionHelper;
  */
 @Controller
 @RequestMapping("/integracio")
-public class IntegracioController extends BaseUserController {
+public class IntegracioController extends BaseAdminController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "IntegracioController.session.filtre";
 	
@@ -53,7 +56,9 @@ public class IntegracioController extends BaseUserController {
 	private MonitorIntegracioService monitorIntegracioService;
 	@Autowired
 	private ConfigService configService;
-
+	@Autowired
+	private AplicacioService aplicacioService;
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
@@ -227,6 +232,27 @@ public class IntegracioController extends BaseUserController {
 					"redirect:../../integracio",
 					"integracio.list.no.existeix");
 		}
+	}
+	
+	@RequestMapping(value = "/diagnostic", method = RequestMethod.GET)
+	public String diagnostic(
+			HttpServletRequest request,
+			Model model) {		
+
+		List<IntegracioDto> integracions = monitorIntegracioService.findPerDiagnostic();
+		model.addAttribute("integracions", integracions);
+		
+		return "integracioDiagnostic";
+	}
+	
+	@RequestMapping(value = "/diagnosticAjax/{codiIntegracio}", method = RequestMethod.GET)
+	public @ResponseBody IntegracioDiagnosticDto diagnosticAjax(
+			HttpServletRequest request,
+			@PathVariable String codiIntegracio,
+			Model model) {
+		
+		UsuariDto usuari = aplicacioService.getUsuariActual();
+		return monitorIntegracioService.diagnostic(codiIntegracio, usuari);
 	}
 	
 	@ResponseBody

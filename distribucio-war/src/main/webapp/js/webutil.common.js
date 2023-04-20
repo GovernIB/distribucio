@@ -722,9 +722,13 @@ $(document).ajaxError(function(event, jqxhr, ajaxSettings, thrownError) {
 		$(this).webutilTogglesEval();
 
 		$('form input, form select').on('keypress', function (e) {
-			if (e.which && e.which == 13) {
-				$(this).parents('form').submit();
-				return false;
+			if (e.which && e.which == 13 ) {	
+				if($('button[id = filtrar]').length > 0 ) {
+ 			           $('button[id = filtrar]').click(); 
+   			        }else {				
+				    $(this).parents('form').submit();
+                                }
+                               return false;
 			} else {
 				return true;
 			}

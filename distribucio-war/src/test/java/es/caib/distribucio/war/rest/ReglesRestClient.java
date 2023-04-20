@@ -25,8 +25,11 @@ import com.sun.jersey.api.representation.Form;
  */
 public class ReglesRestClient {
 
-	private static final String CARPETA_SERVICE_PATH = "/api/rest/regles";
-	
+	// WAR
+	//private static final String CARPETA_SERVICE_PATH = "/api/rest/regles";
+	// API INTERNA
+	private static final String CARPETA_SERVICE_PATH = "/regla";
+
 	private String baseUrl;
 	private String username;
 	private String password;

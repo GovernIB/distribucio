@@ -68,7 +68,7 @@ public interface ConfigRepository extends JpaRepository<ConfigEntity, String> {
 	@Query( "from "
 			+ "ConfigEntity c "
 			+ "where "
-			+ "c.configurable = 1"
+			+ "c.configurable = true"
 			)
 	public List<ConfigEntity> findConfigurables();
 	
@@ -76,7 +76,7 @@ public interface ConfigRepository extends JpaRepository<ConfigEntity, String> {
 	@Query( "from "
 			+ "ConfigEntity c "
 			+ "where "
-			+ "c.configurable = 1 "
+			+ "c.configurable = true "
 			+ "and c.entitatCodi = null"
 			)
 	public List<ConfigEntity> findConfigurablesAmbEntitatNull();

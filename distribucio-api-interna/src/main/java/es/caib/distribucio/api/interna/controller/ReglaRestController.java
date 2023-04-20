@@ -74,20 +74,7 @@ public class ReglaRestController{
 			@ApiParam(name="sia", value="Codi SIA de la regla")
 			@RequestParam(required = false) String sia,
 			@ApiParam(name="backoffice", value="Codi Backoffice per la regla")
-			@RequestParam(required = false) String backoffice) {
-		
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-//			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per crear regles.", HttpStatus.UNAUTHORIZED);
-//		}
-//		// Obtenim el nom de l'usuari que ha fet la petició
-//		Object usuariContext = auth.getPrincipal();
-//		String usuari;
-//		if (usuariContext instanceof UserDetails ) {
-//			usuari = ((UserDetails)usuariContext).getUsername();
-//		}else {
-//			usuari = usuariContext.toString();
-//		}
+			@RequestParam(required = false) String backoffice) {		
 		
 		// CREAR Regla AMB TOTES LES VALIDACIONS
 		
@@ -144,7 +131,7 @@ public class ReglaRestController{
 			regla.put("backofficeDesti", backofficeDesti.getNom());
 			regla.put("codiSia", sia);
 			Date data = novaReglaDto.getCreatedDate();
-			DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			regla.put("data", dateFormat.format(data));
 			
 			
@@ -171,11 +158,6 @@ public class ReglaRestController{
 			@RequestParam(required = true) String sia,
 			@ApiParam(name="activa", value="Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
 			@RequestParam(required = false) Boolean activa){
-//		
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-//			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
-//		}
 
 		List<ReglaDto> regles = reglaService.findReglaBackofficeByProcediment(sia);
 		ReglaDto regla;
@@ -219,11 +201,7 @@ public class ReglaRestController{
 			HttpServletRequest request, 
 			@ApiParam(name="sia", value="Codi SIA de la regla que identifica la regla de tipus backoffice.")
 			@RequestParam(required = true) String sia) {
-//		
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		if ( auth == null || !this.comprovarRol(auth, "ROLE_REGLA") ) {
-//			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
-//		}
+
 		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
 		if (reglesDto.size() > 1) {
 			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi de procediment " + sia + ".");
@@ -237,7 +215,7 @@ public class ReglaRestController{
 			r.put("id", regla.getId());
 			r.put("nom", regla.getNom());
 			Date data = regla.getCreatedDate();
-			DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss");
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			r.put("data", dateFormat.format(data));
 			r.put("entitat", regla.getEntitatNom());
 			r.put("activa", regla.isActiva());
@@ -248,27 +226,7 @@ public class ReglaRestController{
 		}
 		return new ResponseEntity<Object>(regles, HttpStatus.OK);
 	}
-	
-	
-
-	/** Comprova que l'usuari autenticat tingui el rol.
-	 * 
-	 * @param auth
-	 * @param rol
-	 * @return
-	 */
-	private boolean comprovarRol(Authentication auth, String rol) {
-		boolean ret = false;
-		if (auth != null) {
-			for (GrantedAuthority a : auth.getAuthorities()) {
-				if (a.getAuthority().equals(rol)) {
-					ret = true;
-					break;
-				}
-			}
-		}
-		return ret;
-	}
+		
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaRestController.class);
 }

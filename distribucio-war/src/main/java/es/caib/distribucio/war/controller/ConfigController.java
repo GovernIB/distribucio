@@ -150,22 +150,21 @@ public class ConfigController extends BaseUserController{
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
     public String synchronize(
             HttpServletRequest request,
-            Model model, 
-            @RequestParam("paginaActual") String paginaActual) {
+            Model model) {
     	
     	try {
 			configService.synchronize();
 			
 	        return getModalControllerReturnValueSuccess(
 	                request,
-	                "redirect:../" + paginaActual,
+    				"redirect:" + request.getHeader("referer"),
 	                "config.controller.synchronize.ok");
 			
 		} catch (Exception e) {
 			logger.error("Error al sincronitzar properties", e);
 	        return getModalControllerReturnValueErrorNoKey(
 	                request,
-	                "redirect:../" + paginaActual,
+    				"redirect:" + request.getHeader("referer"),
 	                getMessage(request,"config.controller.synchronize.error") + ": " + ExceptionHelper.getRootCauseOrItself(e).getMessage());
 		}
 

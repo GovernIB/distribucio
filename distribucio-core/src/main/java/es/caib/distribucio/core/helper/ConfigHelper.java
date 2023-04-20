@@ -222,6 +222,25 @@ public class ConfigHelper {
         return configEntity.getValue();
     }
     
+
+    /** Obté totes les propietats Jboss i per entitat. Els valors per entitat
+     * prevalen sobre els de jboss.
+     */
+    @Transactional(readOnly = true)
+	public Properties getAllProperties(String entitatCodi) {
+		Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
+        List<ConfigEntity> configs = configRepository.findByEntitatCodiIsNull();
+        for (ConfigEntity config: configs) {
+             String value = getConfigForEntitat(entitatCodi, config.getKey());
+            if (value != null) {
+                properties.put(config.getKey(), value);
+            } else if ( !config.isJbossProperty()) {
+            	properties.remove(config.getKey());
+            }
+        }
+        return properties;
+	}
+
     /** Obté totes les propietats per a un codi d'entitat s'usa per inicalitzar els plugins.
      */
     @Transactional(readOnly = true)

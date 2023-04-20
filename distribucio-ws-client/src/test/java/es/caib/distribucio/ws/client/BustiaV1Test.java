@@ -43,8 +43,8 @@ import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
-	private static final String ENTITAT_DIST_CODI = "A04019281"; //A04003003 DEV | A04019281 DES
-	private static final String UNITAT_ADM_CODI = "A04032369"; //A04026923 DEV | A04032369 DES
+	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV | A04019281 DES
+	private static final String UNITAT_ADM_CODI = "A04026923"; //A04026923 DEV | A04032369 DES
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
@@ -52,6 +52,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
 	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
+	private static final boolean PRESENCIAL = true;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
 	private static final String EXTRACTE = "Prova alta anotació Distribucio " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
@@ -177,7 +178,7 @@ public class BustiaV1Test {
 	        anotacio.setIdiomaDescripcio(IDIOMA_DESC);
 	        anotacio.setIdentificador(IDENTIFICADOR);
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
-	        anotacio.setPresencial(true);
+	        anotacio.setPresencial(PRESENCIAL);
 	        anotacio.setObservacions("Anotacio Observacions....");
 	        
 //	        anotacio.setDocumentacioFisicaCodi("1");

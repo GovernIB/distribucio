@@ -8,10 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +46,6 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -69,6 +66,7 @@ import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.DominiService;
 import es.caib.distribucio.core.api.service.MetaDadaService;
+import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.war.command.ContingutReenviarCommand;
 import es.caib.distribucio.war.command.MarcarProcessatCommand;
@@ -120,6 +118,8 @@ public class RegistreUserController extends BaseUserController {
 	private BeanGeneratorHelper beanGeneratorHelper;
 	@Autowired
 	private DominiService dominiService;
+	@Autowired
+	private ProcedimentService procedimentService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -416,26 +416,14 @@ public class RegistreUserController extends BaseUserController {
 
 			String codiSia = registre.getProcedimentCodi();
 			if (codiSia != null) {
-				Map<String, ProcedimentEstatEnumDto> procedimentDades = new HashMap<String, ProcedimentEstatEnumDto>();
-				// Descripció del procediment
-				try {
-					List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
-					if (!procedimentDto.isEmpty()) {
-						for(ProcedimentDto procediment : procedimentDto) {
-							procedimentDades.put(procediment.getNom(), procediment.getEstat());
-						}
-					} else {
-						String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
-						MissatgesHelper.warning(request, errMsg);
-						procedimentDades.put("(" + errMsg + ")", null);
-					}
-				}catch(Exception e) {
-					String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
-					logger.error(errMsg, e);
-					MissatgesHelper.warning(request, errMsg);
-					procedimentDades.put("(" + errMsg + ")", null);
+				ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
+				if (procediment == null) {
+					procediment = new ProcedimentDto();
+					procediment.setCodi(codiSia);
+					procediment.setCodiSia(codiSia);
+					procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
 				}
-				model.addAttribute("procedimentDades", procedimentDades);
+				model.addAttribute("procedimentDades", procediment);				
 			}
 
 			model.addAttribute("registre", registre);

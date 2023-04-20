@@ -359,12 +359,6 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER", "DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
-	public List<ProcedimentDto> procedimentFindByCodiSia(long entitatId, String codiSia) {
-		return delegate.procedimentFindByCodiSia(entitatId, codiSia);
-	}
-
-	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "tothom"})
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		return delegate.getDadesAnnexFirmesSenseDetall(annexId);

@@ -16,8 +16,10 @@
 	</c:if>
 	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
-	<dis:modalHead/>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+		<dis:modalHead/>
 <script>
+
 var registres = [];
 <c:forEach var="registre" items="${registres}">
 registres.push({id: ${registre.id}});
@@ -117,6 +119,17 @@ $(document).ready(function() {
 		
 	});
 });
+
+//Funció per advertir a l'usuari dels procediments que estàn obsolets
+function formatProcedimentSelect(item) {
+	const procedimentSplit = item.text.split(" => ");
+	if (procedimentSplit[1] == 'EXTINGIT') {
+		return $("<span>" + procedimentSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span> </span>");
+	}else{
+		return $("<span>" + procedimentSplit[0] + " </span>");
+	}
+}
+
 </script>
 <style>
 #registres-list {
@@ -209,7 +222,17 @@ $(document).ready(function() {
 				</dis:inputFixed>
 			</c:when>
 			<c:otherwise>
-				<dis:inputSelect name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment" optionItems="${procediments}" optionValueAttribute="codiSia" optionTextAttribute="nom" required="true"/>
+				<dis:inputSelect 
+				name="codiProcediment" 
+				textKey="bustia.pendent.classificar.camp.codi.procediment" 
+				optionItems="${procediments}" 
+				optionValueAttribute="codiSia" 
+				optionTextAttribute="codiNomEstat" 
+				emptyOption="true"
+				required="false"
+				placeholderKey="bustia.pendent.classificar.camp.codi.procediment"
+				optionMinimumResultsForSearch="0" 
+				optionTemplateFunction="formatProcedimentSelect"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

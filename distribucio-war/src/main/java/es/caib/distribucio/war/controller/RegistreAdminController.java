@@ -6,10 +6,8 @@ package es.caib.distribucio.war.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +39,6 @@ import es.caib.distribucio.core.api.dto.PaginaDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
 import es.caib.distribucio.core.api.dto.RegistreDto;
 import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
@@ -55,12 +52,13 @@ import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ContingutService;
 import es.caib.distribucio.core.api.service.MetaDadaService;
+import es.caib.distribucio.core.api.service.ProcedimentService;
 import es.caib.distribucio.core.api.service.RegistreService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.RegistreFiltreCommand;
 import es.caib.distribucio.war.helper.AjaxHelper;
-import es.caib.distribucio.war.helper.BeanGeneratorHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
+import es.caib.distribucio.war.helper.BeanGeneratorHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.EnumHelper;
@@ -96,6 +94,8 @@ public class RegistreAdminController extends BaseAdminController {
 	private BeanGeneratorHelper beanGeneratorHelper;
 	@Autowired
 	private AplicacioService aplicacioService;
+	@Autowired
+	private ProcedimentService procedimentService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -198,26 +198,14 @@ public class RegistreAdminController extends BaseAdminController {
 
 				String codiSia = ((RegistreDto)registreDto).getProcedimentCodi();
 				if (codiSia != null) {
-					Map<String, ProcedimentEstatEnumDto> procedimentDades = new HashMap<String, ProcedimentEstatEnumDto>();
-					// Descripció del procediment
-					try {
-						List<ProcedimentDto> procedimentDto = registreService.procedimentFindByCodiSia(entitatActual.getId(), codiSia);
-						if (!procedimentDto.isEmpty()) {
-							for(ProcedimentDto procediment : procedimentDto) {
-								procedimentDades.put(procediment.getNom(), procediment.getEstat());
-							}
-						} else {
-							String errMsg = getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia});
-							MissatgesHelper.warning(request, errMsg);
-							procedimentDades.put("(" + errMsg + ")", null);
-						}
-					}catch(NullPointerException e) {
-						String errMsg = getMessage(request, "registre.detalls.camp.procediment.error", new Object[] {codiSia, e.getMessage()});
-						logger.error(errMsg, e);
-						MissatgesHelper.warning(request, errMsg);
-						procedimentDades.put("(" + errMsg + ")", null);
+					ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
+					if (procediment == null) {
+						procediment = new ProcedimentDto();
+						procediment.setCodi(codiSia);
+						procediment.setCodiSia(codiSia);
+						procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
 					}
-					model.addAttribute("procedimentDades", procedimentDades);
+					model.addAttribute("procedimentDades", procediment);				
 				}
 			}
 			model.addAttribute("registre", registreDto);
@@ -747,9 +735,8 @@ public class RegistreAdminController extends BaseAdminController {
 					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
 				}
 			} 
-			else if (this.isPendentArxiu(registreDto)) {
-				correcte = registreService.processarAnnexosAdmin(
-						entitatActual.getId(),
+			else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
+				correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
 						registreId);
 				missatge = getMessage(
 						request, 

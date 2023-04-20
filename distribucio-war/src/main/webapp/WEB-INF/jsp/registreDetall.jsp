@@ -936,10 +936,7 @@ li[id^="anotacio_"] {
 							<c:if test="${procedimentDades != null}">
 								- ${procediment.key} 
 							</c:if>		
-							<c:if test="${procediment.value == 'EXTINGIT'}">
-								 <span class='fa fa-exclamation-triangle text-warning' title='No es troba al llistat de procediments de Rolsac'> </span>
-							</c:if>		
-						</c:forEach>
+						</c:if>
 					</td>
 					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
 					<td>${registre.expedientNumero}</td>

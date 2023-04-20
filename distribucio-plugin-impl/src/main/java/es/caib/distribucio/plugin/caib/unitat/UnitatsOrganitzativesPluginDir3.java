@@ -253,7 +253,7 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 		}
 	}
 	
-	private String getServiceUrl() {
+	public String getServiceUrl() {
 		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url");
 	}
@@ -274,7 +274,7 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 		return value != null ? Integer.valueOf(value) : null;
 	}
 	private String getServiceCercaUrl() {
-		return getProperty(
+		return PropertiesHelper.getProperties().getProperty(
 				"es.caib.distribucio.plugin.unitats.cerca.dir3.service.url");
 	}
 

@@ -30,7 +30,7 @@ public class DistribucioRegistreAnnex {
 	private List<DistribucioRegistreFirma> firmes;
 	private String metaDades;
 	
-	private ValidacioFirmaEnum validacioFirma;
+	private ValidacioFirmaEnum validacioFirmaEstat;
 	private String validacioFirmaError;
 	
 	private Integer procesIntents;
@@ -122,11 +122,11 @@ public class DistribucioRegistreAnnex {
 	public void setMetaDades(String metaDades) {
 		this.metaDades = metaDades;
 	}
-	public ValidacioFirmaEnum getValidacioFirma() {
-		return validacioFirma;
+	public ValidacioFirmaEnum getValidacioFirmaEstat() {
+		return validacioFirmaEstat;
 	}
-	public void setValidacioFirma(ValidacioFirmaEnum validacioFirmaEnum) {
-		this.validacioFirma = validacioFirmaEnum;
+	public void setValidacioFirmaEstat(ValidacioFirmaEnum validacioFirmaEstat) {
+		this.validacioFirmaEstat = validacioFirmaEstat;
 	}
 	public String getValidacioFirmaError() {
 		return validacioFirmaError;
