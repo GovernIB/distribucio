@@ -109,7 +109,6 @@ td,
 	/* width: fit-content; */
 } 
 
-#div-btn-accions button, 
 #link-comentaris {
 	white-space: normal;
 	word-wrap: break-word;
@@ -124,7 +123,7 @@ span.badge {
 
 span.fa-comments {
 	font-size: 2rem !important;
-/* 	margin-right: 2rem; */
+ 	padding-right: 5px;
 }
 
 span.fa-cog {
@@ -735,14 +734,15 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">
-				
-<!-- 				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;"> -->
+				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">				
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>	
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:120px;">							
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:100px;">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span><span class="badge">{{:numComentaris}}</span></a>
+						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
+							<span class="fa fa-lg fa-comments"></span>
+							<span class="badge">{{:numComentaris}}</span>
+						</a>
 
 					</script>
 				</th>

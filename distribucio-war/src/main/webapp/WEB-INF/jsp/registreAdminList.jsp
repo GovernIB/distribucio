@@ -74,20 +74,17 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 
 #div-btn-accions button, 
 #link-comentaris {
-	white-space: normal;
+	white-space: nowrap;
 	word-wrap: break-word;
-	font-size: 1.2rem;
-	width: 80%; 
 }
 
 span.badge {
 	font-size: 1.2rem !important;
-/* 	padding-right: 1.2rem !important; */
 }
 
 span.fa-comments {
 	font-size: 2rem !important;
-/* 	margin-right: 2rem; */
+ 	padding-right: 5px;
 }
 
 span.fa-cog {
@@ -734,9 +731,12 @@ $(document).ready(function() {
 				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:120px">							
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:100px">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span><span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
+							<span class="fa fa-lg fa-comments"></span>
+							<span class="badge">{{:numComentaris}}</span>
+						</a>
 					</script>
 				</th>
 
