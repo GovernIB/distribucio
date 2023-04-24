@@ -63,12 +63,11 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 
  th,  
  td,  
- #link-comentaris span,  
-#div-btn-accions button span { 
+ #link-comentaris span { 
      word-wrap: break-word; 
      overflow-wrap: break-word; 
      overflow-wrap: anywhere; 
- 	font-size: 1.2rem; 
+ 	font-size: 1.4rem; 
  	width: 0%;  
  	width: fit-content;  
  }  
@@ -77,22 +76,22 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 #link-comentaris {
 	white-space: normal;
 	word-wrap: break-word;
-	font-size: 1.5rem;
-	width: 100%; 
+	font-size: 1.2rem;
+	width: 80%; 
 }
 
 span.badge {
 	font-size: 1.2rem !important;
-	padding-right: 1.2rem !important;
+/* 	padding-right: 1.2rem !important; */
 }
 
 span.fa-comments {
 	font-size: 2rem !important;
-	margin-right: 2rem
+/* 	margin-right: 2rem; */
 }
 
 span.fa-cog {
-	margin: 4px 1.5rem 0 0; 
+	margin: 2px 1.5rem 0 0; 
 }
 
 tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
@@ -139,7 +138,7 @@ button#filtrar {
 }
 
 .btn-default .badge {
-  padding-right: 2rem !important;
+/*   padding-right: 2rem !important; */
 }
 	
 </style>
@@ -602,7 +601,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" data-converter="datetime" style="width:8%; min-width: 55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="data" data-converter="datetime" style="min-width:45px;" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
@@ -649,7 +648,7 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" data-orderable="false" style="width:6%;  min-width: 55px;" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" style="min-width: 50px;" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -716,7 +715,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="bustiaActiva" data-visible="false"></th>
-				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%; min-width: 55px;" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" style="min-width: 100px;" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/><br>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{if path}}
@@ -732,24 +731,24 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="width:8%;  min-width: 55px;">
+				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:4%;">
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:120px">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span><span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 
 
-				<th data-col-name="backCodi" data-orderable="true" style="width:8%;  min-width: 30px;">
+				<th data-col-name="backCodi" data-orderable="true" style=" min-width: 80px;">
 					<spring:message code="contingut.admin.columna.backoffice"/>
 				</th>
 				
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="min-width:130px">
+				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="max-width:50px;">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div id="div-btn-accions" class="dropdown">
-							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="font-size:1.5rem; display:flex; width:90%; font-size:1.2rem"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;"><span class="fa fa-cog"></span><spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
