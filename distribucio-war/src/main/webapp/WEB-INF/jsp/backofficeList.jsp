@@ -34,7 +34,6 @@
 	
 	<style>
 	td {
-		width: 450px;
 		overflow-wrap: break-word;
 		white-space: nowrap;
 		overflow: hidden;
