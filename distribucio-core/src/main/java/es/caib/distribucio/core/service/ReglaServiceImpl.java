@@ -360,10 +360,8 @@ public class ReglaServiceImpl implements ReglaService {
 		}
 		
 		Boolean registrePresencial = null;
-		if (regla.getPresencial().equals(ReglaPresencialEnumDto.NO)) {
-			registrePresencial = false;
-		}else if (regla.getPresencial().equals(ReglaPresencialEnumDto.SI)) {
-			registrePresencial = true;
+		if (regla.getPresencial() != null) {
+			registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
 		}
 		
 		for(RegistreEntity registre : reglaRepository.findRegistres(
@@ -371,7 +369,7 @@ public class ReglaServiceImpl implements ReglaService {
 				regla.getUnitatOrganitzativaFiltre() == null, 
 				bustiesUnitatOrganitzativaIds,
 				registrePresencial == null, 
-				registrePresencial != null ? registrePresencial : null,
+				registrePresencial != null ? registrePresencial.booleanValue() : false,
 				regla.getBustiaFiltre() == null, 
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
 				regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(), 
