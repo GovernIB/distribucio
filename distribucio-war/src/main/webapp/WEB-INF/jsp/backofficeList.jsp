@@ -32,14 +32,21 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	
-	
+	<style>
+	td {
+		width: 450px;
+		overflow-wrap: break-word;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+</style>
 	<script>
 		$(document).ready(
 		function() {
 			$("#nouBoto").detach().appendTo('#header')
 		});
 	</script>
-	
 </head>
 <body>
   <c:if test="${isRolActualAdministrador}">
@@ -52,7 +59,9 @@
 		data-toggle="datatable" 
 		data-url="<c:url value="/backoffice/datatable"/>" 
 		data-info-type="search" 
-		class="table table-striped table-bordered">
+		class="table table-striped table-bordered"
+		style= "table-layout: fixed;"	
+		width="80%">
 		<thead>
 			<tr>
 				<th data-col-name="codi" data-orderable="true"><spring:message code="backoffice.list.columna.codi"/></th>

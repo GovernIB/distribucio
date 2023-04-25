@@ -100,12 +100,11 @@ li[id^="anotacio_"] {
 
 th, 
 td, 
-#link-comentaris span, 
-#div-btn-accions button span {
+#link-comentaris span {
     word-wrap: break-word;
     overflow-wrap: break-word;
     overflow-wrap: anywhere;
-	font-size: 1.2rem;
+	font-size: 1.4rem;
 	width: 0%; 
 	/* width: fit-content; */
 } 
@@ -114,25 +113,25 @@ td,
 #link-comentaris {
 	white-space: normal;
 	word-wrap: break-word;
-	font-size: 1.5rem;
-	width: 100%; 
+	font-size: 1.2rem;
+	width: 80%; 
 }
 
 span.badge {
 	font-size: 1.2rem !important;
-	padding-right: 1.2rem !important;
+/* 	padding-right: 1.2rem !important; */
 }
 
 span.fa-comments {
 	font-size: 2rem !important;
-	margin-right: 2rem
+/* 	margin-right: 2rem; */
 }
 
 span.fa-cog {
-	margin: 4px 1.5rem 0 0; 
+	margin: 2px 1.5rem 0 0; 
 }
 
-tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+tbody tr.selectable td span.caret {
 	margin: 8px 0 0 2px; 
 }
 
@@ -176,15 +175,14 @@ button#filtrar {
 }
 
 .btn-default .badge {
-  padding-right: 2rem !important;
+/*   padding-right: 2rem !important; */
 }
 
 </style>
 <script>
 $.views.helpers({
 	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
-	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat,
-	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions}
+	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat
 });
 
 function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
@@ -194,7 +192,7 @@ function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
 var bustiesInactives = [];
 var tipusDocumentacioFisica = '${tipusDocumentacio}';
-//Funció per donar format als items de la select de bústies segons si estan actives o no
+//FunciÃ³ per donar format als items de la select de bÃºsties segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
 		return $("<span>" + item.text + " <span class='fa fa-exclamation-triangle text-warning' title=\"<spring:message code='bustia.list.avis.bustia.inactiva'/>\"></span></span>");
@@ -264,7 +262,7 @@ $(document).ready(function() {
 				var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
 				var registreTotal = pageInfo.recordsTotal;
 				var registreNumero = $(this).data('rowIndex');
-				// Afegeix els paràmetres a l'enllaç dels detalls
+				// Afegeix els parÃ metres a l'enllaÃ§ dels detalls
 				var url = new URL(window.location);
 				var params = url.searchParams;
 				params.set("registreNumero", registreNumero);
@@ -276,11 +274,11 @@ $(document).ready(function() {
 				}			
 				var $a = $($(this).find("#detall-button"));
 				$a.attr('href', $a.attr('href') + '?' + params.toString());
-				// Afegeix els paràmetres a l'enllaç de la fila
+				// Afegeix els parÃ metres a l'enllaÃ§ de la fila
 				$(this).data('href', $(this).data('href') + '?' + params.toString());
 				
 				if (${isEnviarConeixementActiu}) {
-					//tramitació/coneixement
+					//tramitaciÃ³/coneixement
 					var isPerConeixement = $('#taulaDades').dataTable().api().row($(this)).data()['perConeixement'];
 					if (isPerConeixement) {
 						$(this).find("td:eq(0)").css('background-color', '#5bc0de');
@@ -379,35 +377,6 @@ $(document).ready(function() {
 				}
 		);
 		return false;
-	});
-	
-	if (${isPermesAssignarAnotacions}) {
-		var baseUrl = "<c:url value='/registreUser/assignar/usuaris'/>";
-		$.get(baseUrl)
-			.done(function(data) {
-				$('#usuariAssignatCodi').select2('val', '', true);
-				$('#usuariAssignatCodi option[value!=""]').remove();
-				for (var i = 0; i < data.length; i++) {
-					if ('${registreFiltreCommand.usuariAssignatCodi}' == data[i].codi)
-						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '" selected>' + data[i].nom + '</option>');
-					else
-						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '">' + data[i].nom + '</option>');
-				}
-			})
-			.fail(function() {
-				alert("<spring:message code="error.jquery.ajax"/>");
-			});
-	}
-
-	$(document).on('hidden.bs.modal', function (event) {
-		var data = sessionStorage.getItem('selectedElements');
-		if (data != null) {
-			// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
-			$(".seleccioCount").html(data);
-			$('#taulaDades').webutilDatatable('refresh');
-			
-			sessionStorage.removeItem('selectedElements');
-		}
 	});
 });
 
@@ -537,21 +506,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					placeholderKey="registre.admin.list.filtre.procediment"
 					suggestValue="codiSia"
 					suggestText="codiNom" />
-			</div>
-			<c:if test="${isPermesAssignarAnotacions}">
-				<div class="col-md-3">
-					<dis:inputSelect 
-						name="usuariAssignatCodi" 
-						optionItems="${replacedByJquery}" 
-						optionValueAttribute="codi" 
-						optionTextAttribute="nom" 
-						emptyOption="true" 
-						placeholderKey="bustia.list.filtre.usuari.assignat" 
-						inline="true"
-						optionMinimumResultsForSearch="0" />
-				</div>
-			</c:if>
-			<div class="${isPermesAssignarAnotacions ? 'col-md-1' : 'col-md-3'}"></div>
+			</div>		
+			<div class="col-md-3"></div>
 			<div class="col-md-2 d-flex">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
@@ -634,7 +590,6 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 <!-- 				<th data-col-name="extracte" style="width:10%;" data-template="#extracteTemplate"> -->
 				<th data-col-name="extracte" style="width:16%; min-width: 150px"><spring:message code="bustia.pendent.columna.titol"/>											
 				
-					<spring:message code="bustia.pendent.columna.titol"/>
 <!-- 					<script id="extracteTemplate" type="text/x-jsrender"> -->
 <!-- 						<div class="extracteColumn"> -->
 <!-- 							{{:extracte}} -->
@@ -666,7 +621,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
  						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="data" data-converter="datetime" style="width:8%; min-width: 55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="data" data-converter="datetime" style="min-width: 45px;" ><spring:message code="bustia.pendent.columna.data"/></th>
 
 <!-- 				<th data-col-name="data" data-converter="datetime" style="width:10%;"><spring:message code="bustia.pendent.columna.data"/></th> -->
 				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
@@ -716,7 +671,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="procesError" data-orderable="false" style="width:6%;  min-width: 55px;" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" style="min-width: 50px;" data-template="#procesErrorTemplate">
 
 <!-- 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate" style="width:10%;"> -->
 					<spring:message code="bustia.pendent.columna.avisos"/>
@@ -766,7 +721,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						</center>
 					</script>
 				</th>
-				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%; min-width: 55px;" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" style="min-width: 100px;" data-orderable="false">
 				
 <!-- 				<th data-col-name="path" data-template="#cellPathTemplate" style="width:10%;" data-orderable="false"> -->
 					<spring:message code="bustia.pendent.columna.localitzacio"/>
@@ -780,24 +735,21 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="width:8%;  min-width: 55px;">
+				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">
 				
 <!-- 				<th data-col-name="interessatsResum" data-orderable="false" style="width:10%;"> -->
 					<spring:message code="bustia.pendent.columna.interessats"/>
-				</th>
-				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}" style="width:8%;">
-					<spring:message code="bustia.pendent.columna.agafat"/>
-				</th>			
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="width:10%;">
+				</th>	
+				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:120px;">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span><span class="badge">{{:numComentaris}}</span></a>
 
 					</script>
 				</th>
-				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="width:10%;">
+				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="max-width:50px;">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
-						<div class="dropdown">
-							<button class="btn btn-primary {{if ~hlpIsPermesReservarAnotacions && agafat}} alliberat {{/if}}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+						<div id="div-btn-accions" class="dropdown">
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;"><span class="fa fa-cog"></span><spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li>
 									<a id="detall-button"
@@ -837,14 +789,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 									<li role="separator" class="divider"></li>
 									{{if !agafat}}
 										<li id="anotacio_{{:id}}"><a onClick="bloquejar({{:id}})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
-										{{if ~hlpIsPermesAssignarAnotacions}}
-											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.assignar"/> ...</a></li>
-										{{/if}}
 									{{else}}
-										<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
-										{{if ~hlpIsPermesAssignarAnotacions}}
-											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
-										{{/if}}
+											<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
 										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
 											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}
