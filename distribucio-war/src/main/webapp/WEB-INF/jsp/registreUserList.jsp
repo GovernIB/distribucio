@@ -620,7 +620,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
  						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="data" data-converter="datetime" style="min-width: 45px;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="data" data-converter="datetime" style="min-width: 55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
 
 <!-- 				<th data-col-name="data" data-converter="datetime" style="width:10%;"><spring:message code="bustia.pendent.columna.data"/></th> -->
 				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
