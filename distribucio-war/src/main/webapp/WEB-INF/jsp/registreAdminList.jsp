@@ -598,7 +598,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" data-converter="datetime" style="min-width:45px;" ><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="data" data-converter="datetime" style="min-width:55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
 				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
