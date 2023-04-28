@@ -2,7 +2,7 @@ package es.caib.distribucio.core.api.dto;
 
 public enum IntegracioEnumDto {
 	REGISTRE,
-	USUARIS,
+//	USUARIS,
 	UNITATS,
 	CIUTADA,
 	PFIRMA,

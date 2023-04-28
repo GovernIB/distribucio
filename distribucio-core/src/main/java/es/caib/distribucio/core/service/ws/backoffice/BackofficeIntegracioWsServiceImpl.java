@@ -50,7 +50,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 		AnotacioRegistreId id) {
 		
 		AnotacioRegistreEntrada anotacioRegistreEntrada;
-		String accioDescripcio = "Consulta d'anotació pendent";
+		String accioDescripcio = "Consulta d'anotació pendent "+ id.getIndetificador();
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		
@@ -74,7 +74,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
 					usuariIntegracio,
-					accioParams,
+					//accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
 			);			
@@ -138,7 +138,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
 					usuariIntegracio,
-					accioParams,
+					//accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
 			);		

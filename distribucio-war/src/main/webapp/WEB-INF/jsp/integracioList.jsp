@@ -154,7 +154,7 @@ function esborrarEntrades() {
 				<th data-col-name="data" data-orderable="true" data-converter="datetime" width="150px"><spring:message code="integracio.list.columna.data"/></th>				
 				<th data-col-name="descripcio" data-orderable="true"><spring:message code="integracio.list.columna.descripcio"/></th>
 				<th data-col-name="tipus" data-orderable="true"><spring:message code="integracio.list.columna.tipus"/></th>
-				<th data-col-name="codiUsuari" data-orderable="true"><spring:message code="integracio.list.columna.usuari"/></th>
+<%-- 				<th data-col-name="codiUsuari" data-orderable="true"><spring:message code="integracio.list.columna.usuari"/></th> --%>
 				<th data-col-name="codiEntitat" data-orderable="true"><spring:message code="integracio.list.columna.entitat"/></th>
 				<th data-col-name="tempsResposta" data-template="#cellTempsTemplate" data-orderable="true">
 					<spring:message code="integracio.list.columna.temps.resposta"/>

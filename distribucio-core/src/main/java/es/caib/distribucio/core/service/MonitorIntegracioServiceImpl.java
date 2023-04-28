@@ -225,12 +225,12 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		String accioDescripcio;
 		try {
 			switch (codiIntegracio) {
-			case "USUARIS": 
-				pluginHelper.dadesUsuariFindAmbCodi(usuari.getCodi());
-				accioDescripcio = "Consulta d'usuari amb codi";
-				diagnostic.setProva(accioDescripcio);
-				diagnostic.setCorrecte(true); 				
-				break;
+//			case "USUARIS": 
+//				pluginHelper.dadesUsuariFindAmbCodi(usuari.getCodi());
+//				accioDescripcio = "Consulta d'usuari amb codi";
+//				diagnostic.setProva(accioDescripcio);
+//				diagnostic.setCorrecte(true); 				
+//				break;
 				
 			case "UNITATS":
 				 Timestamp timestamp = new Timestamp(System.currentTimeMillis());

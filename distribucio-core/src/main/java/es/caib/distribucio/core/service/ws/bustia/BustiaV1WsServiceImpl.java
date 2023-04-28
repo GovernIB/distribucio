@@ -113,7 +113,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				first = false;
 			}
 		}
-		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia";
+		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia del registre "+ registreEntrada.getIdentificador();
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
@@ -164,7 +164,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					IntegracioHelper.INTCODI_BUSTIAWS,
 					accioDescripcio,
 					usuariIntegracio,
-					accioParams,
+					//accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0);
 			

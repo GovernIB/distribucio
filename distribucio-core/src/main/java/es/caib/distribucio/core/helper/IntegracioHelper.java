@@ -46,9 +46,9 @@ public class IntegracioHelper {
 
 	public List<IntegracioDto> findAll() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
-		integracions.add(
-				novaIntegracio(
-						INTCODI_USUARIS));
+//		integracions.add(
+//				novaIntegracio(
+//						INTCODI_USUARIS));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_UNITATS));
@@ -117,7 +117,7 @@ public class IntegracioHelper {
 			String integracioCodi,
 			String descripcio,
 			String usuariIntegracio,
-			Map<String, String> parametres,
+//			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta) {
 		
@@ -130,10 +130,10 @@ public class IntegracioHelper {
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
-		accio.setParametres(this.buildParams(parametres));
+//		accio.setParametres(this.buildParams(parametres));
 
 		monitorIntegracioService.create(accio);		
-		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
+		logger.debug(descripcio + /*", Parametres: " + parametres +*/ ", Temps resposta: " + tempsResposta);
 	}
 	public void addAccioError(
 			String integracioCodi,

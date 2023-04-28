@@ -1322,10 +1322,10 @@ public class RegistreHelper {
 
 		long t0 = System.currentTimeMillis();
 		String accioDescripcio = "";
-		if (ids.size() > 0) {
-			accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi();
-		} else {
-			accioDescripcio = "Comunicació amb el backoffice " + backofficeDesti.getCodi();
+		if (ids.size() > 0 && ids.size() < 2) {
+			accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi() +" - anotació "+ ids.get(0).getIndetificador();
+		} else if(ids.size()>1){
+			accioDescripcio = "Comunicació amb el backoffice " + backofficeDesti.getCodi() + " amb "+ids.size()+"  aotacions.";
 		}
 		String usuari = null;
 		try {			
@@ -1376,7 +1376,7 @@ public class RegistreHelper {
 						IntegracioHelper.INTCODI_BACKOFFICE,
 						accioDescripcio,
 						usuari,
-						accioParams,
+						//accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0
 				);			
