@@ -931,10 +931,11 @@ li[id^="anotacio_"] {
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td colspan="3">${registre.procedimentCodi}
-						<c:forEach items="${procedimentDades}" var="procediment">
-							<c:if test="${procedimentDades != null}">
-								- ${procediment.key} 
+					<td colspan="5">
+						<c:if test="${procedimentDades != null }">
+							${procedimentDades.codiSia} - ${procedimentDades.nom}
+							<c:if test="${procedimentDades.estat == 'EXTINGIT'}">
+								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span>
 							</c:if>		
 						</c:if>
 					</td>
