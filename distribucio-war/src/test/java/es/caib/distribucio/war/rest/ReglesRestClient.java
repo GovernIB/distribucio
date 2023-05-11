@@ -8,6 +8,10 @@ import javax.management.MalformedObjectNameException;
 import javax.naming.NamingException;
 import javax.ws.rs.core.UriBuilder;
 
+import org.springframework.http.MediaType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -16,6 +20,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.representation.Form;
+
+import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 
 
 /**
@@ -126,6 +133,45 @@ public class ReglesRestClient {
 		}
 		return ret;
 	}
+	
+	/** 
+	 * 
+	 * Mètode per canviar els estats dels camps booleans 'activa' i 'presencial'
+	 *
+	 */
+	public boolean update(String sia,
+			boolean activa,
+			boolean presencial) {
+		boolean ret = false;
+		try {
+			
+			String urlAmbMetode = "http://localhost:8080/distribucioapi/interna/regla/update"
+					+ "?sia="+sia+"&activa="+activa+"&presencial="+presencial;
+			Client jerseyClient = generarClient();
+			if (username != null) {
+				autenticarClient(
+						jerseyClient,
+						urlAmbMetode,
+						username,
+						password);
+			}
+			ClientResponse response = jerseyClient
+					.resource(urlAmbMetode)
+					.post(ClientResponse.class);
+			
+			System.out.println("Resposta de l'actualització de la regla " + response.getStatus() 
+								+ ": " + response.getEntity(String.class));
+
+            if (response.getStatus()/100 != 2) {
+			//if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+				ret = true;
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return ret;
+	}
+
 	
 	/** Mètode per consultar regles per codi SIA.
 	 * 

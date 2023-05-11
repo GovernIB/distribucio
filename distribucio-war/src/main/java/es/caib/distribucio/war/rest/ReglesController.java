@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,7 @@ import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.EntitatService;
@@ -97,6 +99,7 @@ public class ReglesController extends BaseUserController {
 		// CREAR Regla AMB TOTES LES VALIDACIONS
 
 		// Per posar la data a la descripció
+		String msg;
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String dataAra = sdf.format(new Date());
 
@@ -119,6 +122,16 @@ public class ReglesController extends BaseUserController {
 					HttpStatus.NOT_FOUND);
 		}
 
+		// Cream l'objecte de tipus ReglaDto
+		ReglaDto novaReglaDto = new ReglaDto();
+		novaReglaDto.setNom(nom);
+		novaReglaDto.setDescripcio(descripcio);
+		novaReglaDto.setTipus(tipus);
+		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
+		novaReglaDto.setBackofficeDestiNom(backoffice);
+		novaReglaDto.setProcedimentCodiFiltre(sia);
+				
+		
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
 		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByProcediment(sia);
 		for (ReglaDto regla : reglesPerSia) {
@@ -128,20 +141,18 @@ public class ReglesController extends BaseUserController {
 						+ regla.getNom() + "\" pel backoffice \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
 						+ regla.getEntitatNom() + "\"", HttpStatus.NOT_ACCEPTABLE);
 			} else {
+				//En comprovar-se que ja existeix una regla amb el codi sia (procediment) idèntic 
+				//al mateix backoffice es llança un update amb les noves dades i es finalitza el servei.
+				novaReglaDto = reglaService.update(entitatDto.getId(), novaReglaDto);
+				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+				+ "\" actualitzada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+				 + " a l'entitat " + entitat;
 				// OK Regla existent pel mateix backoffie
-				return new ResponseEntity<Object>("Ja existeix la regla amb id " + regla.getId() + " i nom \""
-						+ regla.getNom() + "\" per aquest backoffice i codi SIA", HttpStatus.OK);
+				return new ResponseEntity<Object>(msg, HttpStatus.OK);
 			}
 		}
 
-		// Cream l'objecte de tipus ReglaDto
-		ReglaDto novaReglaDto = new ReglaDto();
-		novaReglaDto.setNom(nom);
-		novaReglaDto.setDescripcio(descripcio);
-		novaReglaDto.setTipus(tipus);
-		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
-		novaReglaDto.setBackofficeDestiNom(backoffice);
-		novaReglaDto.setProcedimentCodiFiltre(sia);
+		
 
 		try {
 			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
@@ -159,7 +170,6 @@ public class ReglesController extends BaseUserController {
 			regla.put("data", dateFormat.format(data));
 
 			ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
-			String msg;
 
 			if (procediment != null) {
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
@@ -261,6 +271,51 @@ public class ReglesController extends BaseUserController {
 		}
 		return new ResponseEntity<Object>(regles, HttpStatus.OK);
 	}
+	
+	
+	@RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")	
+	@ApiOperation(value = "Actualitzar qualsevol camp de la regla",
+			httpMethod = "POST",
+			notes = "Servei Update per canviar els estats dels camps booleans 'activa' i 'presencial'.")
+	public ResponseEntity<Object> update(HttpServletRequest request,
+			@ApiParam(name = "sia", value = "Codi SIA de la regla") @RequestParam(required = true) String sia,
+			@ApiParam(name = "activa", value = "Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.") @RequestParam(required = false) Boolean activa,
+			@ApiParam(name = "presencial", value = "Paràmetre opcional per cambi l'estat del camp Presencial. ") @RequestParam(required = false) Boolean presencial){
+				
+		List<ReglaDto> regles = reglaService.findReglaByProcediment(sia);
+		ReglaDto regla;
+		ReglaDto novaReglaDto;
+		ReglaPresencialEnumDto presencialEnum;
+		if (regles == null || regles.isEmpty()) {
+			return new ResponseEntity<Object>("La regla amb el codi " + sia + " no existeix", HttpStatus.CONFLICT);
+		} else if (regles.size() > 1) {
+			logger.warn("S'han trobat " + regles.size() + " regles pel codi de procediment " + sia
+					+ ", es consultarà només la primera regla.");
+		}
+		regla = regles.get(0);
+		if (activa == null) {
+			activa = !regla.isActiva();
+		}
+		if(presencial == null) {
+			 presencialEnum = regla.getPresencial();
+		}else {
+			presencialEnum = presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
+		}
+		try {
+		
+			// Actualiza valors de regla
+			novaReglaDto = reglaService.updatePresencial(regla.getEntitatId(), regla.getId(), activa, presencialEnum);
+		} catch (Exception e) {
+			String errMsg = "error fent l'update de la regla " + regla.getNom() + " pel procediment " + regla.getProcedimentCodiFiltre() + ":"
+					+ e.getMessage();
+			logger.error(errMsg, e);
+			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}	
+		
+		return new ResponseEntity<Object>(novaReglaDto, HttpStatus.OK);
+	}
+
 
 	/**
 	 * Comprova que l'usuari autenticat tingui el rol.

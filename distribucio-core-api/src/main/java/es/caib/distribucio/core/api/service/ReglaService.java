@@ -14,6 +14,7 @@ import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 
 
@@ -49,7 +50,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('DIS_REGLA','DIS_ADMIN')")
 	public ReglaDto update(
 			Long entitatId,
 			ReglaDto regla) throws NotFoundException;
@@ -73,6 +74,29 @@ public interface ReglaService {
 			Long reglaId,
 			boolean activa) throws NotFoundException;
 
+	
+	/**
+	 * Marca la regla com a activa/inactiva.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param reglaId
+	 *            Atribut id de la regla a modificar.
+	 * @param activa
+	 *            true si es vol activar o false en cas contrari.
+	 * @return La regla modificada.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
+	public ReglaDto updatePresencial(
+			Long entitatId,
+			Long reglaId,
+			boolean activa,
+			ReglaPresencialEnumDto presencial) throws NotFoundException;
+
+	
+	
 	/**
 	 * Esborra una regla.
 	 * 
@@ -209,5 +233,15 @@ public interface ReglaService {
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_REGLA')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
+	
+	
+	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de update
+	 * de regles.
+	 * 
+	 * @param procedimentCodi
+	 * @return
+	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_REGLA')")
+	public List<ReglaDto> findReglaByProcediment (String procedimentCodi);
 	
 }

@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.ejb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,10 @@ import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
+import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.core.entity.ReglaEntity;
 
 /**
  * Implementació de ReglaService com a EJB que empra una clase
@@ -48,13 +51,17 @@ public class ReglaServiceBean implements ReglaService {
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
-	public ReglaDto update(
-			Long entitatId,
-			ReglaDto regla) throws NotFoundException {
-		return delegate.update(
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public ReglaDto updatePresencial(Long entitatId,
+			Long reglaId,
+			boolean activa,
+			ReglaPresencialEnumDto presencial)
+			 throws NotFoundException {
+		return delegate.updatePresencial(
 				entitatId,
-				regla);
+				reglaId,
+				activa,
+				presencial);
 	}
 
 	@Override
@@ -183,5 +190,18 @@ public class ReglaServiceBean implements ReglaService {
 	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
 		return delegate.findReglaBackofficeByProcediment(procedimentCodi);
 	}
+
+	@Override
+	public ReglaDto update(Long entitatId, ReglaDto regla) throws NotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
+		return delegate.findReglaByProcediment(procedimentCodi);
+	}
+
+	
 	
 }

@@ -163,5 +163,13 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			" and (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))")
 	List<ReglaEntity> findReglaBackofficeByCodiProcediment(
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre);
+	
+	/** Consulta las reglas para el codi procediment dado */
+	@Query(	"from " +
+			"    ReglaEntity r " +
+			"where " +
+			" (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))")
+	List<ReglaEntity> findReglaByCodiProcediment(
+			@Param("procedimentCodiFiltre") String procedimentCodiFiltre);
 
 }

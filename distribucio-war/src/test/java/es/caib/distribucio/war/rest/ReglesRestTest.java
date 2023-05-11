@@ -11,6 +11,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import es.caib.distribucio.core.api.dto.ReglaDto;
+
 /**
  * Test per al client REST de l'API REST de creació de regles automàtiques de Distribucio.
  * 
@@ -18,7 +20,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class ReglesRestTest {
 
-	private static final String URL = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String URL = "http://localhost:8080/distribucioapi/interna";
 	// Usuari amb només el rol de DIS_REGLA
 	private static final String USERNAME = "disregla";
 	private static final String PASSWORD = "disregla";
@@ -38,32 +40,45 @@ public class ReglesRestTest {
 				true);
 		
 		// Dades del test
+		Long entitatId = 401L;
 		String entitat = "A04019281";
-		String sia = "BACK_HELIUM_675";
+		String sia = "868187";
 		String backoffice = "HELIUM";
+		boolean activa = true;
+		boolean presencial = true;
+		
 
-		// Creació de la regla
-		try {
-			boolean ret = client.add(entitat, sia, backoffice);
-			System.out.println("Creació finalitzada correctament amb resultat " + ret);
-		} catch (Exception e) {
-			System.err.println("Error creant la regla: " + e.getMessage());
-			e.printStackTrace();
-		}
+//		// Creació de la regla
+//		try {
+//			boolean ret = client.add(entitat, sia, backoffice);
+//			System.out.println("Creació finalitzada correctament amb resultat " + ret);
+//		} catch (Exception e) {
+//			System.err.println("Error creant la regla: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		
+//		// Modificació de l'activació de la regla
+//		try {
+//			boolean ret = client.canviEstat(sia, null);
+//			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + ret);
+//		} catch (Exception e) {
+//			System.err.println("Error canviant estat a la regla: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		
+//		// Consulta de la regla
+//		try {
+//			boolean ret = client.consultarRegla(sia);
+//			System.out.println("Consulta finalitzada correctament amb resultat " + ret);
+//		} catch (Exception e) {
+//			System.err.println("Error consultant la regla: " + e.getMessage());
+//			e.printStackTrace();
+//		}
 		
-		// Modificació de l'activació de la regla
+		// nova utilitat per a api de regles
 		try {
-			boolean ret = client.canviEstat(sia, null);
-			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + ret);
-		} catch (Exception e) {
-			System.err.println("Error canviant estat a la regla: " + e.getMessage());
-			e.printStackTrace();
-		}
-		
-		// Consulta de la regla
-		try {
-			boolean ret = client.consultarRegla(sia);
-			System.out.println("Consulta finalitzada correctament amb resultat " + ret);
+			boolean ret = client.update(sia, activa, presencial);
+			System.out.println("Update finalitzado correctament amb resultat " + ret);
 		} catch (Exception e) {
 			System.err.println("Error consultant la regla: " + e.getMessage());
 			e.printStackTrace();
