@@ -2417,6 +2417,8 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) 
 			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+			registre.updateProcedimentCodi(procedimentCodi);
+
 		if (titol != null)
 			registre.updateTitol(titol);
 		if (procedimentCodi != null)
