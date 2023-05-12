@@ -45,7 +45,8 @@
 			registres="${registres}"
 			btnSubmit="button[name='btnEnviarViaEmailSubmit']"
 			form="#registreEnviarViaEmailCommand"
-			postUrl="/registreUser/enviarViaEmailAjax/"></dis:processamentMultiple>
+			postUrl="/registreUser/enviarViaEmailAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">

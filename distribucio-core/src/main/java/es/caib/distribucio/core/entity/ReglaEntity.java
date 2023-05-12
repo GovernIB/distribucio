@@ -193,6 +193,11 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			boolean activa) {
 		this.activa = activa;
 	}
+	
+	public void updatePresencial(
+			ReglaPresencialEnumDto presencial) {
+		this.presencial = presencial;
+	}
 
 	public static Builder getBuilder(
 			EntitatEntity entitat,

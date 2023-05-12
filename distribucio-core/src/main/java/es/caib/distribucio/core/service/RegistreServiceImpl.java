@@ -116,6 +116,7 @@ import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.entity.RegistreInteressatEntity;
 import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.core.entity.UsuariEntity;
 import es.caib.distribucio.core.entity.VistaMovimentEntity;
 import es.caib.distribucio.core.helper.BustiaHelper;
 import es.caib.distribucio.core.helper.ConfigHelper;
@@ -126,6 +127,7 @@ import es.caib.distribucio.core.helper.EmailHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.GestioDocumentalHelper;
 import es.caib.distribucio.core.helper.HistogramPendentsHelper;
+import es.caib.distribucio.core.helper.MessageHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.core.helper.PermisosHelper;
@@ -217,6 +219,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private DadaRepository dadaRepository;
 	@Autowired
 	private MetaDadaRepository metaDadaRepository;
+	@Autowired
+	private MessageHelper messageHelper;
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -490,6 +494,8 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 					filtre.getNombreAnnexes(),
+					filtre.getUsuariAssignatCodi() == null,
+					filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
 
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -575,7 +581,9 @@ public class RegistreServiceImpl implements RegistreService {
 			Boolean sobreescriure,
 			boolean esNullProcedimentCodi,
 			String procedimentCodi,
-			RegistreNombreAnnexesEnumDto nombreAnnexos, 
+			RegistreNombreAnnexesEnumDto nombreAnnexos,
+			boolean esNullUsuariAssignatCodi,
+			String usuariAssignatCodi,
 			Pageable pageable) {
 		
 		Object ret = null; // Retorna una llista d'identificadors o una pàgina
@@ -693,6 +701,11 @@ public class RegistreServiceImpl implements RegistreService {
 		if (!esNullProcedimentCodi) {
 			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");				
 			parametres.put("procedimentCodi", procedimentCodi);
+		}
+		
+		if (!esNullUsuariAssignatCodi) {
+			sqlWhere.append("and r.agafatPer is not null and r.agafatPer.codi = :usuariAssignatCodi ");				
+			parametres.put("usuariAssignatCodi", usuariAssignatCodi);
 		}
 		
 		if (nombreAnnexos != null) {
@@ -1131,6 +1144,8 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getProcedimentCodi() == null, 
 				filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 				filtre.getNombreAnnexes(),
+				filtre.getUsuariAssignatCodi() == null,
+				filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 				null);
 	
 
@@ -2402,6 +2417,8 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) 
 			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+			registre.updateProcedimentCodi(procedimentCodi);
+
 		if (titol != null)
 			registre.updateTitol(titol);
 		if (procedimentCodi != null)
@@ -2581,6 +2598,38 @@ public class RegistreServiceImpl implements RegistreService {
 		registreHelper.bloquejar(
 				registre, 
 				usuariHelper.getUsuariAutenticat().getCodi());
+	}
+
+	@Transactional
+	@Override
+	public void assignar(Long entitatId, Long registreId, String usuariCodi, String comentari) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UsuariEntity usuari = usuariHelper.getUsuariByCodi(usuariCodi);
+		UsuariEntity usuariActual = usuariHelper.getUsuariByCodi(auth.getName());
+		logger.debug("Assignant l'anotació a l'usuari (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", " + "usuari=" + usuari.getNom() + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
+		
+		if (!isPermesReservarAnotacions()) {
+			throw new ValidationException(
+					registreId, 
+					RegistreEntity.class, 
+					"La funcionalitat de reserva d'anotacions no està activa");
+		}
+		
+		RegistreEntity registre = entityComprovarHelper.comprovarRegistre(registreId, null);
+		entityComprovarHelper.comprovarBustia(entitat, registre.getPareId(), false);
+		
+		registreHelper.assignar(usuari, usuariActual, registre);
+		
+		String comentariAssignat = messageHelper.getMessage("registre.comentari.usuari.assigant", new Object[] {usuari.getNom()}) + comentari;
+		if (comentari != null)
+			contingutHelper.publicarComentariPerContingut(entitatId, registreId, comentariAssignat);
+		
+		emailHelper.sendEmailAvisAssignacio(usuari.getEmail(), usuariActual, registre, comentari);
 	}
 	
 	@Transactional

@@ -41,7 +41,8 @@
 			registres="${registres}"
 			btnSubmit="button[name='btnEnviarIProcessarSubmit']"
 			form="#registreEnviarIProcessarCommand"
-			postUrl="/registreUser/enviarIProcessarAjax/"></dis:processamentMultiple>
+			postUrl="/registreUser/enviarIProcessarAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
 	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarIProcessarCommand">

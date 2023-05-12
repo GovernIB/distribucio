@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.core.api.dto.BackofficeDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
@@ -79,11 +81,12 @@ public class ReglaController  extends BaseAdminController {
 //				"busties", 
 //				bustiaService.findAmbEntitat(
 //						entitatActual.getId()));
+		List<BackofficeDto> backOfficesList = backofficeService.findByEntitat(entitatActual.getId());
 		
+		Collections.sort(backOfficesList);
 		model.addAttribute(
 				"backoffices",
-				backofficeService.findByEntitat(
-						entitatActual.getId()));
+				backOfficesList);
 		
 		return "reglaList";
 	}

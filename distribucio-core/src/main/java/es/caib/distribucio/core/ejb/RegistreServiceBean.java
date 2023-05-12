@@ -406,4 +406,14 @@ public class RegistreServiceBean implements RegistreService {
 				rolActual);
 	}
 
+	@Override
+	@RolesAllowed("tothom")
+	public void assignar(Long entitatId, Long registreId, String usuariCodi, String comentari) {
+		delegate.assignar(
+				entitatId, 
+				registreId, 
+				usuariCodi, 
+				comentari);
+	}
+
 }

@@ -1,6 +1,7 @@
 package es.caib.distribucio.backoffice.utils.sistra;
 
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -22,7 +23,7 @@ public class BackofficeSistra2UtilsImpl implements BackofficeSistra2Utils {
 		try {
 	    	JAXBContext jaxbContext = JAXBContext.newInstance(Pago.class);
 	    	Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-	    	pago = (Pago) jaxbUnmarshaller.unmarshal( new StringReader(new String(contingut)) );
+	    	pago = (Pago) jaxbUnmarshaller.unmarshal( new StringReader(new String(contingut, StandardCharsets.UTF_8)) );
 		} catch(Exception e) {
 			String errMsg = "Error obtenint la informacó del pagamant a partir del contingut de l'annex : " + e.getMessage();
 			throw new Exception(errMsg, e);
@@ -39,7 +40,7 @@ public class BackofficeSistra2UtilsImpl implements BackofficeSistra2Utils {
 		try {
 	    	JAXBContext jaxbContext = JAXBContext.newInstance(Formulario.class);
 	    	Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-	    	formulario = (Formulario) jaxbUnmarshaller.unmarshal( new StringReader(new String(contingut)) );
+	    	formulario = (Formulario) jaxbUnmarshaller.unmarshal( new StringReader(new String(contingut, StandardCharsets.UTF_8)) );
 		} catch(Exception e) {
 			String errMsg = "Error obtenint la informacó del formulari a partir del contingut de l'annex: " + e.getMessage();
 			throw new Exception(errMsg, e);

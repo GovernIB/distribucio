@@ -208,6 +208,27 @@ public class ReglaServiceImpl implements ReglaService {
 		regla.updateActiva(activa);
 		return toReglaDto(reglaRepository.save(regla));
 	}
+	
+	@Override
+	@Transactional
+	public ReglaDto updatePresencial(Long entitatId, Long reglaId, boolean activa, ReglaPresencialEnumDto presencial)
+			throws NotFoundException {
+			logger.debug("Modificant propietats activa i presencial de la regla ("
+				+ "entitatId=" + entitatId + ", "
+				+ "reglaId=" + reglaId + ", "
+				+ "activa=" + activa + ")");		
+			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+					entitatId,
+					false,
+					true,
+					false);
+			ReglaEntity regla = entityComprovarHelper.comprovarRegla(
+					entitat,
+					reglaId);
+			regla.updateActiva(activa);
+			regla.updatePresencial(presencial);
+			return toReglaDto(reglaRepository.save(regla));
+	}
 
 	@Override
 	@Transactional
@@ -601,9 +622,6 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 	
 	
-	
-
-
 	private void canviPosicio(
 			ReglaEntity regla,
 			int posicio) {
@@ -657,8 +675,20 @@ public class ReglaServiceImpl implements ReglaService {
 		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaByCodiProcediment(procedimentCodi);
+		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
+
+	
+	
+	
 
 
 

@@ -276,6 +276,38 @@ public class EmailHelper {
 		mailSender.send(missatge);		
 	}
 	
+	/** Envia un email d'avís de que s'ha assignat una anotació a un usuari.
+	 * 
+	 * @param emailDestinatari
+	 * 			Email a qui s'enviarà l'email.
+	 * @param contingutEmail
+	 */
+	public void sendEmailAvisAssignacio(
+			String emailDestinatari,
+			UsuariEntity usuariActual,
+			ContingutEntity contingut,
+			String comentari) {
+		logger.trace("Enviament email comentari a destinatari");
+		String appBaseUrl = configHelper.getConfig("es.caib.distribucio.app.base.url");
+		BustiaEntity bustia = null;
+		ContingutEntity pare = contingut.getPare();
+		if (pare != null && pare instanceof BustiaEntity)
+			bustia = (BustiaEntity) pare;
+		
+		SimpleMailMessage missatge = new SimpleMailMessage();
+		missatge.setTo(emailDestinatari);
+		missatge.setFrom(getRemitent());
+		missatge.setSubject(this.getPrefixDistribucio() + " Assignat a una anotació [" + contingut.getNom() + "]");
+		EntitatEntity entitat = contingut.getEntitat();
+		missatge.setText(
+				"L'usuari " + usuariActual.getNom() + "(" + usuariActual.getCodi() + ") t'ha assignat l'anotació [" + contingut.getNom() + "]: \n" +
+				"\tEntitat: " + (entitat != null ? entitat.getNom() : "") + "\n" +
+				"\tNom anotació: " + (contingut != null ? contingut.getNom() : "") + "\n" +
+				(bustia != null ? "\tEnllaç: " + this.getEnllacContingut(appBaseUrl, bustia, contingut, entitat) + "\n" : "") +
+				(comentari != null ? "\tComentari: " + comentari + "\n" : ""));
+		
+		mailSender.send(missatge);
+	}
 	/**
 	 * Envia un email d'avís quan un usuari agafa una anotació que ja està reservada per un altre usuari prèviament.
 	 * 

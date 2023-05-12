@@ -44,7 +44,8 @@
 			registres="${registres}"
 			btnSubmit="button[name='btnMarcarProcessatSubmit']"
 			form="#marcarProcessatCommand"
-			postUrl="/registreUser/marcarProcessatAjax/"></dis:processamentMultiple>
+			postUrl="/registreUser/marcarProcessatAjax/"
+			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
 	<form:form action="" class="form-horizontal" commandName="marcarProcessatCommand">

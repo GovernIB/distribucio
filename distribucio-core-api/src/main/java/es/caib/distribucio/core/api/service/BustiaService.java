@@ -295,6 +295,8 @@ public interface BustiaService {
 	 *            Atribut id del contingut que es vol reenviar.
 	 * @param comentari
 	 *            Comentari pel reenviament.
+	 * @param destinsUsuari 
+	 * 			  Usuari a s'ha d'assignar l'anotació i un comentari per cada usuari
 	 * @param destiLogic
 	 *            Origen de les anotacions en la pantalla de moviments.
 	 * @param long1 
@@ -309,6 +311,7 @@ public interface BustiaService {
 			boolean deixarCopia,
 			String comentari,
 			Long[] perConeixement,
+			Map<Long, String> destinsUsuari,
 			Long destiLogic) throws NotFoundException;
 
 	/**

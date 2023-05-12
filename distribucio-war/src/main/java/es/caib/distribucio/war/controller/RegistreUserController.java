@@ -141,6 +141,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isEnviarConeixementActiu", isEnviarConeixementActiu());
 		if (bustiaPerDefecte != null)
 			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
+		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		return "registreUserList";
 	}
 
@@ -182,7 +183,7 @@ public class RegistreUserController extends BaseUserController {
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
 			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 		}
-		return DatatablesHelper.getDatatableResponse(
+ 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
 						entitatActual.getId(),
@@ -443,7 +444,7 @@ public class RegistreUserController extends BaseUserController {
 							entitatActual.getId(),
 							((RegistreDto)registre).getDades()));
 			model.addAttribute("metadadesActives", isMetadadesActives());
-			
+			model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -1126,6 +1127,7 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 			model.addAttribute("destiLogic", destiLogic);
 			model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+			model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -1168,7 +1170,7 @@ public class RegistreUserController extends BaseUserController {
 			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
-		return registreReenviarPost(
+ 		return registreReenviarPost(
 				request, 
 				registreId, 
 				null,
@@ -1201,6 +1203,7 @@ public class RegistreUserController extends BaseUserController {
 								"bustia.pendent.accio.reenviar.no.desti"));
 				model.addAttribute("maxLevel", getMaxLevelArbre());
 				model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+				model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 				return "registreReenviarForm";
 			}
 			bustiaService.registreReenviar(
@@ -1210,6 +1213,7 @@ public class RegistreUserController extends BaseUserController {
 					command.isDeixarCopia(),
 					command.getComentariEnviar(),
 					command.getPerConeixement(),
+					command.getDestinsUsuari(),
 					destiLogic);
 			if (command.getParams().length == 0) {
 				
@@ -1316,6 +1320,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
@@ -1391,6 +1396,7 @@ public class RegistreUserController extends BaseUserController {
 					command.isDeixarCopia(),
 					command.getComentariEnviar(),
 					command.getPerConeixement(),
+					command.getDestinsUsuari(),
 					null);
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(getMessage(request, "bustia.controller.pendent.contingut.reenviat.ok"));
@@ -2037,6 +2043,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		return registreDto;
 	}
 	
@@ -2077,6 +2084,10 @@ public class RegistreUserController extends BaseUserController {
 	
 	private boolean isMetadadesActives() {
 		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.permetre.metadades.registre"));
+	}
+	
+	private boolean isPermesAssignarAnotacions() {
+		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.assignar.anotacions"));
 	}
 	
 	private RegistreFiltreCommand getFiltreCommand(

@@ -231,6 +231,7 @@ public class RegistreComunController extends BaseController{
 		model.addAttribute("isFavoritsPermes", isFavoritsPermes());
 		model.addAttribute("isMostrarPermisosBustiaPermes", isMostrarPermisosBustiaPermes());
 		model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		model.addAttribute(
 				"arbreUnitatsOrganitzatives",
 				bustiaService.findArbreUnitatsOrganitzatives(
@@ -272,6 +273,9 @@ public class RegistreComunController extends BaseController{
 		return Boolean.parseBoolean(isMostrarPermisosBustiaPermesStr);
 	}
 	
+	private boolean isPermesAssignarAnotacions() {
+		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.assignar.anotacions"));
+	}
 	
 	@RequestMapping(value = "/marcarProcessatMultiple/{rol}", method = RequestMethod.GET)
 	public String marcarProcessatMultipleGet(

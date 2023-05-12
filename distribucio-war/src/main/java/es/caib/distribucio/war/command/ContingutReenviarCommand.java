@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.war.command;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -25,6 +28,8 @@ public class ContingutReenviarCommand {
 	protected String[] params;
 	
 	protected Long[] perConeixement;
+	
+	protected Map<Long, String> destinsUsuari = new HashMap<Long, String>();
 	
 	public String getComentariEnviar() {
 		return comentariEnviar;
@@ -56,6 +61,12 @@ public class ContingutReenviarCommand {
 	}
 	public void setPerConeixement(Long[] perConeixement) {
 		this.perConeixement = perConeixement;
+	}
+	public Map<Long, String> getDestinsUsuari() {
+		return destinsUsuari;
+	}
+	public void setDestinsUsuari(Map<Long, String> destiUsuari) {
+		this.destinsUsuari = destiUsuari;
 	}
 	@Override
 	public String toString() {

@@ -273,6 +273,7 @@ public class BustiaServiceBean implements BustiaService {
 			boolean deixarCopia,
 			String comentari,
 			Long[] perConeixement,
+			Map<Long, String> destinsUsuari,
 			Long destiLogic) throws NotFoundException {
 		delegate.registreReenviar(
 				entitatId,
@@ -281,6 +282,7 @@ public class BustiaServiceBean implements BustiaService {
 				deixarCopia,
 				comentari,
 				perConeixement,
+				destinsUsuari,
 				destiLogic);
 	}
 
