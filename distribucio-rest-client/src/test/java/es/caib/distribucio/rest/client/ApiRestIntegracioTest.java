@@ -1,8 +1,10 @@
 package es.caib.distribucio.rest.client;
 
-import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
-import es.caib.distribucio.rest.client.domini.AnotacioRegistreId;
-import es.caib.distribucio.rest.client.domini.Estat;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClientFactory;
+import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
+import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId;
+import es.caib.distribucio.rest.client.integracio.domini.Estat;
 
 /** Test per provar el client REST de l'API RESt d'integració per backoffices. Es prova 
  * la consulta i canvi d'estat d'una anotació.

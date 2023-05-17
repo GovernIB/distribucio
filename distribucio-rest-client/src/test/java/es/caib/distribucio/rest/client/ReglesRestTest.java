@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.war.rest;
+package es.caib.distribucio.rest.client;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -11,7 +11,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import es.caib.distribucio.core.api.dto.ReglaDto;
+import es.caib.distribucio.rest.client.regla.ReglesRestClient;
 
 /**
  * Test per al client REST de l'API REST de creació de regles automàtiques de Distribucio.
@@ -40,15 +40,15 @@ public class ReglesRestTest {
 				true);
 		
 		// Dades del test
-		Long entitatId = 401L;
-		String entitat = "A04019281";
-		String sia = "868187";
+		//Long entitatId = 401L;
+		String entitat = "A04003003";
+		String sia = "1161489";
 		String backoffice = "HELIUM";
-		boolean activa = true;
+		boolean activa = false;
 		boolean presencial = true;
 		
 
-//		// Creació de la regla
+		// Creació de la regla
 //		try {
 //			boolean ret = client.add(entitat, sia, backoffice);
 //			System.out.println("Creació finalitzada correctament amb resultat " + ret);

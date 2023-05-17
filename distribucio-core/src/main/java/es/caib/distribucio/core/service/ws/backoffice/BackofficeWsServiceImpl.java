@@ -30,11 +30,11 @@ import es.caib.distribucio.core.helper.ConfigHelper;
 import es.caib.distribucio.core.helper.IntegracioHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.rest.client.BackofficeIntegracioRestClient;
-import es.caib.distribucio.rest.client.BackofficeIntegracioRestClientFactory;
-import es.caib.distribucio.rest.client.domini.Annex;
-import es.caib.distribucio.rest.client.domini.AnnexEstat;
-import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClientFactory;
+import es.caib.distribucio.rest.client.integracio.domini.Annex;
+import es.caib.distribucio.rest.client.integracio.domini.AnnexEstat;
+import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.Expedient;
@@ -66,11 +66,11 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 		try {
 			// Client de l'API REST de backoffice per consultar anotacions
 			BackofficeIntegracioRestClient backofficeClient = getClientRest();			
-			es.caib.distribucio.rest.client.domini.AnotacioRegistreId idWs;
+			es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId idWs;
 			for (AnotacioRegistreId id : ids) {
 				try {
 					// Construeix l'identificador pel WS del backoffice de DISTRIBUCIO
-					idWs = new es.caib.distribucio.rest.client.domini.AnotacioRegistreId();
+					idWs = new es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId();
 					idWs.setClauAcces(id.getClauAcces());
 					idWs.setIndetificador(id.getIndetificador());
 		
@@ -79,7 +79,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					// Canvia l'estat a Rebuda
 					backofficeClient.canviEstat(
 							idWs,
-							es.caib.distribucio.rest.client.domini.Estat.REBUDA,
+							es.caib.distribucio.rest.client.integracio.domini.Estat.REBUDA,
 							"Canviar l'estat a rebuda");
 					
 					// Prepara la cria a la llibreria d'utilitats pel backoffice de DISTRIBUCIO
@@ -166,13 +166,13 @@ public class BackofficeWsServiceImpl implements BackofficeWsService,
 					switch(arxiuResultat.getErrorCodi()) {
 						case 0:
 							backofficeClient.canviEstat(idWs, 
-														es.caib.distribucio.rest.client.domini.Estat.PROCESSADA, 
+														es.caib.distribucio.rest.client.integracio.domini.Estat.PROCESSADA, 
 														"Processada correctament, s'ha creat l'expedient " 
 																+ (expedientDetalls != null ? expedientDetalls.getNom() : "-") 
 																+ " amb uuid " + expedientUuid);
 							break;
 						default:
-							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.domini.Estat.ERROR, arxiuResultat.getErrorCodi() + " " + arxiuResultat.getErrorMessage());
+							backofficeClient.canviEstat(idWs, es.caib.distribucio.rest.client.integracio.domini.Estat.ERROR, arxiuResultat.getErrorCodi() + " " + arxiuResultat.getErrorMessage());
 							break;
 					}
 				} catch (Throwable ex) {

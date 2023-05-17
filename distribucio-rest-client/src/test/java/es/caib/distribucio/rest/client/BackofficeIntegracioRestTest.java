@@ -11,9 +11,11 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.Test;
 
-import es.caib.distribucio.rest.client.domini.AnotacioRegistreEntrada;
-import es.caib.distribucio.rest.client.domini.AnotacioRegistreId;
-import es.caib.distribucio.rest.client.domini.Estat;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient;
+import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClientFactory;
+import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
+import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId;
+import es.caib.distribucio.rest.client.integracio.domini.Estat;
 
 /**
  * Client de test per al servei bustia de RIPEA.
@@ -22,7 +24,7 @@ import es.caib.distribucio.rest.client.domini.Estat;
  */
 public class BackofficeIntegracioRestTest {
 	
-	private static final String URL_BASE = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String URL_BASE = "http://localhost:8080/distribucioapi/interna";
 	private static final String USER = "admin";
 	private static final String PASS = "admin";
 
