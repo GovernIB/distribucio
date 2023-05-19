@@ -21,9 +21,15 @@
 <html>
 <head>
 	<title><spring:message code="anotacions.admin.titol"/></title>
-	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
-	<script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
-	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+	
+	<link href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css" rel="stylesheet"/> 
+	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+	
+	
+<%-- 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script> --%>
+	<link href="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.css" rel="stylesheet"/>
+ 
+	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<c:if test="${requestLocale == 'en'}">
@@ -42,102 +48,16 @@
 	
 	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
-
 <style>
-table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
-	background-color: #fcf8e3;
-	color: #666666;
-}
-table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
-	cursor: pointer;
-}
-table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
-    color: #333;
-}
-
-/*  div.extracteColumn {  */
-/*      word-wrap: break-word;  */
-/*      overflow-wrap: break-word;  */
-/*      overflow-wrap: anywhere;  */
-/* }  */
-
- th,  
- td,  
- #link-comentaris span { 
-     word-wrap: break-word; 
-     overflow-wrap: break-word; 
-     overflow-wrap: anywhere; 
- 	font-size: 1.4rem; 
- 	width: 0%;  
- 	width: fit-content;  
- }  
-
-#div-btn-accions button, 
-#link-comentaris {
-	white-space: nowrap;
-	word-wrap: break-word;
-}
-
-span.badge {
-	font-size: 1.2rem !important;
-}
-
-span.fa-comments {
-	font-size: 2rem !important;
- 	padding-right: 5px;
-}
-
-span.fa-cog {
-	margin: 2px 1.5rem 0 0; 
-}
-
-tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
-	margin: 8px 0 0 2px; 
-}
-
-span.select2-container {
-	width: 100% !important;
-}
-
-button#nomesAmbErrorsBtn, 
-button#nomesAmbEsborranysBtn, 
-button#mostrarInactivesBtn {
-	width: 100% !important;
-}
-
-button#nomesAmbErrorsBtn span.fa-warning, 
-button#nomesAmbEsborranysBtn span.fa-warning, 
-button#mostrarInactivesBtn i{
-	position: relative !important;
-	margin-left: -5px !important;
-}
-
-button#mostrarInactivesBtn i.fa-ban, button#mostrarInactivesBtn i.fa-inbox {
-	position: absolute !important;
-	font-size: 2.5rem;
-	margin-left: -5px !important;
-}
-
-button#mostrarInactivesBtn i.fa-inbox {
-	position: absolute !important;
-	font-size: 1.5rem;
-	margin-left: -5px !important;
-}
-
-button#netejarFiltre, 
-button#filtrar {
-	width: 50%;
-}
-
-.datepicker td, 
-.datepicker th {
-	width: 4rem !important;
-}
-
-.btn-default .badge {
-/*   padding-right: 2rem !important; */
-}
 	
+
+	span.fa-cog {
+		margin: 2px 1.5rem 0 0; 
+	}
+	tbody tr.selectable td span.caret {
+		margin: 8px 0 0 2px; 
+	}
+
 </style>
 	
 <script>
@@ -321,9 +241,13 @@ $(document).ready(function() {
 		);
 		return false;
 	});
+	
+	
+// 	$('#taulaDades').DataTable({
+// 							responsive : true
+// 						});
 
-});
-
+ 					});
 </script>
 </head>
 <body>
@@ -546,6 +470,7 @@ $(document).ready(function() {
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
+	<div class="table-responsive" style="width: 100%; overflow-x: visible">
 	<table
 		id="taulaDades"
 		data-refresh-tancar="true"
@@ -556,10 +481,9 @@ $(document).ready(function() {
 		data-selection-enabled="true"
 		data-default-order="14"
 		data-default-dir="desc"
-		class="table table-bordered table-striped"
-		data-rowhref-template="#rowhrefTemplate" 
-		data-rowhref-toggle="modal"
-		data-rowhref-maximized="true">
+		class="table table-striped table-bordered"
+		style="word-break:break-all; width:100%;"
+		>
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
@@ -567,16 +491,16 @@ $(document).ready(function() {
 				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
-				<th data-col-name="procesEstatSimple"  data-visible="false">
+				<th data-col-name="procesEstatSimple"  data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false"></th>
-				<th data-col-name="sobreescriure" data-visible="false">
-				<th data-col-name="arxiuTancat" data-visible="false">
+				<th data-col-name="sobreescriure" data-visible="false"></th>
+				<th data-col-name="arxiuTancat" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-visible="false"></th>	
-				<th data-col-name="numero" style="max-width: 10%; min-width: 70px"><spring:message code="bustia.pendent.columna.numero"/></th>			
-				<th data-col-name="extracte" style="width:16%; min-width: 150px"><spring:message code="bustia.pendent.columna.titol"/></th>											
-				<th data-col-name="numeroOrigen" style="width:8%; min-width: 55px"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="numero" style="min-width: 65px;"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				<th data-col-name="extracte" style="min-width: 65px;"><spring:message code="bustia.pendent.columna.titol"/></th>											
+				<th data-col-name="numeroOrigen" style="min-width: 35px;"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
-				<th data-col-name="darrerMovimentUsuari" style="width:8%; min-width: 55px;" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" style="min-width: 50px;" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -598,8 +522,8 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" data-converter="datetime" style="min-width:55px;" ><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" data-orderable="true" style="width:8%;  min-width: 55px;"  data-template="#estatTemplate">
+				<th data-col-name="data" style="min-width: 60px;" data-converter="datetime"><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="procesEstat" style="min-width: 40px;" data-orderable="true"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -645,7 +569,7 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" data-orderable="false" style="min-width: 50px;" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" style="min-width: 40px;" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -712,7 +636,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="bustiaActiva" data-visible="false"></th>
-				<th data-col-name="path" data-template="#cellPathTemplate" style="min-width: 100px;" data-orderable="false">
+				<th data-col-name="path" style="min-width: 120px;" data-template="#cellPathTemplate" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/><br>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{if path}}
@@ -728,10 +652,10 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" data-orderable="false" style="min-width: 100px;">
+				<th data-col-name="interessatsResum" style="min-width: 90px;" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
-				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate" style="min-width:100px">							
+				<th data-col-name="numComentaris"   style ="text-align: center;" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
 							<span class="fa fa-lg fa-comments"></span>
@@ -741,12 +665,12 @@ $(document).ready(function() {
 				</th>
 
 
-				<th data-col-name="backCodi" data-orderable="true" style=" min-width: 80px;">
+				<th data-col-name="backCodi" style="min-width: 90px;" data-orderable="true">
 					<spring:message code="contingut.admin.columna.backoffice"/>
 				</th>
 				
-				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" style="max-width:50px;">
-					<script id="cellAccionsTemplate" type="text/x-jsrender">
+				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="max-width:50px;">
+					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div id="div-btn-accions" class="dropdown">
 							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;"><span class="fa fa-cog"></span><spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
@@ -792,7 +716,7 @@ $(document).ready(function() {
 				<th data-col-name="backCodi" data-visible="false"></th>
 			</tr>
 		</thead>
-	</table>
+	</table></div>
 	
 	
 	

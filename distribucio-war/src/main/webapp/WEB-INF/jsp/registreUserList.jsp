@@ -554,10 +554,11 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		</div>
 	</script>
 	<script id="rowhrefTemplate" type="text/x-jsrender">registreUser/registre/{{:id}}</script>
+	<div class="table-responsive" style="width: 100%; overflow-x: visible;">
 	<table 
 		id="taulaDades" 
-		class="table table-bordered table-striped" 
-		data-toggle="datatable"
+		class="table table-striped table-bordered"
+ 		data-toggle="datatable"
 		data-url="<c:url value="/registreUser/datatable"/>"
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
@@ -583,7 +584,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
 			
 <!-- 				<th data-col-name="procesError" data-visible="false">#</th> -->
-				<th data-col-name="numero" style="max-width: 10%; min-width: 70px"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				<th data-col-name="numero" style="width:16%; min-width: 100px"><spring:message code="bustia.pendent.columna.numero"/></th>			
 				
 <!-- 				<th data-col-name="numero" style="width:10%;"><spring:message code="bustia.pendent.columna.numero"/></th> -->
 <!-- 				<th data-col-name="extracte" style="width:10%;" data-template="#extracteTemplate"> -->
@@ -810,6 +811,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 			</tr>
 		</thead>
 	</table>
+	</div>
 	
 	<!-- Modal pels estats del processament -->
 	<div id="modalProcesEstat" class="modal fade">
