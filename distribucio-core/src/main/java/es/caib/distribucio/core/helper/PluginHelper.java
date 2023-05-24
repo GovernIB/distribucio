@@ -38,6 +38,7 @@ import es.caib.distribucio.core.api.dto.ProcedimentDto;
 import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.core.api.helper.ArxiuConversions;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
@@ -732,15 +733,14 @@ public class PluginHelper {
 			ValidateSignatureResponse validateSignatureResponse = getValidaSignaturaPlugin().validateSignature(validationRequest);
 			
 			// Completa la resposta
-			ValidaSignaturaResposta detalls = new ValidaSignaturaResposta();
-			detalls.setStatus(validateSignatureResponse.getValidationStatus().getStatus());
-			detalls.setErrMsg(validateSignatureResponse.getValidationStatus().getErrorMsg());
-			detalls.setErrException(validateSignatureResponse.getValidationStatus().getErrorException());
+			ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
+			resposta.setStatus(validateSignatureResponse.getValidationStatus().getStatus());
+			resposta.setErrMsg(validateSignatureResponse.getValidationStatus().getErrorMsg());
+			resposta.setErrException(validateSignatureResponse.getValidationStatus().getErrorException());
 			
 			if (validateSignatureResponse.getSignatureDetailInfo() != null) {
 				for (SignatureDetailInfo signatureInfo: validateSignatureResponse.getSignatureDetailInfo()) {
 					ArxiuFirmaDetallDto detall = new ArxiuFirmaDetallDto();
-					signatureInfo.getSignDate();
 					TimeStampInfo timeStampInfo = signatureInfo.getTimeStampInfo();
 					if (timeStampInfo != null) {
 						detall.setData(timeStampInfo.getCreationTime());
@@ -753,8 +753,12 @@ public class PluginHelper {
 						detall.setResponsableNom(certificateInfo.getNomCompletResponsable());
 						detall.setEmissorCertificat(certificateInfo.getEmissorOrganitzacio());
 					}
-					detalls.getFirmaDetalls().add(detall);
+					resposta.getFirmaDetalls().add(detall);
 				}
+				resposta.setPerfil(ArxiuConversions.toPerfilFirmaArxiu(validateSignatureResponse.getSignProfile()));
+				resposta.setTipus(ArxiuConversions.toFirmaTipus(
+						validateSignatureResponse.getSignType(),
+						validateSignatureResponse.getSignFormat()));
 			}
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_VALIDASIG,
@@ -763,7 +767,7 @@ public class PluginHelper {
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
-			return detalls;
+			return resposta;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de validar signatures";
 			integracioHelper.addAccioError(

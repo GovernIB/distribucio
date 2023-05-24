@@ -2620,7 +2620,7 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false);
 		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(
-						registreAnnexRepository.findOne(annexId));
+						registreAnnexRepository.findOne(annexId), null);
 		
 		// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
 		// guardar com a definitiu
@@ -2674,7 +2674,9 @@ public class RegistreServiceImpl implements RegistreService {
 					
 					// if document is signed
 					if (document.getFirmes() != null && !document.getFirmes().isEmpty()) {
-						RegistreAnnexFirmaEntity registreAnneFirma = annexEntity.getFirmes().get(0);
+						RegistreAnnexFirmaEntity registreAnneFirma = !annexEntity.getFirmes().isEmpty() ?
+																		annexEntity.getFirmes().get(0)
+																		: null;
 						for (Firma firma : document.getFirmes()) {
 							// we want to use first firma that is not CSV type
 							if (!FirmaTipus.CSV.equals(firma.getTipus())) {
@@ -2684,8 +2686,10 @@ public class RegistreServiceImpl implements RegistreService {
 								if (detached && retornarAnnexIFirmaContingut) {
 										annexPerBackoffice.setFirmaContingut(firma.getContingut());
 										annexPerBackoffice.setFirmaTamany(firma.getContingut().length);
-										annexPerBackoffice.setFirmaNom(registreAnneFirma.getFitxerNom());
-										annexPerBackoffice.setFirmaTipusMime(registreAnneFirma.getTipusMime());
+										if (registreAnneFirma != null) {
+											annexPerBackoffice.setFirmaNom(registreAnneFirma.getFitxerNom());
+											annexPerBackoffice.setFirmaTipusMime(registreAnneFirma.getTipusMime());
+										}
 								}
 								annexPerBackoffice.setFirmaTipus(
 										firma.getTipus() != null ? es.caib.distribucio.core.api.service.ws.backoffice.FirmaTipus.valueOf(firma.getTipus().name()) : null);
