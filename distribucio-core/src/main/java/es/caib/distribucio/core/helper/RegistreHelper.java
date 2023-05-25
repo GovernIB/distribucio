@@ -2052,7 +2052,7 @@ public class RegistreHelper {
 	 */
 	private boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
 		// Si no està firmat no cal la versió imprimible
-		if (annex.getFirmes() == null || annex.getFirmes().isEmpty()) {
+		if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) && (annex.getFirmes() == null || annex.getFirmes().isEmpty())) {
 			return false;
 		}
 		// Revisa que sigui convertible
@@ -2060,8 +2060,10 @@ public class RegistreHelper {
 		String extensio = FilenameUtils.getExtension(annex.getFitxerNom());
 		if (extensio != null) {
 			for (int i = 0; i < extensionsConvertiblesPdf.length; i++) {
-				if (extensio.equalsIgnoreCase(extensionsConvertiblesPdf[i]))
+				if (extensio.equalsIgnoreCase(extensionsConvertiblesPdf[i])) {
 					convertible = true;
+					break;
+				}
 			}
 		}
 		if (!convertible) {
@@ -2070,17 +2072,23 @@ public class RegistreHelper {
 		// Comprova segons el tipus de firma
 		boolean generarVersioImprimible = false;
 		if ((annex.getFitxerNom().toLowerCase().endsWith(".pdf") 
-				|| "application/pdf".equals(annex.getFitxerTipusMime()))
-				&&  annex.getFirmes() != null 
-				&& !annex.getFirmes().isEmpty()) {
-			for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-				if (firma.getTipus() != null ) {
-					if (	   DocumentNtiTipoFirmaEnumDto.TF06.toString().equals(firma.getTipus())
-							|| DocumentNtiTipoFirmaEnumDto.TF05.toString().equals(firma.getTipus())
-							|| DocumentNtiTipoFirmaEnumDto.TF04.toString().equals(firma.getTipus()))
-					generarVersioImprimible = true;
-					break;
+				|| "application/pdf".equals(annex.getFitxerTipusMime()))) {
+			
+			if (annex.getFirmes() != null 
+					&& !annex.getFirmes().isEmpty()) {
+				// Comprova les fimres
+				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+					if (firma.getTipus() != null ) {
+						if (	   DocumentNtiTipoFirmaEnumDto.TF06.toString().equals(firma.getTipus())
+								|| DocumentNtiTipoFirmaEnumDto.TF05.toString().equals(firma.getTipus())
+								|| DocumentNtiTipoFirmaEnumDto.TF04.toString().equals(firma.getTipus()))
+						generarVersioImprimible = true;
+						break;
+					}
 				}
+			} else {
+				// Comprova l'estat definitiu
+				generarVersioImprimible = AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat());
 			}
 		}
 		return generarVersioImprimible;
