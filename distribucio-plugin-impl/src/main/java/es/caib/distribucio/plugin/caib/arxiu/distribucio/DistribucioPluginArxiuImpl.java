@@ -37,6 +37,7 @@ import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.NtiOrigenEnumDto;
 import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.core.api.helper.ArxiuConversions;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
@@ -273,7 +274,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					}
 					byte [] firmaDistribucioContingut = signatura.getContingut();
 					String tipusFirmaArxiu = signatura.getTipusFirmaEni();
-					String perfil = mapPerfilFirma(signatura.getPerfilFirmaEni());
+					String perfil = ArxiuConversions.toPerfilFirmaArxiu(signatura.getPerfilFirmaEni());
 					String fitxerNom = signatura.getNom();
 					String tipusMime = signatura.getMime();
 					String csvRegulacio = null;
@@ -366,7 +367,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				errSistemaExtern = errSistemaExtern + "\n" + errMsg2;
 			}
 
-			// Si el document era definitiu, no existeix a l'Arxiu i s'han esgotat els reintnets i està posat guardar com esborrany llavors guarda com esborrany
+			// Si el document era definitiu, no existeix a l'Arxiu i s'han esgotat els reintents i està posat guardar com esborrany llavors guarda com esborrany
 			if (DocumentEstat.DEFINITIU.equals(estatDocument)
 					&& distribucioAnnex.getFitxerArxiuUuid() == null
 					&& distribucioAnnex.getProcesIntents() >= (maxReintents - 1) 
@@ -419,38 +420,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		return true;
 	}
-
-	/** Map amb el mapeig dels perfils de firma cap als perfils admesos per l'Arxiu. */
-	private static Map<String, String> mapPerfilsFirma = new HashMap<String, String>();
-	static {
-		mapPerfilsFirma.put("AdES-BES", "BES");
-		mapPerfilsFirma.put("AdES-EPES", "EPES");
-		mapPerfilsFirma.put("AdES-T", "T");
-		mapPerfilsFirma.put("AdES-C", "C");
-		mapPerfilsFirma.put("AdES-X", "X");
-		mapPerfilsFirma.put("AdES-X1", "X");
-		mapPerfilsFirma.put("AdES-X2", "X");
-		mapPerfilsFirma.put("AdES-XL", "XL");
-		mapPerfilsFirma.put("AdES-XL1", "XL");
-		mapPerfilsFirma.put("AdES-XL2", "XL");
-		mapPerfilsFirma.put("AdES-A", "A");
-		mapPerfilsFirma.put("PAdES-LTV", "LTV");
-		mapPerfilsFirma.put("PAdES-Basic", "BES");
-	}
-	
-	/** Mapeja els diferents perfils de firma que pot retornar el plugin de firma simple cap
-	 * als perfils admesos per l'Arxiu.
-	 * 
-	 * @param perfil
-	 * @return
-	 */
-	public static String mapPerfilFirma(String perfil) {
-		if (mapPerfilsFirma.containsKey(perfil))
-			perfil = mapPerfilsFirma.get(perfil);
-		return perfil;
-	}
-
-
 
 	@Override
 	public Document documentDescarregar(

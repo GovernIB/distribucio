@@ -25,6 +25,12 @@ public class ValidaSignaturaResposta {
 	
 	private List<ArxiuFirmaDetallDto> firmaDetalls = new ArrayList<>();
 
+	/** Perfil de firma */
+	private String perfil;
+	/** Tipus de firma */
+	private String tipus;
+
+	
 	public int getStatus() {
 		return status;
 	}
@@ -70,5 +76,17 @@ public class ValidaSignaturaResposta {
 			causaInvalida = getErrMsg();
 		}
 		return causaInvalida;
+	}
+	public String getPerfil() {
+		return perfil;
+	}
+	public void setPerfil(String perfil) {
+		this.perfil = perfil;
+	}
+	public String getTipus() {
+		return tipus;
+	}
+	public void setTipus(String tipus) {
+		this.tipus = tipus;
 	}
 }

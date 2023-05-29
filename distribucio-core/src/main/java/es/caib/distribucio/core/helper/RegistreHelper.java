@@ -865,11 +865,12 @@ public class RegistreHelper {
 
 	/** Mètode per validar les firmes de l'annex tingui o no firmes per revisar si 
 	 * l'annex té firmes invàlides.
+	 * @param firmes 
 	 * 
 	 * @param distribucioAnnex
 	 */
 	@Transactional
-	public ValidacioFirmaEnum validaFirmes(RegistreAnnexEntity annex) {
+	public ValidacioFirmaEnum validaFirmes(RegistreAnnexEntity annex, List<DistribucioRegistreFirma> firmes) {
 		
 		logger.debug("Validant firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
 				
@@ -879,6 +880,10 @@ public class RegistreHelper {
 		FitxerDto fitxer = this.getAnnexFitxer(annex.getId(), false);
 		byte[] documentContingut = fitxer.getContingut();
 		byte[] firmaContingut = null;
+
+		if (firmes == null) {
+			firmes = new ArrayList<>();
+		}
 
 		// 0 - Mira si és un PDF sense firmes
 		boolean isPdfSenseFirmes = false;
@@ -902,46 +907,11 @@ public class RegistreHelper {
 		if (!isPdfSenseFirmes 
 				&& pluginHelper.isValidaSignaturaPluginActiu()) {
 
-			
-			// 1- Valida el document com si no tingués firmes
-			try {
-				ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut);
-				switch(validacioFirma.getStatus()) {
-					case ValidaSignaturaResposta.FIRMA_VALIDA:
-						validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
-						break;
-					case ValidaSignaturaResposta.FIRMA_INVALIDA:
-						validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
-						validacioFirmaError = validacioFirma.getCausaInvalida();
-						break;
-					case ValidaSignaturaResposta.FIRMA_ERROR:
-						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
-						validacioFirmaError = validacioFirma.getCausaInvalida();
-						break;
-					default:
-						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
-				}
-			} catch(Exception e) {
-				// Determina si és error perquè no té firmes o validant
-				Throwable throwable = ExceptionHelper.getRootCauseOrItself(e);
-				if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
-						|| throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
-						|| throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
-					validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
-				} else {
-					logger.error("Error validant les firmes del document", e);
-					validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
-					validacioFirmaError = "Error no controlat validant: " + e.getMessage();
-				}
-			}
-
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
-			if (annexFirmat 
-					&& (validacioFirmaEstat == ValidacioFirmaEnum.SENSE_FIRMES 
-						|| validacioFirmaEstat == ValidacioFirmaEnum.FIRMA_VALIDA)) 
+			if (annexFirmat) 
 			{
-				// 2- Valida les firmes per separat
+				// 1- Valida les firmes de l'annex
 				int nFirma = 1;
 				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
 					if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
@@ -967,6 +937,7 @@ public class RegistreHelper {
 							default:
 								validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
 						}
+						firmes.add(toRegistreFirmes(validacioFirma, firmaContingut, firma.getTipusMime()));
 					} catch(Exception e) {
 						logger.error("Error validant una firma del document", e);
 						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
@@ -979,6 +950,39 @@ public class RegistreHelper {
 						break;
 					}
 				}
+			} else {
+				// 1- Valida el document com si no tingués firmes
+				try {
+					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut);
+					switch(validacioFirma.getStatus()) {
+						case ValidaSignaturaResposta.FIRMA_VALIDA:
+							validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
+							break;
+						case ValidaSignaturaResposta.FIRMA_INVALIDA:
+							validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
+							validacioFirmaError = validacioFirma.getCausaInvalida();
+							break;
+						case ValidaSignaturaResposta.FIRMA_ERROR:
+							validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+							validacioFirmaError = validacioFirma.getCausaInvalida();
+							break;
+						default:
+							validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+					}
+					firmes.add(toRegistreFirmes(validacioFirma, documentContingut, annex.getFitxerTipusMime()));
+				} catch(Exception e) {
+					// Determina si és error perquè no té firmes o validant
+					Throwable throwable = ExceptionHelper.getRootCauseOrItself(e);
+					if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+							|| throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+							|| throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
+						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
+					} else {
+						logger.error("Error validant les firmes del document", e);
+						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
+						validacioFirmaError = "Error no controlat validant: " + e.getMessage();
+					}
+				}				
 			}
 		}
 		annex.setValidacioFirmaEstat(validacioFirmaEstat);
@@ -987,6 +991,30 @@ public class RegistreHelper {
 		logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
 							validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
 		return validacioFirmaEstat;
+	}
+
+	/** Serverix per convertir les firmes reconegudes d'un document després de la validació i afegir-les al registre. 
+	 * @param validacioFirma
+	 * @param contingut 
+	 * @param tipusMime 
+	 */
+	private DistribucioRegistreFirma toRegistreFirmes(ValidaSignaturaResposta validacioFirma, byte[] contingut, String tipusMime) {
+
+		DistribucioRegistreFirma registreFirma = new DistribucioRegistreFirma();
+		
+		registreFirma.setTipus(validacioFirma.getTipus());
+		registreFirma.setPerfil(validacioFirma.getPerfil());
+		registreFirma.setTipusMime(tipusMime);
+
+//			private String fitxerNom;
+//			private String csvRegulacio;
+
+		registreFirma.setContingut(contingut);
+		if (contingut != null) {
+			registreFirma.setTamany(contingut.length);
+		}
+
+		return registreFirma;
 	}
 
 	public FitxerDto getJustificant(Long registreId) {
@@ -1188,7 +1216,7 @@ public class RegistreHelper {
 				annexEntity.updateFirmaCsv(metadades.getCsv());
 			}
 			
-			if (document.getFirmes() != null && document.getFirmes().size() > 0) {
+			if (document.getFirmes() != null && document.getFirmes().size() > 0 && annexEntity.getFirmes().size() > 0) {
 				List<RegistreAnnexFirmaEntity> firmes = annexEntity.getFirmes();
 				Iterator<es.caib.plugins.arxiu.api.Firma> it = document.getFirmes().iterator();
 				
@@ -2029,7 +2057,7 @@ public class RegistreHelper {
 	 */
 	private boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
 		// Si no està firmat no cal la versió imprimible
-		if (annex.getFirmes() == null || annex.getFirmes().isEmpty()) {
+		if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) && (annex.getFirmes() == null || annex.getFirmes().isEmpty())) {
 			return false;
 		}
 		// Revisa que sigui convertible
@@ -2037,8 +2065,10 @@ public class RegistreHelper {
 		String extensio = FilenameUtils.getExtension(annex.getFitxerNom());
 		if (extensio != null) {
 			for (int i = 0; i < extensionsConvertiblesPdf.length; i++) {
-				if (extensio.equalsIgnoreCase(extensionsConvertiblesPdf[i]))
+				if (extensio.equalsIgnoreCase(extensionsConvertiblesPdf[i])) {
 					convertible = true;
+					break;
+				}
 			}
 		}
 		if (!convertible) {
@@ -2047,17 +2077,23 @@ public class RegistreHelper {
 		// Comprova segons el tipus de firma
 		boolean generarVersioImprimible = false;
 		if ((annex.getFitxerNom().toLowerCase().endsWith(".pdf") 
-				|| "application/pdf".equals(annex.getFitxerTipusMime()))
-				&&  annex.getFirmes() != null 
-				&& !annex.getFirmes().isEmpty()) {
-			for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-				if (firma.getTipus() != null ) {
-					if (	   DocumentNtiTipoFirmaEnumDto.TF06.toString().equals(firma.getTipus())
-							|| DocumentNtiTipoFirmaEnumDto.TF05.toString().equals(firma.getTipus())
-							|| DocumentNtiTipoFirmaEnumDto.TF04.toString().equals(firma.getTipus()))
-					generarVersioImprimible = true;
-					break;
+				|| "application/pdf".equals(annex.getFitxerTipusMime()))) {
+			
+			if (annex.getFirmes() != null 
+					&& !annex.getFirmes().isEmpty()) {
+				// Comprova les fimres
+				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
+					if (firma.getTipus() != null ) {
+						if (	   DocumentNtiTipoFirmaEnumDto.TF06.toString().equals(firma.getTipus())
+								|| DocumentNtiTipoFirmaEnumDto.TF05.toString().equals(firma.getTipus())
+								|| DocumentNtiTipoFirmaEnumDto.TF04.toString().equals(firma.getTipus()))
+						generarVersioImprimible = true;
+						break;
+					}
 				}
+			} else {
+				// Comprova l'estat definitiu
+				generarVersioImprimible = AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat());
 			}
 		}
 		return generarVersioImprimible;
@@ -2164,9 +2200,16 @@ public class RegistreHelper {
 									
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
-			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex);
+			List<DistribucioRegistreFirma> firmes = new ArrayList<>();
+			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex, firmes);
 			if (validacioFirma == ValidacioFirmaEnum.ERROR_VALIDANT) {
 				logger.warn("No s'han pogut validar les firmes per l'annex \"" +  annex.getTitol() + "\" (" + annex.getFitxerNom() + ") de l'anotació " + registre.getIdentificador() );
+			} else {
+				// Si no té firmes i es reconeixen firmes vàlides llavors les afegeix per guardar l'annexo com a definitiu
+				if (distribucioAnnex.getFirmes().isEmpty() 
+						&& ValidacioFirmaEnum.FIRMA_VALIDA == validacioFirma) {
+					distribucioAnnex.getFirmes().addAll(firmes);
+				}
 			}
 			distribucioAnnex.setPocesIntents(registre.getProcesIntents());
 			
