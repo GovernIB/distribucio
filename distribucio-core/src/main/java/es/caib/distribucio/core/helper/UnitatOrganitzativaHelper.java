@@ -12,7 +12,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,10 +146,7 @@ public class UnitatOrganitzativaHelper {
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
-		logger.debug("Consulta d'unitats vigents a DB");
-		for(UnitatOrganitzativaEntity uv: vigentUnitats){
-			logger.debug(ToStringBuilder.reflectionToString(uv));
-		}
+
 		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
 		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
 		// If since last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
@@ -365,8 +361,12 @@ public class UnitatOrganitzativaHelper {
 		if (unidadWS.getHistoricosUO()!=null && !unidadWS.getHistoricosUO().isEmpty()) {
 			for (String historicoCodi : unidadWS.getHistoricosUO()) {
 				UnitatOrganitzativaEntity nova = unitatOrganitzativaRepository.findByCodi(historicoCodi);
-				unitat.addNova(nova);
-				nova.addAntiga(unitat);
+				if (!unitat.getNoves().contains(nova)) {
+					unitat.addNova(nova);
+				}
+				if (!nova.getAntigues().contains(unitat)) {
+					nova.addAntiga(unitat);
+				}
 			}
 		}
 	}
