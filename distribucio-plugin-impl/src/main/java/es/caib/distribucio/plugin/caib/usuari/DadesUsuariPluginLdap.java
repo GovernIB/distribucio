@@ -126,6 +126,7 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 						result.getAttributes(),
 						atributs[5]);
 				boolean excloure = false;
+				String useraccountcontrol = "";
 				if (getLdapExcloureGrup() != null) {
 					excloure = grup.equals(getLdapExcloureGrup());
 					if (excloure && getLdapExcloureMembre() != null) {
@@ -148,17 +149,20 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 					String nif = obtenirAtributComString(
 							result.getAttributes(),
 							atributs[4]);
-					String useraccountcontrol = obtenirAtributComString(
-							result.getAttributes(),
-							atributs[6]);
-
+					if (atributs.length > 6) {
+	 					useraccountcontrol = obtenirAtributComString(
+								result.getAttributes(),
+								atributs[6]);
+					}
 					DadesUsuari dadesUsuari = new DadesUsuari();
 					dadesUsuari.setCodi(codi);
 					dadesUsuari.setNom(nom);
 					dadesUsuari.setLlinatges(llinatges);
 					dadesUsuari.setEmail(email);
 					dadesUsuari.setNif(nif);
-					dadesUsuari.setActiu(atributs[6] == null || isUserEnabled(useraccountcontrol, nom));
+					if (atributs.length > 6) {
+						dadesUsuari.setActiu(isUserEnabled(useraccountcontrol, nom));
+					}
 					usuaris.add(dadesUsuari);
 					
 				}
