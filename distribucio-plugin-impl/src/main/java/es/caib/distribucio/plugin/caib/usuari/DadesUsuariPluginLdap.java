@@ -148,19 +148,40 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 					String nif = obtenirAtributComString(
 							result.getAttributes(),
 							atributs[4]);
+					String useraccountcontrol = obtenirAtributComString(
+							result.getAttributes(),
+							atributs[6]);
+
 					DadesUsuari dadesUsuari = new DadesUsuari();
 					dadesUsuari.setCodi(codi);
 					dadesUsuari.setNom(nom);
 					dadesUsuari.setLlinatges(llinatges);
 					dadesUsuari.setEmail(email);
 					dadesUsuari.setNif(nif);
+					dadesUsuari.setActiu(atributs[6] == null || isUserEnabled(useraccountcontrol, nom));
 					usuaris.add(dadesUsuari);
+					
 				}
 			}
 		} finally {
 			ctx.close();
 		}
 		return usuaris;
+	}
+	
+	private boolean isUserEnabled(String useraccountcontrol, String nom) {
+		List<String> valoresInactividad = new ArrayList<String>();
+		valoresInactividad.add("2"); // ACCOUNTDISABLE
+		valoresInactividad.add("546"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("514"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("66050"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("66082"); // Disabled, Don’t Expire Password
+		
+		if (valoresInactividad.contains(useraccountcontrol)) {
+			LOGGER.error("El usuario " + nom + " está inactivo en la LDAP!");
+			return false;
+		} 
+		return true;
 	}
 
 	private String obtenirAtributComString(

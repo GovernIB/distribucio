@@ -612,7 +612,8 @@ public class ContingutHelper {
 						usuariUserPermisDto.setHasUsuariPermission(true);
 					} else { // if doesnt exists
 						DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
-						if (dadesUsuari != null) {
+						boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && dadesUsuari.isActiu();
+						if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
 							usuariUserPermisDto = new UsuariPermisDto();
 							usuariUserPermisDto.setCodi(permis.getPrincipalNom());
 							usuariUserPermisDto.setNom(dadesUsuari.getNom());
@@ -627,15 +628,18 @@ public class ContingutHelper {
 					List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(permis.getPrincipalNom());
 					if (usuarisGrup != null) {
 						for (DadesUsuari usuariGrup : usuarisGrup) {
-							UsuariPermisDto usuariRolPermisDto = usuaris.get(usuariGrup.getCodi());
-							if (usuariRolPermisDto != null) { // if already exists
-								usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
-							} else { // if doesnt exists
-								usuariRolPermisDto = new UsuariPermisDto();
-								usuariRolPermisDto.setCodi(usuariGrup.getCodi());
-								usuariRolPermisDto.setNom(usuariGrup.getNom());
-								usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
-								usuaris.put(usuariGrup.getNom(), usuariRolPermisDto);
+							boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && usuariGrup.isActiu();
+							if (isMostrarUsuarisInactiusEnabled() || isUsuariActiu) {
+								UsuariPermisDto usuariRolPermisDto = usuaris.get(usuariGrup.getCodi());
+								if (usuariRolPermisDto != null) { // if already exists
+									usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+								} else { // if doesnt exists
+									usuariRolPermisDto = new UsuariPermisDto();
+									usuariRolPermisDto.setCodi(usuariGrup.getCodi());
+									usuariRolPermisDto.setNom(usuariGrup.getNom());
+									usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
+									usuaris.put(usuariGrup.getNom(), usuariRolPermisDto);
+								}
 							}
 						}
 					}
@@ -646,7 +650,9 @@ public class ContingutHelper {
 		return usuaris;
 	}
 	
-	
+	public boolean isMostrarUsuarisInactiusEnabled() {
+		return Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.mostrar.usuaris.inactius.ldap"));
+	}
 	
 
 	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(

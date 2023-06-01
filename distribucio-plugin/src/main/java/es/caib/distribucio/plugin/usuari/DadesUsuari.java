@@ -18,7 +18,8 @@ public class DadesUsuari implements Serializable {
 	private String llinatges;
 	private String nif;
 	private String email;
-
+	private boolean actiu = true;
+	
 	public String getCodi() {
 		return codi;
 	}
@@ -64,6 +65,12 @@ public class DadesUsuari implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public boolean isActiu() {
+		return actiu;
+	}
+	public void setActiu(boolean actiu) {
+		this.actiu = actiu;
 	}
 
 
