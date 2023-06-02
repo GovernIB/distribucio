@@ -1,4 +1,4 @@
-package es.caib.distribucio.rest.client.domini;
+package es.caib.distribucio.rest.client.integracio.domini;
 
 /**
  * Enumeració amb els estats dels documents a l'Arxiu.

@@ -1,4 +1,4 @@
-package es.caib.distribucio.rest.client.domini;
+package es.caib.distribucio.rest.client.integracio.domini;
 
 /**
  * Enumeració amb els possibles valors del firma del document.

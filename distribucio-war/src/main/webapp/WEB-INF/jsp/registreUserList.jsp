@@ -181,7 +181,8 @@ button#filtrar {
 <script>
 $.views.helpers({
 	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
-	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat
+	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat,
+	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions}
 });
 
 function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
@@ -377,6 +378,35 @@ $(document).ready(function() {
 		);
 		return false;
 	});
+	
+	if (${isPermesAssignarAnotacions}) {
+		var baseUrl = "<c:url value='/registreUser/assignar/usuaris'/>";
+		$.get(baseUrl)
+			.done(function(data) {
+				$('#usuariAssignatCodi').select2('val', '', true);
+				$('#usuariAssignatCodi option[value!=""]').remove();
+				for (var i = 0; i < data.length; i++) {
+					if ('${registreFiltreCommand.usuariAssignatCodi}' == data[i].codi)
+						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '" selected>' + data[i].nom + '</option>');
+					else
+						$('#usuariAssignatCodi').append('<option value="' + data[i].codi + '">' + data[i].nom + '</option>');
+				}
+			})
+			.fail(function() {
+				alert("<spring:message code="error.jquery.ajax"/>");
+			});
+	}
+	
+	$(document).on('hidden.bs.modal', function (event) {
+		var data = sessionStorage.getItem('selectedElements');
+		if (data != null) {
+			// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
+			$(".seleccioCount").html(data);
+			$('#taulaDades').webutilDatatable('refresh');
+			
+			sessionStorage.removeItem('selectedElements');
+		}
+	});
 });
 
 function bloquejar(anotacioId) {
@@ -505,8 +535,21 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					placeholderKey="registre.admin.list.filtre.procediment"
 					suggestValue="codiSia"
 					suggestText="codiNom" />
-			</div>		
-			<div class="col-md-3"></div>
+			</div>
+			<c:if test="${isPermesAssignarAnotacions}">
+				<div class="col-md-3">
+					<dis:inputSelect 
+						name="usuariAssignatCodi" 
+						optionItems="${replacedByJquery}" 
+						optionValueAttribute="codi" 
+						optionTextAttribute="nom" 
+						emptyOption="true" 
+						placeholderKey="bustia.list.filtre.usuari.assignat" 
+						inline="true"
+						optionMinimumResultsForSearch="0" />
+				</div>
+			</c:if>
+			<div class="${isPermesAssignarAnotacions ? 'col-md-1' : 'col-md-3'}"></div>
 			<div class="col-md-2 d-flex">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
@@ -790,8 +833,14 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 									<li role="separator" class="divider"></li>
 									{{if !agafat}}
 										<li id="anotacio_{{:id}}"><a onClick="bloquejar({{:id}})"><span class="fa fa-lock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.bloquejar"/></a></li>
+										{{if ~hlpIsPermesAssignarAnotacions}}
+											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.assignar"/> ...</a></li>
+										{{/if}}
 									{{else}}
-											<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
+										<li id="anotacio_{{:id}}"><a onClick="alliberar({{:id}}, {{:agafat}}, '{{:agafatPer.codi}}')"><span class="fa fa-unlock"></span>&nbsp;&nbsp;<spring:message code="comu.boto.alliberar"/></a></li>	
+										{{if ~hlpIsPermesAssignarAnotacions}}
+											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
+										{{/if}}
 										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
 											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}

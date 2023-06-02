@@ -1,6 +1,6 @@
 package es.caib.distribucio.backoffice.utils.arxiu;
 
-import es.caib.distribucio.rest.client.domini.Annex;
+import es.caib.distribucio.rest.client.integracio.domini.Annex;
 
 /** Classe que conté el resultat de l'operació de moure un annex de l'Arxiu amb el mètode
  * crearExpedientAmbAnotacioRegistre de la funció d'utilitats {@link BackofficeArxiuUtils}.

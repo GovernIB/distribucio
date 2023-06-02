@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.rest.client.domini;
+package es.caib.distribucio.rest.client.integracio.domini;
 
 import lombok.Getter;
 import lombok.Setter;

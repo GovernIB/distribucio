@@ -10,48 +10,55 @@ import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId;
 import es.caib.distribucio.rest.client.integracio.domini.Estat;
 
+/** Client de l'API REST del servei per a la integració de backoffices. Permet consultar 
+ * i canviar l'estat a una anotació.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ *
+ */
 public class BackofficeIntegracioRestClient extends RestClientBase{
 
 	protected String BACKOFFICE_SERVICE_PATH = "/backoffice";
 
-    
-    BackofficeIntegracioRestClient(String baseUrl, String username, String password) {
-        this.baseUrl = baseUrl;
-        this.username = username;
-        this.password = password;
-    }
+	public BackofficeIntegracioRestClient(
+			String baseUrl, 
+			String username, 
+			String password) {
+		super(baseUrl, username, password);
+	}
 
-    public BackofficeIntegracioRestClient(String baseUrl, String username, String password, boolean autenticacioBasic) {
-        this.baseUrl = baseUrl;
-        this.username = username;
-        this.password = password;
-        this.autenticacioBasic = autenticacioBasic;
-    }
+	public BackofficeIntegracioRestClient(
+			String baseUrl, 
+			String username, 
+			String password, 
+			boolean autenticacioBasic) {
+		super(baseUrl, username, password, autenticacioBasic);
+	}
 
-    public BackofficeIntegracioRestClient(String baseUrl, String username, String password, int connecTimeout, int readTimeout) {
-        this.baseUrl = baseUrl;
-        this.username = username;
-        this.password = password;
-        this.connecTimeout = connecTimeout;
-        this.readTimeout = readTimeout;
-    }
+	public BackofficeIntegracioRestClient(
+			String baseUrl, 
+			String username, 
+			String password, 
+			int connecTimeout,
+			int readTimeout) {
+		super(baseUrl, username, password, true, connecTimeout, readTimeout);
+	}
 
-    public BackofficeIntegracioRestClient(String baseUrl, String username, String password, boolean autenticacioBasic, int connecTimeout, int readTimeout) {
-        this.baseUrl = baseUrl;
-        this.username = username;
-        this.password = password;
-        this.autenticacioBasic = autenticacioBasic;
-        this.connecTimeout = connecTimeout;
-        this.readTimeout = readTimeout;
-    }
-
-    
-
-
+	public BackofficeIntegracioRestClient(
+			String baseUrl, 
+			String username, 
+			String password,
+			boolean autenticacioBasic, 
+			int connecTimeout, 
+			int readTimeout) {
+		super(baseUrl, username, password, autenticacioBasic, connecTimeout, readTimeout);
+	}
+	
     // MÈTODES
     // ////////////////////////////////////////////////
 
-    public AnotacioRegistreEntrada consulta(AnotacioRegistreId id) throws Exception {
+
+	public AnotacioRegistreEntrada consulta(AnotacioRegistreId id) throws Exception {
         String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/consulta";
         Client jerseyClient = generarClient(urlAmbMetode);
         String json = jerseyClient.

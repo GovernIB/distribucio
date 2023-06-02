@@ -22,8 +22,8 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  */
 public class BackofficeIntegracioTest {
 	
-	private static final String IDENTIFICADOR = "GOIBE1669628521530/2022"; 
-	private static final String CLAU_ACCESS = "IsCo71eGcWiq14eEP3USG8GD7pt0OYusdLP1DB7EIAM=";
+	private static final String IDENTIFICADOR = "GOIBE2283-SE/2023"; 
+	private static final String CLAU_ACCESS = "p8EXNvIYMUp7fFfnApvr08OAuriUNID4K8xuAEpTHtA=";
 	
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
@@ -58,8 +58,8 @@ public class BackofficeIntegracioTest {
 			
 			getBustiaServicePort().canviEstat(
 					anotacioRegistreId, 
-					Estat.ERROR, 
-					"Error");
+					Estat.REBUDA, 
+					null);
 			
 			
 		} catch (Exception ex) {
@@ -71,9 +71,9 @@ public class BackofficeIntegracioTest {
 	
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"http://10.35.3.232:8080/distribucio/ws/backofficeIntegracio",
-				"danielm",				
-				"danielm");				
+				"https://se.caib.es/distribucio/ws/backofficeIntegracio",
+				"$udit_distribucio",				
+				"udit_distribucio");				
 	}	
 
 }

@@ -21,6 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+/** Client base amb els mètodes compartits.
+ * 
+ * @author Limit Tecnologies
+ *
+ */
 @Getter @Setter @Slf4j
 public class RestClientBase {
 
@@ -37,6 +42,38 @@ public class RestClientBase {
     
     protected Client jerseyClient;
 
+    
+    protected RestClientBase(String baseUrl, String username, String password) {
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.password = password;
+    }
+
+    public RestClientBase(String baseUrl, String username, String password, boolean autenticacioBasic) {
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.password = password;
+        this.autenticacioBasic = autenticacioBasic;
+    }
+
+    public RestClientBase(String baseUrl, String username, String password, int connecTimeout, int readTimeout) {
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.password = password;
+        this.connecTimeout = connecTimeout;
+        this.readTimeout = readTimeout;
+    }
+
+    public RestClientBase(String baseUrl, String username, String password, boolean autenticacioBasic, int connecTimeout, int readTimeout) {
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.password = password;
+        this.autenticacioBasic = autenticacioBasic;
+        this.connecTimeout = connecTimeout;
+        this.readTimeout = readTimeout;
+    }
+
+    
 	protected Client generarClient(String urlAmbMetode) throws Exception {
 		if (this.jerseyClient == null) {
 			this.jerseyClient = generarClient();
@@ -53,7 +90,7 @@ public class RestClientBase {
 	    return this.jerseyClient;
 	}
 
-	protected Client generarClient() {
+	private Client generarClient() {
 	    this.jerseyClient = Client.create();
 	    jerseyClient.setConnectTimeout(connecTimeout);
 	    jerseyClient.setReadTimeout(readTimeout);

@@ -1,11 +1,11 @@
-package es.caib.distribucio.rest.client;
+package es.caib.distribucio.rest.client.integracio;
 
 public class BackofficeIntegracioRestClientFactory {
 
     /**
-     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO.
+     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO per a la integració de backoffices.
      *
-     * @param baseUrl Url de Notib
+     * @param baseUrl Url de Distribucio
      * @param username Usuari de tipus aplicació amb el que es vol interactuar amb Distribucio
      * @param password Contrasenya de l'usuari
      * @return Client per a interactuar amb Distribucio. El client per defecte està configurat amb autenticació tipus BASIC,
@@ -16,9 +16,9 @@ public class BackofficeIntegracioRestClientFactory {
     }
 
     /**
-     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO.
+     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO per a la integració de backoffices.
      *
-     * @param baseUrl Url de Notib
+     * @param baseUrl Url de Distribucio
      * @param username Usuari de tipus aplicació amb el que es vol interactuar amb Distribucio
      * @param password Contrasenya de l'usuari
      * @param autenticacioBasic Indica si utilitzar autenticació basic. En cas negatiu s'utilitzarà autenticació form.
@@ -30,9 +30,9 @@ public class BackofficeIntegracioRestClientFactory {
     }
 
     /**
-     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO.
+     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO per a la integració de backoffices.
      *
-     * @param baseUrl Url de Notib
+     * @param baseUrl Url de Distribucio
      * @param username Usuari de tipus aplicació amb el que es vol interactuar amb Distribucio
      * @param password Contrasenya de l'usuari
      * @param connecTimeout Timeout de connexió en milisegons
@@ -45,9 +45,9 @@ public class BackofficeIntegracioRestClientFactory {
     }
 
     /**
-     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO.
+     * Crea un client per a connectar-se amb la API REST v2 de DISTRIBUCIO per a la integració de backoffices.
      *
-     * @param baseUrl Url de Notib
+     * @param baseUrl Url de Distribucio
      * @param username Usuari de tipus aplicació amb el que es vol interactuar amb Distribucio
      * @param password Contrasenya de l'usuari
      * @param autenticacioBasic Indica si utilitzar autenticació basic. En cas negatiu s'utilitzarà autenticació form.
