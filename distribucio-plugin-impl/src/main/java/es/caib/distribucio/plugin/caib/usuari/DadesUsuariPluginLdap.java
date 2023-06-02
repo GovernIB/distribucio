@@ -126,6 +126,7 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 						result.getAttributes(),
 						atributs[5]);
 				boolean excloure = false;
+				String useraccountcontrol = "";
 				if (getLdapExcloureGrup() != null) {
 					excloure = grup.equals(getLdapExcloureGrup());
 					if (excloure && getLdapExcloureMembre() != null) {
@@ -148,19 +149,43 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 					String nif = obtenirAtributComString(
 							result.getAttributes(),
 							atributs[4]);
+					if (atributs.length > 6) {
+	 					useraccountcontrol = obtenirAtributComString(
+								result.getAttributes(),
+								atributs[6]);
+					}
 					DadesUsuari dadesUsuari = new DadesUsuari();
 					dadesUsuari.setCodi(codi);
 					dadesUsuari.setNom(nom);
 					dadesUsuari.setLlinatges(llinatges);
 					dadesUsuari.setEmail(email);
 					dadesUsuari.setNif(nif);
+					if (atributs.length > 6) {
+						dadesUsuari.setActiu(isUserEnabled(useraccountcontrol, nom));
+					}
 					usuaris.add(dadesUsuari);
+					
 				}
 			}
 		} finally {
 			ctx.close();
 		}
 		return usuaris;
+	}
+	
+	private boolean isUserEnabled(String useraccountcontrol, String nom) {
+		List<String> valoresInactividad = new ArrayList<String>();
+		valoresInactividad.add("2"); // ACCOUNTDISABLE
+		valoresInactividad.add("546"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("514"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("66050"); // Disabled, Don’t Expire Password
+		valoresInactividad.add("66082"); // Disabled, Don’t Expire Password
+		
+		if (valoresInactividad.contains(useraccountcontrol)) {
+			LOGGER.error("El usuario " + nom + " está inactivo en la LDAP!");
+			return false;
+		} 
+		return true;
 	}
 
 	private String obtenirAtributComString(
