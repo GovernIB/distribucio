@@ -149,32 +149,26 @@ public class MonitorSystemController extends BaseController {
 		for(MonitorTascaInfo monitorTasca : monitorTasques) {
 			identificadors.add(monitorTasca.getCodi());
 			
-			tasca.add(getMessage(request, "monitor.tasques.tasca") + ": " + getMessage(request, "monitor.tasques.tasca.codi." + monitorTasca.getCodi()));
+			tasca.add(getMessage(request, "monitor.tasques.tasca.codi." + monitorTasca.getCodi()));
 			
-			estat.add(getMessage(request, "monitor.tasques.estat") + ": " + getMessage(request, "monitor.tasques.estat." + monitorTasca.getEstat()));
+			estat.add(getMessage(request, "monitor.tasques.estat." + monitorTasca.getEstat()));
 			
 			String strDataInici = "-";
 			if (monitorTasca.getDataInici() != null) {
 				strDataInici = sdf.format(monitorTasca.getDataInici());
 			}
-			iniciExecucio.add(getMessage(request, "monitor.tasques.darrer.inici") + ": " + strDataInici);
+			iniciExecucio.add(strDataInici);
 			
-			@SuppressWarnings("unused")
-			String difDataSegons = "-";
-			if (monitorTasca.getDataInici() != null) {
-				long difDatas = System.currentTimeMillis() - monitorTasca.getDataInici().getTime();
-				difDataSegons = ((int) (difDatas / 1000) % 60) + "s";
-			}
-			tempsExecucio.add(getMessage(request, "monitor.tasques.temps.execucio") + ": " + monitorTasca.getTempsExecucio());
+			tempsExecucio.add(monitorTasca.getTempsExecucio());
 
 			String strProperaExecucio = "-";
 			if ( ! MonitorTascaEstatEnum.EN_EXECUCIO.equals(monitorTasca.getEstat()) 
 					&& monitorTasca.getProperaExecucio() != null) {
 				strProperaExecucio = sdf.format(monitorTasca.getProperaExecucio());
 			}
-			properaExecucio.add(getMessage(request, "monitor.tasques.propera.execucio") + ": " + strProperaExecucio);
+			properaExecucio.add(strProperaExecucio);
 			
-			observacions.add(getMessage(request, "monitor.tasques.observacions") + ": " + monitorTasca.getObservacions());
+			observacions.add(monitorTasca.getObservacions());
 		}
 		tasques.put("tasca", tasca);
 		tasques.put("estat", estat);

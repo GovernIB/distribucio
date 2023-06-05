@@ -248,10 +248,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
 					Timer.Context context = timer.time();
 					List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
-					logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom());
+					logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + " per la regla " + regla.getNom());
 					Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 					if (t != null) {
-						logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + ": " + t.getMessage());
+						logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + " per la regla " + 
+									regla.getNom() + ": " + t.getMessage());
 					}
 					context.stop();
 				}

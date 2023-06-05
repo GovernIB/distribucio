@@ -1,9 +1,7 @@
 package es.caib.distribucio.core.api.service;
 
-import java.util.Date;
 import java.util.List;
 
-import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
 import es.caib.distribucio.core.api.monitor.MonitorTascaInfo;
 
 /**
@@ -16,14 +14,6 @@ public interface MonitorTasquesService {
 
 	public MonitorTascaInfo addTasca(String codiTasca);
 
-	public void updateTasca(String codiTasca, 
-							MonitorTascaEstatEnum estat, 
-							Date inici, 
-							Date fi, 
-							Date properaExecucio, 
-							String observacions);
-
-
 	public void updateProperaExecucio(String codi, Long plusValue);
 
 	public List<MonitorTascaInfo> findAll();
@@ -34,7 +24,7 @@ public interface MonitorTasquesService {
 
 	public void fi(String codiTasca);
 
-	public void error(String codiTasca);
+	public void error(String codiTasca, String error);
 
 	/** Mètode per posar totes les tasques en espera abans de reiniciar les tasques des de la 
 	 * configuració dels paràmetres i la configuracío.

@@ -63,8 +63,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.guardarAnotacionsPendentsEnArxiu();
                         	monitorTasquesService.fi(codiGuardarAnotacionsPendents);
-                        } catch(Exception e) {
-                        	monitorTasquesService.error(codiGuardarAnotacionsPendents);
+                        } catch(Throwable th) {
+                        	tractarErrorTascaSegonPla(th, codiGuardarAnotacionsPendents);
                         }
                     }
                 },
@@ -106,8 +106,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.enviarIdsAnotacionsPendentsBackoffice();
                         	monitorTasquesService.fi(codiEnviarBackoffice);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarBackoffice);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiEnviarBackoffice);
                         }
                     }
                 },
@@ -147,8 +147,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.aplicarReglesPendentsBackoffice();
                         	monitorTasquesService.fi(codiAplicarReglesBackoffice);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiAplicarReglesBackoffice);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiAplicarReglesBackoffice);
                         }
                     }
                 },
@@ -188,8 +188,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.tancarContenidorsArxiuPendents();
                         	monitorTasquesService.fi(codiTancarContenidors);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiTancarContenidors);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiTancarContenidors);
                         }
                     }
                 },
@@ -230,8 +230,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.enviarEmailsPendentsNoAgrupats();
                         	monitorTasquesService.fi(codiEnviarEmailsNoAgrupats);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarEmailsNoAgrupats);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiEnviarEmailsNoAgrupats);
                         }
                     }
                 },
@@ -273,8 +273,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.enviarEmailsPendentsAgrupats();
                         	monitorTasquesService.fi(codiEnviarEmailsAgrupats);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEnviarEmailsAgrupats);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiEnviarEmailsAgrupats);
                         }
                     }
                 },
@@ -315,8 +315,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.calcularDadesHistoriques();
                         	monitorTasquesService.fi(codiCalularDadesHistoriques);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiCalularDadesHistoriques);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiCalularDadesHistoriques);
                         }
                     }
                 },
@@ -358,8 +358,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.esborrarDadesAntigesMonitorIntegracio();
                         	monitorTasquesService.fi(codiEsborrarDadesAntigues);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiEsborrarDadesAntigues);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiEsborrarDadesAntigues);
                         }
                     }
                 },
@@ -403,8 +403,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.reintentarProcessamentBackoffice();
                         	monitorTasquesService.fi(codiReintentarProcessament);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiReintentarProcessament);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiReintentarProcessament);
                         }
 					}        			
         		}, 
@@ -445,8 +445,8 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         try{ 
                         	segonPlaService.actualitzarProcediments();
                         	monitorTasquesService.fi(codiActualitzarProcediments);
-                        } catch(Exception e) {                        	
-                        	monitorTasquesService.error(codiActualitzarProcediments);
+                        } catch(Throwable th) {                        	
+                        	tractarErrorTascaSegonPla(th, codiActualitzarProcediments);
                         }
 					}        			
         		}, 
@@ -474,7 +474,14 @@ public class SegonPlaConfig implements SchedulingConfigurer {
         );
         monitorTasquesService.addTasca(codiActualitzarProcediments);
     }
-    
+ 
+    /** Enregistre l'error als logs i marca la tasca amb error. */
+	private void tractarErrorTascaSegonPla(Throwable th, String codiTasca) {
+		String errMsg = th.getClass() + ": " + th.getMessage() + " (" + new Date().getTime() + ")";
+		logger.error("Error no controlat a l'execució de la tasca en segon pla amb codi \"" + codiTasca + "\": " + errMsg, th);
+		monitorTasquesService.error(codiTasca, errMsg);
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(SegonPlaConfig.class);
 
 }
