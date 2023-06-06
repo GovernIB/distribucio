@@ -2,10 +2,12 @@
 <%@ taglib tagdir="/WEB-INF/tags/distribucio" prefix="dis"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <html>
 <head>
 	<title><spring:message code='monitor.titol' /></title>
+	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 	<style type="text/css">	
 		body.loading {
@@ -59,6 +61,7 @@
             	var checkValue = $("#chRefrescarTasques").is(":checked");
             	if (checkValue) {
             		clearInterval(intervalCadaSegon);
+            		$('#span-refresh-tasques').hide();
             	}
 				carregaMonitor();
 			});
@@ -131,13 +134,13 @@
 		       			                        '</thead><tbody id="tbody_monitor">';
 		       			                        
 		       			                        
-		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors);
+		       			            content += getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors, data.observacions);
 		       			            content +=  '</tbody></table>' + 
 				                        '<br><br><hr>' + 
 				                        	'<input class="ml-6" id="chRefrescarTasques" type="checkbox" name="refrescarTasquesCadaSegon">' +
-					                        '<label class="ml-1" for="refrescarTasquesCadaSegon">' + 					                        					                        
+					                        '<label class="ml-1" for="refrescarTasquesCadaSegon">' +
 					                        '<spring:message code="monitor.tasques.check.refresh"/></label>' +   
-					                        '<span id="span-refresh-tasques" class="ml-2 fa fa-refresh" style="visibylity-hidden"></span>' + 
+					                        '<span id="span-refresh-tasques" class="ml-2 fa fa-refresh" style="display:none;"> <span id="span-darrera-actualitzacio" class="text-muted"></span></span>' + 
 		       		                    '</div>'+  
 		    		                    '</div>'+
 		                        
@@ -153,6 +156,7 @@
 		                		refrescarTasquesCadaSegon();
 		                	}else {
 		                		clearInterval(intervalCadaSegon);
+		            			$('#span-refresh-tasques').hide();
 		                	}
 		                	
 		                });
@@ -169,43 +173,51 @@
 		
 		
 		function carregaTasques() {
-			$("#span-refresh-tasques").addClass('fa-circle-o-notch');
 			$("#span-refresh-tasques").addClass('fa-spin');
+			$("#span-darrera-actualitzacio").empty();
 		    $.ajax({
 		        url: "monitor/tasques",
 		        dataType: 'json',
 		        async: false,
 		        success: function(data){
-		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors));
+		            $("#tbody_monitor").empty().html(getTasquesTBody(data.tasca, data.estat, data.iniciExecucio, data.tempsExecucio, data.properaExecucio, data.identificadors, data.observacions));
 		        }
 		    })
 		    .fail(function( jqxhr, textStatus, error ) {
 		         var err = textStatus + ', ' + error;
 		         console.log( "Request Failed: " + err);
+		         $("#span-darrera-actualitzacio").append(' <span class="text-danger">' + error + '</span>');
+		    })
+		    .done(function() {
 		    })
 	        .always(function() {
 	            $("body").removeClass("loading");
-				$("#span-refresh-tasques").removeClass('fa-circle-o-notch');
 				$("#span-refresh-tasques").removeClass('fa-spin');
+		    	$("#span-darrera-actualitzacio").append(formatDate(new Date()));
 	        });
 		}
 		
 		function refrescarTasquesCadaSegon() {
+			$('#span-refresh-tasques').show();
 			intervalCadaSegon = setInterval(function() {
 				carregaTasques();
 			}, 1000);
 		}
 		
 		
-		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio, identificadors) {
+		function getTasquesTBody(tasca, estat, iniciExecucio, tempsExecucio, properaExecucio, identificadors, observacions) {
 			var content = '';
 	            for (var i = 0; i < tasca.length; i++) {
 	               content +=  '<tr class="monitor_fila">' +
-	                            '<td id="tasca-' + identificadors[i] + '">' + tasca[i].replace("<spring:message code='monitor.tasques.tasca'/>: ", "") + '</td>' +
-	                           '<td class="text-center" id="estat-' + identificadors[i] + '">' + estat[i].replace("<spring:message code='monitor.tasques.estat'/>: ", "") + '</td>' +
-	                           '<td class="text-center" id="inici-execucio-' + identificadors[i] + '">' + iniciExecucio[i].replace("<spring:message code='monitor.tasques.darrer.inici'/>: ", "") + '</td>' +
-	                           '<td class="text-right" id ="temps-execucio-' + identificadors[i] + '">' + tempsExecucio[i].replace("<spring:message code='monitor.tasques.temps.execucio'/>: ", "") + '</td>' +
-	                           '<td class="text-center" id="propera-execucio-' + identificadors[i] + '">' + properaExecucio[i].replace("<spring:message code='monitor.tasques.propera.execucio'/>: ", "") + '</td>' +
+	                            '<td id="tasca-' + identificadors[i] + '">' + tasca[i] + '</td>' +
+	                           '<td class="text-center" id="estat-' + identificadors[i] + '">' + estat[i];
+	               if (observacions[i] != null) {
+	            	    content += ' <span class="fa fa-info-circle text-primary" title="' + observacions[i] + '"></span>';
+	               }
+	               content +=  '</td>' +
+	                           '<td class="text-center" id="inici-execucio-' + identificadors[i] + '">' + iniciExecucio[i] + '</td>' +
+	                           '<td class="text-right" id ="temps-execucio-' + identificadors[i] + '">' + tempsExecucio[i] + '</td>' +
+	                           '<td class="text-center" id="propera-execucio-' + identificadors[i] + '">' + properaExecucio[i] + '</td>' +
 	                           '</tr>';
 	           }  
 	     	return content;

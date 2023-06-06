@@ -33,12 +33,6 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void updateTasca(String codiTasca, MonitorTascaEstatEnum estat, Date inici, Date fi, Date properaExecucio,
-			String observacions) {
-		delegate.updateTasca(codiTasca, estat, inici, fi, properaExecucio, observacions);
-	}
-
-	@Override
 	public List<MonitorTascaInfo> findAll() {
 		return delegate.findAll();
 	}
@@ -64,8 +58,8 @@ public class MonitorTasquesServiceBean implements MonitorTasquesService {
 	}
 
 	@Override
-	public void error(String codiTasca) {
-		delegate.error(codiTasca);
+	public void error(String codiTasca, String error) {
+		delegate.error(codiTasca, error);
 	}
 
 	@Override
