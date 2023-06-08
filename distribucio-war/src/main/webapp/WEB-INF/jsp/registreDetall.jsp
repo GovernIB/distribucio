@@ -795,7 +795,7 @@ li[id^="anotacio_"] {
 					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
 						<%-- PROCESSAR --%>
 						<c:choose>
-							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat)}">
+							<c:when test="${registre.procesEstat == 'BUSTIA_PENDENT' || (registre.procesEstat == 'ARXIU_PENDENT' && registre.reintentsEsgotat) || registre.procesEstat == 'BACK_REBUTJADA'}">
 								<li class="<c:if test="${isAccioVisible}">hidden opt_processar_${registre.id}</c:if>"><a id="accioMarcarProcessat" href="#"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 							</c:when>
 							<c:otherwise>
