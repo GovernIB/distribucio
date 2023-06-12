@@ -437,9 +437,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	@Query("from RegistreEntity r " +
 			"where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
 			"	and r.procesIntents <= :maxReintents " +
+			"	and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"	and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
 			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
+			@Param("currentDate") Date currentDate,
 			@Param("maxReintents") int maxReintents);
 	
 	
