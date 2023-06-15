@@ -69,6 +69,7 @@ import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.core.api.dto.DocumentNtiTipoFirmaEnumDto;
+import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.FitxerDto;
 import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
@@ -1317,10 +1318,12 @@ public class RegistreHelper {
 			return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
 		}
 		
-		BackofficeEntity backofficeDesti = pendentsByRegla.get(0).getRegla().getBackofficeDesti();
+		ReglaEntity regla = pendentsByRegla.get(0).getRegla();
+		BackofficeEntity backofficeDesti = regla.getBackofficeDesti();
 		if (backofficeDesti == null) {
-			return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + pendentsByRegla.get(0).getRegla().getNom());
+			return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + regla.getNom());
 		}
+		accioParams.put("Regla", regla.getId() + " - " + regla.getNom());
 		accioParams.put("Backoffice", backofficeDesti.getCodi());
 		List<AnotacioRegistreId> ids = new ArrayList<>();
 		for (RegistreEntity pendent : pendentsByRegla) {
@@ -1345,7 +1348,11 @@ public class RegistreHelper {
 		return comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
 	}
 	
-	// Comprova conexió amb el backoffice
+	/** Mètode per provar la connexió amb un backoffice comunicant una llista buida d'identificadors d'anotacions de registre.
+	 * 
+	 * @param backoffice
+	 * @return
+	 */
 	@Transactional(readOnly = true)
 	public Exception provarConnexioBackoffice(BackofficeEntity backoffice) {
 		List<AnotacioRegistreId> ids = new ArrayList<>();
@@ -1431,7 +1438,17 @@ public class RegistreHelper {
 			} else {
 				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice";
 			}
-			afegirAccioErrorBackOffice(accioDescripcio, errorDescripcio, usuari, accioParams, t0, ex);
+			
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					usuari,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+
 			return new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
@@ -1512,20 +1529,7 @@ public class RegistreHelper {
 					new HTTPBasicAuthFilter(username, password));
 		}
 	}
-	
-	private void afegirAccioErrorBackOffice(String accioDescripcio, String errorDescripcio, String usuari, Map<String, String> accioParams, long tInit, Exception ex) {
-		
-		integracioHelper.addAccioError(
-				IntegracioHelper.INTCODI_BACKOFFICE,
-				accioDescripcio,
-				usuari,
-				accioParams,
-				IntegracioAccioTipusEnumDto.ENVIAMENT,
-				System.currentTimeMillis() - tInit,
-				errorDescripcio,
-				ex);
-	}
-		
+			
 	public int getGuardarAnnexosMaxReintentsProperty() {
 		String maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
@@ -1566,57 +1570,47 @@ public class RegistreHelper {
 		return throwable;
 	}
 	
-	
 	@Transactional()
 	public void updateBackEnviarDelayData(
 			List<Long> pendentsIdsGroupedByRegla, 
 			Exception throwable, 
 			Date dataComunicacio) {
 
-		List<RegistreEntity> pendentsByRegla = new ArrayList<>();
-		for (Long id : pendentsIdsGroupedByRegla) {
-			RegistreEntity pendent = registreRepository.findOne(id);
-			pendentsByRegla.add(pendent);
+		String tempsEspera = configHelper.getConfig(
+				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
+		// we convert to minutes to not have to deal with too big numbers out of bounds
+		int minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
+		if (minutesEspera < 1) {
+			minutesEspera = 1;
 		}
 		
-		for (RegistreEntity pend : pendentsByRegla) {
-
+		for (Long id : pendentsIdsGroupedByRegla) {
+			RegistreEntity pend = registreRepository.findOne(id);
 			
 			if (throwable == null) {
 				// remove exception message and increment procesIntents
 				pend.updateProces(null, null);
-				
-				// Si estava pendent de comunicar al backoffice 
-				// 		o estava processada amb error abans de tornar a comunicar-la (pot ser que el backoffic la hagi tornat a posar com a back_error mentre se li comunica la nova anotació)
-				// llavors actualitza l'estat
-				if (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PENDENT) 
-						|| (pend.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_ERROR) 
-								&& dataComunicacio.after(pend.getBackProcesRebutjErrorData()))) {
+
+				// Si no s'ha actualitzat després de la hora de la comunicació actualitza l'estat com a comunicada al backoffice.
+				if (pend.getLastModifiedDate().isBefore(dataComunicacio.getTime())) {
 					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataComunicacio));
 				}
-			} else { // if excepion occured during sending anotacions ids to backoffice
+			} else { 
+				// if excepion occured during sending anotacions ids to backoffice
 				// add exception message and increment procesIntents
 				pend.updateProces(null,
-						throwable);
+						throwable);				
 			}
-
 			// set delay for another send retry
 			int procesIntents = pend.getProcesIntents();
-			String tempsEspera = configHelper.getConfig(
-					"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
-			// we convert to minutes to not have to deal with too big numbers out of bounds
-			int minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
-			if (minutesEspera < 1) {
-				minutesEspera = 1;
-			} // with every proces intent delay between resends will be longer
+			// with every proces intent delay between resends will be longer
 			int delayMinutes = minutesEspera * procesIntents;
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
 			cal.add(Calendar.MINUTE,
 					delayMinutes);
 			pend.updateBackRetryEnviarData(cal.getTime());
-			registreRepository.saveAndFlush(pend);
-			
+			registreRepository.saveAndFlush(pend);			
 		}
 	}
 
@@ -2020,7 +2014,7 @@ public class RegistreHelper {
 	public List<Long> findRegistresBackError(int maxReintents) {
 		List<Long> registresBackError = new ArrayList<>();
 		
-		List<RegistreEntity> llistatRegistresBackError = registreRepository.findRegistresBackError(maxReintents);
+		List<RegistreEntity> llistatRegistresBackError = registreRepository.findRegistresBackError(new Date(), maxReintents);
 		for(RegistreEntity registre : llistatRegistresBackError) {
 			
 			registresBackError.add(registre.getId());
@@ -2419,6 +2413,16 @@ public class RegistreHelper {
 		if (clauSecreta == null)
 			throw new RuntimeException("Clau secreta no specificada al fitxer de propietats");
 		return clauSecreta;
+	}
+
+	public int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
+		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		if (maxReintents != null) {
+			return Integer.parseInt(maxReintents);
+		} else {
+			return 0;
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);

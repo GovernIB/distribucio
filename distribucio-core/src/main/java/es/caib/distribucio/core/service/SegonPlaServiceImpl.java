@@ -230,7 +230,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			entitatDto.setCodi(entitat.getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 
-			int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+			int maxReintents = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
 		
 			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
 			List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(entitat, new Date(), maxReintents);
@@ -486,16 +486,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 	
-	private int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
-		if (maxReintents != null) {
-			return Integer.parseInt(maxReintents);
-		} else {
-			return 0;
-		}
-	}
-
 	private int getAplicarReglesMaxReintentsProperty(EntitatEntity entitat) {
 		
 		/*String maxReintents = configHelper.getConfig("es.caib.distribucio." + entitat.getCodi() + ".tasca.aplicar.regles.max.reintents");
@@ -545,9 +535,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		logger.trace("Execució de tasca programada (" + startTime + "): reintentar enviament d'una anotació al backoffice");
 		
 		String maxReintentsString = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
-		int maxReintents = 0;
+		int maxReintents = 2;
 		if (maxReintentsString != null) {
-			maxReintents = Integer.parseInt(maxReintentsString);
+			try {
+				maxReintents = Integer.parseInt(maxReintentsString);
+			} catch (Exception e) {
+				logger.error("Error llegint la propietat es.caib.distribucio.backoffice.reintentar.processament.max.reintents amb valor \"" + maxReintentsString 
+						+ "\" com a enter per establir el màxim de reintents per reprocessar anotacions, es deixen per defecte "  + maxReintents + " intents." );
+			}
 		}
 		
 		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);

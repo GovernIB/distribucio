@@ -98,8 +98,6 @@ public class ContingutHelper {
 	@Autowired
 	private UsuariHelper usuariHelper;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;	
-	@Autowired
 	private MetricRegistry metricRegistry;
 	@Resource
 	private CacheHelper cacheHelper;
@@ -143,7 +141,6 @@ public class ContingutHelper {
 			boolean filtrarFillsSegonsPermisRead,
 			boolean ambDades,
 			boolean ambPath,
-	//		boolean pathNomesFinsExpedientArrel,
 			boolean ambVersions,
 			boolean ambUnitatOrganitzativa) {
 		final Timer timerTotal = metricRegistry.timer(MetricRegistry.name(ContingutHelper.class, "toContingutDto"));
@@ -235,9 +232,10 @@ public class ContingutHelper {
 				maxReintents = registreHelper.getGuardarAnnexosMaxReintentsProperty();
 			} else if (RegistreProcesEstatEnum.BACK_COMUNICADA.equals(registreDto.getProcesEstat())
 					|| RegistreProcesEstatEnum.BACK_ERROR.equals(registreDto.getProcesEstat())
-					|| RegistreProcesEstatEnum.BACK_PENDENT.equals(registreDto.getProcesEstat())
 					|| RegistreProcesEstatEnum.BACK_REBUDA.equals(registreDto.getProcesEstat())){				
 				maxReintents = registreHelper.getBackofficeMaxReintentsProperty();
+			} else if (RegistreProcesEstatEnum.BACK_PENDENT.equals(registreDto.getProcesEstat())) {
+	            maxReintents = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(contingut.getEntitat());
 			}
 			if (registreEntity.getProcesIntents() >= maxReintents) {
 				registreDto.setReintentsEsgotat(true);
