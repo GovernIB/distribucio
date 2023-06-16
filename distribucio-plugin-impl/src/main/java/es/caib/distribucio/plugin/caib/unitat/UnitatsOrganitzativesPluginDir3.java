@@ -3,40 +3,27 @@
  */
 package es.caib.distribucio.plugin.caib.unitat;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPHandler;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWs;
-import es.caib.dir3caib.ws.api.unidad.Dir3CaibObtenerUnidadesWsService;
-import es.caib.dir3caib.ws.api.unidad.UnidadTF;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
+
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -59,10 +46,11 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) throws MalformedURLException {
 
-		UnidadTF unidad = getObtenerUnidadesService().obtenerUnidad(
-				pareCodi, 
-				fechaActualizacion, 
-				fechaSincronizacion);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+		UnidadRest unidad = getUnitatsOrganitzativesRestClient().obtenerUnidad(
+				pareCodi,
+				fechaActualizacion != null ? dateFormat.format(fechaActualizacion) : null,
+				fechaSincronizacion != null ? dateFormat.format(fechaSincronizacion) : null, false);
 		if (unidad != null) {
 			return toUnitatOrganitzativa(unidad);
 		} else {
@@ -78,23 +66,18 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 			Timestamp fechaSincronizacion) throws SistemaExternException {
 		try {
 			List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
-			List<UnidadTF> arbol = getObtenerUnidadesService().obtenerArbolUnidades(
+			
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+			List<UnidadRest> unidades = getUnitatsOrganitzativesRestClient().obtenerArbolUnidades(
 					pareCodi,
-					fechaActualizacion,
-					fechaSincronizacion);
+					fechaActualizacion != null ? dateFormat.format(fechaActualizacion) : null,
+					fechaSincronizacion != null ? dateFormat.format(fechaSincronizacion) : null, false);
 
-//			System.out.println("TF");
-			for(UnidadTF unidadTF: arbol){
-//				for (Field field : unidadTF.getClass().getDeclaredFields()) {
-//				    field.setAccessible(true);
-//				    String name = field.getName();
-//				    Object value = field.get(unidadTF);
-//				    System.out.print(name+": "+ value+", ");
-//				}
-//				System.out.println();
-
-				unitatOrganitzativa.add(toUnitatOrganitzativa(unidadTF));
-			}
+            if (unidades != null) {
+                for (UnidadRest unidad : unidades) {
+                	unitatOrganitzativa.add(toUnitatOrganitzativa(unidad));
+                }
+            }
 			return unitatOrganitzativa;
 		} catch (Exception ex) {
 			throw new SistemaExternException(
@@ -156,47 +139,11 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 
 
 
-	private Dir3CaibObtenerUnidadesWs getObtenerUnidadesService() throws MalformedURLException {
-		Dir3CaibObtenerUnidadesWs client = null;
-		URL url = new URL(getServiceUrl() + "?wsdl");
-		Dir3CaibObtenerUnidadesWsService service = new Dir3CaibObtenerUnidadesWsService(
-				url,
-				new QName(
-						"http://unidad.ws.dir3caib.caib.es/",
-						"Dir3CaibObtenerUnidadesWsService"));
-		client = service.getDir3CaibObtenerUnidadesWs();
-		BindingProvider bp = (BindingProvider)client;
-		bp.getRequestContext().put(
-				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-				getServiceUrl());
-		String username = getServiceUsername();
-		if (username != null && !username.isEmpty()) {
-			bp.getRequestContext().put(
-					BindingProvider.USERNAME_PROPERTY,
-					username);
-			bp.getRequestContext().put(
-					BindingProvider.PASSWORD_PROPERTY,
-					getServicePassword());
-		}
-		if (isLogMissatgesActiu()) {
-			@SuppressWarnings("rawtypes")
-			List<Handler> handlerChain = new ArrayList<Handler>();
-			handlerChain.add(new LogMessageHandler());
-			bp.getBinding().setHandlerChain(handlerChain);
-		}
-		Integer connectTimeout = getServiceTimeout();
-		if (connectTimeout != null) {
-			bp.getRequestContext().put(
-					"org.jboss.ws.timeout",
-					connectTimeout);
-		}
-		return client;
-	}
 
-	private UnitatOrganitzativa toUnitatOrganitzativa(UnidadTF unidad) {
+	private UnitatOrganitzativa toUnitatOrganitzativa(UnidadRest unidad) {
 		UnitatOrganitzativa unitat = new UnitatOrganitzativa(
 				unidad.getCodigo(),
-				unidad.getDenominacion(),
+				unidad.getDenominacionCooficial() != null ? unidad.getDenominacionCooficial() : unidad.getDenominacion(),
 				unidad.getCodigo(), // CifNif
 				unidad.getFechaAltaOficial(),
 				unidad.getCodigoEstadoEntidad(),
@@ -213,46 +160,16 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 				unidad.getHistoricosUO());
 		return unitat;
 	}
-
-	private class LogMessageHandler implements SOAPHandler<SOAPMessageContext> {
-		public boolean handleMessage(SOAPMessageContext messageContext) {
-			log(messageContext);
-			return true;
-		}
-		public Set<QName> getHeaders() {
-			return Collections.emptySet();
-		}
-		public boolean handleFault(SOAPMessageContext messageContext) {
-			log(messageContext);
-			return true;
-		}
-		public void close(MessageContext context) {
-		}
-		private void log(SOAPMessageContext messageContext) {
-			SOAPMessage msg = messageContext.getMessage();
-			try {
-				Boolean outboundProperty = (Boolean)messageContext.get(
-						MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-				if (outboundProperty)
-					System.out.print("Missatge SOAP petició: ");
-				else
-					System.out.print("Missatge SOAP resposta: ");
-				msg.writeTo(System.out);
-				System.out.println();
-			} catch (SOAPException ex) {
-				Logger.getLogger(LogMessageHandler.class.getName()).log(
-						Level.SEVERE,
-						null,
-						ex);
-			} catch (IOException ex) {
-				Logger.getLogger(LogMessageHandler.class.getName()).log(
-						Level.SEVERE,
-						null,
-						ex);
-			}
-		}
-	}
 	
+	private UnitatsOrganitzativesRestClient getUnitatsOrganitzativesRestClient() {
+		UnitatsOrganitzativesRestClient unitatsOrganitzativesRestClient = new UnitatsOrganitzativesRestClient(
+				getServiceUrl(),
+				getServiceUsername(),
+				getServicePassword());
+
+		return unitatsOrganitzativesRestClient;
+	}
+
 	public String getServiceUrl() {
 		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url");

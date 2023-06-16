@@ -31,6 +31,7 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.UnitatOrganitzativaFiltreCommand;
+import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.war.helper.RequestSessionHelper;
@@ -93,47 +94,13 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = unitatOrganitzativaService
 						.getObsoletesFromWS(entitatActual.getId());
 	
-	
-				// differentiate between split and (subst or merge)
-				for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
-					if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
-						for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
-							splitMap.put(vigentObsolete, hist);
-						}
-					} else if (vigentObsolete.getLastHistoricosUnitats().size() == 1) {
-						// check if the map already contains key with this codi
-						UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
-						UnitatOrganitzativaDto keyWithTheSameCodi = null;
-						Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
-						for (UnitatOrganitzativaDto mergeOrSubstKeyMap : keysMergeOrSubst) {
-							if (mergeOrSubstKeyMap.getCodi().equals(mergeOrSubstKeyWS.getCodi())) {
-								keyWithTheSameCodi = mergeOrSubstKeyMap;
-							}
-						}
-						// if it contains already key with the same codi, assign
-						// found key
-						if (keyWithTheSameCodi != null) {
-							mergeOrSubstMap.put(keyWithTheSameCodi, vigentObsolete);
-						} else {
-							mergeOrSubstMap.put(mergeOrSubstKeyWS, vigentObsolete);
-						}
-					}
-				}
-	
+				// 1, differentiate between split and (subst or merge)
+				// 2, check if the map already contains key with this codi
+				// 3, if it contains already key with the same codi, assign found key
+				diferentiateBetweenSplitAndSubstOrMerge(splitMap, mergeOrSubstMap, unitatsVigentObsoleteDto);	
 	
 				// differantiate between substitution and merge
-				Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
-				for (UnitatOrganitzativaDto mergeOrSubstKey : keysMergeOrSubst) {
-					List<UnitatOrganitzativaDto> values = (List<UnitatOrganitzativaDto>) mergeOrSubstMap
-							.get(mergeOrSubstKey);
-					if (values.size() > 1) {
-						for (UnitatOrganitzativaDto value : values) {
-							mergeMap.put(mergeOrSubstKey, value);
-						}
-					} else {
-						substMap.put(mergeOrSubstKey, values.get(0));
-					}
-				}
+				diffSubsAndMerge(mergeOrSubstMap, mergeMap, substMap);
 	
 				// Getting list of unitats that are now vigent in db and in syncronization are also vigent but with properties changed
 				unitatsVigents = unitatOrganitzativaService
@@ -154,26 +121,6 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 						exception.getMessage());
 	
 			}
-
-			// Set<UnitatOrganitzativaDto> keysSplit = splitMap.keySet();
-			// System.out.println("SPLITS: ");
-			// for (UnitatOrganitzativaDto splitKey : keysSplit) {
-			// System.out.println(splitMap.get(splitKey));
-			// }
-			//
-			// Set<UnitatOrganitzativaDto> mergeKeys = mergeMap.keySet();
-			// System.out.println("MERGES: ");
-			// for (UnitatOrganitzativaDto mergeKey : mergeKeys) {
-			// System.out.println(mergeKey.getCodi() + " "+mergeKey+": "+
-			// mergeOrSubstMap.get(mergeKey));
-			// }
-			//
-			// Set<UnitatOrganitzativaDto> substKeys = substMap.keySet();
-			// System.out.println("SUBSTUTIONS: ");
-			// for (UnitatOrganitzativaDto substKey : substKeys) {
-			// System.out.println(substKey.getCodi() + " "+substKey+": "+
-			// mergeOrSubstMap.get(substKey));
-			// }
 		}
 		
 
@@ -305,7 +252,51 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		return unitatOrganitzativaFiltreCommand;
 	}
 	
-
+	private void diferentiateBetweenSplitAndSubstOrMerge(MultiMap splitMap, MultiMap mergeOrSubstMap,
+			List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto) {
+		// differentiate between split and (subst or merge)
+		for (UnitatOrganitzativaDto vigentObsolete : unitatsVigentObsoleteDto) {
+			if (vigentObsolete.getLastHistoricosUnitats().size() > 1) {
+				for (UnitatOrganitzativaDto hist : vigentObsolete.getLastHistoricosUnitats()) {
+					splitMap.put(vigentObsolete, hist);
+				}
+			} else if (vigentObsolete.getLastHistoricosUnitats().size() == 1) {
+				// check if the map already contains key with this codi
+				UnitatOrganitzativaDto mergeOrSubstKeyWS = vigentObsolete.getLastHistoricosUnitats().get(0);
+				UnitatOrganitzativaDto keyWithTheSameCodi = null;
+				Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+				for (UnitatOrganitzativaDto mergeOrSubstKeyMap : keysMergeOrSubst) {
+					if (mergeOrSubstKeyMap.getCodi().equals(mergeOrSubstKeyWS.getCodi())) {
+						keyWithTheSameCodi = mergeOrSubstKeyMap;
+					}
+				}
+				// if it contains already key with the same codi, assign
+				// found key
+				if (keyWithTheSameCodi != null) {
+					mergeOrSubstMap.put(keyWithTheSameCodi, vigentObsolete);
+				} else {
+					mergeOrSubstMap.put(mergeOrSubstKeyWS, vigentObsolete);
+				}
+			}
+		}
+	}
+	
+	
+	private void diffSubsAndMerge(MultiMap mergeOrSubstMap, MultiMap mergeMap, MultiMap substMap) {
+		Set<UnitatOrganitzativaDto> keysMergeOrSubst = mergeOrSubstMap.keySet();
+		ConversioTipusHelper conver = new ConversioTipusHelper();
+		for (UnitatOrganitzativaDto mergeOrSubstKey : keysMergeOrSubst) {
+			List<UnitatOrganitzativaDto> values = (List<UnitatOrganitzativaDto>) mergeOrSubstMap.get(mergeOrSubstKey);
+			
+			if (values.size() > 1) {
+				for (UnitatOrganitzativaDto value : values) {
+					mergeMap.put(mergeOrSubstKey, value);
+				}
+			} else {
+				substMap.put(mergeOrSubstKey, values.get(0));
+			}
+		}
+	}
 	private static final Logger logger = LoggerFactory.getLogger(UnitatOrganitzativaController.class);
 
 

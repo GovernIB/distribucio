@@ -355,7 +355,9 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			List<UnitatOrganitzativa> arbol = getUnitatsOrganitzativesPlugin().findAmbPare(
-					pareCodi, fechaActualizacion, fechaSincronizacion);
+					pareCodi, 
+					fechaActualizacion,
+					fechaSincronizacion);
 			// Remove from list unitats that are substituted by itself
 			removeUnitatsSubstitutedByItself(arbol);
 

@@ -283,6 +283,11 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 		this.numVia = numVia;
 	}
 	
+	public void updateDenominacio(
+			String denominacio ) {
+		this.denominacio = denominacio;
+	}
+	
 	public static Builder getBuilder(
 			String codi,
 			String denominacio) {

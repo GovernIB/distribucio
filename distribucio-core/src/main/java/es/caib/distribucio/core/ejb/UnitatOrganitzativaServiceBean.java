@@ -146,33 +146,5 @@ public class UnitatOrganitzativaServiceBean implements UnitatOrganitzativaServic
 	public List<UnitatOrganitzativaDto> findByCodiAndDenominacioFiltre(String filtre) {
 		return delegate.findByCodiAndDenominacioFiltre(filtre);
 	}
-	
-	/*@Autowired
-	UnitatsOrganitzativesService delegate;
 
-	@Override
-	@RolesAllowed("tothom")
-	public UnitatOrganitzativaDto findUnitatOrganitzativaByCodi(String codi) throws NotFoundException {
-		return delegate.findUnitatOrganitzativaByCodi(codi);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public PaginaDto<UnitatOrganitzativaD3Dto> findUnitatsOrganitzativesPerDatatable(UnitatsFiltreDto filtre,
-			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		return delegate.findUnitatsOrganitzativesPerDatatable(filtre, paginacioParams);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<LocalitatDto> findLocalitatsPerProvincia(String codiProvincia) throws NotFoundException {
-		return delegate.findLocalitatsPerProvincia(codiProvincia);
-	}
-
-	@Override
-	@RolesAllowed("tothom")
-	public List<ProvinciaRw3Dto> findProvinciesPerComunitat(String codiComunitat) throws NotFoundException {
-		return delegate.findProvinciesPerComunitat(codiComunitat);
-	}*/
-	
 }

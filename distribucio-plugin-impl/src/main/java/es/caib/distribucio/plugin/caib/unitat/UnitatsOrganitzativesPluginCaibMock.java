@@ -36,13 +36,6 @@ public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPlug
 		return null;
 	}
 	
-//	@Override
-//	public List<UnitatOrganitzativa> obtenerArbolUnidades(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
-//		return null;
-//	}
-//	
-	
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<UnitatOrganitzativa> findAmbPare(
@@ -59,37 +52,6 @@ public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPlug
 					ex);
 		}
 	}
-
-
-
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public List<UnitatOrganitzativaD3> cercaUnitatsD3(
-			String codiUnitat, 
-			String denominacioUnitat,
-			Long codiNivellAdministracio, 
-			Long codiComunitat, 
-			Boolean ambOficines, 
-			Boolean esUnitatArrel,
-			Long codiProvincia, 
-			String codiLocalitat) throws SistemaExternException {
-		try {
-			return (List<UnitatOrganitzativaD3>)deserialize(
-					"/es/caib/distribucio/plugin/unitat/ArbreUnitatsCaib.ser");
-		} catch (Exception ex) {
-			throw new SistemaExternException(
-					"No s'han pogut consultar les unitats organitzatives via REST (" +
-					"codiUnitat=" + codiUnitat + ", " +
-					"denominacioUnitat=" + denominacioUnitat + ", " +
-					"codiNivellAdministracio=" + codiNivellAdministracio + ", " +
-					"codiComunitat=" + codiComunitat + ", " +
-					"ambOficines=" + ambOficines + ", " +
-					"esUnitatArrel=" + esUnitatArrel + ", " +
-					"codiProvincia=" + codiProvincia + ", " +
-					"codiLocalitat=" + codiLocalitat + ")",
-					ex);
-		}
-	}*/
 
 	@Override
 	public List<UnitatOrganitzativa> cercaUnitats(String codiUnitat, String denominacioUnitat,

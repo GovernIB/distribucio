@@ -490,6 +490,9 @@ $(document).ready(function() {
 		data-default-dir="desc"
 		class="table table-striped table-bordered"
 		style="word-break:break-all; width:100%;"
+		data-rowhref-template="#rowhrefTemplate" 
+		data-rowhref-toggle="modal"
+		data-rowhref-maximized="true"
 		>
 		<thead>
 			<tr>

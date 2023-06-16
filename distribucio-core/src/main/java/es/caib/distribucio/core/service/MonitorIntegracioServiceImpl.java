@@ -234,18 +234,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				
 			case "UNITATS":
 				 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-				pluginHelper.unitatsOrganitzativesFindByFiltre(
-						"A04003003",
-						null,
-						null,
-						null,
-						null,
-						null,
-						true
-						);
-				pluginHelper.findAmbPare("548548", timestamp, timestamp);
-				accioDescripcio = "Consulta unitat donat un pare";
+				pluginHelper.findAmbPare("A04003003", timestamp, timestamp);
+				accioDescripcio = "Consulta unitats donat un pare";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
 				break;

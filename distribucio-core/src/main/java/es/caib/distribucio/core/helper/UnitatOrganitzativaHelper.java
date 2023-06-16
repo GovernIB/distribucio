@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,13 +145,47 @@ public class UnitatOrganitzativaHelper {
 				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 
 		// getting all vigent unitats from database
-		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
-				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		List<UnitatOrganitzativaEntity> vigentUnitats = allUnitatsVigentsFromDB(entitat);	
 
 		// list of obsolete unitats from ws that were vigent after last sincro (are vigent in DB and obsolete in WS)
 		// the reason why we don't just return all obsolete unitats from ws is because it is possible to have cumulative changes:
 		// If since last sincro unitat A changed to B and then to C then in our DB will be A(Vigent) but from WS we wil get: A(Extinguished) -> B(Extinguished) -> C(Vigent) 
 		// we only want to return A (we dont want to return B) because prediction must show this transition (A -> C) [between A(that is now vigent in database) and C (that is now vigent in WS)]     
+		List<UnitatOrganitzativa> unitatsVigentObsolete = unitatsVigentsDbObsoleteWs(entitat, unitatsWS, vigentUnitats);	
+		
+		// setting obsolete unitat to point to the last one it transitioned into 
+		// Name of the field historicosUO is totally wrong because this field shows future unitats not historic
+		// but that's how it is named in WS and we cant change it 
+		// lastHistoricosUnitats field should be pointing to the last unitat it transitioned into.
+		// We need to recursively find last one because it is possible there will be cumulative changes:
+		// If since last sincro unitat A changed to B and then to C then from WS we will get unitat 
+		//A pointing to B (A -> B) and unitat B pointing to C (B -> C)  
+		// what we want is to add direct pointer from unitat A to C (A -> C)
+		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {			
+		
+			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
+		}
+		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
+		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = toUnitatOrganitzativaDto(unitatsVigentObsolete);
+		return unitatsVigentObsoleteDto;
+	}
+
+
+
+	private List<UnitatOrganitzativaDto> toUnitatOrganitzativaDto(List<UnitatOrganitzativa> unitatsVigentObsolete) {
+		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
+		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
+			unitatsVigentObsoleteDto.add(conversioTipusHelper.convertir(
+					vigentObsolete, 
+					UnitatOrganitzativaDto.class));
+		}
+		return unitatsVigentObsoleteDto;
+	}
+
+
+
+	private List<UnitatOrganitzativa> unitatsVigentsDbObsoleteWs(EntitatEntity entitat,
+			List<UnitatOrganitzativa> unitatsWS, List<UnitatOrganitzativaEntity> vigentUnitats) {
 		List<UnitatOrganitzativa> unitatsVigentObsolete = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) { 
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
@@ -164,24 +199,18 @@ public class UnitatOrganitzativaHelper {
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
 			logger.debug(vigentObsolete.getCodi()+" "+vigentObsolete.getEstat()+" "+vigentObsolete.getHistoricosUO());
 		}
-		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {
-			
-			// setting obsolete unitat to point to the last one it transitioned into 
-			// Name of the field historicosUO is totally wrong because this field shows future unitats not historic
-			// but that's how it is named in WS and we cant change it 
-			// lastHistoricosUnitats field should be pointing to the last unitat it transitioned into. We need to recursively find last one because it is possible there will be cumulative changes:
-			// If since last sincro unitat A changed to B and then to C then from WS we will get unitat A pointing to B (A -> B) and unitat B pointing to C (B -> C)  
-			// what we want is to add direct pointer from unitat A to C (A -> C)
-			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
+		return unitatsVigentObsolete;
+	}
+
+
+ private List<UnitatOrganitzativaEntity> allUnitatsVigentsFromDB(EntitatEntity entitat) {
+		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
+				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		logger.debug("Consulta d'unitats vigents a DB");
+		for(UnitatOrganitzativaEntity uv: vigentUnitats){
+			logger.debug(ToStringBuilder.reflectionToString(uv));
 		}
-		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
-		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = new ArrayList<>();
-		for(UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete){
-			unitatsVigentObsoleteDto.add(conversioTipusHelper.convertir(
-					vigentObsolete, 
-					UnitatOrganitzativaDto.class));
-		}
-		return unitatsVigentObsoleteDto;
+		return vigentUnitats;
 	}
 
 	/**
@@ -190,15 +219,32 @@ public class UnitatOrganitzativaHelper {
 	 * @return
 	 */
 	public List<UnitatOrganitzativaDto> getVigentsFromWebService(Long entidadId){
-		EntitatEntity entitat = entitatRepository.getOne(entidadId);
+		EntitatEntity entitat = entitatRepository.findOne(entidadId);
+		List<UnitatOrganitzativa> unitatsVigentsWithChangedAttributes = new ArrayList<>();
+
 		// getting list of last changes from webservices
-		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
-				entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
+		List<UnitatOrganitzativa> unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(), null, null);
 		// getting all vigent unitats from database
 		List<UnitatOrganitzativaEntity> vigentUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3AndEstatV(entitat.getCodiDir3());
+		
+		// Consultem les unitats vigents per comprovar si la denominació coofical és diferent a l'actual
+		// i afegim al llistat de sincronitzables les unitats la denominació de les quals 
+		//no coincideixi amb la denominació cooficial que porti el webservice 	
+		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
+			for (UnitatOrganitzativa unitatWS : unitatsWS) {
+				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatWS.getEstat().equals("V")
+						&& !(unitatV.getDenominacio().equals(unitatWS.getDenominacio()))
+						&& !unitatsVigentsWithChangedAttributes.contains(unitatWS)) {
+					unitatsVigentsWithChangedAttributes.add(unitatWS);
+				}
+			}
+		}
+		
+		// getting list of last changes from webservices
+		unitatsWS = pluginHelper.findAmbPare(entitat.getCodiDir3(),
+						entitat.getFechaActualizacion(), entitat.getFechaSincronizacion());
 		// list of vigent unitats from webservice
-		List<UnitatOrganitzativa> unitatsVigentsWithChangedAttributes = new ArrayList<>();
 		for (UnitatOrganitzativaEntity unitatV : vigentUnitats) {
 			for (UnitatOrganitzativa unitatWS : unitatsWS) {
 				if (unitatV.getCodi().equals(unitatWS.getCodi()) && unitatWS.getEstat().equals("V")
@@ -207,7 +253,8 @@ public class UnitatOrganitzativaHelper {
 					unitatsVigentsWithChangedAttributes.add(unitatWS);
 				}
 			}
-		}
+		}	
+		
 		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentsWithChangedAttributesDto = new ArrayList<>();
 		for(UnitatOrganitzativa vigent : unitatsVigentsWithChangedAttributes){
@@ -352,6 +399,14 @@ public class UnitatOrganitzativaHelper {
 				}
 			}
 		}
+		
+		
+		// Repassa les unitats vigents per actualitzar el nom en cas que sigui diferent
+		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), null, null);
+		// Takes all the unitats from WS and saves them to database. If unitat did't exist in db it creates new one if it already existed it overrides existing one.  
+		for (UnitatOrganitzativa unidadWS : unitats) {
+			comprovarDenominacio(unidadWS);
+		}	
 	}
 
 	public void sincronizarHistoricosUnitat(
@@ -371,6 +426,26 @@ public class UnitatOrganitzativaHelper {
 		}
 	}
 
+	/** Mètode per consultar l'anotació de BBDD i actualitzar la denominació en cas que sigui diferent a la de la unitat consultada vigent.
+	 * 
+	 * @param unitatWS
+	 */
+	public void comprovarDenominacio( UnitatOrganitzativa unitatWS) {
+
+		UnitatOrganitzativaEntity unitat = null;
+		if (unitatWS != null) {
+			// checks if unitat already exists in database
+			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
+			if (unitat != null) {
+				if (unitat.getCodi().equals(unitatWS.getCodi()) && unitatWS.getEstat().equals("V")
+						&& !(unitat.getDenominacio().equals(unitatWS.getDenominacio()))) {
+					unitat.updateDenominacio(unitatWS.getDenominacio());
+				}
+			}
+		}
+	}
+
+	
 	/**
 	 * Creating new unitat (if it doesn't exist in db) or overriding existing one (if it exists in db)
 	 * 
@@ -421,9 +496,6 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNumVia());
 				unitat.setCodiDir3Entitat(codiEntitat);
 			}
-			// Guardamos el Unitat
-			//unitat = unitatOrganitzativaRepository.save(unitat);
-			//unitatOrganitzativaRepository.flush();
 		}
 		return unitat;
 	}
