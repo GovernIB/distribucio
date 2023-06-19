@@ -2679,8 +2679,14 @@ public class RegistreServiceImpl implements RegistreService {
 			// Modificar 
 			if (annex.getFitxerArxiuUuid() != null) {
 				pluginHelper.arxiuDocumentSetDefinitiu(annex);
+				annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+				registreAnnexRepository.saveAndFlush(annex);
+				registreHelper.comptarAnnexosEstatEsborrany(registreId);
+
 			}
-		}
+		}				
+	
+			
 		return validacioFirma;
 	}
 	
