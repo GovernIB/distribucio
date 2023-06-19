@@ -8,7 +8,7 @@
 		<version>0.9</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
-	<version>0.9.47</version>
+	<version>0.9.48</version>
 	<dependencies>
 
 		<dependency>

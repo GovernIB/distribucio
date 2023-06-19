@@ -203,20 +203,72 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 
 		// Processa els annexos
 		ArxiuResultatAnnex resultatAnnex;
+		int errorsMoventAnnexos = 0;
 		for (Annex annex : anotacioRegistreEntrada.getAnnexos()) {
+			
 			resultatAnnex = new ArxiuResultatAnnex();
 			resultatAnnex.setAnnex(annex);
 			resultatAnnex.setErrorCodi(DistribucioArxiuError.NO_ERROR);
 			
+			// Valida que l'annex tingui uuid
+			if (annex.getUuid() == null) {
+				// Informa de l'error a nivell d'annex
+				resultatAnnex.setAccio(AnnexAccio.ERROR);
+				resultatAnnex.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
+				String errMsg = "L'annex de l'anotació té uuid null i no es pot moure: " + annex.getNom();
+				resultatAnnex.setErrorMessage(errMsg);
+				logger.error(errMsg);
+				// Afegeix el resultat a la llista de resultat d'annexos
+				arxiuResultat.addResultatAnnex(annex, resultatAnnex);
+				errorsMoventAnnexos ++;
+				continue;
+			}
+			
+			long t0 = System.currentTimeMillis();
+			Map<String, String> parametres = new HashMap<String, String>();
+			parametres.put("expedient.identificador", expedientDetalls.getIdentificador());
+			parametres.put("expedient.nom", expedientDetalls.getNom());
+			parametres.put("annex.uuid", annex.getUuid());
+			parametres.put("annex.nom", annex.getNom());
+
 			boolean documentExistsInArxiu = false;
 			if (fillsArxiu != null) {
-				String nom = revisarContingutNom(annex.getNom());
+				
+				String nom = null;
+				// Consulta el nom real a l'Arxiu per veure si existeix a la carpeta destí
+				try {
+					es.caib.plugins.arxiu.api.Document arxiuDocument = getArxiuPlugin().documentDetalls(
+							annex.getUuid(),
+							null,
+							false);
+					nom = arxiuDocument.getNom();
+					event("documentConsultar", parametres, true, null, null, System.currentTimeMillis() - t0);
+				} catch(Exception e) {
+					
+					// Informa de l'error a nivell d'annex
+					resultatAnnex.setAccio(AnnexAccio.ERROR);
+					resultatAnnex.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
+					String errMsg = "Error consultant els detalls de l'annex \"" + annex.getNom() + "\" amb uuid " + annex.getUuid() + " a l'arxiu: " + e.getMessage();
+					resultatAnnex.setErrorMessage(errMsg);
+					resultatAnnex.setException(e);
+					logger.error(errMsg, e);
+					event("documentConsultar", parametres, false, e.getMessage(), e, System.currentTimeMillis() - t0);
+					// Afegeix el resultat a la llista de resultat d'annexos
+					arxiuResultat.addResultatAnnex(annex, resultatAnnex);
+					errorsMoventAnnexos ++;
+					continue;
+				}
+
+				// Comprova si la existeix al destí per nom o per uuid que s'hagi mogut
 				for (ContingutArxiu fillArxiu : fillsArxiu) {
-					if (fillArxiu.getTipus() == ContingutTipus.DOCUMENT && fillArxiu.getNom().equals(nom)) {
+					if (fillArxiu.getTipus() == ContingutTipus.DOCUMENT 
+							&& (fillArxiu.getNom().equals(nom)
+							|| fillArxiu.getIdentificador().equals(annex.getUuid()))) {
 						documentExistsInArxiu = true;
-						logger.debug("Document amb nom: " + annex.getTitol() + " ja existeix al arxiu");
+						logger.debug("Document amb nom: " + annex.getTitol() + " i arxiu " + nom + " ja existeix al destí amb l'identificador " + fillArxiu.getIdentificador());
 						resultatAnnex.setAccio(AnnexAccio.EXISTENT);
 						resultatAnnex.setIdentificadorAnnex(fillArxiu.getIdentificador());
+						break;
 					}
 				}
 			}
@@ -224,12 +276,7 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 				
 				ContingutArxiu nouDocumentDispatched;
 				// documentMoure
-				long t0 = System.currentTimeMillis();
-				Map<String, String> parametres = new HashMap<String, String>();
-				parametres.put("expedient.identificador", expedientDetalls.getIdentificador());
-				parametres.put("expedient.nom", expedientDetalls.getNom());
-				parametres.put("annex.uuid", annex.getUuid());
-				parametres.put("annex.nom", annex.getNom());
+				t0 = System.currentTimeMillis();
 				try {
 					nouDocumentDispatched = iArxiuPlugin.documentMoure(
 							annex.getUuid(),
@@ -249,18 +296,21 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 					// Informa de l'error a nivell d'annex
 					resultatAnnex.setAccio(AnnexAccio.ERROR);
 					resultatAnnex.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
-					resultatAnnex.setErrorMessage("Error movent l'annex :" + e.getMessage());
+					String errMsg = "Error movent l'annex \"" + annex.getNom() + "\" amb uuid " + annex.getUuid() + " a l'arxiu: " + e.getMessage();
+					resultatAnnex.setErrorMessage(errMsg);
 					resultatAnnex.setException(e);
-					// Informa de l'error a nivell global.
-					arxiuResultat.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
-					arxiuResultat.setErrorMessage("Hi ha hagut un error movent annexos.");
-					
-					logger.error("Error movent l'annex \"" + annex.getNom() + "\" a l'arxiu: " + e.getMessage(), e);
+					logger.error(errMsg, e);
+					errorsMoventAnnexos ++;
 					event("documentMoure", parametres, false, e.getMessage(), e, System.currentTimeMillis() - t0);
 				}
 			}
 			// Afegeix el resultat a la llista de resultat d'annexos
 			arxiuResultat.addResultatAnnex(annex, resultatAnnex);
+		}
+		if (errorsMoventAnnexos > 0) {
+			// Informa de l'error a nivell global.
+			arxiuResultat.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
+			arxiuResultat.setErrorMessage("Hi ha hagut " + errorsMoventAnnexos + " errors movent " + anotacioRegistreEntrada.getAnnexos() + " annexos.");
 		}
 	}
 	
