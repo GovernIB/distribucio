@@ -16,13 +16,11 @@ import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
-import es.caib.distribucio.core.entity.RegistreEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;
 import es.caib.distribucio.core.helper.EntityComprovarHelper;
 import es.caib.distribucio.core.helper.PaginacioHelper;
 import es.caib.distribucio.core.helper.RegistreHelper;
 import es.caib.distribucio.core.repository.BackofficeRepository;
-import es.caib.distribucio.core.repository.RegistreRepository;
 
 
 @Service
@@ -37,8 +35,6 @@ public class BackofficeServiceImpl implements BackofficeService {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
-	@Autowired
-	private RegistreRepository registreRepository;
 	@Autowired
 	private RegistreHelper registreHelper;
 
@@ -223,17 +219,12 @@ public class BackofficeServiceImpl implements BackofficeService {
 				entitatId,
 				false,
 				false,
-				false);
-
-		List<BackofficeEntity> list = backofficeRepository.findByEntitat(
-				entitat);
+				false);		
 		
-		
-		List<BackofficeDto> listDto = conversioTipusHelper.convertirList(
-				list,
+		return conversioTipusHelper.convertirList(
+				backofficeRepository.findByEntitat(
+						entitat),
 				BackofficeDto.class);
-
-		return listDto;
 	}
 
 	

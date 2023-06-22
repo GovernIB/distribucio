@@ -164,7 +164,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	List<ReglaEntity> findReglaBackofficeByCodiProcediment(
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre);
 	
-	/** Consulta las reglas para el codi procediment dado */
+	/** Consulta les regles donat un codi de procediment. */
 	@Query(	"from " +
 			"    ReglaEntity r " +
 			"where " +

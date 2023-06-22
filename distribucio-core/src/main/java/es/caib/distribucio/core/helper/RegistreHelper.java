@@ -1423,7 +1423,7 @@ public class RegistreHelper {
 						IntegracioHelper.INTCODI_BACKOFFICE,
 						accioDescripcio,
 						usuari,
-						//accioParams,
+						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0
 				);			

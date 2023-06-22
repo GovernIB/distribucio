@@ -120,7 +120,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return contenidorUuid;
@@ -180,7 +180,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return documentUuid;
@@ -218,7 +218,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return dadesUsuari;
@@ -255,7 +255,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return dadesUsuari;
@@ -303,7 +303,7 @@ public class PluginHelper {
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						usuariIntegracio,
-//						accioParams,
+						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
 				return unitat;
@@ -375,7 +375,7 @@ public class PluginHelper {
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						usuariIntegracio,
-//						accioParams,
+						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
 				
@@ -390,7 +390,7 @@ public class PluginHelper {
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
 						usuariIntegracio,
-//						accioParams,
+						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0);
 			}
@@ -451,7 +451,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return unitatsOrganitzatives;
@@ -490,7 +490,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -530,7 +530,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -571,7 +571,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -622,7 +622,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return documentDetalls;
@@ -683,7 +683,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -766,7 +766,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_VALIDASIG,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return resposta;
@@ -838,7 +838,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0);
 			return tipusVies;
@@ -876,7 +876,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
 					usuariIntegracio,
-//					null,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return provincies;
@@ -914,7 +914,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
 					usuariIntegracio,
-//					null,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return municipis;
@@ -949,7 +949,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return exp;
@@ -992,7 +992,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return procediments;
@@ -1029,7 +1029,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return procediment;
@@ -1076,7 +1076,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -1119,7 +1119,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return gestioDocumentalId;
@@ -1160,7 +1160,7 @@ public class PluginHelper {
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,
 					usuariIntegracio,
-//					accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
@@ -1460,7 +1460,7 @@ public class PluginHelper {
 											integracioCodi,
 											descripcio,
 											usuariIntegracio,
-//											parametres,
+											parametres,
 											IntegracioAccioTipusEnumDto.ENVIAMENT,
 											tempsResposta);
 								}

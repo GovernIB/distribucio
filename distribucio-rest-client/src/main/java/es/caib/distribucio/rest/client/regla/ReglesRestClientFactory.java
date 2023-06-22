@@ -1,5 +1,9 @@
 package es.caib.distribucio.rest.client.regla;
 
+/** Classe per obtenir un client amb paràmetres en comptes de directament amb el constructor.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
 public class ReglesRestClientFactory {
 
     /**

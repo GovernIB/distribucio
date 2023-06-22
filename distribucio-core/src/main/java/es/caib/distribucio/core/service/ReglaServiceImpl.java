@@ -211,7 +211,7 @@ public class ReglaServiceImpl implements ReglaService {
 	
 	@Override
 	@Transactional
-	public ReglaDto updatePresencial(Long entitatId, Long reglaId, boolean activa, ReglaPresencialEnumDto presencial)
+	public ReglaDto updateActivaPresencial(Long entitatId, Long reglaId, boolean activa, ReglaPresencialEnumDto presencial)
 			throws NotFoundException {
 			logger.debug("Modificant propietats activa i presencial de la regla ("
 				+ "entitatId=" + entitatId + ", "
@@ -685,10 +685,6 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);
-
-	
-	
-	
 
 
 

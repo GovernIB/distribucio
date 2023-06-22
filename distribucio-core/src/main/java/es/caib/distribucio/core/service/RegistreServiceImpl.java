@@ -2684,9 +2684,7 @@ public class RegistreServiceImpl implements RegistreService {
 				registreHelper.comptarAnnexosEstatEsborrany(registreId);
 
 			}
-		}				
-	
-			
+		}
 		return validacioFirma;
 	}
 	

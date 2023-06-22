@@ -4,7 +4,6 @@
 package es.caib.distribucio.war.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,8 +81,6 @@ public class ReglaController  extends BaseAdminController {
 //				bustiaService.findAmbEntitat(
 //						entitatActual.getId()));
 		List<BackofficeDto> backOfficesList = backofficeService.findByEntitat(entitatActual.getId());
-		
-		Collections.sort(backOfficesList);
 		model.addAttribute(
 				"backoffices",
 				backOfficesList);

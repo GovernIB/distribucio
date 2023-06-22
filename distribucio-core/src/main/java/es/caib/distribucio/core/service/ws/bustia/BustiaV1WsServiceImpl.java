@@ -164,7 +164,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					IntegracioHelper.INTCODI_BUSTIAWS,
 					accioDescripcio,
 					usuariIntegracio,
-					//accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0);
 			

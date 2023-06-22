@@ -183,7 +183,7 @@ public class RegistreUserController extends BaseUserController {
 		if (registreFiltreCommand.getBustia() == null || registreFiltreCommand.getBustia().isEmpty()) {
 			bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), registreFiltreCommand.isMostrarInactives());
 		}
- 		return DatatablesHelper.getDatatableResponse(
+		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findRegistre(
 						entitatActual.getId(),
@@ -1170,7 +1170,7 @@ public class RegistreUserController extends BaseUserController {
 			@Valid ContingutReenviarCommand command,
 			BindingResult bindingResult,
 			Model model) {
- 		return registreReenviarPost(
+		return registreReenviarPost(
 				request, 
 				registreId, 
 				null,

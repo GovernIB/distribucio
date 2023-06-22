@@ -76,7 +76,10 @@ public interface ReglaService {
 
 	
 	/**
-	 * Marca la regla com a activa/inactiva.
+	 * Mètode per actualitzar la informació de la regla i establir si està activa
+	 * o si té el filtre per presencial. Aquest mètode s'usa a l'API REST per part
+	 * dels backoffices de Distribucio per activar o desactivar o poder fixar el valor
+	 * pel filtre segons si l'anotació és presencial.
 	 * 
 	 * @param entitatId
 	 *            Atribut id de l'entitat.
@@ -84,12 +87,14 @@ public interface ReglaService {
 	 *            Atribut id de la regla a modificar.
 	 * @param activa
 	 *            true si es vol activar o false en cas contrari.
+	 * @param presencial
+	 *            Amb valor true o false per si es vol filtrar o null en cas contrari.
 	 * @return La regla modificada.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
-	public ReglaDto updatePresencial(
+	public ReglaDto updateActivaPresencial(
 			Long entitatId,
 			Long reglaId,
 			boolean activa,

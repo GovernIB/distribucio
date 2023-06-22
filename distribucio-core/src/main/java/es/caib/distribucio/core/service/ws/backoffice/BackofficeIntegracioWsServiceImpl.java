@@ -74,7 +74,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
 					usuariIntegracio,
-					//accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
 			);			
@@ -138,7 +138,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,
 					usuariIntegracio,
-					//accioParams,
+					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0
 			);		

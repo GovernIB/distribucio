@@ -46,6 +46,7 @@
 			$("#nouBoto").detach().appendTo('#header')
 		});
 	</script>
+	
 </head>
 <body>
   <c:if test="${isRolActualAdministrador}">

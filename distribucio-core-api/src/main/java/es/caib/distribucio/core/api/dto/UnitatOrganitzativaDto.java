@@ -21,7 +21,6 @@ public class UnitatOrganitzativaDto implements Serializable {
 	private Long id;
 	private String codi;
 	private String denominacio;
-	private String denominacioCooficial;
 	private String nifCif;
 	private String codiUnitatSuperior;
 	private String codiUnitatArrel;

@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.ejb;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
 import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.service.ReglaService;
-import es.caib.distribucio.core.entity.ReglaEntity;
 
 /**
  * Implementació de ReglaService com a EJB que empra una clase
@@ -52,12 +50,12 @@ public class ReglaServiceBean implements ReglaService {
 
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
-	public ReglaDto updatePresencial(Long entitatId,
+	public ReglaDto updateActivaPresencial(Long entitatId,
 			Long reglaId,
 			boolean activa,
 			ReglaPresencialEnumDto presencial)
 			 throws NotFoundException {
-		return delegate.updatePresencial(
+		return delegate.updateActivaPresencial(
 				entitatId,
 				reglaId,
 				activa,
@@ -193,8 +191,7 @@ public class ReglaServiceBean implements ReglaService {
 
 	@Override
 	public ReglaDto update(Long entitatId, ReglaDto regla) throws NotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return delegate.update(entitatId, regla);
 	}
 
 	@Override

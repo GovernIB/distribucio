@@ -5,13 +5,19 @@ package es.caib.distribucio.rest.client;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import es.caib.distribucio.rest.client.regla.ReglesRestClient;
+import es.caib.distribucio.rest.client.regla.domini.Regla;
+import es.caib.distribucio.rest.client.regla.domini.ReglaResponse;
 
 /**
  * Test per al client REST de l'API REST de creació de regles automàtiques de Distribucio.
@@ -32,6 +38,13 @@ public class ReglesRestTest {
 		
 		ReglesRestTest.trustAllCertificates();
 		
+		// Dades del test
+		String entitat = "A04003003";
+		String sia = String.valueOf(new Date().getTime());
+		String backoffice = "HELIUM";
+		Boolean activa = false;
+		Boolean presencial = null;
+
 		// Creació del client
 		ReglesRestClient client = new ReglesRestClient(
 				URL,
@@ -39,50 +52,91 @@ public class ReglesRestTest {
 				PASSWORD,
 				true);
 		
-		// Dades del test
-		//Long entitatId = 401L;
-		String entitat = "A04003003";
-		String sia = "1161489";
-		String backoffice = "HELIUM";
-		boolean activa = false;
-		boolean presencial = true;
-		
+		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, backoffice, activa, presencial);
+		//ReglesRestTest.consulta(client, sia);
+	}
 
+	/** Test general per crear una nova regla, canviar-li l'estat, consultar-la i modificar-la.
+	 * 
+	 * @param client
+	 * @param entitat
+	 * @param sia
+	 * @param backoffice
+	 * @param activa
+	 * @param presencial
+	 */
+	private static void altaCanviEstatConsultaUpdate(
+			ReglesRestClient client, 
+			String entitat, 
+			String sia,
+			String backoffice, 
+			Boolean activa, 
+			Boolean presencial) {
+
+		System.out.println("Inici test API REST de regles ( " + 
+				"entitat= " + entitat +
+				", sia= " + sia +
+				", backoffice= " + backoffice +
+				", activa = " + activa +
+				", presencial= " + presencial
+		);
+		ReglaResponse ret;
 		// Creació de la regla
-//		try {
-//			boolean ret = client.add(entitat, sia, backoffice);
-//			System.out.println("Creació finalitzada correctament amb resultat " + ret);
-//		} catch (Exception e) {
-//			System.err.println("Error creant la regla: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//		
-//		// Modificació de l'activació de la regla
-//		try {
-//			boolean ret = client.canviEstat(sia, null);
-//			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + ret);
-//		} catch (Exception e) {
-//			System.err.println("Error canviant estat a la regla: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//		
-//		// Consulta de la regla
-//		try {
-//			boolean ret = client.consultarRegla(sia);
-//			System.out.println("Consulta finalitzada correctament amb resultat " + ret);
-//		} catch (Exception e) {
-//			System.err.println("Error consultant la regla: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-		
-		// nova utilitat per a api de regles
 		try {
-			boolean ret = client.update(sia, activa, presencial);
-			System.out.println("Update finalitzado correctament amb resultat " + ret);
+			ret = client.add(entitat, sia, backoffice, presencial);
+			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
+									ret.getStatus() + " " + ret.getMsg());
+		} catch (Exception e) {
+			System.err.println("Error creant la regla: " + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
+		
+		// Canvi d'estat de l'activació de la regla
+		try {
+			ret = client.canviEstat(sia, null);
+			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
+								ret.getStatus() + " " + ret.getMsg());
+		} catch (Exception e) {
+			System.err.println("Error canviant estat a la regla: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		// Consulta de la regla
+		try {
+			Regla regla = client.consultarRegla(sia);
+			System.out.println("Consulta de la regla realitzada correctament " + regla);
 		} catch (Exception e) {
 			System.err.println("Error consultant la regla: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
+		// Actualització de la regla
+		try {
+			ret = client.update(sia, activa, presencial);
+			System.out.println("Update finalitzado correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
+					ret.getStatus() + " " + ret.getMsg());
+		} catch (Exception e) {
+			System.err.println("Error consultant la regla: " + e.getMessage());
+			e.printStackTrace();
+		}		
+	}
+
+
+	/** Test de consulta de la regla codi SIA.
+	 * @param client 
+	 * 
+	 * @param sia
+	 * @throws Exception 
+	 */
+	private static void consulta(ReglesRestClient client, String sia) throws Exception {
+		
+		client.update(sia, true, true);
+		Regla r  = client.consultarRegla(sia);
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		
+		System.out.println("Regla consultada: " + ow.writeValueAsString(r));
 	}
 
 

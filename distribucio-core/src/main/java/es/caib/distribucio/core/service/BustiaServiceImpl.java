@@ -3191,6 +3191,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return configHelper.getAsBoolean("es.caib.distribucio.assignar.anotacions");
 	}
 	
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(

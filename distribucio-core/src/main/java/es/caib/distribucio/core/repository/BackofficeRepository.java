@@ -27,6 +27,9 @@ public interface BackofficeRepository extends JpaRepository<BackofficeEntity, Lo
 			Pageable pageable);
 	
 
+	@Query("from BackofficeEntity " +
+			"where entitat = :entitat " +
+			"order by nom")
 	List<BackofficeEntity> findByEntitat(
 			@Param("entitat") EntitatEntity entitat);
 	
