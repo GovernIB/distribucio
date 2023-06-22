@@ -24,6 +24,7 @@
 	
 	<link href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css" rel="stylesheet"/> 
 	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.11.2/datatables.min.js"></script>
 	
 	
 <%-- 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script> --%>
@@ -57,7 +58,46 @@
 	tbody tr.selectable td span.caret {
 		margin: 8px 0 0 2px; 
 	}
+	
+	.table-container{
+		position: relative;
+	}
 
+
+	.scrollbar {
+		position: relative;
+	    overflow-x: auto;
+		overflow-y: auto;
+		max-height: 500px;
+		padding: 20px
+			}
+	
+	
+	.scrollbar::-webkit-scrollbar {
+			height: 10px;
+	}
+	
+	.scrollbar::-webkit-scrollbar-thumb {
+			
+			background-color: #888;
+	
+	
+	}
+	
+	
+	.scrollbar::-webkit-scrollbar-track {
+	
+			background-color: #f1f1f1;
+	
+	}
+	
+	
+	.scrollbar::-webkit-scrollbar-thumb:hover {
+	
+			background-color: #555;
+	
+	}
+	
 </style>
 	
 <script>
@@ -133,6 +173,16 @@ $(document).ready(function() {
 	})
 
 	var selectButtonsInitialized = false;
+
+	$('#taulaDades').DataTable({
+
+			responsive: true,
+			autoWidth: true,
+			scrollX: true,
+			retrieve: true
+			
+
+		});
 	
 	$('#taulaDades').on( 'draw.dt', function () {
 	
@@ -477,7 +527,8 @@ $(document).ready(function() {
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
-	<div class="table-responsive" style="width: 100%; overflow-x: visible">
+	<div class="table-container" style="width: 100%; overflow: auto">
+	<div class="scrollbar">
 	<table
 		id="taulaDades"
 		data-refresh-tancar="true"
@@ -729,7 +780,7 @@ $(document).ready(function() {
 				<th data-col-name="backCodi" data-visible="false"></th>
 			</tr>
 		</thead>
-	</table></div>
+	</table></div></div>
 	
 	
 	

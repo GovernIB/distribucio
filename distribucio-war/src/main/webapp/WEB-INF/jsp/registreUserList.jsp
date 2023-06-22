@@ -11,6 +11,7 @@
 	<title><spring:message code="bustia.user.list.titol"/></title>
 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
 	<script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
+	<script src="https://cdn.datatables.net/v/bs5/dt-1.11.2/datatables.min.js"></script>	
 	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
@@ -177,6 +178,45 @@ button#filtrar {
 /*   padding-right: 2rem !important; */
 }
 
+	.table-container{
+		position: relative;
+	}
+
+
+	.scrollbar {
+		position: relative;
+	    overflow-x: auto;
+		overflow-y: auto;
+		max-height: 500px;
+		padding: 20px;
+			}
+	
+	
+	.scrollbar::-webkit-scrollbar {
+			height: 10px;
+	}
+	
+	.scrollbar::-webkit-scrollbar-thumb {
+			
+			background-color: #888;
+	
+	
+	}
+	
+	
+	.scrollbar::-webkit-scrollbar-track {
+	
+			background-color: #f1f1f1;
+	
+	}
+	
+	
+	.scrollbar::-webkit-scrollbar-thumb:hover {
+	
+			background-color: #555;
+	
+	}
+
 </style>
 <script>
 $.views.helpers({
@@ -227,6 +267,14 @@ $(document).ready(function() {
 	});
 
 	var selectButtonsInitialized = false;
+
+	$('#taulaDades').DataTable({
+
+		responsive: true,
+		autoWidth: true,
+		scrollX: true
+
+	});
 
 	$('#taulaDades').on( 'draw.dt', function () {
 		$.get( "registreUser/getNumPendents").done(function( data ) {
@@ -597,7 +645,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		</div>
 	</script>
 	<script id="rowhrefTemplate" type="text/x-jsrender">registreUser/registre/{{:id}}</script>
-	<div class="table-responsive" style="width: 100%; overflow-x: visible;">
+	<div class="table-container" style="width: 100%; overflow-x: visible;">
+	<div class="scrollbar">
+	
 	<table 
 		id="taulaDades" 
 		class="table table-striped table-bordered"
@@ -860,7 +910,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 			</tr>
 		</thead>
 	</table>
-	</div>
+	</div></div>
 	
 	<!-- Modal pels estats del processament -->
 	<div id="modalProcesEstat" class="modal fade">

@@ -29,6 +29,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 
@@ -183,6 +185,11 @@ public class RegistreHelper {
 	private IntegracioHelper integracioHelper;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
+	
+	
+	@PersistenceContext
+    private EntityManager entityManager;
+
 
 	/** Referència pròpia per cridar mètodes de forma transaccional */
 	private RegistreHelper self;
@@ -1423,7 +1430,7 @@ public class RegistreHelper {
 						IntegracioHelper.INTCODI_BACKOFFICE,
 						accioDescripcio,
 						usuari,
-						accioParams,
+						//accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0
 				);			

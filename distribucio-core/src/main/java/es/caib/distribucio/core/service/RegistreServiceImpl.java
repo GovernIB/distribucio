@@ -2658,7 +2658,7 @@ public class RegistreServiceImpl implements RegistreService {
 				usuariHelper.getUsuariAutenticat().getCodi());
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public ValidacioFirmaEnum validarFirmes(Long entitatId, Long registreId, Long annexId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -2668,23 +2668,41 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(
-						registreAnnexRepository.findOne(annexId), null);
+		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(registreAnnexRepository.findOne(annexId), null);
 		
-		// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
-		// guardar com a definitiu
-		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
-			// Recuperar informació de l'annex
-			RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
-			// Modificar 
-			if (annex.getFitxerArxiuUuid() != null) {
-				pluginHelper.arxiuDocumentSetDefinitiu(annex);
-				annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-				registreAnnexRepository.saveAndFlush(annex);
-				registreHelper.comptarAnnexosEstatEsborrany(registreId);
+		try {
+			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
+			// guardar com a definitiu
+			if (ValidacioFirmaEnum.isValida(validacioFirma)) {
+				// Recuperar informació de l'annex
+				RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+				RegistreEntity registre = registreRepository.getOne(registreId);
+				List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
+				int numEsborrany = 0;
+				for(RegistreAnnexEntity annexList: registreAnnex) {
+					if(annexList.getArxiuEstat()== AnnexEstat.ESBORRANY) {
+						numEsborrany++;
+					}					
+				}			
+				
+				// Modificar 
+				if (annex.getFitxerArxiuUuid() != null) {
+					pluginHelper.arxiuDocumentSetDefinitiu(annex);
+					annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+					registre.setAnnexosEstatEsborrany(numEsborrany-1);
+					registreRepository.saveAndFlush(registre);
+					registreAnnexRepository.saveAndFlush(annex);
+					entityManager.flush();
 
+				}
+				logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId);
 			}
-		}
+		} catch (Exception e) {
+			logger.error("Validació de signatura NO completada correctament per a l'annex con id:  "+ annexId +" de l'anotació amb id:  "+ registreId) ;
+			e.printStackTrace();
+		}				
+	
+			
 		return validacioFirma;
 	}
 	
