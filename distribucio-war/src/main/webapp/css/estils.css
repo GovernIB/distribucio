@@ -90,6 +90,9 @@
 /*
  * webutil
  */
+table.dataTable {
+	word-break: break-all;
+}
 table.dataTable tr div.form-group {
 	width: 100%;
 }
@@ -341,4 +344,15 @@ div.exemple {
 
 .justify-content-start {
 	justify-content: start;
+}
+
+
+/* S'aplica quan l'amplada és menor de 1300px. */
+@media (max-width: 1300px) {
+
+	/* Amaga elements a finestres amb un width menor de l'establert. */	
+	.hidden_dis {
+	  display: none;
+	}
+	
 }

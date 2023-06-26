@@ -21,16 +21,9 @@
 <html>
 <head>
 	<title><spring:message code="anotacions.admin.titol"/></title>
-	
-	<link href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css" rel="stylesheet"/> 
-	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
-	<script src="https://cdn.datatables.net/v/bs5/dt-1.11.2/datatables.min.js"></script>
-	
-	
-<%-- 	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script> --%>
-	<link href="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.css" rel="stylesheet"/>
- 
-	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
+	<script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
+	<script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
 	<c:if test="${requestLocale == 'en'}">
@@ -49,55 +42,14 @@
 	
 	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
-<style>
-	
 
+<style>	     
 	span.fa-cog {
-		margin: 2px 1.5rem 0 0; 
+		margin: 2px 0.5rem 0 0; 
 	}
 	tbody tr.selectable td span.caret {
 		margin: 8px 0 0 2px; 
-	}
-	
-	.table-container{
-		position: relative;
-	}
-
-
-	.scrollbar {
-		position: relative;
-	    overflow-x: auto;
-		overflow-y: auto;
-		max-height: 500px;
-		padding: 20px
-			}
-	
-	
-	.scrollbar::-webkit-scrollbar {
-			height: 10px;
-	}
-	
-	.scrollbar::-webkit-scrollbar-thumb {
-			
-			background-color: #888;
-	
-	
-	}
-	
-	
-	.scrollbar::-webkit-scrollbar-track {
-	
-			background-color: #f1f1f1;
-	
-	}
-	
-	
-	.scrollbar::-webkit-scrollbar-thumb:hover {
-	
-			background-color: #555;
-	
-	}
-	
+	}	
 </style>
 	
 <script>
@@ -173,16 +125,6 @@ $(document).ready(function() {
 	})
 
 	var selectButtonsInitialized = false;
-
-	$('#taulaDades').DataTable({
-
-			responsive: true,
-			autoWidth: true,
-			scrollX: true,
-			retrieve: true
-			
-
-		});
 	
 	$('#taulaDades').on( 'draw.dt', function () {
 	
@@ -527,8 +469,6 @@ $(document).ready(function() {
 	</script>	
 
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
-	<div class="table-container" style="width: 100%; overflow: auto">
-	<div class="scrollbar">
 	<table
 		id="taulaDades"
 		data-refresh-tancar="true"
@@ -539,12 +479,10 @@ $(document).ready(function() {
 		data-selection-enabled="true"
 		data-default-order="14"
 		data-default-dir="desc"
-		class="table table-striped table-bordered"
-		style="word-break:break-all; width:100%;"
+		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
-		data-rowhref-maximized="true"
-		>
+		data-rowhref-maximized="true">
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
@@ -557,11 +495,11 @@ $(document).ready(function() {
 				<th data-col-name="sobreescriure" data-visible="false"></th>
 				<th data-col-name="arxiuTancat" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-visible="false"></th>	
-				<th data-col-name="numero" style="min-width: 65px;"><spring:message code="bustia.pendent.columna.numero"/></th>			
-				<th data-col-name="extracte" style="min-width: 65px;"><spring:message code="bustia.pendent.columna.titol"/></th>											
-				<th data-col-name="numeroOrigen" style="min-width: 35px;"><spring:message code="bustia.list.filtre.origen.num"/></th>
+				<th data-col-name="numero"><spring:message code="bustia.pendent.columna.numero"/></th>			
+				<th data-col-name="extracte"><spring:message code="bustia.pendent.columna.titol"/></th>											
+				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
 				
-				<th data-col-name="darrerMovimentUsuari" style="min-width: 50px;" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" data-orderable="false" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
@@ -583,8 +521,8 @@ $(document).ready(function() {
 					</script>
 				</th>
 				
-				<th data-col-name="data" style="min-width: 60px;" data-converter="datetime"><spring:message code="bustia.pendent.columna.data"/></th>
-				<th data-col-name="procesEstat" style="min-width: 40px;" data-orderable="true"  data-template="#estatTemplate">
+				<th data-col-name="data" data-converter="datetime"><spring:message code="bustia.pendent.columna.data"/></th>
+				<th data-col-name="procesEstat" data-orderable="true"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
 						{{if procesEstat == 'ARXIU_PENDENT'}}
@@ -633,7 +571,7 @@ $(document).ready(function() {
 					</script>
 
 				</th>
-				<th data-col-name="procesError" style="min-width: 40px;" data-orderable="false" data-template="#procesErrorTemplate">
+				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
 					<spring:message code="bustia.pendent.columna.avisos"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						<center>
@@ -700,7 +638,7 @@ $(document).ready(function() {
 					</script>
 				</th>
 				<th data-col-name="bustiaActiva" data-visible="false"></th>
-				<th data-col-name="path" style="min-width: 120px;" data-template="#cellPathTemplate" data-orderable="false">
+				<th data-col-name="path" data-template="#cellPathTemplate" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.localitzacio"/><br>
 					<script id="cellPathTemplate" type="text/x-jsrender">
 						{{if path}}
@@ -716,7 +654,7 @@ $(document).ready(function() {
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="interessatsResum" style="min-width: 90px;" data-orderable="false">
+				<th data-col-name="interessatsResum" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>				
 				<th data-col-name="numComentaris"   style ="text-align: center;" data-orderable="false" data-template="#cellPermisosTemplate">							
@@ -729,14 +667,18 @@ $(document).ready(function() {
 				</th>
 
 
-				<th data-col-name="backCodi" style="min-width: 90px;" data-orderable="true">
+				<th data-col-name="backCodi" data-orderable="true">
 					<spring:message code="contingut.admin.columna.backoffice"/>
 				</th>
 				
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="max-width:50px;">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div id="div-btn-accions" class="dropdown">
-							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;"><span class="fa fa-cog"></span><spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;">
+								<span class="fa fa-cog"></span>
+								<span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>
+								<span class="caret"></span>
+							</button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 
@@ -780,7 +722,7 @@ $(document).ready(function() {
 				<th data-col-name="backCodi" data-visible="false"></th>
 			</tr>
 		</thead>
-	</table></div></div>
+	</table>
 	
 	
 	
