@@ -1136,7 +1136,14 @@ public class BustiaServiceImpl implements BustiaService {
 					anotacioEntity.getDarrerMoviment());
 		}
 		contextmoveAnotacioToBustiaPerDefecte.stop();
-		
+
+		// Si ve informat amb uuid no guardar a l'arxiu
+		Boolean isRegistreArxiuPendent = registreRepository.isRegistreArxiuPendentByUuid(anotacioEntity.getId(), entitat);
+		if (!isRegistreArxiuPendent && reglaAplicable == null) {
+			anotacioEntity.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+		} else if (!isRegistreArxiuPendent && reglaAplicable != null) {
+			anotacioEntity.setNewProcesEstat(RegistreProcesEstatEnum.REGLA_PENDENT);
+		}
 		
 		//-- apply rules of type bustia or unitat ---
 		Timer.Context contextprocessarAnotacioPendentRegla = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.processarAnotacioPendentRegla")).time();

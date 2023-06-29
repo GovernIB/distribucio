@@ -655,7 +655,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 									{{:darrerMovimentUsuari.nom}}
 								</div>
  							{{else}}
- 								<span class="fa fa-home" title=""/>
+ 								<span class="fa fa-home" title=""></span>
  							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
  							{{/if}}
  						{{else}}

@@ -725,11 +725,19 @@ public class RegistreHelper {
 				}
 			}else {
 				// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
-				anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+				Boolean isRegistreArxiuPendent = registreRepository.isRegistreArxiuPendentByUuid(anotacio.getId(), anotacio.getEntitat());
+				if (isRegistreArxiuPendent)
+					anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+				else
+					anotacio.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
 			}
 		} else {
 			// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
-			anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+			Boolean isRegistreArxiuPendent = registreRepository.isRegistreArxiuPendentByUuid(anotacio.getId(), anotacio.getEntitat());
+			if (isRegistreArxiuPendent)
+				anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
+			else
+				anotacio.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
 		}
 		return exceptionAplicantRegla;
 

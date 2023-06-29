@@ -452,7 +452,15 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"where ra.registre.id = :registreId")
 	public List<RegistreAnnexEntity> getDadesRegistreAnnex(
 			@Param("registreId") Long registreId);
-	
+
+	@Query(
+			"select case when (count(r) > 0) then true else false end " + 
+			"from " +
+			"    RegistreEntity r JOIN r.annexos a " +
+			"where r.id = :registreId " +
+			"	and (r.justificantArxiuUuid = null or a.fitxerArxiuUuid = null) " +
+			"	and r.entitat = :entitat")
+	public Boolean isRegistreArxiuPendentByUuid(@Param("registreId") Long registreId, @Param("entitat") EntitatEntity entitat);
 	
 	/**
 	 * Consulta per retornar un llistat de registres filtrat pel seu
