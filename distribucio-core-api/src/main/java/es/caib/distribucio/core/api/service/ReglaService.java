@@ -213,8 +213,13 @@ public interface ReglaService {
 			Long entitatId,
 			PaginacioParamsDto paginacioParams);
 
-	List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi);
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(Long entitatId, String unitatCodi);
 
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi);
+
+	
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
 
 	@PreAuthorize("hasRole('DIS_ADMIN')")

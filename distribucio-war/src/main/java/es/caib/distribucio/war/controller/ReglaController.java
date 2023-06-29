@@ -172,7 +172,7 @@ public class ReglaController  extends BaseAdminController {
 			
 				// getting all the regles connected with old unitat excluding the
 				// one you are currently in
-				List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatCodi(
+				List<ReglaDto> reglesOfOldUnitat = reglaService.findByEntitatAndUnitatFiltreCodi(
 						entitatActual.getId(),
 						regla.getUnitatOrganitzativaFiltre().getCodi());
 				List<ReglaDto> reglesOfOldUnitatWithoutCurrent = new ArrayList<ReglaDto>();

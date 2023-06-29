@@ -539,10 +539,10 @@ public class ReglaServiceImpl implements ReglaService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<ReglaDto> findByEntitatAndUnitatCodi(
+	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(
 			Long entitatId, 
 			String unitatCodi) {
-		logger.debug("Cercant las regles de la unitat (" 
+		logger.debug("Cercant las regles de la unitat  filtre (" 
 				+ "entitatId=" + entitatId 
 				+ ", " + "unitatCodi=" + unitatCodi
 				+ ")");
@@ -556,6 +556,24 @@ public class ReglaServiceImpl implements ReglaService {
 		return resposta;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(
+			Long entitatId, 
+			String unitatCodi) {
+		logger.debug("Cercant las regles de la unitat destí (" 
+				+ "entitatId=" + entitatId 
+				+ ", " + "unitatCodi=" + unitatCodi
+				+ ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
+
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndUnitatDestiCodi(entitat, unitatCodi);
+		List<ReglaDto> resposta = new ArrayList<ReglaDto>();
+		for (ReglaEntity regla : regles) {
+			resposta.add(toReglaDto(regla));
+		}
+		return resposta;
+	}
 
 	
 	@Override

@@ -4,6 +4,7 @@
 package es.caib.distribucio.war.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,9 +27,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.core.api.dto.BustiaDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;
 import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.UnitatOrganitzativaFiltreCommand;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
@@ -54,6 +57,8 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	@Autowired
 	private BustiaService bustiaService;
 
+	@Autowired
+	private ReglaService reglaService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -80,6 +85,9 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsNew = new ArrayList<>();
+		List<ReglaDto> rules =  new ArrayList<ReglaDto>();
+		List<ReglaDto> rulesDesti =  new ArrayList<ReglaDto>();
+
 		
 		boolean isFirstSincronization = unitatOrganitzativaService.isFirstSincronization(entitatActual.getId());
 		
@@ -112,7 +120,24 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 						.getNewFromWS(entitatActual.getId());
 				
 				
-			
+				// For all merges find related rules to old UO
+				Set<UnitatOrganitzativaDto> valuesMerge = new HashSet<UnitatOrganitzativaDto>(mergeOrSubstMap.values());
+				List<String> codisUosFusionadesSubstituides = new ArrayList<String>();
+				for (UnitatOrganitzativaDto uo : valuesMerge) {
+					codisUosFusionadesSubstituides.add(uo.getCodi());
+				}
+				
+				for  ( String codiUo : codisUosFusionadesSubstituides) {
+					// Regles per filtre
+					for(ReglaDto r: reglaService.findByEntitatAndUnitatFiltreCodi(entitatActual.getId(),codiUo)) {
+						rules.add(r);	
+					}
+					// Regles per destí
+					for(ReglaDto r: reglaService.findByEntitatAndUnitatDestiCodi(entitatActual.getId(),codiUo)) {
+						rulesDesti.add(r);	
+					}
+				}
+		
 			} catch (Exception exception){
 				logger.error("Error synchronizacion", exception);
 				return getModalControllerReturnValueErrorNoKey(
@@ -134,6 +159,9 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		model.addAttribute("substMap", substMap);
 		model.addAttribute("unitatsVigents", unitatsVigents);
 		model.addAttribute("unitatsNew", unitatsNew);
+		model.addAttribute("rules", rules);
+		model.addAttribute("rulesDesti", rulesDesti);
+
 		
 		
 		return "synchronizationPrediction";
@@ -145,7 +173,6 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		unitatOrganitzativaService.synchronize(entitatActual.getId());
-
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:unitatOrganitzativa",
