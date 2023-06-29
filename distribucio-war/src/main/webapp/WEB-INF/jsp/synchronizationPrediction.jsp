@@ -217,6 +217,55 @@
 				</div>
 			</c:if>
 			
+			<!-- If they exist show rules of which unit has changed due to substitution or merger -->
+			<c:if test="${!empty rules}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<spring:message
+							code="regla.synchronize.prediction.substitucionsAndMerges" />
+					</div>
+					<div class="panel-body">
+						<c:forEach var="regla" items="${rules}">
+
+							<div class=horizontal-left>
+								<div id="wrapper" style="margin-left: 15px">
+									<span class="label bg-warning border-yellow overflow-ellipsis"
+										title="${regla.nom}  ( ${regla.unitatOrganitzativaFiltre.codi} - ${regla.unitatOrganitzativaFiltre.denominacio}}">
+										${regla.nom}  (${regla.unitatOrganitzativaFiltre.codi} - ${regla.unitatOrganitzativaFiltre.denominacio})</span>
+									<div class="branch lv1 empty-branch">
+										<div class="entry sole empty-entry">
+											<span
+												class="label bg-warning border-yellow overflow-ellipsis empty-label"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</c:forEach>
+						
+						<div class="panel-body">
+						<c:forEach var="regla" items="${rulesDesti}">
+
+							<div class=horizontal-left>
+								<div id="wrapper" >
+									<span class="label bg-warning border-yellow overflow-ellipsis"
+										title="${regla.nom}  ( ${regla.unitatDesti.codi} - ${regla.unitatDesti.denominacio}}">
+										${regla.nom}  (${regla.unitatDesti.codi} - ${regla.unitatDesti.denominacio})</span>
+									<div class="branch lv1 empty-branch">
+										<div class="entry sole empty-entry">
+											<span
+												class="label bg-warning border-yellow overflow-ellipsis empty-label"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</c:forEach>
+					</div>
+				</div>
+			</c:if>
+			
+		
 			<!-- If they exist show unitats that are new (are not transitioned from any other unitat) -->
 			<c:if test="${!empty unitatsNew}">
 				<div class="panel panel-default">

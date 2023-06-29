@@ -43,6 +43,7 @@ public class ReglaDto extends AuditoriaDto {
 	private String entitatNom;
 	
 
+	private UnitatOrganitzativaDto unitatDesti;
 
 	
 	public Long getBustiaFiltreId() {
@@ -128,6 +129,12 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setBackofficeDestiNom(String backofficeDestiNom) {
 		this.backofficeDestiNom = backofficeDestiNom;
+	}
+	public UnitatOrganitzativaDto getUnitatDesti() {
+		return unitatDesti;
+	}
+	public void setUnitatDesti(UnitatOrganitzativaDto unitatDesti) {
+		this.unitatDesti = unitatDesti;
 	}
 	@Override
 	public String toString() {

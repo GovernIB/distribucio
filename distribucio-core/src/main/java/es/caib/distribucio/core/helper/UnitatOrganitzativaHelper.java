@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -29,8 +30,10 @@ import es.caib.distribucio.core.api.dto.TipusViaDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.entity.EntitatEntity;
+import es.caib.distribucio.core.entity.ReglaEntity;
 import es.caib.distribucio.core.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.core.repository.EntitatRepository;
+import es.caib.distribucio.core.repository.ReglaRepository;
 import es.caib.distribucio.core.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 
@@ -57,6 +60,8 @@ public class UnitatOrganitzativaHelper {
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Resource
 	private EntitatRepository entitatRepository;
+	@Resource
+	private ReglaRepository reglaRepository;
 	
 	@Autowired
 	private MetricRegistry metricRegistry;
@@ -320,13 +325,12 @@ public class UnitatOrganitzativaHelper {
 		}
 	}
 
+	
 	public void sincronizarOActualizar(EntitatEntity entitat) {
-		List<UnitatOrganitzativa> unitats;
-		/*UnitatOrganitzativa unidadPadreWS = pluginHelper.findUnidad(entitat.getCodiDir3(),
-				null, null);*/
-		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
+		List<UnitatOrganitzativa> unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), entitat.getFechaActualizacion(),
 					entitat.getFechaSincronizacion());
 		// Takes all the unitats from WS and saves them to database. If unitat did't exist in db it creates new one if it already existed it overrides existing one.  
+		// In addition, the related rules will also be updated with the new unit entity
 		for (UnitatOrganitzativa unidadWS : unitats) {
 			sincronizarUnitat(unidadWS, entitat.getCodiDir3());
 		}
@@ -336,10 +340,11 @@ public class UnitatOrganitzativaHelper {
 					.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unidadWS.getCodi());
 			sincronizarHistoricosUnitat(unitat, unidadWS);
 		}
+
 		List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3EntitatAndEstatNotV(entitat.getCodiDir3());
 		// setting type of transition
-		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
+		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats)  {
 			if (obsoleteUnitat.getNoves().size() > 1) {
 				obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
 			} else {
@@ -347,9 +352,20 @@ public class UnitatOrganitzativaHelper {
 					if (obsoleteUnitat.getNoves().get(0).getAntigues().size() > 1) {
 						obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.FUSIO);
 					} else if (obsoleteUnitat.getNoves().get(0).getAntigues().size() == 1) {
-						obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.SUBSTITUCIO);
+						obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.SUBSTITUCIO);						
 					}
 				}
+			} 
+		}
+
+		// regles
+		for (UnitatOrganitzativa unidadWS : unitats)  {
+			UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository
+					.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unidadWS.getCodi());
+			if ("E".equals(unitat.getEstat())
+					&& unitat.getNoves() != null 
+					&& unitat.getNoves().size() == 1) {
+				sincronitzarRegles(entitat, unitat, unitat.getNoves().get(0));
 			}
 		}
 	}
@@ -367,6 +383,7 @@ public class UnitatOrganitzativaHelper {
 				if (!nova.getAntigues().contains(unitat)) {
 					nova.addAntiga(unitat);
 				}
+				unitatOrganitzativaRepository.saveAndFlush(nova);
 			}
 		}
 	}
@@ -378,6 +395,7 @@ public class UnitatOrganitzativaHelper {
 	 * @param entidadId
 	 * @throws Exception
 	 */
+	@Transactional
 	public UnitatOrganitzativaEntity sincronizarUnitat(UnitatOrganitzativa unitatWS, String codiEntitat) {
 		UnitatOrganitzativaEntity unitat = null;
 		if (unitatWS != null) {					
@@ -402,7 +420,7 @@ public class UnitatOrganitzativaHelper {
 						numVia(unitatWS.getNumVia())
 						.build();
 				unitat.setCodiDir3Entitat(codiEntitat);
-				unitatOrganitzativaRepository.save(unitat);
+				unitatOrganitzativaRepository.saveAndFlush(unitat);
 			} else {
 				unitat.update(
 						unitatWS.getCodi(),
@@ -420,14 +438,41 @@ public class UnitatOrganitzativaHelper {
 						unitatWS.getNomVia(),
 						unitatWS.getNumVia());
 				unitat.setCodiDir3Entitat(codiEntitat);
+				unitatOrganitzativaRepository.saveAndFlush(unitat);
 			}
-			// Guardamos el Unitat
-			//unitat = unitatOrganitzativaRepository.save(unitat);
-			//unitatOrganitzativaRepository.flush();
 		}
 		return unitat;
 	}
 
+	
+	/**
+	 * Comprova les regles de les unitats fusionades o substituïdes i actaulitza la UO.
+	 * 
+	 * @param unidadWS
+	 * @param entidadId
+	 * @throws Exception
+	 * @return List<ReglaEntity>
+	 */
+	@Transactional
+	public void  sincronitzarRegles(
+			EntitatEntity entitat, 
+			UnitatOrganitzativaEntity obsoleta,
+			UnitatOrganitzativaEntity nova) 
+	{		
+			// busca les regles que tenen la obsoleta com a UO en el filtre		
+			for (ReglaEntity regla : reglaRepository.findByEntitatAndUnitatOrganitzativaFiltreCodi(entitat, obsoleta.getCodi())) {
+				logger.info("Sincronitzant la regla " + regla.getId() + " " + regla.getNom() + ". Canviant de la UO  filtre obsoleta " + obsoleta.getCodi() + " a la nova " + nova.getCodi() + "." );
+					regla.setUnitatOrganitzativaFiltre(nova);
+					reglaRepository.saveAndFlush(regla);
+			}
+			// busca les regles que tenen la obsoleta com a uo en l'acció de moure
+			for (ReglaEntity regla : reglaRepository.findByEntitatAndUnitatDestiCodi(entitat, obsoleta.getCodi())) {  
+				logger.info("Sincronitzant la regla " + regla.getId() + " " + regla.getNom() + ". Canviant de la UO  destí obsoleta " + obsoleta.getCodi() + " a la nova " + nova.getCodi() + "." );
+				regla.setUnitatDesti(nova);
+				reglaRepository.saveAndFlush(regla);
+		}
+	}
+	
 	public static UnitatOrganitzativaDto assignAltresUnitatsFusionades(
 			UnitatOrganitzativaEntity unitatOrganitzativaEntity, UnitatOrganitzativaDto unitatOrganitzativaDto) {
 		if (unitatOrganitzativaEntity != null && unitatOrganitzativaDto != null) {

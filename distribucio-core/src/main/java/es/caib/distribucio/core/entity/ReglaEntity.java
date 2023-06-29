@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -58,7 +59,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "procediment_codi", length = 1024, nullable = false)
 	private String procedimentCodiFiltre;
 	
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "unitat_id")
 	@ForeignKey(name = "dis_unitat_regla_fk")
 	protected UnitatOrganitzativaEntity unitatOrganitzativaFiltre;
@@ -153,6 +154,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public UnitatOrganitzativaEntity getUnitatDesti() {
 		return unitatDesti;
 	}
+	public void setUnitatDesti(UnitatOrganitzativaEntity  unitatDesti) {
+		this.unitatDesti = unitatDesti;
+	}
+
 	public void update(
 			BackofficeEntity backofficeDestiId, 
 			String nom,
@@ -247,6 +252,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			return built;
 		}
 	}
+	
+	public void setUnitatOrganitzativaFiltre(UnitatOrganitzativaEntity unitatOrganitzativaFiltre) {
+		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
+	}
 
 	@Override
 	public int hashCode() {
@@ -293,5 +302,4 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
-
 }

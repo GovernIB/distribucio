@@ -146,12 +146,21 @@ public class ReglaServiceBean implements ReglaService {
 
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
-	public List<ReglaDto> findByEntitatAndUnitatCodi(Long entitatId, String unitatCodi) {
-		return delegate.findByEntitatAndUnitatCodi(
+	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(Long entitatId, String unitatCodi) {
+		return delegate.findByEntitatAndUnitatFiltreCodi(
 				entitatId,
 				unitatCodi);
 	}
 
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi) {
+		return delegate.findByEntitatAndUnitatDestiCodi(
+				entitatId,
+				unitatCodi);
+	}
+
+	
 	@Override
 	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
 	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
