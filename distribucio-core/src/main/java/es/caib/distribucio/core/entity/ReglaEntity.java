@@ -59,7 +59,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "procediment_codi", length = 1024, nullable = false)
 	private String procedimentCodiFiltre;
 	
-	@ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitat_id")
 	@ForeignKey(name = "dis_unitat_regla_fk")
 	protected UnitatOrganitzativaEntity unitatOrganitzativaFiltre;
@@ -302,4 +302,5 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
+
 }

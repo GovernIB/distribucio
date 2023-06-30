@@ -40,35 +40,32 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		List<UnitatOrganitzativa> unitats = new ArrayList<>();
 		
 		
-		final String CODI_UNITAT_ARREL = "A04019281";
+		final String CODI_UNITAT_ARREL = "A04026906";
 		final String CODI_UNITAT_SUPERIOR = "A04019281";
 		
 		final String CODI_UNITAT_TO_SPLIT = "A04032338";
 		final String CODI_UNITAT_TO_MERGE1 = "A04032340";
-		final String CODI_UNITAT_TO_MERGE2 = "A04032334";
+		final String CODI_UNITAT_TO_MERGE2 = "A04031575";
 		final String CODI_UNITAT_TO_SUBSTITUTE = "A04031579";
-		final String CODI_UNITAT_TO_SUBSTITUTE2 = "A04032338";
-
 		final String CODI_UNITAT_TO_CUMULATIVE_CHANGES = "A04046344";
 		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04031605";		
+		
+		//TEST
+		
 		
 //		//SPLIT
 //		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SPLIT, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999901", "A99999902"))));
 //		unitats.add(new UnitatOrganitzativa("A99999901", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 //		unitats.add(new UnitatOrganitzativa("A99999902", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 //		
-		//MERGE
-		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE1, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
-		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE2, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
-		unitats.add(new UnitatOrganitzativa("A99999903", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+//		//MERGE
+//		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE1, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
+//		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_MERGE2, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999903"))));
+//		unitats.add(new UnitatOrganitzativa("A99999903", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
-		//SUBSTITUTION
-		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SUBSTITUTE, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999904"))));
-		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
-		
-		//SUBSTITUTION 2
-		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SUBSTITUTE2, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999908"))));
-		unitats.add(new UnitatOrganitzativa("A99999908", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
+//		//SUBSTITUTION
+//		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_SUBSTITUTE, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999904"))));
+//		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 		
 //		//CUMULATIVE CHANGES
 //		unitats.add(new UnitatOrganitzativa(CODI_UNITAT_TO_CUMULATIVE_CHANGES, "denominacio", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", new ArrayList<>(Arrays.asList("A99999905"))));
@@ -86,6 +83,9 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 //		unitats.add(new UnitatOrganitzativa("A04032353", "Direcció General D'innovació", CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"E", null));
 //		unitats.add(new UnitatOrganitzativa("A04032353", "Direcció General D'innovació " + new Date().getTime(), CODI_UNITAT_SUPERIOR, CODI_UNITAT_ARREL,"V", null));
 
+		// VALIDACIÓ 0.9.48.6
+		unitats.add(new UnitatOrganitzativa("A04035957", "Arxiu del Govern de les Illes Balears", "A04035959", "A04003003", "E", new ArrayList<>(Arrays.asList("A99999904"))));
+		unitats.add(new UnitatOrganitzativa("A99999904", "denominacio", "A04035959", "A04003003", "V", null));
 		
 		return unitats;
 	}

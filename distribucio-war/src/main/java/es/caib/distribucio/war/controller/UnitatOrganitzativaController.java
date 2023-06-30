@@ -84,7 +84,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsNew = new ArrayList<>();
-		List<ReglaDto> rules =  new ArrayList<ReglaDto>();
+		List<ReglaDto> rulesFiltre =  new ArrayList<ReglaDto>();
 		List<ReglaDto> rulesDesti =  new ArrayList<ReglaDto>();
 
 		
@@ -163,7 +163,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 				for  ( String codiUo : codisUosFusionadesSubstituides) {
 					// Regles per filtre
 					for(ReglaDto r: reglaService.findByEntitatAndUnitatFiltreCodi(entitatActual.getId(),codiUo)) {
-						rules.add(r);	
+						rulesFiltre.add(r);	
 					}
 					// Regles per destí
 					for(ReglaDto r: reglaService.findByEntitatAndUnitatDestiCodi(entitatActual.getId(),codiUo)) {
@@ -212,7 +212,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		model.addAttribute("substMap", substMap);
 		model.addAttribute("unitatsVigents", unitatsVigents);
 		model.addAttribute("unitatsNew", unitatsNew);
-		model.addAttribute("rules", rules);
+		model.addAttribute("rulesFiltre", rulesFiltre);
 		model.addAttribute("rulesDesti", rulesDesti);
 
 		
@@ -226,6 +226,7 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		unitatOrganitzativaService.synchronize(entitatActual.getId());
+
 		return getModalControllerReturnValueSuccess(
 				request,
 				"redirect:unitatOrganitzativa",

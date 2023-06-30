@@ -367,8 +367,8 @@ public class ReglaController  extends BaseAdminController {
 			return getAjaxControllerReturnValueError(
 					request,
 					"redirect:../../bustiaAdmin",
-					"regla.controller.esborrada.error.validacio",
-					new Object[] {ve.getMessage()});			
+					"regla.controller.esborrada.error",
+					new Object[] {ve.getClass() + ": " + ve.getMessage()});			
 		}
 	}
 	

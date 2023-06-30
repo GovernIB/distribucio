@@ -218,14 +218,16 @@
 			</c:if>
 			
 			<!-- If they exist show rules of which unit has changed due to substitution or merger -->
-			<c:if test="${!empty rules}">
+			<c:if test="${!empty rulesFiltre or !empty rulesDesti}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<spring:message
-							code="regla.synchronize.prediction.substitucionsAndMerges" />
+							code="unitat.synchronize.prediction.rules" />
 					</div>
 					<div class="panel-body">
-						<c:forEach var="regla" items="${rules}">
+						<c:if test="${!empty rulesFiltre}">
+						<p>(<spring:message code="unitat.synchronize.prediction.rules.filtre"></spring:message>)</p>
+						<c:forEach var="regla" items="${rulesFiltre}">
 
 							<div class=horizontal-left>
 								<div id="wrapper" style="margin-left: 15px">
@@ -242,8 +244,10 @@
 							</div>
 
 						</c:forEach>
-						
-						<div class="panel-body">
+						</c:if>
+
+						<c:if test="${!empty rulesDesti}">
+						<p>(<spring:message code="unitat.synchronize.prediction.rules.desti"></spring:message>)</p>
 						<c:forEach var="regla" items="${rulesDesti}">
 
 							<div class=horizontal-left>
@@ -261,10 +265,10 @@
 							</div>
 
 						</c:forEach>
+						</c:if>
 					</div>
 				</div>
 			</c:if>
-			
 		
 			<!-- If they exist show unitats that are new (are not transitioned from any other unitat) -->
 			<c:if test="${!empty unitatsNew}">
