@@ -34,11 +34,15 @@
 		src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	<script src="<c:url value="/js/printThis.js"/>"></script>
 	<dis:modalHead />
+	<script>
+		let crearPdf = () => $('#divPredict').printThis();
+	</script>
 </head>
 <body>
 
-	<div class="panel-group">
+	<div id="divPredict" class="panel-group">
 	
 		<!-- If this is first sincronization it shows all currently vigent unitats that will be created in db  -->
 		<c:if test="${isFirstSincronization}">
@@ -218,14 +222,16 @@
 			</c:if>
 			
 			<!-- If they exist show rules of which unit has changed due to substitution or merger -->
-			<c:if test="${!empty rules}">
+			<c:if test="${!empty rulesFiltre or !empty rulesDesti}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<spring:message
-							code="regla.synchronize.prediction.substitucionsAndMerges" />
+							code="unitat.synchronize.prediction.rules" />
 					</div>
 					<div class="panel-body">
-						<c:forEach var="regla" items="${rules}">
+						<c:if test="${!empty rulesFiltre}">
+						<p>(<spring:message code="unitat.synchronize.prediction.rules.filtre"></spring:message>)</p>
+						<c:forEach var="regla" items="${rulesFiltre}">
 
 							<div class=horizontal-left>
 								<div id="wrapper" style="margin-left: 15px">
@@ -242,8 +248,10 @@
 							</div>
 
 						</c:forEach>
-						
-						<div class="panel-body">
+						</c:if>
+
+						<c:if test="${!empty rulesDesti}">
+						<p>(<spring:message code="unitat.synchronize.prediction.rules.desti"></spring:message>)</p>
 						<c:forEach var="regla" items="${rulesDesti}">
 
 							<div class=horizontal-left>
@@ -261,10 +269,10 @@
 							</div>
 
 						</c:forEach>
+						</c:if>
 					</div>
 				</div>
 			</c:if>
-			
 		
 			<!-- If they exist show unitats that are new (are not transitioned from any other unitat) -->
 			<c:if test="${!empty unitatsNew}">
@@ -301,6 +309,7 @@
 	</c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" role="form">
 		<div id="modal-botons">
+			<a id="pdfBtn" class="btn btn-default" onclick="crearPdf()"><spring:message code="comu.boto.descarregar.pdf" /></a>
 			<button type="submit" class="btn btn-success"
 				<c:if test="${isAllEmpty and !isFirstSincronization}"><c:out value="disabled='disabled'"/></c:if>>
 				<span class="fa fa-save"></span>

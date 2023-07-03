@@ -387,11 +387,10 @@ public class UnitatOrganitzativaHelper {
 					.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unidadWS.getCodi());
 			sincronizarHistoricosUnitat(unitat, unidadWS);
 		}
-
 		List<UnitatOrganitzativaEntity> obsoleteUnitats = unitatOrganitzativaRepository
 				.findByCodiDir3EntitatAndEstatNotV(entitat.getCodiDir3());
 		// setting type of transition
-		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats)  {
+		for (UnitatOrganitzativaEntity obsoleteUnitat : obsoleteUnitats) {
 			if (obsoleteUnitat.getNoves().size() > 1) {
 				obsoleteUnitat.updateTipusTransicio(TipusTransicioEnumDto.DIVISIO);
 			} else {
