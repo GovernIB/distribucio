@@ -39,6 +39,10 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	
+	tr{
+		height:150px;
+	}
 </style>
 	<script>
 		$(document).ready(

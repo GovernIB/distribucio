@@ -599,7 +599,7 @@ $(document).ready(function() {
 				</th>			
 				<th data-col-name="numComentaris" style="max-width: 10%; min-width: 70px" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a id="link-comentaris" href="../contingut/{{:id}}/comentaris/?isVistaMoviments=true" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
