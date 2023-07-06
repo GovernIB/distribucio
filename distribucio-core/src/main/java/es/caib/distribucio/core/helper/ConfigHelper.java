@@ -81,25 +81,33 @@ public class ConfigHelper {
     @Transactional(readOnly = true)
     public String getConfigForEntitat(String entitatCodi, String key) {
 		String value = null;
-		ConfigEntity configEntity = configRepository.findOne(key);
-		if (configEntity != null) {
-			// Propietat trobada
-			if (configEntity.isConfigurable() && entitatCodi != null) {
-	    		// Propietat a nivell d'entitat
-	    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatCodi, key);
-	    		ConfigEntity configEntitatEntity = configRepository.findOne(keyEntitat);
-	            if (configEntitatEntity != null) {
-	            	value = getConfig(configEntitatEntity);
-	            }
+		if(key!=null) {
+			ConfigEntity configEntity = configRepository.findOne(key);
+			if (configEntity != null) {
+				// Propietat trobada
+				if (configEntity.isConfigurable() && entitatCodi != null) {
+		    		// Propietat a nivell d'entitat
+		    		String keyEntitat = convertirKeyGeneralToKeyPropietat(entitatCodi, key);
+		    		ConfigEntity configEntitatEntity = configRepository.findOne(keyEntitat);
+		            if (configEntitatEntity != null) {
+		            	value = getConfig(configEntitatEntity);
+		            }
+				}
+				if (value == null) {
+					// Propietat global
+					value = getConfig(configEntity);
+				}
+			} else {
+				// Propietat JBoss
+				value = getJBossProperty(key);
 			}
-			if (value == null) {
-				// Propietat global
-				value = getConfig(configEntity);
-			}
-		} else {
-			// Propietat JBoss
-			value = getJBossProperty(key);
-		}
+    }	else {
+    		
+    	// Propietat JBoss
+		value = getJBossProperty(key);
+    }
+    	
+    
 		return value;
     }
     
@@ -310,7 +318,7 @@ public class ConfigHelper {
         }
 
         public String getProperty(String key) {
-            if (llegirSystem)
+            if (llegirSystem && key!=null)
                 return System.getProperty(key); //jboss
             else
                 return super.getProperty(key); //jboss
