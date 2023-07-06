@@ -32,14 +32,7 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	
-	<style>
-	td {
-		overflow-wrap: break-word;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-</style>
+	
 	<script>
 		$(document).ready(
 		function() {
@@ -60,8 +53,8 @@
 		data-url="<c:url value="/backoffice/datatable"/>" 
 		data-info-type="search" 
 		class="table table-striped table-bordered"
-		style= "table-layout: fixed;"	
-		width="80%">
+		data-state-save="true" 
+		data-state-duration="-1" >
 		<thead>
 			<tr>
 				<th data-col-name="codi" data-orderable="true"><spring:message code="backoffice.list.columna.codi"/></th>
