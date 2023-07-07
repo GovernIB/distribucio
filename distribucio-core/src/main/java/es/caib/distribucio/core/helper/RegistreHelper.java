@@ -911,9 +911,15 @@ public class RegistreHelper {
 				logger.debug("Error validant si l'annex PDF \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes amb PdfReader.");
 			}
 		}
+		
+		for (RegistreAnnexFirmaEntity firmaTF04 : annex.getFirmes()) {
+			if ("TF04".equals(firmaTF04.getAnnex().getFirmes().get(0).getTipus())) { // <> TF04 CAdDES dettached
+				firmaContingut = this.getFirmaContingut(firmaTF04.getGesdocFirmaId());
+			}
+		}	
 
-		if (!isPdfSenseFirmes 
-				&& pluginHelper.isValidaSignaturaPluginActiu()) {
+		if ((!isPdfSenseFirmes 	&& pluginHelper.isValidaSignaturaPluginActiu())
+				|| (firmaContingut!=null && pluginHelper.isValidaSignaturaPluginActiu())) {
 
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
