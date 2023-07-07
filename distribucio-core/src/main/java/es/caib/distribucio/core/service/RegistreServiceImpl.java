@@ -1922,35 +1922,23 @@ public class RegistreServiceImpl implements RegistreService {
 	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) {
+		
 		FitxerDto fitxerDto = new FitxerDto();
 		
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findOne(annexId);
 		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
-		
+
 		// if annex is already created in arxiu take firma content from arxiu
-		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-		
-			Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true);
-			if (document != null) {
-				List<Firma> firmes = document.getFirmes();
-				if (firmes != null && firmes.size() > 0) {
-					
-					Iterator<Firma> it = firmes.iterator();
-					while (it.hasNext()) {
-						Firma firma = it.next();
-						if (firma.getTipus() == FirmaTipus.CSV) {
-							it.remove();
-						}
-					}
-					Firma firma = firmes.get(indexFirma);
-					
-					if (firma != null && firmaEntity != null) {
-						fitxerDto.setNom(firmaEntity.getFitxerNom());
-						fitxerDto.setContentType(firmaEntity.getTipusMime());
-						fitxerDto.setContingut(firma.getContingut());
-						fitxerDto.setTamany(firma.getContingut().length);
-					}
-				}
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null 
+				&& !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()
+				&& firmaEntity != null) {
+
+			Firma firma = registreHelper.getFirma(registreAnnexEntity, indexFirma);
+			if (firma != null) {
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firma.getContingut());
+				fitxerDto.setTamany(firma.getContingut().length);
 			}
 		
 		// if annex is not yet created in arxiu take firma content from gestio documental

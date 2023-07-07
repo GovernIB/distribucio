@@ -895,7 +895,9 @@ public class RegistreHelper {
 
 		// 0 - Mira si és un PDF sense firmes
 		boolean isPdfSenseFirmes = false;
-		if ("application/pdf".equals(annex.getFitxerTipusMime())) {
+		if ("application/pdf".equals(annex.getFitxerTipusMime())
+				&& (annex.getFirmes() == null
+						|| annex.getFirmes().isEmpty()) ) {
 			PdfReader reader;
 			try {
 				reader = new PdfReader(documentContingut);
@@ -911,15 +913,7 @@ public class RegistreHelper {
 				logger.debug("Error validant si l'annex PDF \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes amb PdfReader.");
 			}
 		}
-		
-		for (RegistreAnnexFirmaEntity firmaTF04 : annex.getFirmes()) {
-			if ("TF04".equals(firmaTF04.getAnnex().getFirmes().get(0).getTipus())) { // <> TF04 CAdDES dettached
-				firmaContingut = this.getFirmaContingut(firmaTF04.getGesdocFirmaId());
-			}
-		}	
-
-		if ((!isPdfSenseFirmes 	&& pluginHelper.isValidaSignaturaPluginActiu())
-				|| (firmaContingut!=null && pluginHelper.isValidaSignaturaPluginActiu())) {
+		if ((!isPdfSenseFirmes 	&& pluginHelper.isValidaSignaturaPluginActiu())) {
 
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
@@ -928,8 +922,16 @@ public class RegistreHelper {
 				// 1- Valida les firmes de l'annex
 				int nFirma = 1;
 				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
-					if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
-						firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId());
+					
+					if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
+						if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId());
+						}
+					} else {
+						es.caib.plugins.arxiu.api.Firma firmaArxiu = this.getFirma(annex, 0);
+						if (firmaArxiu != null) {
+							firmaContingut = firmaArxiu.getContingut();
+						}
 					}
 					try {
 						logger.debug("Validant la firma " + nFirma++ + "/" + annex.getFirmes().size() + " " + firma.getTipus()
@@ -2438,6 +2440,32 @@ public class RegistreHelper {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
+	/** Consulta la firma amb l'índex assenayalat per paràmetre excloent les firmes CSV. */
+	public es.caib.plugins.arxiu.api.Firma getFirma(RegistreAnnexEntity registreAnnexEntity, int indexFirma) {
 
+		es.caib.plugins.arxiu.api.Firma firma = null;
+
+		if (registreAnnexEntity.getFitxerArxiuUuid() == null ) {
+			return null;
+		}
+		
+		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true);
+		if (document != null) {
+			List<es.caib.plugins.arxiu.api.Firma> firmes = document.getFirmes();
+			if (firmes != null && firmes.size() > indexFirma) {
+				
+				Iterator<es.caib.plugins.arxiu.api.Firma> it = firmes.iterator();
+				while (it.hasNext()) {
+					es.caib.plugins.arxiu.api.Firma f = it.next();
+					if (f.getTipus() == FirmaTipus.CSV) {
+						it.remove();
+					}
+				}
+				firma = firmes.get(indexFirma);
+			}
+		}		
+		return firma;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 }

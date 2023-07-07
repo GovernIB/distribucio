@@ -90,8 +90,13 @@
 /*
  * webutil
  */
+/** Per forçar a ajustar el contingut separant paraules */
 table.dataTable {
 	word-break: break-all;
+}
+/** Per mantenir els títols sencers */
+table.dataTable > thead {
+	white-space: nowrap;
 }
 table.dataTable tr div.form-group {
 	width: 100%;
@@ -348,11 +353,15 @@ div.exemple {
 
 
 /* S'aplica quan l'amplada és menor de 1300px. */
-@media (max-width: 1300px) {
-
+@media (max-width: 1100px) {
+	
+	/** Permet separar títols */
+	table.dataTable > thead {
+		white-space: inherit;
+	}
+	
 	/* Amaga elements a finestres amb un width menor de l'establert. */	
 	.hidden_dis {
 	  display: none;
 	}
-	
 }

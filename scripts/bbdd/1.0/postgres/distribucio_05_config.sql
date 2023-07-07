@@ -126,6 +126,8 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plantilla.historic.es',null,'Ruta plantilla històric en castellà','GENERAL','19',false,'TEXT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.contingut.modificar.titol',false,'Permetre modificar el títol d''una anotació en classificar','GENERAL','20',false,'BOOL',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.permetre.metadades.registre',false,'Permetre metadatar assentaments registrals','GENERAL','21',false,'BOOL',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.assignar.anotacions',false,'Permetre assignar una anotació a un usuari','GENERAL','22',false,'BOOL',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.mostrar.usuaris.inactius.ldap',true,'Indica si mostrar els usuaris inactius a la LDAP que tenen permís sobre una bústia','GENERAL','23',false,'BOOL',null,null);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 

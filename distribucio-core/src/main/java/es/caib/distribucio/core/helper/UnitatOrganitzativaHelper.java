@@ -551,7 +551,8 @@ public class UnitatOrganitzativaHelper {
 			UnitatOrganitzativaEntity unitatOrganitzativaEntity, UnitatOrganitzativaDto unitatOrganitzativaDto) {
 		if (unitatOrganitzativaEntity != null && unitatOrganitzativaDto != null) {
 			Map<String, String> altresUnitatsFusionades = new HashMap<String, String>();
-			if (unitatOrganitzativaEntity.getTipusTransicio() == TipusTransicioEnumDto.FUSIO) {
+			if (unitatOrganitzativaEntity.getTipusTransicio() == TipusTransicioEnumDto.FUSIO
+					&& unitatOrganitzativaEntity.getNoves().size() > 0) {
 				List<UnitatOrganitzativaEntity> antigaUnitats = unitatOrganitzativaEntity.getNoves().get(0)
 						.getAntigues();
 				for (UnitatOrganitzativaEntity unitatEntity : antigaUnitats) {
