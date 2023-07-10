@@ -32,18 +32,7 @@
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	
-	<style>
-	td {
-		overflow-wrap: break-word;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
 	
-	tr{
-		height:150px;
-	}
-</style>
 	<script>
 		$(document).ready(
 		function() {
@@ -63,9 +52,7 @@
 		data-toggle="datatable" 
 		data-url="<c:url value="/backoffice/datatable"/>" 
 		data-info-type="search" 
-		class="table table-striped table-bordered"
-		style= "table-layout: fixed;"	
-		width="80%">
+		class="table table-striped table-bordered">
 		<thead>
 			<tr>
 				<th data-col-name="codi" data-orderable="true"><spring:message code="backoffice.list.columna.codi"/></th>
@@ -76,7 +63,7 @@
 					<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 						<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu">
 								<li><a href="backoffice/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 								<li><a href="backoffice/{{:id}}/provar"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="comu.boto.provar"/></a></li>

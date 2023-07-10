@@ -309,7 +309,11 @@
 					<th data-col-name="id" data-orderable="false" data-template="#cellAccionsTemplate" width="10%">
 						<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown d-flex justify-content-center">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary" data-toggle="dropdown">
+								<span class="fa fa-cog"></span>
+								<span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>
+								<span class="caret"></span>
+							</button>
 							<ul class="dropdown-menu">
 								<li><a href="regla/{{:id}}" data-toggle="modal"><span class="fa fa-pencil"></span>&nbsp;&nbsp;<spring:message code="comu.boto.modificar"/></a></li>
 								{{if !activa}}

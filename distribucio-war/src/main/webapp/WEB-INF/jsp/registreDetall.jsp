@@ -931,7 +931,7 @@ li[id^="anotacio_"] {
 				</tr>							
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-					<td colspan="5">
+					<td colspan="3">
 						<c:if test="${procedimentDades != null }">
 							${procedimentDades.codiSia} - ${procedimentDades.nom}
 							<c:if test="${procedimentDades.estat == 'EXTINGIT'}">

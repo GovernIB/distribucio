@@ -140,7 +140,11 @@ pageContext.setAttribute(
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
 						<div class="dropdown d-flex justify-content-center ">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary" data-toggle="dropdown">
+								<span class="fa fa-cog"></span>
+								<span class="hidden_dis"><spring:message code="comu.boto.accions"/>
+								<span class="caret"></span>
+							</button>
 							<ul class="dropdown-menu">
 								<li><a href="contingutAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 								<li><a href="contingutAdmin/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="comu.boto.historial"/></a></li>

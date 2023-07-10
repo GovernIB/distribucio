@@ -605,7 +605,7 @@ $(document).ready(function() {
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
 						<div class="dropdown">
-							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+							<button class="btn btn-primary" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>&nbsp;<span class="caret"></span></button>
 							<ul class="dropdown-menu dropdown-left-high">
 								<li>
 									<a id="detall-button"
