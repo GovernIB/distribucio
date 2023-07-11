@@ -202,7 +202,8 @@ $(document).ready(function() {
 					optionValueAttribute="id" 
 					optionTextAttribute="nom" 
 					required="true"
-					emptyOption="true" />
+					emptyOption="true"
+					optionMinimumResultsForSearch="0" />
 			</div>
 			<div id="camps_tipus_UNITAT">
 				<dis:inputSuggest 

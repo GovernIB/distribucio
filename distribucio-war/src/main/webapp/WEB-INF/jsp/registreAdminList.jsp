@@ -353,7 +353,7 @@ $(document).ready(function() {
 				</div>
 			</div>
 			<div class="col-md-2">
-				<dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true"/>
+				<dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true" optionMinimumResultsForSearch="0"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>			

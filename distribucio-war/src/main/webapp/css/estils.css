@@ -92,7 +92,8 @@
  */
 /** Per forçar a ajustar el contingut separant paraules */
 table.dataTable {
-	word-break: break-all;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 /** Per mantenir els títols sencers */
 table.dataTable > thead {
