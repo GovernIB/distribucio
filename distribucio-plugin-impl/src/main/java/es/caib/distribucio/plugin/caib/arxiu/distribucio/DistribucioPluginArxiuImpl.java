@@ -407,12 +407,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// comprovar si la firma està reconeguda
 		for (ArxiuFirmaDto arxiuFirma : arxiuFirmes) {
 			// comprova que el tipus i el perfil estiguin reconeguts pel model CAIb
-			if (arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.SMIME) || 
+			if (	arxiuFirma.getTipus() == null ||
+					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.SMIME) || 
 					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.ODT) || 
 					arxiuFirma.getTipus().equals(ArxiuFirmaTipusEnumDto.OOXML)) {
 				return false;
 			}
-			if (arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASIC) || 
+			if (	arxiuFirma.getPerfil() == null || 
+					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASIC) || 
 					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASELINE_T) || 
 					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.LTA)) {
 				return false;

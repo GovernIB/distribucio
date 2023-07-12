@@ -750,7 +750,7 @@ public class RegistreHelper {
 				self.getDistribucioRegistreAnotacio(anotacioId);
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
-		List<Exception> exceptions = new ArrayList<>();
+		List<Exception> exceptions = null;
 		
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
 
@@ -781,6 +781,7 @@ public class RegistreHelper {
 						"anotacioId=" + distribucioRegistreAnotacio.getId() + ", " +
 						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");				
+				exceptions = new ArrayList<>();
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
 					try {
 						boolean titolRepetit = false;

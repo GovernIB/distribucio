@@ -65,7 +65,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2020";
+	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2023";
 	
 
 	private static final int N_ANOTACIONS = 1;

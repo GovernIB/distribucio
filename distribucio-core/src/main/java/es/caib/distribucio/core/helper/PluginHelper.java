@@ -718,6 +718,10 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			ValidateSignatureRequest validationRequest = new ValidateSignatureRequest();
+			if (documentContingut != null && firmaContingut == null) {
+				firmaContingut = documentContingut;
+				documentContingut = null;
+			}
 			if (firmaContingut != null) {
 				validationRequest.setSignedDocumentData(documentContingut);
 				validationRequest.setSignatureData(firmaContingut);
