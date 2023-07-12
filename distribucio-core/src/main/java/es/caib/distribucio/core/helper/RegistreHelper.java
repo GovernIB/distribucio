@@ -1384,12 +1384,13 @@ public class RegistreHelper {
 			Map<String, String> accioParams) {
 
 		long t0 = System.currentTimeMillis();
-		String accioDescripcio = "";
-		if (ids.size() > 0 && ids.size() < 2) {
-			accioDescripcio = "Comunicar anotacions pendents " + backofficeDesti.getCodi() +" - anotació "+ ids.get(0).getIndetificador();
-		} else if(ids.size()>1){
-			accioDescripcio = "Comunicació amb el backoffice " + backofficeDesti.getCodi() + " amb "+ids.size()+"  aotacions.";
+		String accioDescripcio = "Comunicar ";
+		if (ids.size() == 1) {
+			accioDescripcio += " l'anotació " + ids.get(0).getIndetificador();
+		} else {
+			accioDescripcio +=  ids.size() + " anotacions";
 		}
+		accioDescripcio += " al backoffice " + backofficeDesti.getCodi();
 		String usuari = null;
 		try {			
 			usuari = backofficeDesti.getUsuari();

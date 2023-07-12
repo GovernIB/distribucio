@@ -113,7 +113,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				first = false;
 			}
 		}
-		String accioDescripcio = "Nou registre d'entrada processat al servei web de bústia del registre "+ registreEntrada.getIdentificador();
+		String accioDescripcio = "Nou registre d'entrada "+ registreEntrada.getNumero();
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
