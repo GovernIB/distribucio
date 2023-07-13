@@ -2656,14 +2656,16 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
-		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(registreAnnexRepository.findOne(annexId), null);
+		RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(annex, null);
 		
 		try {
 			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
 			// guardar com a definitiu
-			if (ValidacioFirmaEnum.isValida(validacioFirma)) {
-				// Recuperar informació de l'annex
-				RegistreAnnexEntity annex = registreAnnexRepository.findOne(annexId);
+			if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma)
+					&& AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) ) {
+
+				// Actualitza el recompte d'esborranys
 				RegistreEntity registre = registreRepository.getOne(registreId);
 				List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
 				int numEsborrany = 0;
@@ -2683,14 +2685,12 @@ public class RegistreServiceImpl implements RegistreService {
 					entityManager.flush();
 
 				}
-				logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId);
 			}
+			logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId + " i resultat " + validacioFirma);
 		} catch (Exception e) {
 			logger.error("Validació de signatura NO completada correctament per a l'annex con id:  "+ annexId +" de l'anotació amb id:  "+ registreId) ;
 			e.printStackTrace();
-		}				
-	
-			
+		}
 		return validacioFirma;
 	}
 	
