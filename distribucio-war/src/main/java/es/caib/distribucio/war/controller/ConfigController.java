@@ -136,15 +136,34 @@ public class ConfigController extends BaseUserController{
     		HttpServletRequest request, 
     		@PathVariable String key, 
     		Model model) {
-    	
+
     	try {
-    		return configService.findEntitatsConfigByKey(key.replace("-", "."));
+            List<ConfigGroupDto> configGroups = configService.findAll();
+            List<ConfigDto> entitatsDB = configService.findEntitatsConfigByKey(key.replace("-", "."));
+            List<ConfigDto> propertiesConfigs=null;
+    		for(ConfigGroupDto configGroup: configGroups) {
+    				propertiesConfigs = configGroup.getConfigs();
+    				for(ConfigDto configDtoJbossProperty :propertiesConfigs) {
+        				for(ConfigDto setValue: entitatsDB) {        					
+        					if(setValue.getEntitatCodi().equals(configDtoJbossProperty.getEntitatCodi())
+        							&& configDtoJbossProperty.getValue()!=null
+        							&& configDtoJbossProperty.getKey().equals(setValue.getKey())) {
+        						setValue.setValue(configDtoJbossProperty.getValue());
+        					}
+        					
+        				}
+        			}
+    			
+    			
+    		}
+            return entitatsDB;
     	}catch (Exception ex) {
     		logger.error("Error obtinguent les configuracions d'entitats per la key " + key, ex);
     		return new ArrayList<>();
     	}
     	
     }
+    
     
     
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)
