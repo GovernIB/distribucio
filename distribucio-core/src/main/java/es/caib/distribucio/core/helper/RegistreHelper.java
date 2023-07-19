@@ -924,11 +924,13 @@ public class RegistreHelper {
 				int nFirma = 1;
 				for (RegistreAnnexFirmaEntity firma : annex.getFirmes()) {
 					
-					if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
+					// Si encara no està a l'Arxiu o està en estat esborrany recupera el fitxer de firma de la gesió documental.
+					if (annex.getFitxerArxiuUuid() == null || AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
 						if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
 							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId());
 						}
 					} else {
+						// Altrament obté la 1a firma de l'Arxiu
 						es.caib.plugins.arxiu.api.Firma firmaArxiu = this.getFirma(annex, 0);
 						if (firmaArxiu != null) {
 							firmaContingut = firmaArxiu.getContingut();
