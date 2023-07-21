@@ -154,6 +154,9 @@ public class ContingutHelper {
 			BustiaEntity bustiaEntity = (BustiaEntity)deproxied;
 			BustiaDto bustiaDto = new BustiaDto();
 			bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
+			if (bustiaEntity.getPare() == null) {
+				bustiaDto.setNom(bustiaEntity.getUnitatOrganitzativa().getDenominacio());
+			}
 			bustiaDto.setActiva(bustiaEntity.isActiva());
 			bustiaDto.setPerDefecte(bustiaEntity.isPerDefecte());
 
@@ -248,7 +251,9 @@ public class ContingutHelper {
 		
 		// ########################################### CONTINGUT ####################################################
 		contingutDto.setId(contingut.getId());
-		contingutDto.setNom(contingut.getNom());
+		if (contingutDto.getNom() == null) {
+			contingutDto.setNom(contingut.getNom());
+		}
 			contingutDto.setEsborrat(contingut.getEsborrat());
 			contingutDto.setArxiuUuid(contingut.getArxiuUuid());
 			contingutDto.setArxiuDataActualitzacio(contingut.getArxiuDataActualitzacio());
