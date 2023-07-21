@@ -565,6 +565,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DocumentEstat estatDocument, 
 			boolean firmesReconegudes) throws SistemaExternException {
 		
+		String annexFitxerArxiuUuid = annex.getFitxerArxiuUuid();
+		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
 			if (fitxer.getContingut() == null) {
@@ -636,6 +638,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 								documentEniRegistrableDto,
 								annex.getMetaDades()),
 						identificadorPare);
+				
+				annexFitxerArxiuUuid = contingutFitxer != null? contingutFitxer.getIdentificador() : null;						
+
 				integracioAddAccioOk(
 						integracioArxiuCodi,
 						accioDescripcio,
@@ -665,7 +670,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						accioParams,
 						System.currentTimeMillis() - t0);
 			}
-			return contingutFitxer != null? contingutFitxer.getIdentificador() : null;
+			return annexFitxerArxiuUuid;
 		} catch (Exception ex) {
 			
 			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + " i amb estat ";
