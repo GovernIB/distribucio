@@ -3143,9 +3143,10 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		List<RegistreAnnexFirmaDto> registresAnnexFirmesDto = new ArrayList<>();
-		RegistreAnnexFirmaEntity registreAnnexFirmaEntity = registreAnnexFirmaRepository.getRegistreAnnexFirmaSenseDetall(annexId);
-		if(registreAnnexFirmaEntity != null) {
-			RegistreAnnexFirmaDto registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
+		List<RegistreAnnexFirmaEntity> registreAnnexFirmes = registreAnnexFirmaRepository.getRegistreAnnexFirmesSenseDetall(annexId);
+		RegistreAnnexFirmaDto registreAnnexFirmaDto;
+		for (RegistreAnnexFirmaEntity registreAnnexFirmaEntity : registreAnnexFirmes) {
+			registreAnnexFirmaDto = conversioTipusHelper.convertir(registreAnnexFirmaEntity, RegistreAnnexFirmaDto.class);
 			registresAnnexFirmesDto.add(registreAnnexFirmaDto);
 		}
 		return registresAnnexFirmesDto;

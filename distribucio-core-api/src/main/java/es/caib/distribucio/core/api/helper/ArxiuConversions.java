@@ -62,5 +62,30 @@ public class ArxiuConversions {
 		return tipusFirma;
 	}
 
+	public static ArxiuFirmaTipusEnumDto toArxiuFirmaTipus(String tipusFirmaEni) {
+		
+		switch (tipusFirmaEni) {
+			case "TF01":
+				return ArxiuFirmaTipusEnumDto.CSV;
+			case "TF02":
+				return ArxiuFirmaTipusEnumDto.XADES_DET;
+			case "TF03":
+				return ArxiuFirmaTipusEnumDto.XADES_ENV;
+			case "TF04":
+				return ArxiuFirmaTipusEnumDto.CADES_DET;
+			case "TF05":
+				return ArxiuFirmaTipusEnumDto.CADES_ATT;
+			case "TF06":
+				return ArxiuFirmaTipusEnumDto.PADES;
+			case "TF07":
+				return ArxiuFirmaTipusEnumDto.SMIME;
+			case "TF08":
+				return ArxiuFirmaTipusEnumDto.ODT;
+			case "TF09":
+				return ArxiuFirmaTipusEnumDto.OOXML;
+			default:
+				return null;
+		}
+	}
 	
 }

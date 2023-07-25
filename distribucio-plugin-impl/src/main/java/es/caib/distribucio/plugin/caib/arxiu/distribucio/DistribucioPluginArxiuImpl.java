@@ -68,6 +68,7 @@ import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.plugins.arxiu.caib.ArxiuConversioHelper;
 import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
 
 /**
@@ -216,7 +217,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				for (Firma firma: arxiuDocument.getFirmes()) {
 					ArxiuFirmaDto arxiuFirma = new ArxiuFirmaDto();
 					
-					arxiuFirma.setTipus(firma.getTipus() != null ? ArxiuFirmaTipusEnumDto.valueOf(firma.getTipus().toString()) : null);
+					arxiuFirma.setTipus(firma.getTipus() != null ? ArxiuConversions.toArxiuFirmaTipus(firma.getTipus().toString()) : null);
 					arxiuFirma.setPerfil(firma.getPerfil() != null ? ArxiuFirmaPerfilEnumDto.valueOf(firma.getPerfil().toString()) : null);
 					arxiuFirma.setFitxerNom(firma.getFitxerNom());
 					arxiuFirma.setContingut(firma.getContingut());
@@ -541,18 +542,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	}
 
 	private String revisarContingutNom(String nom) {
-		if (nom != null) {
-			/*String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
-			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
-			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();*/
-			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüÇÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
-			if (nom.endsWith(".")) {
-				nom = nom.substring(0, nom.length()-1);
-			}
-			return nom;
-		} else {
-			return null;
-		}
+		return ArxiuConversioHelper.revisarContingutNom(nom);
 	}
 
 	private String arxiuDocumentAnnexCrearActualizar(
@@ -569,7 +559,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 			// Per guardar-lo com a esborrany treu la informació de les firmes i corregeix el contingut
-			if (fitxer.getContingut() == null) {
+			if (fitxer.getContingut() == null && firmes != null && !firmes.isEmpty()) {
 				fitxer.setContingut(firmes.get(0).getContingut());
 			}
 			firmes = null;
@@ -844,7 +834,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		// Revisa els caràcters estranys com ho fa el plugin abans comprobar si ja existeix el nom
 		arxiuNom = revisarContingutNom(arxiuNom);
-		
 
 		// geting all docuements of an expedient saved already in arxiu
 		List<ContingutArxiu> continguts = getArxiuPlugin().expedientDetalls(

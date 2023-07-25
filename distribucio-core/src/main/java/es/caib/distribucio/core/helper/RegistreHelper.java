@@ -1003,6 +1003,17 @@ public class RegistreHelper {
 					}
 				}				
 			}
+			// Valida que no tingui més de 1 firma PADES
+			int nPades = 0;
+			for (DistribucioRegistreFirma firma : firmes) {
+				if ("TF06".equals(firma.getTipus())) {
+					nPades++;
+				}
+			}
+			if (nPades > 1) {
+				validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
+				validacioFirmaError = "Els annexos no poden tenir més d'una firma PAdES";
+			}
 		}
 		annex.setValidacioFirmaEstat(validacioFirmaEstat);
 		annex.setValidacioFirmaError(validacioFirmaError);
@@ -1193,7 +1204,7 @@ public class RegistreHelper {
 	
 	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
-		logger.trace("Loading Signatura detalls to DB");
+		logger.debug("Guardant els detalls de la firma a la BBDD de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() + " de l'anotació " + annexEntity.getRegistre().getNumero());
 		
 		if (annexEntity.getFitxerArxiuUuid() == null || annexEntity.getFitxerArxiuUuid().isEmpty()) {
 			logger.warn("Intent de carregar dades de firmes per l'annex " + annexEntity.getTimestamp() + " de l'anotació " + annexEntity.getRegistre().getIdentificador() + " amb UUID d'Arxiu buit.");
@@ -1277,8 +1288,8 @@ public class RegistreHelper {
 				}
 			annexEntity.updateSignaturaDetallsDescarregat(true);
 		} catch (Exception e) {
-			logger.error("Error al carregar singatura detalls a la base de dades", e);
-			throw new RuntimeException("Error al carregar singatura detalls a la base de dades", e);
+			logger.error("Error al carregar singatura detalls a la base de dades de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() 
+						+ " de l'anotació " + annexEntity.getRegistre().getNumero(), e);
 		}
 	}
 	
@@ -2208,7 +2219,7 @@ public class RegistreHelper {
 		
 		if (annex.getFitxerArxiuUuid() == null || 
 				( annex.getArxiuEstat() == AnnexEstat.ESBORRANY
-					&& annex.getFirmes().isEmpty()
+					&& !annex.getFirmes().isEmpty()
 					&& ValidacioFirmaEnum.FIRMA_INVALIDA != distribucioAnnex.getValidacioFirmaEstat()) ) {
 									
 			

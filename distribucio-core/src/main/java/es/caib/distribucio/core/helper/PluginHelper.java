@@ -715,6 +715,8 @@ public class PluginHelper {
 		String accioDescripcio = "Obtenir informació de document firmat";
 		String usuariIntegracio = this.getPropertyUsuariValidacioSignatura();		
 		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("documentContingut", documentContingut != null ? documentContingut.length + " bytes" : "null");
+		accioParams.put("firmaContingut", firmaContingut != null ? firmaContingut.length + " bytes" : "null");
 		long t0 = System.currentTimeMillis();
 		try {
 			ValidateSignatureRequest validationRequest = new ValidateSignatureRequest();
