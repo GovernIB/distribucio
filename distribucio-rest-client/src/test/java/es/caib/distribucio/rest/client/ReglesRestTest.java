@@ -86,6 +86,9 @@ public class ReglesRestTest {
 			ret = client.add(entitat, sia, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
+			ret = client.add(entitat, sia, backoffice, presencial);
+			System.out.println("Segona crida creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
+									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
 			System.err.println("Error creant la regla: " + e.getMessage());
 			e.printStackTrace();

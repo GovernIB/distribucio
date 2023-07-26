@@ -1236,7 +1236,7 @@ public class RegistreHelper {
 				break;
 			}
 			// Si passa d'esborrany a definitiu resta un en el recompte d'annexos en estat d'esborrany de l'anotació
-			if (estatAnterior == AnnexEstat.ESBORRANY 
+			if ((estatAnterior == null || estatAnterior == AnnexEstat.ESBORRANY )
 					&& annexEntity.getArxiuEstat() == AnnexEstat.DEFINITIU) {
 				annexEntity.getRegistre().setAnnexosEstatEsborrany(
 						Math.max(0, annexEntity.getRegistre().getAnnexosEstatEsborrany() - 1));
@@ -2219,7 +2219,6 @@ public class RegistreHelper {
 		
 		if (annex.getFitxerArxiuUuid() == null || 
 				( annex.getArxiuEstat() == AnnexEstat.ESBORRANY
-					&& !annex.getFirmes().isEmpty()
 					&& ValidacioFirmaEnum.FIRMA_INVALIDA != distribucioAnnex.getValidacioFirmaEstat()) ) {
 									
 			

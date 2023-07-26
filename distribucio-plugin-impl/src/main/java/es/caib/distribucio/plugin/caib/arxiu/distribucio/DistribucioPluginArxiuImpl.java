@@ -194,24 +194,32 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
 			String procedimentCodi) throws SistemaExternException {
 		
-		List<ArxiuFirmaDto> arxiuFirmes = null;
 		byte[] annexContingut = null;
+		List<ArxiuFirmaDto> arxiuFirmes = null;
 		
-		// if annex is already created in arxiu 
-		if (distribucioAnnex.getFitxerArxiuUuid() != null) {
+		// Determina el contingut
+		if (distribucioAnnex.getGesdocDocumentId() != null) {
+		    // get contingut bytes from local file system
+			annexContingut = gestioDocumentalGet(
+					distribucioAnnex.getGesdocDocumentId(),
+					gesdocAgrupacioAnnexos);
+		} 
+		if (annexContingut == null && distribucioAnnex.getFitxerArxiuUuid() != null) {
 			// Obtenim contingut bytes i les firmes de l'arxiu
 			Document arxiuDocument = this.arxiuDocumentConsultar(
 					distribucioAnnex.getFitxerArxiuUuid(),
 					null,
 					true,
 					false);
-			if (arxiuDocument.getContingut() == null) {
+			if (arxiuDocument.getContingut() != null) {
+				annexContingut = arxiuDocument.getContingut().getContingut();
+			}
+			if (annexContingut == null) {
 				throw new ValidationException(
 						"No s'ha trobat cap contingut per l'annex (" +
 						"uuid=" + distribucioAnnex.getFitxerArxiuUuid() + ")");
 			}
-			annexContingut = arxiuDocument.getContingut().getContingut();
-			
+			// Llegeix les firmes de l'Arxiu
 			if (arxiuDocument.getFirmes() != null) {
 				arxiuFirmes = new ArrayList<ArxiuFirmaDto>();
 				for (Firma firma: arxiuDocument.getFirmes()) {
@@ -226,84 +234,75 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirmes.add(arxiuFirma);
 				}
 			}
-		// if annex is not yet created in arxiu 	
-		} else { 
-			if (distribucioAnnex.getGesdocDocumentId() != null) {
-			    // get contingut bytes from local file system
-				annexContingut = gestioDocumentalGet(
-						distribucioAnnex.getGesdocDocumentId(),
-						gesdocAgrupacioAnnexos);
-			} 
-			if (distribucioAnnex.getFirmes() != null) {
-				// get firmes info from db and firmes content bytes from local file system
-				arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
-						distribucioAnnex.getFirmes());
-			}
+		}
+
+		// Determina les firmes
+		if (distribucioAnnex.getFirmes() != null) {
+			// get firmes info from db and firmes content bytes from local file system
+			arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
+					distribucioAnnex.getFirmes());			
 		}
 		
-		if (annexContingut != null) {
-			// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
-			boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
-			DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
-			boolean documentValid = (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.FIRMA_INVALIDA)
-									&& (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.ERROR_VALIDANT)
-									&& format != null;
-			
+		// Si l'annex no està firmat el firma amb el plugin de firma en servidor si és vàlid, té un format reconegut ler l'Arxiu i no s'han esgotat els reintents
+		boolean annexFirmat = arxiuFirmes != null && !arxiuFirmes.isEmpty();
+		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(distribucioAnnex.getFitxerNom()));
+		boolean documentValid = (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.FIRMA_INVALIDA)
+								&& (distribucioAnnex.getValidacioFirmaEstat() != ValidacioFirmaEnum.ERROR_VALIDANT)
+								&& format != null;
 
-			// Mira si firmar en servidor
-			if (!annexFirmat 
-					&& documentValid
-					&& isRegistreSignarAnnexos()) {
+		// Mira si firmar en servidor
+		if (!annexFirmat 
+				&& documentValid
+				&& isRegistreSignarAnnexos()) {
+			
+			try {
+				SignaturaResposta signatura = signaturaDistribucioSignar(
+						distribucioAnnex,
+						annexContingut,
+						"Firma en servidor de document annex de l'anotació de registre");
 				
-				try {
-					SignaturaResposta signatura = signaturaDistribucioSignar(
-							distribucioAnnex,
-							annexContingut,
-							"Firma en servidor de document annex de l'anotació de registre");
-					
-					if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()) 
-							|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
-						logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
-								signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
-						if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
-							logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
-							if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
-								signatura.setTipusFirmaEni("TF04");
-							if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
-								signatura.setPerfilFirmaEni("BES");
-						}
+				if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()) 
+						|| StringUtils.isEmpty(signatura.getTipusFirmaEni())) {
+					logger.warn("El tipus o perfil de firma s'ha retornat buit i això pot provocar error guardant a l'Arxiu [tipus: " + 
+							signatura.getTipusFirmaEni() + ", perfil: " + signatura.getPerfilFirmaEni() + "]");
+					if ("cades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
+						logger.warn("Fixant el tipus de firma a TF04 i perfil BES");
+						if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
+							signatura.setTipusFirmaEni("TF04");
+						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
+							signatura.setPerfilFirmaEni("BES");
 					}
-					byte [] firmaDistribucioContingut = signatura.getContingut();
-					String tipusFirmaArxiu = signatura.getTipusFirmaEni();
-					String perfil = ArxiuConversions.toPerfilFirmaArxiu(signatura.getPerfilFirmaEni());
-					String fitxerNom = signatura.getNom();
-					String tipusMime = signatura.getMime();
-					String csvRegulacio = null;
-					
-					
-					DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
-					annexFirma.setTipus(tipusFirmaArxiu);
-					annexFirma.setPerfil(perfil);
-					annexFirma.setFitxerNom(fitxerNom);
-					annexFirma.setTipusMime(tipusMime);
-					annexFirma.setCsvRegulacio(csvRegulacio);
-					annexFirma.setAutofirma(true);
-					annexFirma.setGesdocFirmaId(null);
-					annexFirma.setContingut(firmaDistribucioContingut);
-					annexFirma.setAnnex(distribucioAnnex);
-					annexFirma.setTamany(firmaDistribucioContingut.length);
-					distribucioAnnex.getFirmes().add(annexFirma);
-					
-					arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
-							distribucioAnnex.getFirmes());					
-					
-				} catch(SistemaExternException se) {
-					if (getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
-						logger.error("Error firmant en servidor l'annex \"" + distribucioAnnex.getFitxerNom() + "\" (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
-						+ ". Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
-					} else {
-						throw se;
-					}
+				}
+				byte [] firmaDistribucioContingut = signatura.getContingut();
+				String tipusFirmaArxiu = signatura.getTipusFirmaEni();
+				String perfil = ArxiuConversions.toPerfilFirmaArxiu(signatura.getPerfilFirmaEni());
+				String fitxerNom = signatura.getNom();
+				String tipusMime = signatura.getMime();
+				String csvRegulacio = null;
+				
+				
+				DistribucioRegistreFirma annexFirma = new DistribucioRegistreFirma();
+				annexFirma.setTipus(tipusFirmaArxiu);
+				annexFirma.setPerfil(perfil);
+				annexFirma.setFitxerNom(fitxerNom);
+				annexFirma.setTipusMime(tipusMime);
+				annexFirma.setCsvRegulacio(csvRegulacio);
+				annexFirma.setAutofirma(true);
+				annexFirma.setGesdocFirmaId(null);
+				annexFirma.setContingut(firmaDistribucioContingut);
+				annexFirma.setAnnex(distribucioAnnex);
+				annexFirma.setTamany(firmaDistribucioContingut.length);
+				distribucioAnnex.getFirmes().add(annexFirma);
+				
+				arxiuFirmes = convertirFirmesAnnexToArxiuFirmaDto(
+						distribucioAnnex.getFirmes());					
+				
+			} catch(SistemaExternException se) {
+				if (getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
+					logger.error("Error firmant en servidor l'annex \"" + distribucioAnnex.getFitxerNom() + "\" (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
+					+ ". Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+				} else {
+					throw se;
 				}
 			}
 		}
@@ -318,12 +317,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		// Es guarden definitius si:
 		// 1) El document té firmes
-		boolean guardarDefinitiu = distribucioAnnex.getFirmes() != null && !distribucioAnnex.getFirmes().isEmpty();
+		boolean guardarDefinitiu = arxiuFirmes != null && !arxiuFirmes.isEmpty();
 		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
 		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) 
 				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
 		// 3) Format no reconegut
-		DocumentFormat format = this.getDocumentFormat(this.getDocumentExtensio(fitxerContingut));
 		guardarDefinitiu = guardarDefinitiu && format != null;
 
 		// 4) Té una firma reconeguda per l'arxiu CAIB o la propietat  
@@ -638,22 +636,25 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						System.currentTimeMillis() - t0);
 			} else if (DocumentEstat.DEFINITIU.equals(estatDocument)) {
 				// Actualitza l'annex com a definitiu
-				contingutFitxer = getArxiuPlugin().documentModificar(
-						toArxiuDocument(
-								annex.getFitxerArxiuUuid(),
-								null, // No actualitza el nom 
-								annex.getTitol(),
-								fitxer,
-								firmes,
-								null,
-								(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
-								Arrays.asList(unitatArrelCodi),
-								annex.getDataCaptura(),
-								(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
-								(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
-								estatDocument,
-								documentEniRegistrableDto,
-								annex.getMetaDades()));
+				Document document = toArxiuDocument(
+						annex.getFitxerArxiuUuid(),
+						null, // No actualitza el nom 
+						annex.getTitol(),
+						fitxer,
+						firmes,
+						null,
+						(annex.getOrigenCiutadaAdmin() != null ? NtiOrigenEnumDto.values()[Integer.valueOf(RegistreAnnexOrigenEnum.valueOf(annex.getOrigenCiutadaAdmin()).getValor())] : null),
+						Arrays.asList(unitatArrelCodi),
+						annex.getDataCaptura(),
+						(annex.getNtiElaboracioEstat() != null ? DocumentNtiEstadoElaboracionEnumDto.valueOf(RegistreAnnexElaboracioEstatEnum.valueOf(annex.getNtiElaboracioEstat()).getValor()) : null),
+						(annex.getNtiTipusDocument() != null ? DocumentNtiTipoDocumentalEnumDto.valueOf(RegistreAnnexNtiTipusDocumentEnum.valueOf(annex.getNtiTipusDocument()).getValor()) : null),
+						estatDocument,
+						documentEniRegistrableDto,
+						annex.getMetaDades());
+				// Treu el contingut del fitxer
+				document.setContingut(null);
+				// Guarda com a definitiu amb les firmes reconegudes
+				contingutFitxer = getArxiuPlugin().documentModificar(document);
 				integracioAddAccioOk(
 						integracioArxiuCodi,
 						accioDescripcio,
