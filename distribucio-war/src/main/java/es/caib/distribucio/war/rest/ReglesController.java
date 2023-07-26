@@ -156,6 +156,7 @@ public class ReglesController extends BaseUserController {
 			} else {
 				//En comprovar-se que ja existeix una regla amb el codi sia (procediment) idèntic 
 				//al mateix backoffice es llança un update amb les noves dades i es finalitza el servei.
+				novaReglaDto.setId(regla.getId());
 				novaReglaDto = reglaService.update(entitatDto.getId(), novaReglaDto);
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
 				+ "\" actualitzada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
