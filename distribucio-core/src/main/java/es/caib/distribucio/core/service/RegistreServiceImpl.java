@@ -1831,6 +1831,13 @@ public class RegistreServiceImpl implements RegistreService {
 					"L'anotació de registre no es troba en estat pendent");
 		}
 		
+		logger.debug("Fi reintentant processament d'anotació pendent per admins (" +
+				"entitatId=" + entitatId + ", " +
+				"registreId=" + registreId + ", " +
+				"anotacio=" + anotacio.getNumero() + ", " +
+				"exceptionProcessant=" + (exceptionProcessant != null ? exceptionProcessant.getClass() + " " + exceptionProcessant.getMessage() : "") + 
+				")");
+		
 		return exceptionProcessant == null;
 	}
 	

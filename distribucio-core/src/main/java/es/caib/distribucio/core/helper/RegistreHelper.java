@@ -35,6 +35,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.SistemaExternException;
 import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.core.api.helper.ArxiuConversions;
 import es.caib.distribucio.core.api.registre.Firma;
 import es.caib.distribucio.core.api.registre.RegistreAnnex;
 import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
@@ -725,6 +727,7 @@ public class RegistreHelper {
 				}
 			}else {
 				// Corregeix l'estat a pendent d'Arxiu per a que segueixi el procés fins a bústia pendent
+				anotacio.updateRegla(null);
 				anotacio.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 			}
 		} else {
@@ -1014,6 +1017,23 @@ public class RegistreHelper {
 				validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
 				validacioFirmaError = "Els annexos no poden tenir més d'una firma PAdES";
 			}
+			if (validacioFirmaError != null && !firmes.isEmpty() ) {
+				// Valida que els tipus de firma i perfils s'avinguin segons el model CAIB				
+				boolean errorPerfil = false;
+				StringBuilder errorPerfilsDescripcio = new StringBuilder();
+				for (DistribucioRegistreFirma firma : firmes) {
+					ArxiuFirmaTipusEnumDto firmaTipus = ArxiuConversions.toArxiuFirmaTipus(firma.getTipus());
+					if (!ArxiuConversions.checkTipusPrefil(firmaTipus, firma.getPerfil())) {
+						errorPerfilsDescripcio.append("El perfil \"" + firma.getPerfil() + "\" no està admés a l'Arxiu pel tipus de firma " + firmaTipus + ". " +
+										     " Els perfils admesos són: [" + StringUtils.join(ArxiuConversions.getPerfilsAdmesosPerTipus(firmaTipus), ",") + "]");
+						errorPerfil = true;
+					}
+				}
+				if (errorPerfil) {
+					validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_INVALIDA;
+					validacioFirmaError = errorPerfilsDescripcio.toString();
+				}
+			}
 		}
 		annex.setValidacioFirmaEstat(validacioFirmaEstat);
 		annex.setValidacioFirmaError(validacioFirmaError);
@@ -1202,7 +1222,7 @@ public class RegistreHelper {
 	
 	
 	
-	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
+	private void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		logger.debug("Guardant els detalls de la firma a la BBDD de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() + " de l'anotació " + annexEntity.getRegistre().getNumero());
 		

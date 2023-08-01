@@ -1558,6 +1558,7 @@ public class BustiaServiceImpl implements BustiaService {
 		logger.debug("Reenviant contingut pendent de la bústia ("
 				+ "entitatId=" + entitatId + ", "
 				+ "bustiaDestiIds=" + bustiaDestiIds + ", "
+				+ "opcioDeixarCopiaSelectada=" + opcioDeixarCopiaSelectada + ", "
 				+ "registreId=" + registreId + ", "
 				+ "comentari=" + comentari + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(

@@ -336,7 +336,7 @@ public class ReglaHelper {
 				if (alreadySavedInArxiu) {
 					if ((isPermesSobreescriureAnotacions() && !reactivada && !isPerConeixement && !anotacioDuplicada) || !isPermesSobreescriureAnotacions()) {
 						if (regla.getBackofficeDesti() == null) {
-							throw new RuntimeException("Regla es del tipo backoffice pero no tiene backoffice específico assignado");
+							throw new RuntimeException("La regla és del tipus backoffice però no té un backoffice específic assignat, s'ha de corregir la regla.");
 						}
 						
 						registre.updateProcesBackPendent();

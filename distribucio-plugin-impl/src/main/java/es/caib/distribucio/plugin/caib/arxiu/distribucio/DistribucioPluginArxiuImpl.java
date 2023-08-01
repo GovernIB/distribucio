@@ -301,6 +301,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				if (getPropertyGuardarAnnexosFirmesInvalidesComEsborrany()) {
 					logger.error("Error firmant en servidor l'annex \"" + distribucioAnnex.getFitxerNom() + "\" (" + distribucioAnnex.getFitxerNom() + "):"  + se.getMessage() 
 					+ ". Per la propietat es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany=true s'ignora l'excepció per guardar l'annex com esborrany.");
+					// Marca el document com a invàlid perquè no s'ha pogut firmar en servidor, es guardarà com esborrany
+					documentValid = false;
 				} else {
 					throw se;
 				}
@@ -316,8 +318,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		// Determina l'estat
 		DocumentEstat estatDocument = DocumentEstat.ESBORRANY;
 		// Es guarden definitius si:
-		// 1) El document té firmes
-		boolean guardarDefinitiu = arxiuFirmes != null && !arxiuFirmes.isEmpty();
+		// 1) El document té firmes i és vàlid
+		boolean guardarDefinitiu = arxiuFirmes != null && !arxiuFirmes.isEmpty() && documentValid;
 		// 2) No té firmes invàlides o la propietat de guardar annexos amb firmes invàlides com a esborrany està desactivada
 		guardarDefinitiu = guardarDefinitiu && ValidacioFirmaEnum.isValida(distribucioAnnex.getValidacioFirmaEstat()) 
 				|| ! getPropertyGuardarAnnexosFirmesInvalidesComEsborrany();
@@ -336,7 +338,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			estatDocument = DocumentEstat.DEFINITIU;
 		}
 		
-
 		
 		// SAVE IN ARXIU
 		String uuidDocumentCreat = null;
@@ -403,7 +404,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		if (arxiuFirmes == null) {
 			return false;
 		}
-		// comprovar si la firma està reconeguda
+		// comprovar si la firma està reconeguda i si els perfils de firma són correctes
 		for (ArxiuFirmaDto arxiuFirma : arxiuFirmes) {
 			// comprova que el tipus i el perfil estiguin reconeguts pel model CAIb
 			if (	arxiuFirma.getTipus() == null ||
@@ -417,7 +418,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.BASELINE_T) || 
 					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.LTA)) {
 				return false;
-			}	
+			}
+			// Comprova que el perfil de firma es corresón amb el tipus de firma
+			if (!ArxiuConversions.checkTipusPrefil(arxiuFirma.getTipus(), arxiuFirma.getPerfil().toString())) {
+				return false;
+			}
 		}
 		return true;
 	}

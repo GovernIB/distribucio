@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.core.helper;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,6 +122,8 @@ public class ContingutHelper {
 	private MessageHelper messageHelper;
 	@Resource
 	private UsuariRepository usuariRepository;
+	@Resource
+	private GestioDocumentalHelper gestioDocumentalHelper;
 	
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -940,6 +943,20 @@ public class ContingutHelper {
 					continue;
 				}
 				
+				String gestioDocumentalId = null;
+				if (registreAnnex.getGesdocDocumentId() != null) {
+					// Copia el contingut dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
+					ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
+					gestioDocumentalHelper.gestioDocumentalGet(
+							registreAnnex.getGesdocDocumentId(), 
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							contingutOut);
+					byte[] contingut = contingutOut.toByteArray();
+					gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+							contingut);
+				}
+				
 				RegistreAnnexEntity nouAnnex = RegistreAnnexEntity.getBuilder(
 						registreAnnex.getTitol(), 
 						registreAnnex.getFitxerNom(), 
@@ -950,6 +967,7 @@ public class ContingutHelper {
 						registreAnnex.getNtiTipusDocument(), 
 						registreAnnex.getSicresTipusDocument(), 
 						registreCopia).
+						gesdocDocumentId(gestioDocumentalId).
 						ntiElaboracioEstat(registreAnnex.getNtiElaboracioEstat()).
 						fitxerTipusMime(registreAnnex.getFitxerTipusMime()).
 						localitzacio(registreAnnex.getLocalitzacio()).
@@ -957,7 +975,6 @@ public class ContingutHelper {
 						firmaMode(registreAnnex.getFirmaMode()).
 						timestamp(registreAnnex.getTimestamp()).
 						validacioOCSP(registreAnnex.getValidacioOCSP()).
-						gesdocDocumentId(registreAnnex.getGesdocDocumentId()).
 						build();
 				nouAnnex.setValidacioFirmaEstat(registreAnnex.getValidacioFirmaEstat());
 				nouAnnex.setValidacioFirmaError(registreAnnex.getValidacioFirmaError());
@@ -967,6 +984,21 @@ public class ContingutHelper {
 				}
 				
 				for (RegistreAnnexFirmaEntity firma: registreAnnex.getFirmes()) {
+					
+					String gestioDocumentalFirmaId = null;
+					if (firma.getGesdocFirmaId() != null) {
+						// Copia la firma dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
+						ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
+						gestioDocumentalHelper.gestioDocumentalGet(
+								firma.getGesdocFirmaId(), 
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+								contingutOut);
+						byte[] contingut = contingutOut.toByteArray();
+						gestioDocumentalFirmaId = gestioDocumentalHelper.gestioDocumentalCreate(
+								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
+								contingut);
+					}
+					
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
 							firma.getTipus(), 
 							firma.getPerfil(), 
@@ -975,7 +1007,7 @@ public class ContingutHelper {
 							firma.getCsvRegulacio(), 
 							firma.isAutofirma(), 
 							nouAnnex).
-							gesdocFirmaId(firma.getGesdocFirmaId()).
+							gesdocFirmaId(gestioDocumentalFirmaId).
 							build();
 					for (RegistreFirmaDetallEntity arxiuFirmaDetallEntity : firma.getDetalls()) {
 						RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
