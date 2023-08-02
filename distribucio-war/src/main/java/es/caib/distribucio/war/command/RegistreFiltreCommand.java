@@ -69,6 +69,9 @@ public class RegistreFiltreCommand {
 	private RegistreNombreAnnexesEnumDto nombreAnnexes;
 
 	private String usuariAssignatCodi;
+
+	/** Per mostrar anotacions sense assignar */
+	private boolean mostrarSenseAssignar;
 	
 	public String getBackCodi() {
 		return backCodi;
@@ -95,6 +98,12 @@ public class RegistreFiltreCommand {
 		this.interessat = interessat;
 	}
 	
+	public boolean isMostrarSenseAssignar() {
+		return mostrarSenseAssignar;
+	}
+	public void setMostrarSenseAssignar(boolean mostrarSenseAssignar) {
+		this.mostrarSenseAssignar = mostrarSenseAssignar;
+	}
 	
 	public static RegistreFiltreCommand asCommand(RegistreFiltreDto dto) {
 		RegistreFiltreCommand command = ConversioTipusHelper.convertir(

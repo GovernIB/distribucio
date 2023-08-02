@@ -496,6 +496,7 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getNombreAnnexes(),
 					filtre.getUsuariAssignatCodi() == null,
 					filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
+					filtre.isMostrarSenseAssignar(),
 					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
 
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -584,6 +585,7 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreNombreAnnexesEnumDto nombreAnnexos,
 			boolean esNullUsuariAssignatCodi,
 			String usuariAssignatCodi,
+			boolean mostrarSenseAssignar,
 			Pageable pageable) {
 		
 		Object ret = null; // Retorna una llista d'identificadors o una pàgina
@@ -703,9 +705,11 @@ public class RegistreServiceImpl implements RegistreService {
 			parametres.put("procedimentCodi", procedimentCodi);
 		}
 		
-		if (!esNullUsuariAssignatCodi) {
+		if (!esNullUsuariAssignatCodi && !mostrarSenseAssignar) {
 			sqlWhere.append("and r.agafatPer is not null and r.agafatPer.codi = :usuariAssignatCodi ");				
 			parametres.put("usuariAssignatCodi", usuariAssignatCodi);
+		} else if (mostrarSenseAssignar) {
+			sqlWhere.append("and r.agafatPer is null ");		
 		}
 		
 		if (nombreAnnexos != null) {
@@ -1146,6 +1150,7 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getNombreAnnexes(),
 				filtre.getUsuariAssignatCodi() == null,
 				filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
+				filtre.isMostrarSenseAssignar(),
 				null);
 	
 

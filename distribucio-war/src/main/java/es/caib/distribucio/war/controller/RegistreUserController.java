@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 import es.caib.distribucio.core.api.dto.AlertaDto;
 import es.caib.distribucio.core.api.dto.BustiaDto;
@@ -100,6 +103,8 @@ public class RegistreUserController extends BaseUserController {
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreUserController.session.seleccio";
 	private static final String SESSION_ATTRIBUTE_SELECCIO_MOVIMENTS = "RegistreUserController.session.seleccio.moviments";
 
+	private static final String COOKIE_SENSE_ASSIGNAR = "mostrar_sense_assignar";
+	
 	@Autowired
 	private BustiaService bustiaService;
 	@Autowired
@@ -123,6 +128,7 @@ public class RegistreUserController extends BaseUserController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
+			@CookieValue(value = COOKIE_SENSE_ASSIGNAR, defaultValue = "false") boolean mostrarSenseAssignar,
 			HttpServletRequest request,
 			Model model) {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
@@ -142,6 +148,8 @@ public class RegistreUserController extends BaseUserController {
 		if (bustiaPerDefecte != null)
 			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
 		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
+		model.addAttribute("nomCookieSenseAssignar", COOKIE_SENSE_ASSIGNAR);
+		model.addAttribute("mostrarSenseAssignar", mostrarSenseAssignar);
 		return "registreUserList";
 	}
 
@@ -2104,6 +2112,16 @@ public class RegistreUserController extends BaseUserController {
 					filtreCommand);
 			filtreCommand.setMostrarInactives(false);
 		}
+		
+		if (isPermesAssignarAnotacions()) {
+			Cookie cookie = WebUtils.getCookie(request, COOKIE_SENSE_ASSIGNAR);
+			filtreCommand.setMostrarSenseAssignar(cookie != null && "true".equals(cookie.getValue()));
+			
+			if (filtreCommand.isMostrarSenseAssignar()) {
+				filtreCommand.setUsuariAssignatCodi(null);
+			}
+		}
+		
 		return filtreCommand;
 	}
 
