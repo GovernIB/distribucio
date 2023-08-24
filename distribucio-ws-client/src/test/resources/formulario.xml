@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:FORMULARIO accion="accion" xmlns:ns2="urn:es:caib:sistra2:xml:formulario:v1:model">
-	<CAMPO id="PREU" tipus="simple">
+	<CAMPO id="PREU" tipo="simple">
 		<VALOR>1.234.567,123</VALOR>
 	</CAMPO>
 	<CAMPO id="SISTRA2" tipo="simple">
@@ -9,12 +9,53 @@
 	<CAMPO id="SISTRA2_SELECCION" tipo="compuesto">
 		<VALOR codigo="prova">Prueba</VALOR>
 	</CAMPO>
-	<CAMPO id="campo_0">
+	<CAMPO id="campo_0" tipo="multivaluado">
 		<VALOR codigo="cod_0">valor_i</VALOR>
 		<VALOR codigo="cod_0">valor_i</VALOR>
 	</CAMPO>
-	<CAMPO id="campo_1">
+	<CAMPO id="campo_1" tipo="multivaluado">
 		<VALOR codigo="cod_1">valor_i</VALOR>
 		<VALOR codigo="cod_1">valor_i</VALOR>
-	</CAMPO>	
+	</CAMPO>
+	
+	<!-- Diferents tipus de camps -->
+	
+	<CAMPO id="SIMPLE" tipo="simple">
+		<VALOR>Valor simple</VALOR>
+	</CAMPO>
+
+    <CAMPO id="COMPOST" tipo="compuesto">
+        <VALOR codigo="C1">Valor compost de codi i text</VALOR>
+    </CAMPO>
+    
+    <CAMPO id="MULTIVALUAT" tipo="multivaluado">
+        <VALOR codigo="C1">C1 - Valor 1</VALOR>
+        <VALOR codigo="C2">C2 - Valor 2</VALOR>
+    </CAMPO>
+    
+    <CAMPO id="LLISTA_CAMPS" tipo="lista">
+        <ELEMENTO>
+            <CAMPO id="CAMP_SIMPLE" tipo="simple">
+                <VALOR>1</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_COMPOST" tipo="compuesto">
+                <VALOR codigo="1">Valor compost 1</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_NULABLE" tipo="simple">
+                <VALOR xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            </CAMPO>
+        </ELEMENTO>
+        <ELEMENTO>
+            <CAMPO id="CAMP_SIMPLE" tipo="simple">
+                <VALOR>3</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_COMPOST" tipo="compuesto">
+                <VALOR codigo="2">Valor compost 2</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_NULABLE" tipo="simple">
+                <VALOR>1</VALOR>
+            </CAMPO>
+        </ELEMENTO>
+    </CAMPO>
+	
 </ns2:FORMULARIO>

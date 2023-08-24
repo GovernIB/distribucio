@@ -1,2 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urn:FORMULARIO accion="" xmlns:urn="urn:es:caib:sistra2:xml:formulario:v1:model"><CAMPO id="CNIF" tipo="simple"><VALOR>43080993S</VALOR></CAMPO><CAMPO id="CNOMBRE" tipo="simple"><VALOR>FRANCISCO JAVIER</VALOR></CAMPO><CAMPO id="CAPELLIDO1" tipo="simple"><VALOR>CALDERON</VALOR></CAMPO><CAMPO id="CAPELLIDO2" tipo="simple"><VALOR>OGANDO</VALOR></CAMPO></urn:FORMULARIO>
+<urn:FORMULARIO accion="" xmlns:urn="urn:es:caib:sistra2:xml:formulario:v1:model">
+
+	<CAMPO id="CNIF" tipo="simple">
+		<VALOR>12345678Z</VALOR>
+	</CAMPO>
+	<CAMPO id="CNOMBRE" tipo="simple">
+		<VALOR>NOM</VALOR>
+	</CAMPO>
+	<CAMPO id="CAPELLIDO1" tipo="simple">
+		<VALOR>LLINATGE1</VALOR>
+	</CAMPO>
+	<CAMPO id="CAPELLIDO2" tipo="simple">
+		<VALOR>LLINATGE2</VALOR>
+	</CAMPO>
+
+    <CAMPO id="COMPOST" tipo="compuesto">
+        <VALOR codigo="C1">Valor compost de codi i text</VALOR>
+    </CAMPO>
+    
+    <CAMPO id="MULTIVALUAT" tipo="multivaluado">
+        <VALOR codigo="C1">C1 - Valor 1</VALOR>
+        <VALOR codigo="C2">C2 - Valor 2</VALOR>
+    </CAMPO>
+    
+    <CAMPO id="LLISTA_CAMPS" tipo="lista">
+        <ELEMENTO>
+            <CAMPO id="CAMP_SIMPLE" tipo="simple">
+                <VALOR>1</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_COMPOST" tipo="compuesto">
+                <VALOR codigo="1">Valor compost 1</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_NULABLE" tipo="simple">
+                <VALOR xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            </CAMPO>
+        </ELEMENTO>
+        <ELEMENTO>
+            <CAMPO id="CAMP_SIMPLE" tipo="simple">
+                <VALOR>3</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_COMPOST" tipo="compuesto">
+                <VALOR codigo="2">Valor compost 2</VALOR>
+            </CAMPO>
+            <CAMPO id="CAMP_NULABLE" tipo="simple">
+                <VALOR>1</VALOR>
+            </CAMPO>
+        </ELEMENTO>
+    </CAMPO>
+
+</urn:FORMULARIO>

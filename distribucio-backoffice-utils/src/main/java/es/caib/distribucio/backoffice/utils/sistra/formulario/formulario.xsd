@@ -3,8 +3,9 @@
 	xmlns:tns="urn:es:caib:sistra2:xml:formulario:v1:model" targetNamespace="urn:es:caib:sistra2:xml:formulario:v1:model"
 	version="1.0">
 
-	<xs:element name="FORMULARIO" type="tns:FORMULARIO" />
 
+	<!--  Formulario: lista de campos -->
+	<xs:element name="FORMULARIO" type="tns:FORMULARIO" />
 	<xs:complexType name="FORMULARIO">
 		<xs:sequence>
 			<xs:element name="CAMPO" type="tns:CAMPO" maxOccurs="unbounded"
@@ -14,11 +15,23 @@
     	<xs:attribute name="accion" type="xs:string" use="optional" />
 	</xs:complexType>
 
+
+	<!--
+		Definición campo: puede ser
+			- Valor: para campos "normales" (tipo: simple, compuesto y multivaluado)
+			- Lista de Elementos: para campos "lista elementos" (tipo: lista)
+	 -->
 	<xs:complexType name="CAMPO">
-		<xs:sequence>
-			<xs:element name="VALOR" type="tns:VALOR" maxOccurs="unbounded"
-				minOccurs="0" nillable="true"/>
-		</xs:sequence>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="VALOR" type="tns:VALOR" maxOccurs="unbounded"
+					minOccurs="0" nillable="true"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="ELEMENTO" type="tns:ELEMENTO" maxOccurs="unbounded"
+					minOccurs="0" nillable="true"/>
+			</xs:sequence>
+		</xs:choice>
 		<xs:attribute name="id" type="xs:string" use="required" />
 		<xs:attribute name="tipo" use="required">
 			<xs:simpleType>
@@ -26,11 +39,13 @@
 					<xs:enumeration value="simple"></xs:enumeration>
 					<xs:enumeration value="compuesto"></xs:enumeration>
 					<xs:enumeration value="multivaluado"></xs:enumeration>
+					<xs:enumeration value="lista"></xs:enumeration>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
 
+	<!--  Valor para campo normal -->
 	<xs:complexType name="VALOR">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -38,6 +53,17 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+
+
+	<!-- Definición elemento: lista de campos (no pueden anidarse campos de tipo lista elementos)  -->
+	<xs:complexType name="ELEMENTO">
+		<xs:sequence>
+			<xs:element name="CAMPO" type="tns:CAMPO" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
 
 
 </xs:schema>
