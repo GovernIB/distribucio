@@ -52,7 +52,9 @@
 		data-toggle="datatable" 
 		data-url="<c:url value="/backoffice/datatable"/>" 
 		data-info-type="search" 
-		class="table table-striped table-bordered">
+		class="table table-striped table-bordered"
+		data-state-save="true" 
+		data-state-duration="-1" >
 		<thead>
 			<tr>
 				<th data-col-name="codi" data-orderable="true"><spring:message code="backoffice.list.columna.codi"/></th>

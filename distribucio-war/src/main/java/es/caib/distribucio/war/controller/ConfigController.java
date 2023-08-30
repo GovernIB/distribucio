@@ -25,6 +25,7 @@ import es.caib.distribucio.core.api.dto.ConfigDto;
 import es.caib.distribucio.core.api.dto.ConfigGroupDto;
 import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.ConfigService;
 import es.caib.distribucio.core.api.service.EntitatService;
 import es.caib.distribucio.core.api.service.MonitorTasquesService;
@@ -51,6 +52,9 @@ public class ConfigController extends BaseUserController{
     private EntitatService entitatService;
     @Autowired
     private MonitorTasquesService monitorTasquesService;
+	@Autowired
+	private AplicacioService aplicacioService;
+
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(
@@ -136,15 +140,22 @@ public class ConfigController extends BaseUserController{
     		HttpServletRequest request, 
     		@PathVariable String key, 
     		Model model) {
-    	
+
     	try {
-    		return configService.findEntitatsConfigByKey(key.replace("-", "."));
+            List<ConfigDto> entitatsDB = configService.findEntitatsConfigByKey(key.replace("-", "."));
+            for(ConfigDto setValue: entitatsDB) { 
+            	if (setValue.isJbossProperty()) {
+            		setValue.setValue(aplicacioService.propertyFindByNom(setValue.getKey()));
+            	}
+            }
+            return entitatsDB;
     	}catch (Exception ex) {
     		logger.error("Error obtinguent les configuracions d'entitats per la key " + key, ex);
     		return new ArrayList<>();
     	}
     	
     }
+    
     
     
     @RequestMapping(value="/synchronize", method = RequestMethod.GET)

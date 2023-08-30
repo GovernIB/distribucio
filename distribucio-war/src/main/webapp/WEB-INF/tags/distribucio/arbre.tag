@@ -93,7 +93,7 @@
 				<c:when test="${not isArbreSeleccionable and not isFullesSeleccionable}">return false;</c:when>
 			</c:choose>
 		},
-		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", "crrm"],
+		"plugins": ["conditionalselect", "conditionalhover", "search", ${isCheckBoxEnabled} ? "checkbox" : "", "crrm", "sort"],
 		"core": {
 			"check_callback": true
 		},

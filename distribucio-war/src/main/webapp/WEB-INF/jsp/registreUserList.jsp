@@ -140,7 +140,8 @@ span.select2-container {
 
 button#nomesAmbErrorsBtn, 
 button#nomesAmbEsborranysBtn, 
-button#mostrarInactivesBtn {
+button#mostrarInactivesBtn,
+button#mostrarSenseAssignarBtn {
 	width: 100% !important;
 }
 
@@ -211,7 +212,7 @@ function formatSelectTipusDocumentacio(item) {
 		return '<spring:message code="bustia.list.filtre.tipusDocFisica"/>';
 	}
 }
-
+var mostrarSenseAssignar = '${mostrarSenseAssignar}' === 'true';
 $(document).ready(function() {
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	$("#contingutBusties").addClass('active');
@@ -395,6 +396,34 @@ $(document).ready(function() {
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
 			});
+		
+		$('#usuariAssignatCodi').on('change', function() {
+			usuariAssignat = $(this).val();
+			mostrarSenseAssignar = $('#mostrarSenseAssignarBtn').hasClass('active');
+			
+			if (usuariAssignat && mostrarSenseAssignar) {
+				$('#mostrarSenseAssignarBtn').removeClass('active');
+				$('#mostrarSenseAssignar').val(false).change();
+				setCookie("${nomCookieSenseAssignar}", false);
+			}
+		});
+		
+		$('#mostrarSenseAssignarBtn').on('click', function() {
+			mostrarSenseAssignar = !$(this).hasClass('active');
+			// Modifica el formulari
+			$('#mostrarSenseAssignar').val(mostrarSenseAssignar).change();
+			$(this).blur();
+			// Estableix el valor de la cookie
+			setCookie("${nomCookieSenseAssignar}", mostrarSenseAssignar);
+			
+			$('#usuariAssignatCodi').val('');
+			$('#usuariAssignatCodi').change();
+			
+			// Refresca la taula
+			$('#taulaDades').webutilDatatable('refresh');
+		});
+		
+		$('#mostrarSenseAssignar').change();
 	}
 	
 	$(document).on('hidden.bs.modal', function (event) {
@@ -538,15 +567,28 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 			</div>
 			<c:if test="${isPermesAssignarAnotacions}">
 				<div class="col-md-3">
-					<dis:inputSelect 
-						name="usuariAssignatCodi" 
-						optionItems="${replacedByJquery}" 
-						optionValueAttribute="codi" 
-						optionTextAttribute="nom" 
-						emptyOption="true" 
-						placeholderKey="bustia.list.filtre.usuari.assignat" 
-						inline="true"
-						optionMinimumResultsForSearch="0" />
+					<div class="row">
+					<div class="col-md-10">
+						<dis:inputSelect 
+							name="usuariAssignatCodi" 
+							optionItems="${replacedByJquery}" 
+							optionValueAttribute="codi" 
+							optionTextAttribute="nom" 
+							emptyOption="true" 
+							placeholderKey="bustia.list.filtre.usuari.assignat" 
+							inline="true"
+							optionMinimumResultsForSearch="0" />
+						</div>
+						<div class="col-md-2" style="padding-left: 0;">
+							<button id="mostrarSenseAssignarBtn" title="<spring:message code="bustia.list.filtre.sense.assignar"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarSenseAssignar}"> active</c:if>" data-toggle="button">
+								<span class="fa-stack" aria-hidden="true">
+									<i class="fa fa-user fa-stack-1x"></i>
+			    	    			<i class="fa fa-ban fa-stack-2x"></i>
+			   					</span>
+							</button>
+							<dis:inputHidden name="mostrarSenseAssignar"/>
+						</div>
+					</div>
 				</div>
 			</c:if>
 			<div class="${isPermesAssignarAnotacions ? 'col-md-1' : 'col-md-3'}"></div>
@@ -655,7 +697,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 									{{:darrerMovimentUsuari.nom}}
 								</div>
  							{{else}}
- 								<span class="fa fa-home" title=""/>
+ 								<span class="fa fa-home" title=""></span>
  							{{:oficinaDescripcio}}<br/>({{:darrerMovimentUsuari.nom}})
  							{{/if}}
  						{{else}}
