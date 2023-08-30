@@ -1,9 +1,6 @@
 package es.caib.distribucio.core.api.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
@@ -31,39 +28,6 @@ public class ArxiuConversions {
 		mapPerfilsFirma.put("AdES-A", "A");
 		mapPerfilsFirma.put("PAdES-LTV", "LTV");
 		mapPerfilsFirma.put("PAdES-Basic", "BES");
-	}
-	
-	/** Map amb els perfils de firma reconeguts a l'Arxi per tipus de firma segons el model de l'Arxiu.
-	 * @see <a href=”https://github.com/GovernIB/gdib/blob/9167685d96211e792ea34059ad5284d17dd2e769/gdib-amp/src/main/amp/config/alfresco/module/gdib-amp/models/caibModel.xml#L531”>modelCaib.xml</a> */
-	private static Map<ArxiuFirmaTipusEnumDto, List<String>> mapPerfilsPermesos = new HashMap<ArxiuFirmaTipusEnumDto, List<String>>();
-	static {
-		// XADES, CADES
-		mapPerfilsPermesos.put(ArxiuFirmaTipusEnumDto.XADES_DET, Arrays.asList( "BES", "EPES", "T", "C", "X", "XL", "A", "BASELINE B-Level", "BASELINE LT- Level", "BASELINE LTA-Level"));
-		mapPerfilsPermesos.put(ArxiuFirmaTipusEnumDto.XADES_ENV, mapPerfilsPermesos.get(ArxiuFirmaTipusEnumDto.XADES_DET));
-		mapPerfilsPermesos.put(ArxiuFirmaTipusEnumDto.CADES_ATT, mapPerfilsPermesos.get(ArxiuFirmaTipusEnumDto.XADES_DET));
-		mapPerfilsPermesos.put(ArxiuFirmaTipusEnumDto.CADES_DET, mapPerfilsPermesos.get(ArxiuFirmaTipusEnumDto.XADES_DET));
-		// PADES
-		mapPerfilsPermesos.put(ArxiuFirmaTipusEnumDto.PADES, Arrays.asList(  "BES", "EPES", "BASELINE B-Level", "BASELINE LT- Level", "BASELINE LTA-Level", "LTV" ));
-	}
-	
-	/** Mètode estàtic per comprobar si el perfil està acceptat per l'Arxiu per un tipus de firma. */
-	public static boolean checkTipusPrefil(ArxiuFirmaTipusEnumDto firmaTipus, String firmaPerfil) {
-		boolean valid = false;
-		if (firmaTipus != null && firmaPerfil != null) {
-			List<String> perfils = mapPerfilsPermesos.get(firmaTipus);
-			valid = perfils != null && perfils.contains(firmaPerfil);
-		}
-		return valid;
-	}
-	/** Consulta els perfils admesos pel tipus de firma. */
-	public static List<String> getPerfilsAdmesosPerTipus(ArxiuFirmaTipusEnumDto firmaTipus) {
-		List<String> perfils = new ArrayList<>();
-		if (firmaTipus != null && mapPerfilsPermesos.containsKey(firmaTipus)) {
-			for (String perfil : mapPerfilsPermesos.get(firmaTipus)) {
-				perfils.add(perfil);
-			}
-		}
-		return perfils;
 	}
 	
 	/** Mapeja els diferents perfils de firma que pot retornar el plugin de firma simple o de validació cap

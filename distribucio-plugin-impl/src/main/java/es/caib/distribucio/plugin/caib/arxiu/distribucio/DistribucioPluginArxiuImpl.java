@@ -419,10 +419,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuFirma.getPerfil().equals(ArxiuFirmaPerfilEnumDto.LTA)) {
 				return false;
 			}
-			// Comprova que el perfil de firma es corresón amb el tipus de firma
-			if (!ArxiuConversions.checkTipusPrefil(arxiuFirma.getTipus(), arxiuFirma.getPerfil().toString())) {
-				return false;
-			}
 		}
 		return true;
 	}
@@ -915,8 +911,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				} else if ("TF09".equalsIgnoreCase(annexFirma.getTipus())) {
 					firma.setTipus(ArxiuFirmaTipusEnumDto.OOXML);
 				}
-				if (StringUtils.isNotEmpty(annexFirma.getPerfil()))
-					firma.setPerfil(ArxiuFirmaPerfilEnumDto.valueOf(annexFirma.getPerfil()));
+				if (StringUtils.isNotEmpty(annexFirma.getPerfil())) {
+					if ("A".equals(annexFirma.getPerfil())) {
+						// #633 Cas de perfil A LTV-A es fixa com a LTV per a que l'Arxiu el pugui guardar sense problemes interns quan validi el document.
+						firma.setPerfil(ArxiuFirmaPerfilEnumDto.LTV);
+					} else {
+						firma.setPerfil(ArxiuFirmaPerfilEnumDto.valueOf(annexFirma.getPerfil()));
+					}
+				}
 				firma.setFitxerNom(annexFirma.getFitxerNom());
 				firma.setTipusMime(annexFirma.getTipusMime());
 				firma.setCsvRegulacio(annexFirma.getCsvRegulacio());
