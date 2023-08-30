@@ -1,7 +1,7 @@
 # ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
 
 > - Versió Estable: __0.9.49__ (tag [Distribucio_0.9.49](https://github.com/GovernIB/distribucio/tree/Distribucio_0.9.49))
-> - Versió Desenvolupament: __0.9.50__ (branca [dis-dev-0.9.50](https://github.com/GovernIB/distribucio/tree/dis-dev))
+> - Versió Desenvolupament: __0.9.50__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
 
 ## <a name="desc"></a> Descripció
 
