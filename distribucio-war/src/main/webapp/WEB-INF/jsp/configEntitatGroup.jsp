@@ -162,24 +162,29 @@
     	var buttonSave = document.getElementById(keyReplaced.id + '_button_save');
     	var buttonEdit = document.getElementById(keyReplaced.id + '_button_config');
 		var stringClassInfo = 'info_block_' + keyReplaced.id;
-    	if (nameEvent == 'trash') {
-    		if (inputEvent.type == 'text' 
-    		|| inputEvent.type == 'password' 
-    		|| inputEvent.type == 'number') {
-    		inputEvent.value = "";
-	    	}else if (inputEvent.type == 'checkbox') {
-	    		inputEvent.checked = null;
+		let value = null;
+   		if (inputEvent.type == 'text' 
+	   		|| inputEvent.type == 'password' 
+	   		|| inputEvent.type == 'number') {
+   	    	if (nameEvent == 'trash') {
+	    		value = "";
+	    	}else {
+	    		value = inputEvent.value;
 	    	}
+   		} else if (inputEvent.type == 'checkbox') {
+   	    	if (nameEvent == 'trash') {
+	    		value = "null";
+	    	}else {
+	    		value = inputEvent.checked;
+	    	}
+	    }
+	    if (nameEvent == 'trash') {
     		buttonTrash.classList.remove('d-block');
     		buttonTrash.classList.add('d-none');
-    	}
+	    }
         let formData = new FormData();
+    	formData.append("value", value);
         formData.append("key", configKey);
-        if (inputEvent.type == 'checkbox'){
-        	formData.append("value", inputEvent.checked);
-        }else {
-        	formData.append("value", inputEvent.value);
-    	}
     	$.ajax({
 	        url: '<c:url value="/config/update"/>',
 	        type: 'post',
