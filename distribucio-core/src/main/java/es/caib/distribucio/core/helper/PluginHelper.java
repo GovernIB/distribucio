@@ -712,8 +712,22 @@ public class PluginHelper {
 	public ValidaSignaturaResposta validaSignaturaObtenirDetalls(
 			byte[] documentContingut,
 			byte[] firmaContingut) {
+
+		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
+		
 		String accioDescripcio = "Obtenir informació de document firmat";
-		String usuariIntegracio = this.getPropertyUsuariValidacioSignatura();		
+		String usuariIntegracio = this.getPropertyUsuariValidacioSignatura();
+		
+		// Abans de cridar a la validació de firmes comprova si la grandària supera el màxim en bytes
+		Integer maxBytes = getPropertyMaxBytesValidacioFirma();
+		int bytes = Math.max(documentContingut != null ? documentContingut.length : 0, 
+								firmaContingut != null ? firmaContingut.length : 0);
+		if (maxBytes != null && maxBytes < bytes) {
+			resposta.setStatus(ValidaSignaturaResposta.FIRMA_ERROR);
+			resposta.setErrMsg("Error de validació. La grandària de la firma " + bytes + " és superior a la grandària màxima configurada " + maxBytes + " i no es pot enviar a validar.");
+			return resposta;
+		}
+		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("documentContingut", documentContingut != null ? documentContingut.length + " bytes" : "null");
 		accioParams.put("firmaContingut", firmaContingut != null ? firmaContingut.length + " bytes" : "null");
@@ -741,7 +755,6 @@ public class PluginHelper {
 			ValidateSignatureResponse validateSignatureResponse = getValidaSignaturaPlugin().validateSignature(validationRequest);
 			
 			// Completa la resposta
-			ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 			resposta.setStatus(validateSignatureResponse.getValidationStatus().getStatus());
 			resposta.setErrMsg(validateSignatureResponse.getValidationStatus().getErrorMsg());
 			resposta.setErrException(validateSignatureResponse.getValidationStatus().getErrorException());
@@ -1577,6 +1590,17 @@ public class PluginHelper {
 	private String getUsuariAutenticat() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication != null ? authentication.getName() : null;
+	}
+
+	private Integer getPropertyMaxBytesValidacioFirma() {
+		Integer maxBytes = null;
+		String configKey = "es.caib.distribucio.plugins.validatesignature.maxBytes";
+		try {
+			maxBytes = Integer.valueOf(configHelper.getConfig(configKey));
+		} catch(Exception e) {
+			logger.error("Error llegint la propietat entera de màxim de bytes del plugin de validació " + configKey + ": " + e.getMessage());
+		}
+		return maxBytes;
 	}
 
 	/**
