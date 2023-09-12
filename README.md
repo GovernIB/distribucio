@@ -1,7 +1,7 @@
 # ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
 
-> - Versió Estable: __0.9.49__ (tag [Distribucio_0.9.49](https://github.com/GovernIB/distribucio/tree/Distribucio_0.9.49))
-> - Versió Desenvolupament: __0.9.50__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
+> - Versió Estable: __0.9.50__ (tag [Distribucio_0.9.50](https://github.com/GovernIB/distribucio/tree/Distribucio_0.9.50))
+> - Versió Desenvolupament: __1.0.1__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
 
 ## <a name="desc"></a> Descripció
 
@@ -12,16 +12,16 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 ## <a name="docs"></a> Documentació
 
 
->- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.49/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
->- [Manual d'administrador](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.49/doc/pdf/02_Distribucio_Manual_Administrador.pdf)
->- [Manual d'usuari](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.49/doc/pdf/02_Distribucio_Manual_Usuari.pdf)
->- [Manual d'integració](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.49/doc/pdf/03_Distribucio_Manual_Integraci%C3%B3.pdf)
->- [Manual de plugins](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.49/doc/pdf/04_Distribucio_Manual_Plugins.pdf)
+>- [Manual d'instal·lació](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.50/doc/pdf/00_Distribucio_Manual_instalacio.pdf)
+>- [Manual d'administrador](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.50/doc/pdf/02_Distribucio_Manual_Administrador.pdf)
+>- [Manual d'usuari](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.50/doc/pdf/02_Distribucio_Manual_Usuari.pdf)
+>- [Manual d'integració](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.50/doc/pdf/03_Distribucio_Manual_Integraci%C3%B3.pdf)
+>- [Manual de plugins](https://github.com/GovernIB/distribucio/blob/Distribucio_0.9.50/doc/pdf/04_Distribucio_Manual_Plugins.pdf)
 
 
 ## <a name="v_estable"></a> Versió estable
-### [0.9.49](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.49)
+### [0.9.50](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_0.9.50)
 
 ## <a name="v_jars"></a> Llibreries d'integració i utilitats
->- [distribucio-backoffice-utils-0.9.49](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/0.9.49): Llibreria d'utilitats per a backoffices de Distribucio.
+>- [distribucio-backoffice-utils-0.9.50](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/0.9.50): Llibreria d'utilitats per a backoffices de Distribucio.
 >- [distribucio-rest-client-0.9.49](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/0.9.49): Client REST per a backoffices de Distribucio.
