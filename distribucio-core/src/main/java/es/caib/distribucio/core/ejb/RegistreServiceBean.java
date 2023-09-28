@@ -214,10 +214,18 @@ public class RegistreServiceBean implements RegistreService {
 	}
 
 	@Override
-	public void canviEstat(AnotacioRegistreId id,
+	@RolesAllowed("tothom")
+	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception {
+		return delegate.getRegistrePerIdentificador(id);
+	}
+
+	@Override
+	@RolesAllowed("tothom")
+	public void canviEstat(
+			long registreId,
 			Estat estat,
 			String observacions) {
-		delegate.canviEstat(id, estat, observacions);		
+		delegate.canviEstat(registreId, estat, observacions);		
 	}
 
 	@Override

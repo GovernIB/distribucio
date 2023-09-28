@@ -1604,53 +1604,52 @@ public class RegistreHelper {
 	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 
 		Date dataComunicacio = new Date();
-		Exception throwable = enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
-		updateBackEnviarDelayData(pendentsIdsGroupedByRegla, throwable, dataComunicacio);
-		return throwable;
-	}
-	
-	@Transactional()
-	public void updateBackEnviarDelayData(
-			List<Long> pendentsIdsGroupedByRegla, 
-			Exception throwable, 
-			Date dataComunicacio) {
+		Exception throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
 
+		int minutesEspera = 1;
 		String tempsEspera = configHelper.getConfig(
 				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
 		// we convert to minutes to not have to deal with too big numbers out of bounds
-		int minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
+		minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
 		if (minutesEspera < 1) {
 			minutesEspera = 1;
+		}			
+		for (Long pendentId : pendentsIdsGroupedByRegla) {
+			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio, minutesEspera);
 		}
+		return throwable;
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void updateBackEnviarDelayData(
+			Long pendentId, 
+			Exception throwable, 
+			Date dataComunicacio,
+			int minutesEspera) {
 		
-		for (Long id : pendentsIdsGroupedByRegla) {
-			RegistreEntity pend = registreRepository.findOne(id);
-			
-			if (throwable == null) {
-				// remove exception message and increment procesIntents
-				pend.updateProces(null, null);
-
-				// Si no s'ha actualitzat després de la hora de la comunicació actualitza l'estat com a comunicada al backoffice.
-				if (pend.getLastModifiedDate().isBefore(dataComunicacio.getTime())) {
-					pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataComunicacio));
-				}
-			} else { 
-				// if excepion occured during sending anotacions ids to backoffice
-				// add exception message and increment procesIntents
-				pend.updateProces(null,
-						throwable);				
+		RegistreEntity pend = registreRepository.findOneAmbBloqueig(pendentId);
+		if (throwable == null) {
+			// remove exception message and increment procesIntents
+			pend.updateProces(null, null);
+			// Si no s'ha actualitzat després de la hora de la comunicació actualitza l'estat com a comunicada al backoffice.
+			if (pend.getLastModifiedDate().isBefore(dataComunicacio.getTime())) {
+				pend.updateBackEstat(RegistreProcesEstatEnum.BACK_COMUNICADA, "Comunicada " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(dataComunicacio));
 			}
-			// set delay for another send retry
-			int procesIntents = pend.getProcesIntents();
-			// with every proces intent delay between resends will be longer
-			int delayMinutes = minutesEspera * procesIntents;
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(new Date());
-			cal.add(Calendar.MINUTE,
-					delayMinutes);
-			pend.updateBackRetryEnviarData(cal.getTime());
-			registreRepository.saveAndFlush(pend);			
+		} else { 
+			// if excepion occured during sending anotacions ids to backoffice
+			// add exception message and increment procesIntents
+			pend.updateProces(null,
+					throwable);				
 		}
+		// set delay for another send retry
+		int procesIntents = pend.getProcesIntents();
+		// with every proces intent delay between resends will be longer
+		int delayMinutes = minutesEspera * procesIntents;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MINUTE,
+				delayMinutes);
+		pend.updateBackRetryEnviarData(cal.getTime());
 	}
 
 	public void comprovarRegistreAlliberat(RegistreEntity registre) {

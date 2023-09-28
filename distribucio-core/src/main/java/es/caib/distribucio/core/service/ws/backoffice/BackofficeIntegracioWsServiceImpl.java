@@ -132,7 +132,8 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			
 			logger.trace(">>> Abans de cridar el servei de canvi d'estat");			
 			
-			registreService.canviEstat(id, estat, observacions);
+			long registreId = registreService.getRegistrePerIdentificador(id);
+			registreService.canviEstat(registreId, estat, observacions);
 			
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,

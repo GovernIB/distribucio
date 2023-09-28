@@ -232,7 +232,23 @@ public interface RegistreService {
 	
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
-	public void canviEstat(AnotacioRegistreId id,
+	/** Mètode per trobar l'id del registre a partir de l'identificador clau+número.
+	 * 
+	 * @param id Objecte amb la clau + número.
+	 * @return Retorna l'id del registre que coincideix amb el número i la clau.
+	 * 
+	 * @throws Excepció si no pot trobar el registre.
+	 */
+	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception;
+
+	/** Mètode per canviar l'estat a un registre d'anotació.
+	 * 
+	 * @param id
+	 * @param estat
+	 * @param observacions
+	 */
+	public void canviEstat(
+			long id,
 			Estat estat,
 			String observacions);
 
