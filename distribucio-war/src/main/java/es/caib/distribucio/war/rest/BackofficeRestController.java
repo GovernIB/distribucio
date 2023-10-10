@@ -22,8 +22,8 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeWsService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.war.controller.BaseUserController;
 
 /**

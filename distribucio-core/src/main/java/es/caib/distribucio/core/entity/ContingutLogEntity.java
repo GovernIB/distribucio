@@ -23,8 +23,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.LogObjecteTipusEnumDto;
-import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.LogObjecteTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**

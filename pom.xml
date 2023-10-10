@@ -4,10 +4,31 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.caib.distribucio</groupId>
 	<artifactId>distribucio</artifactId>
-	<version>0.9</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.16</version>
+	</parent>
 	<properties>
-		<github.global.server>github</github.global.server>
+		<springboot.version>2.7.16</springboot.version>
+		<liquibase.version>4.4.3</liquibase.version>
+		<openapi.version>1.7.0</openapi.version>
+		<orika.version>1.5.4</orika.version>
+		<xdocreport.version>2.0.2</xdocreport.version>
+		<arxiu.api.version>2.0.27</arxiu.api.version>
+		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
+		<portafib.version>1.1</portafib.version>
+		<regweb.version>3.0.5</regweb.version>
+		<dir3caib.version>1.0.7</dir3caib.version>
+		<bouncycastle.version>1.46</bouncycastle.version>
+		<implementation.vendor>Límit Tecnologies</implementation.vendor>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<skipTests>true</skipTests>
+		<!-- <github.global.server>github</github.global.server>
 		<spring.version>3.2.17.RELEASE</spring.version>
 		<spring-security.version>3.2.9.RELEASE</spring-security.version>
 		<spring-data-jpa.version>1.6.6.RELEASE</spring-data-jpa.version>
@@ -33,12 +54,12 @@
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<version.revision>50</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2023.09.07 07:00h</version.date>
+		<version.date>2023.09.07 07:00h</version.date> -->
 	</properties>
 	<modules>
-		<module>distribucio-core</module>
+		<!--module>distribucio-core</module>
 		<module>distribucio-war</module>
-	    <module>distribucio-api-externa</module>
+		<module>distribucio-api-externa</module>
 		<module>distribucio-core-api</module>
 		<module>distribucio-ear</module>
 		<module>distribucio-lib-common</module>
@@ -46,14 +67,21 @@
 		<module>distribucio-plugin-impl</module>
 		<module>distribucio-ws-client</module>
 		<module>distribucio-backoffice-utils</module>
-        <module>distribucio-api-interna</module>
-        <module>distribucio-rest-client</module>
-    </modules>
+		<module>distribucio-api-interna</module>
+		<module>distribucio-rest-client</module-->
+		<module>distribucio-back</module>
+		<module>distribucio-ear</module>
+		<module>distribucio-persistence</module>
+		<module>distribucio-plugin</module>
+		<module>distribucio-plugin-impl</module>
+		<module>distribucio-service</module>
+		<module>distribucio-service-intf</module>
+		<module>distribucio-ejb</module>
+	</modules>
 	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.1</version>
 				<configuration>
 					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
 				</configuration>
@@ -86,10 +114,9 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.6</version>
 				<executions>
 					<execution>
 						<id>get-the-git-infos</id>
@@ -102,7 +129,7 @@
 				<configuration>
 					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -112,13 +139,4 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
-	<!--
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-		</dependency>
-	</dependencies>
-	-->
 </project>

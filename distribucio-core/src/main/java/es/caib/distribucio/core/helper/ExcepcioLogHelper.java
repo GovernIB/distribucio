@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.ExcepcioLogDto;
+import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 
 /**
  * Mètodes per a la gestió del log d'excepcions.

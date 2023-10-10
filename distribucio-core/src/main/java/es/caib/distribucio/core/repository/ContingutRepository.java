@@ -88,7 +88,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    c.entitat = :entitat " +
 			"and c.pare in (:pares) " +
 			"and c.esborrat = 0 " +
-			" and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)) " +
+			" and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)) " +
 			"group by " +
 			"    c.pare")
 	List<Object[]> countByPares(
@@ -105,7 +105,7 @@ public interface ContingutRepository extends JpaRepository<ContingutEntity, Long
 			"    c.entitat = :entitat " +
 			"and (c.pare in (:llista1) or c.pare in (:llista2) or c.pare in (:llista3) or c.pare in (:llista4) or c.pare in (:llista5) )" +
 			"and c.esborrat = 0 " +
-			" and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)) " +
+			" and (type(c) != es.caib.distribucio.core.entity.RegistreEntity or (c.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT)) " +
 			"group by " +
 			"    c.pare")
 	List<Object[]> countByParesAmbLlistes(

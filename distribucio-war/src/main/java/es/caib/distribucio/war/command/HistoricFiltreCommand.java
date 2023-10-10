@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import es.caib.distribucio.core.api.dto.historic.HistoricDadesMostrarEnumDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricFiltreDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricDadesMostrarEnumDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricFiltreDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 public class HistoricFiltreCommand {

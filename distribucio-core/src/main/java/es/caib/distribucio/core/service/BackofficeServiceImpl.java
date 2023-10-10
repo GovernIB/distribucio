@@ -9,11 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.BackofficeDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.service.BackofficeService;
+import es.caib.distribucio.logic.intf.dto.BackofficeDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;

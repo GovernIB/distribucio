@@ -18,10 +18,10 @@ import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.FitxerDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.exception.ValidationException;
-import es.caib.distribucio.core.api.registre.RegistreInteressat;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressat;
 import es.caib.distribucio.war.controller.BaseController;
 
 @Component

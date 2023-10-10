@@ -14,9 +14,9 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import es.caib.distribucio.core.api.dto.MetaDadaDto;
-import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.MultiplicitatEnumDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.validation.CodiMetaDadaNoRepetit;
 import es.caib.distribucio.war.validation.CodiMetaDadaNomValid;

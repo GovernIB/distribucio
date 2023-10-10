@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.exception.PropietatNotFoundException;
+import es.caib.distribucio.logic.intf.exception.PropietatNotFoundException;
 
 /**
  * Mètodes comuns per la gestió del logo de l'entitat

@@ -10,11 +10,11 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.AlertaDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.service.AlertaService;
+import es.caib.distribucio.logic.intf.dto.AlertaDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.service.AlertaService;
 
 /**
  * Implementació de AlertaService com a EJB que empra una clase

@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.core.entity.MonitorIntegracioEntity;
 
 /**

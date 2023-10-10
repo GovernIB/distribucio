@@ -14,24 +14,24 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.ArbreDto;
-import es.caib.distribucio.core.api.dto.BustiaContingutDto;
-import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.BustiaFiltreDto;
-import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
-import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.PermisDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.dto.UsuariBustiaFavoritDto;
-import es.caib.distribucio.core.api.dto.UsuariPermisDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.registre.RegistreAnotacio;
-import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
-import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.logic.intf.dto.ArbreDto;
+import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UsuariBustiaFavoritDto;
+import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.UsuariDadesObertesDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
+import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
+import es.caib.distribucio.logic.intf.service.BustiaService;
 
 /**
  * Implementació de BustiaService com a EJB que empra una clase

@@ -19,7 +19,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 
 /**
  * Classe de model de dades que conté els moviments de les anotacions amb origen i destí

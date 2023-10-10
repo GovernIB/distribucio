@@ -9,9 +9,9 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricFiltreDto;
-import es.caib.distribucio.core.api.service.HistoricService;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricDadesDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricFiltreDto;
+import es.caib.distribucio.logic.intf.service.HistoricService;
 
 /**
  * Implementació de HistoricService com a EJB que empra una clase

@@ -12,13 +12,13 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.ArbreDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaFiltreDto;
-import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.logic.intf.dto.ArbreDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
+import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 
 /**
  * Implementació de UnitatsOrganitzativesService com a EJB que empra una clase

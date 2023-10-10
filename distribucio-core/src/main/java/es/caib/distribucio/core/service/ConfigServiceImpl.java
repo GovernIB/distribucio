@@ -12,10 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
-import es.caib.distribucio.core.api.dto.ConfigGroupDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.dto.ConfigGroupDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.core.config.SegonPlaConfig;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;

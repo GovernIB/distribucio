@@ -4,7 +4,7 @@ package es.caib.distribucio.backoffice.utils.arxiu;
 import java.util.Date;
 import java.util.List;
 
-import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;

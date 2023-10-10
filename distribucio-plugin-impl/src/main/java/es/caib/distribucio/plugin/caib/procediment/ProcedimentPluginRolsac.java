@@ -20,7 +20,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;

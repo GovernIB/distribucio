@@ -12,11 +12,11 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
-import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.UnitatOrganitzativaService;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 import es.caib.distribucio.war.command.BustiaCommand;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MessageHelper;

@@ -1,0 +1,14 @@
+        <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
+            <realm name="GOIB">
+                <auth-server-url>${env.JBOSS_AUTH_URL}</auth-server-url>
+                <ssl-required>external</ssl-required>
+            </realm>
+            <secure-deployment name="distribucio-back.war">
+                <realm>${env.JBOSS_AUTH_REALM}</realm>
+                <resource>${env.JBOSS_AUTH_CLIENTID}</resource>
+                <use-resource-role-mappings>false</use-resource-role-mappings>
+                <public-client>true</public-client>
+                <verify-token-audience>true</verify-token-audience>
+                <principal-attribute>preferred_username</principal-attribute>
+            </secure-deployment>
+        </subsystem>

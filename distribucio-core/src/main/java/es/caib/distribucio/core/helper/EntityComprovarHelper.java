@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.exception.PermissionDeniedException;
-import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.PermissionDeniedException;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;

@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 
 /**

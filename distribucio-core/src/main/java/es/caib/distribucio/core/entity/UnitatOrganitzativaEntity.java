@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.TipusTransicioEnumDto;
+import es.caib.distribucio.logic.intf.dto.TipusTransicioEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 

@@ -9,10 +9,10 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
-import es.caib.distribucio.core.api.dto.ConfigGroupDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.dto.ConfigGroupDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 
 /**
  * Implementació de ConfigService com a EJB que empra una clase

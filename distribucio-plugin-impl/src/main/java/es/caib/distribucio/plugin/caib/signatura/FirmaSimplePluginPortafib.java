@@ -21,7 +21,7 @@ import org.fundaciobit.apisib.apifirmasimple.v1.jersey.ApiFirmaEnServidorSimpleJ
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.distribucio.core.api.exception.SistemaExternException;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;

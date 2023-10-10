@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.MetaDadaDto;
-import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.service.MetaDadaService;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.MetaDadaEntity;
 import es.caib.distribucio.core.helper.ConversioTipusHelper;

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 @Entity

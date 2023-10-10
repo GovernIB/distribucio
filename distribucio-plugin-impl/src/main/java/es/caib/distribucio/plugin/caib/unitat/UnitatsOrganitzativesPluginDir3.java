@@ -182,10 +182,12 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 		return getProperty(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password");
 	}
+	@SuppressWarnings("unused")
 	private boolean isLogMissatgesActiu() {
 		return PropertiesHelper.getProperties().getAsBoolean(
 				"es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.log.actiu");
 	}
+	@SuppressWarnings("unused")
 	private Integer getServiceTimeout() {
 		String value = getProperty("es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.timeout");		
 		return value != null ? Integer.valueOf(value) : null;

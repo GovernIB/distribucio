@@ -22,8 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 
 /**
  * Classe del model de dades que representa un MonitorIntegracio.

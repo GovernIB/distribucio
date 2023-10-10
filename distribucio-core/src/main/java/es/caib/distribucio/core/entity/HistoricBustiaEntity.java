@@ -16,7 +16,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
 
 /**
  * Classe de model de dades que conté la informació de les dades estadístiques

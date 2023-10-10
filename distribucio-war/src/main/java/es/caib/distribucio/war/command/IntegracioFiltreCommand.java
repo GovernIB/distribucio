@@ -4,8 +4,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
-import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

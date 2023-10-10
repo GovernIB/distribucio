@@ -27,21 +27,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaPerfilEnumDto;
-import es.caib.distribucio.core.api.dto.ArxiuFirmaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.DocumentEniRegistrableDto;
-import es.caib.distribucio.core.api.dto.DocumentNtiEstadoElaboracionEnumDto;
-import es.caib.distribucio.core.api.dto.DocumentNtiTipoDocumentalEnumDto;
-import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
-import es.caib.distribucio.core.api.dto.NtiOrigenEnumDto;
-import es.caib.distribucio.core.api.exception.ValidationException;
-import es.caib.distribucio.core.api.helper.ArxiuConversions;
-import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
-import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
-import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
+import es.caib.distribucio.logic.intf.dto.DocumentNtiEstadoElaboracionEnumDto;
+import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoDocumentalEnumDto;
+import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.NtiOrigenEnumDto;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
@@ -1041,7 +1041,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuUuid", arxiuUuid);
 		accioParams.put("versio", versio);
-		accioParams.put("ambContingut", new Boolean(ambContingut).toString());
+		accioParams.put("ambContingut", Boolean.valueOf(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
 		try {
 			documentDetalls = getArxiuPlugin().documentDetalls(
@@ -1386,7 +1386,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			metaDadesAddicionals.put("eni:fecha_asiento_registral", df.format(documentEniRegistrableDto.getData()));
 		}
 		metaDadesAddicionals.put("eni:codigo_oficina_registro", documentEniRegistrableDto.getOficinaCodi());
-		metaDadesAddicionals.put("eni:tipo_asiento_registral", new Integer("0"));
+		metaDadesAddicionals.put("eni:tipo_asiento_registral", Integer.valueOf("0"));
 		
 		if (metaDades != null && !metaDades.isEmpty()) {
 			Map<String, String> metaDadesMap;
@@ -1512,7 +1512,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				descripcio, 
 				this.getUsuariIntegracio(),
 				parametres, 
-				tempsResposta);		
+				tempsResposta);
 	}
 	
 	private void integracioAddAccioOk(
@@ -1655,7 +1655,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return getProperty("es.caib.distribucio.plugin.gesdoc.class");
 	}
 	private boolean getPropertyPluginRegistreSignarAnnexos() {
-		return new Boolean(getProperty(
+		return Boolean.valueOf(getProperty(
 				"es.caib.distribucio.plugin.signatura.signarAnnexos")).booleanValue();
 	}
 	private String getPropertyPluginSignatura() {
@@ -1675,13 +1675,13 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 	/** Determina si guardar com a esborrany annexos sense firma vàlida. Per defecte fals. */
 	private boolean getPropertyGuardarAnnexosFirmesInvalidesComEsborrany() {
-		return new Boolean(this.getProperties().getProperty(
+		return Boolean.valueOf(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.firmes.invalides.com.esborrany")).booleanValue();
 	}
 
 	/** Determina si guardar com a esborrany annexos si no existeix el perfil i el tipus a l'Arxiu CAIB. */
 	private boolean getPropertyGuardarAnnexosComEsborranySiNoExisteixAlCaib() {
-		return new Boolean(this.getProperties().getProperty(
+		return Boolean.valueOf(this.getProperties().getProperty(
 				"es.caib.distribucio.tasca.guardar.annexos.com.esborrany.si.perfils.o.tipus.no.existeix.al.caib")).booleanValue();
 	}
 

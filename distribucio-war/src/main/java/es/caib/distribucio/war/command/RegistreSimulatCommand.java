@@ -8,8 +8,8 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
-import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 

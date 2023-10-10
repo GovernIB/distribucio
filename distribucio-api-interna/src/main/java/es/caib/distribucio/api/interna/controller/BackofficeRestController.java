@@ -17,10 +17,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import es.caib.distribucio.api.interna.model.InfoCanviEstat;
-import es.caib.distribucio.core.api.exception.SistemaExternException;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
 
 /**
  * Controlador pel servei REST de backoffice.

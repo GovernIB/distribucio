@@ -38,14 +38,14 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 			String agrupacio,
 			InputStream contingut) throws SistemaExternException {
 		try {
-			String id = new Long(System.currentTimeMillis()).toString();
+			String id = Long.valueOf(System.currentTimeMillis()).toString();
 			File fContent = new File(getBaseDir(agrupacio) + "/" + id);
 			fContent.getParentFile().mkdirs();
 			while (fContent.exists()) {
 				try {
 					Thread.sleep(1);
 				} catch (Exception ignored) {}
-				id = new Long(System.currentTimeMillis()).toString();
+				id = Long.valueOf(System.currentTimeMillis()).toString();
 				fContent = new File(getBaseDir(agrupacio) + "/" + id);
 			}
 			FileOutputStream outContent = new FileOutputStream(fContent);

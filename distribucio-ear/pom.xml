@@ -5,110 +5,160 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>0.9</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>distribucio-ear</artifactId>
 	<packaging>ear</packaging>
+	<properties>
+		<docker.base.image>${project.parent.artifactId}</docker.base.image>
+		<docker.jboss.userhome>/home/jboss</docker.jboss.userhome>
+		<docker.jboss.dir>jboss-eap-7.2</docker.jboss.dir>
+	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator-legacy</artifactId>
-			<version>4.0.2.GA</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
 				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>hibernate-core</artifactId>
-					<groupId>org.hibernate</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>
-						hibernate-commons-annotations
-					</artifactId>
-					<groupId>org.hibernate</groupId>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-lib-common</artifactId>
+			<artifactId>distribucio-back</artifactId>
 			<version>${project.version}</version>
-			<type>pom</type>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-ejb</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<!-- Dependències pels wars de tipus skinny 
+		     (https://maven.apache.org/plugins/maven-war-plugin/examples/skinny-wars.html) -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-service-intf</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-plugin-impl</artifactId>
 			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>					
-				</exclusion>
-			</exclusions>
 		</dependency>
+		<!-- Per a solucionar "NoClassDefFoundError: org/springframework/http/server/reactive/ServletServerHttpResponse$ResponseBodyProcessor" 
+			(https://developer.jboss.org/thread/276373?start=15&tstart=0) -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-core</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-war</artifactId>
-			<version>${project.version}</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-api-externa</artifactId>
-			<version>${project.version}</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-api-interna</artifactId>
-			<version>${project.version}</version>
-			<type>war</type>
+			<groupId>org.reactivestreams</groupId>
+			<artifactId>reactive-streams</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.42.1</version>
+				<configuration>
+					<verbose>true</verbose>
+					<images>
+						<image>
+							<name>${docker.base.image}</name>
+							<alias>${project.parent.artifactId}</alias>
+							<build>
+								<from>280421/jboss-eap-caib-7.2</from>
+								<maintainer>limit@limit.es</maintainer>
+								<ports>
+									<port>8080</port>
+								</ports>
+								<assemblies>
+									<assembly>
+										<name>copy_jboss_config</name>
+										<inline>
+											<fileSets>
+												<fileSet>
+													<directory>${basedir}/docker/jboss</directory>
+													<outputDirectory>config</outputDirectory>
+												</fileSet>
+											</fileSets>
+										</inline>
+										<targetDir>$JBOSS_USERHOME</targetDir>
+										<user>jboss:nogroup</user>
+									</assembly>
+									<assembly>
+										<name>copy_properties</name>
+										<inline>
+											<fileSets>
+												<fileSet>
+													<directory>${basedir}/docker/properties</directory>
+													<outputDirectory>${project.parent.artifactId}</outputDirectory>
+												</fileSet>
+											</fileSets>
+										</inline>
+										<targetDir>$JBOSS_USERHOME/apps</targetDir>
+										<user>jboss:nogroup</user>
+									</assembly>
+									<assembly>
+										<descriptorRef>artifact</descriptorRef>
+										<targetDir>$JBOSS_HOME/standalone/deployments</targetDir>
+										<user>jboss:nogroup</user>
+									</assembly>
+								</assemblies>
+								<runCmds>
+									<run>chmod a+x $JBOSS_USERHOME/config/jboss_config.sh</run>
+									<run>dos2unix $JBOSS_USERHOME/config/jboss_config.sh</run>
+									<run>sed -i 's~#!/bin/sh~#!/bin/sh\n$JBOSS_USERHOME/config/jboss_config.sh~' $JBOSS_HOME/bin/standalone.sh</run>
+								</runCmds>
+								<tags>
+									<tag>latest</tag>
+									<tag>${project.version}</tag>
+								</tags>
+							</build>
+						</image>
+					</images>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
+				<version>3.2.0</version>
 				<configuration>
-					<finalName>distribucio</finalName>
-					<version>5</version>
+					<generateApplicationXml>true</generateApplicationXml>
+					<defaultLibBundleDir>/lib</defaultLibBundleDir>
+					<includeLibInApplicationXml>false</includeLibInApplicationXml>
+					<version>6</version>
+					<initializeInOrder>true</initializeInOrder>
+					<skinnyWars>true</skinnyWars>
+					<archive>
+						<manifestEntries>
+							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+							<Implementation-Vendor>Límit Tecnologies</Implementation-Vendor>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Implementation-SCM-Branch>${git.branch}</Implementation-SCM-Branch>
+							<Implementation-SCM-Revision>${git.commit.id}</Implementation-SCM-Revision>
+						</manifestEntries>
+					</archive>
 					<modules>
 						<ejbModule>
 							<groupId>${project.groupId}</groupId>
-							<artifactId>distribucio-core</artifactId>
-							<bundleFileName>distribucio.jar</bundleFileName>
+							<artifactId>distribucio-ejb</artifactId>
+							<bundleFileName>distribucio-ejb.jar</bundleFileName>
 						</ejbModule>
 						<webModule>
 							<groupId>${project.groupId}</groupId>
-							<artifactId>distribucio-war</artifactId>
+							<artifactId>distribucio-back</artifactId>
 							<contextRoot>/distribucio</contextRoot>
-							<bundleFileName>distribucio.war</bundleFileName>
-						</webModule>
-						<webModule>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>distribucio-api-externa</artifactId>
-							<contextRoot>/distribucioapi</contextRoot>
-							<bundleFileName>distribucioapi.war</bundleFileName>
-						</webModule>
-						<webModule>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>distribucio-api-interna</artifactId>
-							<contextRoot>/distribucioapi/interna</contextRoot>
-							<bundleFileName>distribucio-api-interna.war</bundleFileName>
+							<bundleFileName>distribucio-back.war</bundleFileName>
 						</webModule>
 					</modules>
-					<defaultJavaBundleDir>lib/</defaultJavaBundleDir>
 				</configuration>
-				<version>2.8</version>
 			</plugin>
 		</plugins>
 		<finalName>distribucio</finalName>

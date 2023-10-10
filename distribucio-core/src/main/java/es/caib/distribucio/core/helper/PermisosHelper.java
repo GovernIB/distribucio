@@ -33,8 +33,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.PermisDto;
-import es.caib.distribucio.core.api.dto.PrincipalTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
+import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.core.security.ExtendedPermission;
 
 

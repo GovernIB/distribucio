@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.historic.HistoricEstatDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricEstatDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
 import es.caib.distribucio.core.entity.HistoricEstatEntity;
 
 /**
@@ -132,7 +132,7 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 
 	/** Consulta per retornar les dades agregades per estat sense tenir
 	 * en compte la UO.	 */
-	@Query(	"select new es.caib.distribucio.core.api.dto.historic.HistoricEstatDto( " +
+	@Query(	"select new es.caib.distribucio.logic.intf.dto.historic.HistoricEstatDto( " +
 			"			data, " + 
 			"			tipus, " + 
 			"			estat, " + 

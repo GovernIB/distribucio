@@ -16,7 +16,7 @@ import javax.persistence.TemporalType;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.AvisNivellEnumDto;
+import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**

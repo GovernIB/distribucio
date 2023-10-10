@@ -32,16 +32,16 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
-import es.caib.distribucio.core.api.dto.BackofficeDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.ReglaDto;
-import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.core.api.service.BackofficeService;
-import es.caib.distribucio.core.api.service.EntitatService;
-import es.caib.distribucio.core.api.service.ProcedimentService;
-import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.logic.intf.dto.BackofficeDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.service.BackofficeService;
+import es.caib.distribucio.logic.intf.service.EntitatService;
+import es.caib.distribucio.logic.intf.service.ProcedimentService;
+import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.war.controller.BaseUserController;
 
 /**

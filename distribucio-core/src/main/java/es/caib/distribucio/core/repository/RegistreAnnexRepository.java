@@ -5,7 +5,7 @@ package es.caib.distribucio.core.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;
 

@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.IntegracioAccioEstatEnumDto;
-import es.caib.distribucio.core.api.dto.IntegracioAccioTipusEnumDto;
-import es.caib.distribucio.core.api.dto.IntegracioDto;
-import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
-import es.caib.distribucio.core.api.dto.MonitorIntegracioParamDto;
-import es.caib.distribucio.core.api.service.MonitorIntegracioService;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioDto;
+import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
+import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 
 /**
  * Mètodes per a la gestió d'integracions.

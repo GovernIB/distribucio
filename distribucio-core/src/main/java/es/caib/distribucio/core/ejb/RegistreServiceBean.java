@@ -13,25 +13,25 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.ArxiuDetallDto;
-import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.ClassificacioResultatDto;
-import es.caib.distribucio.core.api.dto.ContingutDto;
-import es.caib.distribucio.core.api.dto.FitxerDto;
-import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexFirmaDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.core.api.service.RegistreService;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
+import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
+import es.caib.distribucio.logic.intf.dto.ContingutDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 
 /**
  * Implementació de RegistreService com a EJB que empra una clase

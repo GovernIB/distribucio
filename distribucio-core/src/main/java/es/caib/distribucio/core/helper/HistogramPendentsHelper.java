@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.HistogramPendentsEntryDto;
+import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
 
 /**
  * Mètodes per a la gestió d'integracions.

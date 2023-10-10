@@ -2,9 +2,9 @@ package es.caib.distribucio.war.command;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
-import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 public class ProcedimentFiltreCommand {

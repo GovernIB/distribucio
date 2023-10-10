@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.ModalHelper;

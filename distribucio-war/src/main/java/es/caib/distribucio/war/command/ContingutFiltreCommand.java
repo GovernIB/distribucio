@@ -7,8 +7,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.ContingutFiltreDto;
-import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ContingutFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

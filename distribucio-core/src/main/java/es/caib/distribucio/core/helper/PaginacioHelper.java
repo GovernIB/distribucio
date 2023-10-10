@@ -17,10 +17,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDireccioDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto.OrdreDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDto;
 
 /**
  * Helper per a convertir les dades de paginació entre el DTO

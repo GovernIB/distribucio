@@ -5,10 +5,10 @@ package es.caib.distribucio.war.command;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.ReglaFiltreActivaEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
-import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

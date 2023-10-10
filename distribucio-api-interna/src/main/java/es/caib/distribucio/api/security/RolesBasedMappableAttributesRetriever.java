@@ -3,7 +3,7 @@
  */
 package es.caib.distribucio.api.security;
 
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

@@ -5,8 +5,8 @@ package es.caib.distribucio.war.command;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaEstatEnumDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaFiltreDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

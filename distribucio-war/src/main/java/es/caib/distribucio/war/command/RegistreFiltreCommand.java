@@ -7,15 +7,15 @@ import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.RegistreEnviatPerEmailEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreDto;
-import es.caib.distribucio.core.api.dto.RegistreFiltreReintentsEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreMarcatPerSobreescriureEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreNombreAnnexesEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreTipusDocFisicaEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaDto;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.dto.RegistreEnviatPerEmailEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
+import es.caib.distribucio.logic.intf.dto.RegistreFiltreReintentsEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreMarcatPerSobreescriureEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

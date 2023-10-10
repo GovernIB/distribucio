@@ -21,7 +21,7 @@ import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.representation.Form;
 
-import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
 
 
 /**

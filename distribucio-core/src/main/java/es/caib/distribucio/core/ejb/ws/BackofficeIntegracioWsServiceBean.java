@@ -15,10 +15,10 @@ import org.jboss.wsf.spi.annotation.WebContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreEntrada;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.BackofficeIntegracioWsService;
-import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 import es.caib.distribucio.core.helper.UsuariHelper;
 import es.caib.distribucio.core.service.ws.backoffice.BackofficeIntegracioWsServiceImpl;
 

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultat.ExpedientAccio;
 import es.caib.distribucio.backoffice.utils.arxiu.ArxiuResultatAnnex.AnnexAccio;
-import es.caib.distribucio.core.api.dto.ExpedientEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.rest.client.integracio.domini.Annex;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
 import es.caib.distribucio.rest.client.integracio.domini.Interessat;

@@ -3,7 +3,7 @@ package es.caib.distribucio.plugin.validacio;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.caib.distribucio.core.api.dto.ArxiuFirmaDetallDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 
 /**
  * Informació de la resposta de la validació de les firmes.

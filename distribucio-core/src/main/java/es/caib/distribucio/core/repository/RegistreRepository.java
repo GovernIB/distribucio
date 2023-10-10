@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreAnnexEntity;
@@ -55,7 +55,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from " +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
+			"    r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents < :maxReintents " +
 			"and r.entitat = :entitat ")
 	long countGuardarAnnexPendents(
@@ -66,7 +66,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from" +
 			"    RegistreEntity r " +
 			"where " +
-			"    r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
+			"    r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.ARXIU_PENDENT " +
 			"and r.procesIntents < :maxReintents " +
 			"and r.entitat = :entitat ")
 	Page<RegistreEntity> findGuardarAnnexPendentsPaged(
@@ -80,7 +80,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"    RegistreEntity r " +
 			"where " +
 			"    r.regla is not null " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.REGLA_PENDENT " +
+			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.REGLA_PENDENT " +
 			"and r.procesIntents <= :maxReintents " +
 			"and r.entitat = :entitat " + 
 		    "order by " +
@@ -98,8 +98,8 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"where " +
 			"    r.regla.activa = true " +
 			"and r.entitat = :entitat " +
-			"and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
+			"and r.regla.tipus = es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto.BACKOFFICE " +
+			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BACK_PENDENT " +
 			"and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
 			"and r.procesIntents < :maxReintents " +
 		    "order by r.regla.id asc ")
@@ -435,10 +435,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	 * amb errors i regla pendent de tipus enviar a backoffice
 	 **/
 	@Query("from RegistreEntity r " +
-			"where r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_ERROR " +
+			"where r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BACK_ERROR " +
 			"	and r.procesIntents <= :maxReintents " +
 			"	and (r.backRetryEnviarData is null or r.backRetryEnviarData < :currentDate) " +
-			"	and r.regla.tipus = es.caib.distribucio.core.api.dto.ReglaTipusEnumDto.BACKOFFICE " +
+			"	and r.regla.tipus = es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto.BACKOFFICE " +
 			"order by r.data DESC")
 	public List<RegistreEntity> findRegistresBackError(
 			@Param("currentDate") Date currentDate,

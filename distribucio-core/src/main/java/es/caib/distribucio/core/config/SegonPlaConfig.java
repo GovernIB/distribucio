@@ -16,8 +16,8 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
-import es.caib.distribucio.core.api.service.MonitorTasquesService;
-import es.caib.distribucio.core.api.service.SegonPlaService;
+import es.caib.distribucio.logic.intf.service.MonitorTasquesService;
+import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.core.helper.ConfigHelper;
 
 

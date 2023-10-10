@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.dto.UsuariPermisDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
-import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.war.command.RegistreAssignarCommand;
 
 /**

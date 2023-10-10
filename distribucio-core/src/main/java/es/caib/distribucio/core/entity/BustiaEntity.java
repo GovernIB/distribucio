@@ -15,7 +15,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 
 /**
  * Classe del model de dades que representa un arxiu.

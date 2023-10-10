@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.BustiaDto;
-import es.caib.distribucio.core.api.dto.UsuariPermisDto;
-import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
+import es.caib.distribucio.logic.intf.service.BustiaService;
 
 @Component
 public class BustiaHelper {

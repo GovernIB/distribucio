@@ -1,4 +1,4 @@
-package es.caib.distribucio.core.api.dto.historic;
+package es.caib.distribucio.logic.intf.dto.historic;
 
 import java.util.Date;
 
@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 
 /**
  * Informació de dades d'anotacions per bústia.

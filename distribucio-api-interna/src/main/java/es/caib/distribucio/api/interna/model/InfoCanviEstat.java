@@ -1,7 +1,7 @@
 package es.caib.distribucio.api.interna.model;
 
-import es.caib.distribucio.core.api.service.ws.backoffice.AnotacioRegistreId;
-import es.caib.distribucio.core.api.service.ws.backoffice.Estat;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 
 public class InfoCanviEstat {
 

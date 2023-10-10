@@ -5,7 +5,7 @@ package es.caib.distribucio.war.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 
 
 /**

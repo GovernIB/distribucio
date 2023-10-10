@@ -8,11 +8,11 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
-import es.caib.distribucio.core.api.dto.ProcedimentFiltreDto;
-import es.caib.distribucio.core.api.service.ProcedimentService;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
+import es.caib.distribucio.logic.intf.service.ProcedimentService;
 
 /**
  * Implementació de ProcedimentService com a EJB que empra una clase

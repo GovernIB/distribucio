@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 
 /**
  * Utilitat per a gestionar el canvi de rol de l'usuari actual.

@@ -16,12 +16,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.ArbreDto;
-import es.caib.distribucio.core.api.dto.ArbreNodeDto;
-import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.exception.EmptyMailException;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.dto.ArbreDto;
+import es.caib.distribucio.logic.intf.dto.ArbreNodeDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.exception.EmptyMailException;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;

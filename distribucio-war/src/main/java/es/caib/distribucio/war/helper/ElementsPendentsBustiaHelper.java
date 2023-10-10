@@ -5,8 +5,8 @@ package es.caib.distribucio.war.helper;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.service.BustiaService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.BustiaService;
 
 /**
  * Utilitat per a contar els elements pendents de les bústies

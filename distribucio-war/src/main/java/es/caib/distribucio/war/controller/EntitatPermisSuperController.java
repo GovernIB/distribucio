@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.PermisDto;
-import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.war.command.PermisCommand;
 import es.caib.distribucio.war.helper.DatatablesHelper;
 import es.caib.distribucio.war.helper.DatatablesHelper.DatatablesResponse;

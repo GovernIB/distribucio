@@ -1,0 +1,15 @@
+databaseChangeLog:
+-  property:
+    name: app_prefix
+    value: dis_
+- include:
+    file: db/changelog/00_initial_schema_table.yaml
+- include:
+    file: db/changelog/01_initial_schema_constraint.yaml
+- include:
+    file: db/changelog/02_initial_schema_sequence.yaml
+- include:
+    file: db/changelog/03_initial_schema_trigger.yaml
+- includeAll:
+    path: db/changelog/changes
+    errorIfMissingOrEmpty: false

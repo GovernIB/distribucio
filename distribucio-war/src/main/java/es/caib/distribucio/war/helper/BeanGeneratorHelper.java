@@ -13,10 +13,10 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.DadaDto;
-import es.caib.distribucio.core.api.dto.MetaDadaDto;
-import es.caib.distribucio.core.api.dto.MultiplicitatEnumDto;
-import es.caib.distribucio.core.api.service.MetaDadaService;
+import es.caib.distribucio.logic.intf.dto.DadaDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
+import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import net.sf.cglib.beans.BeanGenerator;
 
 /**

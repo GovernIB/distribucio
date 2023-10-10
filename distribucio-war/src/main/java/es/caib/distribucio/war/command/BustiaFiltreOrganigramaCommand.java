@@ -2,7 +2,7 @@ package es.caib.distribucio.war.command;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.core.api.dto.BustiaFiltreOrganigramaDto;
+import es.caib.distribucio.logic.intf.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

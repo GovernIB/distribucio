@@ -27,19 +27,19 @@ public abstract class DistribucioAbstractPluginProperties {
 	}
 	
 	public boolean getAsBoolean(String key) {
-		return new Boolean(getProperty(key)).booleanValue();
+		return Boolean.valueOf(getProperty(key)).booleanValue();
 	}
 	public int getAsInt(String key) {
-		return new Integer(getProperty(key)).intValue();
+		return Integer.valueOf(getProperty(key)).intValue();
 	}
 	public long getAsLong(String key) {
-		return new Long(getProperty(key)).longValue();
+		return Long.valueOf(getProperty(key)).longValue();
 	}
 	public float getAsFloat(String key) {
-		return new Float(getProperty(key)).floatValue();
+		return Float.valueOf(getProperty(key)).floatValue();
 	}
 	public double getAsDouble(String key) {
-		return new Double(getProperty(key)).doubleValue();
+		return Double.valueOf(getProperty(key)).doubleValue();
 	}
 
 

@@ -70,7 +70,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 			for (DadesComunesPais paisJson: paisosJson) {
 				Long codiNumeric = 0L;
 				if (paisJson.getCodi_numeric() != null) {
-					codiNumeric = new Long(paisJson.getCodi_numeric());
+					codiNumeric = Long.valueOf(paisJson.getCodi_numeric());
 				}
 				Pais pais = new Pais(
 						codiNumeric,

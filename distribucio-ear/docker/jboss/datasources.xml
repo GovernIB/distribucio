@@ -1,0 +1,33 @@
+        <subsystem xmlns="urn:jboss:domain:datasources:5.0">
+            <datasources>
+                <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
+                    <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
+                    <driver>h2</driver>
+                    <security>
+                        <user-name>sa</user-name>
+                        <password>sa</password>
+                    </security>
+                </datasource>
+                <datasource jndi-name="java:jboss/datasources/distribucioDS" pool-name="distribucioDB" enabled="true">
+                    <driver>${env.JBOSS_DB_DRIVER}</driver>
+                    <connection-url>${env.JBOSS_DB_URL}</connection-url>
+                    <security>
+                        <user-name>${env.JBOSS_DB_USERNAME}</user-name>
+                        <password>${env.JBOSS_DB_PASSWORD}</password>
+                    </security>
+                    <pool>
+                        <min-pool-size>1</min-pool-size>
+                        <max-pool-size>10</max-pool-size>
+                        <prefill>true</prefill>
+                    </pool>
+                </datasource>
+                <drivers>
+                    <driver name="h2" module="com.h2database.h2">
+                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+                    </driver>
+                    <driver name="oracle" module="com.oracle">
+                        <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>

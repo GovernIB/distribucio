@@ -11,9 +11,9 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.historic.HistoricDadesDto;
-import es.caib.distribucio.core.api.dto.historic.HistoricFiltreDto;
-import es.caib.distribucio.core.api.service.HistoricService;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricDadesDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricFiltreDto;
+import es.caib.distribucio.logic.intf.service.HistoricService;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.helper.HistoricHelper;
 import es.caib.distribucio.core.helper.UnitatOrganitzativaHelper;

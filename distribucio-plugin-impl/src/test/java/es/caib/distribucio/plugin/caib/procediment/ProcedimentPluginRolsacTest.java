@@ -17,7 +17,6 @@ import javax.net.ssl.X509TrustManager;
 import org.junit.Before;
 import org.junit.Test;
 
-import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;

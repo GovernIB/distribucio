@@ -13,8 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 
 /**
  * Utilitat per a gestionar accions de context de sessió.

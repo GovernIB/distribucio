@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.war.helper.AplicacioHelper;
 
 /**

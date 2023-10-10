@@ -13,15 +13,15 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.core.api.dto.RegistreSimulatDto;
-import es.caib.distribucio.core.api.dto.ReglaDto;
-import es.caib.distribucio.core.api.dto.ReglaFiltreDto;
-import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.service.ReglaService;
 
 /**
  * Implementació de ReglaService com a EJB que empra una clase

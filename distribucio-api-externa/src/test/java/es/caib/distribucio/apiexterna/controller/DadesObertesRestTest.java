@@ -5,7 +5,7 @@ package es.caib.distribucio.apiexterna.controller;
 
 import java.util.List;
 
-import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
 
 /**
  * Test per al client REST de l'API REST de consulta de dades obertes de Distribicio.

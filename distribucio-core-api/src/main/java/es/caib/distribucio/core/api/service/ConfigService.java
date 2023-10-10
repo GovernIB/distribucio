@@ -1,13 +1,13 @@
-package es.caib.distribucio.core.api.service;
+package es.caib.distribucio.logic.intf.service;
 
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
-import es.caib.distribucio.core.api.dto.ConfigGroupDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.dto.ConfigGroupDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 
 /**
  * Declaració dels mètodes per a la gestió dels paràmetres de configuració de l'aplicació.

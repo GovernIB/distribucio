@@ -6,7 +6,7 @@ package es.caib.distribucio.plugin.distribucio;
 import java.util.Date;
 import java.util.List;
 
-import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 
 /**
  * Classe que representa un annex d'una anotació de registre.

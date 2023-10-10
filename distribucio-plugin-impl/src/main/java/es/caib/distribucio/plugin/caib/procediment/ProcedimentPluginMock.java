@@ -7,7 +7,7 @@ package es.caib.distribucio.plugin.caib.procediment;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.caib.distribucio.core.api.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;

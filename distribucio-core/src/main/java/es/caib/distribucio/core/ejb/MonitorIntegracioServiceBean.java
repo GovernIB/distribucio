@@ -14,15 +14,15 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.IntegracioDiagnosticDto;
-import es.caib.distribucio.core.api.dto.IntegracioDto;
-import es.caib.distribucio.core.api.dto.IntegracioFiltreDto;
-import es.caib.distribucio.core.api.dto.MonitorIntegracioDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.service.MonitorIntegracioService;
+import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
+import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 
 /**
  * Implementació de MonitorIntegracioService com a EJB que empra una clase

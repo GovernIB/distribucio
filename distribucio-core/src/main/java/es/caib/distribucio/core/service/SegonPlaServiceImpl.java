@@ -29,11 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.SemaphoreDto;
-import es.caib.distribucio.core.api.service.MonitorIntegracioService;
-import es.caib.distribucio.core.api.service.ProcedimentService;
-import es.caib.distribucio.core.api.service.SegonPlaService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
+import es.caib.distribucio.logic.intf.service.ProcedimentService;
+import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.core.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.RegistreEntity;

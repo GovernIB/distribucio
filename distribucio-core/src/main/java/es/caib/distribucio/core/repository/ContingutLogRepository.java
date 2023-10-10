@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.entity.ContingutEntity;
 import es.caib.distribucio.core.entity.ContingutLogEntity;
 import es.caib.distribucio.core.entity.ContingutMovimentEntity;
@@ -45,7 +45,7 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			"		BustiaEntity bDesti " +
 			"where " +
 			"		(l.contingut.id = r.id) " +
-			"	and (l.contingut.tipus = es.caib.distribucio.core.api.dto.ContingutTipusEnumDto.REGISTRE) " +
+			"	and (l.contingut.tipus = es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto.REGISTRE) " +
 			" 	and (:isNullAnotacioId = true or r.id = :anotacioId) " +
 			" 	and (:isNullAnotacioNumero = true or r.numero like :anotacioNumero) " +
 			"	and ((contingutMoviment.origenId is not null and bOrigen.id = contingutMoviment.origenId) " + 
@@ -112,10 +112,10 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			"		RegistreEntity r " +
 			"where " +
 			"		l.contingut.id = r.id " +
-			"	and l.contingut.tipus = es.caib.distribucio.core.api.dto.ContingutTipusEnumDto.REGISTRE " +
+			"	and l.contingut.tipus = es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto.REGISTRE " +
 			" 	and r.numero like :anotacioNumero " +
 			" 	and l.tipus like 'BACK_%' " +
-			"	and r.procesEstat =  es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BACK_COMUNICADA " +
+			"	and r.procesEstat =  es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BACK_COMUNICADA " +
 			"order by r.procesData desc"
 			)
 	public List<RegistreEntity> findByNumeroAndComunidaBackoffice(

@@ -26,12 +26,12 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.registre.RegistreAnnexElaboracioEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreAnnexNtiTipusDocumentEnum;
-import es.caib.distribucio.core.api.registre.RegistreAnnexOrigenEnum;
-import es.caib.distribucio.core.api.registre.RegistreAnnexSicresTipusDocumentEnum;
-import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**

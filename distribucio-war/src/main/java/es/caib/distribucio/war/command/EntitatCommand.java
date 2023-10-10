@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.validation.CodiEntitatNoRepetit;
 import es.caib.distribucio.war.validation.DocumentIdentitat;

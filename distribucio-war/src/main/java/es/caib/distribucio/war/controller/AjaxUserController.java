@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.dto.UsuariDto;
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.war.helper.EnumHelper.HtmlOption;
 
 /**
@@ -120,9 +120,9 @@ public class AjaxUserController extends BaseUserController {
 	}
 	
 	private static String[] enumPackages = {
-			"es.caib.distribucio.core.api.dto",
-			"es.caib.distribucio.core.api.dto.historic",
-			"es.caib.distribucio.core.api.registre"
+			"es.caib.distribucio.logic.intf.dto",
+			"es.caib.distribucio.logic.intf.dto.historic",
+			"es.caib.distribucio.logic.intf.registre"
 	};
 
 	/** Busca l'enumeració en diferents rutes. Si no troba la classe llença excepció. */

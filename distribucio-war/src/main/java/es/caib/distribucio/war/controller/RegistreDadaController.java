@@ -3,12 +3,12 @@
  */
 package es.caib.distribucio.war.controller;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.MetaDadaDto;
-import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.service.MetaDadaService;
-import es.caib.distribucio.core.api.service.RegistreService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.service.MetaDadaService;
+import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.war.helper.BeanGeneratorHelper;

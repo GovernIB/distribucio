@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.core.authority.mapping.MappableAttributesRetriever;
 
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 
 /**
  * Aconsegueix els rols que seran rellevants per a l'aplicació.

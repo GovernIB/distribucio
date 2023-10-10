@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>0.9</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>distribucio-plugin-impl</artifactId>
 	<dependencies>
@@ -55,18 +55,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>es.caib.portafib</groupId>
 			<artifactId>portafib-ws-api</artifactId>
 			<version>${portafib.version}</version>
-		</dependency>
-
-		<dependency>
-			<artifactId>apifirmasimple-api</artifactId>
-			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
-			<version>1.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fundaciobit.apisib.jerseycore</groupId>
@@ -82,11 +75,23 @@
 			<artifactId>apifirmasimple-jersey</artifactId>
 			<groupId>org.fundaciobit.apisib.apifirmasimple</groupId>
 			<version>1.0.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
 			<version>1.19.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.ws.rs</groupId>
+					<artifactId>jsr311-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -108,7 +113,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>es.caib.regweb3</groupId>
 			<artifactId>regweb3-ws-api</artifactId>
@@ -127,19 +131,16 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -161,7 +162,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jcl</artifactId>
-			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -196,37 +196,39 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.fundaciobit.pluginsib.userinformation</groupId>
+			<artifactId>pluginsib-userinformation-keycloak</artifactId>
+			<version>3.1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
-			<version>2.1.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-base</artifactId>
-			<version>2.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>2.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.voodoodyne.jackson.jsog</groupId>
 			<artifactId>jackson-jsog</artifactId>
 			<version>1.1.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -251,8 +253,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-
+		<dependency>
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -266,39 +276,12 @@
 			</dependencies>
 		</profile>
 	</profiles>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.4.1</version>
-				<executions>
-					<execution>
-						<id>generate-reports-ws-code</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>wsimport</goal>
-						</goals>
-						<configuration>
-							<wsdlUrls>
-								<wsdlUrl>${basedir}/wsdl/cws/CWS.wsdl</wsdlUrl>
-							</wsdlUrls>
-							<vmArgs>
-								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-							</vmArgs>
-							<verbose>true</verbose>
-							<sourceDestDir>${basedir}/src/main/java</sourceDestDir>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 	<repositories>
 		<repository>
 			<id>github-governib-maven-repos</id>
 			<name>GitHub GovernIB Maven Repository</name>
-			<url>http://governib.github.io/maven/maven/</url>
+			<!--url>http://governib.github.io/maven/maven/</url-->
+			<url>https://raw.githubusercontent.com/GovernIB/maven/gh-pages/maven</url>
 		</repository>
 		<repository>
 			<name>Local Maven repository</name>

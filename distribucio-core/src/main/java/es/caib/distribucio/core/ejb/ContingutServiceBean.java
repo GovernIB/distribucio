@@ -13,20 +13,20 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.dto.ContingutComentariDto;
-import es.caib.distribucio.core.api.dto.ContingutDto;
-import es.caib.distribucio.core.api.dto.ContingutFiltreDto;
-import es.caib.distribucio.core.api.dto.ContingutLogDetallsDto;
-import es.caib.distribucio.core.api.dto.ContingutLogDto;
-import es.caib.distribucio.core.api.dto.ContingutMovimentDto;
-import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.PaginaDto;
-import es.caib.distribucio.core.api.dto.PaginacioParamsDto;
-import es.caib.distribucio.core.api.dto.RespostaPublicacioComentariDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
+import es.caib.distribucio.logic.intf.dto.ContingutDto;
+import es.caib.distribucio.logic.intf.dto.ContingutFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ContingutLogDetallsDto;
+import es.caib.distribucio.logic.intf.dto.ContingutLogDto;
+import es.caib.distribucio.logic.intf.dto.ContingutMovimentDto;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.RespostaPublicacioComentariDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.LogsDadesObertesDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.service.ContingutService;
 
 /**
  * Implementació de ContenidorService com a EJB que empra una clase

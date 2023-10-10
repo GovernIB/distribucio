@@ -10,7 +10,7 @@ import javax.interceptor.Interceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
 
-import es.caib.distribucio.core.api.service.SegonPlaService;
+import es.caib.distribucio.logic.intf.service.SegonPlaService;
 
 /**
  * Implementació de BustiaService com a EJB que empra una clase

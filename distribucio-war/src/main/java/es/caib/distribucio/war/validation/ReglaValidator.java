@@ -14,10 +14,10 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.ReglaDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.core.api.service.ReglaService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.war.command.ReglaCommand;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MessageHelper;

@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
-import es.caib.distribucio.core.api.dto.MultiplicitatEnumDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.entity.MetaDadaEntity;
 

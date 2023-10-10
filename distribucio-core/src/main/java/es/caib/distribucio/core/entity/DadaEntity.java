@@ -22,7 +22,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.core.audit.DistribucioAuditable;
-import es.caib.distribucio.core.api.dto.MetaDadaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 
 /**
  * Classe del model de dades que representa una dada.

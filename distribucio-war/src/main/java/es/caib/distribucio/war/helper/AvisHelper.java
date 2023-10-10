@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.core.api.dto.AvisDto;
-import es.caib.distribucio.core.api.service.AvisService;
+import es.caib.distribucio.logic.intf.dto.AvisDto;
+import es.caib.distribucio.logic.intf.service.AvisService;
 
 /**
  * Utilitat per obtenir els avisos de sessió..

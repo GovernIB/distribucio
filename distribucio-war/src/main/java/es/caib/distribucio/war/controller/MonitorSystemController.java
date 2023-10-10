@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
-import es.caib.distribucio.core.api.monitor.MonitorTascaInfo;
-import es.caib.distribucio.core.api.service.MonitorTasquesService;
+import es.caib.distribucio.logic.intf.monitor.MonitorTascaEstatEnum;
+import es.caib.distribucio.logic.intf.monitor.MonitorTascaInfo;
+import es.caib.distribucio.logic.intf.service.MonitorTasquesService;
 import es.caib.distribucio.war.helper.MonitorHelper;
 
 /**

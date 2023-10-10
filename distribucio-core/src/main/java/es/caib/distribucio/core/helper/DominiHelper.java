@@ -28,11 +28,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import es.caib.distribucio.core.api.dto.DominiDto;
-import es.caib.distribucio.core.api.exception.CipherException;
-import es.caib.distribucio.core.api.exception.DominiException;
-import es.caib.distribucio.core.api.exception.NotFoundException;
-import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.logic.intf.dto.DominiDto;
+import es.caib.distribucio.logic.intf.exception.CipherException;
+import es.caib.distribucio.logic.intf.exception.DominiException;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.core.entity.DominiEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
 import es.caib.distribucio.core.repository.DominiRepository;

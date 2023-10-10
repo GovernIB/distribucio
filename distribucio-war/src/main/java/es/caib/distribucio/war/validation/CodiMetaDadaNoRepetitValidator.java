@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import es.caib.distribucio.core.api.dto.MetaDadaDto;
-import es.caib.distribucio.core.api.service.MetaDadaService;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.service.MetaDadaService;
 
 /**
  * Constraint de validació que controla que no es repeteixi el codi de meta-dada.

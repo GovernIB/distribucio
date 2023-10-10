@@ -1,6 +1,6 @@
 package es.caib.distribucio.war.command;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 import es.caib.distribucio.war.validation.Config;
 

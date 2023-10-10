@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.service.ConfigService;
-import es.caib.distribucio.core.api.service.EntitatService;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.war.helper.ContingutEstaticHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 

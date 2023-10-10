@@ -30,10 +30,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.ContingutTipusEnumDto;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatSistraEnum;
-import es.caib.distribucio.core.api.registre.RegistreTipusEnum;
+import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 
 /**
  * Classe del model de dades que representa una anotació al

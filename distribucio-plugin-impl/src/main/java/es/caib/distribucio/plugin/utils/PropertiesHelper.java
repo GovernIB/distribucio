@@ -17,12 +17,8 @@ import org.slf4j.LoggerFactory;
 public class PropertiesHelper extends Properties {
 
 	private static final String APPSERV_PROPS_PATH = "es.caib.distribucio.properties.path";
-
 	private static PropertiesHelper instance = null;
-
 	private boolean llegirSystem = true;
-
-
 
 	public static PropertiesHelper getProperties() {
 		if (instance == null) {
@@ -60,23 +56,23 @@ public class PropertiesHelper extends Properties {
 	}
 	public String getProperty(String key, String defaultValue) {
 		String val = getProperty(key);
-        return (val == null) ? defaultValue : val;
+		return (val == null) ? defaultValue : val;
 	}
 
 	public boolean getAsBoolean(String key) {
-		return new Boolean(getProperty(key)).booleanValue();
+		return Boolean.valueOf(getProperty(key)).booleanValue();
 	}
 	public int getAsInt(String key) {
-		return new Integer(getProperty(key)).intValue();
+		return Integer.valueOf(getProperty(key)).intValue();
 	}
 	public long getAsLong(String key) {
-		return new Long(getProperty(key)).longValue();
+		return Long.valueOf(getProperty(key)).longValue();
 	}
 	public float getAsFloat(String key) {
-		return new Float(getProperty(key)).floatValue();
+		return Float.valueOf(getProperty(key)).floatValue();
 	}
 	public double getAsDouble(String key) {
-		return new Double(getProperty(key)).doubleValue();
+		return Double.valueOf(getProperty(key)).doubleValue();
 	}
 
 	public boolean isLlegirSystem() {

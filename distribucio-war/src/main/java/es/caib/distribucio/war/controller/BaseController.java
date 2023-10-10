@@ -22,11 +22,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.support.RequestContext;
 
-import es.caib.distribucio.core.api.dto.EntitatDto;
-import es.caib.distribucio.core.api.dto.RegistreAnnexDto;
-import es.caib.distribucio.core.api.dto.RegistreDto;
-import es.caib.distribucio.core.api.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.core.api.service.ws.backoffice.AnnexEstat;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.war.helper.AjaxHelper;
 import es.caib.distribucio.war.helper.EntitatHelper;
 import es.caib.distribucio.war.helper.MissatgesHelper;

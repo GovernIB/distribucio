@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import es.caib.distribucio.core.api.dto.AvisNivellEnumDto;
-import es.caib.distribucio.core.api.dto.AvisDto;
+import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
+import es.caib.distribucio.logic.intf.dto.AvisDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.web.servlet.support.RequestContext;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
-import es.caib.distribucio.core.api.service.ConfigService;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.war.command.ConfigCommand;
 import es.caib.distribucio.war.helper.MessageHelper;
 

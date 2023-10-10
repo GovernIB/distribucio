@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import es.caib.distribucio.core.api.monitor.MonitorTascaEstatEnum;
-import es.caib.distribucio.core.api.monitor.MonitorTascaInfo;
-import es.caib.distribucio.core.api.service.MonitorTasquesService;
+import es.caib.distribucio.logic.intf.monitor.MonitorTascaEstatEnum;
+import es.caib.distribucio.logic.intf.monitor.MonitorTascaInfo;
+import es.caib.distribucio.logic.intf.service.MonitorTasquesService;
 
 
 /**

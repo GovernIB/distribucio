@@ -16,9 +16,9 @@ import javax.persistence.Version;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.registre.RegistreInteressatCanalEnum;
-import es.caib.distribucio.core.api.registre.RegistreInteressatDocumentTipusEnum;
-import es.caib.distribucio.core.api.registre.RegistreInteressatTipusEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatCanalEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatDocumentTipusEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**

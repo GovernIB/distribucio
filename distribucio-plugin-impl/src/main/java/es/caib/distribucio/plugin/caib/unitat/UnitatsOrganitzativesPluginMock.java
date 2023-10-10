@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,7 +39,7 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		List<UnitatOrganitzativa> unitats = new ArrayList<>();
 		
 		
-		final String CODI_UNITAT_ARREL = "A04026906";
+		/*final String CODI_UNITAT_ARREL = "A04026906";
 		final String CODI_UNITAT_SUPERIOR = "A04019281";
 		
 		final String CODI_UNITAT_TO_SPLIT = "A04032338";
@@ -48,7 +47,7 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		final String CODI_UNITAT_TO_MERGE2 = "A04031575";
 		final String CODI_UNITAT_TO_SUBSTITUTE = "A04031579";
 		final String CODI_UNITAT_TO_CUMULATIVE_CHANGES = "A04046344";
-		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04031605";		
+		final String CODI_UNITAT_TO_PROPS_CHANGED = "A04031605";*/
 		
 		//TEST
 		

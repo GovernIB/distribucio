@@ -20,13 +20,13 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
-import es.caib.distribucio.core.api.dto.LogTipusEnumDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.BustiaDadesObertesDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.LogsDadesObertesDto;
-import es.caib.distribucio.core.api.dto.dadesobertes.UsuariDadesObertesDto;
-import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.core.api.service.BustiaService;
-import es.caib.distribucio.core.api.service.ContingutService;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.LogsDadesObertesDto;
+import es.caib.distribucio.logic.intf.dto.dadesobertes.UsuariDadesObertesDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.ContingutService;
 
 /**
  * Controlador API REST per a les Dades Obertes per a la consulta de bústies, usuaris i esdevenidments (logs).

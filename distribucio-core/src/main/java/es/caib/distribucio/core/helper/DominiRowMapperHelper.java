@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.core.api.dto.ResultatConsultaDto;
+import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
 
 /**
  * Mapeig del resultat d'una consulta a ResultatDominiDto

@@ -5,7 +5,7 @@ package es.caib.distribucio.core.repository;
 
 import javax.sql.DataSource;
 
-import es.caib.distribucio.core.api.dto.ResultatConsultaDto;
+import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
 
 
 /**

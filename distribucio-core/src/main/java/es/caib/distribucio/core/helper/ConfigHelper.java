@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.core.api.dto.ConfigDto;
-import es.caib.distribucio.core.api.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ConfigDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.core.entity.ConfigEntity;
 import es.caib.distribucio.core.entity.ConfigGroupEntity;
 import es.caib.distribucio.core.repository.ConfigGroupRepository;

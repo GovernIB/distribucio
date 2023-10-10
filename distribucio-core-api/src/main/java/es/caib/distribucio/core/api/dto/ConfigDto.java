@@ -1,9 +1,9 @@
-package es.caib.distribucio.core.api.dto;
+package es.caib.distribucio.logic.intf.dto;
 
 
 import java.util.List;
 
-import es.caib.distribucio.core.api.dto.config.EntitatConfig;
+import es.caib.distribucio.logic.intf.dto.config.EntitatConfig;
 
 public class ConfigDto {
     private String key;

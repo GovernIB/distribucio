@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ForeignKey;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import es.caib.distribucio.core.api.dto.ProcedimentEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.core.audit.DistribucioAuditable;
 
 /**

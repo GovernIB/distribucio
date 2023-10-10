@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import es.caib.distribucio.core.api.dto.PermisDto;
-import es.caib.distribucio.core.api.dto.PrincipalTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
+import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.war.helper.ConversioTipusHelper;
 
 /**

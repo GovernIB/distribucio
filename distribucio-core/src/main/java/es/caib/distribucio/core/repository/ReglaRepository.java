@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.caib.distribucio.core.api.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
 import es.caib.distribucio.core.entity.EntitatEntity;
@@ -138,7 +138,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    RegistreEntity r " +
 			"where " +
 			"    r.entitat = :entitat " +
-			"and r.procesEstat = es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
+			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
 			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
 			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " + 
 			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " + 

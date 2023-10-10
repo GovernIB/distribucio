@@ -2,7 +2,7 @@ package es.caib.distribucio.war.helper;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.core.api.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 
 /**
  * 
