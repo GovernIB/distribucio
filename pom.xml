@@ -16,6 +16,7 @@
 		<liquibase.version>4.4.3</liquibase.version>
 		<openapi.version>1.7.0</openapi.version>
 		<orika.version>1.5.4</orika.version>
+		<keycloak.version>22.0.4</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<arxiu.api.version>2.0.27</arxiu.api.version>
 		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>

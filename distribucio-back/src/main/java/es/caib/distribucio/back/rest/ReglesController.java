@@ -39,9 +39,6 @@ import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador REST per a l'API REST de creació, canvi d'estat, consulta i actualtizació de regles de Distribucio per a 
@@ -54,7 +51,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @Controller
 @RequestMapping("/api/rest/regles")
-@Tag(name = "/api/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari autenticar-se amb el rol DIS_REGLA.")
+//@Tag(name = "/api/rest/regles", description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari autenticar-se amb el rol DIS_REGLA.")
 public class ReglesController extends BaseUserController {
 
 
@@ -75,23 +72,23 @@ public class ReglesController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@Operation(
-			summary = "Alta de regla per codi SIA", 
-			description = "Dona d'alta una regla pel backoffice i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
-					+ "és necessari una autenticació bàsica amb el rol DIS_REGLA."
-					+ " S'informarà del camp presencial per, si és valor és true, no desar la regla al backoffice."
-			)
+//	@Operation(
+//			summary = "Alta de regla per codi SIA", 
+//			description = "Dona d'alta una regla pel backoffice i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
+//					+ "és necessari una autenticació bàsica amb el rol DIS_REGLA."
+//					+ " S'informarà del camp presencial per, si és valor és true, no desar la regla al backoffice."
+//			)
 	@ResponseBody
 	public ResponseEntity<Object> add(			
 			HttpServletRequest request, 
 			
-			@Parameter(name="entitat", description="Entitat en la qual crear la regla")
+//			@Parameter(name="entitat", description="Entitat en la qual crear la regla")
 			@RequestParam(required = true) String entitat, 
-			@Parameter(name="sia", description="Codi SIA de la regla")
+//			@Parameter(name="sia", description="Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
-			@Parameter(name="backoffice", description="Codi Backoffice per la regla")
+//			@Parameter(name="backoffice", description="Codi Backoffice per la regla")
 			@RequestParam(required = true) String backoffice,
-			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
+//			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
 			@RequestParam(required = false) Boolean presencial) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -216,16 +213,16 @@ public class ReglesController extends BaseUserController {
 	}
 
 	@RequestMapping(value = "/canviEstat", method = RequestMethod.POST)
-	@Operation(
-			summary = "Activar/Desactivar regla", 
-			description = "Depenent del seu estat, activa o desactiva una regla en concret."
-			)
+//	@Operation(
+//			summary = "Activar/Desactivar regla", 
+//			description = "Depenent del seu estat, activa o desactiva una regla en concret."
+//			)
 	@ResponseBody
 	public ResponseEntity<String> canviEstat(
 			HttpServletRequest request, 
-			@Parameter(name="sia", description="Codi SIA de la regla")
+//			@Parameter(name="sia", description="Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
-			@Parameter(name="activa", description="Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
+//			@Parameter(name="activa", description="Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
 			@RequestParam(required = false) Boolean activa){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -266,14 +263,14 @@ public class ReglesController extends BaseUserController {
 	
 	
 	@RequestMapping(value = "/consultarRegla", method = RequestMethod.GET)
-	@Operation(
-			summary = "Consultar regles per codi SIA",
-			description = "Consulta les regles per codi SIA que existeixin i esigui actives. En principi només hi pot haver una regla de tipus backoffice per codi SIA."
-			)
+//	@Operation(
+//			summary = "Consultar regles per codi SIA",
+//			description = "Consulta les regles per codi SIA que existeixin i esigui actives. En principi només hi pot haver una regla de tipus backoffice per codi SIA."
+//			)
 	@ResponseBody
 	public ResponseEntity<Object> consultarRegla(
 			HttpServletRequest request, 
-			@Parameter(name="sia", description="Codi SIA de la regla que identifica la regla de tipus backoffice.")
+//			@Parameter(name="sia", description="Codi SIA de la regla que identifica la regla de tipus backoffice.")
 			@RequestParam(required = true) String sia) {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -296,15 +293,15 @@ public class ReglesController extends BaseUserController {
 	
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")	
-	@Operation(summary = "Actualitzar qualsevol camp de la regla",
-			method = "POST",
-			description = "Servei Update per canviar els estats dels camps booleans 'activa' i 'presencial'.")
+//	@Operation(summary = "Actualitzar qualsevol camp de la regla",
+//			method = "POST",
+//			description = "Servei Update per canviar els estats dels camps booleans 'activa' i 'presencial'.")
 	public ResponseEntity<Object> update(HttpServletRequest request,
-			@Parameter(name = "sia", description = "Codi SIA de la regla")
+//			@Parameter(name = "sia", description = "Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
-			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si no s'especifica es canvia segons el valor que tingui actualment.") 
+//			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si no s'especifica es canvia segons el valor que tingui actualment.") 
 			@RequestParam(required = false) Boolean activa,
-			@Parameter(name = "presencial", description = "Paràmetre per fixar el valor del filtre segons si l'anotació és prensencial, no presencial o no té valor.")
+//			@Parameter(name = "presencial", description = "Paràmetre per fixar el valor del filtre segons si l'anotació és prensencial, no presencial o no té valor.")
 			@RequestParam(required = false) Boolean presencial) {
 				
 		List<ReglaDto> regles = reglaService.findReglaByProcediment(sia);

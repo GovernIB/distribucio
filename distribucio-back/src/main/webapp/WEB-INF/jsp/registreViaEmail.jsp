@@ -49,7 +49,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
-	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarViaEmailCommand">
+	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreEnviarViaEmailCommand">
 		<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
 		<c:if test="${isVistaMoviments}">
 			<p class="alert alert-warning"><spring:message code="bustia.pendent.contingut.seleccio.info.2"/></p>

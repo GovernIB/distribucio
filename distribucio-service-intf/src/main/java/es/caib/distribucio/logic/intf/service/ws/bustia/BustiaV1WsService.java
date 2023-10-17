@@ -17,9 +17,12 @@ import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @WebService(
-		name = "BustiaV1",
-		targetNamespace = "http://www.caib.es/distribucio/ws/v1/bustia")
+		name = BustiaV1WsService.SERVICE_NAME,
+		targetNamespace = BustiaV1WsService.NAMESPACE_URI)
 public interface BustiaV1WsService {
+
+	public static final String SERVICE_NAME = "BustiaV1";
+	public static final String NAMESPACE_URI = "http://www.caib.es/distribucio/ws/v1/bustia";
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte

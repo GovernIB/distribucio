@@ -211,7 +211,7 @@ function formatProcedimentSelect(item) {
 			<span></span>
 		</div>
 	</div>
-	<form:form cssClass="form-horizontal" commandName="registreClassificarCommand">
+	<form:form cssClass="form-horizontal" modelAttribute="registreClassificarCommand">
 		<c:choose>
 			<c:when test="${empty procediments}">
 				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">

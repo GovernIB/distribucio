@@ -320,22 +320,26 @@
 						columns.push({
 							data: '<null>',
 							orderable: false,
-							visible: true});
+							visible: true,
+							defaultContent: ''});
 					} else if ((!plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 0) || (plugin.settings.selectionEnabled && plugin.settings.dragEnabled && index == 1)) {
 						columns.push({
 							data: '<null>',
 							orderable: false,
-							visible: true});
+							visible: true,
+							defaultContent: ''});
 					} else if (plugin.settings.editable && $(this).is(':last-child')) {
 						columns.push({
 							data: '<null>',
 							orderable: false,
-							visible: true});
+							visible: true,
+							defaultContent: ''});
 					} else if (plugin.settings.rowInfo && $(this).is(':last-child')) {
 						columns.push({
 							data: '<null>',
 							orderable: false,
-							visible: true});
+							visible: true,
+							defaultContent: ''});
 					} else {
 						var columnSettings = $.extend({
 							orderable: true,
@@ -417,7 +421,7 @@
 											'dragupdate.dataTable',
 											[itemId, $(item).index()-1]);
 									$taula.dataTable().fnDraw();
-						    }
+							}
 						});
 				});
 			}

@@ -85,7 +85,7 @@
 	</script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="bustiaFiltreCommand">
 		<div class="row">
 			<div class="col-md-4">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>

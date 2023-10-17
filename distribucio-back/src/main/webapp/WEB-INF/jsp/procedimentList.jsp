@@ -74,7 +74,7 @@
 	</script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="procedimentFiltreCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="procedimentFiltreCommand">
 		<div class="row">
 			<div class="col-md-3">
 				<dis:inputText name="codiSia" inline="true" placeholderKey="procediment.list.columna.codiSia"/>

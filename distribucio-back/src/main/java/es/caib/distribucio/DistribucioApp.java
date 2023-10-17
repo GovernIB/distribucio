@@ -12,9 +12,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServe
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -46,8 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 		FreeMarkerAutoConfiguration.class,
 		WebSocketServletAutoConfiguration.class,
 		JerseyServerMetricsAutoConfiguration.class,
-		SpringDataWebAutoConfiguration.class,
-		HypermediaAutoConfiguration.class
 })
 @ComponentScan(
 		basePackages = { BaseConfig.BASE_PACKAGE },

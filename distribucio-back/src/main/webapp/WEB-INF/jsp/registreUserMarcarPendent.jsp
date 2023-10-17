@@ -48,7 +48,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" commandName="marcarPendentCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="marcarPendentCommand">
 		<dis:inputTextarea required="true" name="motiu" textKey="registre.user.marcar.pendent.camp.motiu"/>
 		<div id="modal-botons" class="well">
 			<button name="btnMarcarPendentSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-undo"></span> <spring:message code="registre.user.marcar.pendent.boto"/></button>

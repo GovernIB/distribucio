@@ -36,98 +36,115 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-@ConditionalOnWarDeployment
 public class EjbClientConfig {
 
 	static final String EJB_JNDI_PREFIX = "java:app/" + BaseConfig.APP_NAME + "-ejb/";
 	static final String EJB_JNDI_SUFFIX = "Ejb";
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean alertaService() {
 		return getLocalEjbFactoyBean(AlertaService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean aplicacioService() {
 		return getLocalEjbFactoyBean(AplicacioService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean avisService() {
 		return getLocalEjbFactoyBean(AvisService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean backofficeService() {
 		return getLocalEjbFactoyBean(BackofficeService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean bustiaService() {
 		return getLocalEjbFactoyBean(BustiaService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean configService() {
 		return getLocalEjbFactoyBean(ConfigService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean contingutService() {
 		return getLocalEjbFactoyBean(ContingutService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean dominiService() {
 		return getLocalEjbFactoyBean(DominiService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean entitatService() {
 		return getLocalEjbFactoyBean(EntitatService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean historicService() {
 		return getLocalEjbFactoyBean(HistoricService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean metaDadaService() {
 		return getLocalEjbFactoyBean(MetaDadaService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean monitorIntegracioService() {
 		return getLocalEjbFactoyBean(MonitorIntegracioService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean monitorTasquesService() {
 		return getLocalEjbFactoyBean(MonitorTasquesService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean procedimentService() {
 		return getLocalEjbFactoyBean(ProcedimentService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean registreService() {
 		return getLocalEjbFactoyBean(RegistreService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean reglaService() {
 		return getLocalEjbFactoyBean(ReglaService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean segonPlaService() {
 		return getLocalEjbFactoyBean(SegonPlaService.class);
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean unitatOrganitzativaService() {
 		return getLocalEjbFactoyBean(UnitatOrganitzativaService.class);
 	}

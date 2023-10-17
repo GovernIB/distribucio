@@ -45,6 +45,12 @@
 		     (https://maven.apache.org/plugins/maven-war-plugin/examples/skinny-wars.html) -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-back</artifactId>
+			<version>${project.version}</version>
+			<classifier>classes</classifier>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-service-intf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -136,6 +142,7 @@
 					<version>6</version>
 					<initializeInOrder>true</initializeInOrder>
 					<skinnyWars>true</skinnyWars>
+					<packagingExcludes>lib/es.caib.distribucio-distribucio-back-*</packagingExcludes>
 					<archive>
 						<manifestEntries>
 							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>

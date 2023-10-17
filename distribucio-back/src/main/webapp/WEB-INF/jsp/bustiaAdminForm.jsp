@@ -102,7 +102,7 @@
 		</div>
 	</c:if>
 	<c:set var="formAction"><dis:modalUrl value="/bustiaAdmin/newOrModify"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="bustiaCommand" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="bustiaCommand" role="form">
 		<form:hidden path="id"/>
 		<form:hidden path="pareId"/>
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>

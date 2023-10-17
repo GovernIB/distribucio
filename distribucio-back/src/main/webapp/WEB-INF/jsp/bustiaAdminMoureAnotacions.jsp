@@ -22,7 +22,7 @@
 	</script>
 </head>
 <body>
-	<form:form action="" class="form-horizontal" commandName="moureAnotacionsCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="moureAnotacionsCommand">
 		<form:hidden path="origenId"/>
 		<dis:inputArbre 
 				name="destiId" 

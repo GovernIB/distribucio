@@ -849,7 +849,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
-	<form:form action="" class="form-horizontal" commandName="contingutReenviarCommand" onsubmit="updateConeixement()">
+	<form:form action="" class="form-horizontal" modelAttribute="contingutReenviarCommand" onsubmit="updateConeixement()">
 		<form:hidden path="params"/>
 	    <%--<c:choose>
 	    	<c:when test="${isFavoritsPermes}"> --%>

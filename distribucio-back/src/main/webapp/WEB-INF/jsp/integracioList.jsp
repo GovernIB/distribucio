@@ -90,7 +90,7 @@ function esborrarEntrades() {
 	
 </head>
 <body>
-	<form:form action="/distribucio/integracio/${integracioFiltreCommand.codi}" method="post" cssClass="well" commandName="integracioFiltreCommand">
+	<form:form action="/distribucio/integracio/${integracioFiltreCommand.codi}" method="post" cssClass="well" modelAttribute="integracioFiltreCommand">
 		
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		

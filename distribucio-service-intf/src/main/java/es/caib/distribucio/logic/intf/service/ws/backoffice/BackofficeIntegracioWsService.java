@@ -16,9 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @WebService(
-		name = "BackofficeIntegracio",
-		targetNamespace = "http://www.caib.es/distribucio/ws/backofficeIntegracio")
+		name = BackofficeIntegracioWsService.SERVICE_NAME,
+		targetNamespace = BackofficeIntegracioWsService.NAMESPACE_URI)
 public interface BackofficeIntegracioWsService {
+
+	public static final String SERVICE_NAME = "BackofficeIntegracio";
+	public static final String NAMESPACE_URI = "http://www.caib.es/distribucio/ws/backofficeIntegracio";
 
 	/**
 	 * Processa una anotació de registre d'entrada.
@@ -30,10 +33,7 @@ public interface BackofficeIntegracioWsService {
 	@WebMethod
 	public AnotacioRegistreEntrada consulta(
 			@WebParam(name="id") @XmlElement(required=true) AnotacioRegistreId id);
-	
-	
-	
-	
+
 	/**
 	 * Processa una anotació de registre d'entrada.
 	 * 

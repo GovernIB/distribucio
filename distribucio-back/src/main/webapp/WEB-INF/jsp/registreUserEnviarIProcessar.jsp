@@ -45,7 +45,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
-	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreEnviarIProcessarCommand">
+	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreEnviarIProcessarCommand">
 
 		<form:hidden path="contingutId"/>
 		

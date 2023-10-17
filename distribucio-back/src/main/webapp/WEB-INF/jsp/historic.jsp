@@ -845,7 +845,7 @@
 
 <body>
 	<div id="div-loading" class="div-dades-carregant" style="display:none;"><span class="fa fa-circle-o-notch fa-spin fa-3x"></span></div>
-	<form:form id="form_filtre" action="" method="post" cssClass="well" commandName="historicFiltreCommand">
+	<form:form id="form_filtre" action="" method="post" cssClass="well" modelAttribute="historicFiltreCommand">
 		<div class="row">
 			<div class="col-md-2">
 				<dis:inputDate name="dataInici" inline="true" placeholderKey="historic.filtre.data.inici"/>
@@ -1036,7 +1036,7 @@
 		</div>
 	</div>
 
-	<form:form id="form_netejar_filtre" action="" method="post" cssClass="well" commandName="historicFiltreCommand" style="display: none;">
+	<form:form id="form_netejar_filtre" action="" method="post" cssClass="well" modelAttribute="historicFiltreCommand" style="display: none;">
 		<input id="accio" name="accio" type="hidden" value="netejar"/>
 	</form:form>
 	

@@ -133,7 +133,7 @@
 	
 
 	
-	<form:form action="" method="post" cssClass="well" commandName="reglaFiltreCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="reglaFiltreCommand">
 		<div class="row">
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>

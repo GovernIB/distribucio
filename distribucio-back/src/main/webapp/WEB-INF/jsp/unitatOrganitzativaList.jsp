@@ -76,7 +76,7 @@
 </head>
 <body>
 
-		<form:form action="" method="post" cssClass="well" commandName="unitatOrganitzativaFiltreCommand">
+		<form:form action="" method="post" cssClass="well" modelAttribute="unitatOrganitzativaFiltreCommand">
 			<div class="row">
 				<div class="col-md-4">
 					<dis:inputText name="codi" inline="true" placeholderKey="unitat.list.filtre.codi"/>

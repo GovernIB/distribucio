@@ -71,7 +71,7 @@ pageContext.setAttribute(
 	</script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="well" commandName="contingutFiltreCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="contingutFiltreCommand">
 		<div class="row">
 			<div class="col-md-7">
 				<dis:inputText name="nom" inline="true" placeholderKey="contingut.admin.filtre.nom"/>

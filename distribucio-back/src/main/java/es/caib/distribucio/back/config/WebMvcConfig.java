@@ -3,13 +3,29 @@
  */
 package es.caib.distribucio.back.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.opensymphony.module.sitemesh.filter.PageFilter;
+
+import es.caib.distribucio.back.interceptor.AccesAdminInterceptor;
+import es.caib.distribucio.back.interceptor.AccesMetadadaInterceptor;
+import es.caib.distribucio.back.interceptor.AccesSuperInterceptor;
+import es.caib.distribucio.back.interceptor.AjaxInterceptor;
+import es.caib.distribucio.back.interceptor.AplicacioInterceptor;
+import es.caib.distribucio.back.interceptor.AvisosInterceptor;
+import es.caib.distribucio.back.interceptor.ElementsPendentsBustiaInterceptor;
+import es.caib.distribucio.back.interceptor.LlistaEntitatsInterceptor;
+import es.caib.distribucio.back.interceptor.LlistaRolsInterceptor;
+import es.caib.distribucio.back.interceptor.ModalInterceptor;
+import es.caib.distribucio.back.interceptor.NodecoInterceptor;
+import es.caib.distribucio.back.interceptor.SessioInterceptor;
 
 /**
  * Configuració de Spring MVC.
@@ -17,33 +33,34 @@ import com.opensymphony.module.sitemesh.filter.PageFilter;
  * @author Limit Tecnologies
  */
 @Configuration
+@DependsOn("ejbClientConfig")
 @SuppressWarnings("deprecation")
 public class WebMvcConfig implements WebMvcConfigurer {
 
-//	@Autowired
-//	private AplicacioInterceptor aplicacioInterceptor;
-//	@Autowired
-//	private SessioInterceptor sessioInterceptor;
-//	@Autowired
-//	private LlistaEntitatsInterceptor llistaEntitatsInterceptor;
-//	@Autowired
-//	private LlistaRolsInterceptor llistaRolsInterceptor;
-//	@Autowired
-//	private ModalInterceptor modalInterceptor;
-//	@Autowired
-//	private NodecoInterceptor nodecoInterceptor;
-//	@Autowired
-//	private AjaxInterceptor ajaxInterceptor;
-//	@Autowired
-//	private ElementsPendentsBustiaInterceptor elementsPendentsBustiaInterceptor;
-//	@Autowired
-//	private AvisosInterceptor avisosInterceptor;
-//	@Autowired
-//	private AccesAdminInterceptor accesAdminInterceptor;
-//	@Autowired
-//	private AccesMetadadaInterceptor accesMetadadaInterceptor;
-//	@Autowired
-//	private AccesSuperInterceptor accesSuperInterceptor;
+	@Autowired
+	private AplicacioInterceptor aplicacioInterceptor;
+	@Autowired
+	private SessioInterceptor sessioInterceptor;
+	@Autowired
+	private LlistaEntitatsInterceptor llistaEntitatsInterceptor;
+	@Autowired
+	private LlistaRolsInterceptor llistaRolsInterceptor;
+	@Autowired
+	private ModalInterceptor modalInterceptor;
+	@Autowired
+	private NodecoInterceptor nodecoInterceptor;
+	@Autowired
+	private AjaxInterceptor ajaxInterceptor;
+	@Autowired
+	private ElementsPendentsBustiaInterceptor elementsPendentsBustiaInterceptor;
+	@Autowired
+	private AvisosInterceptor avisosInterceptor;
+	@Autowired
+	private AccesAdminInterceptor accesAdminInterceptor;
+	@Autowired
+	private AccesMetadadaInterceptor accesMetadadaInterceptor;
+	@Autowired
+	private AccesSuperInterceptor accesSuperInterceptor;
 
 	@Bean
 	public FilterRegistrationBean<PageFilter> sitemeshFilter() {
@@ -59,80 +76,80 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
 	}
 
-//	@Override
-//	public void addInterceptors(InterceptorRegistry registry) {
-//		String[] excludedPathPatterns = new String [] {
-//				"/js/**",
-//				"/css/**",
-//				"/fonts/**",
-//				"/img/**",
-//				"/images/**",
-//				"/extensions/**",
-//				"/webjars/**",
-//				"/**/datatable/**",
-//				"/**/selection/**",
-//				"/**/rest/notib**",
-//				"/**/rest/notib/**",
-//				"/api/rest**",
-//				"/api/rest/**",
-//				"/api-docs/**",
-//				"/**/api-docs/",
-//				"/public/**"
-//		};
-//		registry.addInterceptor(aplicacioInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(sessioInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(llistaEntitatsInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(llistaRolsInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(modalInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(nodecoInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(ajaxInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(elementsPendentsBustiaInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(avisosInterceptor).excludePathPatterns(excludedPathPatterns);
-//		registry.addInterceptor(accesAdminInterceptor).addPathPatterns(new String[] {
-//				"/bustiaAdminOrganigrama**",
-//				"/bustiaAdminOrganigrama/**",
-//				"/unitatOrganitzativa**",
-//				"/unitatOrganitzativa/**",
-//				"/regla**",
-//				"/regla/**",
-//				"/backoffice**",
-//				"/backoffice/**",
-//				"/permis**",
-//				"/permis/**",
-//				"/contingutAdmin**",
-//				"/contingutAdmin/**",
-//				"/registreAdmin**",
-//				"/registreAdmin/**",
-//				"/procediment/**",
-//				"/procediment**",
-//		});
-//		registry.addInterceptor(accesMetadadaInterceptor).addPathPatterns(new String[] {
-//				"/metaDada**",
-//				"/metaDada/**",
-//				"/domini**",
-//				"/domini/**",
-//		});
-//		registry.addInterceptor(accesSuperInterceptor).addPathPatterns(new String[] {
-//				"/entitat**",
-//				"/entitat/**",
-//				"/integracio**",
-//				"/integracio/**",
-//				"/excepcio**",
-//				"/excepcio/**",
-//				"/registreUser/metriquesView**",
-//				"/registreUser/metriquesView/**",
-//				"/registreUser/anotacionsPendentArxiu**",
-//				"/registreUser/anotacionsPendentArxiu/**",
-//				"/monitor**",
-//				"/monitor/**",
-//				"/config**",
-//				"/config/**",
-//				"/avis**",
-//				"/avis/**",
-//		}).excludePathPatterns(new String[] {
-//				"/entitat/logo",
-//				"/entitat/**/logo"
-//		});
-//	}
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		String[] excludedPathPatterns = new String [] {
+				"/js/**",
+				"/css/**",
+				"/fonts/**",
+				"/img/**",
+				"/images/**",
+				"/extensions/**",
+				"/webjars/**",
+				"/**/datatable/**",
+				"/**/selection/**",
+				"/**/rest/notib**",
+				"/**/rest/notib/**",
+				"/api/rest**",
+				"/api/rest/**",
+				"/api-docs/**",
+				"/**/api-docs/",
+				"/public/**"
+		};
+		registry.addInterceptor(aplicacioInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(sessioInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(llistaEntitatsInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(llistaRolsInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(modalInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(nodecoInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(ajaxInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(elementsPendentsBustiaInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(avisosInterceptor).excludePathPatterns(excludedPathPatterns);
+		registry.addInterceptor(accesAdminInterceptor).addPathPatterns(new String[] {
+				"/bustiaAdminOrganigrama**",
+				"/bustiaAdminOrganigrama/**",
+				"/unitatOrganitzativa**",
+				"/unitatOrganitzativa/**",
+				"/regla**",
+				"/regla/**",
+				"/backoffice**",
+				"/backoffice/**",
+				"/permis**",
+				"/permis/**",
+				"/contingutAdmin**",
+				"/contingutAdmin/**",
+				"/registreAdmin**",
+				"/registreAdmin/**",
+				"/procediment/**",
+				"/procediment**",
+		});
+		registry.addInterceptor(accesMetadadaInterceptor).addPathPatterns(new String[] {
+				"/metaDada**",
+				"/metaDada/**",
+				"/domini**",
+				"/domini/**",
+		});
+		registry.addInterceptor(accesSuperInterceptor).addPathPatterns(new String[] {
+				"/entitat**",
+				"/entitat/**",
+				"/integracio**",
+				"/integracio/**",
+				"/excepcio**",
+				"/excepcio/**",
+				"/registreUser/metriquesView**",
+				"/registreUser/metriquesView/**",
+				"/registreUser/anotacionsPendentArxiu**",
+				"/registreUser/anotacionsPendentArxiu/**",
+				"/monitor**",
+				"/monitor/**",
+				"/config**",
+				"/config/**",
+				"/avis**",
+				"/avis/**",
+		}).excludePathPatterns(new String[] {
+				"/entitat/logo",
+				"/entitat/**/logo"
+		});
+	}
 
 }

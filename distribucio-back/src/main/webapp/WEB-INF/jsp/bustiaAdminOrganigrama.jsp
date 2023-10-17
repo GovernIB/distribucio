@@ -294,7 +294,7 @@
 </head>
 <body>
 	<!------------------------- FILTER ------------------------>
-	<form:form action="" method="post" cssClass="well" commandName="bustiaFiltreOrganigramaCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="bustiaFiltreOrganigramaCommand">
 		<div class="row">
 			<div class="col-md-4">
 				<dis:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
@@ -405,7 +405,7 @@
 					</div>
 
 					<c:set var="formAction"><dis:modalUrl value="/bustiaAdminOrganigrama/modify"/></c:set>
-					<form:form action="${formAction}" method="post" commandName="bustiaCommand" role="form">
+					<form:form action="${formAction}" method="post" modelAttribute="bustiaCommand" role="form">
 						<form:hidden path="id"/>
 						<form:hidden path="pareId"/>
 						

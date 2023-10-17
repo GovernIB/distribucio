@@ -27,7 +27,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreAssignarCommand">
+	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreAssignarCommand">
 		<c:choose>
 			<c:when test="${empty usuarisAmbPermis}">
 				<dis:inputFixed name="usuariCodi" textKey="bustia.pendent.assignar.camp.usuari">

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -21,11 +22,6 @@ import es.caib.distribucio.logic.intf.service.AplicacioService;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public class RolHelper {
-
-	private static final String ROLE_SUPER = "DIS_SUPER";
-	private static final String ROLE_ADMIN = "DIS_ADMIN";
-	private static final String ROLE_ADMIN_LECTURA = "DIS_ADMIN_LECTURA";
-	private static final String ROLE_USER = "tothom";
 
 	private static final String REQUEST_PARAMETER_CANVI_ROL = "canviRol";
 	private static final String SESSION_ATTRIBUTE_ROL_ACTUAL = "RolHelper.rol.actual";
@@ -69,14 +65,14 @@ public class RolHelper {
 				SESSION_ATTRIBUTE_ROL_ACTUAL);
 		List<String> rolsDisponibles = getRolsUsuariActual(request);
 		if (rolActual == null || !rolsDisponibles.contains(rolActual)) {
-			if (request.isUserInRole(ROLE_USER) && rolsDisponibles.contains(ROLE_USER)) {
-				rolActual = ROLE_USER;
-			} else if (request.isUserInRole(ROLE_ADMIN) && rolsDisponibles.contains(ROLE_ADMIN)) {
-				rolActual = ROLE_ADMIN;
-			} else if (request.isUserInRole(ROLE_ADMIN_LECTURA) && rolsDisponibles.contains(ROLE_ADMIN_LECTURA)) {
-				rolActual = ROLE_ADMIN_LECTURA;
-			} else if (request.isUserInRole(ROLE_SUPER) && rolsDisponibles.contains(ROLE_SUPER)) {
-				rolActual = ROLE_SUPER;
+			if (request.isUserInRole(BaseConfig.ROLE_USER) && rolsDisponibles.contains(BaseConfig.ROLE_USER)) {
+				rolActual = BaseConfig.ROLE_USER;
+			} else if (request.isUserInRole(BaseConfig.ROLE_ADMIN) && rolsDisponibles.contains(BaseConfig.ROLE_ADMIN)) {
+				rolActual = BaseConfig.ROLE_ADMIN;
+			} else if (request.isUserInRole(BaseConfig.ROLE_ADMIN_LECTURA) && rolsDisponibles.contains(BaseConfig.ROLE_ADMIN_LECTURA)) {
+				rolActual = BaseConfig.ROLE_ADMIN_LECTURA;
+			} else if (request.isUserInRole(BaseConfig.ROLE_SUPER) && rolsDisponibles.contains(BaseConfig.ROLE_SUPER)) {
+				rolActual = BaseConfig.ROLE_SUPER;
 			}
 			if (rolActual != null) {
 				request.getSession().setAttribute(
@@ -89,34 +85,34 @@ public class RolHelper {
 	}
 
 	public static boolean isRolActualSuperusuari(HttpServletRequest request) {
-		return ROLE_SUPER.equals(getRolActual(request));
+		return BaseConfig.ROLE_SUPER.equals(getRolActual(request));
 	}
 	public static boolean isRolActualAdministrador(HttpServletRequest request) {
-		return ROLE_ADMIN.equals(getRolActual(request));
+		return BaseConfig.ROLE_ADMIN.equals(getRolActual(request));
 	}
 	public static boolean isRolActualAdminLectura(HttpServletRequest request) {
-		return ROLE_ADMIN_LECTURA.equals(getRolActual(request));
+		return BaseConfig.ROLE_ADMIN_LECTURA.equals(getRolActual(request));
 	}
 	public static boolean isRolActualUsuari(HttpServletRequest request) {
-		return ROLE_USER.equals(getRolActual(request));
+		return BaseConfig.ROLE_USER.equals(getRolActual(request));
 	}
 
 	public static List<String> getRolsUsuariActual(HttpServletRequest request) {
 		LOGGER.trace("Obtenint rols disponibles per a l'usuari actual");
 		List<String> rols = new ArrayList<String>();
-		if (request.isUserInRole(ROLE_SUPER)) {
-			rols.add(ROLE_SUPER);
+		if (request.isUserInRole(BaseConfig.ROLE_SUPER)) {
+			rols.add(BaseConfig.ROLE_SUPER);
 		}
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		if (entitatActual != null) {
-			if (entitatActual.isUsuariActualAdministration() && request.isUserInRole(ROLE_ADMIN)) {
-				rols.add(ROLE_ADMIN);
+			if (entitatActual.isUsuariActualAdministration() && request.isUserInRole(BaseConfig.ROLE_ADMIN)) {
+				rols.add(BaseConfig.ROLE_ADMIN);
 			}
-			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(ROLE_ADMIN_LECTURA)) {
-				rols.add(ROLE_ADMIN_LECTURA);
+			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(BaseConfig.ROLE_ADMIN_LECTURA)) {
+				rols.add(BaseConfig.ROLE_ADMIN_LECTURA);
 			}
-			if (entitatActual.isUsuariActualRead() && request.isUserInRole(ROLE_USER)) {
-				rols.add(ROLE_USER);
+			if (entitatActual.isUsuariActualRead() && request.isUserInRole(BaseConfig.ROLE_USER)) {
+				rols.add(BaseConfig.ROLE_USER);
 			}
 		}
 		return rols;

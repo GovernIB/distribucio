@@ -29,7 +29,7 @@
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/entitat"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="entitatCommand" role="form"  enctype="multipart/form-data">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="entitatCommand" role="form"  enctype="multipart/form-data">
 		<form:hidden path="id"/>
 		<dis:inputText name="codi" textKey="entitat.form.camp.codi" required="true"/>
 		<dis:inputText name="nom" textKey="entitat.form.camp.nom" required="true"/>

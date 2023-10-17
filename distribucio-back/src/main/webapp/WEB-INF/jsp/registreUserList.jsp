@@ -472,7 +472,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 <body>
 
 
-	<form:form action="" method="post" cssClass="well" commandName="registreFiltreCommand">
+	<form:form action="" method="post" cssClass="well" modelAttribute="registreFiltreCommand">
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		<div class="row">
 			<div class="col-md-2">

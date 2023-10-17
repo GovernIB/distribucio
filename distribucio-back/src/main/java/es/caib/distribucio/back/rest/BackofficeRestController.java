@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.controller.BaseUserController;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador REST per rebre les comunicacions d'anotacions pendents via API REST com
@@ -35,7 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 //@Controller
 @RequestMapping("/public/backoffice")
-@Tag(name = "/public/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla per provar backoffices de tipus API REST.")
+//@Tag(name = "/public/backoffice", description = "API REST per comunicar anotacions als backoffices corresponents quan es dispara una regla per provar backoffices de tipus API REST.")
 public class BackofficeRestController extends BaseUserController {
 	
 	@Autowired
@@ -50,15 +46,15 @@ public class BackofficeRestController extends BaseUserController {
 
 	
 	@RequestMapping(value = "/comunicarAnotacionsPendents", method = RequestMethod.POST)
-	@Operation(
-			summary = "Comunicar anotacions als backoffice", 
-					description = "Comunicar les anotacions que estiguin en estat pendent de comunicar al backoffice " + 
-					"amb el backoffice corresponent"	
-			)
+//	@Operation(
+//			summary = "Comunicar anotacions als backoffice", 
+//					description = "Comunicar les anotacions que estiguin en estat pendent de comunicar al backoffice " + 
+//					"amb el backoffice corresponent"	
+//			)
 	@ResponseBody
 	public ResponseEntity<Object> comunicarAnotacionsPendents(			
 			HttpServletRequest request,
-			@Parameter(name="ids", description="Llista de identificadors d'anotacions comunicades.")
+//			@Parameter(name="ids", description="Llista de identificadors d'anotacions comunicades.")
 			@RequestBody(required = true) List<AnotacioRegistreId> ids) {
 		try {
 			logger.debug("S'ha rebut una comunicació de " + ids.size() + " anotacions pendents: " + ids);

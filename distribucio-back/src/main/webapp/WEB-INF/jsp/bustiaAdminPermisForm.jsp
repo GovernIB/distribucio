@@ -59,7 +59,7 @@
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/bustiaAdmin/${bustia.id}/permis"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="permisCommand">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="permisCommand">
 		<form:hidden path="id"/>
 		<dis:inputSelect name="principalTipus" textKey="bustia.permis.form.camp.tipus" disabled="${not empty permisCommand.id}" optionEnum="PrincipalTipusEnumDto"/>
 		<dis:inputText name="principalNom" textKey="bustia.permis.form.camp.principal" disabled="${not empty permisCommand.id}"/>

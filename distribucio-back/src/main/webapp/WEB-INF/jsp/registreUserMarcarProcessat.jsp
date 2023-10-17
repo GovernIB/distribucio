@@ -48,7 +48,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 
-	<form:form action="" class="form-horizontal" commandName="marcarProcessatCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="marcarProcessatCommand">
 		<dis:inputTextarea required="true" name="motiu" textKey="bustia.pendent.contingut.camp.motiu"/>
 		<div id="modal-botons" class="well">
 			<button name="btnMarcarProcessatSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success" data-nosubmit="true"><span class="fa fa-check-circle-o"></span> <spring:message code="bustia.pendent.contingut.marcar.processat.boto"/></button>

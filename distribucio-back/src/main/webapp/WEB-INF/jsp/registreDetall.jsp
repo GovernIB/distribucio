@@ -1947,7 +1947,7 @@ li[id^="anotacio_"] {
 			<!------------------------------ TABPANEL PROCESSAMENT_AUTOMATIC ------------------------------------->
 			<div class="tab-pane" id="dades" role="tabpanel">
 				<c:if test="${not empty metaDades}">
-					<form:form id="nodeDades" commandName="dadesCommand" cssClass="form-inline">
+					<form:form id="nodeDades" modelAttribute="dadesCommand" cssClass="form-inline">
 						<table class="table table-striped table-bordered"
 							style="width: 100%">
 							<thead>

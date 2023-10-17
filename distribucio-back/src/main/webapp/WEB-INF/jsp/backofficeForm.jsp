@@ -124,7 +124,7 @@
 <body>
 	<div id="div-alert" class="alert "></div>
 	<c:set var="formAction"><dis:modalUrl value="/backoffice/save"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="backofficeCommand">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="backofficeCommand">
 		<form:hidden path="id"/>
 		<form:hidden path="entitatId"/>
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>

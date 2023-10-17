@@ -39,16 +39,17 @@ public class DistribucioController {
 		if (RolHelper.isRolActualSuperusuari(request)) {
 			return "redirect:integracio";
 		} else {
+			// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 			if (entitat == null)
 				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
 			if (RolHelper.isRolActualAdministrador(request) || RolHelper.isRolActualAdminLectura(request)) {
 				return "redirect:registreAdmin";
-			} else {//if (RolHelper.isRolActualUsuari(request)) {
+			} else if (RolHelper.isRolActualUsuari(request)) {
 				return "redirect:registreUser";
-			}/* else {
+			} else {
 				return "index";
-			}*/
+			}
 		}
 	}
 

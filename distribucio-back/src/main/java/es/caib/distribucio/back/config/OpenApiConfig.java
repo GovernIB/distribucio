@@ -3,30 +3,14 @@
  */
 package es.caib.distribucio.back.config;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
-import org.springframework.context.annotation.Bean;
-
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Configuració de Springdoc OpenAPI.
  * 
  * @author Limit Tecnologies
  */
-@Slf4j
 public class OpenApiConfig {
 
-	@Bean
+	/*@Bean
 	public OpenAPI customOpenAPI() {
 		String version = "Unknown";
 		try {
@@ -64,6 +48,6 @@ public class OpenApiConfig {
 
 	protected boolean enableAuthComponent() {
 		return false;
-	}
+	}*/
 
 }

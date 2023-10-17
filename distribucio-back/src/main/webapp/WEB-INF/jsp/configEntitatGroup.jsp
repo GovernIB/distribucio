@@ -248,7 +248,7 @@
     <div class="panel-body">
         <c:forEach items="${ group.configs }" var="config" varStatus="status_group">
             <c:set var = "configKey" value = "${fn:replace(config.key,'.','_')}"/>            
-            <form:form id="filtre"  method="post" cssClass="form-update-config form-horizontal" action="config/update" commandName="config_${configKey}">
+            <form:form id="filtre"  method="post" cssClass="form-update-config form-horizontal" action="config/update" modelAttribute="config_${configKey}">
                 <form:hidden path="key"/>
                 <c:if test="${config.entitatCodi == null}">
                 <div class="form-group separador padding-bottom-4">

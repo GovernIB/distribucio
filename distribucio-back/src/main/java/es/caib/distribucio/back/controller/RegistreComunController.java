@@ -24,6 +24,7 @@ import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RegistreHelper;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
@@ -63,7 +64,7 @@ public class RegistreComunController extends BaseController{
 			@PathVariable Long registreId,
 			@PathVariable String codiProcediment,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "tothom");
+		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, BaseConfig.ROLE_USER);
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,

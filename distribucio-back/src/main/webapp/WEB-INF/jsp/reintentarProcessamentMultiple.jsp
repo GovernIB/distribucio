@@ -45,7 +45,7 @@
 			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" commandName="reintentarProcessamentCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="reintentarProcessamentCommand">
 		<div id="modal-botons" class="well">
 			<button name="btnReintentarProcessamentSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

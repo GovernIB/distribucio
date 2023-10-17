@@ -46,7 +46,7 @@ $(document).ready(function() {
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/usuari/configuracio"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="usuariCommand" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="usuariCommand" role="form">
 		<form:hidden path="codi"/>
 		<dis:inputText name="nom" textKey="usuari.form.camp.nom" disabled="true"/>
 		<dis:inputText name="nif" textKey="usuari.form.camp.nif" disabled="true"/>

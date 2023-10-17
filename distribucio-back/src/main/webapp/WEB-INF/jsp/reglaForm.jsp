@@ -146,7 +146,7 @@ $(document).ready(function() {
 	<c:set var="formAction"><dis:modalUrl value="/regla/save"/></c:set>
 	<!-- Es redimensiona l'altura de la modal perquè mai desapareguin els botons Guardar/Cancel·lar quan s'oculten o mostren filtres segons el tipus de regla i hi ha errors de validació. -->
 	<div style="height: 650px;">
-		<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="reglaCommand" role="form">
+		<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="reglaCommand" role="form">
 			<form:hidden path="id"/>
 			
 			<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>

@@ -7,11 +7,13 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
-
 @WebService(
-		name = "Backoffice",
-		targetNamespace = "http://www.caib.es/distribucio/ws/backoffice")
+		name = BackofficeWsService.SERVICE_NAME,
+		targetNamespace = BackofficeWsService.NAMESPACE_URI)
 public interface BackofficeWsService {
+
+	public static final String SERVICE_NAME = "Backoffice";
+	public static final String NAMESPACE_URI = "http://www.caib.es/distribucio/ws/backoffice";
 
 	@WebMethod
 	void comunicarAnotacionsPendents(

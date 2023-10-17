@@ -77,7 +77,7 @@ $(document).ready(function() {
 <body>
 
 	<c:set var="formAction"><dis:modalUrl value="/regla/simular"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="registreSimulatCommand" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="registreSimulatCommand" role="form">
 
 		<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 		<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>

@@ -45,7 +45,7 @@
 		</dis:enviamentBackofficeMultiple>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" commandName="reintentarEnviamentBackofficeCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="reintentarEnviamentBackofficeCommand">
 		<div id="modal-botons" class="well">
 			<button name="btnReintentarEnviamentBackofficeSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

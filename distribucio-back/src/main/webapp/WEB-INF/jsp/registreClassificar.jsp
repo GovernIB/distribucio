@@ -89,7 +89,7 @@ $(document).ready(function() {
 			</tbody>
 		</table>
 	</div>
-	<form:form action="" method="post" cssClass="form-horizontal" commandName="registreClassificarCommand">
+	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreClassificarCommand">
 		<c:if test="${isPermesModificarTitol}">
 			<dis:inputText name="titol" textKey="bustia.pendent.classificar.camp.titol" />
 		</c:if>

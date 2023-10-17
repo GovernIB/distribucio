@@ -3,68 +3,102 @@
  */
 package es.caib.distribucio.back.config;
 
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Configuració de Spring Security.
+ * Configuració de Spring Security per a executar l'aplicació amb Spring Boot.
  * 
  * @author Limit Tecnologies
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+@ConditionalOnNotWarDeployment
+public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 
 	private final KeycloakLogoutHandler keycloakLogoutHandler;
 
-	WebSecurityConfig(KeycloakLogoutHandler keycloakLogoutHandler) {
+	SpringBootWebSecurityConfig(KeycloakLogoutHandler keycloakLogoutHandler) {
 		this.keycloakLogoutHandler = keycloakLogoutHandler;
 	}
 
 	@Bean
-	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-		return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-	}
-
-	@Order(1)
-	@Bean
+	//@Order(1)
 	public SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().
-			requestMatchers(publicRequestMatchers()).
-			permitAll().
-			anyRequest().
-			authenticated();
+			requestMatchers(publicRequestMatchers()).permitAll().
+			anyRequest().authenticated();
 		http.oauth2Login().
-			and().
-			logout().
+			userInfoEndpoint().userService(oidcUserService());
+		http.logout().
 			addLogoutHandler(keycloakLogoutHandler).
+			logoutUrl("/usuari/logout").
 			logoutSuccessUrl("/");
 		return http.build();
 	}
 
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oidcUserService() {
+		final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
+		return (userRequest) -> {
+			OAuth2User oauth2User = delegate.loadUser(userRequest);
+			OAuth2AccessToken accessToken = userRequest.getAccessToken();
+			Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+			try {
+				JWT parsedJwt = JWTParser.parse(accessToken.getTokenValue());
+				JSONObject realmAccess = (JSONObject)parsedJwt.getJWTClaimsSet().getClaim("realm_access");
+				if (realmAccess != null) {
+					JSONArray roles = (JSONArray)realmAccess.get("roles");
+					if (roles != null) {
+						roles.stream().
+						map(r -> new SimpleGrantedAuthority((String)r)).
+						forEach(mappedAuthorities::add);
+					}
+				}
+			} catch (ParseException ex) {
+				log.warn("No s'han pogut obtenir els rols del token JWT", ex);
+			}
+			return new DefaultOAuth2User(
+					mappedAuthorities,
+					oauth2User.getAttributes(),
+					userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName());
+		};
+	}
+
+	/*@Bean
 	@Order(2)
-	@Bean
 	public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().
 			requestMatchers(publicRequestMatchers()).
@@ -73,24 +107,7 @@ public class WebSecurityConfig {
 			authenticated();
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		return http.build();
-	}
-
-	private RequestMatcher[] publicRequestMatchers() {
-		return new RequestMatcher[] {
-				new AntPathRequestMatcher("/public/**/*"),
-				new AntPathRequestMatcher("/ws/v0/bustia"),
-				new AntPathRequestMatcher("/ws/v1/bustia"),
-				new AntPathRequestMatcher("/ws/MCGDws"),
-				new AntPathRequestMatcher("/ws/portafibCallback"),
-				new AntPathRequestMatcher("/api-docs"),
-				new AntPathRequestMatcher("/api-docs/**/*"),
-				new AntPathRequestMatcher("/css/**/*"),
-				new AntPathRequestMatcher("/fonts/**/*"),
-				new AntPathRequestMatcher("/img/**/*"),
-				new AntPathRequestMatcher("/js/**/*"),
-				new AntPathRequestMatcher("/webjars/**/*"),
-		};
-	}
+	}*/
 
 	@Slf4j
 	@Configuration

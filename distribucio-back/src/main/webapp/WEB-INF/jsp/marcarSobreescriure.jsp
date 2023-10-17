@@ -44,7 +44,7 @@
 			postUrl="/registreAdmin/marcarSobreescriureAjax/"></dis:processamentMultiple>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" commandName="marcarSobreescriureCommand">
+	<form:form action="" class="form-horizontal" modelAttribute="marcarSobreescriureCommand">
 		<div id="modal-botons" class="well">
 			<button name="btnMarcarSobreescriureSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

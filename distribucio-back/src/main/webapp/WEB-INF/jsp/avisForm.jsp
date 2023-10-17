@@ -34,7 +34,7 @@
 </head>
 <body>
 	<c:set var="formAction"><dis:modalUrl value="/avis"/></c:set>
-	<form:form action="${formAction}" method="post" cssClass="form-horizontal" commandName="avisCommand" role="form">
+	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="avisCommand" role="form">
 		<form:hidden path="id"/>
 		<dis:inputText name="assumpte" textKey="avis.form.camp.assumpte" required="true"/>
 		<dis:inputTextarea name="missatge" textKey="avis.form.camp.missatge" required="true"/>
