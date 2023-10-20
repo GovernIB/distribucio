@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeplo
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -45,15 +46,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-@EnableWebSecurity
 @ConditionalOnNotWarDeployment
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
-
-	private final KeycloakLogoutHandler keycloakLogoutHandler;
-
-	SpringBootWebSecurityConfig(KeycloakLogoutHandler keycloakLogoutHandler) {
-		this.keycloakLogoutHandler = keycloakLogoutHandler;
-	}
 
 	@Bean
 	//@Order(1)
@@ -64,9 +60,12 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		http.oauth2Login().
 			userInfoEndpoint().userService(oidcUserService());
 		http.logout().
-			addLogoutHandler(keycloakLogoutHandler).
-			logoutUrl("/usuari/logout").
+			addLogoutHandler(keycloakLogoutHandler()).
+			logoutUrl(LOGOUT_URL).
 			logoutSuccessUrl("/");
+		http.headers().frameOptions().sameOrigin();
+		http.csrf().disable();
+		http.cors();
 		return http.build();
 	}
 
@@ -97,6 +96,34 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
+	private LogoutHandler keycloakLogoutHandler() {
+		return new LogoutHandler() {
+			private final RestTemplate restTemplate = new RestTemplate();
+			@Override
+			public void logout(
+					HttpServletRequest request,
+					HttpServletResponse response,
+					Authentication auth) {
+				if (auth != null) {
+					logoutFromKeycloak((OidcUser) auth.getPrincipal());
+				}
+			}
+			private void logoutFromKeycloak(OidcUser user) {
+				String endSessionEndpoint = user.getIssuer() + "/protocol/openid-connect/logout";
+				UriComponentsBuilder builder = UriComponentsBuilder.
+						fromUriString(endSessionEndpoint).
+						queryParam("id_token_hint", user.getIdToken().getTokenValue());
+				ResponseEntity<String> logoutResponse = restTemplate.getForEntity(
+				builder.toUriString(), String.class);
+				if (logoutResponse.getStatusCode().is2xxSuccessful()) {
+					log.debug("Successfully logged out from Keycloak");
+				} else {
+					log.error("Could not propagate logout to Keycloak");
+				}
+			}
+		};
+	}
+
 	/*@Bean
 	@Order(2)
 	public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
@@ -108,31 +135,5 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		return http.build();
 	}*/
-
-	@Slf4j
-	@Configuration
-	public static class KeycloakLogoutHandler implements LogoutHandler {
-		private final RestTemplate restTemplate = new RestTemplate();
-		@Override
-		public void logout(
-				HttpServletRequest request,
-				HttpServletResponse response,
-				Authentication auth) {
-			logoutFromKeycloak((OidcUser)auth.getPrincipal());
-		}
-		private void logoutFromKeycloak(OidcUser user) {
-			String endSessionEndpoint = user.getIssuer() + "/protocol/openid-connect/logout";
-			UriComponentsBuilder builder = UriComponentsBuilder.
-					fromUriString(endSessionEndpoint).
-					queryParam("id_token_hint", user.getIdToken().getTokenValue());
-			ResponseEntity<String> logoutResponse = restTemplate.getForEntity(
-			builder.toUriString(), String.class);
-			if (logoutResponse.getStatusCode().is2xxSuccessful()) {
-				log.debug("Successfully logged out from Keycloak");
-			} else {
-				log.error("Could not propagate logout to Keycloak");
-			}
-		}
-	}
 
 }

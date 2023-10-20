@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 
 /**
@@ -22,7 +23,7 @@ import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_bustia")
+@Table(name = BaseConfig.DB_PREFIX + "bustia")
 @EntityListeners(AuditingEntityListener.class)
 public class BustiaEntity extends ContingutEntity {
 
@@ -30,7 +31,7 @@ public class BustiaEntity extends ContingutEntity {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "unitat_id",
-			foreignKey = @ForeignKey(name = "dis_unitat_organitzativa_bustia_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_unitat_org_fk"))
 	protected UnitatOrganitzativaEntity unitatOrganitzativa;
 	@Column(name = "per_defecte")
 	protected boolean perDefecte;

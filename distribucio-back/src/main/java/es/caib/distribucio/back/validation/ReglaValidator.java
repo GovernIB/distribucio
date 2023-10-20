@@ -45,9 +45,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 	@Override
 	public boolean isValid(final ReglaCommand command, final ConstraintValidatorContext context) {
 		boolean valid = true;
-		
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
-		
 		// Comprova que almenys un camp del firtre esta informat
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
 			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
@@ -72,8 +70,6 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 					.addConstraintViolation();	
 			valid = false;
 		}
-		
-
 		if (command.getTipus() == ReglaTipusEnumDto.UNITAT && command.getUnitatDestiId() == null) {
 			context.buildConstraintViolationWithTemplate(
 					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
@@ -101,10 +97,8 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 						.addConstraintViolation();	
 				valid = false;
 			}
-
 			// No permetre crear regles de tipus "Gestionar amb backoffice" amb codis SIA ja definits en altres regles
 			if (command.getProcedimentCodiFiltre() != null) {
-				
 				Map<String, List<ReglaDto>> mapa;
 				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
 				List<String> procediments = Arrays.asList(procedimentCodiFiltre.split("\\s+"));
@@ -135,11 +129,8 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 				}
 			}
 		}
-		
-
 		if (!valid)
 			context.disableDefaultConstraintViolation();
-		
-        return valid;
+		return valid;
 	}
 }

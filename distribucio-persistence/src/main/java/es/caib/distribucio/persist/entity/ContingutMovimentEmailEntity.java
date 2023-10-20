@@ -14,6 +14,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa un canvi de lloc
  * d'un contenidor.
@@ -21,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_cont_mov_email")
+@Table(name = BaseConfig.DB_PREFIX + "cont_mov_email")
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutMovimentEmailEntity extends DistribucioAuditable<Long> {
 
@@ -37,19 +39,19 @@ public class ContingutMovimentEmailEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "bustia_id",
-			foreignKey = @ForeignKey(name = "dis_bustia_contmovemail_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_mov_email_bustia_fk"))
 	protected BustiaEntity bustia;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "contingut_moviment_id",
-			foreignKey = @ForeignKey(name = "dis_contmov_contmovemail_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_mov_email_contmov_fk"))
 	protected ContingutMovimentEntity contingutMoviment;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "contingut_id",
-			foreignKey = @ForeignKey(name = "dis_cont_contmovemail_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_mov_email_cont_fk"))
 	protected ContingutEntity contingut;
 	
 	@Column(name = "unitat_organitzativa", length = 256)

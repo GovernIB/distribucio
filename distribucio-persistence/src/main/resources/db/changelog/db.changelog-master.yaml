@@ -2,6 +2,12 @@ databaseChangeLog:
 -  property:
     name: app_prefix
     value: dis_
+-  property:
+    name: pk_type
+    value: NUMBER(19, 0)
+-  property:
+    name: acl_pk_type
+    value: BIGINT
 - include:
     file: db/changelog/00_initial_schema_table.yaml
 - include:
@@ -10,6 +16,8 @@ databaseChangeLog:
     file: db/changelog/02_initial_schema_sequence.yaml
 - include:
     file: db/changelog/03_initial_schema_trigger.yaml
+- include:
+    file: db/changelog/04_initial_data.yaml
 - includeAll:
     path: db/changelog/changes
     errorIfMissingOrEmpty: false

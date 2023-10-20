@@ -1,8 +1,13 @@
 package es.caib.distribucio.ejb;
 
+import java.util.Date;
+
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricDadesDto;
+import es.caib.distribucio.logic.intf.dto.historic.HistoricFiltreDto;
 import es.caib.distribucio.logic.intf.service.HistoricService;
 import lombok.experimental.Delegate;
 
@@ -17,6 +22,24 @@ public class HistoricServiceEjb extends AbstractServiceEjb<HistoricService> impl
 
 	@Delegate
 	private HistoricService delegateService = null;
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public HistoricDadesDto getDadesHistoriques(Long entitatId, HistoricFiltreDto filtre) {
+		return delegateService.getDadesHistoriques(entitatId, filtre);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public void calcularDadesHistoriques(Date data) {
+		delegateService.calcularDadesHistoriques(data);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public void recalcularTotals(Date data) {
+		delegateService.recalcularTotals(data);
+	}
 
 	protected void setDelegateService(HistoricService delegateService) {
 		this.delegateService = delegateService;

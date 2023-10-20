@@ -2,33 +2,36 @@ package es.caib.distribucio.persist.entity;
 
 
 import javax.persistence.*;
+
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 import java.util.Set;
 
 @Entity
-@Table(	name = "DIS_CONFIG_GROUP")
+@Table(name = BaseConfig.DB_PREFIX + "config_group")
 public class ConfigGroupEntity {
 
 	@Id
-	@Column(name = "CODE", length = 128, nullable = false)
+	@Column(name = "code", length = 128, nullable = false)
 	private String key;
 
-	@Column(name = "DESCRIPTION", length = 512, nullable = true)
+	@Column(name = "description", length = 512, nullable = true)
 	private String description;
 
-	@Column(name = "POSITION")
+	@Column(name = "position")
 	private int position;
 
-	@Column(name = "PARENT_CODE")
+	@Column(name = "parent_code")
 	private String parentCode;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "GROUP_CODE")
-	@OrderBy("position ASC")
+	@JoinColumn(name = "group_code")
+	@OrderBy("position asc")
 	private Set<ConfigEntity> configs;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PARENT_CODE")
-	@OrderBy("position ASC")
+	@JoinColumn(name = "parent_code")
+	@OrderBy("position asc")
 	private Set<ConfigGroupEntity> innerConfigs;
 
 	public String getKey() {

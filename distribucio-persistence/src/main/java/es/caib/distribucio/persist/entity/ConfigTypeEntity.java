@@ -5,6 +5,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,14 +18,14 @@ import java.util.List;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "DIS_CONFIG_TYPE")
+@Table(name = BaseConfig.DB_PREFIX + "config_type")
 public class ConfigTypeEntity {
 
 	@Id
-	@Column(name = "CODE", length = 128, nullable = false)
+	@Column(name = "code", length = 128, nullable = false)
 	private String code;
 
-	@Column(name = "VALUE", length = 2048, nullable = false)
+	@Column(name = "value", length = 2048, nullable = false)
 	private String value;
 
 	public List<String> getValidValues() {

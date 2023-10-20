@@ -5,13 +5,10 @@ package es.caib.distribucio.persist.entity;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -22,36 +19,34 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa les bústies default dels usuaris
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "DIS_BUSTIA_DEFAULT")
+@Table(name = BaseConfig.DB_PREFIX + "bustia_default")
 @EntityListeners(AuditingEntityListener.class)
-public class BustiaDefaultEntity {
+public class BustiaDefaultEntity extends DistribucioPersistable<Integer> {
 
-	@Id @GeneratedValue
-	@Column(name = "id")
-	private Integer id;
-	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
-			name = "ENTITAT",
-			foreignKey = @ForeignKey(name = "DIS_BUSTIA_DEF_ENT_FK"))
+			name = "entitat",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_def_ent_fk"))
 	private EntitatEntity entitat;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
-			name = "BUSTIA",
-			foreignKey = @ForeignKey(name = "DIS_BUSTIA_DEF_BST_FK"))
+			name = "bustia",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_def_bst_fk"))
 	private BustiaEntity bustia;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
-			name = "USUARI",
-			foreignKey = @ForeignKey(name = "DIS_BUSTIA_DEF_USR_FK"))
+			name = "usuari",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_def_usr_fk"))
 	private UsuariEntity usuari;
 
 	@CreatedDate
@@ -118,7 +113,7 @@ public class BustiaDefaultEntity {
 			return built;
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -128,7 +123,7 @@ public class BustiaDefaultEntity {
 		result = prime * result + ((usuari == null) ? 0 : usuari.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -155,5 +150,5 @@ public class BustiaDefaultEntity {
 			return false;
 		return true;
 	}
-	
+
 }

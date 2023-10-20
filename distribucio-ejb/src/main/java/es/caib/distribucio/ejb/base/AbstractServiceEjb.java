@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.ejb.SessionContext;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,20 +21,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractServiceEjb<S> {
 
-	private Class<S> serviceClass;
-
+	@Resource
+	protected EJBContext ejbContext;
 	@Resource
 	protected SessionContext sessionContext;
+
+	private Class<S> serviceClass;
+	//private AplicacioService aplicacioService = null;
 
 	@PostConstruct
 	public void postConstruct() {
 		log.debug("EJB instance created for " + getClass().getSimpleName());
 		S delegateService = EjbContextConfig.getApplicationContext().getBean(getServiceClass());
+		//aplicacioService = EjbContextConfig.getApplicationContext().getBean(AplicacioService.class);
 		log.debug("EJB instance delegate configured for " + getClass().getSimpleName() + ": " + delegateService);
 		setDelegateService(delegateService);
 	}
 
-	abstract protected void setDelegateService(S delegateService);
+	/*@AroundInvoke
+	protected Object beanAroundInvoke(InvocationContext ic) throws Exception {
+		Authentication auth = aplicacioService.getAuthentication();
+		if (auth != null) {
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		}
+		return ic.proceed();
+	}*/
 
 	@SuppressWarnings("unchecked")
 	protected Class<S> getServiceClass() {
@@ -47,5 +59,7 @@ public abstract class AbstractServiceEjb<S> {
 		}
 		return serviceClass;
 	}
+
+	abstract protected void setDelegateService(S delegateService);
 
 }

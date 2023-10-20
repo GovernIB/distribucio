@@ -1,160 +1,80 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>0.9</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>distribucio-api-externa</artifactId>
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>${openapi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-hateoas</artifactId>
+			<version>${openapi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-core</artifactId>
+			<version>${keycloak.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-service-intf</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-			<version>1.1.2</version>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jerseyclient.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-			<type>jar</type>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-context</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-expression</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.2</version>
-		</dependency>
-		
-		<dependency>
-	        <groupId>org.slf4j</groupId>
-	        <artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-	    </dependency>
-		    
-		<!-- swagger -->
-		<dependency>
-			<groupId>com.mangofactory</groupId>
-			<artifactId>swagger-springmvc</artifactId>
-			<version>1.0.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.slf4j</artifactId>
-					<groupId>slf4j-api</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
-				
 	</dependencies>
-
 	<profiles>
 		<profile>
-			<id>tomcat</id>
+			<id>eclipse</id>
 			<activation>
-				<file>
-					<exists>appserv_tomcat</exists>
-				</file>
-				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>m2e.version</name>
+				</property>
 			</activation>
-			<properties>
-				<application.context>application-context-tomcat.xml</application.context>
-				<enable.tomcat.ws.start>--&gt;</enable.tomcat.ws.start>
-				<enable.tomcat.ws.end>&lt;!--</enable.tomcat.ws.end>
-				<webjars.classpath>classpath:</webjars.classpath>
-			</properties>
 			<dependencies>
 				<dependency>
-					<groupId>org.jvnet.jax-ws-commons.spring</groupId>
-					<artifactId>jaxws-spring</artifactId>
-					<version>1.9</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-core</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-beans</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-context</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-web</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<dependency>
-					<groupId>javax.transaction</groupId>
-					<artifactId>jta</artifactId>
-					<version>1.1</version>
-				</dependency>
-				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>distribucio-core</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>distribucio-core-api</artifactId>
+					<artifactId>distribucio-service</artifactId>
 					<version>${project.version}</version>
 				</dependency>
 				<dependency>
@@ -162,133 +82,50 @@
 					<artifactId>distribucio-plugin-impl</artifactId>
 					<version>${project.version}</version>
 				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>distribucio-lib-common</artifactId>
-					<version>${project.version}</version>
-					<type>pom</type>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>distribucio-war</artifactId>
-					<version>${project.version}</version>
-					<type>pom</type>
-				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-war-plugin</artifactId>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
 						<configuration>
-							<packagingExcludes>META-INF/context.xml</packagingExcludes>
+							<mainClass>es.caib.distribucio.DistribucioApiExternaApp</mainClass>
 						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>jboss</id>
-			<activation>
-				<file>
-					<missing>appserv_tomcat</missing>
-				</file>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<application.context>application-context-jboss.xml</application.context>
-				<webjars.classpath></webjars.classpath>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-validator</artifactId>
-					<version>${hibernate.validator.version}</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>distribucio-lib-common</artifactId>
-					<version>${project.version}</version>
-					<scope>provided</scope>
-					<type>pom</type>
-				</dependency>
-			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-war-plugin</artifactId>
-						<configuration>
-							<packagingExcludes>
-								META-INF/context.xml,
-								WEB-INF/classes/log4j.xml,
-								WEB-INF/lib/jquery*,
-								WEB-INF/lib/bootstrap*,
-								WEB-INF/lib/font-awesome*,
-								WEB-INF/lib/datatables*,
-								WEB-INF/lib/select2*,
-								WEB-INF/lib/bootstrap-datepicker*,
-								WEB-INF/lib/jsrender*,
-								WEB-INF/lib/jstree*
-								WEB-INF/lib/Sortable*
-							</packagingExcludes>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>unpack dependencies</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>unpack-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeGroupIds>org.webjars</includeGroupIds>
-									<includes>**/*</includes>
-									<outputDirectory>${project.build.directory}/distribucioapi</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
-
-
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>banner.txt</include>
+					<include>*.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
-			<!--
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			-->
-			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-					<warName>distribucioapi</warName>
-					<webResources>
-						<webResource>
-							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
-							<includes>
-								<include>web.xml</include>
-								<include>apiexterna-servlet.xml</include>
-							</includes>
-							<targetPath>WEB-INF</targetPath>
-							<filtering>true</filtering>
-						</webResource>
-					</webResources>
+					<packagingExcludes>**/DistribucioApiExternaBootApp.class,WEB-INF/lib/*.jar</packagingExcludes>
+					<archive>
+						<manifestEntries>
+							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+							<Implementation-Vendor>${implementation.vendor}</Implementation-Vendor>
+							<Implementation-Version>${project.version}</Implementation-Version>
+						</manifestEntries>
+					</archive>
+					<attachClasses>true</attachClasses>
 				</configuration>
-				<version>2.2</version>
-			</plugin>			
+			</plugin>
 		</plugins>
-		<finalName>distribucioapi</finalName>
-		
 	</build>
 </project>

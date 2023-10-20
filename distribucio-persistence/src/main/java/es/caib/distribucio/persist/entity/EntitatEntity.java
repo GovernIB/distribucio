@@ -9,9 +9,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 
 /**
  * Classe del model de dades que representa una Entitat.
@@ -19,7 +22,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name="dis_entitat")
+@Table(
+		name = BaseConfig.DB_PREFIX + "entitat",
+		uniqueConstraints = {
+				@UniqueConstraint(
+						name = BaseConfig.DB_PREFIX + "entitat_codi_uk",
+						columnNames = { "codi" })
+		}
+)
 @EntityListeners(AuditingEntityListener.class)
 public class EntitatEntity extends DistribucioAuditable<Long> {
 

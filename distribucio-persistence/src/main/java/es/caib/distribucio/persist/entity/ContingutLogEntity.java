@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 
@@ -33,7 +34,7 @@ import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_cont_log")
+@Table(name = BaseConfig.DB_PREFIX + "cont_log")
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutLogEntity extends DistribucioAuditable<Long> {
 
@@ -44,7 +45,9 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	private LogTipusEnumDto tipus;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contingut_id")
+	@JoinColumn(
+			name = "contingut_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_log_contingut_fk"))
 	protected ContingutEntity contingut;
 	@Column(name = "objecte_id", length = 64)
 	private String objecteId;
@@ -61,12 +64,12 @@ public class ContingutLogEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "contmov_id",
-			foreignKey = @ForeignKey(name = "dis_contmov_contlog_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_log_contmov_fk"))
 	protected ContingutMovimentEntity contingutMoviment;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "pare_id",
-			foreignKey = @ForeignKey(name = "dis_pare_contlog_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_log_pare_fk"))
 	protected ContingutLogEntity pare;
 	@OneToMany(
 			mappedBy = "contingutLog",

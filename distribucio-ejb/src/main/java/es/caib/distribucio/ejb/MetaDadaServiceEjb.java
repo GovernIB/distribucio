@@ -1,8 +1,15 @@
 package es.caib.distribucio.ejb;
 
+import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import lombok.experimental.Delegate;
 
@@ -17,6 +24,73 @@ public class MetaDadaServiceEjb extends AbstractServiceEjb<MetaDadaService> impl
 
 	@Delegate
 	private MetaDadaService delegateService = null;
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public MetaDadaDto create(Long entitatId, MetaDadaDto metaDada) throws NotFoundException {
+		return delegateService.create(entitatId, metaDada);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public MetaDadaDto update(Long entitatId, MetaDadaDto metaDada) throws NotFoundException {
+		return delegateService.update(entitatId, metaDada);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public MetaDadaDto delete(Long entitatId, Long metaDadaId) throws NotFoundException {
+		return delegateService.delete(entitatId, metaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public MetaDadaDto updateActiva(Long entitatId, Long metaDadaId, boolean activa) throws NotFoundException {
+		return delegateService.updateActiva(entitatId, metaDadaId, activa);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void moveUp(Long entitatId, Long metaDadaId) throws NotFoundException {
+		delegateService.moveUp(entitatId, metaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void moveDown(Long entitatId, Long metaDadaId) throws NotFoundException {
+		delegateService.moveDown(entitatId, metaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public void moveTo(Long entitatId, Long metaDadaId, int posicio) throws NotFoundException {
+		delegateService.moveTo(entitatId, metaDadaId, posicio); 
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public MetaDadaDto findById(Long entitatId, Long metaDadaId) throws NotFoundException {
+		return delegateService.findById(entitatId, metaDadaId);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public MetaDadaDto findByCodi(Long entitatId, String codi) throws NotFoundException {
+		return delegateService.findByCodi(entitatId, codi);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public PaginaDto<MetaDadaDto> findByEntitatPaginat(Long entitatId, PaginacioParamsDto paginacioParams)
+			throws NotFoundException {
+		return delegateService.findByEntitatPaginat(entitatId, paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public List<MetaDadaDto> findByEntitat(Long entitatId) {
+		return delegateService.findByEntitat(entitatId);
+	}
 
 	protected void setDelegateService(MetaDadaService delegateService) {
 		this.delegateService = delegateService;

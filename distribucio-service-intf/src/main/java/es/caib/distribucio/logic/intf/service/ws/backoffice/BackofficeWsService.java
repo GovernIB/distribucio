@@ -16,7 +16,7 @@ public interface BackofficeWsService {
 	public static final String NAMESPACE_URI = "http://www.caib.es/distribucio/ws/backoffice";
 
 	@WebMethod
-	void comunicarAnotacionsPendents(
+	public void comunicarAnotacionsPendents(
 			@WebParam(name="ids") @XmlElement(required=true) List<AnotacioRegistreId> ids);
 
 }

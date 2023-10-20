@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -15,6 +16,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa un canvi de lloc
  * d'un contenidor.
@@ -22,13 +25,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_cont_comment")
+@Table(name = BaseConfig.DB_PREFIX + "cont_comment")
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutComentariEntity extends DistribucioAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contingut_id")
+	@JoinColumn(
+			name = "contingut_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_comment_cont_fk"))
 	protected ContingutEntity contingut;
 	@Column(name = "text", length = 4000)
 	protected String text;

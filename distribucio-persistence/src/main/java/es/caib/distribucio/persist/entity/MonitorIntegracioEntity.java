@@ -19,9 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 
@@ -31,9 +31,9 @@ import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name="dis_mon_int")
+@Table(name = BaseConfig.DB_PREFIX + "mon_int")
 @EntityListeners(AuditingEntityListener.class)
-public class MonitorIntegracioEntity extends AbstractPersistable<Long> {
+public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 
 	@Column(name = "codi", length = 64, nullable = false, unique = true)
 	private String codi;

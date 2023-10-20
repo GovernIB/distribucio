@@ -48,7 +48,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreDto findOne(
 			Long entitatId,
 			Long registreId,
@@ -68,7 +68,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreDto findOne(
 			Long entitatId,
 			Long registreId,
@@ -88,7 +88,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds,
@@ -105,16 +105,15 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom') or hasRole('DIS_REGLA')")
+	@PreAuthorize("isAuthenticated()")
 	public PaginaDto<ContingutDto> findRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) throws NotFoundException;
-	
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	List<Long> findRegistreIds(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
@@ -171,15 +170,15 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId) throws NotFoundException;
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getAnnexFitxer(
 			Long annexId, boolean ambVersioImprimible) throws NotFoundException;
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getJustificant(
 			Long registreId) throws NotFoundException;
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) throws NotFoundException;
@@ -191,6 +190,7 @@ public interface RegistreService {
 	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
 	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
 			String rolActual) throws Exception;
@@ -204,7 +204,7 @@ public interface RegistreService {
 	 *            Atribut id del l'anotació que es vol consultarcontenidor a on està situada l'anotació.
 	 * @return L'anotació modificada
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreDto marcarLlegida(
 			Long entitatId,
 			Long registreId);
@@ -216,22 +216,25 @@ public interface RegistreService {
 	 *            Atribut id de l'anotacio de registre.
 	 * @return la informació de l'expedient emmagatzemada a dins l'arxiu
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public ArxiuDetallDto getArxiuDetall(Long registreAnotacioId);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreAnnexDto getRegistreJustificant(Long entitatId, Long registreId, boolean isVistaMoviments)
 			throws NotFoundException;
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreAnnexDto getAnnexSenseFirmes(Long entitatId, Long registreId, Long annexId, boolean isVistaMoviments)
 			throws NotFoundException;
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RegistreAnnexDto getAnnexAmbFirmes(Long entitatId, Long registreId,
 			Long annexId, boolean isVistaMoviments) throws NotFoundException;
-	
+
+	@PreAuthorize("isAuthenticated()")
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
+	@PreAuthorize("isAuthenticated()")
 	public void canviEstat(AnotacioRegistreId id,
 			Estat estat,
 			String observacions);
@@ -256,7 +259,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
@@ -274,15 +277,15 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ProcedimentDto> classificarFindProcediments(
 			Long entitatId,
 			Long bustiaId);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public List<HistogramPendentsEntryDto> getHistogram();
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public int getNumberThreads();
 
 	/**
@@ -295,7 +298,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	void bloquejar(Long entitatId, Long id);
 
 	/**
@@ -308,7 +311,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	void alliberar(Long entitatId, Long id);
 
 	/**
@@ -322,7 +325,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	PaginaDto<ContingutDto> findMovimentsRegistre(
 			Long entitatId, 
 			List<BustiaDto> bustiesPermesesPerUsuari,
@@ -340,7 +343,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	List<String> findRegistreMovimentsIds(
 			Long entitatId, 
 			List<BustiaDto> bustiesUsuari, 
@@ -358,16 +361,15 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public PaginaDto<ContingutDto> findMovimentRegistre(
 			Long entitatId,
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			PaginacioParamsDto paginacioParams, 
 			boolean isAdmin) throws NotFoundException;
-	
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ContingutDto> getPathContingut(
 			Long entitatId,
 			Long bustiaId) throws NotFoundException;
@@ -376,15 +378,14 @@ public interface RegistreService {
 	public void marcarSobreescriure(
 			Long entitatId,
 			Long registreId);
-			
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public boolean marcarPendent(
 			Long entitatId,
 			Long registreId,
 			String text,
-			String rolActual);		
-	
+			String rolActual);
+
 	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si té firmes vàlides llavors
 	 * es guarda com a definitiu.
 	 * 
@@ -404,11 +405,10 @@ public interface RegistreService {
 	 *  
 	 *  @param registreId
 	 **/
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(
 			Long annexId);
-	
-	
+
 	/**
 	 * Retorna l'id d'un registre encriptat
 	 * 
@@ -416,8 +416,7 @@ public interface RegistreService {
 	 **/
 	public String obtenirRegistreIdEncriptat (
 			Long registreId);
-	
-	
+
 	/**
 	 * Retorna l'id d'un registre desencriptat
 	 * 
@@ -425,8 +424,6 @@ public interface RegistreService {
 	 **/
 	public String obtenirRegistreIdDesencriptat (
 			String clau) throws Exception;
-	
-
 
 	public boolean reintentarProcessamentUser(Long entitatId, Long registreId);
 
@@ -442,7 +439,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void dadaSave(
 			Long entitatId,
 			Long registreId,
@@ -473,6 +470,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	RegistreDto findOneAmbDades(Long entitatId, Long registreId, boolean isVistaMoviments, String rolActual)
 			throws NotFoundException;
 
@@ -488,6 +486,7 @@ public interface RegistreService {
 	 * @param comentari
 	 *            Comentari assignació.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	void assignar(Long entitatId, Long registreId, String usuariCodi, String comentari);
 
 }

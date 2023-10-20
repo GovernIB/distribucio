@@ -138,8 +138,8 @@ public class AclConfig {
 		String tableEntry =  getPrefix() + "acl_entry";
 		jdbcMutableAclService.setAclClassIdSupported(CLASS_ID_SUPPORTED);
 		if (hibernateDialect.toLowerCase().contains("oracle") && isOracleSequenceLegacy()) {
-			jdbcMutableAclService.setClassIdentityQuery("select " + tableClass.toUpperCase() + "_sq.currval from dual");
-			jdbcMutableAclService.setSidIdentityQuery("select " + tableSid.toUpperCase() + "_sq.currval from dual");
+			jdbcMutableAclService.setClassIdentityQuery("select " + tableClass.toUpperCase() + "_seq.currval from dual");
+			jdbcMutableAclService.setSidIdentityQuery("select " + tableSid.toUpperCase() + "_seq.currval from dual");
 		} else if (hibernateDialect.toLowerCase().contains("oracle") && !isOracleSequenceLegacy()) {
 			jdbcMutableAclService.setClassIdentityQuery("select current_value('" + tableClass.toUpperCase() + "') from dual");
 			jdbcMutableAclService.setSidIdentityQuery("select current_value('" + tableSid.toUpperCase() + "') from dual");
@@ -227,7 +227,7 @@ public class AclConfig {
 	}
 
 	protected boolean isOracleSequenceLegacy() {
-		return false;
+		return true;
 	}
 
 	private class ExtendedPermissionFactory extends DefaultPermissionFactory {

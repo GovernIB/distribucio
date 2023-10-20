@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
 
 /**
@@ -24,7 +25,7 @@ import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_avis")
+@Table(name = BaseConfig.DB_PREFIX + "avis")
 @EntityListeners(AuditingEntityListener.class)
 public class AvisEntity extends DistribucioAuditable<Long> {
 	

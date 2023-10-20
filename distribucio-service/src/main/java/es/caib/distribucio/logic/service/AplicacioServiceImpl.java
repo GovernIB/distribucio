@@ -311,9 +311,13 @@ public class AplicacioServiceImpl implements AplicacioService {
 	public void setRolUsuariActual(String rolActual) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("Actualitzant rol de usuari actual");
-
 		UsuariEntity usuari = usuariRepository.getReferenceById(auth.getName());
 		usuari.updateRolActual(rolActual);
+	}
+
+	@Override
+	public Authentication getAuthentication() {
+		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
 	private Properties getVersionProperties() throws IOException {

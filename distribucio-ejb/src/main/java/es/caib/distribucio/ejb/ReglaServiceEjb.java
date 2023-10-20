@@ -3,9 +3,21 @@
  */
 package es.caib.distribucio.ejb;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import lombok.experimental.Delegate;
 
@@ -20,6 +32,175 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 
 	@Delegate
 	private ReglaService delegateService = null;
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public ReglaDto create(
+			Long entitatId,
+			ReglaDto regla) {
+		return delegateService.create(
+				entitatId,
+				regla);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public ReglaDto update(Long entitatId, ReglaDto regla) throws NotFoundException {
+		return delegateService.update(entitatId, regla);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public ReglaDto updateActiva(
+			Long entitatId,
+			Long reglaId,
+			boolean activa) throws NotFoundException {
+		return delegateService.updateActiva(
+				entitatId,
+				reglaId,
+				activa);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public ReglaDto updateActivaPresencial(Long entitatId,
+			Long reglaId,
+			boolean activa,
+			ReglaPresencialEnumDto presencial)
+			 throws NotFoundException {
+		return delegateService.updateActivaPresencial(
+				entitatId,
+				reglaId,
+				activa,
+				presencial);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public ReglaDto delete(
+			Long entitatId,
+			Long reglaId) throws NotFoundException {
+		return delegateService.delete(
+				entitatId,
+				reglaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public ReglaDto moveUp(
+			Long entitatId,
+			Long reglaId) throws NotFoundException {
+		return delegateService.moveUp(
+				entitatId,
+				reglaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public ReglaDto moveDown(
+			Long entitatId,
+			Long reglaId) throws NotFoundException {
+		return delegateService.moveDown(
+				entitatId,
+				reglaId);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public ReglaDto moveTo(
+			Long entitatId,
+			Long reglaId,
+			int posicio) throws NotFoundException {
+		return delegateService.moveTo(
+				entitatId,
+				reglaId,
+				posicio);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public List<String> aplicarManualment(
+			Long entitatId,
+			Long reglaId) throws NotFoundException {
+		return delegateService.aplicarManualment(
+				entitatId,
+				reglaId);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public ReglaDto findOne(
+			Long entitatId,
+			Long reglaId) {
+		return delegateService.findOne(
+				entitatId,
+				reglaId);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
+			Long entitatId,
+			PaginacioParamsDto paginacioParams) {
+		return delegateService.findAmbEntitatPaginat(
+				entitatId,
+				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(Long entitatId, String unitatCodi) {
+		return delegateService.findByEntitatAndUnitatFiltreCodi(
+				entitatId,
+				unitatCodi);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi) {
+		return delegateService.findByEntitatAndUnitatDestiCodi(
+				entitatId,
+				unitatCodi);
+	}
+
+	
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
+			Long entitatId,
+			ReglaFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegateService.findAmbFiltrePaginat(
+				entitatId,
+				filtre,
+				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed("DIS_ADMIN")
+	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
+			RegistreSimulatDto registreSimulatDto) {
+		return delegateService.simularReglaAplicacio(
+				registreSimulatDto);
+	}
+	
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
+		return delegateService.findReglesByCodiProcediment(procediments);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
+		return delegateService.findReglaBackofficeByProcediment(procedimentCodi);
+	}
+
+	@Override
+	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
+		return delegateService.findReglaByProcediment(procedimentCodi);
+	}
 
 	protected void setDelegateService(ReglaService delegateService) {
 		this.delegateService = delegateService;

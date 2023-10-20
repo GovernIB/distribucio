@@ -13,13 +13,15 @@ import javax.persistence.Version;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe de model de dades que conté la informació d'un usuari.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_usuari")
+@Table(name = BaseConfig.DB_PREFIX + "usuari")
 public class UsuariEntity implements Serializable {
 
 	@Id

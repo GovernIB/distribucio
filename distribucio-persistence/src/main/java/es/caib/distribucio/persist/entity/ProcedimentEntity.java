@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 
 /**
@@ -22,7 +23,7 @@ import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_procediment")
+@Table(name = BaseConfig.DB_PREFIX + "procediment")
 @EntityListeners(AuditingEntityListener.class)
 public class ProcedimentEntity extends DistribucioAuditable<Long>{
 
@@ -42,13 +43,13 @@ public class ProcedimentEntity extends DistribucioAuditable<Long>{
 	@ManyToOne(optional = false, fetch = FetchType.LAZY) 
 	@JoinColumn(
 			name = "id_unitat_organitzativa",
-			foreignKey = @ForeignKey(name = "dis_procediment_unitat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "procediment_unitat_fk"))
 	private UnitatOrganitzativaEntity unitatOrganitzativa;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat",
-			foreignKey = @ForeignKey(name = "dis_procediment_entitat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "procediment_entitat_fk"))
 	private EntitatEntity entitat;
 
 	public String getCodi() {

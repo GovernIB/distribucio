@@ -69,7 +69,7 @@ public interface DominiService {
 	public DominiDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
-	
+
 	/**
 	 * Consulta un domini donat el seu id.
 	 * 
@@ -85,7 +85,7 @@ public interface DominiService {
 	public DominiDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
-	
+
 	/**
 	 * Llistat paginat amb tots els dominis de l'entitat.
 	 * 
@@ -99,7 +99,7 @@ public interface DominiService {
 	public PaginaDto<DominiDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
-	
+
 	/**
 	 * Llistat amb tots els dominis de l'entitat.
 	 * 
@@ -124,11 +124,11 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public DominiDto findByCodiAndEntitat(
 			String codi,
 			Long entitatId) throws NotFoundException;
-	
+
 	/**
 	 * Recupera el resultat de una consulta d'un domini.
 	 * 
@@ -143,14 +143,14 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ResultatDominiDto getResultDomini(
 			Long entitatId,
 			DominiDto domini,
 			String filter,
 			int page,
 			int resultCount) throws NotFoundException;
-	
+
 	/**
 	 * Recupera el resultat de una consulta d'un domini.
 	 * 
@@ -165,12 +165,12 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ResultatConsultaDto getSelectedDomini(
 			Long entitatId,
 			DominiDto domini,
 			String dadaValor) throws NotFoundException;
-	
+
 	/**
 	 * Recupera el resultat de una consulta d'un domini.
 	 * 
@@ -182,9 +182,9 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<DominiDto> findByEntitatPermisLecturaAndTipusDomini(Long entitatId);
-	
+
 	/**
 	 * Buida la cache dels dominis.
 	 * 
@@ -198,4 +198,5 @@ public interface DominiService {
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public void evictDominiCache();
+
 }

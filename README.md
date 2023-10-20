@@ -1,7 +1,5 @@
 # DISTRIBUCIO
 DISTRIBUCIO és una solució tecnològica desenvolupada pel Govern de les Illes Balears que permet distribuir anotacions de registre a les diferents bústies dels organismes.
-
-DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que aquestes es distribueixin en les bústies definides per les diferents unitats organitzatives. També permet definir bústies per defecte i regles per distribuir automàticament les anotacions en les diferents bústies segons el codi DIR3 de la unitat organitzativa destí i el codi de procediement SIA. L'usuari podrà marcar com a processades les anotacions de registre o també es podran crear regles per processar-les automàticament i enviar-les a una altra aplicació de backoffice que s'encarregarà del seu processament.
 ## Compilar
 Executar la següent comanda:
 

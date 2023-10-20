@@ -2,8 +2,6 @@ package es.caib.distribucio.logic.intf.service;
 
 import java.util.List;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
@@ -22,7 +20,6 @@ public interface ProcedimentService {
 	 * @param paginacioParams
 	 * @return La pàgina de procediments que compleixen el filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
 	public PaginaDto<ProcedimentDto> findAmbFiltre(
 			Long entitatId, 
 			ProcedimentFiltreDto filtre, 

@@ -16,6 +16,7 @@ import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreInteressatCanalEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
@@ -27,7 +28,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_registre_inter")
+@Table(name = BaseConfig.DB_PREFIX + "registre_inter")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 
@@ -71,25 +72,25 @@ public class RegistreInteressatEntity extends DistribucioAuditable<Long> {
 	private String canalPreferent;
 	@Column(name = "observacions", length = 160)
 	private String observacions;
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(
+			name = "registre_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "reginter_registre_fk"))
+	protected RegistreEntity registre;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(
 			name = "representant_id",
-			foreignKey = @ForeignKey(name = "dis_interessat_representant_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "reginter_representant_fk"))
 	protected RegistreInteressatEntity representant;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "representat_id",
-			foreignKey = @ForeignKey(name = "dis_interessat_representat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "reginter_representat_fk"))
 	protected RegistreInteressatEntity representat;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(
-			name = "registre_id",
-			foreignKey = @ForeignKey(name = "dis_interessat_registre_fk"))
-	protected RegistreEntity registre;
-	@Version
-	private long version = 0;
 	@Column(name = "codi_dire", length = 20)
 	private String codiDire;
+	@Version
+	private long version = 0;
 
 	public RegistreInteressatTipusEnum getTipus() {
 		return RegistreInteressatTipusEnum.valorAsEnum(tipus);

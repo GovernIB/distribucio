@@ -70,7 +70,7 @@ public interface AlertaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina d'Alertes.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public PaginaDto<AlertaDto> findPaginat(PaginacioParamsDto paginacioParams);
 
 	/**
@@ -81,7 +81,7 @@ public interface AlertaService {
 	 * 
 	 * @return El llistat d'alertes.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public PaginaDto<AlertaDto> findPaginatByLlegida(
 			boolean llegida,
 			Long contingutId,

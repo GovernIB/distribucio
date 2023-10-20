@@ -11,8 +11,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,10 +77,10 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		
-		MultiMap splitMap = new MultiHashMap();
-		MultiMap mergeOrSubstMap = new MultiHashMap();
-		MultiMap mergeMap = new MultiHashMap();
-		MultiMap substMap = new MultiHashMap();
+		MultiMap splitMap = new MultiValueMap();
+		MultiMap mergeOrSubstMap = new MultiValueMap();
+		MultiMap mergeMap = new MultiValueMap();
+		MultiMap substMap = new MultiValueMap();
 		List<UnitatOrganitzativaDto> unitatsVigents = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsVigentsFirstSincro = new ArrayList<>();
 		List<UnitatOrganitzativaDto> unitatsNew = new ArrayList<>();

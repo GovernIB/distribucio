@@ -45,7 +45,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ContingutDto findAmbIdUser(
 			Long entitatId,
 			Long contingutId,
@@ -100,7 +100,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ContingutLogDto> findLogsPerContingutUser(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -113,7 +113,7 @@ public interface ContingutService {
 	 * @param contingutId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ContingutLogDetallsDto> findLogsDetallsPerContingutUser(
 			Long entitatId,
 			Long contingutId);
@@ -129,7 +129,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ContingutLogDetallsDto findLogDetallsPerContingutUser(
 			Long entitatId,
 			Long contingutId,
@@ -146,7 +146,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -162,7 +162,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ContingutMovimentDto> findMovimentsPerContingutUser(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -198,7 +198,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ContingutComentariDto> findComentarisPerContingut(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -216,7 +216,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public RespostaPublicacioComentariDto publicarComentariPerContingut(
 			Long entitatId,
 			Long contingutId,
@@ -237,13 +237,13 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public boolean marcarProcessat(
 			Long entitatId,
 			Long contingutId,
 			String text, 
 			String rolActual) throws NotFoundException;
-	
+
 	/**
 	 * Comprova si l'usuari actual disposa de permisos sobre una bústia
 	 * 
@@ -255,20 +255,14 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public boolean hasPermisSobreBustia(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
-	
-	
-	
-	
-	
-	
+
 	/** 
 	 * 
 	 */
-
 	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
 	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
 			Date dataInici,
@@ -285,6 +279,6 @@ public interface ContingutService {
 			String uoOrigen, 
 			String uoSuperior, 
 			String uoDesti, 
-			String uoDestiSuperior
-			);	
+			String uoDestiSuperior);
+
 }

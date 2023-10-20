@@ -6,6 +6,7 @@ package es.caib.distribucio.persist.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -13,9 +14,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 
 @Entity
-@Table(name = "dis_cont_log_param")
+@Table(name = BaseConfig.DB_PREFIX + "cont_log_param")
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutLogParamEntity extends DistribucioAuditable<Long> implements Comparable<ContingutLogParamEntity>{
 
@@ -23,7 +26,9 @@ public class ContingutLogParamEntity extends DistribucioAuditable<Long> implemen
 	private static final int PARAM_MAX_LENGTH = 255;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "cont_log_id")
+	@JoinColumn(
+			name = "cont_log_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_log_param_contlog_fk"))
 	private ContingutLogEntity contingutLog;
 	
 	@Column(name = "numero", nullable = false)

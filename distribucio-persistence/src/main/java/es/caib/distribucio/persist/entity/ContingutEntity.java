@@ -31,6 +31,7 @@ import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 
 /**
@@ -39,7 +40,7 @@ import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_contingut")
+@Table(name = BaseConfig.DB_PREFIX + "contingut")
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class ContingutEntity extends DistribucioAuditable<Long> {
@@ -52,7 +53,7 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "pare_id",
-			foreignKey = @ForeignKey(name = "dis_pare_contingut_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "contingut_pare_fk"))
 	protected ContingutEntity pare;
 	@OneToMany(
 			mappedBy = "pare",
@@ -73,12 +74,12 @@ public abstract class ContingutEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "dis_entitat_contingut_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "contingut_entitat_fk"))
 	protected EntitatEntity entitat;
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "contmov_id",
-			foreignKey = @ForeignKey(name = "dis_contmov_contingut_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "contingut_contmov_fk"))
 	protected ContingutMovimentEntity darrerMoviment;
 	@OneToMany(
 			mappedBy = "contingut",

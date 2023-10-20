@@ -79,7 +79,7 @@ public class RegistreAdminController extends BaseAdminController {
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "RegistreAdminController.session.seleccio";
 
 	@Autowired
-	private RegistreService registreService;	
+	private RegistreService registreService;
 	@Autowired
 	private UnitatOrganitzativaService unitatOrganitzativaService;
 	@Autowired
@@ -116,7 +116,6 @@ public class RegistreAdminController extends BaseAdminController {
 		backNull.setCodi("senseBackoffice");
 		backoffices.add(backNull);
 		model.addAttribute("backoffices", backoffices);
-
 		return "registreAdminList";
 	}
 
@@ -162,11 +161,11 @@ public class RegistreAdminController extends BaseAdminController {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-	    binder.registerCustomEditor(
-	    		Date.class,
-	    		new CustomDateEditor(
-	    				new SimpleDateFormat("dd/MM/yyyy"),
-	    				true));
+		binder.registerCustomEditor(
+				Date.class,
+				new CustomDateEditor(
+						new SimpleDateFormat("dd/MM/yyyy"),
+						true));
 	}
 
 
@@ -180,14 +179,12 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		
 		try {
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
 					entitatActual.getId(),
 					registreId,
 					true);
-			
 			int numeroAnnexosPendentsArxiu = 0;
 			int numeroAnnexosFirmaInvalida = 0;
 			int numeroAnnexosEstatEsborrany = 0;
@@ -195,7 +192,6 @@ public class RegistreAdminController extends BaseAdminController {
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
-
 				String codiSia = ((RegistreDto)registreDto).getProcedimentCodi();
 				if (codiSia != null) {
 					ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
@@ -205,7 +201,7 @@ public class RegistreAdminController extends BaseAdminController {
 						procediment.setCodiSia(codiSia);
 						procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
 					}
-					model.addAttribute("procedimentDades", procediment);				
+					model.addAttribute("procedimentDades", procediment);
 				}
 			}
 			model.addAttribute("registre", registreDto);
@@ -224,7 +220,6 @@ public class RegistreAdminController extends BaseAdminController {
 							((RegistreDto)registreDto).getDades()));
 			model.addAttribute("metadadesActives", isMetadadesActives());
 		} catch (Exception e) {
-			
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
 				NotFoundException exc = (NotFoundException) thr;
@@ -238,11 +233,9 @@ public class RegistreAdminController extends BaseAdminController {
 			} else {
 				throw e;
 			}
-
 		}
 		return "registreDetall";
 	}
-	
 
 	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des
 	 * dels botons "Anterior" i "Següent" de la pàgina del detall.
@@ -260,7 +253,6 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
 			Model model) {
-		
 		ContingutDto registre = null;
 		String ret = null;
 		// Recupera el registre a partir del número de registre
@@ -284,7 +276,6 @@ public class RegistreAdminController extends BaseAdminController {
 								RegistreFiltreCommand.asDto(registreFiltreCommand),
 								paginacioParams,
 								true);
-			
 			// Posa les dades dels registres al model segons la consulta
 			if (pagina != null && !pagina.getContingut().isEmpty()) {
 				registre = pagina.getContingut().get(0);///{registreId}/detall    /registre/{registreId}
@@ -300,7 +291,7 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return ret;
 	}
-	
+
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
 	@ResponseBody
 	public int select(
@@ -323,7 +314,7 @@ public class RegistreAdminController extends BaseAdminController {
 			}
 		} else {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);			
+			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			seleccio.addAll(
 					registreService.findRegistreIds(
 							entitatActual.getId(),
@@ -359,9 +350,8 @@ public class RegistreAdminController extends BaseAdminController {
 			seleccio.clear();
 		}
 		return seleccio.size();
-	}		
-	
-	
+	}
+
 	@RequestMapping(value = "/busties", method = RequestMethod.GET)
 	@ResponseBody
 	public List<BustiaDto> busties(
@@ -375,9 +365,7 @@ public class RegistreAdminController extends BaseAdminController {
 		filtre.setUnitatIdFiltre(unitatId);
 		return bustiaService.findAmbEntitatAndFiltre(entitatActual.getId(), filtre);
 	}
-	
-	
-	
+
 	/** Estats que permeten el reprocessament */
 	private static RegistreProcesEstatEnum[] estatsReprocessables = {
 			RegistreProcesEstatEnum.ARXIU_PENDENT,
@@ -389,7 +377,7 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreProcesEstatEnum.BACK_PROCESSADA,
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
-	
+
 	/** Estats que permeten el renviament al backoffice */
 	private static RegistreProcesEstatEnum[] estatsReenviablesBackoffices = {
 			RegistreProcesEstatEnum.BACK_PENDENT,
@@ -399,15 +387,14 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreProcesEstatEnum.BACK_PROCESSADA,
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
-	
-	
+
 	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
 		
-		AjaxFormResponse response = this.reintentarProcessament(request, registreId);		
+		AjaxFormResponse response = this.reintentarProcessament(request, registreId);
 		if (response.isEstatOk()) {
 			MissatgesHelper.success(
 					request, 
@@ -419,7 +406,7 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return "redirect:../../" + registreId + "/detall";
 	}
-	
+
 	@RequestMapping(value = "/registre/{registreId}/processarAnnexos", method = RequestMethod.GET)
 	public String processarAnnexos(
 			HttpServletRequest request,
@@ -446,8 +433,7 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return "redirect:../../" + registreId + "/detall";
 	}
-	
-	
+
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)
 	public String reintentarEnviamentBackoffice(
 			HttpServletRequest request,
@@ -469,8 +455,7 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return "redirect:" + request.getHeader("referer");
 	}
-	
-	
+
 	@RequestMapping(value = "/reintentarEnviamentBackofficeMultiple", method = RequestMethod.GET)
 	public String reintentarEnviamentBackofficeMultiple(
 			HttpServletRequest request,
@@ -483,8 +468,7 @@ public class RegistreAdminController extends BaseAdminController {
 				true));
 		return "reintentarEnviamentBackofficeMultiple";
 	}
-	
-	
+
 	/** Mèdode per enviar al backoffice una anotacions de registre via ajax des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request
@@ -498,15 +482,12 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId, 
 			@Valid Object command, 
 			BindingResult bindingResult) {
-		
 		AjaxFormResponse response = null;
-		
 		if (bindingResult.hasErrors()) {
 			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
 			response.setMissatge(getMessage(request, "enviamentMultiple.error.validacio"));
 			return response;
 		}
-		
 		boolean correcte = false;
 		String missatge = null;
 		ContingutDto contingutDto = null;
@@ -514,7 +495,6 @@ public class RegistreAdminController extends BaseAdminController {
 		try {
 			this.entrarSemafor(registreId);
 			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
-			
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 			registreDto = (RegistreDto) contingutDto;
@@ -536,26 +516,21 @@ public class RegistreAdminController extends BaseAdminController {
 		} finally {
 			this.sortirSemafor(registreId);
 		}
-		
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(missatge.toString());
 			
-		}else {
+		} else {
 			response = AjaxHelper.generarAjaxError(missatge.toString());
 		}
-		
 		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
-		
 		return response;
 	}
-	
-	
+
 	@RequestMapping(value = "/{registreId}/marcarSobreescriure", method = RequestMethod.GET)
 	public String marcarSobreescriure(
 			HttpServletRequest request,
 			@PathVariable Long registreId) {
-		
 		try {
 			registreService.marcarSobreescriure(getEntitatActualComprovantPermisAdmin(request).getId(), registreId);
 			return getAjaxControllerReturnValueSuccess(
@@ -570,9 +545,7 @@ public class RegistreAdminController extends BaseAdminController {
 					"registre.admin.controller.marcar.sobreescriure.error",
 					new Object[] {ExceptionHelper.getRootCauseOrItself(e).getMessage()});
 		}
-
 	}
-	
 
 	@RequestMapping(value = "/marcarSobreescriureMultiple", method = RequestMethod.GET)
 	public String marcarSobreescriureMultipleGet(
@@ -587,8 +560,7 @@ public class RegistreAdminController extends BaseAdminController {
 						true));
 		return "marcarSobreescriure";
 	}
-	
-	
+
 	/** Mèdode per marcar per sobreescriure una anotació de registre via ajax des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request
@@ -602,24 +574,20 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			@Valid Object command,
 			BindingResult bindingResult) {
-		
 		AjaxFormResponse response;
 		if (bindingResult.hasErrors()) {
 			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
 			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
 			return response;
 		}
-		
 		boolean correcte = false;
 		String missatge = null;
 		RegistreDto registreDto = null;
 		try {
 			this.entrarSemafor(registreId);
-			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);			
+			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
-			
 			registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
-
 			if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
 				registreService.marcarSobreescriure(entitatActual.getId(), registreId);
 				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.ok", new Object[] {registreId});
@@ -646,8 +614,7 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return response;
 	}
-	
-	
+
 	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
 	public String reintentarProcessamentMultipleGet(
 			HttpServletRequest request,
@@ -661,8 +628,7 @@ public class RegistreAdminController extends BaseAdminController {
 						true));
 		return "reintentarProcessamentMultiple";
 	}
-	
-	
+
 	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request
@@ -676,14 +642,12 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId,
 			@Valid Object command,
 			BindingResult bindingResult) {
-		
 		AjaxFormResponse response;
 		if (bindingResult.hasErrors()) {
 			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
 			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
 			return response;
 		}
-
 		try {
 			this.entrarSemafor(registreId);
 			response = this.reintentarProcessament(request, registreId);
@@ -693,12 +657,10 @@ public class RegistreAdminController extends BaseAdminController {
 			this.sortirSemafor(registreId);
 		}
 		logger.debug("L'anotació amb id " + registreId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
-
 		return response;
 	}
 
 	private AjaxFormResponse reintentarProcessament(HttpServletRequest request, Long registreId) {
-
 		AjaxFormResponse response = null;
 		boolean correcte = false;
 		String missatge = null;
@@ -706,8 +668,6 @@ public class RegistreAdminController extends BaseAdminController {
 		RegistreDto registreDto = null;;
 		try {
 			logger.debug("Reprocessar anotació amb id " + registreId);
-			
-
 			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 			registreDto = (RegistreDto) contingutDto;
@@ -718,9 +678,7 @@ public class RegistreAdminController extends BaseAdminController {
 						registreId);
 				contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.pare.restaurat");
-			} 
-			else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) 
-			{
+			} else if ( ArrayUtils.contains(estatsReprocessables, registreDto.getProcesEstat())) {
 				if (registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
 					|| registreDto.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
 				{
@@ -734,16 +692,14 @@ public class RegistreAdminController extends BaseAdminController {
 							registreId);
 					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
 				}
-			} 
-			else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
+			} else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
 				correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
 						registreId);
 				missatge = getMessage(
 						request, 
 						"contingut.admin.controller.registre.desat.arxiu." + (correcte ? "ok" : "error"),
 						null);
-			} else 
-			{
+			} else {
 				missatge = getMessage(request, "registre.admin.controller.reintentar.processament.reprocessables.no.detectat");
 				correcte = true;
 			}
@@ -752,14 +708,12 @@ public class RegistreAdminController extends BaseAdminController {
 			logger.error(missatge, e);
 			correcte = false;
 		}
-		
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(missatge.toString());
 		} else {
 			response = AjaxHelper.generarAjaxError(missatge);
 		}
-		
 		return response;
 	}
 
@@ -782,7 +736,6 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		return isPendentArxiu;
 	}
-
 
 	@RequestMapping(value = "/ajaxBustia/{bustiaId}", method = RequestMethod.GET)
 	@ResponseBody
@@ -833,8 +786,8 @@ public class RegistreAdminController extends BaseAdminController {
 			bustiesFinals = bustiaService.findAmbFiltreAdmin(entitatActual.getId(), filtre, paginacioParams).getContingut();
 		}
 		return bustiesFinals;
-	}	
-	
+	}
+
 	private RegistreFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
 		RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
@@ -852,7 +805,6 @@ public class RegistreAdminController extends BaseAdminController {
 		return filtreCommand;
 	}
 
-	
 	/** Mètode per validar les firmes d'un annex per mostrar informació de les firmes en el detall de l'annex.
 	 * 
 	 * @param request
@@ -877,11 +829,12 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.validar.firmes.no.valides"));
 		}
 		return "redirect:" + request.getHeader("referer");
-	}	
-	
+	}
+
 	private boolean isMetadadesActives() {
 		return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.permetre.metadades.registre"));
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreAdminController.class);
+
 }

@@ -25,7 +25,6 @@ public interface SegonPlaService {
 	 * ja processades.
 	 */
 	public void tancarContenidorsArxiuPendents();
-	
 
 	public void enviarEmailsPendentsNoAgrupats();
 
@@ -65,4 +64,5 @@ public interface SegonPlaService {
 	 * @throws Exception 
 	 **/
 	public void actualitzarProcediments() throws Exception;
+
 }

@@ -2,6 +2,8 @@ package es.caib.distribucio.logic.intf.service;
 
 import java.util.Date;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import es.caib.distribucio.logic.intf.dto.historic.HistoricDadesDto;
 import es.caib.distribucio.logic.intf.dto.historic.HistoricFiltreDto;
 
@@ -27,6 +29,7 @@ public interface HistoricService {
 	 * organitzatives concretes o per l'entitat en general si no es filtra per UO.
 	 * 
 	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public HistoricDadesDto getDadesHistoriques(
 			Long entitatId,
 			HistoricFiltreDto filtre);
@@ -36,12 +39,14 @@ public interface HistoricService {
 	 * 
 	 * @param data
 	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public void calcularDadesHistoriques(Date data);
 
 	/** Mètode per recalcular els totals d'un dia passat a partir de les dades del dia següent.
 	 * 
 	 * @param data
 	 */
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public void recalcularTotals(Date data);
 
 }

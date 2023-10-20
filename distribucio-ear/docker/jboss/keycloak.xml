@@ -3,9 +3,27 @@
                 <auth-server-url>${env.JBOSS_AUTH_URL}</auth-server-url>
                 <ssl-required>external</ssl-required>
             </realm>
+            <secure-deployment name="distribucio-api-externa.war">
+                <realm>${env.JBOSS_AUTH_REALM}</realm>
+                <resource>${env.JBOSS_AUTH_API_CLIENTID}</resource>
+                <use-resource-role-mappings>false</use-resource-role-mappings>
+                <bearer-only>true</bearer-only>
+                <enable-basic-auth>true</enable-basic-auth>
+                <credential name="secret">${env.JBOSS_AUTH_API_SECRET}</credential>
+                <principal-attribute>preferred_username</principal-attribute>
+            </secure-deployment>
+            <secure-deployment name="distribucio-api-interna.war">
+                <realm>${env.JBOSS_AUTH_REALM}</realm>
+                <resource>${env.JBOSS_AUTH_API_CLIENTID}</resource>
+                <use-resource-role-mappings>false</use-resource-role-mappings>
+                <bearer-only>true</bearer-only>
+                <enable-basic-auth>true</enable-basic-auth>
+                <credential name="secret">${env.JBOSS_AUTH_API_SECRET}</credential>
+                <principal-attribute>preferred_username</principal-attribute>
+            </secure-deployment>
             <secure-deployment name="distribucio-back.war">
                 <realm>${env.JBOSS_AUTH_REALM}</realm>
-                <resource>${env.JBOSS_AUTH_CLIENTID}</resource>
+                <resource>${env.JBOSS_AUTH_BACK_CLIENTID}</resource>
                 <use-resource-role-mappings>false</use-resource-role-mappings>
                 <public-client>true</public-client>
                 <verify-token-audience>true</verify-token-audience>

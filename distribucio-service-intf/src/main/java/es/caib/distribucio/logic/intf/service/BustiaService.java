@@ -128,7 +128,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public BustiaDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -144,7 +144,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public BustiaDto findById(
 			Long id) throws NotFoundException;
 	
@@ -189,7 +189,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> findActivesAmbEntitat(
 			Long entitatId) throws NotFoundException;
 	
@@ -204,7 +204,7 @@ public interface BustiaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('tothom') or hasRole('DIS_REGLA')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> findBustiesPermesesPerUsuari(
 			Long entitatId, 
 			boolean mostrarInactives);
@@ -230,8 +230,6 @@ public interface BustiaService {
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
 			RegistreAnotacio anotacio) throws NotFoundException;
-
-
 
 	/**
 	 * Crea l'anotació de registre.
@@ -280,7 +278,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public long contingutPendentBustiesAllCount(
 			Long entitatId) throws NotFoundException;
 
@@ -303,7 +301,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public void registreReenviar(
 			Long entitatId,
 			Long[] bustiaDestiIds,
@@ -330,7 +328,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzatives(
 			Long entitatId,
 			boolean nomesBusties,
@@ -373,22 +371,22 @@ public interface BustiaService {
 			Long id,
 			Long permisId) throws NotFoundException;
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> findAmbEntitat(Long entitatId);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaContingutDto> findAmbEntitatAndFiltrePerInput(Long entitatId, ContingutTipusEnumDto tipus, String filtre);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public ArbreDto<UnitatOrganitzativaDto> findArbreUnitatsOrganitzativesAmbFiltre(Long entitatId, List<BustiaDto> busties);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String getApplictionMetrics();
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public void registreAnotacioEnviarPerEmail(
 			Long entitatId,
 			Long registreId,
@@ -415,14 +413,15 @@ public interface BustiaService {
 			long destiId, 
 			String comentari);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<UsuariPermisDto> getUsuarisPerBustia(Long bustiaId);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public Map<String, UsuariPermisDto> getUsuarisPerBustia(Long bustiaId, boolean directe, boolean perRol);
 
-	@PreAuthorize("hasRole('tothom')")
-	public List<BustiaDto> findAmbUnitatId(Long entitatId,
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	public List<BustiaDto> findAmbUnitatId(
+			Long entitatId,
 			Long unitatId);
 
 	/** Consulta les unitats organitzatives que són superiors per unitats amb bústies.
@@ -433,29 +432,29 @@ public interface BustiaService {
 	 */
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public boolean isBustiaReadPermitted(Long bustiaId);
-		
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public void addToFavorits(
 			Long entitatId, 
 			Long bustiaId);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public PaginaDto<UsuariBustiaFavoritDto> getBustiesFavoritsUsuariActual(Long entitatId, PaginacioParamsDto paginacioParams);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public void removeFromFavorits(
 			Long entitatId, 
 			Long id);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public boolean checkIfFavoritExists(
 			Long entitatId, 
 			Long id);
-	
-	@PreAuthorize("hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public List<Long> getIdsBustiesFavoritsUsuariActual(Long entitatId);
 	
 	/**
@@ -467,7 +466,7 @@ public interface BustiaService {
 	 * 				Indica si incloure les bústies innactives en el resultat.
 	 * @return El llistat de bústies origen.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> consultaBustiesOrigen(
 			Long entitatId, 
 			List<BustiaDto> bustiesPermesesPerUsuari, 
@@ -484,7 +483,7 @@ public interface BustiaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BustiaDto> findBustiesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
 

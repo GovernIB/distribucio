@@ -100,8 +100,6 @@ public interface ReglaService {
 			boolean activa,
 			ReglaPresencialEnumDto presencial) throws NotFoundException;
 
-	
-	
 	/**
 	 * Esborra una regla.
 	 * 
@@ -219,7 +217,7 @@ public interface ReglaService {
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi);
 
-	
+	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
 
 	@PreAuthorize("hasRole('DIS_ADMIN')")

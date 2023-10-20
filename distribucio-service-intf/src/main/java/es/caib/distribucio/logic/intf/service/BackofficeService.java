@@ -112,7 +112,6 @@ public interface BackofficeService {
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
-	
 	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;
 
@@ -121,6 +120,4 @@ public interface BackofficeService {
 			Long entitatId,
 			String backofficeCodi) throws NotFoundException;
 
-
-	
 }

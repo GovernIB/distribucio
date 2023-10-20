@@ -19,42 +19,44 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades de configuracio de properties.
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "DIS_CONFIG")
+@Table(name = BaseConfig.DB_PREFIX + "config")
 @EntityListeners(AuditingEntityListener.class)
 public class ConfigEntity {
 
 	@Id
-	@Column(name = "KEY", length = 256, nullable = false)
+	@Column(name = "key", length = 256, nullable = false)
 	private String key;
 
-	@Column(name = "VALUE", length = 2048, nullable = true)
+	@Column(name = "value", length = 2048, nullable = true)
 	private String value;
 
-	@Column(name = "DESCRIPTION", length = 2048, nullable = true)
+	@Column(name = "description", length = 2048, nullable = true)
 	private String description;
 
-	@Column(name = "JBOSS_PROPERTY", nullable = false)
+	@Column(name = "jboss_property", nullable = false)
 	private boolean jbossProperty;
 
-	@Column(name = "GROUP_CODE", length = 2048, nullable = true)
+	@Column(name = "group_code", length = 2048, nullable = true)
 	private String groupCode;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
-			name = "TYPE_CODE", insertable = false, updatable = false,
-			foreignKey = @ForeignKey(name = "NOT_CONFIG_TYPE_FK"))
+			name = "type_code", insertable = false, updatable = false,
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "config_type_fk"))
 	private ConfigTypeEntity type;
 
-	@Column(name="TYPE_CODE", length = 128, nullable = true)
+	@Column(name="type_code", length = 128, nullable = true)
 	private String typeCode;
 
-	@Column(name = "POSITION")
+	@Column(name = "position")
 	private int position;
 
 	@LastModifiedBy
@@ -65,10 +67,10 @@ public class ConfigEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedDate;
 
-	@Column(name = "ENTITAT_CODI")
+	@Column(name = "entitat_codi")
 	private String entitatCodi;
 
-	@Column(name = "CONFIGURABLE")
+	@Column(name = "configurable")
 	private boolean configurable;
 
 	/**

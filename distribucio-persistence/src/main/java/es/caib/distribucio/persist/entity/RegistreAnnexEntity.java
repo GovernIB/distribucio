@@ -26,6 +26,7 @@ import javax.persistence.Version;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
@@ -40,7 +41,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_registre_annex")
+@Table(name = BaseConfig.DB_PREFIX + "registre_annex")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 
@@ -71,28 +72,22 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	private String observacions;
 	@Column(name = "firma_mode")
 	private Integer firmaMode;
+	@Column(name = "firma_csv", length = 256)
+	private String firmaCsv;
 	@Column(name = "timestamp", length = 100)
 	private String timestamp;
 	@Column(name = "validacio_ocsp", length = 100)
 	private String validacioOCSP;
 	@Column(name = "gesdoc_doc_id")
 	private String gesdocDocumentId;
-	
 	@Column(name = "sign_detalls_descarregat")
 	private boolean signaturaDetallsDescarregat;
-	@Column(name = "firma_csv", length = 256)
-	private String firmaCsv;
-	
-	
 	@Column(name = "meta_dades", length = 4000)
 	private String metaDades;
-	
-
-
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "registre_id",
-			foreignKey = @ForeignKey(name = "dis_annex_registre_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_annex_reg_fk"))
 	private RegistreEntity registre;
 	@OneToMany(
 			mappedBy = "annex",
@@ -100,21 +95,18 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreAnnexFirmaEntity> firmes;
-	@Version
-	private long version = 0;
-
-
 	// Camps per a mostrar informació de la validacó de firmes
 	@Enumerated(EnumType.STRING)
 	@Column(name = "val_firma_estat")
 	private ValidacioFirmaEnum validacioFirmaEstat;
 	@Column(name = "val_firma_error", length= 1000)
 	private String validacioFirmaError;
-
 	// Camp per mostrar si el document està en estat ESBORRANY o DEFINITIU
 	@Enumerated(EnumType.STRING)
 	@Column(name = "arxiu_estat")
 	private AnnexEstat arxiuEstat;
+	@Version
+	private long version = 0;
 
 	public String getFirmaCsv() {
 		return firmaCsv;

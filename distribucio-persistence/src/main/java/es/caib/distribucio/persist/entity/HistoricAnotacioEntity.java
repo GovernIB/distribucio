@@ -14,8 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.data.jpa.domain.AbstractPersistable;
-
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
 
 /**
@@ -25,13 +24,13 @@ import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_his_anotacio")
-public class HistoricAnotacioEntity extends AbstractPersistable<Long> {
+@Table(name = BaseConfig.DB_PREFIX + "his_anotacio")
+public class HistoricAnotacioEntity extends DistribucioPersistable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "dis_entitat_his_anot_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "his_anot_entitat_fk"))
 	private EntitatEntity entitat;
 
 	/** Distinció per unitat organitzativa. Si és null llavors és un registre dels
@@ -40,7 +39,7 @@ public class HistoricAnotacioEntity extends AbstractPersistable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "unitat_id",
-			foreignKey = @ForeignKey(name = "dis_unitat_his_anot_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "his_anot_unitat_fk"))
 	private UnitatOrganitzativaEntity unitat;
 	
 	@Enumerated(EnumType.STRING)

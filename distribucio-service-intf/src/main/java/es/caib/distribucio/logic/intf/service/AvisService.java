@@ -18,25 +18,25 @@ import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
  */
 public interface AvisService {
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	AvisDto create(AvisDto avis);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	AvisDto update(AvisDto avis);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	AvisDto updateActiva(Long id, boolean activa);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	AvisDto delete(Long id);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	AvisDto findById(Long id);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	PaginaDto<AvisDto> findPaginat(PaginacioParamsDto paginacioParams);
 
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	List<AvisDto> findActive();
 
 

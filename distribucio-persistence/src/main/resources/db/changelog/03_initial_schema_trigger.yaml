@@ -1,4 +1,21 @@
 databaseChangeLog:
 - changeSet:
     id: init-trigger-1
-    author: limit (generated)
+    author: limit
+    changes:
+    - sql:
+        dbms: oracle
+        endDelimiter: "@@"
+        sql: CREATE OR REPLACE TRIGGER dis_acl_sid_idgen BEFORE INSERT ON dis_acl_sid FOR EACH ROW BEGIN SELECT dis_acl_sid_seq.NEXTVAL INTO :NEW.ID FROM DUAL; END@@
+    - sql:
+        dbms: oracle
+        endDelimiter: "@@"
+        sql: CREATE OR REPLACE TRIGGER dis_acl_class_idgen BEFORE INSERT ON dis_acl_class FOR EACH ROW BEGIN SELECT dis_acl_class_seq.NEXTVAL INTO :NEW.ID FROM DUAL; END@@
+    - sql:
+        dbms: oracle
+        endDelimiter: "@@"
+        sql: CREATE OR REPLACE TRIGGER dis_acl_oid_idgen BEFORE INSERT ON dis_acl_object_identity FOR EACH ROW BEGIN SELECT dis_acl_oid_seq.NEXTVAL INTO :NEW.ID FROM DUAL; END@@
+    - sql:
+        dbms: oracle
+        endDelimiter: "@@"
+        sql: CREATE OR REPLACE TRIGGER dis_acl_entry_idgen BEFORE INSERT ON dis_acl_entry FOR EACH ROW BEGIN SELECT dis_acl_entry_seq.NEXTVAL INTO :NEW.ID FROM DUAL; END@@

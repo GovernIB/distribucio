@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: init-data-1
+    author: limit
+    changes:
+    - sqlFile:
+        path: scripts/initial_data_config.sql
+        splitStatements: true
+        relativeToChangelogFile: true

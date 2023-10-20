@@ -75,8 +75,8 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle.database.jdbc</groupId>
-					<artifactId>ojdbc6</artifactId>
-					<version>11.2.0.4</version>
+					<artifactId>ojdbc10</artifactId>
+					<version>19.20.0.0</version>
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
@@ -89,7 +89,7 @@
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<configuration>
 					<propertyFile>liquibase/liquibase.properties</propertyFile>
-					<migrationSqlOutputFile>liquibase/script.sql</migrationSqlOutputFile>
+					<migrationSqlOutputFile>liquibase/update_script.sql</migrationSqlOutputFile>
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -101,6 +101,12 @@
 						<groupId>org.liquibase.ext</groupId>
 						<artifactId>liquibase-hibernate5</artifactId>
 						<version>${liquibase.version}</version>
+						<exclusions>
+							<exclusion>
+								<groupId>org.liquibase</groupId>
+								<artifactId>liquibase-test-harness</artifactId>
+							</exclusion>
+						</exclusions>
 					</dependency>
 					<dependency>
 						<groupId>org.springframework.boot</groupId>

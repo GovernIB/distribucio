@@ -1,1 +1,0 @@
-<%=es.caib.distribucio.war.helper.AplicacioHelper.getVersioActual(request)%> <span id="versioData"style="color:rgba(0,0,0,0);">(<%=es.caib.distribucio.war.helper.AplicacioHelper.getVersioData(request)%>)</span>

@@ -20,24 +20,24 @@ import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 
-
 /**
- * Classe del model de dades que representa una regla per al
- * processament automàtic d'anotacions de registre.
+ * Classe del model de dades que representa una regla pel processament
+ * automàtic d'anotacions de registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_regla",
+@Table(name = BaseConfig.DB_PREFIX + "regla",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {
-						"entitat_id",
-						"nom",
-						"tipus",
-						"assumpte_codi"})})
+				@UniqueConstraint(
+						name = BaseConfig.DB_PREFIX + "regla_mult_uk",
+						columnNames = { "entitat_id", "nom", "tipus", "assumpte_codi"})
+		}
+)
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public class ReglaEntity extends DistribucioAuditable<Long> {
@@ -60,11 +60,13 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "unitat_id",
-			foreignKey = @ForeignKey(name = "dis_unitat_regla_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_uofiltre_fk"))
 	protected UnitatOrganitzativaEntity unitatOrganitzativaFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "bustia_filtre_id")
+	@JoinColumn(
+			name = "bustia_filtre_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_bustiafiltre_fk"))
 	protected BustiaEntity bustiaFiltre;
 	
 	@Column(name = "presencial", nullable = true)
@@ -78,24 +80,22 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	protected ReglaTipusEnumDto tipus;
 	
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "backoffice_desti_id")
+	@JoinColumn(
+			name = "backoffice_desti_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_bodesti_fk"))
 	protected BackofficeEntity backofficeDesti;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "bustia_id",
-			foreignKey = @ForeignKey(name = "dis_bustia_regla_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_bustia_fk"))
 	protected BustiaEntity bustiaDesti;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "unitat_desti_id")
+	@JoinColumn(
+			name = "unitat_desti_id",
+					foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_uodesti_fk"))
 	protected UnitatOrganitzativaEntity unitatDesti;
-	
-
-	
-	
-
-	
 	
 	@Column(name = "ordre", nullable = false)
 	protected int ordre;
@@ -106,7 +106,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "dis_entitat_regla_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_entitat_fk"))
 	protected EntitatEntity entitat;
 	
 	@Version

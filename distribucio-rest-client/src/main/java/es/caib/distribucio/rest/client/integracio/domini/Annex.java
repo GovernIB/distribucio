@@ -5,8 +5,6 @@ package es.caib.distribucio.rest.client.integracio.domini;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,15 +41,12 @@ public class Annex {
 	private AnnexEstat estat;
 
 	
-	@XmlTransient
 	public boolean isDocumentValid() {
 		return documentValid;
 	}
-	@XmlTransient
 	public String getDocumentError() {
 		return documentError;
 	}
-	@XmlTransient
 	public AnnexEstat getEstat() {
 		return estat;
 	}

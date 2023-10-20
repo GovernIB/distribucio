@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.19.3</version>
+			<version>${jerseyclient.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.ws.rs</groupId>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>1.19.3</version>
+			<version>${jerseyclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>

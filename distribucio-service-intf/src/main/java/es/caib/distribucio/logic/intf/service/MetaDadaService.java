@@ -164,7 +164,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public MetaDadaDto findByCodi(
 			Long entitatId,
 			String codi) throws NotFoundException;
@@ -194,7 +194,7 @@ public interface MetaDadaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<MetaDadaDto> findByEntitat(Long entitatId);
 
 }

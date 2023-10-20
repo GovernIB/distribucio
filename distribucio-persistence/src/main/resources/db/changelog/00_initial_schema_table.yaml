@@ -1,4 +1,2287 @@
 databaseChangeLog:
 - changeSet:
     id: init-table-1
-    author: limit (generated)
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}alerta_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: VARCHAR(256)
+        - column:
+            name: error
+            type: VARCHAR(2048)
+        - column:
+            constraints:
+              nullable: false
+            name: llegida
+            type: BOOLEAN
+        - column:
+            name: contingut_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}alerta
+- changeSet:
+    id: init-table-2
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}avis_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: assumpte
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: missatge
+            type: VARCHAR(2048)
+        - column:
+            constraints:
+              nullable: false
+            name: data_inici
+            type: TIMESTAMP(6)
+        - column:
+            constraints:
+              nullable: false
+            name: data_final
+            type: TIMESTAMP(6)
+        - column:
+            constraints:
+              nullable: false
+            name: actiu
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: avis_nivell
+            type: VARCHAR(10)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}avis
+- changeSet:
+    id: init-table-3
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}backoffice_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR2(20)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR2(64)
+        - column:
+            constraints:
+              nullable: false
+            name: url
+            type: VARCHAR(256)
+        - column:
+            name: usuari
+            type: VARCHAR(255)
+        - column:
+            name: contrasenya
+            type: VARCHAR2(255)
+        - column:
+            name: intents
+            type: NUMBER(10, 0)
+        - column:
+            name: temps_entre_intents
+            type: NUMBER(10, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: tipus
+            type: VARCHAR(32)
+            defaultValue: SOAP
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}backoffice
+- changeSet:
+    id: init-table-4
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}bustia_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: per_defecte
+            type: BOOLEAN
+        - column:
+            name: activa
+            type: BOOLEAN
+        - column:
+            name: unitat_id
+            type: ${pk_type}
+        tableName: ${app_prefix}bustia
+- changeSet:
+    id: init-table-5
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}bustia_default_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: bustia
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: usuari
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}bustia_default
+- changeSet:
+    id: init-table-6
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}bustia_favorit_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: bustia_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: usuari_codi
+            type: VARCHAR(64)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}bustia_favorit
+- changeSet:
+    id: init-table-7
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}bustia_user_filtre_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: bustia
+            type: VARCHAR(256)
+        - column:
+            name: contingut_descripcio
+            type: VARCHAR(256)
+        - column:
+            name: remitent
+            type: VARCHAR(256)
+        - column:
+            name: data_recepcio_inici
+            type: TIMESTAMP
+        - column:
+            name: data_recepcio_fi
+            type: TIMESTAMP
+        - column:
+            name: estat_contingut
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: filter_name
+            type: VARCHAR(256)
+        - column:
+            name: last_used_date
+            type: TIMESTAMP
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}bustia_user_filtre
+- changeSet:
+    id: init-table-8
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}config_pk
+            name: key
+            type: VARCHAR(256)
+        - column:
+            name: value
+            type: VARCHAR(2048)
+        - column:
+            name: description
+            type: VARCHAR(2048)
+        - column:
+            constraints:
+              nullable: false
+            name: group_code
+            type: VARCHAR(128)
+        - column:
+            constraints:
+              nullable: false
+            name: position
+            type: SMALLINT
+            defaultValueNumeric: 0
+        - column:
+            constraints:
+              nullable: false
+            name: jboss_property
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: type_code
+            type: VARCHAR(128)
+            defaultValue: TEXT
+        - column:
+            name: configurable
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: entitat_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}config
+- changeSet:
+    id: init-table-9
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}config_group_pk
+            name: code
+            type: VARCHAR(128)
+        - column:
+            name: parent_code
+            type: VARCHAR(128)
+        - column:
+            constraints:
+              nullable: false
+            name: position
+            type: SMALLINT
+            defaultValueNumeric: 0
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: VARCHAR(512)
+        tableName: ${app_prefix}config_group
+- changeSet:
+    id: init-table-10
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}config_type_pk
+            name: code
+            type: VARCHAR(128)
+        - column:
+            name: value
+            type: VARCHAR(2048)
+        tableName: ${app_prefix}config_type
+- changeSet:
+    id: init-table-11
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}contingut_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(1024)
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(8)
+        - column:
+            name: pare_id
+            type: ${pk_type}
+        - column:
+            name: esborrat
+            type: INTEGER
+        - column:
+            name: arxiu_uuid
+            type: VARCHAR(36)
+        - column:
+            name: arxiu_data_act
+            type: TIMESTAMP
+        - column:
+            name: contmov_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}contingut
+- changeSet:
+    id: init-table-12
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}cont_comment_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: contingut_id
+            type: ${pk_type}
+        - column:
+            name: text
+            type: VARCHAR(4000)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}cont_comment
+- changeSet:
+    id: init-table-13
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}cont_log_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(30)
+        - column:
+            constraints:
+              nullable: false
+            name: contingut_id
+            type: ${pk_type}
+        - column:
+            name: pare_id
+            type: ${pk_type}
+        - column:
+            name: contmov_id
+            type: ${pk_type}
+        - column:
+            name: objecte_id
+            type: VARCHAR(256)
+        - column:
+            name: objecte_log_tipus
+            type: VARCHAR(30)
+        - column:
+            name: objecte_tipus
+            type: VARCHAR(12)
+        - column:
+            name: param1
+            type: VARCHAR(256)
+        - column:
+            name: param2
+            type: VARCHAR(256)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}cont_log
+- changeSet:
+    id: init-table-14
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}cont_log_param_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: cont_log_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: numero
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: valor
+            type: VARCHAR(256)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}cont_log_param
+- changeSet:
+    id: init-table-15
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}cont_mov_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: contingut_id
+            type: ${pk_type}
+        - column:
+            name: origen_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: desti_id
+            type: ${pk_type}
+        - column:
+            name: remitent_codi
+            type: VARCHAR(64)
+        - column:
+            name: comentari
+            type: VARCHAR(3940)
+        - column:
+            name: per_coneixement
+            type: BOOLEAN
+        - column:
+            name: comentari_destins
+            type: VARCHAR(256)
+        - column:
+            name: origen_nom
+            type: VARCHAR(1024)
+        - column:
+            name: desti_nom
+            type: VARCHAR(1024)
+        - column:
+            name: num_duplicat
+            type: NUMBER(10, 0)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}cont_mov
+- changeSet:
+    id: init-table-16
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}cont_mov_email_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: destinatari_codi
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: destinatari_email
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: enviament_agrupat
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: bustia_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: contingut_moviment_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: contingut_id
+            type: ${pk_type}
+        - column:
+            name: unitat_organitzativa
+            type: VARCHAR(256)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}cont_mov_email
+- changeSet:
+    id: init-table-17
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}dada_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: ordre
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: valor
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: metadada_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: registre_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}dada
+- changeSet:
+    id: init-table-18
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}domini_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(256)
+        - column:
+            name: descripcio
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: consulta
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: cadena
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: contrasenya
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}domini
+- changeSet:
+    id: init-table-19
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}entitat_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(256)
+        - column:
+            name: descripcio
+            type: VARCHAR(1024)
+        - column:
+            constraints:
+              nullable: false
+            name: cif
+            type: VARCHAR(9)
+        - column:
+            constraints:
+              nullable: false
+            name: codi_dir3
+            type: VARCHAR(9)
+        - column:
+            name: activa
+            type: BOOLEAN
+        - column:
+            name: fecha_actualizacion
+            type: TIMESTAMP
+        - column:
+            name: fecha_sincronizacion
+            type: TIMESTAMP
+        - column:
+            name: color_fons
+            type: VARCHAR(32)
+        - column:
+            name: color_lletra
+            type: VARCHAR(32)
+        - column:
+            name: logo_cap
+            type: BLOB
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}entitat
+- changeSet:
+    id: init-table-20
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}his_anotacio_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: unitat_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(16)
+        - column:
+            constraints:
+              nullable: false
+            name: data
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: anotacions
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: anotacions_total
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: emails
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: justificants
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: annexos
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: busties
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: usuaris
+            type: NUMBER(19, 0)
+        - column:
+            name: reenviaments
+            type: NUMBER(19, 0)
+        tableName: ${app_prefix}his_anotacio
+- changeSet:
+    id: init-table-21
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}his_bustia_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: unitat_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(16)
+        - column:
+            constraints:
+              nullable: false
+            name: data
+            type: TIMESTAMP
+        - column:
+            name: bustia_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(1024)
+        - column:
+            constraints:
+              nullable: false
+            name: usuaris
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: usuaris_permis
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: usuaris_rol
+            type: NUMBER(19, 0)
+        tableName: ${app_prefix}his_bustia
+- changeSet:
+    id: init-table-22
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}his_estat_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: unitat_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(16)
+        - column:
+            constraints:
+              nullable: false
+            name: data
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: estat
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: correcte
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: correcte_total
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: error
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: error_total
+            type: NUMBER(19, 0)
+        - column:
+            constraints:
+              nullable: false
+            name: total
+            type: NUMBER(19, 0)
+        tableName: ${app_prefix}his_estat
+- changeSet:
+    id: init-table-23
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}metadada_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            name: multiplicitat
+            type: TINYINT
+        - column:
+            constraints:
+              nullable: false
+            name: activa
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: read_only
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: ordre
+            type: SMALLINT
+        - column:
+            name: descripcio
+            type: VARCHAR(1024)
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: no_aplica
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: valor
+            type: VARCHAR(255)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}metadada
+- changeSet:
+    id: init-table-24
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}mon_int_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            name: data
+            type: TIMESTAMP
+        - column:
+            name: descripcio
+            type: VARCHAR(1024)
+        - column:
+            name: tipus
+            type: VARCHAR(10)
+        - column:
+            name: temps_resposta
+            type: NUMBER(19, 0)
+        - column:
+            name: estat
+            type: VARCHAR(4)
+        - column:
+            name: codi_usuari
+            type: VARCHAR(64)
+        - column:
+            name: codi_entitat
+            type: VARCHAR(64)
+        - column:
+            name: error_descripcio
+            type: VARCHAR(1024)
+        - column:
+            name: excepcio_msg
+            type: VARCHAR(1024)
+        - column:
+            name: excepcio_stacktrace
+            type: VARCHAR(2048)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}mon_int
+- changeSet:
+    id: init-table-25
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}mon_int_param_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: mon_int_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(64)
+        - column:
+            name: descripcio
+            type: VARCHAR(1024)
+        tableName: ${app_prefix}mon_int_param
+- changeSet:
+    id: init-table-26
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}procediment_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            name: nom
+            type: VARCHAR(256)
+        - column:
+            name: codisia
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: ESTAT
+            type: VARCHAR(20)
+            defaultValue: VIGENT
+        - column:
+            name: id_unitat_organitzativa
+            type: ${pk_type}
+        - column:
+            name: entitat
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}procediment
+- changeSet:
+    id: init-table-27
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}registre_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: unitat_adm
+            type: VARCHAR(21)
+        - column:
+            name: unitat_adm_desc
+            type: VARCHAR(300)
+        - column:
+            constraints:
+              nullable: false
+            name: numero
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: data
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: identificador
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_codi
+            type: VARCHAR(255)
+        - column:
+            name: entitat_desc
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: oficina_codi
+            type: VARCHAR(21)
+        - column:
+            name: oficina_desc
+            type: VARCHAR(300)
+        - column:
+            constraints:
+              nullable: false
+            name: llibre_codi
+            type: VARCHAR(4)
+        - column:
+            name: llibre_desc
+            type: VARCHAR(255)
+        - column:
+            name: extracte
+            type: VARCHAR(240)
+        - column:
+            name: assumpte_tipus_codi
+            type: VARCHAR(16)
+        - column:
+            name: assumpte_tipus_desc
+            type: VARCHAR(100)
+        - column:
+            name: assumpte_codi
+            type: VARCHAR(16)
+        - column:
+            name: assumpte_desc
+            type: VARCHAR(255)
+        - column:
+            name: referencia
+            type: VARCHAR(16)
+        - column:
+            name: expedient_num
+            type: VARCHAR(80)
+        - column:
+            name: num_orig
+            type: VARCHAR(80)
+        - column:
+            constraints:
+              nullable: false
+            name: idioma_codi
+            type: VARCHAR(19)
+        - column:
+            name: idioma_desc
+            type: VARCHAR(100)
+        - column:
+            name: transport_tipus_codi
+            type: VARCHAR(20)
+        - column:
+            name: transport_tipus_desc
+            type: VARCHAR(100)
+        - column:
+            name: transport_num
+            type: VARCHAR(20)
+        - column:
+            name: usuari_codi
+            type: VARCHAR(20)
+        - column:
+            name: usuari_nom
+            type: VARCHAR(767)
+        - column:
+            name: usuari_contacte
+            type: VARCHAR(255)
+        - column:
+            name: aplicacio_codi
+            type: VARCHAR(255)
+        - column:
+            name: aplicacio_versio
+            type: VARCHAR(255)
+        - column:
+            name: docfis_codi
+            type: VARCHAR(19)
+        - column:
+            name: docfis_desc
+            type: VARCHAR(100)
+        - column:
+            name: observacions
+            type: VARCHAR(50)
+        - column:
+            name: proces_data
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: proces_estat
+            type: VARCHAR(64)
+        - column:
+            name: proces_intents
+            type: INTEGER
+        - column:
+            name: regla_id
+            type: ${pk_type}
+        - column:
+            name: proces_estat_sistra
+            type: VARCHAR(16)
+        - column:
+            name: sistra_id_tram
+            type: VARCHAR(20)
+        - column:
+            name: sistra_id_proc
+            type: VARCHAR(100)
+        - column:
+            name: data_orig
+            type: TIMESTAMP
+        - column:
+            name: oficina_orig_codi
+            type: VARCHAR(21)
+        - column:
+            name: oficina_orig_desc
+            type: VARCHAR(100)
+        - column:
+            name: justificant_arxiu_uuid
+            type: VARCHAR(256)
+        - column:
+            name: llegida
+            type: BOOLEAN
+        - column:
+            name: expedient_arxiu_uuid
+            type: VARCHAR(100)
+        - column:
+            name: data_tancament
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: arxiu_tancat
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            constraints:
+              nullable: false
+            name: arxiu_tancat_error
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: numero_copia
+            type: INTEGER
+        - column:
+            name: back_pendent_data
+            type: TIMESTAMP
+        - column:
+            name: back_rebuda_data
+            type: TIMESTAMP
+        - column:
+            name: back_proces_rebutj_error_data
+            type: TIMESTAMP
+        - column:
+            name: back_observacions
+            type: VARCHAR(4000)
+        - column:
+            name: back_retry_enviar_data
+            type: TIMESTAMP
+        - column:
+            name: procediment_codi
+            type: VARCHAR(64)
+        - column:
+            name: back_codi
+            type: VARCHAR(20)
+        - column:
+            name: presencial
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: pendent
+            type: BOOLEAN
+            defaultValueBoolean: true
+        - column:
+            name: exposa
+            type: CLOB
+        - column:
+            name: solicita
+            type: CLOB
+        - column:
+            name: motiu_rebuig
+            type: CLOB
+        - column:
+            name: justificant_descarregat
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: justificant_id
+            type: ${pk_type}
+        - column:
+            name: enviat_per_email
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: agafat_per
+            type: VARCHAR(64)
+        - column:
+            name: proces_error
+            type: CLOB
+        - column:
+            name: reactivat
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: sobreescriure
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: annexos_estat_esborrany
+            type: INTEGER
+            defaultValueNumeric: 0
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}registre
+- changeSet:
+    id: init-table-28
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}registre_annex_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: titol
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            name: fitxer_nom
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: fitxer_tamany
+            type: NUMBER(10, 0)
+        - column:
+            name: fitxer_mime
+            type: VARCHAR(100)
+        - column:
+            name: fitxer_arxiu_uuid
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: data_captura
+            type: TIMESTAMP
+        - column:
+            name: localitzacio
+            type: VARCHAR(80)
+        - column:
+            constraints:
+              nullable: false
+            name: origen_ciuadm
+            type: VARCHAR(1)
+        - column:
+            constraints:
+              nullable: false
+            name: nti_tipus_doc
+            type: VARCHAR(4)
+        - column:
+            name: sicres_tipus_doc
+            type: VARCHAR(2)
+        - column:
+            name: nti_elaboracio_estat
+            type: VARCHAR(4)
+        - column:
+            name: observacions
+            type: VARCHAR(50)
+        - column:
+            name: firma_mode
+            type: NUMBER(10, 0)
+        - column:
+            name: firma_csv
+            type: VARCHAR(256)
+        - column:
+            name: timestamp
+            type: VARCHAR(100)
+        - column:
+            name: validacio_ocsp
+            type: VARCHAR(100)
+        - column:
+            constraints:
+              nullable: false
+            name: registre_id
+            type: ${pk_type}
+        - column:
+            name: gesdoc_doc_id
+            type: VARCHAR(50)
+        - column:
+            name: sign_detalls_descarregat
+            type: BOOLEAN
+            defaultValueBoolean: false
+        - column:
+            name: meta_dades
+            type: VARCHAR(4000)
+        - column:
+            name: val_firma_estat
+            type: VARCHAR(64)
+        - column:
+            name: val_firma_error
+            type: VARCHAR(1000)
+        - column:
+            name: arxiu_estat
+            type: VARCHAR(20)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}registre_annex
+- changeSet:
+    id: init-table-29
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}registre_annex_firma_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: tipus
+            type: VARCHAR(30)
+        - column:
+            name: perfil
+            type: VARCHAR(30)
+        - column:
+            name: fitxer_nom
+            type: VARCHAR(256)
+        - column:
+            name: tipus_mime
+            type: VARCHAR(30)
+        - column:
+            name: csv_regulacio
+            type: VARCHAR(640)
+        - column:
+            constraints:
+              nullable: false
+            name: annex_id
+            type: ${pk_type}
+        - column:
+            name: autofirma
+            type: BOOLEAN
+        - column:
+            name: gesdoc_fir_id
+            type: VARCHAR(50)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}registre_annex_firma
+- changeSet:
+    id: init-table-30
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}registre_firma_detall_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: data
+            type: TIMESTAMP
+        - column:
+            name: responsable_nif
+            type: VARCHAR(30)
+        - column:
+            name: responsable_nom
+            type: VARCHAR(256)
+        - column:
+            name: emissor_certificat
+            type: VARCHAR(2000)
+        - column:
+            name: firma_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}registre_firma_detall
+- changeSet:
+    id: init-table-31
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}registre_inter_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(19)
+        - column:
+            name: doc_tipus
+            type: VARCHAR(4)
+        - column:
+            name: doc_num
+            type: VARCHAR(68)
+        - column:
+            name: nom
+            type: VARCHAR(255)
+        - column:
+            name: llinatge1
+            type: VARCHAR(255)
+        - column:
+            name: llinatge2
+            type: VARCHAR(255)
+        - column:
+            name: rao_social
+            type: VARCHAR(2000)
+        - column:
+            name: pais
+            type: VARCHAR(100)
+        - column:
+            name: pais_codi
+            type: VARCHAR(4)
+        - column:
+            name: provincia
+            type: VARCHAR(100)
+        - column:
+            name: provincia_codi
+            type: VARCHAR(4)
+        - column:
+            name: municipi
+            type: VARCHAR(100)
+        - column:
+            name: municipi_codi
+            type: VARCHAR(4)
+        - column:
+            name: adresa
+            type: VARCHAR(640)
+        - column:
+            name: codi_postal
+            type: VARCHAR(20)
+        - column:
+            name: email
+            type: VARCHAR(640)
+        - column:
+            name: telefon
+            type: VARCHAR(80)
+        - column:
+            name: email_hab
+            type: VARCHAR(640)
+        - column:
+            name: canal_pref
+            type: VARCHAR(8)
+        - column:
+            name: observacions
+            type: VARCHAR(640)
+        - column:
+            constraints:
+              nullable: false
+            name: registre_id
+            type: ${pk_type}
+        - column:
+            name: representant_id
+            type: ${pk_type}
+        - column:
+            name: representat_id
+            type: ${pk_type}
+        - column:
+            name: codi_dire
+            type: VARCHAR(64)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}registre_inter
+- changeSet:
+    id: init-table-32
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}regla_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            name: activa
+            type: BOOLEAN
+        - column:
+            name: assumpte_codi
+            type: VARCHAR(16)
+        - column:
+            name: descripcio
+            type: VARCHAR(1024)
+        - column:
+            constraints:
+              nullable: false
+            name: nom
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: ordre
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: tipus
+            type: VARCHAR(32)
+        - column:
+            name: unitat_codi
+            type: VARCHAR(9)
+        - column:
+            name: contrasenya
+            type: VARCHAR(64)
+        - column:
+            name: tipus_backoffice
+            type: VARCHAR(255)
+        - column:
+            name: intents
+            type: NUMBER(10, 0)
+        - column:
+            name: temps_entre_intents
+            type: NUMBER(10, 0)
+        - column:
+            name: url
+            type: VARCHAR(256)
+        - column:
+            name: usuari
+            type: VARCHAR(64)
+        - column:
+            name: bustia_id
+            type: NUMBER(19, 0)
+        - column:
+            name: metaexpedient_id
+            type: NUMBER(19, 0)
+        - column:
+            name: unitat_id
+            type: ${pk_type}
+        - column:
+            name: procediment_codi
+            type: VARCHAR(1024)
+        - column:
+            name: backoffice_codi
+            type: VARCHAR(20)
+        - column:
+            name: bustia_filtre_id
+            type: ${pk_type}
+        - column:
+            name: presencial
+            type: BOOLEAN
+        - column:
+            name: backoffice_desti_id
+            type: ${pk_type}
+        - column:
+            name: unitat_desti_id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entitat_id
+            type: ${pk_type}
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}regla
+- changeSet:
+    id: init-table-33
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}unitat_organitzativa_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: codi
+            type: VARCHAR(9)
+        - column:
+            constraints:
+              nullable: false
+            name: denominacio
+            type: VARCHAR(300)
+        - column:
+            name: nif_cif
+            type: VARCHAR(9)
+        - column:
+            name: codi_unitat_superior
+            type: VARCHAR(9)
+        - column:
+            name: codi_unitat_arrel
+            type: VARCHAR(9)
+        - column:
+            name: codi_dir3_entitat
+            type: VARCHAR(9)
+        - column:
+            name: data_creacio_oficial
+            type: TIMESTAMP
+        - column:
+            name: data_supressio_oficial
+            type: TIMESTAMP
+        - column:
+            name: data_extincio_funcional
+            type: TIMESTAMP
+        - column:
+            name: data_anulacio
+            type: TIMESTAMP
+        - column:
+            name: estat
+            type: VARCHAR(1)
+        - column:
+            name: codi_pais
+            type: VARCHAR(3)
+        - column:
+            name: codi_comunitat
+            type: VARCHAR(2)
+        - column:
+            name: codi_provincia
+            type: VARCHAR(2)
+        - column:
+            name: codi_postal
+            type: VARCHAR(5)
+        - column:
+            name: nom_localitat
+            type: VARCHAR(50)
+        - column:
+            name: localitat
+            type: VARCHAR(40)
+        - column:
+            name: adressa
+            type: VARCHAR(70)
+        - column:
+            name: tipus_via
+            type: NUMBER(19, 0)
+        - column:
+            name: nom_via
+            type: VARCHAR(200)
+        - column:
+            name: num_via
+            type: VARCHAR(100)
+        - column:
+            name: tipus_transicio
+            type: VARCHAR(12)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+        tableName: ${app_prefix}unitat_organitzativa
+- changeSet:
+    id: init-table-34
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: antiga_uo
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: nova_uo
+            type: ${pk_type}
+        tableName: ${app_prefix}uo_sinc_rel
+- changeSet:
+    id: init-table-35
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}usuari_pk
+            name: codi
+            type: VARCHAR(64)
+        - column:
+            name: nom
+            type: VARCHAR(200)
+        - column:
+            name: nif
+            type: VARCHAR(9)
+        - column:
+            name: email
+            type: VARCHAR(200)
+        - column:
+            name: email_alternatiu
+            type: VARCHAR(200)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: ca
+            name: idioma
+            type: VARCHAR(2)
+        - column:
+            name: inicialitzat
+            type: BOOLEAN
+        - column:
+            name: rebre_emails
+            type: BOOLEAN
+        - column:
+            name: emails_agrupats
+            type: BOOLEAN
+        - column:
+            name: rol_actual
+            type: VARCHAR(64)
+        - column:
+            constraints:
+              nullable: false
+            name: version
+            type: INTEGER
+        tableName: ${app_prefix}usuari
+- changeSet:
+    id: init-table-36
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}acl_class_pk
+            name: id
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: class
+            type: VARCHAR(100)
+        tableName: ${app_prefix}acl_class
+- changeSet:
+    id: init-table-37
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}acl_sid_pk
+            name: id
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: principal
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: sid
+            type: VARCHAR(100)
+        tableName: ${app_prefix}acl_sid
+- changeSet:
+    id: init-table-38
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}acl_object_identity_pk
+            name: id
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: object_id_class
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: object_id_identity
+            type: ${acl_pk_type}
+        - column:
+            name: parent_object
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: owner_sid
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: entries_inheriting
+            type: BOOLEAN
+        tableName: ${app_prefix}acl_object_identity
+- changeSet:
+    id: init-table-39
+    author: limit
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}acl_entry_pk
+            name: id
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: acl_object_identity
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: ace_order
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: sid
+            type: ${acl_pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: mask
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: granting
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: audit_success
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: audit_failure
+            type: BOOLEAN
+        tableName: ${app_prefix}acl_entry

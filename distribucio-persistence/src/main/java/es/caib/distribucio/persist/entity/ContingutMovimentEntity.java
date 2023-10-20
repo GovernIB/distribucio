@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa un canvi de lloc
  * d'un contenidor.
@@ -23,13 +25,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_cont_mov")
+@Table(name = BaseConfig.DB_PREFIX + "cont_mov")
 @Inheritance(strategy=InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contingut_id")
+	@JoinColumn(
+			name = "contingut_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_mov_contingut_fk"))
 	protected ContingutEntity contingut;
 	@Column(name = "origen_id")
 	protected Long origenId;
@@ -42,7 +46,7 @@ public class ContingutMovimentEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "remitent_codi",
-			foreignKey = @ForeignKey(name = "dis_remitent_contmov_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "remitent_contmov_fk"))
 	protected UsuariEntity remitent;
 	@Column(name = "comentari", length = 3940)
 	protected String comentari;

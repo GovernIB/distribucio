@@ -82,7 +82,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public EntitatDto findById(
 			Long id) throws NotFoundException;
 	
@@ -115,6 +115,7 @@ public interface EntitatService {
 	 * @param codiDir3
 	 * @return
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public EntitatDto findByCodiDir3(String codiDir3);
 
 	/**
@@ -132,7 +133,7 @@ public interface EntitatService {
 	 * 
 	 * @return El llistat d'entitats.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<EntitatDto> findAccessiblesUsuariActual();
 
 	/**
@@ -227,9 +228,7 @@ public interface EntitatService {
 
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public void evictEntitatsAccessiblesUsuari();
-	
-	
-	
+
 	/**
 	 * Afegeix l'entitat que està activada a l'aplicació per poder accedir a les 
 	 * seves propietats
@@ -237,8 +236,7 @@ public interface EntitatService {
 	 * @param entitatDto
 	 *            Atribut entitatDto
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("isAuthenticated()")
 	public void setConfigEntitat(EntitatDto entitatDto);
-
 
 }

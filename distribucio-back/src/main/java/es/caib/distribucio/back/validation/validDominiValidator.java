@@ -34,17 +34,17 @@ public class validDominiValidator implements ConstraintValidator<validDomini, Do
 		boolean validXml = true;
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
-	        SAXParser sp = spf.newSAXParser();
-	        XMLReader xr = sp.getXMLReader();
-	        xr.parse(new InputSource(new StringReader(value.getCadena())));
-        } catch (final Exception ex) {
-        	LOGGER.error("XML no vàlid", ex);
-        	validXml = false;
-        	context.disableDefaultConstraintViolation();
+			SAXParser sp = spf.newSAXParser();
+			XMLReader xr = sp.getXMLReader();
+			xr.parse(new InputSource(new StringReader(value.getCadena())));
+		} catch (final Exception ex) {
+			LOGGER.error("XML no vàlid", ex);
+			validXml = false;
+			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(MessageHelper.getInstance().getMessage("domini.form.camp.cadena-validacio"))
 			.addNode("cadena")
 			.addConstraintViolation();
-        }
+		}
 		return validXml;
 	}
 	

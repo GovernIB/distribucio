@@ -7,8 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.springframework.data.jpa.domain.AbstractPersistable;
-
 /**
  * Classe del model de dades que representa un SID d'una ACL.
  * 
@@ -16,7 +14,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
  */
 @Entity
 @Table(name = "dis_acl_sid")
-public class AclSidEntity extends AbstractPersistable<Long> {
+public class AclSidEntity extends DistribucioPersistable<Long> {
 
 	@Column(name = "principal", nullable = false)
 	private boolean principal;

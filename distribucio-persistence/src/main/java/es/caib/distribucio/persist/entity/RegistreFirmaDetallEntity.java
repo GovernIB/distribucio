@@ -6,16 +6,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 
 @Entity
-@Table(	name = "dis_registre_firma_detall")
+@Table(name = BaseConfig.DB_PREFIX + "registre_firma_detall")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreFirmaDetallEntity extends DistribucioAuditable<Long> {
 
@@ -27,9 +29,10 @@ public class RegistreFirmaDetallEntity extends DistribucioAuditable<Long> {
 	private String responsableNom;
 	@Column(name = "emissor_certificat", length = 2000)
 	private String emissorCertificat;
-
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "firma_id")
+	@JoinColumn(
+			name = "firma_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regfirdet_regfirma_fk"))
 	private RegistreAnnexFirmaEntity firma;
 
 	public static Builder getBuilder(

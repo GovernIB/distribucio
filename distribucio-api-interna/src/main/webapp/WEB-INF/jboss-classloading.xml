@@ -1,6 +1,0 @@
-<classloading xmlns="urn:jboss:classloading:1.0"
-		domain="distribucio-api-interna.war"
-		parent-domain="distribucio.ear"
-		export-all="NON_EMPTY"
-		import-all="true">
-</classloading>

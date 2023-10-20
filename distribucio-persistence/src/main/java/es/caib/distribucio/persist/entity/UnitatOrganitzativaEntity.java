@@ -16,28 +16,30 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.TipusTransicioEnumDto;
 
 
 @Entity
-@Table(name = "dis_unitat_organitzativa")
+@Table(name = BaseConfig.DB_PREFIX + "unitat_organitzativa")
 @EntityListeners(AuditingEntityListener.class)
 public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 
-
-	@JoinTable(name = "dis_uo_sinc_rel", joinColumns = {
-	@JoinColumn(name = "antiga_uo", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
-	@JoinColumn(name = "nova_uo", referencedColumnName = "id", nullable = false) })
+	@JoinTable(
+			name = BaseConfig.DB_PREFIX + "uo_sinc_rel",
+			joinColumns = {
+					@JoinColumn(name = "antiga_uo", referencedColumnName = "id", nullable = false)
+			},
+			inverseJoinColumns = {
+					@JoinColumn(name = "nova_uo", referencedColumnName = "id", nullable = false)
+			})
 	@ManyToMany
 	private List<UnitatOrganitzativaEntity> noves = new ArrayList<UnitatOrganitzativaEntity>();
-	
 	@ManyToMany(mappedBy = "noves")
 	private List<UnitatOrganitzativaEntity> antigues = new ArrayList<UnitatOrganitzativaEntity>();
-	
 	@Column(name = "tipus_transicio", length = 12)
 	@Enumerated(EnumType.STRING)
 	private TipusTransicioEnumDto tipusTransicio;
-
 	@Column(name = "codi", length = 9, nullable = false)
 	private String codi;
 	@Column(name = "denominacio", length = 300, nullable = false)
@@ -46,13 +48,10 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	private String nifCif;
 	@Column(name = "codi_unitat_superior", length = 9)
 	private String codiUnitatSuperior;
-
 	@Column(name = "codi_unitat_arrel", length = 9) 
 	private String codiUnitatArrel;
-	
 	@Column(name = "codi_dir3_entitat")
 	private String codiDir3Entitat;
-	
 	@Column(name = "data_creacio_oficial") 
 	private Date dataCreacioOficial;
 	@Column(name = "data_supressio_oficial") 
@@ -63,7 +62,6 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	private Date dataAnulacio;
 	@Column(name = "estat", length = 1) 
 	private String estat; // V: Vigente, E: Extinguido, A: Anulado, T: Transitorio
-
 	@Column(name = "codi_pais", length = 3) 
 	private String codiPais;
 	@Column(name = "codi_comunitat", length = 1) 
@@ -76,7 +74,6 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	private String nomLocalitat;
 	@Column(name = "localitat", length = 40) 
 	private String localitat;
-
 	@Column(name = "adressa", length = 70) 
 	private String adressa;
 	@Column(name = "tipus_via") 
@@ -85,12 +82,6 @@ public class UnitatOrganitzativaEntity extends DistribucioAuditable<Long>{
 	private String nomVia;
 	@Column(name = "num_via", length = 100) 
 	private String numVia;
-
-	
-	
-
-
-	
 
 	public List<UnitatOrganitzativaEntity> getNoves() {
 		return noves;

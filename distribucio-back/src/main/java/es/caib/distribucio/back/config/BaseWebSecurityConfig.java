@@ -19,6 +19,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class BaseWebSecurityConfig {
 
 	public static final String ROLE_PREFIX = "";
+	public static final String LOGOUT_URL = "/usuari/logout";
 
 	@Bean
 	public GrantedAuthorityDefaults grantedAuthorityDefaults() {

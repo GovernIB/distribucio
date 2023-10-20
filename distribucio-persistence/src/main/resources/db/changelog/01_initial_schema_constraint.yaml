@@ -1,4 +1,1044 @@
 databaseChangeLog:
 - changeSet:
     id: init-constraint-1
-    author: limit (generated)
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}dada_mult_uk_i
+        tableName: ${app_prefix}dada
+        columns:
+        - column:
+            name: metadada_id
+        - column:
+            name: registre_id
+        - column:
+            name: ordre
+        unique: true
+    - addUniqueConstraint:
+        columnNames: metadada_id, registre_id, ordre
+        constraintName: ${app_prefix}dada_mult_uk
+        forIndexName: ${app_prefix}dada_mult_uk_i
+        tableName: ${app_prefix}dada
+- changeSet:
+    id: init-constraint-2
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}entitat_codi_uk_i
+        tableName: ${app_prefix}entitat
+        columns:
+        - column:
+            name: codi
+        unique: true
+    - addUniqueConstraint:
+        columnNames: codi
+        constraintName: ${app_prefix}entitat_codi_uk
+        forIndexName: ${app_prefix}entitat_codi_uk_i
+        tableName: ${app_prefix}entitat
+- changeSet:
+    id: init-constraint-3
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}metadada_codi_uk_i
+        tableName: ${app_prefix}metadada
+        columns:
+        - column:
+            name: codi
+        unique: true
+    - addUniqueConstraint:
+        columnNames: codi
+        constraintName: ${app_prefix}metadada_codi_uk
+        forIndexName: ${app_prefix}metadada_codi_uk_i
+        tableName: ${app_prefix}metadada
+- changeSet:
+    id: init-constraint-4
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}registre_mult_uk_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: entitat_codi
+        - column:
+            name: llibre_codi
+        - column:
+            name: tipus
+        - column:
+            name: numero
+        - column:
+            name: data
+        - column:
+            name: numero_copia
+        unique: true
+    - addUniqueConstraint:
+        columnNames: entitat_codi, llibre_codi, tipus, numero, data, numero_copia
+        constraintName: ${app_prefix}registre_mult_uk
+        forIndexName: ${app_prefix}registre_mult_uk_i
+        tableName: ${app_prefix}registre
+- changeSet:
+    id: init-constraint-5
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}regla_mult_uk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: entitat_id
+        - column:
+            name: nom
+        - column:
+            name: tipus
+        - column:
+            name: assumpte_codi
+        unique: true
+    - addUniqueConstraint:
+        columnNames: entitat_id, nom, tipus, assumpte_codi
+        constraintName: ${app_prefix}regla_mult_uk
+        forIndexName: ${app_prefix}regla_mult_uk_i
+        tableName: ${app_prefix}regla
+- changeSet:
+    id: init-constraint-6
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}bustia_fav_mult_uk_i
+        tableName: ${app_prefix}bustia_favorit
+        columns:
+        - column:
+            name: bustia_id
+        - column:
+            name: usuari_codi
+        unique: true
+    - addUniqueConstraint:
+        columnNames: bustia_id, usuari_codi
+        constraintName: ${app_prefix}bustia_fav_mult_uk
+        forIndexName: ${app_prefix}bustia_fav_mult_uk_i
+        tableName: ${app_prefix}bustia_favorit
+- changeSet:
+    id: init-constraint-7
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}alerta_contingut_fk
+        baseTableName: ${app_prefix}alerta
+        baseColumnNames: contingut_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}alerta_contingut_fk_i
+        tableName: ${app_prefix}alerta
+        columns:
+        - column:
+            name: contingut_id
+- changeSet:
+    id: init-constraint-8
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}backoffice_entitat_fk
+        baseTableName: ${app_prefix}backoffice
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}backoffice_entitat_fk_i
+        tableName: ${app_prefix}backoffice
+        columns:
+        - column:
+            name: entitat_id
+- changeSet:
+    id: init-constraint-9
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_def_ent_fk
+        baseTableName: ${app_prefix}bustia_default
+        baseColumnNames: entitat
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_def_ent_fk_i
+        tableName: ${app_prefix}bustia_default
+        columns:
+        - column:
+            name: entitat
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_def_bst_fk
+        baseTableName: ${app_prefix}bustia_default
+        baseColumnNames: bustia
+        referencedTableName: ${app_prefix}bustia
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_def_bst_fk_i
+        tableName: ${app_prefix}bustia_default
+        columns:
+        - column:
+            name: bustia
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_def_usr_fk
+        baseTableName: ${app_prefix}bustia_default
+        baseColumnNames: usuari
+        referencedTableName: ${app_prefix}usuari
+        referencedColumnNames: codi
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_def_usr_fk_i
+        tableName: ${app_prefix}bustia_default
+        columns:
+        - column:
+            name: usuari
+- changeSet:
+    id: init-constraint-10
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_unitat_org_fk
+        baseTableName: ${app_prefix}bustia
+        baseColumnNames: unitat_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_unitat_org_fk_i
+        tableName: ${app_prefix}bustia
+        columns:
+        - column:
+            name: unitat_id
+- changeSet:
+    id: init-constraint-11
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}config_type_fk
+        baseTableName: ${app_prefix}config
+        baseColumnNames: type_code
+        referencedTableName: ${app_prefix}config_type
+        referencedColumnNames: code
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}config_type_fk_i
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: type_code
+- changeSet:
+    id: init-constraint-12
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_comment_cont_fk
+        baseTableName: ${app_prefix}cont_comment
+        baseColumnNames: contingut_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_comment_cont_fk_i
+        tableName: ${app_prefix}cont_comment
+        columns:
+        - column:
+            name: contingut_id
+- changeSet:
+    id: init-constraint-13
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}contingut_pare_fk
+        baseTableName: ${app_prefix}contingut
+        baseColumnNames: pare_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}contingut_pare_fk_i
+        tableName: ${app_prefix}contingut
+        columns:
+        - column:
+            name: pare_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}contingut_entitat_fk
+        baseTableName: ${app_prefix}contingut
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}contingut_entitat_fk_i
+        tableName: ${app_prefix}contingut
+        columns:
+        - column:
+            name: entitat_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}contingut_contmov_fk
+        baseTableName: ${app_prefix}contingut
+        baseColumnNames: contmov_id
+        referencedTableName: ${app_prefix}cont_mov
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}contingut_contmov_fk_i
+        tableName: ${app_prefix}contingut
+        columns:
+        - column:
+            name: contmov_id
+- changeSet:
+    id: init-constraint-14
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_log_contingut_fk
+        baseTableName: ${app_prefix}cont_log
+        baseColumnNames: contingut_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_log_contingut_fk_i
+        tableName: ${app_prefix}cont_log
+        columns:
+        - column:
+            name: contingut_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_log_contmov_fk
+        baseTableName: ${app_prefix}cont_log
+        baseColumnNames: contmov_id
+        referencedTableName: ${app_prefix}cont_mov
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_log_contmov_fk_i
+        tableName: ${app_prefix}cont_log
+        columns:
+        - column:
+            name: contmov_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_log_pare_fk
+        baseTableName: ${app_prefix}cont_log
+        baseColumnNames: pare_id
+        referencedTableName: ${app_prefix}cont_log
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_log_pare_fk_i
+        tableName: ${app_prefix}cont_log
+        columns:
+        - column:
+            name: pare_id
+- changeSet:
+    id: init-constraint-15
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_log_param_conlog_fk
+        baseTableName: ${app_prefix}cont_log_param
+        baseColumnNames: cont_log_id
+        referencedTableName: ${app_prefix}cont_log
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_log_param_conlog_fk_i
+        tableName: ${app_prefix}cont_log_param
+        columns:
+        - column:
+            name: cont_log_id
+- changeSet:
+    id: init-constraint-16
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_mov_email_bustia_fk
+        baseTableName: ${app_prefix}cont_mov_email
+        baseColumnNames: bustia_id
+        referencedTableName: ${app_prefix}bustia
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_mov_email_bustia_fk_i
+        tableName: ${app_prefix}cont_mov_email
+        columns:
+        - column:
+            name: bustia_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_mov_email_conmov_fk
+        baseTableName: ${app_prefix}cont_mov_email
+        baseColumnNames: contingut_moviment_id
+        referencedTableName: ${app_prefix}cont_mov
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_mov_email_conmov_fk_i
+        tableName: ${app_prefix}cont_mov_email
+        columns:
+        - column:
+            name: contingut_moviment_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_mov_email_cont_fk
+        baseTableName: ${app_prefix}cont_mov_email
+        baseColumnNames: contingut_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_mov_email_cont_fk_i
+        tableName: ${app_prefix}cont_mov_email
+        columns:
+        - column:
+            name: contingut_id
+- changeSet:
+    id: init-constraint-17
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}cont_mov_contingut_fk
+        baseTableName: ${app_prefix}cont_mov
+        baseColumnNames: contingut_id
+        referencedTableName: ${app_prefix}contingut
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}cont_mov_contingut_fk_i
+        tableName: ${app_prefix}cont_mov
+        columns:
+        - column:
+            name: contingut_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}remitent_contmov_fk
+        baseTableName: ${app_prefix}cont_mov
+        baseColumnNames: remitent_codi
+        referencedTableName: ${app_prefix}usuari
+        referencedColumnNames: codi
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}remitent_contmov_fk_i
+        tableName: ${app_prefix}cont_mov
+        columns:
+        - column:
+            name: remitent_codi
+- changeSet:
+    id: init-constraint-18
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}dada_metadada_fk
+        baseTableName: ${app_prefix}dada
+        baseColumnNames: metadada_id
+        referencedTableName: ${app_prefix}metadada
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}dada_metadada_fk_i
+        tableName: ${app_prefix}dada
+        columns:
+        - column:
+            name: metadada_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}dada_registre_fk
+        baseTableName: ${app_prefix}dada
+        baseColumnNames: registre_id
+        referencedTableName: ${app_prefix}registre
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}dada_registre_fk_i
+        tableName: ${app_prefix}dada
+        columns:
+        - column:
+            name: registre_id
+- changeSet:
+    id: init-constraint-19
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}domini_entitat_fk
+        baseTableName: ${app_prefix}domini
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}domini_entitat_fk_i
+        tableName: ${app_prefix}domini
+        columns:
+        - column:
+            name: entitat_id
+- changeSet:
+    id: init-constraint-20
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_anot_entitat_fk
+        baseTableName: ${app_prefix}his_anotacio
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_anot_entitat_fk_i
+        tableName: ${app_prefix}his_anotacio
+        columns:
+        - column:
+            name: entitat_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_anot_unitat_fk
+        baseTableName: ${app_prefix}his_anotacio
+        baseColumnNames: unitat_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_anot_unitat_fk_i
+        tableName: ${app_prefix}his_anotacio
+        columns:
+        - column:
+            name: unitat_id
+- changeSet:
+    id: init-constraint-21
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_bustia_entitat_fk
+        baseTableName: ${app_prefix}his_bustia
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_bustia_entitat_fk_i
+        tableName: ${app_prefix}his_bustia
+        columns:
+        - column:
+            name: entitat_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_bustia_unitat_fk
+        baseTableName: ${app_prefix}his_bustia
+        baseColumnNames: unitat_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_bustia_unitat_fk_i
+        tableName: ${app_prefix}his_bustia
+        columns:
+        - column:
+            name: unitat_id
+- changeSet:
+    id: init-constraint-22
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_estat_entitat_fk
+        baseTableName: ${app_prefix}his_estat
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_estat_entitat_fk_i
+        tableName: ${app_prefix}his_estat
+        columns:
+        - column:
+            name: entitat_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}his_estat_unitat_fk
+        baseTableName: ${app_prefix}his_estat
+        baseColumnNames: unitat_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}his_estat_unitat_fk_i
+        tableName: ${app_prefix}his_estat
+        columns:
+        - column:
+            name: unitat_id
+- changeSet:
+    id: init-constraint-23
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}metadada_entitat_fk
+        baseTableName: ${app_prefix}metadada
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}metadada_entitat_fk_i
+        tableName: ${app_prefix}metadada
+        columns:
+        - column:
+            name: entitat_id
+- changeSet:
+    id: init-constraint-24
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}mon_int_param_monint_fk
+        baseTableName: ${app_prefix}mon_int_param
+        baseColumnNames: mon_int_id
+        referencedTableName: ${app_prefix}mon_int
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}mon_int_param_monint_fk_i
+        tableName: ${app_prefix}mon_int_param
+        columns:
+        - column:
+            name: mon_int_id
+- changeSet:
+    id: init-constraint-25
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}procediment_entitat_fk
+        baseTableName: ${app_prefix}procediment
+        baseColumnNames: entitat
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}procediment_entitat_fk_i
+        tableName: ${app_prefix}procediment
+        columns:
+        - column:
+            name: entitat
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}procediment_unitat_fk
+        baseTableName: ${app_prefix}procediment
+        baseColumnNames: id_unitat_organitzativa
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}procediment_unitat_fk_i
+        tableName: ${app_prefix}procediment
+        columns:
+        - column:
+            name: id_unitat_organitzativa
+- changeSet:
+    id: init-constraint-26
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}registre_annex_reg_fk
+        baseTableName: ${app_prefix}registre_annex
+        baseColumnNames: registre_id
+        referencedTableName: ${app_prefix}registre
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}registre_annex_reg_fk_i
+        tableName: ${app_prefix}registre_annex
+        columns:
+        - column:
+            name: registre_id
+- changeSet:
+    id: init-constraint-27
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}reganefir_regane_fk
+        baseTableName: ${app_prefix}registre_annex_firma
+        baseColumnNames: annex_id
+        referencedTableName: ${app_prefix}registre_annex
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}reganefir_regane_fk_i
+        tableName: ${app_prefix}registre_annex_firma
+        columns:
+        - column:
+            name: annex_id
+- changeSet:
+    id: init-constraint-28
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}registre_justificant_fk
+        baseTableName: ${app_prefix}registre
+        baseColumnNames: justificant_id
+        referencedTableName: ${app_prefix}registre_annex
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}registre_justificant_fk_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: justificant_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}registre_regla_fk
+        baseTableName: ${app_prefix}registre
+        baseColumnNames: regla_id
+        referencedTableName: ${app_prefix}regla
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}registre_regla_fk_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: regla_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}registre_agafatper_fk
+        baseTableName: ${app_prefix}registre
+        baseColumnNames: agafat_per
+        referencedTableName: ${app_prefix}usuari
+        referencedColumnNames: codi
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}registre_agafatper_fk_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: agafat_per
+- changeSet:
+    id: init-constraint-29
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regfirdet_regfirma_fk
+        baseTableName: ${app_prefix}registre_firma_detall
+        baseColumnNames: firma_id
+        referencedTableName: ${app_prefix}registre_annex_firma
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regfirdet_regfirma_fk_i
+        tableName: ${app_prefix}registre_firma_detall
+        columns:
+        - column:
+            name: firma_id
+- changeSet:
+    id: init-constraint-30
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}reginter_registre_fk
+        baseTableName: ${app_prefix}registre_inter
+        baseColumnNames: registre_id
+        referencedTableName: ${app_prefix}registre
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}reginter_registre_fk_i
+        tableName: ${app_prefix}registre_inter
+        columns:
+        - column:
+            name: registre_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}reginter_representant_fk
+        baseTableName: ${app_prefix}registre_inter
+        baseColumnNames: representant_id
+        referencedTableName: ${app_prefix}registre_inter
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}reginter_representant_fk_i
+        tableName: ${app_prefix}registre_inter
+        columns:
+        - column:
+            name: representant_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}reginter_representat_fk
+        baseTableName: ${app_prefix}registre_inter
+        baseColumnNames: representat_id
+        referencedTableName: ${app_prefix}registre_inter
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}reginter_representat_fk_i
+        tableName: ${app_prefix}registre_inter
+        columns:
+        - column:
+            name: representat_id
+- changeSet:
+    id: init-constraint-31
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_uofiltre_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: unitat_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_uofiltre_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: unitat_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_bustiafiltre_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: bustia_filtre_id
+        referencedTableName: ${app_prefix}bustia
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_bustiafiltre_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: bustia_filtre_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_bodesti_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: backoffice_desti_id
+        referencedTableName: ${app_prefix}backoffice
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_bodesti_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: backoffice_desti_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_bustia_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: bustia_id
+        referencedTableName: ${app_prefix}bustia
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_bustia_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: bustia_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_uodesti_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: unitat_desti_id
+        referencedTableName: ${app_prefix}unitat_organitzativa
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_uodesti_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: unitat_desti_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}regla_entitat_fk
+        baseTableName: ${app_prefix}regla
+        baseColumnNames: entitat_id
+        referencedTableName: ${app_prefix}entitat
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}regla_entitat_fk_i
+        tableName: ${app_prefix}regla
+        columns:
+        - column:
+            name: entitat_id
+- changeSet:
+    id: init-constraint-32
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_fav_bustia_fk
+        baseTableName: ${app_prefix}bustia_favorit
+        baseColumnNames: bustia_id
+        referencedTableName: ${app_prefix}bustia
+        referencedColumnNames: id
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_fav_bustia_fk_i
+        tableName: ${app_prefix}bustia_favorit
+        columns:
+        - column:
+            name: bustia_id
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}bustia_fav_usuari_fk
+        baseTableName: ${app_prefix}bustia_favorit
+        baseColumnNames: usuari_codi
+        referencedTableName: ${app_prefix}usuari
+        referencedColumnNames: codi
+        validate: true
+    - createIndex:
+        indexName: ${app_prefix}bustia_fav_usuari_fk_i
+        tableName: ${app_prefix}bustia_favorit
+        columns:
+        - column:
+            name: usuari_codi
+- changeSet:
+    id: init-constraint-33
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}avis_data_inici_i
+        tableName: ${app_prefix}avis
+        columns:
+        - column:
+            name: data_inici
+    - createIndex:
+        indexName: ${app_prefix}avis_data_final_i
+        tableName: ${app_prefix}avis
+        columns:
+        - column:
+            name: data_final
+    - createIndex:
+        indexName: ${app_prefix}contingut_id_esborrat_i
+        tableName: ${app_prefix}contingut
+        columns:
+        - column:
+            name: id
+        - column:
+            name: esborrat
+    - createIndex:
+        indexName: ${app_prefix}registre_pendent_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: pendent
+    - createIndex:
+        indexName: ${app_prefix}registre_exparxuuid_id_i
+        tableName: ${app_prefix}registre
+        columns:
+        - column:
+            name: expedient_arxiu_uuid
+        - column:
+            name: id
+    - createIndex:
+        indexName: ${app_prefix}his_anot_data_i
+        tableName: ${app_prefix}his_anotacio
+        columns:
+        - column:
+            name: data
+    - createIndex:
+        indexName: ${app_prefix}his_estat_data_i
+        tableName: ${app_prefix}his_estat
+        columns:
+        - column:
+            name: data
+    - createIndex:
+        indexName: ${app_prefix}his_bustia_data_i
+        tableName: ${app_prefix}his_bustia
+        columns:
+        - column:
+            name: data
+- changeSet:
+    id: init-constraint-34
+    author: limit
+    changes:
+    - createIndex:
+        indexName: ${app_prefix}acl_class_uk_i
+        tableName: ${app_prefix}acl_class
+        columns:
+        - column:
+            name: class
+        unique: true
+    - addUniqueConstraint:
+        constraintName: ${app_prefix}acl_class_uk
+        forIndexName: ${app_prefix}acl_class_uk_i
+        tableName: ${app_prefix}acl_class
+        columnNames: class
+    - createIndex:
+        indexName: ${app_prefix}acl_sid_uk_i
+        tableName: ${app_prefix}acl_sid
+        columns:
+        - column:
+            name: sid
+        - column:
+            name: principal
+        unique: true
+    - addUniqueConstraint:
+        constraintName: ${app_prefix}acl_sid_uk
+        forIndexName: ${app_prefix}acl_sid_uk_i
+        tableName: ${app_prefix}acl_sid
+        columnNames: sid, principal
+    - createIndex:
+        indexName: ${app_prefix}acl_oid_uk_i
+        tableName: ${app_prefix}acl_object_identity
+        columns:
+        - column:
+            name: object_id_class
+        - column:
+            name: object_id_identity
+        unique: true
+    - addUniqueConstraint:
+        constraintName: ${app_prefix}acl_oid_uk
+        forIndexName: ${app_prefix}acl_oid_uk_i
+        tableName: ${app_prefix}acl_object_identity
+        columnNames: object_id_class, object_id_identity
+    - createIndex:
+        indexName: ${app_prefix}acl_entry_uk_i
+        tableName: ${app_prefix}acl_entry
+        columns:
+        - column:
+            name: acl_object_identity
+        - column:
+            name: ace_order
+        unique: true
+    - addUniqueConstraint:
+        constraintName: ${app_prefix}acl_entry_uk
+        tableName: ${app_prefix}acl_entry
+        columnNames: acl_object_identity, ace_order
+- changeSet:
+    id: init-constraint-35
+    author: limit
+    changes:
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}acl_oid_parent_fk
+        baseTableName: ${app_prefix}acl_object_identity
+        baseColumnNames: parent_object
+        referencedTableName: ${app_prefix}acl_object_identity
+        referencedColumnNames: id
+    - createIndex:
+        indexName: ${app_prefix}acl_oid_parent_fk_i
+        tableName: ${app_prefix}acl_object_identity
+        columns:
+        - column:
+            name: parent_object
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}acl_oid_class_fk
+        baseTableName: ${app_prefix}acl_object_identity
+        baseColumnNames: object_id_class
+        referencedTableName: ${app_prefix}acl_class
+        referencedColumnNames: id
+    - createIndex:
+        indexName: ${app_prefix}acl_oid_owner_fk_i
+        tableName: ${app_prefix}acl_object_identity
+        columns:
+        - column:
+            name: owner_sid
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}acl_oid_owner_fk
+        baseTableName: ${app_prefix}acl_object_identity
+        baseColumnNames: owner_sid
+        referencedTableName: ${app_prefix}acl_sid
+        referencedColumnNames: id
+    - createIndex:
+        indexName: ${app_prefix}acl_entry_object_fk_i
+        tableName: ${app_prefix}acl_entry
+        columns:
+        - column:
+            name: acl_object_identity
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}acl_entry_object_fk
+        baseTableName: ${app_prefix}acl_entry
+        baseColumnNames: acl_object_identity
+        referencedTableName: ${app_prefix}acl_object_identity
+        referencedColumnNames: id
+    - createIndex:
+        indexName: ${app_prefix}acl_entry_acl_fk_i
+        tableName: ${app_prefix}acl_entry
+        columns:
+        - column:
+            name: sid
+    - addForeignKeyConstraint:
+        constraintName: ${app_prefix}acl_entry_acl_fk
+        baseTableName: ${app_prefix}acl_entry
+        baseColumnNames: sid
+        referencedTableName: ${app_prefix}acl_sid
+        referencedColumnNames: id

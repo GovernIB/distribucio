@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
 
 /**
@@ -24,7 +25,7 @@ import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_backoffice")
+@Table(name = BaseConfig.DB_PREFIX + "backoffice")
 @EntityListeners(AuditingEntityListener.class)
 public class BackofficeEntity extends DistribucioAuditable<Long> {
 
@@ -50,7 +51,7 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "ipa_entitat_ipa_backoffice_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "backoffice_entitat_fk"))
 	private EntitatEntity entitat;
 
 	public String getCodi() {

@@ -3,11 +3,11 @@ package es.caib.distribucio.back.helper;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 
-@JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class JsonDades {
 
     private Map<String, List<JsonDadesUo>> jsonDadesUoMap;

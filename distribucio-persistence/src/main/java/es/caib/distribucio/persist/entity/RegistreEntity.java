@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
@@ -42,17 +43,13 @@ import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_registre",
+@Table(name = BaseConfig.DB_PREFIX + "registre",
 		uniqueConstraints = {
 				@UniqueConstraint(
-						name = "dis_reg_mult_uk",
-						columnNames = {
-								"entitat_codi",
-								"llibre_codi",
-								"tipus",
-								"numero",
-								"data",
-								"numero_copia"})})
+						name = BaseConfig.DB_PREFIX + "registre_mult_uk",
+						columnNames = { "entitat_codi", "llibre_codi", "tipus", "numero", "data", "numero_copia"})
+		}
+)
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreEntity extends ContingutEntity {
 
@@ -189,7 +186,9 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "justificant_descarregat")
 	private boolean justificantDescarregat;
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "justificant_id")
+	@JoinColumn(
+			name = "justificant_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_justificant_fk"))
 	private RegistreAnnexEntity justificant;
 	
 	
@@ -210,7 +209,7 @@ public class RegistreEntity extends ContingutEntity {
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "regla_id",
-			foreignKey = @ForeignKey(name = "dis_regla_registre_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_regla_fk"))
 	private ReglaEntity regla;
 	@Column(name = "llegida")
 	private Boolean llegida;
@@ -230,7 +229,7 @@ public class RegistreEntity extends ContingutEntity {
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "agafat_per",
-			foreignKey = @ForeignKey(name = "dis_agafatper_registre_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_agafatper_fk"))
 	protected UsuariEntity agafatPer;
 	
 

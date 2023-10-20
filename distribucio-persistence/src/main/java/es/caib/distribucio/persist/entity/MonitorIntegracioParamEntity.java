@@ -6,13 +6,15 @@ package es.caib.distribucio.persist.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 
 /**
  * Classe del model de dades que representa un MonitorIntegracio.
@@ -20,13 +22,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name="dis_mon_int_param")
+@Table(name = BaseConfig.DB_PREFIX + "mon_int_param")
 @EntityListeners(AuditingEntityListener.class)
-public class MonitorIntegracioParamEntity extends AbstractPersistable<Long> {
-
+public class MonitorIntegracioParamEntity extends DistribucioPersistable<Long> {
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "mon_int_id")
+	@JoinColumn(
+			name = "mon_int_id",
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "mon_int_param_monint_fk"))
 	private MonitorIntegracioEntity monitorIntegracio;
 	
 	@Column(name = "nom", length = 256, nullable = false)

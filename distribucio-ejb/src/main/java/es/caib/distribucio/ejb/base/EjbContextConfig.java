@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 	BaseConfig.BASE_PACKAGE + ".logic",
 	BaseConfig.BASE_PACKAGE + ".persist"
 })
+//@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 @PropertySource(ignoreResourceNotFound = true, value = {
 		"classpath:application.properties",
 		"file://${" + BaseConfig.APP_PROPERTIES + "}",

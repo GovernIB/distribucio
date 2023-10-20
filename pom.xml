@@ -16,6 +16,7 @@
 		<liquibase.version>4.4.3</liquibase.version>
 		<openapi.version>1.7.0</openapi.version>
 		<orika.version>1.5.4</orika.version>
+		<jerseyclient.version>1.19.3</jerseyclient.version>
 		<keycloak.version>22.0.4</keycloak.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<arxiu.api.version>2.0.27</arxiu.api.version>
@@ -29,47 +30,10 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 		<skipTests>true</skipTests>
-		<!-- <github.global.server>github</github.global.server>
-		<spring.version>3.2.17.RELEASE</spring.version>
-		<spring-security.version>3.2.9.RELEASE</spring-security.version>
-		<spring-data-jpa.version>1.6.6.RELEASE</spring-data-jpa.version>
-		<hibernate.version>3.6.5.Final</hibernate.version>
-		<hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
-		<ehcache.version>2.10.1</ehcache.version>
-		<orika.version>1.1.7</orika.version>
-		<groovy.version>2.1.6</groovy.version>
-		<jackson.version>2.6.3</jackson.version>
-		<xdocreport.version>2.0.2</xdocreport.version>
-		<bouncycastle.version>1.46</bouncycastle.version>
-		<cxf.version>2.2.12</cxf.version>
-		<portafib.version>1.1</portafib.version>
-		<regweb.version>3.0.5</regweb.version>
-		<dir3caib.version>1.0.7</dir3caib.version>
-		<arxiu.api.version>2.0.27</arxiu.api.version>
-		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
-		<slf4j.version>1.5.11</slf4j.version>
-		<maven.test.skip>true</maven.test.skip>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<version.revision>50</version.revision>
-		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2023.09.07 07:00h</version.date> -->
 	</properties>
 	<modules>
-		<!--module>distribucio-core</module>
-		<module>distribucio-war</module>
 		<module>distribucio-api-externa</module>
-		<module>distribucio-core-api</module>
-		<module>distribucio-ear</module>
-		<module>distribucio-lib-common</module>
-		<module>distribucio-plugin</module>
-		<module>distribucio-plugin-impl</module>
-		<module>distribucio-ws-client</module>
-		<module>distribucio-backoffice-utils</module>
 		<module>distribucio-api-interna</module>
-		<module>distribucio-rest-client</module-->
 		<module>distribucio-back</module>
 		<module>distribucio-ear</module>
 		<module>distribucio-persistence</module>
@@ -78,6 +42,9 @@
 		<module>distribucio-service</module>
 		<module>distribucio-service-intf</module>
 		<module>distribucio-ejb</module>
+		<module>distribucio-ws-client</module>
+		<module>distribucio-rest-client</module>
+		<module>distribucio-backoffice-utils</module>
 	</modules>
 	<build>
 		<plugins>
@@ -115,22 +82,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>get-the-git-infos</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-						<phase>validate</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-				</configuration>
-			</plugin> -->
 		</plugins>
 	</build>
 	<distributionManagement>

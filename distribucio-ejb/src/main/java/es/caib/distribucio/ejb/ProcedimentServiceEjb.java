@@ -1,8 +1,14 @@
 package es.caib.distribucio.ejb;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import lombok.experimental.Delegate;
 
@@ -18,6 +24,27 @@ public class ProcedimentServiceEjb extends AbstractServiceEjb<ProcedimentService
 
 	@Delegate
 	private ProcedimentService delegateService = null;
+
+	@Override
+	public PaginaDto<ProcedimentDto> findAmbFiltre(Long entitatId, ProcedimentFiltreDto filtre,
+			PaginacioParamsDto paginacioParams) {
+		return delegateService.findAmbFiltre(entitatId, filtre, paginacioParams);
+	}
+
+	@Override
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
+		delegateService.findAndUpdateProcediments(entitatId);
+	}
+
+	@Override
+	public ProcedimentDto findByCodiSia(Long entitatId, String codiSia) {
+		return delegateService.findByCodiSia(entitatId, codiSia);		
+	}
+
+	@Override
+	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom) {
+		return delegateService.findByNomOrCodiSia(entitatId, nom);
+	}
 
 	protected void setDelegateService(ProcedimentService delegateService) {
 		this.delegateService = delegateService;

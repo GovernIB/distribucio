@@ -78,13 +78,16 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 				BasicAuthenticationFilter.class);
 		http.authenticationProvider(preauthAuthProvider());
 		http.logout((lo) -> lo.addLogoutHandler(getLogoutHandler()).
-				logoutRequestMatcher(new AntPathRequestMatcher("/logout")).
+				logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_URL)).
 				invalidateHttpSession(true).
 				logoutSuccessUrl("/").
 				permitAll(false));
 		http.authorizeHttpRequests().
 				requestMatchers(publicRequestMatchers()).permitAll().
 				anyRequest().authenticated();
+		http.headers().frameOptions().sameOrigin();
+		http.csrf().disable();
+		http.cors();
 		return http.build();
 	}
 

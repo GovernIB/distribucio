@@ -727,11 +727,11 @@ public class ContingutController extends BaseUserController {
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-	    binder.registerCustomEditor(
-	    		Date.class,
-	    		new CustomDateEditor(
-	    				new SimpleDateFormat("dd/MM/yyyy"),
-	    				true));
+		binder.registerCustomEditor(
+				Date.class,
+				new CustomDateEditor(
+						new SimpleDateFormat("dd/MM/yyyy"),
+						true));
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ContingutController.class);

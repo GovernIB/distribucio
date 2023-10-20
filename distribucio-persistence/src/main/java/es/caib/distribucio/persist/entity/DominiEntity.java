@@ -14,13 +14,15 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa un domini.
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(name = "dis_domini")
+@Table(name = BaseConfig.DB_PREFIX + "domini")
 @EntityListeners(AuditingEntityListener.class)
 public class DominiEntity extends DistribucioAuditable<Long> {
 
@@ -40,7 +42,7 @@ public class DominiEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "dis_entitat_domini_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "domini_entitat_fk"))
 	protected EntitatEntity entitat;
 
 	public String getCodi() {

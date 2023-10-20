@@ -16,6 +16,7 @@ import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;;
 
@@ -26,9 +27,11 @@ import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;;
  */
 @Entity
 @Table(
-		name = "dis_metadada",
+		name = BaseConfig.DB_PREFIX + "metadada",
 		uniqueConstraints = {
-				@UniqueConstraint(name = "dis_metadada_codi_uk", columnNames = { "codi" })
+				@UniqueConstraint(
+						name = BaseConfig.DB_PREFIX + "metadada_codi_uk",
+						columnNames = { "codi" })
 		}
 )
 @EntityListeners(AuditingEntityListener.class)
@@ -58,7 +61,7 @@ public class MetaDadaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat_id",
-			foreignKey = @ForeignKey(name = "dis_metadada_entitat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "metadada_entitat_fk"))
 	protected EntitatEntity entitat;
 	
 	@Version

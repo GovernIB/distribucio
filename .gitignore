@@ -6,3 +6,4 @@ target/
 .classpath
 .project
 /docker-compose.yml
+/.idea/

@@ -10,7 +10,6 @@ import es.caib.distribucio.logic.intf.monitor.MonitorTascaInfo;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface MonitorTasquesService {
-	
 
 	public MonitorTascaInfo addTasca(String codiTasca);
 
@@ -30,6 +29,6 @@ public interface MonitorTasquesService {
 	 * configuració dels paràmetres i la configuracío.
 	 * 
 	 */
-	public void reiniciarTasquesEnSegonPla();	
+	public void reiniciarTasquesEnSegonPla();
 
 }

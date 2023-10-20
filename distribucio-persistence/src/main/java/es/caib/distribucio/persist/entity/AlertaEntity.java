@@ -14,16 +14,18 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa una alerta d'error en segón pla.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_alerta")
+@Table(name = BaseConfig.DB_PREFIX + "alerta")
 @EntityListeners(AuditingEntityListener.class)
 public class AlertaEntity extends DistribucioAuditable<Long> {
-	
+
 	@Column(name = "text", length = 256, nullable = false)
 	private String text;
 	@Column(name = "error", length = 2048)
@@ -33,22 +35,18 @@ public class AlertaEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = true, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "contingut_id",
-			foreignKey = @ForeignKey(name = "dis_contingut_alerta_fk"))
+			foreignKey = @ForeignKey(name = "dis_alerta_contingut_fk"))
 	protected ContingutEntity contingut;
-	
-	
+
 	public String getText() {
 		return text;
 	}
-	
 	public String getError() {
 		return error;
 	}
-
 	public Boolean getLlegida() {
 		return llegida;
 	}
-	
 	public ContingutEntity getContingut() {
 		return contingut;
 	}

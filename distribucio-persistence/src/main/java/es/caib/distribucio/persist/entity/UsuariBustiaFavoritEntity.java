@@ -14,19 +14,22 @@ import javax.persistence.UniqueConstraint;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 /**
  * Classe del model de dades que representa una bústia favorit d'un usuari
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_bustia_favorit",
+@Table(
+		name = BaseConfig.DB_PREFIX + "bustia_favorit",
 		uniqueConstraints = {
-		@UniqueConstraint(
-				name = "dis_bustia_fav_mult_uk",
-				columnNames = {
-						"bustia_id",
-						"usuari_codi"})})
+				@UniqueConstraint(
+						name = BaseConfig.DB_PREFIX + "bustia_fav_mult_uk",
+						columnNames = { "bustia_id", "usuari_codi" })
+		}
+)
 @EntityListeners(AuditingEntityListener.class)
 public class UsuariBustiaFavoritEntity extends DistribucioAuditable<Long> {
 
@@ -34,13 +37,13 @@ public class UsuariBustiaFavoritEntity extends DistribucioAuditable<Long> {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "bustia_id",
-			foreignKey = @ForeignKey(name = "dis_bustia_fav_bustia_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_fav_bustia_fk"))
 	protected BustiaEntity bustia;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "usuari_codi",
-			foreignKey = @ForeignKey(name = "dis_bustia_fav_usuari_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "bustia_fav_usuari_fk"))
 	protected UsuariEntity usuari;
 	
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
@@ -25,7 +26,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La versió actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String getVersioActual();
 
 	/**
@@ -33,7 +34,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La versió actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String getVersioData();
 
 	
@@ -43,7 +44,7 @@ public interface AplicacioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'usuari amb el codi de l'usuari autenticat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public void processarAutenticacioUsuari() throws NotFoundException;
 	
 	/**
@@ -51,7 +52,7 @@ public interface AplicacioService {
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String propertyPluginPassarelaFirmaIgnorarModalIds();
 
 	/**
@@ -59,7 +60,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	//@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('DIS_REGLA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public UsuariDto getUsuariActual();
 	
 	/**
@@ -67,7 +68,7 @@ public interface AplicacioService {
 	 * 
 	 * @return L'usuari actual.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public UsuariDto updateUsuariActual(UsuariDto asDto, Long entitatId);
 
 	/**
@@ -77,7 +78,7 @@ public interface AplicacioService {
 	 *            Codi de l'usuari a cercar.
 	 * @return L'usuari obtingut o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public UsuariDto findUsuariAmbCodi(String codi);
 
 	/**
@@ -87,7 +88,7 @@ public interface AplicacioService {
 	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<UsuariDto> findUsuariAmbText(String text);
 
 	/**
@@ -97,7 +98,7 @@ public interface AplicacioService {
 	 *            Text per a fer la consulta.
 	 * @return La llista d'usuaris.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text);
 	
 	/**
@@ -139,7 +140,7 @@ public interface AplicacioService {
 	 * 
 	 * @return el valor del paràmetre.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String propertyBaseUrl();
 
 	/**
@@ -147,7 +148,7 @@ public interface AplicacioService {
 	 * 
 	 * @return true si està actiu o false si no ho està.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public boolean isPluginArxiuActiu();
 
 
@@ -157,12 +158,12 @@ public interface AplicacioService {
 	 * 
 	 * @return els valors com a un objecte Properties.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public Properties propertyFindByPrefix(String prefix);
 
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public String propertyFindByNom(String nom);
-	
+
 	/**
 	 * Obté la bústia per defecte de l'usuari i entitat actuals.
 	 * 
@@ -172,16 +173,24 @@ public interface AplicacioService {
 	 * 
 	 * @return La bústia per defecte.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public BustiaDto getBustiaPerDefecte(UsuariDto usuari, Long entitatId);
-	
+
 	/**
 	 * Actualitza el rol de l'usuari actual a la taula de dades d'usuaris.
 	 * 
 	 * @param rolActual Rol de l'usuari actual.
 	 * 
-	 */	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+	 */
+	@PreAuthorize("isAuthenticated()")
 	public void setRolUsuariActual(String rolActual);
+
+	/**
+	 * Retorna l'objecte amb informació d'autenticació obtingut del
+	 * SecurityContext de Spring.
+	 * 
+	 * @return l'objecte amb informació d'autenticació.
+	 */
+	public Authentication getAuthentication();
 
 }

@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 
 /**
@@ -27,33 +28,33 @@ import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Subselect("select 	concat(r.id,concat('_', dst.id)) as id,"
-		+ "			r.id as idRegistre,"
-		+ "			r.numero as numero, "
-		+ "			r.enviat_per_email as enviatPerEmail, "
-		+ "			r.proces_estat as procesEstat, "
-		+ "			r.proces_error as procesError, "
-		+ "			r.extracte as extracte, "
-		+ "			r.num_orig as numeroOrigen, "
-		+ "  		r.pendent, "	
-		+ "			r.data as data, "
-		+ " 		r.docfis_codi as documentacioFisicaCodi,"
-		+ " 		r.docfis_desc as documentacioFisicaDescripcio,"
-		+ " 		r.back_codi as backCodi,"
-		+ "			ori.id as origen, "
-		+ "			dst.id as desti, "
-		+ "         m.createdDate as createdDate, "
-		+ "         m.id as movimentId, "
-		+ "         contingut.contmov_id as darrerMoviment, "
-		+ "         contingut.entitat_id as entitat, "
-		+ "         contingut.pare_id as bustia, "
-		+ "			usuari.nom as remitent"
-		+ " from	dis_registre r"
-		+ " inner join dis_cont_mov m on m.contingut_id = r.id"
-		+ " inner join dis_contingut ori on ori.id = m.origen_id "
-		+ " inner join dis_contingut dst on dst.id = m.desti_id "
-		+ " inner join dis_contingut contingut on contingut.id = r.id "
-		+ " inner join dis_usuari usuari on usuari.codi = m.remitent_codi ")
+@Subselect("select concat(r.id,concat('_', dst.id)) as id, "
+		+ "    r.id as idRegistre, "
+		+ "    r.numero as numero, "
+		+ "    r.enviat_per_email as enviatPerEmail, "
+		+ "    r.proces_estat as procesEstat, "
+		+ "    r.proces_error as procesError, "
+		+ "    r.extracte as extracte, "
+		+ "    r.num_orig as numeroOrigen, "
+		+ "    r.pendent, "
+		+ "    r.data as data, "
+		+ "    r.docfis_codi as documentacioFisicaCodi, "
+		+ "    r.docfis_desc as documentacioFisicaDescripcio, "
+		+ "    r.back_codi as backCodi, "
+		+ "    ori.id as origen, "
+		+ "    dst.id as desti, "
+		+ "    m.createdDate as createdDate, "
+		+ "    m.id as movimentId, "
+		+ "    contingut.contmov_id as darrerMoviment, "
+		+ "    contingut.entitat_id as entitat, "
+		+ "    contingut.pare_id as bustia, "
+		+ "    usuari.nom as remitent "
+		+ "from " + BaseConfig.DB_PREFIX + "registre r "
+		+ "inner join " + BaseConfig.DB_PREFIX + "cont_mov m on m.contingut_id = r.id "
+		+ "inner join " + BaseConfig.DB_PREFIX + "contingut ori on ori.id = m.origen_id "
+		+ "inner join " + BaseConfig.DB_PREFIX + "contingut dst on dst.id = m.desti_id "
+		+ "inner join " + BaseConfig.DB_PREFIX + "contingut contingut on contingut.id = r.id "
+		+ "inner join " + BaseConfig.DB_PREFIX + "usuari usuari on usuari.codi = m.remitent_codi")
 @Immutable
 public class VistaMovimentEntity {
 	

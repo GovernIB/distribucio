@@ -21,6 +21,7 @@ import javax.persistence.Version;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 
 /**
@@ -29,24 +30,25 @@ import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
-@Table(	name = "dis_dada",
+@Table(name = BaseConfig.DB_PREFIX + "dada",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {
-						"metadada_id",
-						"registre_id",
-						"ordre"})})
+				@UniqueConstraint(
+						name = BaseConfig.DB_PREFIX + "dada_mult_uk",
+						columnNames = { "metadada_id", "registre_id", "ordre" })
+		}
+)
 @EntityListeners(AuditingEntityListener.class)
 public class DadaEntity extends DistribucioAuditable<Long> {
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "metadada_id",
-			foreignKey = @ForeignKey(name = "ipa_metadada_dada_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "dada_metadada_fk"))
 	protected MetaDadaEntity metaDada;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "registre_id",
-			foreignKey = @ForeignKey(name = "ipa_registre_dada_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "dada_registre_fk"))
 	protected RegistreEntity registre;
 	@Column(name = "valor", length = 256, nullable = false)
 	protected String valor;

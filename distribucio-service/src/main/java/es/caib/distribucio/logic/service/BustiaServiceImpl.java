@@ -108,8 +108,6 @@ import es.caib.distribucio.persist.repository.UsuariRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
-
-
 /**
  * Implementació dels mètodes per a gestionar bústies.
  * 

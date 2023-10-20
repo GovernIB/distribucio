@@ -16,8 +16,10 @@ import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+
 @Entity
-@Table(	name = "dis_registre_annex_firma")
+@Table(name = BaseConfig.DB_PREFIX + "registre_annex_firma")
 @EntityListeners(AuditingEntityListener.class)
 public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 	
@@ -35,22 +37,18 @@ public class RegistreAnnexFirmaEntity extends DistribucioAuditable<Long> {
 	private Boolean autofirma = false;
 	@Column(name = "gesdoc_fir_id")
 	private String gesdocFirmaId;
-	
-	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "annex_id",
-			foreignKey = @ForeignKey(name = "dis_firma_annex_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "reganefir_regane_fk"))
 	private RegistreAnnexEntity annex;
-	
 	@OneToMany(
 			mappedBy = "firma",
 			fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	private List<RegistreFirmaDetallEntity> detalls = new ArrayList<RegistreFirmaDetallEntity>();
-	
-	
+
 	public List<RegistreFirmaDetallEntity> getDetalls() {
 		return detalls;
 	}

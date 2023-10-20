@@ -37,20 +37,20 @@ public interface ConfigService {
 
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	public void reiniciarTasquesEnSegonPla();
-	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public String getConcsvBaseUrl() ;
 
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('DIS_SUPER')")
 	public ConfigDto findByKey(String key);
 
 	@PreAuthorize("hasRole('DIS_SUPER')")
 	List<ConfigDto> findEntitatsConfigByKey(String key);
-	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public void setEntitatPerPropietat(EntitatDto entitatDto);
-	
-	@PreAuthorize("hasRole('DIS_SUPER') or hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA') or hasRole('tothom')")
+
+	@PreAuthorize("isAuthenticated()")
 	public String getTempsErrorsMonitorIntegracio() ;
 
 	public String getConfig(String key);
@@ -58,4 +58,3 @@ public interface ConfigService {
 	public Long getConfigAsLong(String key);
 
 }
-
