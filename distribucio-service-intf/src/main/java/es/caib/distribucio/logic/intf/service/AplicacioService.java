@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
@@ -116,7 +117,7 @@ public interface AplicacioService {
 	 *             L'index de l'excepció.
 	 * @return L'excepció.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public ExcepcioLogDto excepcioFindOne(Long index);
 
 	/**
@@ -124,7 +125,7 @@ public interface AplicacioService {
 	 * 
 	 * @return La llista amb les darreres excepcions.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<ExcepcioLogDto> excepcioFindAll();
 
 	/**

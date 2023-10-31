@@ -10,6 +10,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
@@ -46,7 +47,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public BustiaDto create(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -62,7 +63,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public BustiaDto update(
 			Long entitatId,
 			BustiaDto bustia) throws NotFoundException;
@@ -80,7 +81,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -97,7 +98,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public BustiaDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -112,7 +113,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -160,7 +161,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) throws NotFoundException;
@@ -174,7 +175,7 @@ public interface BustiaService {
 	 *            El filtre per a la consulta.
 	 * @return Les bústies que coincideixen amb els criteris del filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -224,7 +225,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -248,7 +249,7 @@ public interface BustiaService {
 	 *         Exception
 	 *         		Si es produeix alguna excepció creant l'anotació.
 	 */
-	@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -263,7 +264,7 @@ public interface BustiaService {
 	 *            Identificador de l'anotació de registre.
 	 * @return Excepció en cas de produir-se
 	 */
-	@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public Exception registreAnotacioProcessar(
 			Long registreId);
 
@@ -347,7 +348,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -365,7 +366,7 @@ public interface BustiaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -406,7 +407,7 @@ public interface BustiaService {
 	 * @return
 	 * 		Retorna el número d'anotacions mogudes.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public int moureAnotacions(
 			long entitatId, 
 			long bustiaId, 
@@ -419,7 +420,7 @@ public interface BustiaService {
 	@PreAuthorize("isAuthenticated()")
 	public Map<String, UsuariPermisDto> getUsuarisPerBustia(Long bustiaId, boolean directe, boolean perRol);
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<BustiaDto> findAmbUnitatId(
 			Long entitatId,
 			Long unitatId);
@@ -430,7 +431,7 @@ public interface BustiaService {
 	 * @param paginacioParams
 	 * @return La pàgina d'unitats organitzatives que compleixen el filtre.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre);
 
 	@PreAuthorize("isAuthenticated()")
@@ -487,13 +488,11 @@ public interface BustiaService {
 	public List<BustiaDto> findBustiesPerUsuari(
 			Long entitatId, boolean mostrarInactives);
 
-	
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "') or hasRole('" + BaseConfig.ROLE_REPORT + "')")
 	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(
 			Long id, String uo, String uoSuperior);
 
-	
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "') or hasRole('" + BaseConfig.ROLE_REPORT + "')")
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari, Long id, 
 			String uo, String uoSuperior, 

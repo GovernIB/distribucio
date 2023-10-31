@@ -39,10 +39,9 @@ public class DistribucioController {
 		if (RolHelper.isRolActualSuperusuari(request)) {
 			return "redirect:integracio";
 		} else {
-			// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			EntitatDto entitat = EntitatHelper.getEntitatActual(request);
 			if (entitat == null)
-				return "redirect:unauthorized";//throw new SecurityException("No te cap entitat assignada");*/
+				return "redirect:unauthorized";
 			if (RolHelper.isRolActualAdministrador(request) || RolHelper.isRolActualAdminLectura(request)) {
 				return "redirect:registreAdmin";
 			} else if (RolHelper.isRolActualUsuari(request)) {
@@ -59,7 +58,6 @@ public class DistribucioController {
 			Model model) {
 		EntitatHelper.getEntitatActual(request);
 		return "unauthorized";
-		
 	}
 
 	@RequestMapping(value = ModalHelper.ACCIO_MODAL_TANCAR, method = RequestMethod.GET)

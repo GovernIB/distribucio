@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.DominiDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -32,7 +33,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public DominiDto create(
 			Long entitatId,
 			DominiDto domini) throws NotFoundException;
@@ -49,7 +50,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public DominiDto update(
 			Long entitatId,
 			DominiDto tipusDocumental) throws NotFoundException;
@@ -65,7 +66,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public DominiDto delete(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -81,7 +82,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public DominiDto findById(
 			Long entitatId,
 			Long id) throws NotFoundException;
@@ -95,7 +96,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public PaginaDto<DominiDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
@@ -109,7 +110,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('tothom')")
+	@PreAuthorize("isAuthenticated()")
 	public List<DominiDto> findByEntitat(
 			Long entitatId) throws NotFoundException;
 
@@ -196,7 +197,7 @@ public interface DominiService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void evictDominiCache();
 
 }

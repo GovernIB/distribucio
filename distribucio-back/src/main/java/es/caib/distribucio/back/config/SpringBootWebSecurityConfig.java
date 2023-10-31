@@ -58,9 +58,9 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 			requestMatchers(publicRequestMatchers()).permitAll().
 			anyRequest().authenticated();
 		http.oauth2Login().
-			userInfoEndpoint().userService(oidcUserService());
+			userInfoEndpoint().userService(oauth2UserService());
 		http.logout().
-			addLogoutHandler(keycloakLogoutHandler()).
+			addLogoutHandler(oauth2LogoutHandler()).
 			logoutUrl(LOGOUT_URL).
 			logoutSuccessUrl("/");
 		http.headers().frameOptions().sameOrigin();
@@ -69,7 +69,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		return http.build();
 	}
 
-	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oidcUserService() {
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
 		final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 		return (userRequest) -> {
 			OAuth2User oauth2User = delegate.loadUser(userRequest);
@@ -96,7 +96,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
-	private LogoutHandler keycloakLogoutHandler() {
+	private LogoutHandler oauth2LogoutHandler() {
 		return new LogoutHandler() {
 			private final RestTemplate restTemplate = new RestTemplate();
 			@Override
@@ -105,7 +105,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 					HttpServletResponse response,
 					Authentication auth) {
 				if (auth != null) {
-					logoutFromKeycloak((OidcUser) auth.getPrincipal());
+					logoutFromKeycloak((OidcUser)auth.getPrincipal());
 				}
 			}
 			private void logoutFromKeycloak(OidcUser user) {
@@ -114,7 +114,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 						fromUriString(endSessionEndpoint).
 						queryParam("id_token_hint", user.getIdToken().getTokenValue());
 				ResponseEntity<String> logoutResponse = restTemplate.getForEntity(
-				builder.toUriString(), String.class);
+						builder.toUriString(), String.class);
 				if (logoutResponse.getStatusCode().is2xxSuccessful()) {
 					log.debug("Successfully logged out from Keycloak");
 				} else {
@@ -134,6 +134,20 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 			authenticated();
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		return http.build();
+	}*/
+
+	/*@Getter
+	public static class CustomOAuth2User extends DefaultOAuth2User {
+		private String accessToken;
+		public CustomOAuth2User(
+				Collection<? extends GrantedAuthority> authorities,
+				Map<String, Object> attributes,
+				String nameAttributeKey,
+				String accessToken) {
+			super(authorities, attributes, nameAttributeKey);
+			this.accessToken = accessToken;
+		}
+		private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 	}*/
 
 }

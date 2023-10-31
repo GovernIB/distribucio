@@ -66,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @ConditionalOnWarDeployment
 public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 
-	@Value("${es.caib.distribucio.security.mappableRoles:" + BaseConfig.ROLE_SUPER + "," + BaseConfig.ROLE_ADMIN + "," + BaseConfig.ROLE_ADMIN_LECTURA + "," + BaseConfig.ROLE_REGLA + "," + BaseConfig.ROLE_BUSTIA_WS + "," + BaseConfig.ROLE_USER + "}")
+	@Value("${es.caib.distribucio.security.mappableRoles:" + BaseConfig.ROLE_SUPER + "," + BaseConfig.ROLE_ADMIN + "," + BaseConfig.ROLE_ADMIN_LECTURA + "," + BaseConfig.ROLE_REGLA + "," + BaseConfig.ROLE_BUSTIA_WS + "}")
 	private String mappableRoles;
 	@Value("${es.caib.distribucio.security.nameAttributeKey:preferred_username}")
 	private String nameAttributeKey;

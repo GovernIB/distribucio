@@ -10,6 +10,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
@@ -115,7 +116,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public boolean reintentarBustiaPerDefecte(
 			Long entitatId,
 			Long registreId) {
@@ -125,7 +126,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) {
@@ -135,7 +136,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public boolean processarAnnexosAdmin(
 			Long entitatId,
 			Long registreId) {
@@ -229,7 +230,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId) {
@@ -335,7 +336,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void marcarSobreescriure(
 			Long entitatId,
 			Long registreId) {
@@ -359,7 +360,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public ValidacioFirmaEnum validarFirmes(
 			Long entitatId,
 			Long registreId,
@@ -389,7 +390,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN"})
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void dadaSave(
 			Long entitatId,
 			Long registreId,

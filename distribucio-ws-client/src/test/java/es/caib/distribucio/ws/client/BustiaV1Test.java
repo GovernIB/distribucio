@@ -122,6 +122,11 @@ public class BustiaV1Test {
 	 * @throws Exception */
 	@Before
 	public void init() throws Exception {
+		System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
+		System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
+		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
+		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
+		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
 		    public X509Certificate[] getAcceptedIssuers(){return null;}
@@ -539,67 +544,51 @@ public class BustiaV1Test {
 
 	@SuppressWarnings("unused")
 	private InputStream getContingutJustificant() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/justificant.pdf");
+		InputStream is = getClass().getResourceAsStream("/justificant.pdf");
 		return is;
 	}
 	private InputStream getContingutAnnexSenseFirmaPdf() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/annex_sense_firma.pdf");
+		InputStream is = getClass().getResourceAsStream("/annex_sense_firma.pdf");
 		return is;
 	}
-	
 	private InputStream getContingutFirmaCadesDetached() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/firma_cades_detached.csig");
+		InputStream is = getClass().getResourceAsStream("/firma_cades_detached.csig");
 		return is;
 	}
-	
 	private InputStream getContingutFirmaCadesAttached() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/firma_cades_attached.csig");
+		InputStream is = getClass().getResourceAsStream("/firma_cades_attached.csig");
 		return is;
 	}
-
 	/** TF02 - XAdES internally detached signature */
-	
 	private InputStream getContingutWithFirmaXadesDettached() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/formulario.xml_xades_detached.xsig");
+		InputStream is = getClass().getResourceAsStream("/formulario.xml_xades_detached.xsig");
 		return is;
 	}
-
 	private InputStream getContingutWithFirmaXadesEnveloped() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/formulari.xml_xades_enveloped.xsig");
+		InputStream is = getClass().getResourceAsStream("/formulari.xml_xades_enveloped.xsig");
 		return is;
 	}
-	
+	@SuppressWarnings("unused")
 	private InputStream getContingutAnnexSenseFirmaDocx() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/annex_sense_firma.docx");
+		InputStream is = getClass().getResourceAsStream("/annex_sense_firma.docx");
 		return is;
 	}
 	private InputStream getContingutAnnexSenseFirmaDoc() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/annex.doc");
+		InputStream is = getClass().getResourceAsStream("/annex.doc");
 		return is;
 	}
 	private InputStream getContingutAnnexFirmat() {
-		InputStream is = getClass().getResourceAsStream(
-        		"/annex_firmat.pdf");
+		InputStream is = getClass().getResourceAsStream("/annex_firmat.pdf");
 		return is;
 	}
 	private InputStream getContingutAltre(String arxiuNom) {
-		InputStream is = getClass().getResourceAsStream(
-        		"/" + arxiuNom);
+		InputStream is = getClass().getResourceAsStream("/" + arxiuNom);
 		return is;
 	}
 
 	private Properties getTestProperties() throws IOException {
 		Properties props = new Properties();
-		InputStream is = getClass().getResourceAsStream(
-        		"/bustia_test.properties");
+		InputStream is = getClass().getResourceAsStream("/bustia_test.properties");
 		props.load(is);
 		return props;
 	}

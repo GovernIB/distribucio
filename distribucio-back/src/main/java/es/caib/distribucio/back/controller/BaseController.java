@@ -238,8 +238,6 @@ public class BaseController implements MessageSourceAware {
 		return getMessage(request, key, null);
 	}
 
-
-
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -249,12 +247,11 @@ public class BaseController implements MessageSourceAware {
 	 * 
 	 * @param binder
 	 */
-    @InitBinder
-    public void initBinderBaseController ( WebDataBinder binder )
-    {
-        StringTrimmerEditor stringtrimmer = new StringTrimmerEditor(true);
-        binder.registerCustomEditor(String.class, stringtrimmer);
-    }
+	@InitBinder
+	public void initBinderBaseController ( WebDataBinder binder ) {
+		StringTrimmerEditor stringtrimmer = new StringTrimmerEditor(true);
+		binder.registerCustomEditor(String.class, stringtrimmer);
+	}
 
 	/** Mètode per consultar els registres seleccionats pel processament múltiple.
 	 * @param request Request
@@ -273,10 +270,8 @@ public class BaseController implements MessageSourceAware {
 			registres = new ArrayList<Long>();
 		}
 		return registres;
-
 	}
 
-	
 	public EntitatDto getEntitatActual(
 			HttpServletRequest request) {
 		EntitatDto entitat = EntitatHelper.getEntitatActual(request);
@@ -321,8 +316,7 @@ public class BaseController implements MessageSourceAware {
 		}
 		return numeroAnnexosEstatEsborrany;
 	}
-	
-	
+
 	/** Obté l'entitat actual segons el rol que té l'usuari
 	 * s'utilitza només per les accions comuns d'admin i usuari */	
 	public EntitatDto getEntitatActualComprovantPermis(
@@ -333,15 +327,13 @@ public class BaseController implements MessageSourceAware {
 			if (!entitat.isUsuariActualAdministration() && !entitat.isUsuariActualAdminLectura())
 				throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
 			return entitat;
-		}else {
+		} else {
 			if (!entitat.isUsuariActualRead() && !entitat.isUsuariActualAdminLectura())
 				throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
-			return entitat;			
+			return entitat;
 		}
 	}
-	
 
-	
 	private Map<Long, Semaphore> semafors = new HashMap<Long, Semaphore>();
 
 	protected void entrarSemafor(Long registreId) throws InterruptedException {

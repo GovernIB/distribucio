@@ -22,7 +22,9 @@ public class BaseConfig {
 	public static final String ROLE_ADMIN = "DIS_ADMIN";
 	public static final String ROLE_ADMIN_LECTURA = "DIS_ADMIN_LECTURA";
 	public static final String ROLE_REGLA = "DIS_REGLA";
+	public static final String ROLE_REPORT = "DIS_REPORT";
 	public static final String ROLE_BUSTIA_WS = "DIS_BSTWS";
+	public static final String ROLE_BACKOFFICE_WS = "DIS_BACKWS";
 	public static final String ROLE_USER = "tothom";
 
 }

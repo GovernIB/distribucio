@@ -10,6 +10,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
@@ -34,7 +35,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	private ReglaService delegateService = null;
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public ReglaDto create(
 			Long entitatId,
 			ReglaDto regla) {
@@ -44,13 +45,13 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public ReglaDto update(Long entitatId, ReglaDto regla) throws NotFoundException {
 		return delegateService.update(entitatId, regla);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
@@ -62,7 +63,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public ReglaDto updateActivaPresencial(Long entitatId,
 			Long reglaId,
 			boolean activa,
@@ -76,7 +77,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public ReglaDto delete(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -86,7 +87,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public ReglaDto moveUp(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -96,7 +97,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public ReglaDto moveDown(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -106,7 +107,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public ReglaDto moveTo(
 			Long entitatId,
 			Long reglaId,
@@ -118,7 +119,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public List<String> aplicarManualment(
 			Long entitatId,
 			Long reglaId) throws NotFoundException {
@@ -128,7 +129,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId) {
@@ -138,7 +139,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) {
@@ -148,7 +149,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(Long entitatId, String unitatCodi) {
 		return delegateService.findByEntitatAndUnitatFiltreCodi(
 				entitatId,
@@ -156,7 +157,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi) {
 		return delegateService.findByEntitatAndUnitatDestiCodi(
 				entitatId,
@@ -165,7 +166,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 
 	
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<ReglaDto> findAmbFiltrePaginat(
 			Long entitatId,
 			ReglaFiltreDto filtre,
@@ -177,7 +178,7 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
 			RegistreSimulatDto registreSimulatDto) {
 		return delegateService.simularReglaAplicacio(
@@ -185,19 +186,19 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	}
 	
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
 		return delegateService.findReglesByCodiProcediment(procediments);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
 		return delegateService.findReglaBackofficeByProcediment(procedimentCodi);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
 		return delegateService.findReglaByProcediment(procedimentCodi);
 	}

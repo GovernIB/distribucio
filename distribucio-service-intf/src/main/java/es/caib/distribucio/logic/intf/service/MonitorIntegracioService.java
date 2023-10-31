@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
@@ -30,14 +31,14 @@ public interface MonitorIntegracioService {
 	 * 
 	 * @return La llista d'integracions.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<IntegracioDto> integracioFindAll();
 
 	/** Mètode per treure el llistat d'integracions
 	 *  per comprovar la conexió amb el plugin.
 	 * 
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<IntegracioDto> findPerDiagnostic();
 
 	/**
@@ -47,7 +48,7 @@ public interface MonitorIntegracioService {
 	 *            Informació de l'item monitorIntegracio a crear.
 	 * @return El/La MonitorIntegracio creat/creada
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio);
 
 	/**
@@ -59,7 +60,7 @@ public interface MonitorIntegracioService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public MonitorIntegracioDto findById(
 			Long id) throws NotFoundException;
 
@@ -70,11 +71,11 @@ public interface MonitorIntegracioService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina d'items MonitorIntegracio.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto);
 
 	/** Consulta el número d'errors per integració. */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public Map<String, Integer> countErrors(int numeroHores);
 
 	/** Mètode per esborrar dades anteriors a una data passada per paràmetre */
@@ -93,9 +94,7 @@ public interface MonitorIntegracioService {
 	 * @param objecte usuari 
 	 * @return
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public IntegracioDiagnosticDto diagnostic(String codiIntegracio, UsuariDto usuari);
-	
-	
-	
+
 }

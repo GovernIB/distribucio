@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.ejb.ws;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
@@ -10,6 +11,7 @@ import javax.jws.soap.SOAPBinding;
 import org.jboss.ws.api.annotation.WebContext;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
@@ -31,10 +33,9 @@ import lombok.experimental.Delegate;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebContext(
 		contextRoot = "/distribucio/ws",
-		urlPattern = "/backofficeIntegracio"/*,
-		authMethod = "WSBASIC",
-		transportGuarantee = "NONE",
-		secureWSDLAccess = false*/)
+		urlPattern = "/backofficeIntegracio",
+		secureWSDLAccess = false)
+@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
 public class BackofficeIntegracioWsServiceWs extends AbstractServiceEjb<BackofficeIntegracioWsService> implements BackofficeIntegracioWsService {
 
 	@Delegate

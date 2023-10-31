@@ -452,12 +452,6 @@ public class PermisosHelper {
 		for (GrantedAuthority ga: auth.getAuthorities())
 			sids.add(new GrantedAuthoritySid(ga.getAuthority()));
 		boolean[] granted = new boolean[permissions.length];
-		for (int i = 0; i < permissions.length; i++)
-			if (permissions[i] == ExtendedPermission.ADMIN_LECTURA) {
-				granted[i] = true;
-			}else {
-				granted[i] = false;
-			}
 		try {
 			ObjectIdentity oid = new ObjectIdentityImpl(
 					clazz,

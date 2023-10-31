@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -27,7 +28,7 @@ public interface EntitatService {
 	 *            Informació de l'entitat a crear.
 	 * @return L'Entitat creada.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto create(EntitatDto entitat);
 
 	/**
@@ -40,7 +41,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto update(
 			EntitatDto entitat) throws NotFoundException;
 
@@ -55,7 +56,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto updateActiva(
 			Long id,
 			boolean activa) throws NotFoundException;
@@ -69,7 +70,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto delete(
 			Long id) throws NotFoundException;
 
@@ -95,7 +96,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto findByIdWithLogo(
 			Long id) throws NotFoundException;
 
@@ -106,7 +107,7 @@ public interface EntitatService {
 	 *            Atribut codi de l'entitat a trobar.
 	 * @return L'entitat amb el codi especificat o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public EntitatDto findByCodi(String codi);
 
 
@@ -125,7 +126,7 @@ public interface EntitatService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina d'Entitats.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams);
 
 	/**
@@ -145,7 +146,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<PermisDto> findPermisSuper(
 			Long id) throws NotFoundException;
 
@@ -160,7 +161,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void updatePermisSuper(
 			Long id,
 			PermisDto permis) throws NotFoundException;
@@ -176,7 +177,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void deletePermisSuper(
 			Long id,
 			Long permisId) throws NotFoundException;
@@ -190,7 +191,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<PermisDto> findPermisAdmin(
 			Long id) throws NotFoundException;
 
@@ -205,7 +206,7 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void updatePermisAdmin(
 			Long id,
 			PermisDto permis) throws NotFoundException;
@@ -221,12 +222,12 @@ public interface EntitatService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void deletePermisAdmin(
 			Long id,
 			Long permisId) throws NotFoundException;
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void evictEntitatsAccessiblesUsuari();
 
 	/**

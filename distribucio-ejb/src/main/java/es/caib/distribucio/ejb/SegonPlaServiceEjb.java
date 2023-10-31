@@ -39,7 +39,7 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 	public void aplicarReglesPendentsBackoffice() {
 		delegateService.aplicarReglesPendentsBackoffice();
 	}
-	
+
 	@Override
 	@RolesAllowed("**")
 	public void tancarContenidorsArxiuPendents() {
@@ -56,7 +56,6 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 	@RolesAllowed("**")
 	public void enviarIdsAnotacionsPendentsBackoffice() {
 		delegateService.enviarIdsAnotacionsPendentsBackoffice();
-		
 	}
 
 	@Override
@@ -80,7 +79,6 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 	@Override
 	public void reintentarProcessamentBackoffice() {
 		delegateService.reintentarProcessamentBackoffice();
-		
 	}
 
 	@Override

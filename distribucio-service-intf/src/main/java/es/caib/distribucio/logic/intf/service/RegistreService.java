@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
@@ -119,7 +120,6 @@ public interface RegistreService {
 			List<BustiaDto> bustiesUsuari,
 			RegistreFiltreDto filtre,
 			boolean onlyAmbMoviments, boolean isAdmin);
-	
 
 	/**
 	 * Torna a processar una anotació de registre sense bústia assignada. Assigna 
@@ -133,11 +133,11 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public boolean reintentarBustiaPerDefecte(
 			Long entitatId,
 			Long registreId) throws NotFoundException;
-	
+
 	/**
 	 * Torna a processar una anotació de registre pendent o amb error.
 	 * 
@@ -149,11 +149,11 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public boolean reintentarProcessamentAdmin(
 			Long entitatId,
 			Long registreId) throws NotFoundException;
-	
+
 	/**
 	 * Torna a processar un desat de annexos de manera manual.
 	 * 
@@ -165,7 +165,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public boolean processarAnnexosAdmin(
 			Long entitatId,
 			Long registreId) throws NotFoundException;
@@ -239,7 +239,7 @@ public interface RegistreService {
 			Estat estat,
 			String observacions);
 
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public boolean reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId);
@@ -373,8 +373,8 @@ public interface RegistreService {
 	public List<ContingutDto> getPathContingut(
 			Long entitatId,
 			Long bustiaId) throws NotFoundException;
-	
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void marcarSobreescriure(
 			Long entitatId,
 			Long registreId);
@@ -394,7 +394,7 @@ public interface RegistreService {
 	 * @param annexId
 	 * @return
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public ValidacioFirmaEnum validarFirmes(
 			Long entitatId,
 			Long registreId,
@@ -439,7 +439,7 @@ public interface RegistreService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public void dadaSave(
 			Long entitatId,
 			Long registreId,

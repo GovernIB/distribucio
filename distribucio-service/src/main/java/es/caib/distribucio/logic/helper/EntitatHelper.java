@@ -67,14 +67,15 @@ public class EntitatHelper {
 			// Recupera el logo de la carpeta pare
 			File fFolder = new File(getLogosDir() + "/" + entitatCodi);
 			File[] files = fFolder.listFiles();
-			for (File file : files) {
-				ByteArrayOutputStream streamLogo = new ByteArrayOutputStream();
-				FileInputStream contingutIn = new FileInputStream(file);
-				IOUtils.copy(contingutIn, streamLogo);
-				logoCapBytes = streamLogo.toByteArray();
-				break;
+			if (files != null) {
+				for (File file: files) {
+					ByteArrayOutputStream streamLogo = new ByteArrayOutputStream();
+					FileInputStream contingutIn = new FileInputStream(file);
+					IOUtils.copy(contingutIn, streamLogo);
+					logoCapBytes = streamLogo.toByteArray();
+					break;
+				}
 			}
-			
 			if (logoCapBytes == null) {
 				throw new RuntimeException(
 						"No s'ha trobat cap logo per l'entitat " + entitatCodi);

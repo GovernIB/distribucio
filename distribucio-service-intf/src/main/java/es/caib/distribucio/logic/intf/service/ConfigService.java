@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ConfigDto;
 import es.caib.distribucio.logic.intf.dto.ConfigGroupDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
@@ -23,28 +24,28 @@ public interface ConfigService {
 	 * @param property Informació que es vol actualitzar.
 	 * @return El DTO amb les dades modificades.
 	 */
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public ConfigDto updateProperty(ConfigDto property) throws Exception;
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<ConfigGroupDto> findAll();
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat);
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void synchronize();
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void reiniciarTasquesEnSegonPla();
 
 	@PreAuthorize("isAuthenticated()")
 	public String getConcsvBaseUrl() ;
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public ConfigDto findByKey(String key);
 
-	@PreAuthorize("hasRole('DIS_SUPER')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	List<ConfigDto> findEntitatsConfigByKey(String key);
 
 	@PreAuthorize("isAuthenticated()")

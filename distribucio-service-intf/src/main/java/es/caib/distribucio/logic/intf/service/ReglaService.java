@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
@@ -34,7 +35,7 @@ public interface ReglaService {
 	 *            Informació de la regla a crear.
 	 * @return La regla creada.
 	 */
-	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public ReglaDto create(
 			Long entitatId,
 			ReglaDto regla);
@@ -50,7 +51,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public ReglaDto update(
 			Long entitatId,
 			ReglaDto regla) throws NotFoundException;
@@ -68,13 +69,12 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
 			boolean activa) throws NotFoundException;
 
-	
 	/**
 	 * Mètode per actualitzar la informació de la regla i establir si està activa
 	 * o si té el filtre per presencial. Aquest mètode s'usa a l'API REST per part
@@ -93,7 +93,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasAnyRole('DIS_REGLA','DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public ReglaDto updateActivaPresencial(
 			Long entitatId,
 			Long reglaId,
@@ -111,7 +111,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public ReglaDto delete(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -127,7 +127,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public ReglaDto moveUp(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -143,7 +143,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public ReglaDto moveDown(
 			Long entitatId,
 			Long reglaId) throws NotFoundException;
@@ -161,7 +161,7 @@ public interface ReglaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public ReglaDto moveTo(
 			Long entitatId,
 			Long reglaId,
@@ -178,7 +178,7 @@ public interface ReglaService {
 	 * @return Retorna la llista dels números dels registres als quals s'ha assignat la regla per a que se'ls apliqui.
 	 * 
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public List<String> aplicarManualment(
 			Long entitatId, 
 			Long reglaId);
@@ -192,7 +192,7 @@ public interface ReglaService {
 	 *            Atribut id de la regla a trobar.
 	 * @return La regla amb l'id especificat o null si no s'ha trobat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public ReglaDto findOne(
 			Long entitatId,
 			Long reglaId);
@@ -206,21 +206,21 @@ public interface ReglaService {
 	 *            Paràmetres per a dur a terme la paginació del resultats.
 	 * @return La pàgina de regles.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public PaginaDto<ReglaDto> findAmbEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams);
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<ReglaDto> findByEntitatAndUnitatFiltreCodi(Long entitatId, String unitatCodi);
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi);
 
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
 
-	@PreAuthorize("hasRole('DIS_ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public List<RegistreSimulatAccionDto> simularReglaAplicacio(
 			RegistreSimulatDto registreSimulatDto);
 
@@ -230,26 +230,25 @@ public interface ReglaService {
 	 * 			List de codis procediment
 	 * @return Map<codiProcediment, List<ReglasExistents>>
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
-	
+
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
 	 * de regles.
 	 * 
 	 * @param procedimentCodi
 	 * @return
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_REGLA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
-	
-	
+
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de update
 	 * de regles.
 	 * 
 	 * @param procedimentCodi
 	 * @return
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_REGLA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public List<ReglaDto> findReglaByProcediment (String procedimentCodi);
-	
+
 }

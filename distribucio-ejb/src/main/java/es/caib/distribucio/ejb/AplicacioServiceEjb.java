@@ -10,6 +10,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
@@ -82,13 +83,13 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER"})
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public ExcepcioLogDto excepcioFindOne(Long index) {
 		return delegateService.excepcioFindOne(index);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_SUPER"})
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public List<ExcepcioLogDto> excepcioFindAll() {
 		return delegateService.excepcioFindAll();
 	}

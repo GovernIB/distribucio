@@ -9,6 +9,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.AvisDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -28,25 +29,25 @@ public class AvisServiceEjb extends AbstractServiceEjb<AvisService> implements A
 	private AvisService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public AvisDto create(AvisDto avis) {
 		return delegateService.create(avis);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public AvisDto update(AvisDto avis) {
 		return delegateService.update(avis);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public AvisDto updateActiva(Long id, boolean activa) {
 		return delegateService.updateActiva(id, activa);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public AvisDto delete(Long id) {
 		return delegateService.delete(id);
 	}

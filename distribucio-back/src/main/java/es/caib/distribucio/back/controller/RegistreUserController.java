@@ -150,8 +150,7 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		model.addAttribute("nomCookieSenseAssignar", COOKIE_SENSE_ASSIGNAR);
 		model.addAttribute("mostrarSenseAssignar", mostrarSenseAssignar);
-		//return "registreUserList";
-		return "test";
+		return "registreUserList";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

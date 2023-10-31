@@ -10,6 +10,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.ContingutFiltreDto;
@@ -57,7 +58,7 @@ public class ContingutServiceEjb extends AbstractServiceEjb<ContingutService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
 			Long contingutId,
@@ -69,7 +70,7 @@ public class ContingutServiceEjb extends AbstractServiceEjb<ContingutService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) {
@@ -97,7 +98,7 @@ public class ContingutServiceEjb extends AbstractServiceEjb<ContingutService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) {
@@ -113,7 +114,7 @@ public class ContingutServiceEjb extends AbstractServiceEjb<ContingutService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
 			ContingutFiltreDto filtre,
@@ -158,7 +159,7 @@ public class ContingutServiceEjb extends AbstractServiceEjb<ContingutService> im
 	}
 
 	@Override
-	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_REPORT })
 	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
 			Date dataInici, 
 			Date dataFi, 

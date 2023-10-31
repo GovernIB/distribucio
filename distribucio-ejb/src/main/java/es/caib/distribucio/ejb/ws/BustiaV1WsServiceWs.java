@@ -11,6 +11,7 @@ import javax.jws.soap.SOAPBinding;
 import org.jboss.ws.api.annotation.WebContext;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
 import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
 import lombok.experimental.Delegate;
@@ -29,11 +30,9 @@ import lombok.experimental.Delegate;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebContext(
 		contextRoot = "/distribucio/ws",
-		urlPattern = "/v1/bustia"/*,
-		authMethod = "WSBASIC",
-		transportGuarantee = "NONE",
-		secureWSDLAccess = false*/)
-@RolesAllowed({"DIS_BSTWS"})
+		urlPattern = "/v1/bustia",
+		secureWSDLAccess = false)
+@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
 public class BustiaV1WsServiceWs extends AbstractServiceEjb<BustiaV1WsService> implements BustiaV1WsService {
 
 	@Delegate

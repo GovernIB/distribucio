@@ -39,10 +39,9 @@ public class SoapLoggingHandler implements SOAPHandler<SOAPMessageContext> {
 	public void close(MessageContext messageContext) {
 	}
 
-
-
 	private void logToSystemOut(SOAPMessageContext smc) {
-		if (LOGGER.isDebugEnabled()) {
+		boolean showLog = LOGGER.isDebugEnabled();
+		if (showLog) {
 			StringBuilder sb = new StringBuilder();
 			Boolean outboundProperty = (Boolean)smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 			if (outboundProperty.booleanValue())

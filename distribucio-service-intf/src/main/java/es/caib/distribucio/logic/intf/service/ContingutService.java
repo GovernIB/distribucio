@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.ContingutFiltreDto;
@@ -67,7 +68,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public ContingutDto findAmbIdAdmin(
 			Long entitatId,
 			Long contingutId,
@@ -84,7 +85,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<ContingutLogDto> findLogsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -146,7 +147,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public List<ContingutMovimentDto> findMovimentsPerContingutAdmin(
 			Long entitatId,
 			Long contingutId) throws NotFoundException;
@@ -181,7 +182,7 @@ public interface ContingutService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
-	@PreAuthorize("hasRole('DIS_ADMIN') or hasRole('DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public PaginaDto<ContingutDto> findAdmin(
 			Long entitatId,
 			ContingutFiltreDto filtre,
@@ -263,7 +264,7 @@ public interface ContingutService {
 	/** 
 	 * 
 	 */
-	@PreAuthorize("hasAnyRole('DIS_REPORT','DIS_ADMIN', 'DIS_ADMIN_LECTURA')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "') or hasRole('" + BaseConfig.ROLE_REPORT + "')")
 	public List<LogsDadesObertesDto> findLogsPerDadesObertes(
 			Date dataInici,
 			Date dataFi, 

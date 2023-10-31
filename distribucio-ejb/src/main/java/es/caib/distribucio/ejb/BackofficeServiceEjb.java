@@ -6,6 +6,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -26,7 +27,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	private BackofficeService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BackofficeDto create(
 			Long entitatId, 
 			BackofficeDto tipusDocumental) throws NotFoundException {
@@ -36,7 +37,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public Exception provar(
 			Long entitatId, 
 			Long backofficeId) throws NotFoundException {
@@ -44,7 +45,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BackofficeDto update(
 			Long entitatId, 
 			BackofficeDto tipusDocumental) throws NotFoundException {
@@ -54,7 +55,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BackofficeDto delete(
 			Long entitatId, 
 			Long id) throws NotFoundException {
@@ -64,7 +65,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_REGLA })
 	public BackofficeDto findById(
 			Long entitatId, 
 			Long id) throws NotFoundException {
@@ -74,7 +75,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams)
@@ -85,13 +86,13 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException {
 		return delegateService.findByEntitat(entitatId);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA", "DIS_REGLA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_REGLA })
 	public BackofficeDto findByCodi(
 			Long entitatId,
 			String backofficeCodi) throws NotFoundException {

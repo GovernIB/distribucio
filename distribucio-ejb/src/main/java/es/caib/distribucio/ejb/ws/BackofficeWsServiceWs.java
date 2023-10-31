@@ -30,13 +30,17 @@ import lombok.experimental.Delegate;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebContext(
 		contextRoot = "/distribucio/ws",
-		urlPattern = "/backoffice"/*,
-		transportGuarantee = "NONE",
-		secureWSDLAccess = false*/)
+		urlPattern = "/backoffice",
+		secureWSDLAccess = false)
 public class BackofficeWsServiceWs extends AbstractServiceEjb<BackofficeWsService> implements BackofficeWsService {
 
 	@Delegate
 	private BackofficeWsService delegateService = null;
+
+	@Override
+	public void comunicarAnotacionsPendents(List<AnotacioRegistreId> ids) {
+		delegateService.comunicarAnotacionsPendents(ids);
+	}
 
 	protected void setDelegateService(BackofficeWsService delegateService) {
 		this.delegateService = delegateService;

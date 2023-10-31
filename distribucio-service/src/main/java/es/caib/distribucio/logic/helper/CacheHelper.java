@@ -86,7 +86,8 @@ public class CacheHelper {
 				new Permission[] {
 					ExtendedPermission.READ,
 					ExtendedPermission.ADMINISTRATION,
-					ExtendedPermission.ADMIN_LECTURA}, //
+					ExtendedPermission.ADMIN_LECTURA
+				},
 				auth);
 		List<EntitatDto> resposta = conversioTipusHelper.convertirList(
 				entitats,
@@ -95,7 +96,7 @@ public class CacheHelper {
 			try {
 				entitat.setLogoCapBytes(entitatHelper.getLogo(entitat.getCodiDir3()));
 			} catch (Exception ex) {
-				logger.error("No s'ha pogut definir el logo per l'entitat (codiDir3=" + entitat.getCodiDir3() + ")");
+				logger.error("No s'ha pogut definir el logo per l'entitat (codiDir3=" + entitat.getCodiDir3() + ")", ex);
 			}
 		}
 		permisosEntitatHelper.omplirPermisosPerEntitats(

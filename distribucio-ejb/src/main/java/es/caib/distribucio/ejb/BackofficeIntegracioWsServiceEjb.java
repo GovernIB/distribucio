@@ -3,9 +3,11 @@
  */
 package es.caib.distribucio.ejb;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
@@ -16,9 +18,12 @@ import lombok.experimental.Delegate;
  * Implementació de BackofficeIntegracioWsService com a EJB que empra una clase
  * delegada per accedir a la funcionalitat del servei.
  * 
+ * Aquest EJB és utilitzat pel controlador del servei REST homònim.
+ * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Stateless
+@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
 public class BackofficeIntegracioWsServiceEjb extends AbstractServiceEjb<BackofficeIntegracioWsService> implements BackofficeIntegracioWsService {
 
 	@Delegate

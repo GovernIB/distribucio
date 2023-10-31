@@ -168,6 +168,11 @@
 			<artifactId>distribucio-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-backoffice-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

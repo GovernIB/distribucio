@@ -9,6 +9,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -30,20 +31,20 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	private EntitatService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto create(EntitatDto entitat) {
 		return delegateService.create(entitat);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto update(
 			EntitatDto entitat) {
 		return delegateService.update(entitat);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto updateActiva(
 			Long id,
 			boolean activa) {
@@ -51,7 +52,7 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto delete(
 			Long id) {
 		return delegateService.delete(id);
@@ -64,13 +65,13 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto findByIdWithLogo(Long id) throws NotFoundException {
 		return delegateService.findByIdWithLogo(id);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public EntitatDto findByCodi(String codi) {
 		return delegateService.findByCodi(codi);
 	}
@@ -82,7 +83,7 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public PaginaDto<EntitatDto> findPaginat(PaginacioParamsDto paginacioParams) {
 		return delegateService.findPaginat(paginacioParams);
 	}
@@ -94,13 +95,13 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public List<PermisDto> findPermisSuper(Long id) {
 		return delegateService.findPermisSuper(id);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public void updatePermisSuper(
 			Long id,
 			PermisDto permis) {
@@ -110,7 +111,7 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public void deletePermisSuper(
 			Long id,
 			Long permisId) {
@@ -120,13 +121,13 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<PermisDto> findPermisAdmin(Long id) {
 		return delegateService.findPermisAdmin(id);
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void updatePermisAdmin(
 			Long id,
 			PermisDto permis) {
@@ -136,7 +137,7 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void deletePermisAdmin(
 			Long id,
 			Long permisId) {
@@ -146,7 +147,7 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public void evictEntitatsAccessiblesUsuari() {
 		delegateService.evictEntitatsAccessiblesUsuari();
 	}

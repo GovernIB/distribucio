@@ -65,7 +65,7 @@ public class RolHelper {
 				SESSION_ATTRIBUTE_ROL_ACTUAL);
 		List<String> rolsDisponibles = getRolsUsuariActual(request);
 		if (rolActual == null || !rolsDisponibles.contains(rolActual)) {
-			if (request.isUserInRole(BaseConfig.ROLE_USER) && rolsDisponibles.contains(BaseConfig.ROLE_USER)) {
+			if (rolsDisponibles.contains(BaseConfig.ROLE_USER)) {
 				rolActual = BaseConfig.ROLE_USER;
 			} else if (request.isUserInRole(BaseConfig.ROLE_ADMIN) && rolsDisponibles.contains(BaseConfig.ROLE_ADMIN)) {
 				rolActual = BaseConfig.ROLE_ADMIN;
@@ -111,7 +111,7 @@ public class RolHelper {
 			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(BaseConfig.ROLE_ADMIN_LECTURA)) {
 				rols.add(BaseConfig.ROLE_ADMIN_LECTURA);
 			}
-			if (entitatActual.isUsuariActualRead() && request.isUserInRole(BaseConfig.ROLE_USER)) {
+			if (entitatActual.isUsuariActualRead()) {
 				rols.add(BaseConfig.ROLE_USER);
 			}
 		}

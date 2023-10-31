@@ -23,23 +23,6 @@
 	<security-role>
 		<role-name>DIS_BSTWS</role-name>
 	</security-role>
-	<security-role>
-		<role-name>tothom</role-name>
-	</security-role>
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>All areas</web-resource-name>
-			<url-pattern>/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>DIS_SUPER</role-name>
-			<role-name>DIS_ADMIN</role-name>
-			<role-name>DIS_ADMIN_LECTURA</role-name>
-			<role-name>DIS_REPORT</role-name>
-			<role-name>DIS_BSTWS</role-name>
-			<role-name>tothom</role-name>
-		</auth-constraint>
-	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
@@ -48,5 +31,14 @@
 			<url-pattern>/apidocs</url-pattern>
 			<url-pattern>/apidocs/*</url-pattern>
 		</web-resource-collection>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>All areas</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>**</role-name>
+		</auth-constraint>
 	</security-constraint>
 </web-app>

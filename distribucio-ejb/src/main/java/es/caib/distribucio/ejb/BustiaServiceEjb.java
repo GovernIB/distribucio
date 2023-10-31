@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
@@ -44,7 +45,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	private BustiaService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BustiaDto create(
 			Long entitatId,
 			BustiaDto bustia) {
@@ -52,7 +53,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BustiaDto update(
 			Long entitatId,
 			BustiaDto bustia) {
@@ -60,7 +61,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BustiaDto updateActiva(
 			Long entitatId,
 			Long id,
@@ -69,7 +70,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BustiaDto delete(
 			Long entitatId,
 			Long id) {
@@ -77,7 +78,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public BustiaDto marcarPerDefecte(
 			Long entitatId,
 			Long id) {
@@ -100,7 +101,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}	
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,
 			String unitatCodi) {
@@ -108,7 +109,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<BustiaDto> findAmbFiltreAdmin(
 			Long entitatId,
 			BustiaFiltreDto filtre,
@@ -135,7 +136,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
+	@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
 	public Exception registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -149,7 +150,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
+	@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
 	public long registreAnotacioCrear(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
@@ -163,7 +164,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_BSTWS")
+	@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
 	public Exception registreAnotacioProcessar(
 			Long registreId) {
 		return delegateService.registreAnotacioProcessar(
@@ -214,7 +215,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void updatePermis(
 			Long entitatId,
 			Long id,
@@ -223,7 +224,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}	
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void deletePermis(
 			Long entitatId,
 			Long id,
@@ -286,7 +287,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public int moureAnotacions(long entitatId, long bustiaId, long destiId, String comentari) {
 		return delegateService.moureAnotacions(entitatId, bustiaId, destiId, comentari);
 	}
@@ -304,14 +305,14 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<BustiaDto> findAmbUnitatId(Long entitatId,
 			Long unitatId) {
 		return delegateService.findAmbUnitatId(entitatId, unitatId);
 	}
 
 	@Override
-	@RolesAllowed({"DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<UnitatOrganitzativaDto> findUnitatsSuperiors(Long entitatId, String filtre) {
 		return delegateService.findUnitatsSuperiors(entitatId, filtre);
 	}
@@ -365,7 +366,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_REPORT })
 	public List<BustiaDadesObertesDto> findBustiesPerDadesObertes(
 			Long id,
 			String uo,
@@ -374,7 +375,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}
 
 	@Override
-	@RolesAllowed({"DIS_REPORT", "DIS_ADMIN", "DIS_ADMIN_LECTURA"})
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_REPORT })
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari,
 			Long id,

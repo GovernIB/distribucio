@@ -724,8 +724,9 @@ public class RegistreServiceImpl implements RegistreService {
 		Session session = entityManager.unwrap(Session.class);
 		Query selectQuery = session.createQuery(sqlSelect);
 		if (pageable != null) {
-			selectQuery = selectQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-									.setMaxResults(pageable.getPageSize());
+			selectQuery = selectQuery.
+					setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).
+					setMaxResults(pageable.getPageSize());
 		}
 		Query countQuery = session.createQuery(sqlCount);
 		Object value;
@@ -1526,12 +1527,10 @@ public class RegistreServiceImpl implements RegistreService {
 			Estat estat,
 			String observacions) {
 		try {
-			RegistreEntity registre = this.getRegistrePerIdentificador(id);			
-			
+			RegistreEntity registre = getRegistrePerIdentificador(id);
 			EntitatDto entitatDto = new EntitatDto();
 			entitatDto.setCodi(registre.getEntitatCodi());
 			ConfigHelper.setEntitat(entitatDto);
-			
 			switch (estat) {
 			case REBUDA:
 				registre.updateBackEstat(
@@ -1573,7 +1572,7 @@ public class RegistreServiceImpl implements RegistreService {
 						registre,
 						LogTipusEnumDto.BACK_REBUTJADA,
 						null,
-						false);				
+						false);
 				break;
 			case ERROR:
 				registre.updateBackEstat(
@@ -1592,26 +1591,23 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 	}
 
-	/** Obté el registre per identificador. Com que les anotacions reenviades tenen el mateix identificador si se'n troba més d'una
+	/**
+	 * Obté el registre per identificador. Com que les anotacions reenviades tenen el mateix identificador si se'n troba més d'una
 	 * es retorna la darrera comunicada a un backoffice.
 	 * 
 	 * @param id
 	 * @return
 	 */
 	private RegistreEntity getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception {
-
 		RegistreEntity registre = null;
-		
 		String clauSecreta = registreHelper.getClauSecretaProperty();
-				
-		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades		
+		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
 		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
 		if (registres.isEmpty()) {
 			throw new NotFoundException(
 					id,
 					RegistreEntity.class);
 		}
-
 		String encryptedIdentificator = "";
 		for(RegistreEntity r : registres) {
 			encryptedIdentificator = RegistreHelper.encrypt(
@@ -1622,7 +1618,6 @@ public class RegistreServiceImpl implements RegistreService {
 				break;
 			}
 		}
-		
 		if (registre == null && registres.size() > 0) {
 			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
 			encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(), clauSecreta);
@@ -1637,14 +1632,11 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 		}
-		
 		if (registre == null) {
 			throw new RuntimeException("La clau o identificador és incorrecte");
 		}		
-
 		return registre;
 	}
-
 
 	@Transactional
 	@Override

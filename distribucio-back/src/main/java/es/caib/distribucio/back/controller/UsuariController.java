@@ -49,7 +49,7 @@ public class UsuariController  extends BaseAdminController {
 						"regla.tipus.enum."));
 		return "reglaList";
 	}
-	
+
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession(false);
@@ -89,6 +89,7 @@ public class UsuariController  extends BaseAdminController {
 			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
 		return "usuariForm";
 	}
+
 	@RequestMapping(value = "/configuracio", method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,

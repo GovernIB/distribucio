@@ -6,6 +6,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.DominiDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -28,7 +29,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	private DominiService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public DominiDto create(
 			Long entitatId, 
 			DominiDto tipusDocumental) throws NotFoundException {
@@ -38,7 +39,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public DominiDto update(
 			Long entitatId, 
 			DominiDto tipusDocumental) throws NotFoundException {
@@ -48,7 +49,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public DominiDto delete(
 			Long entitatId, 
 			Long id) throws NotFoundException {
@@ -58,7 +59,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public DominiDto findById(
 			Long entitatId, 
 			Long id) throws NotFoundException {
@@ -68,7 +69,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public PaginaDto<DominiDto> findByEntitatPaginat(
 			Long entitatId,
 			PaginacioParamsDto paginacioParams)
@@ -112,7 +113,7 @@ public class DominiServiceEjb extends AbstractServiceEjb<DominiService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_ADMIN")
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
 	public void evictDominiCache() {
 		delegateService.evictDominiCache();
 	}

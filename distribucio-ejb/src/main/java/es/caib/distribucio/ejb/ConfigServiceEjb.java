@@ -5,6 +5,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ConfigDto;
 import es.caib.distribucio.logic.intf.dto.ConfigGroupDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
@@ -24,31 +25,31 @@ public class ConfigServiceEjb extends AbstractServiceEjb<ConfigService> implemen
 	private ConfigService delegateService = null;
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public ConfigDto updateProperty(ConfigDto property) throws Exception{
 		return delegateService.updateProperty(property);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public List<ConfigGroupDto> findAll(){
 		return delegateService.findAll();
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public List<ConfigDto> findAllPerEntitat(EntitatDto entitat) {
 		return delegateService.findAllPerEntitat(entitat);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public void synchronize() {
 		delegateService.synchronize();
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public void reiniciarTasquesEnSegonPla() {
 		delegateService.reiniciarTasquesEnSegonPla();
 		
@@ -61,13 +62,13 @@ public class ConfigServiceEjb extends AbstractServiceEjb<ConfigService> implemen
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public ConfigDto findByKey(String key) {
 		return delegateService.findByKey(key);
 	}
 
 	@Override
-	@RolesAllowed("DIS_SUPER")
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public List<ConfigDto> findEntitatsConfigByKey(String key) {
 		return delegateService.findEntitatsConfigByKey(key);
 	}
