@@ -20,6 +20,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controlador pel servei REST de backoffice.
@@ -28,6 +29,9 @@ import io.swagger.v3.oas.annotations.Parameter;
  */
 @Controller
 @RequestMapping("/backoffice")
+@Tag(
+		name = "Backoffice",
+		description = "API REST de gestió de backoffices. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
 public class BackofficeRestController {
 
 	private final String ROLE_DIS_BACKWS = "DIS_BACKWS";

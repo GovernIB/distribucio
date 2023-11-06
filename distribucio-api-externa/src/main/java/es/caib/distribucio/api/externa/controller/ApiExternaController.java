@@ -33,7 +33,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @Controller
 @RequestMapping("/opendata")
-@Tag(name = "/opendata", description = "API REST de consulta de Dades Obertes. És necessari tenir el rol DIS_REPORT.")
+@Tag(
+		name = "Opendata",
+		description = "API REST de consulta de Dades Obertes. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REPORT.")
 public class ApiExternaController {
 
 	@Autowired
@@ -55,7 +57,7 @@ public class ApiExternaController {
 			@Parameter(name = "uoSuperior", description = "Codi DIR3 de l'unitat organitzativa superior")
 			@RequestParam(required = false) String uoSuperior) throws Exception {
 		long start = new Date().getTime();
-		StringBuilder logMsg = new StringBuilder("Consulda de dades obertes de bústies (");
+		StringBuilder logMsg = new StringBuilder("Consulta de dades obertes de bústies (");
 		Exception exception = null;
 		logMsg.append("id: " + id); 
 		logMsg.append(", uo: " + uo); 

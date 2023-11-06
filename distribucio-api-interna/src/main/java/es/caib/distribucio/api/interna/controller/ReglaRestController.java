@@ -47,7 +47,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @Controller
 @RequestMapping("/regla")
-@Tag(name = "/regla", description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari autenticar-se amb el rol DIS_REGLA.")
+@Tag(
+		name = "Regla",
+		description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
 public class ReglaRestController {
 
 	@Autowired

@@ -17,22 +17,19 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
-			<url-pattern>/api/rest</url-pattern>
-			<url-pattern>/api/apidoc</url-pattern>
-			<url-pattern>/api-docs</url-pattern>
-			<url-pattern>/api-docs/*</url-pattern>
-			<url-pattern>/js/*</url-pattern>
-			<url-pattern>/css/*</url-pattern>
-			<url-pattern>/img/*</url-pattern>
-			<url-pattern>/ico/*</url-pattern>
-			<url-pattern>/webjars/*</url-pattern>
-			<url-pattern>/images/*</url-pattern>
+			<url-pattern>/</url-pattern>
+			<url-pattern>/index.html</url-pattern>
+			<url-pattern>/swagger-ui</url-pattern>
+			<url-pattern>/swagger-ui/*</url-pattern>
+			<url-pattern>/apidocs</url-pattern>
+			<url-pattern>/apidocs/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Secured areas</web-resource-name>
-			<url-pattern>/*</url-pattern>
+			<url-pattern>/backoffice/*</url-pattern>
+			<url-pattern>/regla/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>**</role-name>

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.api.interna.config;
+package es.caib.distribucio.api.externa.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
