@@ -52,7 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 
 	@Bean
-	//@Order(1)
 	public SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().
 			requestMatchers(publicRequestMatchers()).permitAll().
@@ -96,6 +95,8 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
+	// TODO no funciona perquè aquest handler suposa que li arribarà un OidcUser d'on
+	// podrà obtenir el idToken però realment li arriba un OAuth2User sense idToken.
 	private LogoutHandler oauth2LogoutHandler() {
 		return new LogoutHandler() {
 			private final RestTemplate restTemplate = new RestTemplate();
@@ -123,31 +124,5 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 			}
 		};
 	}
-
-	/*@Bean
-	@Order(2)
-	public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests().
-			requestMatchers(publicRequestMatchers()).
-			permitAll().
-			anyRequest().
-			authenticated();
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-		return http.build();
-	}*/
-
-	/*@Getter
-	public static class CustomOAuth2User extends DefaultOAuth2User {
-		private String accessToken;
-		public CustomOAuth2User(
-				Collection<? extends GrantedAuthority> authorities,
-				Map<String, Object> attributes,
-				String nameAttributeKey,
-				String accessToken) {
-			super(authorities, attributes, nameAttributeKey);
-			this.accessToken = accessToken;
-		}
-		private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-	}*/
 
 }

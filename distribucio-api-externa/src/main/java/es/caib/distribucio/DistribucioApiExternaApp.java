@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -35,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ConditionalOnWarDeployment
 @SpringBootApplication(exclude = {
+		SecurityAutoConfiguration.class,
+		ManagementWebSecurityAutoConfiguration.class,
 		DataSourceAutoConfiguration.class, 
 		DataSourceTransactionManagerAutoConfiguration.class,
 		JpaRepositoriesAutoConfiguration.class,

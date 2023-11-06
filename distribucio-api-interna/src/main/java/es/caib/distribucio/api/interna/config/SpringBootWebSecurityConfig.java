@@ -50,21 +50,23 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 
 	@Bean
-	//@Order(1)
 	public SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().
 			requestMatchers(publicRequestMatchers()).permitAll().
 			anyRequest().authenticated();
 		http.oauth2Login().
-			userInfoEndpoint().userService(oidcUserService());
+			userInfoEndpoint().userService(oauth2UserService());
 		http.logout().
-			addLogoutHandler(keycloakLogoutHandler()).
+			addLogoutHandler(oauth2LogoutHandler()).
 			logoutUrl(LOGOUT_URL).
 			logoutSuccessUrl("/");
+		http.headers().frameOptions().sameOrigin();
+		http.csrf().disable();
+		http.cors();
 		return http.build();
 	}
 
-	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oidcUserService() {
+	private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
 		final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 		return (userRequest) -> {
 			OAuth2User oauth2User = delegate.loadUser(userRequest);
@@ -91,7 +93,9 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
-	private LogoutHandler keycloakLogoutHandler() {
+	// TODO no funciona perquè aquest handler suposa que li arribarà un OidcUser d'on
+	// podrà obtenir el idToken però realment li arriba un OAuth2User sense idToken.
+	private LogoutHandler oauth2LogoutHandler() {
 		return new LogoutHandler() {
 			private final RestTemplate restTemplate = new RestTemplate();
 			@Override
@@ -116,17 +120,5 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 			}
 		};
 	}
-
-	/*@Bean
-	@Order(2)
-	public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests().
-			requestMatchers(publicRequestMatchers()).
-			permitAll().
-			anyRequest().
-			authenticated();
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-		return http.build();
-	}*/
 
 }

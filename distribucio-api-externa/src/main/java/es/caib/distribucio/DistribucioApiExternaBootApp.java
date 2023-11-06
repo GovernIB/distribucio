@@ -1,8 +1,10 @@
 package es.caib.distribucio;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
@@ -12,7 +14,10 @@ import org.springframework.context.annotation.PropertySource;
  * @author Límit Tecnologies
  */
 @ConditionalOnNotWarDeployment
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+		SecurityAutoConfiguration.class,
+		ManagementWebSecurityAutoConfiguration.class
+})
 @ComponentScan
 @PropertySource(
 		ignoreResourceNotFound = true,
