@@ -177,18 +177,19 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 				if (token.getDetails() instanceof PreauthOidcWebAuthenticationDetails) {
 					PreauthOidcWebAuthenticationDetails tokenDetails = (PreauthOidcWebAuthenticationDetails)token.getDetails();
 					String jwtIdToken = tokenDetails.getJwtIdToken();
-					JWT jwt = JWTParser.parse(jwtIdToken);
-					return new PreauthOidcUserDetails(
-							jwtIdToken,
-							token.getName(),
-							jwt.getJWTClaimsSet().getIssueTime().toInstant(),
-							jwt.getJWTClaimsSet().getExpirationTime().toInstant(),
-							jwt.getJWTClaimsSet().getClaims(),
-							nameAttributeKey,
-							authorities);
-				} else {
-					return new User(token.getName(), "N/A", true, true, true, true, authorities);
+					if (jwtIdToken != null) {
+						JWT jwt = JWTParser.parse(jwtIdToken);
+						return new PreauthOidcUserDetails(
+								jwtIdToken,
+								token.getName(),
+								jwt.getJWTClaimsSet().getIssueTime().toInstant(),
+								jwt.getJWTClaimsSet().getExpirationTime().toInstant(),
+								jwt.getJWTClaimsSet().getClaims(),
+								nameAttributeKey,
+								authorities);
+					}
 				}
+				return new User(token.getName(), "N/A", true, true, true, true, authorities);
 			}
 		};
 	}

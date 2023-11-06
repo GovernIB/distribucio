@@ -16,20 +16,18 @@ public class DadesObertesRestTest {
 
 	private static final String URL = "http://localhost:8080/distribucioapi";
 	// Usuari amb només el rol de DIS_REPORT
-	private static final String USERNAME = "disreport";
-	private static final String PASSWORD = "disreport";
+	private static final String USERNAME = "dis_reportws";
+	private static final String PASSWORD = "dis_reportws";
+	private static final boolean BASIC_AUTH = true;
 
-	
 	/** Mètode de prova d'execució per les diferents consultes */
 	public static void main(String[] args) {
-		
 		// Creació del client
 		DadesObertesRestClient client = new DadesObertesRestClient(
 				URL,
 				USERNAME,
 				PASSWORD,
-				false);
-		
+				BASIC_AUTH);
 		// Consulta de bústies
 		try {
 			Long bustiaId = null;
@@ -41,6 +39,6 @@ public class DadesObertesRestTest {
 			System.err.println("Error consultant les bústies: " + ex.getMessage());
 			ex.printStackTrace();
 		}
-		
 	}
+
 }

@@ -1,7 +1,6 @@
 package es.caib.distribucio.api.externa.controller;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.InstanceNotFoundException;
@@ -32,7 +31,7 @@ import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
 public class DadesObertesRestClient {
 
 	private static final String CARPETA_SERVICE_PATH = "/externa/opendata";
-	
+
 	private String baseUrl;
 	private String username;
 	private String password;
@@ -49,7 +48,7 @@ public class DadesObertesRestClient {
 		this.username = username;
 		this.password = password;
 	}
-	
+
 	public DadesObertesRestClient(
 			String baseUrl,
 			String username,
@@ -93,17 +92,14 @@ public class DadesObertesRestClient {
 			throw new RuntimeException(ex);
 		}
 	}
-	
-	
 
-	
 	public boolean isAutenticacioBasic() {
 		return autenticacioBasic;
 	}
 
 	private Client generarClient() {
 		Client jerseyClient = Client.create();
-		jerseyClient.addFilter(
+		/*jerseyClient.addFilter(
 				new ClientFilter() {
 					private ArrayList<Object> cookies;
 					@Override
@@ -121,20 +117,20 @@ public class DadesObertesRestClient {
 						return response;
 					}
 				}
-		);
+		);*/
 		jerseyClient.addFilter(
 				new ClientFilter() {
 					@Override
 					public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
 						ClientHandler ch = getNext();
-				        ClientResponse resp = ch.handle(request);
-				        if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
-				            return resp;
-				        } else {
-				            String redirectTarget = resp.getHeaders().getFirst("Location");
-				            request.setURI(UriBuilder.fromUri(redirectTarget).build());
-				            return ch.handle(request);
-				        }
+						ClientResponse resp = ch.handle(request);
+						if (resp.getStatusInfo().getFamily() != Response.Status.Family.REDIRECTION) {
+							return resp;
+						} else {
+							String redirectTarget = resp.getHeaders().getFirst("Location");
+							request.setURI(UriBuilder.fromUri(redirectTarget).build());
+							return ch.handle(request);
+						}
 					}
 				}
 		);
@@ -150,7 +146,7 @@ public class DadesObertesRestClient {
 			System.out.println(
 					"Autenticant client REST per a fer peticions cap a servei desplegat a damunt jBoss (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
-					"username=" + username +
+					"username=" + username + ", " +
 					"password=********)");
 			jerseyClient.resource(urlAmbMetode).get(String.class);
 			Form form = new Form();
@@ -164,12 +160,11 @@ public class DadesObertesRestClient {
 			System.out.println(
 					"Autenticant REST amb autenticació de tipus HTTP basic (" +
 					"urlAmbMetode=" + urlAmbMetode + ", " +
-					"username=" + username +
+					"username=" + username + ", " +
 					"password=********)");
 			jerseyClient.addFilter(
 					new HTTPBasicAuthFilter(username, password));
 		}
 	}
-
 
 }

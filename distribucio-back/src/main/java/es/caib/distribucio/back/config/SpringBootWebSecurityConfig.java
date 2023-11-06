@@ -7,30 +7,21 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
@@ -52,15 +43,18 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 
 	@Bean
-	public SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain oauth2LoginSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests().
 			requestMatchers(publicRequestMatchers()).permitAll().
 			anyRequest().authenticated();
 		http.oauth2Login().
 			userInfoEndpoint().userService(oauth2UserService());
 		http.logout().
-			addLogoutHandler(oauth2LogoutHandler()).
-			logoutUrl(LOGOUT_URL).
+			invalidateHttpSession(true).
+			clearAuthentication(true).
+			deleteCookies("OAuth_Token_Request_State", "JSESSIONID").
+			//addLogoutHandler(oauth2LogoutHandler()).
+			//logoutUrl(LOGOUT_URL).
 			logoutSuccessUrl("/");
 		http.headers().frameOptions().sameOrigin();
 		http.csrf().disable();
@@ -95,7 +89,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
-	// TODO no funciona perquè aquest handler suposa que li arribarà un OidcUser d'on
+	/*// TODO no funciona perquè aquest handler suposa que li arribarà un OidcUser d'on
 	// podrà obtenir el idToken però realment li arriba un OAuth2User sense idToken.
 	private LogoutHandler oauth2LogoutHandler() {
 		return new LogoutHandler() {
@@ -123,6 +117,6 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 				}
 			}
 		};
-	}
+	}*/
 
 }
