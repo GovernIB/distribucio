@@ -1470,7 +1470,8 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "id=" + id + ")");
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 		try {
-			RegistreEntity registreEntity = this.getRegistrePerIdentificador(id);
+			long registreId = this.getRegistrePerIdentificador(id);
+			RegistreEntity registreEntity = registreRepository.findById(registreId).orElseThrow();
 
 			EntitatDto entitatDto = new EntitatDto();
 			entitatDto.setCodi(registreEntity.getEntitatCodi());
@@ -1523,12 +1524,14 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Override
 	public void canviEstat(
-			AnotacioRegistreId id,
+			long registreId,
 			Estat estat,
 			String observacions) {
 		try {
-			RegistreEntity registre = getRegistrePerIdentificador(id);
+			// L'obté amb bloqueig per si s'està actualitzant
+			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
 			EntitatDto entitatDto = new EntitatDto();
+
 			entitatDto.setCodi(registre.getEntitatCodi());
 			ConfigHelper.setEntitat(entitatDto);
 			switch (estat) {
@@ -1598,7 +1601,8 @@ public class RegistreServiceImpl implements RegistreService {
 	 * @param id
 	 * @return
 	 */
-	private RegistreEntity getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception {
+	@Transactional(readOnly = true)
+	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception {
 		RegistreEntity registre = null;
 		String clauSecreta = registreHelper.getClauSecretaProperty();
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
@@ -1635,7 +1639,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (registre == null) {
 			throw new RuntimeException("La clau o identificador és incorrecte");
 		}		
-		return registre;
+		return registre.getId();
 	}
 
 	@Transactional
