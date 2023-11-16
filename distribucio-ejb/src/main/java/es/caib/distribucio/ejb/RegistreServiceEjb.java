@@ -223,7 +223,8 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 
 	@Override
 	@RolesAllowed("**")
-	public void canviEstat(AnotacioRegistreId id,
+	public void canviEstat(
+			long id,
 			Estat estat,
 			String observacions) {
 		delegateService.canviEstat(id, estat, observacions);
