@@ -3,6 +3,7 @@
 	<deployment>
 		<dependencies>
 			<module name="org.keycloak.keycloak-core" export="TRUE"/>
+			<module name="jdk.management" export="TRUE"/>
 		</dependencies>
 	</deployment>
 	<ear-subdeployments-isolated>false</ear-subdeployments-isolated>
