@@ -49,8 +49,4 @@ public class OpenApiConfig {
 		return openapi;
 	}
 
-	protected boolean enableAuthComponent() {
-		return false;
-	}
-
 }

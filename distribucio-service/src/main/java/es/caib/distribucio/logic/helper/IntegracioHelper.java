@@ -19,10 +19,7 @@ import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
 import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
 import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
-import es.caib.distribucio.persist.entity.MonitorIntegracioEntity;
-import es.caib.distribucio.persist.entity.MonitorIntegracioParamEntity;
-import es.caib.distribucio.persist.repository.MonitorIntegracioParamRepository;
-import es.caib.distribucio.persist.repository.MonitorIntegracioRepository;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -44,10 +41,13 @@ public class IntegracioHelper {
 	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 	public static final String INTCODI_BACKOFFICE = "BACKOFFICE";
 
-	@Autowired
-	private MonitorIntegracioRepository monitorIntegracioRepository;
-	@Autowired
-	private MonitorIntegracioParamRepository monitorIntegracioParamRepository;
+	@Autowired 
+	private MonitorIntegracioService monitorIntegracioService;
+
+//	@Autowired
+//	private MonitorIntegracioRepository monitorIntegracioRepository;
+//	@Autowired
+//	private MonitorIntegracioParamRepository monitorIntegracioParamRepository;
 
 	public List<IntegracioDto> findAll() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
@@ -132,7 +132,8 @@ public class IntegracioHelper {
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
 //		accio.setParametres(this.buildParams(parametres));
-		monitorIntegracioCreate(accio);
+		monitorIntegracioService.create(accio);
+//		monitorIntegracioCreate(accio);
 		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
 	}
 	public void addAccioError(
@@ -180,7 +181,7 @@ public class IntegracioHelper {
 					ExceptionUtils.getStackTrace(throwable));
 		}
 		accio.setParametres(this.buildParams(parametres));
-		monitorIntegracioCreate(accio);
+		monitorIntegracioService.create(accio);
 		logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
 				+ "integracioCodi=" + integracioCodi + ", "
 				+ "parametres=" + parametres + ", "
@@ -190,30 +191,6 @@ public class IntegracioHelper {
 				throwable);
 	}
 
-	public MonitorIntegracioEntity monitorIntegracioCreate(MonitorIntegracioDto monitorIntegracio) {
-		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
-				MonitorIntegracioEntity.getBuilder(
-						monitorIntegracio.getCodi(),
-						monitorIntegracio.getData(),
-						monitorIntegracio.getDescripcio(),
-						monitorIntegracio.getTipus(),
-						monitorIntegracio.getTempsResposta(),
-						monitorIntegracio.getEstat(),
-						monitorIntegracio.getCodiUsuari(),
-						monitorIntegracio.getCodiEntitat(),
-						monitorIntegracio.getErrorDescripcio(),
-						monitorIntegracio.getExcepcioMessage(),
-						monitorIntegracio.getExcepcioStacktrace()).build());
-		for (MonitorIntegracioParamDto paramDto : monitorIntegracio.getParametres()) {
-			MonitorIntegracioParamEntity paramEntity = MonitorIntegracioParamEntity.getBuilder(
-							entity, 
-							paramDto.getNom(), 
-							paramDto.getDescripcio()).build();
-			paramEntity = monitorIntegracioParamRepository.save(paramEntity); 
-			entity.getParametres().add(paramEntity);
-		}
-		return entity;
-	}
 
 	private List<MonitorIntegracioParamDto> buildParams(Map<String, String> parametres) {
 		List<MonitorIntegracioParamDto> parametresDto = new ArrayList<>();

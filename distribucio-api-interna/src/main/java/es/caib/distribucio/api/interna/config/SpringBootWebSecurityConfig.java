@@ -97,11 +97,17 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 					List<GrantedAuthority> authorities = new ArrayList<>();
 					String accessToken = (String)tokenResponseMap.get("access_token");
 					JWT jwt = JWTParser.parse(accessToken);
-					JSONObject realmAccess = (JSONObject)jwt.getJWTClaimsSet().getClaim("realm_access");
-					if (realmAccess != null) {
-						JSONArray roles = (JSONArray)realmAccess.get("roles");
-						if (roles != null) {
-							roles.stream().forEach(r -> authorities.add(new SimpleGrantedAuthority((String)r)));
+					// En el cas dels clients de serveis API REST els rols estan donats d'alta a nivell de client a diferència dels realms del back
+					JSONObject resourceAccess = (JSONObject)jwt.getJWTClaimsSet().getClaim("resource_access");
+					if (resourceAccess != null) {
+						for (String clientId : resourceAccess.keySet()) {
+							JSONObject client = (JSONObject)resourceAccess.get(clientId);
+							if (client != null) {
+								JSONArray roles = (JSONArray)client.get("roles");
+								if (roles != null) {
+									roles.stream().forEach(r -> authorities.add(new SimpleGrantedAuthority((String)r)));
+								}
+							}
 						}
 					}
 					return new UsernamePasswordAuthenticationToken(

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -77,8 +79,7 @@ public class EntitatHelper {
 				}
 			}
 			if (logoCapBytes == null) {
-				throw new RuntimeException(
-						"No s'ha trobat cap logo per l'entitat " + entitatCodi);
+				logger.warn("No s'ha trobat cap logo per l'entitat " + entitatCodi);
 			}
 		} catch (Exception ex) {
 			throw new RuntimeException(
@@ -115,4 +116,5 @@ public class EntitatHelper {
 		return baseDir;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(EntitatHelper.class);
 }

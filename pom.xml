@@ -18,7 +18,7 @@
 		<orika.version>1.5.4</orika.version>
 		<jerseyclient.version>1.19.3</jerseyclient.version>
 		<keycloak.version>22.0.4</keycloak.version>
-		<xdocreport.version>2.0.2</xdocreport.version>
+		<xdocreport.version>2.0.4</xdocreport.version>
 		<arxiu.api.version>2.0.27</arxiu.api.version>
 		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
 		<portafib.version>1.1</portafib.version>

@@ -48,7 +48,6 @@ public interface MonitorIntegracioService {
 	 *            Informació de l'item monitorIntegracio a crear.
 	 * @return El/La MonitorIntegracio creat/creada
 	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio);
 
 	/**

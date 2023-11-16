@@ -52,6 +52,7 @@ import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
+import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -805,31 +806,57 @@ public class PluginHelper {
 		}
 	}
 
-	public Boolean signarDocument(String id,
+	public SignaturaResposta signarDocument(String id,
 			String nom,
 			String motiu,
 			byte[] contingut, 
 			String mime,
-			String tipusDocumental
-			) {
+			String tipusDocumental) {
+		
 		SignaturaPlugin pluginSignar = this.signaturaPlugin();
 
-		try {
+		String accioDescripcio = "Firma en servidor de document annex de l'anotació de registre";
+		String usuariIntegracio = "";
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("nom", nom);
+		accioParams.put("motiu", motiu);
+		accioParams.put("contingut", (contingut != null ? "" + contingut.length : "0") + " bytes");
+		accioParams.put("mime", mime);
+		accioParams.put("tipusDocumental", tipusDocumental);
+		long t0 = System.currentTimeMillis();
 
-			pluginSignar.signar(id,
+		try {
+			SignaturaResposta signatura = pluginSignar.signar(id,
 					nom, 
 					motiu, 
 					contingut, 
 					mime, 
 					tipusDocumental);
+			
+			accioParams.put("resposta", "tipus: " + signatura.getTipusFirmaEni() + 
+					", perfil: " + signatura.getPerfilFirmaEni() + 
+					", nom: " + signatura.getNom() + 
+					", mime: " + signatura.getMime() + 
+					", grandaria: " + (signatura.getContingut() != null ? 
+							signatura.getContingut().length : "-"));
 
-			return true;
-		}catch (Exception e){
-			String msgError = "No s'ha pogut signar el document. ";
-			logger.error(msgError, e);
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+
+			return signatura;
+		}catch (Exception ex){
+			String msgError = "No s'ha pogut signar el document: " + ex.getMessage();
+			logger.error(msgError, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					msgError,
+					ex);
 		}
-		
-		return false;
 	}
 
 	
@@ -1221,8 +1248,8 @@ public class PluginHelper {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
 					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.
-							getDeclaredConstructor(Properties.class).
-							newInstance(configHelper.getAllEntityProperties(null));
+							getDeclaredConstructor(String.class, Properties.class).
+							newInstance("es.caib.distribucio.plugin.dades.usuari.", configHelper.getAllEntityProperties(null));
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							IntegracioHelper.INTCODI_USUARIS,

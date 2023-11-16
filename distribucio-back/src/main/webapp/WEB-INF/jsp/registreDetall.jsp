@@ -229,7 +229,7 @@ li[id^="anotacio_"] {
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/registreJustificant?isVistaMoviments=" + isVistaMoviments);
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>" + "registre/" + registreId + "/registreJustificant?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -238,14 +238,14 @@ li[id^="anotacio_"] {
 		    	var registreId = $(this).data("registreId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + "/" + registreId + "/" + annexId + "?isVistaMoviments=" + isVistaMoviments);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>" + registreId + "/" + annexId + "?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
 		$('.arxiuInfoTab').on('shown.bs.tab', function(data){
 			if (!$(this).data("loaded")) {	
 		    	var registreId = $(this).data("registreId"); 
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "/registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>" + "registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    
@@ -2075,7 +2075,7 @@ li[id^="anotacio_"] {
 							data-registre-numero="${registreNumero + 1}"
 							${registreNumero >= registreTotal ? "disabled='disabled'" : "" }>
 						<spring:message code="comuns.boto.next"/> &gt;&gt;</button>
-		</c:if>			
+		</c:if>
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 </body>

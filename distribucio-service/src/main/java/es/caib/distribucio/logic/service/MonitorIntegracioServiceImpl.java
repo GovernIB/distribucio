@@ -36,11 +36,13 @@ import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
 import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
+import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.persist.entity.MonitorIntegracioEntity;
+import es.caib.distribucio.persist.entity.MonitorIntegracioParamEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.MonitorIntegracioParamRepository;
 import es.caib.distribucio.persist.repository.MonitorIntegracioRepository;
@@ -88,7 +90,27 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
 		logger.trace("Creant una nova monitorIntegracio (" +
 				"monitorIntegracio=" + monitorIntegracio + ")");
-		MonitorIntegracioEntity entity = integracioHelper.monitorIntegracioCreate(monitorIntegracio);
+		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
+				MonitorIntegracioEntity.getBuilder(
+						monitorIntegracio.getCodi(),
+						monitorIntegracio.getData(),
+						monitorIntegracio.getDescripcio(),
+						monitorIntegracio.getTipus(),
+						monitorIntegracio.getTempsResposta(),
+						monitorIntegracio.getEstat(),
+						monitorIntegracio.getCodiUsuari(),
+						monitorIntegracio.getCodiEntitat(),
+						monitorIntegracio.getErrorDescripcio(),
+						monitorIntegracio.getExcepcioMessage(),
+						monitorIntegracio.getExcepcioStacktrace()).build());
+		for (MonitorIntegracioParamDto paramDto : monitorIntegracio.getParametres()) {
+			MonitorIntegracioParamEntity paramEntity = MonitorIntegracioParamEntity.getBuilder(
+							entity, 
+							paramDto.getNom(), 
+							paramDto.getDescripcio()).build();
+			paramEntity = monitorIntegracioParamRepository.save(paramEntity); 
+			entity.getParametres().add(paramEntity);
+		}
 		return conversioTipusHelper.convertir(
 				entity,
 				MonitorIntegracioDto.class);
@@ -228,10 +250,15 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				diagnostic.setCorrecte(true); 
 				break;
 				
-			case "SIGNATURA":					
-				byte[] bytes = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf"));			      
-				pluginHelper.signarDocument("id","nom","",bytes,"mime","pdf");
-				accioDescripcio = "Comunicació amb pluginsignat correcta";
+			case "SIGNATURA":				
+				pluginHelper.signarDocument(
+						String.valueOf( new Date().getTime()), 
+						"test_firmat.pdf", 
+						"Prova firma en servidor diagnòstic Distribucio", 
+						imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf")), 
+						"application/pdf", 
+						"TD99");
+				accioDescripcio = "Comunicació amb el plugin de firma en servidor correcta";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
 				break;
@@ -259,15 +286,10 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				
 }
 		} catch (Exception e) {
-			
 			StringBuilder err = new StringBuilder();
-			
+			err.append("Error amb la integració ").append(codiIntegracio).append(". Excepció: ").append(e.getMessage());
 			diagnostic.setCorrecte(false); 
-			diagnostic.setErrMsg(err.append("Error en integració ").append(codiIntegracio).
-					append("  Excepció: ").append(e.getMessage()).toString());
-			
-			
-			
+			diagnostic.setErrMsg(err.toString());
 		}
 		return diagnostic;
 	}

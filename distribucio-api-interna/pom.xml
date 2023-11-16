@@ -57,6 +57,11 @@
 			<artifactId>distribucio-service-intf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jerseyclient.version}</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
