@@ -59,7 +59,9 @@ import lombok.extern.slf4j.Slf4j;
 		})
 @PropertySource(
 		ignoreResourceNotFound = true,
-		value = { "classpath:application.properties" })
+		value = { "classpath:application.properties",
+				"file://${" + BaseConfig.APP_PROPERTIES + "}",
+				"file://${" + BaseConfig.APP_SYSTEM_PROPERTIES + "}" })
 public class DistribucioApiExternaApp extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

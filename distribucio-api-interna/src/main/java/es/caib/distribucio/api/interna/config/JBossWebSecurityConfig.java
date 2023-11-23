@@ -70,6 +70,11 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 	private String mappableRoles;
 	@Value("${es.caib.distribucio.security.nameAttributeKey:preferred_username}")
 	private String nameAttributeKey;
+	
+	/** En el cas de les APIs REST els rols solen estar en el resource access a nivell de client i depén de la configuració de la publicació al JBoss. Si es vol
+	 * agafar del client amb un resource access concret s'ha d'informar la següent propietat. */
+	@Value("${es.caib.distribucio.security.resourceAcces.api-interna:#{null}}")
+	private String resourceAccess;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -126,6 +131,7 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 	@Bean
 	public AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> authenticationDetailsSource() {
 		J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource authenticationDetailsSource = new J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource() {
+			
 			@Override
 			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest context) {
 				Collection<String> j2eeUserRoles = getUserRoles(context);
@@ -136,10 +142,19 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 					keycloakPrincipal.getKeycloakSecurityContext().getIdTokenString();
 					Set<String> roles = new HashSet<>();
 					roles.addAll(j2eeUserRoles);
-					Access realmAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getRealmAccess();
-					if (realmAccess != null && realmAccess.getRoles() != null) {
-						logger.debug("Keycloak token realm roles: " + realmAccess.getRoles());
-						realmAccess.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+					if (getResourceAccess() == null) {
+						// Rols a nivell de realm
+						Access realmAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getRealmAccess();
+						if (realmAccess != null && realmAccess.getRoles() != null) {
+							logger.debug("Keycloak token realm roles: " + realmAccess.getRoles());
+							realmAccess.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+						}
+					} else {
+						// Rols a nivell de client
+						Map<String, Access> resourceAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getResourceAccess();
+						if (resourceAccess != null) {
+							resourceAccess.get(getResourceAccess()).getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+						}
 					}
 					logger.debug("Creating WebAuthenticationDetails for " + keycloakPrincipal.getName() + " with roles " + roles);
 					result = new PreauthOidcWebAuthenticationDetails(
@@ -234,6 +249,10 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 		public String getName() {
 			return getUsername();
 		}
+	}
+
+	protected String getResourceAccess() {
+		return resourceAccess;
 	}
 
 }

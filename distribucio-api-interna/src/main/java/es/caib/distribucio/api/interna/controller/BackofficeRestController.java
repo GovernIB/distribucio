@@ -9,17 +9,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import es.caib.distribucio.api.interna.model.InfoCanviEstat;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -49,15 +49,21 @@ public class BackofficeRestController {
 			description = "Retorna totes les dades de l'anotació de registre pendents d'enviar al Backoffice consultada")
 	public ResponseEntity<Object> consulta(
 			HttpServletRequest request,
-			@Parameter(name = "id", description = "Identificador de la anotació de registre")
-			final AnotacioRegistreId id) throws SistemaExternException {
+			@Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
+			String indetificador,
+			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true)
+			String clauAcces ) throws SistemaExternException {
+
 		if (!hasRole())
 			return responseUnautorized();
 		try {
+			AnotacioRegistreId id = new AnotacioRegistreId();
+			id.setIndetificador(indetificador);
+			id.setClauAcces(clauAcces);
 			AnotacioRegistreEntrada anotacio = backofficeIntegracioWsService.consulta(id);
 			return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
 		} catch(Exception e) {
-			String errMsg = "Error no controlat consultant l'anotació amb id " + (id != null? id.getIndetificador() : "null") + ": " + e.getMessage();
+			String errMsg = "Error no controlat consultant l'anotació amb id " + indetificador + " i clau " + clauAcces + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -71,18 +77,28 @@ public class BackofficeRestController {
 			description = "Canvia l'estat d'una anotació de registre enviada a backoffice")
 	public ResponseEntity<Object> canviEstat(
 			HttpServletRequest request,
-			@Parameter(name = "infoCanviEstat", description = "Informació del canvi d'estat. Inclou l'identificador de l'anotació de registrem, l'estat que es vol assignar a l'anotació, i observacions.")
-			@RequestBody final InfoCanviEstat infoCanviEstat) throws SistemaExternException {
+			@Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true, in = ParameterIn.QUERY)
+			String indetificador,
+			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true, in = ParameterIn.QUERY)
+			String clauAcces,
+			@Parameter(name = "estat", description = "Codi de l'estat que es comunica per a l'anotació. Els possibles valors són 'PENDENT', 'REBUDA', 'PROCESSADA', 'REBUTJADA' i 'ERROR'", required = true, in = ParameterIn.QUERY)
+		    Estat estat,
+			@Parameter(name = "observacions", description = "Cadena de text opcional per posar observacions en el processament i canvi d'estat per part del backoffice. Se sol usar per indicar un motiu"
+					+ "de rebuig o observacions sobre el resultat del processament.", in = ParameterIn.QUERY)
+		    String observacions) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
 		try {
+			AnotacioRegistreId id = new AnotacioRegistreId();
+			id.setIndetificador(indetificador);
+			id.setClauAcces(clauAcces);
 			backofficeIntegracioWsService.canviEstat(
-					infoCanviEstat.getId(),
-					infoCanviEstat.getEstat(),
-					infoCanviEstat.getObservacions());
+					id,
+					estat,
+					observacions);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch(Exception e) {
-			String errMsg = "Error no controlat canviant l'estat a l'anotació amb id " + (infoCanviEstat != null && infoCanviEstat.getId() != null? infoCanviEstat.getId().getIndetificador() : "null") + ": " + e.getMessage();
+			String errMsg = "Error no controlat canviant l'estat a l'anotació amb id " + indetificador + " i clau " + clauAcces + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
