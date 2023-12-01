@@ -45,7 +45,7 @@ CREATE TABLE DIS_ENTITAT
   FECHA_ACTUALIZACION  TIMESTAMP WITHOUT TIME ZONE,
   FECHA_SINCRONIZACION TIMESTAMP WITHOUT TIME ZONE,
   COLOR_FONS           character varying(32),
-  COLOR_FONS           character varying(32)
+  COLOR_LLETRA         character varying(32)
 );
 
 CREATE TABLE DIS_CONTINGUT
@@ -207,7 +207,8 @@ CREATE TABLE DIS_REGISTRE
   AGAFAT_PER 		character varying(64),
   SOBREESCRIURE           boolean default false,
   REACTIVAT               boolean default false,
-  ANNEXOS_ESTAT_ESBORRANY integer default 0
+  ANNEXOS_ESTAT_ESBORRANY integer default 0,
+  BACK_CODI               character varying(20)
 );
 
 

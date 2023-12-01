@@ -5,11 +5,20 @@ package es.caib.distribucio.plugin.usuari;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Dades d'un usuari.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DadesUsuari implements Serializable {
 
 	private String codi;
@@ -39,41 +48,6 @@ public class DadesUsuari implements Serializable {
 			return null;
 		}
 	}
-	public void setNomSencer(String nomSencer) {
-		this.nomSencer = nomSencer;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getLlinatges() {
-		return llinatges;
-	}
-	public void setLlinatges(String llinatges) {
-		this.llinatges = llinatges;
-	}
-	public String getNif() {
-		return nif;
-	}
-	public void setNif(String nif) {
-		this.nif = nif;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public boolean isActiu() {
-		return actiu;
-	}
-	public void setActiu(boolean actiu) {
-		this.actiu = actiu;
-	}
-
 
 	private static final long serialVersionUID = -139254994389509932L;
-
 }

@@ -9,6 +9,9 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.jboss.ws.api.annotation.WebContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -32,7 +35,7 @@ import lombok.experimental.Delegate;
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/v1/bustia",
 		secureWSDLAccess = false)
-@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
+//@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
 public class BustiaV1WsServiceWs extends AbstractServiceEjb<BustiaV1WsService> implements BustiaV1WsService {
 
 	@Delegate
@@ -43,6 +46,7 @@ public class BustiaV1WsServiceWs extends AbstractServiceEjb<BustiaV1WsService> i
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
+		checkRole();
 		delegateService.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,
@@ -75,4 +79,22 @@ public class BustiaV1WsServiceWs extends AbstractServiceEjb<BustiaV1WsService> i
 		this.delegateService = delegateService;
 	}
 
+	/** Comprova que que l'usuari autenticat té el rol DIS_BSTWS.
+	 * 
+	 */
+	private void checkRole() {
+		boolean hasRole = false;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			for (GrantedAuthority ga : auth.getAuthorities())
+				if (ga.getAuthority().equals(BaseConfig.ROLE_BUSTIA_WS) 
+						|| ga.getAuthority().equals(BaseConfig.ROLE_BUSTIA_WS)) {
+					hasRole = true;
+					break;
+				}
+		}
+		if (!hasRole) {
+			System.err.println("L'usuari " + (auth != null ? auth.getName() : " no està autenticat i ") + " no té el rol " + BaseConfig.ROLE_BUSTIA_WS);
+		}
+	}
 }

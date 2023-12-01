@@ -7,6 +7,9 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
 
 
@@ -35,7 +38,7 @@ public interface BustiaV1WsService {
 	 * @param registreEntrada
 	 *            Dades de l'anotació al registre d'entrada.
 	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public void enviarAnotacioRegistreEntrada(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
@@ -52,7 +55,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar el document.
 	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public void enviarDocument(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,
@@ -69,7 +72,7 @@ public interface BustiaV1WsService {
 	 * @param referenciaDocument
 	 *            Referència per a consultar l'expedient.
 	 */
-	//@PreAuthorize("hasRole('DIS_BSTWS')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
 	public void enviarExpedient(
 			@WebParam(name="entitat") @XmlElement(required=true) String entitat,
 			@WebParam(name="unitatAdministrativa") @XmlElement(required=true) String unitatAdministrativa,

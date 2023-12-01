@@ -404,7 +404,7 @@ public class RegistreAdminController extends BaseAdminController {
 					request,
 					response.getMissatge());
 		}
-		return "redirect:../../" + registreId + "/detall";
+		return "redirect:" + request.getHeader("referer");
 	}
 
 	@RequestMapping(value = "/registre/{registreId}/processarAnnexos", method = RequestMethod.GET)
@@ -431,7 +431,7 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.registre.desat.arxiu.error",
 							null));
 		}
-		return "redirect:../../" + registreId + "/detall";
+		return request.getHeader("referer");
 	}
 
 	@RequestMapping(value = "/registre/{registreId}/reintentarEnviamentBackoffice", method = RequestMethod.GET)

@@ -13,11 +13,20 @@
 	
 	<script>
 		$(document).ready(function() {
+			diagnostic();
+			$('button[name=btnRefrescarDiagnostic]').click(function () {
+				diagnostic();
+				return false;
+			});
+		})
+		
+		function diagnostic() {
 			var integracions = $(".integracio");
 			for(var i=0; i<integracions.length; i++) {
 				let integracio = integracions.eq(i).data('codi');
-				$("#span-refresh-" + integracio).addClass('fa-circle-o-notch');
+				$("#span-refresh-" + integracio).empty().addClass('fa-circle-o-notch');
 				$("#span-refresh-" + integracio).addClass('fa-spin');
+				$("#integracio_" + integracio + "_info").empty();
 				$.ajax({
 					method: "GET",
 			        url: "<c:url value='/integracio/diagnosticAjax'/>/" + integracio, 
@@ -27,25 +36,20 @@
 						$("#span-refresh-" + integracio).removeClass('fa-spin');
 						$("#span-refresh-" + integracio).removeClass('fa-refresh');
 						if (data.correcte == true) {
-							$("#span-refresh-" + integracio).addClass("fa-check text-success");	
-						    let h = document.createElement("p");
-						    let t = document.createTextNode("    "+data.prova);
-						    h.style.cssText = 'display:inline';
-						    h.appendChild(t);
-						    $("#span-refresh-" + integracio).after(h);
+							$("#span-refresh-" + integracio).addClass("fa-check text-success");
+						    let t = document.createTextNode("    " + data.prova);
+							$('#integracio_' + integracio + '_info').append(t);
+							debugger;
 						}else {
 							$("#span-refresh-" + integracio).addClass("fa-times text-danger");
-						    let h = document.createElement("p");
 						    let t = document.createTextNode("    "+data.errMsg);
-						    h.style.cssText = 'display:inline';
-						    h.appendChild(t);
-						    $("#span-refresh-" + integracio).after(h);
-
+						    $('#integracio_' + integracio + '_info').append(t);
+							debugger;
 						}						
 			        }
 			    });
 			} 
-		})
+		}
 	</script>
 	
 </head>
@@ -59,13 +63,14 @@
 			<c:if test="${not empty integracio}">
 				<dl class="dl-horizontal">
 					<dt class="integracio" id="integracio_${integracio.codi}" data-codi="${integracio.codi}">${integracio.nom}</dt>
-					<dd><span id="span-refresh-${integracio.codi}" class="ml-2 fa fa-refresh "></span></dd>
+					<dd><span id="span-refresh-${integracio.codi}" class="ml-2 fa fa-refresh "></span>
+						<p id="integracio_${integracio.codi}_info" style="display:inline;"></p></dd>
 				</dl>
 			</c:if>			
 		</c:forEach>
 	</ul>	
 	<div id="modal-botons">
-		<button name="btnIniciDiagnostic" type="button" id="inici-diagnostic" class="btn btn-success d-none"></button>
+		<button name="btnRefrescarDiagnostic" type="button" id="btnRefrescarDiagnostic" class="btn btn-success"> <span class="fa fa-refresh"></span> <spring:message code="comu.boto.refrescar"/> </button>
 		<a href="<c:url value="/integracio"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>
 

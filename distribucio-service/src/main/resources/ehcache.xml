@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+		xsi:noNamespaceSchemaLocation="ehcache.xsd">
 	<defaultCache eternal="true" maxElementsInMemory="100" overflowToDisk="false" />
 	<cache name="aclCache" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="600" overflowToDisk="false" />
 	<cache name="entitatsUsuari" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="43200" overflowToDisk="false" />

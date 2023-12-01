@@ -4,11 +4,26 @@
 package es.caib.distribucio.plugin.caib.usuari;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.NotFoundException;
 
 import org.fundaciobit.pluginsib.userinformation.UserInfo;
 import org.fundaciobit.pluginsib.userinformation.keycloak.KeyCloakUserInformationPlugin;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.ClientResource;
+import org.keycloak.admin.client.resource.ClientsResource;
+import org.keycloak.admin.client.resource.RoleResource;
+import org.keycloak.admin.client.resource.RolesResource;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,17 +74,106 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 			String grupCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
-			String[] userNames = getUsernamesByRol(grupCodi);
-			List<DadesUsuari> resposta = new ArrayList<DadesUsuari>();
-			for (String userName: userNames) {
-				UserInfo userInfo = getUserInfoByUserName(userName);
-				resposta.add(toDadesUsuari(userInfo));
+			var usuariCodis = getUsernamesByRol(grupCodi);
+//			var usuariCodis = getUsuarisByRol(grupCodi);
+			if (usuariCodis == null || usuariCodis.length == 0) {
+				return new ArrayList<>();
 			}
-			return resposta;
+			return Arrays.stream(usuariCodis).map(u -> DadesUsuari.builder().codi(u).build()).collect(Collectors.toList());
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup " + grupCodi,
 					ex);
+		}
+	}
+	
+	
+	@Override
+	public String[] getUsernamesByRol(String rol) throws Exception {
+
+		Set<String> usernamesClientApp = null;
+		Set<String> usernamesClientPersons = null;
+		Set<String> usersRealm = null;
+		try {
+			String appClient = this.getPropertyRequired("pluginsib.userinformation.keycloak.client_id");
+			usernamesClientApp = this.getUsernamesByRolOfClient(rol, appClient);
+		} catch (Exception ex) {
+			log.error("No s'han obtingut usuaris per client d'aplicació", ex);
+		}
+		try {
+			String personsClient = this.getPropertyRequired("pluginsib.userinformation.keycloak.client_id_for_user_autentication");
+			usernamesClientPersons = this.getUsernamesByRolOfClient(rol, personsClient);
+		} catch (Exception ex) {
+			log.error("No s'han obtingut usuaris per client de persones", ex);
+		}
+		try {
+			usersRealm = this.getUsernamesByRolOfRealm(rol);
+		} catch (Exception ex) {
+			log.error("No s'han obtingut usuaris per realm", ex);
+		}
+		if (usernamesClientApp == null && usernamesClientPersons == null && usersRealm == null) {
+			return null;
+		}
+		Set<String> users = new TreeSet();
+		if (usernamesClientApp != null) {
+			users.addAll(usernamesClientApp);
+		}
+
+		if (usernamesClientPersons != null) {
+			users.addAll(usernamesClientPersons);
+		}
+
+		if (usersRealm != null) {
+			users.addAll(usersRealm);
+		}
+
+		return users.toArray(new String[users.size()]);
+	}
+
+	private Set<String> getUsernamesByRolOfRealm(String rol) throws Exception {
+
+		RolesResource roleres = this.getKeyCloakConnectionForRoles();
+		try {
+			Set<UserRepresentation> userRep = roleres.get(rol).getRoleUserMembers();
+			Set<String> users = new HashSet();
+			Iterator var5 = userRep.iterator();
+
+			while(var5.hasNext()) {
+				UserRepresentation ur = (UserRepresentation)var5.next();
+				users.add(ur.getUsername());
+			}
+
+			return users;
+		} catch (NotFoundException var7) {
+			return null;
+		}
+	}
+
+	private Set<String> getUsernamesByRolOfClient(String rol, String client) throws Exception {
+
+		Keycloak keycloak = this.getKeyCloakConnection();
+		ClientsResource clientsApi = keycloak.realm(this.getPropertyRequired("pluginsib.userinformation.keycloak.realm")).clients();
+		List<ClientRepresentation> crList = clientsApi.findByClientId(client);
+		if (crList == null || crList.isEmpty()) {
+			return null;
+		}
+		ClientResource c = clientsApi.get((crList.get(0)).getId());
+		RolesResource rrs = c.roles();
+
+		try {
+			Set<String> users = new HashSet();
+			RoleResource rr = rrs.get(rol);
+			Set<UserRepresentation> userRep = rr.getRoleUserMembers();
+			Iterator var11 = userRep.iterator();
+
+			while(var11.hasNext()) {
+				UserRepresentation ur = (UserRepresentation)var11.next();
+				users.add(ur.getUsername());
+			}
+
+			return users;
+		} catch (NotFoundException var13) {
+			return null;
 		}
 	}
 

@@ -1187,8 +1187,8 @@ public class RegistreHelper {
 								RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
 										arxiuFirmaDetallDto,
 										firma).build();
-								registreFirmaDetallRepository.saveAndFlush(firmaDetallEntity);
 								firma.getDetalls().add(firmaDetallEntity);
+								registreFirmaDetallRepository.saveAndFlush(firmaDetallEntity);
 							}
 							
 						} else {
