@@ -16,6 +16,7 @@
 		<liquibase.version>4.4.3</liquibase.version>
 		<openapi.version>1.7.0</openapi.version>
 		<orika.version>1.5.4</orika.version>
+		<sitemesh.version>2.5.0</sitemesh.version>
 		<jerseyclient.version>1.19.3</jerseyclient.version>
 		<keycloak.version>22.0.4</keycloak.version>
 		<xdocreport.version>2.0.4</xdocreport.version>

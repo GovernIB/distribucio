@@ -242,12 +242,13 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		
-		
+		// Actualitza l'ordre de les regles
 		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(regla.getEntitat());
-		regles.remove(regla);
 		int i = 0;
 		for (ReglaEntity r : regles) {
-			r.updateOrdre(i++);
+			if (regla.getId() != r.getId()) {
+				r.updateOrdre(i++);
+			}
 		}
 		
 		
