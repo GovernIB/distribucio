@@ -28,8 +28,8 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -2734,13 +2734,15 @@ public class RegistreServiceImpl implements RegistreService {
 						}
 					}
 					// Estat DEFINITIU/ESBORRANY
-					switch(document.getEstat()) {
-					case DEFINITIU:
-						annexPerBackoffice.setEstat(AnnexEstat.DEFINITIU);
-						break;
-					case ESBORRANY:
-						annexPerBackoffice.setEstat(AnnexEstat.ESBORRANY);
-						break;
+					if (document.getEstat() != null) {
+						switch(document.getEstat()) {
+						case DEFINITIU:
+							annexPerBackoffice.setEstat(AnnexEstat.DEFINITIU);
+							break;
+						case ESBORRANY:
+							annexPerBackoffice.setEstat(AnnexEstat.ESBORRANY);
+							break;
+						}
 					}
 					// Informació de si l'annex és vàlid
 					boolean documentValid = true;
