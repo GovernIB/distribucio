@@ -3,15 +3,9 @@
  */
 package es.caib.distribucio.ejb.ws;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
-
-import org.jboss.ws.api.annotation.WebContext;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
@@ -25,17 +19,7 @@ import lombok.experimental.Delegate;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Stateless
-@WebService(
-		name = BackofficeIntegracioWsService.SERVICE_NAME,
-		serviceName = BackofficeIntegracioWsService.SERVICE_NAME + "Service",
-		portName = BackofficeIntegracioWsService.SERVICE_NAME + "ServicePort",
-		targetNamespace = BackofficeIntegracioWsService.NAMESPACE_URI)
-@SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebContext(
-		contextRoot = "/distribucio/ws",
-		urlPattern = "/backofficeIntegracio",
-		secureWSDLAccess = false)
-@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
+//@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
 public class BackofficeIntegracioWsServiceWs extends AbstractServiceEjb<BackofficeIntegracioWsService> implements BackofficeIntegracioWsService {
 
 	@Delegate

@@ -22,16 +22,6 @@ import lombok.experimental.Delegate;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Stateless
-@WebService(
-		name = BackofficeWsService.SERVICE_NAME,
-		serviceName = BackofficeWsService.SERVICE_NAME + "Service",
-		portName = BackofficeWsService.SERVICE_NAME + "ServicePort",
-		targetNamespace = BackofficeWsService.NAMESPACE_URI)
-@SOAPBinding(style = SOAPBinding.Style.RPC)
-@WebContext(
-		contextRoot = "/distribucio/ws",
-		urlPattern = "/backoffice",
-		secureWSDLAccess = false)
 public class BackofficeWsServiceWs extends AbstractServiceEjb<BackofficeWsService> implements BackofficeWsService {
 
 	@Delegate

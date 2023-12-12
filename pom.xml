@@ -47,6 +47,7 @@
 		<module>distribucio-ws-client</module>
 		<module>distribucio-rest-client</module>
 		<module>distribucio-backoffice-utils</module>
+		<module>distribucio-ws</module>
 	</modules>
 	<build>
 		<plugins>

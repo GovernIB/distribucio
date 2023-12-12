@@ -28,8 +28,7 @@
 			<url-pattern>/public/*</url-pattern>
 			<url-pattern>/ws/v0/bustia</url-pattern>
 			<url-pattern>/ws/v1/bustia</url-pattern>
-			<url-pattern>/ws/MCGDws</url-pattern>
-			<url-pattern>/ws/portafibCallback</url-pattern>
+			<url-pattern>/ws/backofficeIntegracio</url-pattern>
 			<url-pattern>/api-docs</url-pattern>
 			<url-pattern>/api-docs/*</url-pattern>
 			<url-pattern>/js/*</url-pattern>

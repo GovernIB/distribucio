@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.back.config;
+package es.caib.distribucio.ws.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
@@ -33,14 +33,11 @@ public class BaseWebSecurityConfig {
 
 	protected RequestMatcher[] publicRequestMatchers() {
 		return new RequestMatcher[] {
-				new AntPathRequestMatcher("/public/**/*"),
-				new AntPathRequestMatcher("/api-docs"),
-				new AntPathRequestMatcher("/api-docs/**/*"),
-				new AntPathRequestMatcher("/css/**/*"),
-				new AntPathRequestMatcher("/fonts/**/*"),
-				new AntPathRequestMatcher("/img/**/*"),
-				new AntPathRequestMatcher("/js/**/*"),
-				new AntPathRequestMatcher("/webjars/**/*"),
+				new AntPathRequestMatcher("/"),
+				new AntPathRequestMatcher("/ws/v0/bustia"),
+				new AntPathRequestMatcher("/ws/backofficeIntegracio"),
+				new AntPathRequestMatcher("/ws/backoffice"),
+				new AntPathRequestMatcher("/index.html"),
 		};
 	}
 

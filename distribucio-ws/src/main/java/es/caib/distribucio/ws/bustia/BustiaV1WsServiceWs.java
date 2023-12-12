@@ -1,20 +1,22 @@
 /**
  * 
  */
-package es.caib.distribucio.ejb.ws;
+package es.caib.distribucio.ws.bustia;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 
+import org.jboss.ws.api.annotation.WebContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
 import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
-import lombok.experimental.Delegate;
 
 /**
  * Implementació dels mètodes per al servei de bústies de DISTRIBUCIO.
@@ -22,48 +24,56 @@ import lombok.experimental.Delegate;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Stateless
-@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
-public class BustiaV1WsServiceWs extends AbstractServiceEjb<BustiaV1WsService> implements BustiaV1WsService {
+@WebService(
+	name = BustiaV1WsServiceI.SERVICE_NAME,
+	serviceName = BustiaV1WsServiceI.SERVICE_NAME + "Service",
+	portName = BustiaV1WsServiceI.SERVICE_NAME + "ServicePort",
+	targetNamespace = BustiaV1WsServiceI.NAMESPACE_URI)
+@SOAPBinding(style = SOAPBinding.Style.RPC)
+@WebContext(
+		contextRoot = "/distribucio/ws",
+	urlPattern = "/v1/bustia",
+	secureWSDLAccess = false)
+public class BustiaV1WsServiceWs implements BustiaV1WsService {
 
-	@Delegate
-	private BustiaV1WsService delegateService = null;
+	@Autowired
+	private BustiaV1WsService bustiaService = null;
 
 	@Override
+	@WebMethod
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
 			RegistreAnotacio registreEntrada) {
 		checkRole();
-		delegateService.enviarAnotacioRegistreEntrada(
+		bustiaService.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,
 				registreEntrada);
 	}
 
 	@Override
+	@WebMethod
 	public void enviarDocument(
 			String entitat,
 			String unitatAdministrativa,
 			String referenciaDocument) {
-		delegateService.enviarDocument(
+		bustiaService.enviarDocument(
 				entitat,
 				unitatAdministrativa,
 				referenciaDocument);
 	}
 
 	@Override
+	@WebMethod
 	public void enviarExpedient(
 			String entitat,
 			String unitatAdministrativa,
 			String referenciaExpedient) {
-		delegateService.enviarExpedient(
+		bustiaService.enviarExpedient(
 				entitat,
 				unitatAdministrativa,
 				referenciaExpedient);
-	}
-
-	protected void setDelegateService(BustiaV1WsService delegateService) {
-		this.delegateService = delegateService;
 	}
 
 	/** Comprova que que l'usuari autenticat té el rol DIS_BSTWS.

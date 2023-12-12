@@ -22,8 +22,19 @@ import es.caib.distribucio.ws.backofficeintegracio.Estat;
  */
 public class BackofficeIntegracioTest {
 	
-	private static final String IDENTIFICADOR = "GOIBE2283-SE/2023"; 
-	private static final String CLAU_ACCESS = "p8EXNvIYMUp7fFfnApvr08OAuriUNID4K8xuAEpTHtA=";
+	// DES
+	private static final String IDENTIFICADOR = "GOIBE1700494730371/2023"; 
+	private static final String CLAU_ACCESS = "cbVHgmzFUd2+6Q1gaYORZVoJ3L2nRkmUnnoWjp4sM+M=";
+	private static final String URL = "http://localhost:8080/distribucio/ws/backofficeIntegracio";
+	private static final String USUARI = "dis_backws";
+	private static final String PASSWORD = "dis_backws";
+	
+	// SE
+//	private static final String IDENTIFICADOR = "GOIBE2283-SE/2023"; 
+//	private static final String CLAU_ACCESS = "p8EXNvIYMUp7fFfnApvr08OAuriUNID4K8xuAEpTHtA=";
+//	private static final String URL = "https://se.caib.es/distribucio/ws/backofficeIntegracio";
+//	private static final String USUARI = "dis_backws";
+//	private static final String PASSWORD = "dis_bacws";
 	
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
@@ -71,9 +82,9 @@ public class BackofficeIntegracioTest {
 	
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"https://se.caib.es/distribucio/ws/backofficeIntegracio",
-				"$udit_distribucio",				
-				"udit_distribucio");				
+				URL,
+				USUARI,				
+				PASSWORD);				
 	}	
 
 }
