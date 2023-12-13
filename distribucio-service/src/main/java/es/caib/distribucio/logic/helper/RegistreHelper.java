@@ -1321,20 +1321,24 @@ public class RegistreHelper {
 		try {
 			usuari = backofficeDesti.getUsuari();
 			String contrasenya = backofficeDesti.getContrasenya();
+			String url = backofficeDesti.getUrl();
 			if (usuari != null && !usuari.isEmpty() && usuari.startsWith("${") && usuari.endsWith("}")) {
 				usuari = configHelper.getConfig(backofficeDesti.getUsuari().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
 			if (contrasenya != null && !contrasenya.isEmpty() && contrasenya.startsWith("${") && contrasenya.endsWith("}")) {
 				contrasenya = configHelper.getConfig(backofficeDesti.getContrasenya().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
+			if (url != null && !url.isEmpty() && url.startsWith("${") && url.endsWith("}")) {
+				url = configHelper.getConfig(backofficeDesti.getUrl().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+			}
 			logger.trace(">>> Abans de generar backoffice WS " + backofficeDesti.getCodi());
 			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
-				String urlAmbMetode = backofficeDesti.getUrl() + "/comunicarAnotacionsPendents";
+				String urlAmbMetode = url + "/comunicarAnotacionsPendents";
 				Client jerseyClient = generarClient();
 				if (usuari != null && !usuari.trim().isEmpty()) {
 					autenticarClient(
 							jerseyClient, 
-							backofficeDesti.getUrl(), 
+							url,
 							urlAmbMetode, 
 							usuari, 
 							contrasenya);
@@ -1349,7 +1353,7 @@ public class RegistreHelper {
 				BackofficeWsService backofficeClient = new WsClientHelper<BackofficeWsService>().generarClientWs(
 						getClass().getResource(
 								"/es/caib/distribucio/core/service/ws/backoffice/backoffice.wsdl"),
-						backofficeDesti.getUrl(),
+						url,
 						new QName(
 								"http://www.caib.es/distribucio/ws/backoffice",
 								"BackofficeService"),

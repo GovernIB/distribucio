@@ -129,7 +129,7 @@
 		<form:hidden path="entitatId"/>
 		<dis:inputText name="codi" textKey="backoffice.form.camp.codi" required="true" comment="backoffice.form.camp.codi.comment"/>
 		<dis:inputText name="nom" textKey="backoffice.form.camp.nom" required="true"/>
-		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true"/>  
+		<dis:inputText name="url" textKey="backoffice.form.camp.url" required="true" comment="backoffice.form.camp.url.comment"/>  
 		<dis:inputSelect 
 				name="tipus" 
 				textKey="backoffice.form.camp.tipus" 

@@ -80,6 +80,18 @@ public class BackofficeValidator implements ConstraintValidator<Backoffice, Obje
 				.addConstraintViolation();	
 			}
 		}
+		
+		if (command.getUrl() != null && !command.getUrl().isEmpty() && 
+				command.getUrl().startsWith("${") && command.getUrl().endsWith("}")) {
+			String url = aplicacioService.propertyFindByNom(command.getUrl().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
+			if (url == null) {
+				valid = false;
+				context.buildConstraintViolationWithTemplate(
+						MessageHelper.getInstance().getMessage("backoffice.validator.no.existeix.property", null, new RequestContext(request).getLocale()))
+				.addNode("url")
+				.addConstraintViolation();	
+			}
+		}
 
 			
 		if (!valid)
