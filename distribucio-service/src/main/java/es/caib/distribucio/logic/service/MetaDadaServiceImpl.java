@@ -330,25 +330,6 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 		return resposta;
 	}
 
-//	@Transactional(readOnly=true)
-//	@Override
-//	public List<MetaDadaDto> findActiveByMetaNode(
-//			Long entitatId) {
-//		logger.debug("Consulta de les meta-dades de l'entitat (" +
-//				"entitatId=" + entitatId + ")");
-//		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-//				entitatId,
-//				false,
-//				true,
-//				false, false, false);
-//		MetaNodeEntity metaNode = entityComprovarHelper.comprovarMetaNode(
-//				entitat,
-//				metaNodeId);
-//		return conversioTipusHelper.convertirList(
-//				metaDadaRepository.findByMetaNodeAndActivaTrueOrderByOrdreAsc(metaNode),
-//				MetaDadaDto.class);
-//	}
-
 	@Transactional(readOnly=true)
 	@Override
 	public List<MetaDadaDto> findByEntitat(Long entitatId) {
@@ -357,25 +338,12 @@ public class MetaDadaServiceImpl implements MetaDadaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
-				false);
+				false,
+				true);
 		return conversioTipusHelper.convertirList(
 				metaDadaRepository.findByEntitatAndActivaTrueOrderByOrdreAsc(entitat),
 				MetaDadaDto.class);
 	}
-//
-//	@Override
-//	public Long findMetaNodeIdByNodeId(
-//			Long entitatId,
-//			Long nodeId) {
-//		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-//				entitatId,
-//				true,
-//				false,
-//				false, false, false);
-//		NodeEntity node = entityComprovarHelper.comprovarNode(entitat, nodeId);
-//		return node.getMetaNode().getId();
-//	}
 	
 	private void moureMetaNodeMetaDada(
 			EntitatEntity entitat,
