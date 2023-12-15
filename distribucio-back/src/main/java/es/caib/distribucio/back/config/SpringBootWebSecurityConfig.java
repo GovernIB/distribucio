@@ -78,6 +78,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 						map(r -> new SimpleGrantedAuthority((String)r)).
 						forEach(mappedAuthorities::add);
 					}
+					mappedAuthorities.add(new SimpleGrantedAuthority("tothom"));
 				}
 			} catch (ParseException ex) {
 				log.warn("No s'han pogut obtenir els rols del token JWT", ex);

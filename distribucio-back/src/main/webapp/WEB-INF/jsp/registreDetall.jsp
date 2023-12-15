@@ -278,10 +278,20 @@ li[id^="anotacio_"] {
 			//</c:if>
 				
          	// if is in modal window
+         	var destiLogic = "${destiLogic}";
+         	
             if ( self !== top ) {
-            	location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
+            	if (destiLogic!="") {
+            		location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
+            	} else {
+            		location.href = '<c:url value="/modal/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	}
             } else {
-            	location.href = '<c:url value="/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
+            	if (destiLogic!="") {
+            		location.href = '<c:url value="/registreUser/pendent/${registre.id}/${destiLogic}/reenviar"/>?' + params.toString();
+            	} else {
+            		location.href = '<c:url value="/registreUser/pendent/${registre.id}/reenviar"/>?' + params.toString();
+            	}
 	        }
     		
     	});

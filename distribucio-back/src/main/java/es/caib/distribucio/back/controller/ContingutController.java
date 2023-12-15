@@ -710,8 +710,8 @@ public class ContingutController extends BaseUserController {
 	@ResponseBody
 	public RespostaPublicacioComentariDto publicarComentari(
 			HttpServletRequest request,
-			@PathVariable Long registreId,
-			@RequestParam String text,
+			@PathVariable Long registreId,			
+			@RequestParam(required=false, defaultValue="") String text,
 			Model model) {
 		RespostaPublicacioComentariDto resposta = new RespostaPublicacioComentariDto();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
