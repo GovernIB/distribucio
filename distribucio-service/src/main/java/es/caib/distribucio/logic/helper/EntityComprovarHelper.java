@@ -88,18 +88,17 @@ public class EntityComprovarHelper {
 			}
 		}
 		if (comprovarPermisAdmin) {
-			//boolean esAdministradorEntitat = permisosHelper.isGrantedAll(
 			boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				entitatId,
 					EntitatEntity.class,
-					new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
+					new Permission[] {ExtendedPermission.ADMINISTRATION},
 					auth);
 			if (!esAdministradorEntitat) {
 				throw new PermissionDeniedException(
 						entitatId,
 						EntitatEntity.class,
 						auth.getName(),
-						"ADMINISTRATION || ADMIN_LECTURA");
+						"ADMINISTRATION");
 			}
 		}
 		if (comprovarPermisUsuariOrAdmin) {

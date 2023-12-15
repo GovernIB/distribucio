@@ -46,22 +46,6 @@ public class UsuariController  extends BaseAdminController {
 		return "reglaList";
 	}
 
-	/*@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String logout(HttpServletRequest request, HttpServletResponse response) {
-		SecurityContextHolder.clearContext();
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
-		}
-		for (Cookie c: request.getCookies()) {
-			// Es sobreescriu el valor de cada cookie a NULL
-			Cookie ck = new Cookie(c.getName(), null);
-			ck.setPath(request.getContextPath());
-			response.addCookie(ck);
-		}
-		return "redirect:/";
-	}*/
-
 	@RequestMapping(value = "/configuracio", method = RequestMethod.GET)
 	public String getConfiguracio(
 			HttpServletRequest request,

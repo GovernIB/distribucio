@@ -1067,9 +1067,9 @@ public class RegistreHelper {
 
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
-				true,
 				false,
-				false);
+				false,
+				true);
 
 		RegistreEntity registre = registreRepository.findByEntitatAndId(
 				entitat,

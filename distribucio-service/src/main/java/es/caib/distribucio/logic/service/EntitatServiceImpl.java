@@ -406,7 +406,7 @@ public class EntitatServiceImpl implements EntitatService {
 		boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				id,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
+				new Permission[] {ExtendedPermission.ADMINISTRATION},
 				auth);
 		if (!esAdministradorEntitat) {
 			logger.error("Aquest usuari no té permisos d'administrador sobre l'entitat (" +
