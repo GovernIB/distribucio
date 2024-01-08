@@ -91,7 +91,9 @@ public class EntityComprovarHelper {
 			boolean esAdministradorEntitat = permisosHelper.isGrantedAny(
 				entitatId,
 					EntitatEntity.class,
-					new Permission[] {ExtendedPermission.ADMINISTRATION},
+					new Permission[] {
+							ExtendedPermission.ADMINISTRATION,
+							ExtendedPermission.ADMIN_LECTURA},
 					auth);
 			if (!esAdministradorEntitat) {
 				throw new PermissionDeniedException(

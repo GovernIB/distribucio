@@ -650,7 +650,7 @@ public class BustiaServiceImpl implements BustiaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
+				false,
 				false);
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("unitat", new String[]{"unitatId"});
