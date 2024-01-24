@@ -25,7 +25,7 @@ import es.caib.distribucio.rest.client.integracio.domini.Estat;
 public class BackofficeIntegracioRestTest {
 	
 	//private static final String URL_BASE = "http://192.168.99.100:8080/distribucioapi/interna";
-	private static final String URL_BASE = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String URL_BASE = "http://localhost:8080/distribucioapi/interna";
 	private static final String USER = "dis_backws";
 	private static final String PASS = "dis_backws";
 

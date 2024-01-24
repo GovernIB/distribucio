@@ -34,9 +34,11 @@ public class BaseWebSecurityConfig {
 	protected RequestMatcher[] publicRequestMatchers() {
 		return new RequestMatcher[] {
 				new AntPathRequestMatcher("/"),
+				/*
 				new AntPathRequestMatcher("/ws/v0/bustia"),
 				new AntPathRequestMatcher("/ws/backofficeIntegracio"),
 				new AntPathRequestMatcher("/ws/backoffice"),
+				*/
 				new AntPathRequestMatcher("/index.html"),
 		};
 	}

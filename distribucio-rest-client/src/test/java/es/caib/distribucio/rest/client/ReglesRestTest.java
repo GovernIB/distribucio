@@ -26,8 +26,7 @@ import es.caib.distribucio.rest.client.regla.domini.ReglaResponse;
  */
 public class ReglesRestTest {
 
-	//private static final String URL = "http://192.168.99.100:8080/distribucioapi/interna";
-	private static final String URL = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String URL = "http://localhost:8080/distribucioapi/interna";
 	// Usuari amb només el rol de DIS_REGLA
 	private static final String USERNAME = "dis_reglaws";
 	private static final String PASSWORD = "dis_reglaws";

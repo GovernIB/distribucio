@@ -109,6 +109,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 							if (roles != null) {
 								roles.stream().forEach(r -> authorities.add(new SimpleGrantedAuthority((String)r)));
 							}
+							authorities.add(new SimpleGrantedAuthority("tothom"));
 						}
 					} else {
 						// Rols a nivell de client
@@ -120,6 +121,7 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 								if (roles != null) {
 									roles.stream().forEach(r -> authorities.add(new SimpleGrantedAuthority((String)r)));
 								}
+								authorities.add(new SimpleGrantedAuthority("tothom"));
 							}
 						}
 					}
