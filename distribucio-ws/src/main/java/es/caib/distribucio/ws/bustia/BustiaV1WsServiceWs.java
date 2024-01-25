@@ -3,13 +3,13 @@
  */
 package es.caib.distribucio.ws.bustia;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.jboss.ws.api.annotation.WebContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,18 +25,18 @@ import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
  */
 @Stateless
 @WebService(
-	name = BustiaV1WsServiceI.SERVICE_NAME,
-	serviceName = BustiaV1WsServiceI.SERVICE_NAME + "Service",
-	portName = BustiaV1WsServiceI.SERVICE_NAME + "ServicePort",
-	targetNamespace = BustiaV1WsServiceI.NAMESPACE_URI)
+		name = BustiaV1WsServiceI.SERVICE_NAME,
+		serviceName = BustiaV1WsServiceI.SERVICE_NAME + "Service",
+		portName = BustiaV1WsServiceI.SERVICE_NAME + "ServicePort",
+		targetNamespace = BustiaV1WsServiceI.NAMESPACE_URI)
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebContext(
 		contextRoot = "/distribucio/ws",
-	urlPattern = "/v1/bustia",
-	secureWSDLAccess = false)
+		urlPattern = "/v1/bustia",
+		secureWSDLAccess = false)
 public class BustiaV1WsServiceWs implements BustiaV1WsService {
 
-	@Autowired
+	@EJB(name="BustiaV1WsServiceEjb")
 	private BustiaV1WsService bustiaService = null;
 
 	@Override

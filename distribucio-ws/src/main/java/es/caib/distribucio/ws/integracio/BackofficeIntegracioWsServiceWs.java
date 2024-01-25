@@ -4,13 +4,13 @@
 package es.caib.distribucio.ws.integracio;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.jboss.ws.api.annotation.WebContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -35,10 +35,10 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backofficeIntegracio",
 		secureWSDLAccess = false)
-//@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
+@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
 public class BackofficeIntegracioWsServiceWs implements BackofficeIntegracioWsServiceI {
 
-	@Autowired
+	@EJB(name="BackofficeIntegracioWsServiceEjb")
 	private BackofficeIntegracioWsService backofficeIntegracioService = null;
 
 	@Override
