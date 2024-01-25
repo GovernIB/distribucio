@@ -35,7 +35,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backofficeIntegracio",
 		secureWSDLAccess = false)
-//@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
+@RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
 public class BackofficeIntegracioWsServiceWs implements BackofficeIntegracioWsServiceI {
 
 	@Autowired

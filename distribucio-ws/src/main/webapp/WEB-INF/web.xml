@@ -4,10 +4,40 @@
 		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 		version="4.0">
 	<display-name>distribucio-api-interna</display-name>
+
+	<!-- 	
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Public areas</web-resource-name>
+			<url-pattern>/</url-pattern>
+			<url-pattern>/index.html</url-pattern>
+			<url-pattern>/public/*</url-pattern>
+			<url-pattern>/ws/v0/bustia</url-pattern>
+			<url-pattern>/ws/v1/bustia</url-pattern>
+			<url-pattern>/ws/backofficeIntegracio</url-pattern>
+			<url-pattern>/ws/backoffice</url-pattern>
+		</web-resource-collection>
+	</security-constraint>
+	 -->
+	 
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Secured areas</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>DIS_BSTWS</role-name>
+			<role-name>DIS_BACKWS</role-name>
+			<role-name>DIS_REGLA</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
 		<realm-name>Govern de les Illes Balears</realm-name>
 	</login-config>
+	
 	<security-role>
 		<description>Rol per poder donar d'alta anotacions a la bústia de Distribucio.</description>
 		<role-name>DIS_BSTWS</role-name>
@@ -20,27 +50,5 @@
 		<description>Rol per poder invocar els mètodes de creació, consulta i modificació de regles per a distribució d'anotacions cap a backoffices de Distribucio.</description>
 		<role-name>DIS_REGLA</role-name>
 	</security-role>
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Public areas</web-resource-name>
-			<url-pattern>/</url-pattern>
-			<url-pattern>/index.html</url-pattern>
-			<url-pattern>/public/*</url-pattern>
-			<!-- 
-			<url-pattern>/ws/v0/bustia</url-pattern>
-			<url-pattern>/ws/v1/bustia</url-pattern>
-			<url-pattern>/ws/backofficeIntegracio</url-pattern>
-			<url-pattern>/ws/backoffice</url-pattern>
-			 -->
-		</web-resource-collection>
-	</security-constraint>
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Secured areas</web-resource-name>
-			<url-pattern>/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>**</role-name>
-		</auth-constraint>
-	</security-constraint>
+
 </web-app>
