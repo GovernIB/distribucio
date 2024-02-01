@@ -26,9 +26,5 @@
 		<description>Rol per poder donar invocar els mètodes d'integració per a backoffices.</description>
 		<role-name>DIS_BACKWS</role-name>
 	</security-role>
-	<security-role>
-		<description>Rol per poder invocar els mètodes de creació, consulta i modificació de regles per a distribució d'anotacions cap a backoffices de Distribucio.</description>
-		<role-name>DIS_REGLA</role-name>
-	</security-role>
 
 </web-app>
