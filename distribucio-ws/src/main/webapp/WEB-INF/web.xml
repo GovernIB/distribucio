@@ -9,6 +9,7 @@
 		<auth-method>KEYCLOAK</auth-method>
 		<realm-name>Govern de les Illes Balears</realm-name>
 	</login-config>
+
 	<security-constraint>
 		<display-name>Unauthenticated</display-name>
 		<web-resource-collection>
