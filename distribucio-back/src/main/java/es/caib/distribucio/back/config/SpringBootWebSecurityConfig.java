@@ -90,34 +90,4 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		};
 	}
 
-	/*// TODO no funciona perquè aquest handler suposa que li arribarà un OidcUser d'on
-	// podrà obtenir el idToken però realment li arriba un OAuth2User sense idToken.
-	private LogoutHandler oauth2LogoutHandler() {
-		return new LogoutHandler() {
-			private final RestTemplate restTemplate = new RestTemplate();
-			@Override
-			public void logout(
-					HttpServletRequest request,
-					HttpServletResponse response,
-					Authentication auth) {
-				if (auth != null) {
-					logoutFromKeycloak((OidcUser)auth.getPrincipal());
-				}
-			}
-			private void logoutFromKeycloak(OidcUser user) {
-				String endSessionEndpoint = user.getIssuer() + "/protocol/openid-connect/logout";
-				UriComponentsBuilder builder = UriComponentsBuilder.
-						fromUriString(endSessionEndpoint).
-						queryParam("id_token_hint", user.getIdToken().getTokenValue());
-				ResponseEntity<String> logoutResponse = restTemplate.getForEntity(
-						builder.toUriString(), String.class);
-				if (logoutResponse.getStatusCode().is2xxSuccessful()) {
-					log.debug("Successfully logged out from Keycloak");
-				} else {
-					log.error("Could not propagate logout to Keycloak");
-				}
-			}
-		};
-	}*/
-
 }

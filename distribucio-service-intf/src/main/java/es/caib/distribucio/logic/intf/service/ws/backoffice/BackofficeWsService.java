@@ -2,17 +2,21 @@ package es.caib.distribucio.logic.intf.service.ws.backoffice;
 
 import java.util.List;
 
-/** Interfície del servei per simular la comunicació d'anotacions pendents
- * 
- */
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlElement;
+
+@WebService(
+		name = BackofficeWsService.SERVICE_NAME,
+		targetNamespace = BackofficeWsService.NAMESPACE_URI)
 public interface BackofficeWsService {
 
-	/** Mètode de la interfície per simular com a backoffice el mètode per rebre
-	 * anotacions pendents.
-	 * 
-	 * @param ids
-	 */
+	public static final String SERVICE_NAME = "Backoffice";
+	public static final String NAMESPACE_URI = "http://www.caib.es/distribucio/ws/backoffice";
+
+	@WebMethod
 	public void comunicarAnotacionsPendents(
-			List<AnotacioRegistreId> ids);
+			@WebParam(name="ids") @XmlElement(required=true) List<AnotacioRegistreId> ids);
 
 }

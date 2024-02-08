@@ -33,7 +33,7 @@ public class BaseWebSecurityConfig {
 
 	protected RequestMatcher[] publicRequestMatchers() {
 		return new RequestMatcher[] {
-				new AntPathRequestMatcher("/public/**/*"),
+				new AntPathRequestMatcher("/public/**"),
 				new AntPathRequestMatcher("/api-docs"),
 				new AntPathRequestMatcher("/api-docs/**/*"),
 				new AntPathRequestMatcher("/css/**/*"),

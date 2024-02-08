@@ -1378,7 +1378,7 @@ public class RegistreHelper {
 			if (ids.size() > 0) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom() + ":" + ex.getMessage();
 			} else {
-				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice";
+				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice: " + ex.getMessage();
 			}
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
