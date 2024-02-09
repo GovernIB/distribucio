@@ -549,6 +549,10 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesEstat = RegistreProcesEstatEnum.REGLA_PENDENT;
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 	}
+	public void removeRegla() {
+		this.regla = null;
+		
+	}
 	public void updateBackCodi(String backCodi) {
 		this.backCodi = backCodi;
 	}
@@ -1010,4 +1014,5 @@ public class RegistreEntity extends ContingutEntity {
 	}
 
 	private static final long serialVersionUID = -2299453443943600172L;
+
 }

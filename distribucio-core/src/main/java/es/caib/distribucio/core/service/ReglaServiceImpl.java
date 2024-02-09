@@ -29,6 +29,7 @@ import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.core.api.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.core.api.exception.NotFoundException;
 import es.caib.distribucio.core.api.exception.ValidationException;
+import es.caib.distribucio.core.api.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.core.api.service.ReglaService;
 import es.caib.distribucio.core.entity.BackofficeEntity;
 import es.caib.distribucio.core.entity.BustiaEntity;
@@ -255,20 +256,24 @@ public class ReglaServiceImpl implements ReglaService {
 			r.updateOrdre(i++);
 		}
 		
-		
-		// cannot remove busties containing any anotacions
-		if (registreRepository.findByRegla(regla) != null && !registreRepository.findByRegla(regla).isEmpty()) {
-			String missatgeError = "No es pot esborrar la regla amb anotacions connectat (" + 
-					"reglaId=" + reglaId + ")";
+		// Comprova que no hi hagi registres pendents de processar aquesta regla
+		List<String> registresPendents = new ArrayList<String>();
+		for (RegistreEntity registre : registreRepository.findByRegla(regla)) {
+			if (RegistreProcesEstatEnum.REGLA_PENDENT.equals(registre.getProcesEstat())) {
+				registresPendents.add(registre.getNumero());
+			} else {
+				registre.removeRegla();
+			}
+		}
+		if (!registresPendents.isEmpty()) {
+			String missatgeError = "No es pot esborrar la regla perquè hi ha " + registresPendents.size() + 
+					" registres pendents de processar-la: " + registresPendents;
 			logger.error(missatgeError);
 			throw new ValidationException(
 					reglaId,
 					ReglaEntity.class,
 					missatgeError);
 		}
-		
-		
-		
 		reglaRepository.delete(regla);
 		return toReglaDto(regla);
 	}
