@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.core.entity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -91,6 +90,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@JoinColumn(name = "unitat_desti_id")
 	protected UnitatOrganitzativaEntity unitatDesti;
 	
+	@Column(name = "aturar_avaluacio")
+	protected boolean aturarAvaluacio = false;
 
 	
 	
@@ -158,6 +159,12 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.unitatDesti = unitatDesti;
 	}
 
+	public boolean isAturarAvaluacio() {
+		return aturarAvaluacio;
+	}
+	public void setAturarAvaluacio(boolean aturarAvaluacio) {
+		this.aturarAvaluacio = aturarAvaluacio;
+	}
 	public void update(
 			BackofficeEntity backofficeDestiId, 
 			String nom,
@@ -167,7 +174,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
-			BustiaEntity bustiaFiltre) {
+			BustiaEntity bustiaFiltre, 
+			boolean aturarAvaluacio) {
 		this.backofficeDesti = backofficeDestiId;
 		this.nom = nom;
 		this.descripcio = descripcio;
@@ -177,6 +185,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 		this.bustiaFiltre = bustiaFiltre;
+		this.aturarAvaluacio = aturarAvaluacio;
 	}
 	public void updatePerTipusBustia(
 			BustiaEntity bustiaDesti) {

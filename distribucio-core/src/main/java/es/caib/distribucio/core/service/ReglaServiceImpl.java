@@ -128,7 +128,7 @@ public class ReglaServiceImpl implements ReglaService {
 					unitatOrganitzativaEntity);
 			break;
 		}
-
+		reglaEntity.setAturarAvaluacio(reglaDto.isAturarAvaluacio());
 		return toReglaDto(reglaRepository.save(reglaEntity));
 	}
 
@@ -164,7 +164,8 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findOne(reglaDto.getUnitatOrganitzativaFiltre().getId()) : null,
-				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findOne(reglaDto.getBustiaFiltreId()) : null);
+				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findOne(reglaDto.getBustiaFiltreId()) : null,
+				reglaDto.isAturarAvaluacio());
 		switch(reglaDto.getTipus()) {
 		case BACKOFFICE:
 			BackofficeEntity backofficeEntity = backofficeRepository.findOne(reglaDto.getBackofficeDestiId());

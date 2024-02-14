@@ -2,6 +2,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/distribucio" prefix="dis"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <c:choose>
@@ -18,6 +19,10 @@
 	</c:if>
 	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
 <script type="text/javascript">
@@ -150,7 +155,18 @@ $(document).ready(function() {
 			<form:hidden path="id"/>
 			
 			<dis:inputText name="nom" textKey="regla.form.camp.nom" required="true"/>
-			<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio"/>
+			<dis:inputTextarea name="descripcio" textKey="regla.form.camp.descripcio" rows="3"/>
+			
+			<!-- Informació de les dates de creació i modificació -->
+			<c:if test="${regla != null }">
+				<div class="row">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-8 comentari ">
+							<spring:message code="comu.data.creacio"></spring:message>: <fmt:formatDate value="${regla.createdDate}" pattern="yyyy-MM-dd HH:mm:ss" />, 
+							<spring:message code="comu.data.modificacio"></spring:message>: <fmt:formatDate value="${regla.lastModifiedDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+					</div>
+				</div>
+			</c:if>
 			
 			<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
 			<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -218,6 +234,7 @@ $(document).ready(function() {
 					optionTemplateFunction="formatSelectUnitat" 
 					required="true"/>
 			</div>
+			<dis:inputCheckbox name="aturarAvaluacio" textKey="bustia.form.camp.aturarAvaluacio"></dis:inputCheckbox>
 			
 			<div id="modal-botons">
 				<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>

@@ -299,6 +299,12 @@
 					</script>
 				</th>
 				
+				<th data-col-name="aturarAvaluacio" data-template="#cellAturarAvaluacioTemplate" data-orderable="true">
+					<spring:message code="regla.list.columna.aturarAvaluacio"/>
+					<script id="cellAturarAvaluacioTemplate" type="text/x-jsrender">
+						{{if aturarAvaluacio}}<span class="fa fa-check"></span>{{/if}}
+					</script>
+				</th>
 				<!-- <th data-col-name="presencial" data-template="#cellPresencialTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.presencial"/>
 					<script id="cellPresencialTemplate" type="text/x-jsrender">

@@ -18,6 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.axis.encoding.Base64;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,7 +320,8 @@ public class ReglaHelper {
 		
 
 		ReglaEntity regla = registre.getRegla();
-		logger.debug("Aplicant regla=" + regla.getNom() + ", tipus=" + regla.getTipus());
+		logger.debug("Aplicant regl =" + regla.getNom() + " de tipus " + regla.getTipus() + " al registre " + registre.getNumero() +
+						". Regla=" + ToStringBuilder.reflectionToString(regla));
 		
 
 		boolean alreadySavedInArxiu = isAnotacioAlreadySavedInArxiu(registre);

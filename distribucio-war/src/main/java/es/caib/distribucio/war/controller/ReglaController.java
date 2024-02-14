@@ -183,7 +183,7 @@ public class ReglaController  extends BaseAdminController {
 				}
 				model.addAttribute("reglesOfOldUnitatWithoutCurrent", reglesOfOldUnitatWithoutCurrent);
 			}
-			model.addAttribute(regla);	
+			model.addAttribute("regla", regla);	
 		}
 		
 		ReglaCommand command = null;
