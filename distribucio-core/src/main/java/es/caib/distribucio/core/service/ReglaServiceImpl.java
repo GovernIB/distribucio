@@ -616,30 +616,16 @@ public class ReglaServiceImpl implements ReglaService {
 		if (registreSimulatDto.getPresencial() != null) {
 			presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
 		}
-		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
-				entitatEntity,
-				unitatOrganitzativaEntity.getId(),
-				bustiaDesti.getId(),
-				registreSimulatDto.getProcedimentCodi(),
-				registreSimulatDto.getAssumpteCodi(), 
-				presencial);
 	
+		registreSimulatDto.setUnitatId(unitatOrganitzativaEntity.getId());
 		registreSimulatDto.setBustiaId(bustiaDesti.getId());
-		
-		if (reglaAplicable != null) {
-			reglaHelper.aplicarSimulation(
-					entitatEntity,
-					registreSimulatDto,
-					reglaAplicable,
-					new ArrayList<ReglaEntity>(),
-					simulatAccions, 
-					presencial);
-		}
 
-		
-		
-
-		
+		reglaHelper.aplicarSimulation(
+				entitatEntity,
+				registreSimulatDto,
+				new ArrayList<ReglaEntity>(),
+				simulatAccions, 
+				presencial);
 		
 		return simulatAccions;
 

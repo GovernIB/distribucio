@@ -78,6 +78,111 @@ public class ReglaHelper {
 
 	private final static String CLAU_XIFRAT = "3çS)ZX!3a94_*?S2";
 
+	/** Troba la primera regla aplicable després de la regla actual en cas que no sigui nul·la en la llista
+	 * de regles. Si itera i no en troba cap retorna null.
+	 * 
+	 * @param reglaActual Regla a partir de la qual se cercarà dins la llista. Li la regla està marcada per aturar avaluació no
+	 * se cercarà cap regla.
+	 * @param regles Conté el llistat de regles per avaluar si són aplicables o no.
+	 * @return
+	 */
+	private ReglaEntity findSeguent(
+			ReglaEntity reglaActual, 
+			List<ReglaEntity> regles,
+			Long unitatId,
+			Long bustiaId,
+			String assumpteCodi, 
+			String procedimentCodi,
+			Boolean presencial) {
+		if (reglaActual != null && reglaActual.isAturarAvaluacio()) {
+			return null;
+		}
+		if (regles == null || regles.isEmpty()) {
+			return null;
+		}
+		// Cerca l'índex de l'actual
+		int iSeguent = 0;
+		if (reglaActual != null) {
+			for (ReglaEntity r : regles) {
+				iSeguent++;
+				if (r.getId().equals(reglaActual.getId())) {
+					break;
+				}
+			}
+		}
+		ReglaEntity reglaSeguent = null;
+		ReglaEntity r;
+		// Cerca la primera regla aplicable des de l'índex seqüent fins al final
+		for (int i = iSeguent; i < regles.size(); i++) {
+			r = regles.get(i);
+			// mirar si coincideix
+			if (this.reglaCoincideix(
+					r,
+					unitatId,
+					bustiaId,
+					procedimentCodi,
+					assumpteCodi,
+					presencial)) {
+				reglaSeguent = r;
+				break;
+			}
+		}
+		// Si no l'ha trobada cerca des de l'inici fins l'índex següent - 1 que seria l'índex de l'actual
+		if (reglaSeguent == null) {
+			for (int i = 0; i < iSeguent; i++) {
+				r = regles.get(i);
+				if (this.reglaCoincideix(
+						r,
+						unitatId,
+						bustiaId,
+						procedimentCodi,
+						assumpteCodi,
+						presencial)) {
+					reglaSeguent = r;
+					break;
+				}
+			}
+		}				
+		return reglaSeguent;
+	}
+	
+
+	/** Compara els filtres de les regles amb les dades del registre. */
+	private boolean reglaCoincideix(
+			ReglaEntity r,
+			Long unitatId,
+			Long bustiaId,
+			String assumpteCodi,
+			String procedimentCodi,
+			Boolean presencial) {
+
+		// Activa
+		boolean coincideix = r.isActiva();
+		// Unitat filtre
+		coincideix = coincideix && (r.getUnitatOrganitzativaFiltre() == null || r.getUnitatOrganitzativaFiltre().getId().equals(unitatId));
+		// Bustia filtre
+		coincideix = coincideix && (r.getBustiaFiltre() == null || r.getBustiaFiltre().getId().equals(bustiaId) );
+		
+		// Procediment 
+		coincideix = coincideix && 
+				(r.getProcedimentCodiFiltre() == null 
+						|| r.getProcedimentCodiFiltre().equals(procedimentCodi)
+						|| r.getProcedimentCodiFiltre().contains(" " + procedimentCodi + " ")
+						|| r.getProcedimentCodiFiltre().startsWith(procedimentCodi + " ")
+						|| r.getProcedimentCodiFiltre().endsWith((" " + procedimentCodi)));
+		// Assumpte
+		coincideix = coincideix && (r.getAssumpteCodiFiltre() == null || r.getAssumpteCodiFiltre().equals(assumpteCodi));
+		// Presencial
+		ReglaPresencialEnumDto esPresencial = null;
+		if (presencial != null) {
+			esPresencial = presencial != null && presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
+		}
+		coincideix = coincideix && (r.getPresencial() == null || r.getPresencial().equals(esPresencial));
+		
+		return coincideix;
+	}
+
+	/** Troba la primera regla aplicable segons les dades del registre. */
 	public ReglaEntity findAplicable(
 			EntitatEntity entitat,
 			Long unitatId,
@@ -106,6 +211,7 @@ public class ReglaHelper {
 		return reglaAplicable;
 	}
 
+	
 	public static String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		byte[] crypted = null;
 		SecretKeySpec skey = new SecretKeySpec(CLAU_XIFRAT.getBytes(), "AES");
@@ -123,8 +229,7 @@ public class ReglaHelper {
 	
 
 	public Exception aplicarControlantException(
-			RegistreEntity registre,
-			List<ReglaEntity> reglesApplied) {
+			RegistreEntity registre) {
 		
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
@@ -139,6 +244,7 @@ public class ReglaHelper {
 				throw new RuntimeException("Exception when aplying rule!!!!!!");
 			}
 			
+			List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
 
 			aplicar(
 					registre,
@@ -236,228 +342,291 @@ public class ReglaHelper {
 	public void aplicarSimulation(
 			EntitatEntity entitatEntity,
 			RegistreSimulatDto registreSimulatDto,
-			ReglaEntity reglaToApply,
 			List<ReglaEntity> reglasApplied,
 			List<RegistreSimulatAccionDto> simulatAccions, 
-			Boolean presencial) {
+			Boolean presencial) 
+	{
 		
+		boolean avaluarTotesLesRegles = true;
 		
-			logger.debug("Simular aplicació regla=" + reglaToApply.getNom() + ", tipus=" + reglaToApply.getTipus());
-
-			switch (reglaToApply.getTipus()) {
-			
-			case BACKOFFICE: // ############################### BACKOFFICE ###############################
-				simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BACKOFFICE, reglaToApply.getBackofficeDesti().getNom(), reglaToApply.getNom()));
-				break;
-				
-			case BUSTIA:
-			case UNITAT: // ############################### BUSTIA / UNITAT ###############################
-				
-				if (reglaToApply.getTipus() == ReglaTipusEnumDto.UNITAT) {
-					
-					BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
-							reglaToApply.getEntitat(),
-							reglaToApply.getUnitatDesti().getCodi());
-					
-					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
-					registreSimulatDto.setUnitatId(bustiaDesti.getUnitatOrganitzativa().getId());
-					
-					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
-					registreSimulatDto.setBustiaId(bustiaDesti.getId());
-				} else if (reglaToApply.getTipus() == ReglaTipusEnumDto.BUSTIA) {
-					
-					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA, reglaToApply.getBustiaDesti().getNom(), reglaToApply.getNom()));
-					registreSimulatDto.setBustiaId(reglaToApply.getBustiaDesti().getId());
-					registreSimulatDto.setUnitatId(reglaToApply.getBustiaDesti().getUnitatOrganitzativa().getId());
+		ReglaEntity reglaToApply = null;
+		boolean reglaAplicada = false;
+		boolean reglaBackoffice = false;
+		boolean reglaJaAplicada = false;
+		boolean aturarAvaluacio = false;
+		
+		logger.debug("Inici de la simulació (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");
+		
+		List<ReglaEntity> regles = null;
+		do {
+			reglaAplicada = false;
+			if (avaluarTotesLesRegles) {
+				// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
+				// o torna a l'inici de la llista
+				if (regles == null) {
+					regles = reglaRepository.findByEntitatOrderByOrdreAsc(entitatEntity);
 				}
-				break;
-
+				reglaToApply = this.findSeguent(
+						reglaToApply, 
+						regles,
+						registreSimulatDto.getUnitatId(),
+						registreSimulatDto.getBustiaId(),
+						registreSimulatDto.getProcedimentCodi(),
+						registreSimulatDto.getAssumpteCodi(), 
+						presencial);
+			} else {
+				// Consulta la següent regla
+				reglaToApply = this.findAplicable(
+						entitatEntity,
+						registreSimulatDto.getUnitatId(),
+						registreSimulatDto.getBustiaId(),
+						registreSimulatDto.getProcedimentCodi(),
+						registreSimulatDto.getAssumpteCodi(), 
+						presencial);					
 			}
-			
-			
-			
-			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
-			reglasApplied.add(reglaToApply);
-//			Boolean presencial = null;
-//			if (registreSimulatDto.getPresencial() != null) {
-//				presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
-//			}
-			ReglaEntity nextReglaToApply = findAplicable(
-					entitatEntity,
-					registreSimulatDto.getUnitatId(),
-					registreSimulatDto.getBustiaId(),
-					registreSimulatDto.getProcedimentCodi(),
-					registreSimulatDto.getAssumpteCodi(), 
-					presencial);
-			
-			if (nextReglaToApply != null) {
-				boolean alreadyApplied = false;
+
+			if (reglaToApply != null) {
+				
+
+				// Comprova si ja s'ha aplicat anteriorment.
 				for (ReglaEntity reglaE : reglasApplied) {
-					if (nextReglaToApply.getId().equals(reglaE.getId())) {
-						alreadyApplied = true;
+					if (reglaToApply.getId().equals(reglaE.getId())) {
+						reglaJaAplicada = true;
+						break;
 					}
 				}
-				if (!alreadyApplied) {
-					aplicarSimulation(
-							entitatEntity,
-							registreSimulatDto,
-							nextReglaToApply,
-							reglasApplied,
-							simulatAccions, 
-							presencial);
-					
+				if (reglaJaAplicada) {
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.LOOP_DETECTED, null, reglaToApply.getNom()));
 				} else {
-					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.LOOP_DETECTED, null, nextReglaToApply.getNom()));
+					logger.debug("Simular aplicació regla=" + reglaToApply.getNom() + ", tipus=" + reglaToApply.getTipus());
+
+					// Aplica la regla a la simulació
+					switch (reglaToApply.getTipus()) {
+					
+					case BACKOFFICE: // ############################### BACKOFFICE ###############################
+						simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BACKOFFICE, reglaToApply.getBackofficeDesti().getNom(), reglaToApply.getNom()));
+						reglaBackoffice = true;
+						break;
+						
+					case BUSTIA:
+					case UNITAT: // ############################### BUSTIA / UNITAT ###############################
+						
+						if (reglaToApply.getTipus() == ReglaTipusEnumDto.UNITAT) {
+							
+							BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
+									reglaToApply.getEntitat(),
+									reglaToApply.getUnitatDesti().getCodi());
+							
+							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
+							registreSimulatDto.setUnitatId(bustiaDesti.getUnitatOrganitzativa().getId());
+							
+							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+							registreSimulatDto.setBustiaId(bustiaDesti.getId());
+						} else if (reglaToApply.getTipus() == ReglaTipusEnumDto.BUSTIA) {
+							
+							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA, reglaToApply.getBustiaDesti().getNom(), reglaToApply.getNom()));
+							registreSimulatDto.setBustiaId(reglaToApply.getBustiaDesti().getId());
+							registreSimulatDto.setUnitatId(reglaToApply.getBustiaDesti().getUnitatOrganitzativa().getId());
+						}
+						break;
+
+					}						
 				}
+				reglasApplied.add(reglaToApply);
+				reglaAplicada = true;
+				
+				if (reglaToApply.isAturarAvaluacio()) {
+					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.ATURAR_EVALUACIO, null, reglaToApply.getNom()));
+					aturarAvaluacio = true;						
+				}
+			} else {
+				reglaAplicada = false;
 			}
+		} while (reglaAplicada 
+				&& !reglaBackoffice 
+				&& !reglaJaAplicada
+				&& !aturarAvaluacio);
 	}
 
-	
-	
 	public void aplicar(
 			RegistreEntity registre,
 			List<ReglaEntity> reglesApplied) {
 		
-
-		ReglaEntity regla = registre.getRegla();
-		logger.debug("Aplicant regl =" + regla.getNom() + " de tipus " + regla.getTipus() + " al registre " + registre.getNumero() +
-						". Regla=" + ToStringBuilder.reflectionToString(regla));
+		boolean avaluarTotesLesRegles = true;
 		
+		boolean reglaAplicada = false;
+		boolean reglaBackoffice = false;
+		boolean reglaJaAplicada = false;
+		boolean aturarAvaluacio = false;
 
-		boolean alreadySavedInArxiu = isAnotacioAlreadySavedInArxiu(registre);
-		boolean reactivada = isAnotacioReactivada(registre);
-		boolean isPerConeixement = isAnotacioPerConeixement(registre);
-		boolean anotacioDuplicada = isAnotacioDuplicada(registre);
+
+		logger.debug("Inici del processametn de regles per l'anotació " + registre.getNumero() + " (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");
 		
-		String error = null;
-		try {
-			switch (regla.getTipus()) {
+		List<ReglaEntity> regles = null;
+		do {
+			reglaAplicada = false;
+			ReglaEntity regla = registre.getRegla();
 			
-			case BACKOFFICE: // ############################### BACKOFFICE ###############################
+			logger.debug("Aplicant regla =" + regla.getNom() + " de tipus " + regla.getTipus() + " al registre " + registre.getNumero() + ". Regla=" + ToStringBuilder.reflectionToString(regla));
+
+			boolean alreadySavedInArxiu = isAnotacioAlreadySavedInArxiu(registre);
+			boolean reactivada = isAnotacioReactivada(registre);
+			boolean isPerConeixement = isAnotacioPerConeixement(registre);
+			boolean anotacioDuplicada = isAnotacioDuplicada(registre);
+			
+			String error = null;
+			try {
+				switch (regla.getTipus()) {
 				
-				if (alreadySavedInArxiu) {
-					if ((isPermesSobreescriureAnotacions() && !reactivada && !isPerConeixement && !anotacioDuplicada) || !isPermesSobreescriureAnotacions()) {
-						if (regla.getBackofficeDesti() == null) {
-							throw new RuntimeException("La regla és del tipus backoffice però no té un backoffice específic assignat, s'ha de corregir la regla.");
+				case BACKOFFICE: // ############################### BACKOFFICE ###############################
+					
+					if (alreadySavedInArxiu) {
+						if ((isPermesSobreescriureAnotacions() && !reactivada && !isPerConeixement && !anotacioDuplicada) || !isPermesSobreescriureAnotacions()) {
+							if (regla.getBackofficeDesti() == null) {
+								throw new RuntimeException("La regla és del tipus backoffice però no té un backoffice específic assignat, s'ha de corregir la regla.");
+							}
+							
+							registre.updateProcesBackPendent();
+							registre.updateBackPendentData(new Date());
+							// Informa del codi del backoffice que processarà l'anotació
+							registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
+							// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
+							
+							
+							// ------ log and evict -----------
+							List<String> params = new ArrayList<>();
+							params.add(regla.getNom());
+							params.add(regla.getTipus().toString());
+							contingutLogHelper.log(
+									registre,
+									LogTipusEnumDto.REGLA_APLICAR,
+									params,
+									false);	
 						}
-						
-						registre.updateProcesBackPendent();
-						registre.updateBackPendentData(new Date());
-						// Informa del codi del backoffice que processarà l'anotació
-						registre.updateBackCodi(regla.getBackofficeDesti().getCodi());
-						// there is @Scheduled method that sends periodically anotacios with state: BACK_PENDENT to backoffice  
-						
-						
-						// ------ log and evict -----------
-						List<String> params = new ArrayList<>();
-						params.add(regla.getNom());
-						params.add(regla.getTipus().toString());
-						contingutLogHelper.log(
-								registre,
-								LogTipusEnumDto.REGLA_APLICAR,
-								params,
-								false);	
+					} else {
+						registre.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
 					}
-				} else {
-					registre.setNewProcesEstat(RegistreProcesEstatEnum.ARXIU_PENDENT);
-				}
-				
-				break;
-				
-			case BUSTIA:
-			case UNITAT: // ############################### BUSTIA / UNITAT ###############################
-				
-				BustiaEntity bustiaDesti = null;
-				if (regla.getTipus() == ReglaTipusEnumDto.UNITAT) {
+					reglaBackoffice = true;					
+					break;
 					
-					bustiaDesti = bustiaHelper.findBustiaDesti(
-							registre.getEntitat(),
-							regla.getUnitatDesti().getCodi());
+				case BUSTIA:
+				case UNITAT: // ############################### BUSTIA / UNITAT ###############################
 					
-				} else if (regla.getTipus() == ReglaTipusEnumDto.BUSTIA) {
-					
-					bustiaDesti = regla.getBustiaDesti();
-				}
-				
-				// ------ log -----------
-				ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
-						registre,
-						bustiaDesti,
-						null,
-						false,
-						null);
-				List<String> params = new ArrayList<>();
-				params.add(regla.getNom());
-				params.add(regla.getTipus().toString());
-				contingutLogHelper.logAccioWithMovimentAndParams(
-						registre,
-						LogTipusEnumDto.REGLA_APLICAR,
-						contingutMoviment,
-						true,
-						params);
-				
-				
-				
-				// ------- change anotacio to next state -------- 
-				RegistreProcesEstatEnum estat;
-				if (!alreadySavedInArxiu) {
-					estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
-				} else {
-					estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
-				}
-				registre.setNewProcesEstat(estat);				
-				break;
-			}
-
-			// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
-			reglesApplied.add(regla);
-			ContingutEntity pare = registre.getPare();
-			if (HibernateHelper.isProxy(pare))
-				pare = HibernateHelper.deproxy(pare);
-			BustiaEntity bustia = (BustiaEntity)pare;
-//			Boolean presencial = null;
-//			if (regla.getPresencial() != null) {
-//				presencial = regla.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
-//			}
-			Boolean presencial = null;
-			if (registre.getPresencial() != null) {
-				presencial = registre.getPresencial();
-			}
-			ReglaEntity nextReglaToApply = findAplicable(
-					registre.getEntitat(),
-					bustia.getUnitatOrganitzativa().getId(),
-					bustia.getId(),
-					registre.getProcedimentCodi(),
-					registre.getAssumpteCodi(), 
-					presencial);
-			
-			if (nextReglaToApply != null) {
-				boolean alreadyApplied = false;
-				for (ReglaEntity reglaE : reglesApplied) {
-					if (nextReglaToApply.getId().equals(reglaE.getId())) {
-						alreadyApplied = true;
+					BustiaEntity bustiaDesti = null;
+					if (regla.getTipus() == ReglaTipusEnumDto.UNITAT) {
+						
+						bustiaDesti = bustiaHelper.findBustiaDesti(
+								registre.getEntitat(),
+								regla.getUnitatDesti().getCodi());
+						
+					} else if (regla.getTipus() == ReglaTipusEnumDto.BUSTIA) {
+						
+						bustiaDesti = regla.getBustiaDesti();
 					}
-				}
-				if (!alreadyApplied) {
-					registre.updateRegla(nextReglaToApply);
-					aplicar(
+					
+					// ------ log -----------
+					ContingutMovimentEntity contingutMoviment = contingutHelper.ferIEnregistrarMoviment(
 							registre,
-							reglesApplied);
+							bustiaDesti,
+							null,
+							false,
+							null);
+					List<String> params = new ArrayList<>();
+					params.add(regla.getNom());
+					params.add(regla.getTipus().toString());
+					contingutLogHelper.logAccioWithMovimentAndParams(
+							registre,
+							LogTipusEnumDto.REGLA_APLICAR,
+							contingutMoviment,
+							true,
+							params);
+					
+					
+					
+					// ------- change anotacio to next state -------- 
+					RegistreProcesEstatEnum estat;
+					if (!alreadySavedInArxiu) {
+						estat = RegistreProcesEstatEnum.ARXIU_PENDENT;
+					} else {
+						estat = RegistreProcesEstatEnum.BUSTIA_PENDENT;
+					}
+					registre.setNewProcesEstat(estat);				
+					break;
 				}
+
+				// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
+				reglesApplied.add(regla);
+				reglaAplicada = true;
+
+				if (regla.isAturarAvaluacio()) {
+					aturarAvaluacio = true;						
+				}
+
+				ContingutEntity pare = registre.getPare();
+				if (HibernateHelper.isProxy(pare))
+					pare = HibernateHelper.deproxy(pare);
+				BustiaEntity bustia = (BustiaEntity)pare;
+				Boolean presencial = null;
+				if (registre.getPresencial() != null) {
+					presencial = registre.getPresencial();
+				}
+				
+				
+				ReglaEntity nextReglaToApply = null;
+				
+				if (avaluarTotesLesRegles) {
+					// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
+					// o torna a l'inici de la llista
+					if (regles == null) {
+						regles = reglaRepository.findByEntitatOrderByOrdreAsc(registre.getEntitat());
+					}
+					nextReglaToApply = this.findSeguent(
+							regla, 
+							regles,
+							bustia.getUnitatOrganitzativa().getId(),
+							bustia.getId(),
+							registre.getProcedimentCodi(),
+							registre.getAssumpteCodi(), 
+							presencial);
+				} else {
+					// Consulta la següent regla
+					nextReglaToApply = this.findAplicable(
+							registre.getEntitat(),
+							bustia.getUnitatOrganitzativa().getId(),
+							bustia.getId(),
+							registre.getProcedimentCodi(),
+							registre.getAssumpteCodi(), 
+							presencial);
+				}
+
+				if (nextReglaToApply != null) {
+					// Comprova si ja s'ha aplicat anteriorment.
+					for (ReglaEntity reglaE : reglesApplied) {
+						if (nextReglaToApply.getId().equals(reglaE.getId())) {
+							reglaJaAplicada = true;
+							break;
+						}
+					}
+					if (!reglaJaAplicada) {
+						registre.updateRegla(nextReglaToApply);
+						regla = nextReglaToApply;
+					}
+				}
+
+			} catch (Exception ex) {
+				Throwable t = ExceptionUtils.getRootCause(ex);
+				if (t == null)
+					t = ex.getCause();
+				if (t == null)
+					t = ex;
+				error = ExceptionUtils.getStackTrace(t);
+				throw new AplicarReglaException(error);
 			}
 			
-			
-			
-		} catch (Exception ex) {
-			Throwable t = ExceptionUtils.getRootCause(ex);
-			if (t == null)
-				t = ex.getCause();
-			if (t == null)
-				t = ex;
-			error = ExceptionUtils.getStackTrace(t);
-			throw new AplicarReglaException(error);
-		}
-		
+		} while (reglaAplicada 
+				&& !reglaBackoffice 
+				&& !reglaJaAplicada
+				&& !aturarAvaluacio);
 	}
 
 	/*
