@@ -29,8 +29,8 @@ public class BackofficeIntegracioRestTest {
 	private static final String USER = "dis_backws";
 	private static final String PASS = "dis_backws";
 
-	private static final String IDENTIFICADOR = "GOIBE1669628521530/2022";
-	private static final String CLAU_ACCESS = "IsCo71eGcWiq14eEP3USG8GD7pt0OYusdLP1DB7EIAM=";
+	private static final String IDENTIFICADOR = "GOIBE1707325316091/2024"; 
+	private static final String CLAU_ACCESS = "F1sm0tSDIORwHJEaVJwhZiB72st06qnvokYvCcntbGY=";
 
 
 	@Test

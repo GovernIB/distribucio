@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -262,10 +263,17 @@ public class EntitatServiceImpl implements EntitatService {
 	@Override
 	public List<EntitatDto> findAccessiblesUsuariActual() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String authUserName = auth.getName();
-		logger.trace("Consulta les entitats accessibles per l'usuari actual (" +
-				"usuari=" + authUserName + ")");
-		return cacheHelper.findEntitatsAccessiblesUsuari(authUserName);
+		List<EntitatDto> entitats;
+		if (auth != null) {
+			String authUserName = auth.getName();
+			logger.trace("Consulta les entitats accessibles per l'usuari actual (" +
+					"usuari=" + authUserName + ")");
+			entitats = cacheHelper.findEntitatsAccessiblesUsuari(authUserName);
+		} else {
+			logger.trace("Consulta de les entitats per l'usuari actual sense usuari autenticat.");
+			entitats = new ArrayList<EntitatDto>();
+		}
+		return entitats;
 	}
 
 	@Transactional(readOnly = true)

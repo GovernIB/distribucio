@@ -140,7 +140,7 @@ public class ReglaServiceImpl implements ReglaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
+				false,
 				false);
 		ReglaEntity reglaEntity = entityComprovarHelper.comprovarRegla(
 				entitat,
@@ -195,7 +195,7 @@ public class ReglaServiceImpl implements ReglaService {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
-				true,
+				false,
 				false);
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
@@ -215,7 +215,7 @@ public class ReglaServiceImpl implements ReglaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 					entitatId,
 					false,
-					true,
+					false,
 					false);
 			ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 					entitat,

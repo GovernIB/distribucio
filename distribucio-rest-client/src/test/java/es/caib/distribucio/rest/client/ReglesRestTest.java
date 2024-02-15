@@ -51,11 +51,48 @@ public class ReglesRestTest {
 				USERNAME,
 				PASSWORD,
 				true);
-		
-		//ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, backoffice, activa, presencial);
-		ReglesRestTest.consulta(client, "20220429");
+		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, backoffice, activa, presencial);
+		//ReglesRestTest.alta(client, entitat, sia, backoffice, activa, presencial);
+		//ReglesRestTest.consulta(client, "20220429");
 	}
 
+	/** Test general per crear una nova regla, canviar-li l'estat, consultar-la i modificar-la.
+	 * 
+	 * @param client
+	 * @param entitat
+	 * @param sia
+	 * @param backoffice
+	 * @param activa
+	 * @param presencial
+	 */
+	private static void alta(
+			ReglesRestClient client, 
+			String entitat, 
+			String sia,
+			String backoffice, 
+			Boolean activa, 
+			Boolean presencial) {
+
+		System.out.println("Inici test alta de regles per API REST de regles ( " + 
+				"entitat= " + entitat +
+				", sia= " + sia +
+				", backoffice= " + backoffice +
+				", activa = " + activa +
+				", presencial= " + presencial
+		);
+		ReglaResponse ret;
+		// Creació de la regla
+		try {
+			ret = client.add(entitat, sia, backoffice, presencial);
+			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
+									ret.getStatus() + " " + ret.getMsg());
+		} catch (Exception e) {
+			System.err.println("Error creant la regla: " + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	/** Test general per crear una nova regla, canviar-li l'estat, consultar-la i modificar-la.
 	 * 
 	 * @param client

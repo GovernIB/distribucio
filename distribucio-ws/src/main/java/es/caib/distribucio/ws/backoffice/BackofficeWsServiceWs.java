@@ -22,16 +22,16 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
  */
 @Stateless
 @WebService(
-		name = BackofficeWsServiceI.SERVICE_NAME,
-		serviceName = BackofficeWsServiceI.SERVICE_NAME + "Service",
-		portName = BackofficeWsServiceI.SERVICE_NAME + "ServicePort",
-		targetNamespace = BackofficeWsServiceI.NAMESPACE_URI)
+		name = BackofficeWsService.SERVICE_NAME,
+		serviceName = BackofficeWsService.SERVICE_NAME + "Service",
+		portName = BackofficeWsService.SERVICE_NAME + "ServicePort",
+		targetNamespace = BackofficeWsService.NAMESPACE_URI)
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 @WebContext(
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backoffice",
 		secureWSDLAccess = false)
-public class BackofficeWsServiceWs implements BackofficeWsServiceI {
+public class BackofficeWsServiceWs implements BackofficeWsService {
 
 	@EJB(name="BackofficeWsServiceEjb")
 	private BackofficeWsService backofficeWsService = null;

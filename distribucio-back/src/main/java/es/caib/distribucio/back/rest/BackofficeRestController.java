@@ -46,15 +46,9 @@ public class BackofficeRestController extends BaseUserController {
 
 	
 	@RequestMapping(value = "/comunicarAnotacionsPendents", method = RequestMethod.POST)
-//	@Operation(
-//			summary = "Comunicar anotacions als backoffice", 
-//					description = "Comunicar les anotacions que estiguin en estat pendent de comunicar al backoffice " + 
-//					"amb el backoffice corresponent"	
-//			)
 	@ResponseBody
 	public ResponseEntity<Object> comunicarAnotacionsPendents(			
 			HttpServletRequest request,
-//			@Parameter(name="ids", description="Llista de identificadors d'anotacions comunicades.")
 			@RequestBody(required = true) List<AnotacioRegistreId> ids) {
 		try {
 			logger.debug("S'ha rebut una comunicació de " + ids.size() + " anotacions pendents: " + ids);
