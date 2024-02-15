@@ -97,7 +97,16 @@ $(document).ready(function() {
 		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
 		<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 		
-		<div class="col-xs-4"></div><div class="col-xs-8"><button id="simularBtn" type="submit" class="btn btn-primary" style="margin-bottom: 35px;"><span class="fa fa-cog"></span> <spring:message code="comu.boto.simular"/></button></div>
+		<div class="col-xs-4"></div><div class="col-xs-8">
+			<div class="row">
+				<div class="col-sm-6">
+					<button id="simularBtn" type="submit" class="btn btn-primary" style="margin-bottom: 35px;"><span class="fa fa-cog"></span> <spring:message code="comu.boto.simular"/></button>
+				</div>
+				<div class="col-sm-6" style="text-align:right">
+					<b><spring:message code="regla.list.etiqueta.avaluarTotes"/>: </b> ${(avaluarTotes == true) ? 'Sí' : 'No'}			
+				</div>
+			</div>
+		</div>
 		
 		<div id="modal-botons">
 			<a href="<c:url value="/regla"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

@@ -27,6 +27,7 @@ import es.caib.distribucio.core.api.dto.EntitatDto;
 import es.caib.distribucio.core.api.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.core.api.dto.ReglaDto;
 import es.caib.distribucio.core.api.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.core.api.service.AplicacioService;
 import es.caib.distribucio.core.api.service.BackofficeService;
 import es.caib.distribucio.core.api.service.BustiaService;
 import es.caib.distribucio.core.api.service.ReglaService;
@@ -57,6 +58,8 @@ public class ReglaController  extends BaseAdminController {
 	private UnitatOrganitzativaService unitatService;
 	@Autowired
 	private BackofficeService backofficeService;
+	@Autowired
+	private AplicacioService aplicacioService;	
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 
@@ -76,15 +79,11 @@ public class ReglaController  extends BaseAdminController {
 		
 		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
 		
-//		model.addAttribute(
-//				"busties", 
-//				bustiaService.findAmbEntitat(
-//						entitatActual.getId()));
 		List<BackofficeDto> backOfficesList = backofficeService.findByEntitat(entitatActual.getId());
 		model.addAttribute(
 				"backoffices",
 				backOfficesList);
-		
+
 		return "reglaList";
 	}
 	
@@ -248,6 +247,10 @@ public class ReglaController  extends BaseAdminController {
 			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
 		
+		model.addAttribute(
+				"avaluarTotes", 
+				aplicacioService.propertyFindByNom("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"));
+
 		return "reglaSimuladorForm";
 	}
 	
@@ -265,6 +268,10 @@ public class ReglaController  extends BaseAdminController {
 			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
 		
+		model.addAttribute(
+				"avaluarTotes", 
+				aplicacioService.propertyFindByNom("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"));
+
 		if (bindingResult.hasErrors()) {
 			return "reglaSimuladorForm";
 		}

@@ -2434,7 +2434,7 @@ public class RegistreServiceImpl implements RegistreService {
 		if (reglaAplicable != null) {
 			registre.updateRegla(reglaAplicable);
 			List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
-			Exception ex = reglaHelper.aplicarControlantException(registre);
+			Exception ex = reglaHelper.aplicarControlantException(registre, reglesApplied);
 
 			if (ex == null) {
 				ReglaEntity lastReglaApplied = reglesApplied.get(reglesApplied.size() - 1);

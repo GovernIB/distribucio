@@ -229,7 +229,8 @@ public class ReglaHelper {
 	
 
 	public Exception aplicarControlantException(
-			RegistreEntity registre) {
+			RegistreEntity registre, 
+			List<ReglaEntity> reglesApplied) {
 		
 		logger.debug("Aplicant regla a anotació de registre (" +
 				"registreId=" + registre.getId() + ", " +
@@ -244,8 +245,6 @@ public class ReglaHelper {
 				throw new RuntimeException("Exception when aplying rule!!!!!!");
 			}
 			
-			List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
-
 			aplicar(
 					registre,
 					reglesApplied);
@@ -575,7 +574,9 @@ public class ReglaHelper {
 				
 				ReglaEntity nextReglaToApply = null;
 				
-				if (avaluarTotesLesRegles) {
+				if (avaluarTotesLesRegles
+						 && !aturarAvaluacio
+						 && !reglaBackoffice) {
 					// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
 					// o torna a l'inici de la llista
 					if (regles == null) {
