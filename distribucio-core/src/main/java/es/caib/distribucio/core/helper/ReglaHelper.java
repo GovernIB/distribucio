@@ -346,8 +346,9 @@ public class ReglaHelper {
 			List<RegistreSimulatAccionDto> simulatAccions, 
 			Boolean presencial) 
 	{
-		
-		boolean avaluarTotesLesRegles = true;
+		// Consulta la  propietat per avaluar totes les regles o només la 1a coincident com fins ara
+		boolean avaluarTotesLesRegles = 
+				configHelper.getAsBoolean("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes", false);
 		
 		ReglaEntity reglaToApply = null;
 		boolean reglaAplicada = false;
