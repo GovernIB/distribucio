@@ -24,9 +24,9 @@ public class ApiRestIntegracioTest {
 				BackofficeIntegracioRestClientFactory.getRestClient(BASE_URL, USERNAME, PASSWORD);
 		
 		// Crea l'objecte id per la consulta
-		AnotacioRegistreId id = new AnotacioRegistreId();			
-		id.setIndetificador("GOIBE715-DEV/2023");
-		id.setClauAcces("JRwLmCaMES6JKAAnzhd5K9Qi4ppjudiLwd+2b5LNsVo=");		
+		AnotacioRegistreId id = new AnotacioRegistreId();
+		id.setIndetificador("GOIBE1708001141307/2024");
+		id.setClauAcces("BYlMBmFPLGJSytavAH325Yjbwqo9xfXhM+wM0vzHxL4=");
 
 		// Consulta l'anotació
 		AnotacioRegistreEntrada anotacio = restClient.consulta(id);

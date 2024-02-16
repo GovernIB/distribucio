@@ -52,8 +52,7 @@ public class BackofficeRestController {
 			@Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
 			String indetificador,
 			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true)
-			String clauAcces ) throws SistemaExternException {
-
+			String clauAcces) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
 		try {
@@ -82,10 +81,10 @@ public class BackofficeRestController {
 			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true, in = ParameterIn.QUERY)
 			String clauAcces,
 			@Parameter(name = "estat", description = "Codi de l'estat que es comunica per a l'anotació. Els possibles valors són 'PENDENT', 'REBUDA', 'PROCESSADA', 'REBUTJADA' i 'ERROR'", required = true, in = ParameterIn.QUERY)
-		    Estat estat,
+			Estat estat,
 			@Parameter(name = "observacions", description = "Cadena de text opcional per posar observacions en el processament i canvi d'estat per part del backoffice. Se sol usar per indicar un motiu"
 					+ "de rebuig o observacions sobre el resultat del processament.", in = ParameterIn.QUERY)
-		    String observacions) throws SistemaExternException {
+			String observacions) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
 		try {
