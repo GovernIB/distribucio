@@ -661,7 +661,8 @@ public class RegistreHelper {
 		Exception exceptionAplicantRegla = null;
 		if (anotacio.getRegla() != null) {
 			if (anotacio.getRegla().isActiva()) {
-				exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio, new ArrayList<ReglaEntity>());
+				List<ReglaEntity> reglesApplied = new ArrayList<ReglaEntity>();
+				exceptionAplicantRegla = reglaHelper.aplicarControlantException(anotacio, reglesApplied);
 				if (exceptionAplicantRegla != null) {
 					anotacio.updateProces(
 							null,

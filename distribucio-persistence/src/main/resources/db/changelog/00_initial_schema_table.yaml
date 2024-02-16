@@ -1966,6 +1966,9 @@ databaseChangeLog:
             name: presencial
             type: BOOLEAN
         - column:
+            name: aturar_avaluacio
+            type: BOOLEAN
+        - column:
             name: backoffice_desti_id
             type: ${pk_type}
         - column:

@@ -13,5 +13,6 @@ public enum RegistreSimulatAccionEnumDto {
 	UNITAT,
 	BUSTIA_PER_DEFECTE,
 	BUSTIA,
-	LOOP_DETECTED
+	LOOP_DETECTED,
+	ATURAR_EVALUACIO
 }

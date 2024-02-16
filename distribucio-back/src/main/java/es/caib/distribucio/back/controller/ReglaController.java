@@ -35,6 +35,7 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
@@ -57,6 +58,8 @@ public class ReglaController  extends BaseAdminController {
 	private UnitatOrganitzativaService unitatService;
 	@Autowired
 	private BackofficeService backofficeService;
+	@Autowired
+	private AplicacioService aplicacioService;
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
 
@@ -64,30 +67,21 @@ public class ReglaController  extends BaseAdminController {
 	public String get(
 			HttpServletRequest request,
 			Model model) {
-		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		
 		model.addAttribute(
 				"reglaTipusEnumOptions",
 				EnumHelper.getOptionsForEnum(
 						ReglaTipusEnumDto.class,
 						"regla.tipus.enum."));
 		ReglaFiltreCommand reglaFiltreCommand = getFiltreCommand(request);
-		
 		model.addAttribute("reglaFiltreCommand", reglaFiltreCommand);
-		
-//		model.addAttribute(
-//				"busties", 
-//				bustiaService.findAmbEntitat(
-//						entitatActual.getId()));
 		List<BackofficeDto> backOfficesList = backofficeService.findByEntitat(entitatActual.getId());
 		model.addAttribute(
 				"backoffices",
 				backOfficesList);
-		
 		return "reglaList";
 	}
-	
+
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -103,8 +97,7 @@ public class ReglaController  extends BaseAdminController {
 				"id");
 		return dtr;
 	}
-	
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public String reglaPost(
 			HttpServletRequest request,
@@ -183,7 +176,7 @@ public class ReglaController  extends BaseAdminController {
 				}
 				model.addAttribute("reglesOfOldUnitatWithoutCurrent", reglesOfOldUnitatWithoutCurrent);
 			}
-			model.addAttribute(regla);	
+			model.addAttribute("regla", regla);
 		}
 		
 		ReglaCommand command = null;
@@ -248,6 +241,10 @@ public class ReglaController  extends BaseAdminController {
 			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
 		
+		model.addAttribute(
+				"avaluarTotes", 
+				aplicacioService.propertyFindByNom("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"));
+		
 		return "reglaSimuladorForm";
 	}
 	
@@ -264,6 +261,10 @@ public class ReglaController  extends BaseAdminController {
 				"busties",
 			bustiaService.findActivesAmbEntitat(
 						entitatActual.getId()));
+		
+		model.addAttribute(
+				"avaluarTotes", 
+				aplicacioService.propertyFindByNom("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"));
 		
 		if (bindingResult.hasErrors()) {
 			return "reglaSimuladorForm";

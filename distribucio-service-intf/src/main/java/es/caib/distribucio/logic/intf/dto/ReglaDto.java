@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.logic.intf.dto;
 
+import java.util.Date;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
@@ -18,7 +20,9 @@ public class ReglaDto extends AuditoriaDto {
 	private String nom;
 	private String descripcio;
 	
-	
+	private Date createdDate;
+	private Date lastModifiedDate;
+
 	// ------------- FILRE ----------------------
 	private String assumpteCodiFiltre;
 	private String procedimentCodiFiltre;
@@ -45,6 +49,7 @@ public class ReglaDto extends AuditoriaDto {
 
 	private UnitatOrganitzativaDto unitatDesti;
 
+	private boolean aturarAvaluacio;
 	
 	public Long getBustiaFiltreId() {
 		return bustiaFiltreId;
@@ -75,6 +80,18 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
+	}
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 	public ReglaTipusEnumDto getTipus() {
 		return tipus;
@@ -176,5 +193,11 @@ public class ReglaDto extends AuditoriaDto {
 	public void setEntitatNom(String entitatNom) {
 		this.entitatNom = entitatNom;
 	}
-	
+	public boolean isAturarAvaluacio() {
+		return aturarAvaluacio;
+	}
+	public void setAturarAvaluacio(boolean aturarAvaluacio) {
+		this.aturarAvaluacio = aturarAvaluacio;
+	}
+
 }

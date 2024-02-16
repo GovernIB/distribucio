@@ -35,6 +35,7 @@ import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
@@ -125,7 +126,7 @@ public class ReglaServiceImpl implements ReglaService {
 			reglaEntity.updatePerTipusUnitat(unitatOrganitzativaEntity);
 			break;
 		}
-
+		reglaEntity.setAturarAvaluacio(reglaDto.isAturarAvaluacio());
 		return toReglaDto(reglaRepository.save(reglaEntity));
 	}
 
@@ -161,7 +162,8 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findById(reglaDto.getUnitatOrganitzativaFiltre().getId()).orElse(null) : null,
-				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null);
+				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null,
+				reglaDto.isAturarAvaluacio());
 		switch(reglaDto.getTipus()) {
 		case BACKOFFICE:
 			BackofficeEntity backofficeEntity = backofficeRepository.findById(reglaDto.getBackofficeDestiId()).orElse(null);
@@ -241,7 +243,6 @@ public class ReglaServiceImpl implements ReglaService {
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaId);
-		
 		// Actualitza l'ordre de les regles
 		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(regla.getEntitat());
 		int i = 0;
@@ -250,21 +251,24 @@ public class ReglaServiceImpl implements ReglaService {
 				r.updateOrdre(i++);
 			}
 		}
-		
-		
-		// cannot remove busties containing any anotacions
-		if (registreRepository.findByRegla(regla) != null && !registreRepository.findByRegla(regla).isEmpty()) {
-			String missatgeError = "No es pot esborrar la regla amb anotacions connectat (" + 
-					"reglaId=" + reglaId + ")";
+		// Comprova que no hi hagi registres pendents de processar aquesta regla
+		List<String> registresPendents = new ArrayList<String>();
+		for (RegistreEntity registre : registreRepository.findByRegla(regla)) {
+			if (RegistreProcesEstatEnum.REGLA_PENDENT.equals(registre.getProcesEstat())) {
+				registresPendents.add(registre.getNumero());
+			} else {
+				registre.removeRegla();
+			}
+		}
+		if (!registresPendents.isEmpty()) {
+			String missatgeError = "No es pot esborrar la regla perquè hi ha " + registresPendents.size() + 
+					" registres pendents de processar-la: " + registresPendents;
 			logger.error(missatgeError);
 			throw new ValidationException(
 					reglaId,
 					ReglaEntity.class,
 					missatgeError);
 		}
-		
-		
-		
 		reglaRepository.delete(regla);
 		return toReglaDto(regla);
 	}
@@ -606,33 +610,17 @@ public class ReglaServiceImpl implements ReglaService {
 		if (registreSimulatDto.getPresencial() != null) {
 			presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
 		}
-		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
-				entitatEntity,
-				unitatOrganitzativaEntity.getId(),
-				bustiaDesti.getId(),
-				registreSimulatDto.getProcedimentCodi(),
-				registreSimulatDto.getAssumpteCodi(), 
-				presencial);
-	
+		registreSimulatDto.setUnitatId(unitatOrganitzativaEntity.getId());
 		registreSimulatDto.setBustiaId(bustiaDesti.getId());
 		
-		if (reglaAplicable != null) {
-			reglaHelper.aplicarSimulation(
-					entitatEntity,
-					registreSimulatDto,
-					reglaAplicable,
-					new ArrayList<ReglaEntity>(),
-					simulatAccions, 
-					presencial);
-		}
-
-		
-		
-
-		
+		reglaHelper.aplicarSimulation(
+				entitatEntity,
+				registreSimulatDto,
+				new ArrayList<ReglaEntity>(),
+				simulatAccions, 
+				presencial);
 		
 		return simulatAccions;
-
 	}
 	
 	

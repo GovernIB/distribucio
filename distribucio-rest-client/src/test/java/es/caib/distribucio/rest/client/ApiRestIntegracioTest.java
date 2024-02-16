@@ -11,9 +11,9 @@ import es.caib.distribucio.rest.client.integracio.domini.Estat;
  */
 public class ApiRestIntegracioTest {
 
-	public static String BASE_URL = "https://dev.caib.es/distribucioapi/interna";
-	public static String USERNAME = "$helium_distribucio";
-	public static String PASSWORD = "****";
+	public static String BASE_URL = "http://localhost:8080/distribucioapi/interna";
+	public static String USERNAME = "dis_backws";
+	public static String PASSWORD = "dis_backws";
 	
 	/** Prova de crear una regla, descactivar-la i consultar-la. 
 	 * @throws Exception */

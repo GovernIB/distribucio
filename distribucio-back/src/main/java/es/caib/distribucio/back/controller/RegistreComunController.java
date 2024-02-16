@@ -57,12 +57,12 @@ public class RegistreComunController extends BaseController{
 	@Autowired
 	private RegistreHelper registreHelper;
 
-	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
+	@RequestMapping(value = "/classificarMultiple/{registreId}", method = RequestMethod.POST)
 	@ResponseBody
 	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@PathVariable String codiProcediment,
+			@RequestParam(value="codiProcediment", required=false) String codiProcediment,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, BaseConfig.ROLE_USER);
 		ClassificacioResultatDto resultat = registreService.classificar(
