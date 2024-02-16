@@ -4,6 +4,12 @@ databaseChangeLog:
     author: limit
     changes:
     - sqlFile:
-        path: scripts/initial_data_config.sql
+        dbms: 'oracle'
+        path: scripts/initial_data_config_oracle.sql
+        splitStatements: true
+        relativeToChangelogFile: true
+    - sqlFile:
+        dbms: 'postgresql'
+        path: scripts/initial_data_config_postgresql.sql
         splitStatements: true
         relativeToChangelogFile: true

@@ -90,7 +90,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			name = "bustia_id",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regla_bustia_fk"))
 	protected BustiaEntity bustiaDesti;
-	
+
+	@Column(name = "aturar_avaluacio")
+	protected boolean aturarAvaluacio = false;
+
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "unitat_desti_id",
@@ -159,6 +162,13 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.unitatDesti = unitatDesti;
 	}
 
+	public boolean isAturarAvaluacio() {
+		return aturarAvaluacio;
+	}
+	public void setAturarAvaluacio(boolean aturarAvaluacio) {
+		this.aturarAvaluacio = aturarAvaluacio;
+	}
+
 	public void update(
 			BackofficeEntity backofficeDestiId, 
 			String nom,
@@ -168,7 +178,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
-			BustiaEntity bustiaFiltre) {
+			BustiaEntity bustiaFiltre, 
+			boolean aturarAvaluacio) {
 		this.backofficeDesti = backofficeDestiId;
 		this.nom = nom;
 		this.descripcio = descripcio;
@@ -178,6 +189,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 		this.bustiaFiltre = bustiaFiltre;
+		this.aturarAvaluacio = aturarAvaluacio;
 	}
 	public void updatePerTipusBustia(
 			BustiaEntity bustiaDesti) {

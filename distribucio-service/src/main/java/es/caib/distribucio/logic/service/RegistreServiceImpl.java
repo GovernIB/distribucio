@@ -1616,7 +1616,7 @@ public class RegistreServiceImpl implements RegistreService {
 		for(RegistreEntity r : registres) {
 			encryptedIdentificator = RegistreHelper.encrypt(
 					id.getIndetificador() + "_" + Long.valueOf(r.getId()),
-					clauSecreta);	
+					clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
 				registre = r;
 				break;

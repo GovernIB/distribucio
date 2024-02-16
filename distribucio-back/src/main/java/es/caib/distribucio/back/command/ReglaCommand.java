@@ -46,6 +46,7 @@ public class ReglaCommand {
 	private Long bustiaDestiId;
 	private Long backofficeDestiId;
 	private Long unitatDestiId;
+	private boolean aturarAvaluacio;
 	
 	
 	public Long getId() {
@@ -149,6 +150,13 @@ public class ReglaCommand {
 	}
 	public void setUnitatDestiId(Long unitatDestiId) {
 		this.unitatDestiId = unitatDestiId;
+	}
+
+	public boolean isAturarAvaluacio() {
+		return aturarAvaluacio;
+	}
+	public void setAturarAvaluacio(boolean aturarAvaluacio) {
+		this.aturarAvaluacio = aturarAvaluacio;
 	}
 
 	public interface CreateUpdate {}
