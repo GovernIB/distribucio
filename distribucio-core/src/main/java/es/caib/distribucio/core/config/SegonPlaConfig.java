@@ -136,19 +136,19 @@ public class SegonPlaConfig implements SchedulingConfigurer {
         );
         monitorTasquesService.addTasca(codiEnviarBackoffice);
         
-   	 	//Aplicar regles de tipus backoffice
-        final String codiAplicarReglesBackoffice = "aplicarReglesBackoffice";
-		monitorTasquesService.addTasca(codiAplicarReglesBackoffice);
+   	 	//Aplicar regles pendents
+        final String codiAplicarReglesPendents = "aplicarReglesPendents";
+		monitorTasquesService.addTasca(codiAplicarReglesPendents);
         taskRegistrar.addTriggerTask(
                 new Runnable() {
                     @Override
                     public void run() {
-                    	monitorTasquesService.inici(codiAplicarReglesBackoffice);
+                    	monitorTasquesService.inici(codiAplicarReglesPendents);
                         try{ 
-                        	segonPlaService.aplicarReglesPendentsBackoffice();
-                        	monitorTasquesService.fi(codiAplicarReglesBackoffice);
+                        	segonPlaService.aplicarReglesPendents();
+                        	monitorTasquesService.fi(codiAplicarReglesPendents);
                         } catch(Throwable th) {                        	
-                        	tractarErrorTascaSegonPla(th, codiAplicarReglesBackoffice);
+                        	tractarErrorTascaSegonPla(th, codiAplicarReglesPendents);
                         }
                     }
                 },
@@ -168,13 +168,13 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     	Date nextExecution = trigger.nextExecutionTime(triggerContext);
                         
                         Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
-        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesBackoffice, longNextExecution);
+        				monitorTasquesService.updateProperaExecucio(codiAplicarReglesPendents, longNextExecution);
                         
                         return nextExecution;
                     }
                 }
         );
-        monitorTasquesService.addTasca(codiAplicarReglesBackoffice);
+        monitorTasquesService.addTasca(codiAplicarReglesPendents);
         
         
    	 	//Tancar contenidors

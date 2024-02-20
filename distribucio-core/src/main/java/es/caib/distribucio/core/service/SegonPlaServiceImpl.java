@@ -264,7 +264,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 	
 	@Override
-	public void aplicarReglesPendentsBackoffice() {
+	public void aplicarReglesPendents() {
 		
 		long startTime = new Date().getTime();
 		logger.trace("Execució de tasca programada (" + startTime + "): aplicar regles pendents");

@@ -18,7 +18,7 @@ public interface SegonPlaService {
 	/**
 	 * Aplica les regles pendents a les anotacions de registre.
 	 */
-	public void aplicarReglesPendentsBackoffice();
+	public void aplicarReglesPendents();
 
 	/**
 	 * Tanca els contenidors de l'arxiu (expedients) de les anotacions de registre

@@ -39,8 +39,8 @@ public class SegonPlaServiceBean implements SegonPlaService {
 
 	@Override
 	@RolesAllowed("tothom")
-	public void aplicarReglesPendentsBackoffice() {
-		delegate.aplicarReglesPendentsBackoffice();
+	public void aplicarReglesPendents() {
+		delegate.aplicarReglesPendents();
 	}
 	
 	@Override

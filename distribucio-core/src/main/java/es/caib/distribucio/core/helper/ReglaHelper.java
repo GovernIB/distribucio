@@ -452,7 +452,9 @@ public class ReglaHelper {
 			RegistreEntity registre,
 			List<ReglaEntity> reglesApplied) {
 		
-		boolean avaluarTotesLesRegles = true;
+		// Consulta la  propietat per avaluar totes les regles o només la 1a coincident com fins ara
+		boolean avaluarTotesLesRegles = 
+				configHelper.getAsBoolean("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes", false);
 		
 		boolean reglaAplicada = false;
 		boolean reglaBackoffice = false;
@@ -573,32 +575,34 @@ public class ReglaHelper {
 				
 				
 				ReglaEntity nextReglaToApply = null;
-				
-				if (avaluarTotesLesRegles
-						 && !aturarAvaluacio
-						 && !reglaBackoffice) {
-					// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
-					// o torna a l'inici de la llista
-					if (regles == null) {
-						regles = reglaRepository.findByEntitatOrderByOrdreAsc(registre.getEntitat());
-					}
-					nextReglaToApply = this.findSeguent(
-							regla, 
-							regles,
-							bustia.getUnitatOrganitzativa().getId(),
-							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getAssumpteCodi(), 
-							presencial);
-				} else {
-					// Consulta la següent regla
-					nextReglaToApply = this.findAplicable(
-							registre.getEntitat(),
-							bustia.getUnitatOrganitzativa().getId(),
-							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getAssumpteCodi(), 
-							presencial);
+
+				if (!aturarAvaluacio
+						&& !reglaBackoffice) 
+				{
+					if (avaluarTotesLesRegles) {
+						// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
+						// o torna a l'inici de la llista
+						if (regles == null) {
+							regles = reglaRepository.findByEntitatOrderByOrdreAsc(registre.getEntitat());
+						}
+						nextReglaToApply = this.findSeguent(
+								regla, 
+								regles,
+								bustia.getUnitatOrganitzativa().getId(),
+								bustia.getId(),
+								registre.getProcedimentCodi(),
+								registre.getAssumpteCodi(), 
+								presencial);
+					} else {
+						// Consulta la 1a regla aplicable  segons les dades del registre
+						nextReglaToApply = this.findAplicable(
+								registre.getEntitat(),
+								bustia.getUnitatOrganitzativa().getId(),
+								bustia.getId(),
+								registre.getProcedimentCodi(),
+								registre.getAssumpteCodi(), 
+								presencial);
+					}					
 				}
 
 				if (nextReglaToApply != null) {
