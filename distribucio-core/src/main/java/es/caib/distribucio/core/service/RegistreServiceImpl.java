@@ -2487,24 +2487,33 @@ public class RegistreServiceImpl implements RegistreService {
 				registresAmbCanviEstat.put(registre, contingutMovimentEntity);
 			}
 			// Actualitzar històric i crear coa correus per cada registre a crear
-			updateMovimentDetail(
+			updateMovimentClassificar(
 					registrePerClassificar, 
-					contingutMovimentEntity);
+					contingutMovimentEntity,
+					procedimentCodi);
 		}
 		
 		
 		return classificacioResultat;
 	}
 	
-	private void updateMovimentDetail(
+	private void updateMovimentClassificar(
 			ContingutEntity registrePerClassificar, 
-			ContingutMovimentEntity contingutMoviment) {
+			ContingutMovimentEntity contingutMoviment, 
+			String procedimentCodi) {
+				
+		if (procedimentCodi == null)
+			procedimentCodi = " ";
+
+		List<String> params = new ArrayList<String>();
+		params.add(procedimentCodi);
 		
-		contingutLogHelper.logMoviment(
-				registrePerClassificar,
-				LogTipusEnumDto.CLASSIFICAR,
-				contingutMoviment,
-				true);
+		contingutLogHelper.logAccioWithMovimentAndParams(
+				registrePerClassificar, 
+				LogTipusEnumDto.CLASSIFICAR, 
+				contingutMoviment, 
+				true, 
+				params);
 	}
 
 	@Override

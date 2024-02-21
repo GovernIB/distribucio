@@ -344,8 +344,8 @@ public class ContingutLogHelper {
 		Builder logBuilder = ContingutLogEntity.getBuilder(
 				tipus,
 				contingut).
-				param1(params != null ? params.get(0) : null).
-				param2(params != null ? params.get(1) : null).
+				param1(params != null && !params.isEmpty() ? params.get(0) : null).
+				param2(params != null && params.size() > 1 ? params.get(1) : null).
 				pare(pare).
 				contingutMoviment(contingutMoviment);
 		
