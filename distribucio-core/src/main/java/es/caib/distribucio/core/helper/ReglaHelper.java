@@ -83,104 +83,58 @@ public class ReglaHelper {
 	 * 
 	 * @param reglaActual Regla a partir de la qual se cercarà dins la llista. Li la regla està marcada per aturar avaluació no
 	 * se cercarà cap regla.
-	 * @param regles Conté el llistat de regles per avaluar si són aplicables o no.
 	 * @return
 	 */
 	private ReglaEntity findSeguent(
+			EntitatEntity entitat,
 			ReglaEntity reglaActual, 
-			List<ReglaEntity> regles,
 			Long unitatId,
 			Long bustiaId,
-			String assumpteCodi, 
 			String procedimentCodi,
+			String assumpteCodi, 
 			Boolean presencial) {
 		if (reglaActual != null && reglaActual.isAturarAvaluacio()) {
 			return null;
 		}
+		ReglaPresencialEnumDto esPresencial = null;
+		if (presencial != null) {
+			esPresencial = presencial == true ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
+		}
+		List<ReglaEntity> regles = reglaRepository.findAplicables(
+				entitat,
+				unitatId,
+				bustiaId,
+				procedimentCodi != null ? procedimentCodi : "",
+				assumpteCodi != null ? assumpteCodi : "", 
+				esPresencial == null,
+				esPresencial);
+		
 		if (regles == null || regles.isEmpty()) {
 			return null;
 		}
-		// Cerca l'índex de l'actual
+		if (reglaActual == null) {
+			return regles.get(0);
+		} 
+
+		// Cerca la següent a partir del número d'ordre actual
 		int iSeguent = 0;
-		if (reglaActual != null) {
-			for (ReglaEntity r : regles) {
-				iSeguent++;
-				if (r.getId().equals(reglaActual.getId())) {
-					break;
-				}
-			}
-		}
 		ReglaEntity reglaSeguent = null;
-		ReglaEntity r;
-		// Cerca la primera regla aplicable des de l'índex seqüent fins al final
-		for (int i = iSeguent; i < regles.size(); i++) {
-			r = regles.get(i);
-			// mirar si coincideix
-			if (this.reglaCoincideix(
-					r,
-					unitatId,
-					bustiaId,
-					procedimentCodi,
-					assumpteCodi,
-					presencial)) {
-				reglaSeguent = r;
-				break;
-			}
+		while (regles.get(iSeguent).getOrdre() <= reglaActual.getOrdre()
+				&& iSeguent < regles.size()) {
+			iSeguent++;
 		}
-		// Si no l'ha trobada cerca des de l'inici fins l'índex següent - 1 que seria l'índex de l'actual
-		if (reglaSeguent == null) {
-			for (int i = 0; i < iSeguent; i++) {
-				r = regles.get(i);
-				if (this.reglaCoincideix(
-						r,
-						unitatId,
-						bustiaId,
-						procedimentCodi,
-						assumpteCodi,
-						presencial)) {
-					reglaSeguent = r;
-					break;
-				}
-			}
-		}				
+		if (iSeguent < regles.size() ) {
+			// seguent regla després de l'ordre de l'actual
+			reglaSeguent = regles.get(iSeguent);
+		} else {
+			// La primera regla coincident
+			reglaSeguent = regles.get(0);
+		}
 		return reglaSeguent;
 	}
 	
 
-	/** Compara els filtres de les regles amb les dades del registre. */
-	private boolean reglaCoincideix(
-			ReglaEntity r,
-			Long unitatId,
-			Long bustiaId,
-			String assumpteCodi,
-			String procedimentCodi,
-			Boolean presencial) {
-
-		// Activa
-		boolean coincideix = r.isActiva();
-		// Unitat filtre
-		coincideix = coincideix && (r.getUnitatOrganitzativaFiltre() == null || r.getUnitatOrganitzativaFiltre().getId().equals(unitatId));
-		// Bustia filtre
-		coincideix = coincideix && (r.getBustiaFiltre() == null || r.getBustiaFiltre().getId().equals(bustiaId) );
-		
-		// Procediment 
-		coincideix = coincideix && 
-				(r.getProcedimentCodiFiltre() == null 
-						|| r.getProcedimentCodiFiltre().equals(procedimentCodi)
-						|| r.getProcedimentCodiFiltre().contains(" " + procedimentCodi + " ")
-						|| r.getProcedimentCodiFiltre().startsWith(procedimentCodi + " ")
-						|| r.getProcedimentCodiFiltre().endsWith((" " + procedimentCodi)));
-		// Assumpte
-		coincideix = coincideix && (r.getAssumpteCodiFiltre() == null || r.getAssumpteCodiFiltre().equals(assumpteCodi));
-		// Presencial
-		ReglaPresencialEnumDto esPresencial = null;
-		if (presencial != null) {
-			esPresencial = presencial != null && presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
-		}
-		coincideix = coincideix && (r.getPresencial() == null || r.getPresencial().equals(esPresencial));
-		
-		return coincideix;
-	}
+	
 
 	/** Troba la primera regla aplicable segons les dades del registre. */
 	public ReglaEntity findAplicable(
@@ -355,20 +309,24 @@ public class ReglaHelper {
 		boolean reglaJaAplicada = false;
 		boolean aturarAvaluacio = false;
 		
-		logger.debug("Inici de la simulació (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");
-		
-		List<ReglaEntity> regles = null;
+		List<Long> reglesAplicadesIds = new ArrayList<Long>();
+		for (ReglaEntity ra : reglasApplied) {
+			reglesAplicadesIds.add(ra.getId());
+		}
+
+		// Màxim de seguretat per evitar bucles infinits
+		int max_bucle_regles = 50;
+
+		logger.debug("Inici de la simulació (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");		
+
 		do {
 			reglaAplicada = false;
 			if (avaluarTotesLesRegles) {
 				// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
 				// o torna a l'inici de la llista
-				if (regles == null) {
-					regles = reglaRepository.findByEntitatOrderByOrdreAsc(entitatEntity);
-				}
 				reglaToApply = this.findSeguent(
+						entitatEntity,
 						reglaToApply, 
-						regles,
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getProcedimentCodi(),
@@ -389,11 +347,9 @@ public class ReglaHelper {
 				
 
 				// Comprova si ja s'ha aplicat anteriorment.
-				for (ReglaEntity reglaE : reglasApplied) {
-					if (reglaToApply.getId().equals(reglaE.getId())) {
-						reglaJaAplicada = true;
-						break;
-					}
+				reglaJaAplicada = reglesAplicadesIds.contains(reglaToApply.getId());
+				if (reglaToApply.getId() == null) {
+					logger.error("La regla aplicada no té identificador. Regla: {nom: " + reglaToApply.getNom() + ", descripcio: " + reglaToApply.getDescripcio() + "}" );
 				}
 				if (reglaJaAplicada) {
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.LOOP_DETECTED, null, reglaToApply.getNom()));
@@ -432,8 +388,13 @@ public class ReglaHelper {
 
 					}						
 				}
-				reglasApplied.add(reglaToApply);
 				reglaAplicada = true;
+				reglasApplied.add(reglaToApply);				
+				reglesAplicadesIds.add(reglaToApply.getId());
+				if (reglaToApply.getId() == null) {
+					logger.error("La regla aplicada no té identificador. Regla: {nom: " + reglaToApply.getNom() + ", descripcio: " + reglaToApply.getDescripcio() + "}" );
+				}
+
 				
 				if (reglaToApply.isAturarAvaluacio()) {
 					simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.ATURAR_EVALUACIO, null, reglaToApply.getNom()));
@@ -445,7 +406,12 @@ public class ReglaHelper {
 		} while (reglaAplicada 
 				&& !reglaBackoffice 
 				&& !reglaJaAplicada
-				&& !aturarAvaluacio);
+				&& !aturarAvaluacio
+				&& max_bucle_regles-- > 0);
+
+		if (max_bucle_regles < 0) {
+			logger.error("S'ha detectat un bucle simulant regles.");
+		}
 	}
 
 	public void aplicar(
@@ -461,10 +427,15 @@ public class ReglaHelper {
 		boolean reglaJaAplicada = false;
 		boolean aturarAvaluacio = false;
 
-
-		logger.debug("Inici del processametn de regles per l'anotació " + registre.getNumero() + " (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");
+		List<Long> reglesAplicadesIds = new ArrayList<Long>();
+		for (ReglaEntity ra : reglesApplied) {
+			reglesAplicadesIds.add(ra.getId());
+		}
 		
-		List<ReglaEntity> regles = null;
+		// Màxim de seguretat per evitar bucles infinits
+		int max_bucle_regles = 50;
+		
+		logger.debug("Inici del processametn de regles per l'anotació " + registre.getNumero() + " (avaluarTotesLesRegles=" + avaluarTotesLesRegles + ")");		
 		do {
 			reglaAplicada = false;
 			ReglaEntity regla = registre.getRegla();
@@ -557,8 +528,12 @@ public class ReglaHelper {
 				}
 
 				// ------ FIND AND APPLY NEXT RELGA IF EXISTS -----------
-				reglesApplied.add(regla);
 				reglaAplicada = true;
+				reglesApplied.add(regla);
+				reglesAplicadesIds.add(regla.getId());
+				if (regla.getId() == null) {
+					logger.error("La regla aplicada no té identificador. Regla: {nom: " + regla.getNom() + ", descripcio: " + regla.getDescripcio() + "}" );
+				}
 
 				if (regla.isAturarAvaluacio()) {
 					aturarAvaluacio = true;						
@@ -582,12 +557,9 @@ public class ReglaHelper {
 					if (avaluarTotesLesRegles) {
 						// #655 S'avaluen totes les regles per veure si apliquen, en comptes de consultar la 1a consulta la següent de la llista
 						// o torna a l'inici de la llista
-						if (regles == null) {
-							regles = reglaRepository.findByEntitatOrderByOrdreAsc(registre.getEntitat());
-						}
 						nextReglaToApply = this.findSeguent(
+								registre.getEntitat(),
 								regla, 
-								regles,
 								bustia.getUnitatOrganitzativa().getId(),
 								bustia.getId(),
 								registre.getProcedimentCodi(),
@@ -607,12 +579,11 @@ public class ReglaHelper {
 
 				if (nextReglaToApply != null) {
 					// Comprova si ja s'ha aplicat anteriorment.
-					for (ReglaEntity reglaE : reglesApplied) {
-						if (nextReglaToApply.getId().equals(reglaE.getId())) {
-							reglaJaAplicada = true;
-							break;
-						}
+					reglaJaAplicada = reglesAplicadesIds.contains(nextReglaToApply.getId());
+					if (nextReglaToApply.getId() == null) {
+						logger.error("La regla aplicada no té identificador. Regla: {nom: " + nextReglaToApply.getNom() + ", descripcio: " + nextReglaToApply.getDescripcio() + "}" );
 					}
+					// Si no està aplicada actualitza la regla al registre
 					if (!reglaJaAplicada) {
 						registre.updateRegla(nextReglaToApply);
 						regla = nextReglaToApply;
@@ -632,7 +603,12 @@ public class ReglaHelper {
 		} while (reglaAplicada 
 				&& !reglaBackoffice 
 				&& !reglaJaAplicada
-				&& !aturarAvaluacio);
+				&& !aturarAvaluacio
+				&& max_bucle_regles-- > 0);
+		
+		if (max_bucle_regles < 0) {
+			logger.error("S'ha detectat un bucle aplicant regles.");
+		}
 	}
 
 	/*
