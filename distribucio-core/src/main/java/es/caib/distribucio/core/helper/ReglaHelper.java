@@ -119,8 +119,8 @@ public class ReglaHelper {
 		// Cerca la següent a partir del número d'ordre actual
 		int iSeguent = 0;
 		ReglaEntity reglaSeguent = null;
-		while (regles.get(iSeguent).getOrdre() <= reglaActual.getOrdre()
-				&& iSeguent < regles.size()) {
+		while (iSeguent < regles.size()
+				&& regles.get(iSeguent).getOrdre() <= reglaActual.getOrdre()) {
 			iSeguent++;
 		}
 		if (iSeguent < regles.size() ) {
