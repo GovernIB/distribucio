@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<artifactId>distribucio-back</artifactId>
 	<packaging>war</packaging>
@@ -372,6 +372,25 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>4.9.10</version>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+						<phase>validate</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<verbose>false</verbose>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
@@ -381,6 +400,8 @@
 							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
 							<Implementation-Vendor>${implementation.vendor}</Implementation-Vendor>
 							<Implementation-Version>${project.version}</Implementation-Version>
+							<Implementation-SCM-Branch>${git.branch}</Implementation-SCM-Branch>
+							<Implementation-SCM-Revision>${git.commit.id}</Implementation-SCM-Revision>
 						</manifestEntries>
 					</archive>
 					<attachClasses>true</attachClasses>

@@ -19,7 +19,7 @@ public class JspHelper {
 
 	private static Attributes manifestMainAttributes;
 
-	public static String getApplicationVersion(HttpServletRequest request) throws IOException {
+	public static String getImplementationVersion(HttpServletRequest request) throws IOException {
 		return getManifestAttributeValue(request, "Implementation-Version");
 	}
 
@@ -27,9 +27,13 @@ public class JspHelper {
 		return getManifestAttributeValue(request, "Build-Timestamp");
 	}
 
-	/*public static String getCurrentUserName() {
-		return KeycloakHelper.getCurrentUserFullName();
-	}*/
+	public static String getImplementationScmBranch(HttpServletRequest request) throws IOException {
+		return getManifestAttributeValue(request, "Implementation-SCM-Branch");
+	}
+
+	public static String getImplementationScmRevision(HttpServletRequest request) throws IOException {
+		return getManifestAttributeValue(request, "Implementation-SCM-Revision");
+	}
 
 	private static String getManifestAttributeValue(
 			HttpServletRequest request,
