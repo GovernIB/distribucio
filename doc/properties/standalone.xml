@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<server xmlns="urn:jboss:domain:8.0">
+    <extensions>
+        ...
+        <extension module="org.keycloak.keycloak-adapter-subsystem"/>
+        ...
+    </extensions>
+    <system-properties>
+        <property name="es.caib.distribucio.properties" value="/opt/webapps/distribucio/jboss.properties"/>
+        <property name="es.caib.distribucio.system.properties" value="/opt/webapps/distribucio/jboss_system.properties"/>
+    </system-properties>
+    
+    <profile>
+    	...
+        <subsystem xmlns="urn:jboss:domain:datasources:5.0">
+            <datasources>
+                <datasource jndi-name="java:jboss/datasources/distribucioDS" pool-name="distribucioDB" enabled="true">
+                    <connection-url>jdbc:oracle:thin:@192.168.0.2:1521:orcl</connection-url>
+                    <driver>oracle</driver>
+                    <pool>
+                        <min-pool-size>1</min-pool-size>
+                        <max-pool-size>10</max-pool-size>
+                        <prefill>true</prefill>
+                    </pool>
+                    <security>
+                        <user-name>distribucio</user-name>
+                        <password>****</password>
+                    </security>
+                </datasource>
+                <drivers>
+                	...
+                    <driver name="oracle" module="com.oracle">
+                        <xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>
+        ...
+        <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
+            <realm name="GOIB">
+                <auth-server-url>https://logindes.caib.es/</auth-server-url>
+                <ssl-required>external</ssl-required>
+            </realm>
+            
+            <secure-deployment name="distribucio-api-externa.war">
+                <realm>GOIB</realm>
+                <resource>goib-ws</resource>
+                <use-resource-role-mappings>true</use-resource-role-mappings>
+                <bearer-only>true</bearer-only>
+                <enable-basic-auth>true</enable-basic-auth>
+                <principal-attribute>preferred_username</principal-attribute>
+                <credential name="secret">****</credential>
+            </secure-deployment>
+            
+            <secure-deployment name="distribucio-api-interna.war">
+                <realm>GOIB</realm>
+                <resource>goib-ws</resource>
+                <use-resource-role-mappings>true</use-resource-role-mappings>
+                <bearer-only>true</bearer-only>
+                <enable-basic-auth>true</enable-basic-auth>
+                <principal-attribute>preferred_username</principal-attribute>
+                <credential name="secret">****</credential>
+            </secure-deployment>
+            
+            <secure-deployment name="distribucio-ws.war">
+                <realm>GOIB</realm>
+                <resource>goib-ws</resource>
+                <use-resource-role-mappings>true</use-resource-role-mappings>
+                <bearer-only>true</bearer-only>
+                <enable-basic-auth>true</enable-basic-auth>
+                <principal-attribute>preferred_username</principal-attribute>
+                <credential name="secret">****</credential>
+            </secure-deployment>
+            
+            <secure-deployment name="distribucio-back.war">
+                <realm>GOIB</realm>
+                <resource>goib-default</resource>
+                <use-resource-role-mappings>false</use-resource-role-mappings>
+                <public-client>true</public-client>
+                <principal-attribute>preferred_username</principal-attribute>
+                <verify-token-audience>true</verify-token-audience>
+            </secure-deployment>
+            
+        </subsystem>
+        
+        <subsystem xmlns="urn:jboss:domain:mail:3.0">
+            <mail-session name="distribucio" jndi-name="java:jboss/mail/DistribucioSession">
+                <smtp-server outbound-socket-binding-ref="smtp-distribucio" ssl="true" tls="true" username="proves_limit@limit.es" password="R8lmu-98TRN"/>
+            </mail-session>
+        </subsystem>     
+...
+</server>

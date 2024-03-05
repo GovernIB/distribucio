@@ -355,7 +355,8 @@ CREATE TABLE DIS_REGLA
 CREATE TABLE DIS_ACL_CLASS
 (
   ID     BIGSERIAL                              NOT NULL,
-  CLASS  character varying(100)                 NOT NULL
+  CLASS  character varying(100)                 NOT NULL,
+  CLASS_ID_TYPE  character varying(255)         NOT NULL
 );
 
 

@@ -354,7 +354,8 @@ CREATE TABLE DIS_REGLA
 CREATE TABLE DIS_ACL_CLASS
 (
   ID     NUMBER(19)                             NOT NULL,
-  CLASS  VARCHAR2(100 CHAR)                          NOT NULL
+  CLASS  VARCHAR2(100 CHAR)                     NOT NULL,
+  CLASS_ID_TYPE  VARCHAR2(255 CHAR)             NOT NULL
 );
 
 

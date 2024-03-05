@@ -1,0 +1,23 @@
+-- Distribucio 1.0.1
+
+-- #172 Actualitzar la versió Java i el servidor d'aplicacions 
+
+-- Modificar les classes en els permisos
+ALTER TABLE DIS_ACL_CLASS ADD CLASS_ID_TYPE character varying(255);
+UPDATE DIS_ACL_CLASS SET CLASS_ID_TYPE='java.lang.Long';
+ALTER TABLE DIS_ACL_CLASS ALTER COLUMN CLASS_ID_TYPE SET NOT NULL;
+UPDATE dis_acl_class SET class = 'es.caib.distribucio.persist.entity.BustiaEntity' WHERE class = 'es.caib.distribucio.core.entity.BustiaEntity';
+UPDATE dis_acl_class SET class = 'es.caib.distribucio.persist.entity.EntitatEntity' WHERE class = 'es.caib.distribucio.core.entity.EntitatEntity';
+
+-- Canvia el plugin de dades d'usuari
+UPDATE DIS_CONFIG SET VALUE = 'es.caib.distribucio.plugin.caib.usuari.DadesUsuariPluginKeycloak' 
+WHERE KEY LIKE 'es.caib.distribucio.plugin.dades.usuari.class';
+
+-- Afegir noves propietats configurables pel plugin d'usuaris
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.serverurl', NULL, 'Url del servidor de keycloak', 'USUARIS', '6', true, 'TEXT', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.realm', NULL, 'Realm del keycloak', 'USUARIS', '7', true, 'TEXT', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.client_id', NULL, 'Client ID del keycloak', 'USUARIS', '8', true, 'TEXT', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.client_id_for_user_autentication', NULL, 'Client ID per autenticació del keycloak', 'USUARIS', '9', true, 'TEXT', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.password_secret', NULL, 'Secret del client de keycloak', 'USUARIS', '10', true, 'CREDENTIALS', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.mapping.administrationID', 'NIF', 'Mapeig del administrationID de keycloak', 'USUARIS', '11', false, 'TEXT', null, null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.debug', 'false', 'Activar el debug del plugin de keycloak', 'USUARIS', '12', false, 'BOOL', null, null);
