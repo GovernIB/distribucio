@@ -209,7 +209,7 @@
 						<webModule>
 							<groupId>${project.groupId}</groupId>
 							<artifactId>distribucio-back</artifactId>
-							<contextRoot>/distribucio</contextRoot>
+							<contextRoot>/distribucioback</contextRoot>
 							<bundleFileName>distribucio-back.war</bundleFileName>
 						</webModule>
 					</modules>
