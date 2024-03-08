@@ -118,7 +118,7 @@ $(document).ready(function() {
 
 function guardarAnotacionsPendents() {
 	var location = window.location.href;
-	const locationSplit = location.split("distribucio/");
+	const locationSplit = location.split(webutilContextPath());
 	window.location.href = '<c:url value="/config/reiniciarTasquesSegonPla?currentPage=' + locationSplit[1] + '"/>';		
 }
 

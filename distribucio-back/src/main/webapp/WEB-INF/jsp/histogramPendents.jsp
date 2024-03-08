@@ -85,7 +85,7 @@ function buildChartEntitat(chart) {
     $(document).ready(function() {
 
         $('#btnRefresh').click(function() {
-        	window.location = '/distribucio/registreUser/anotacionsPendentArxiu';
+        	window.location = webutilContextPath() + '/registreUser/anotacionsPendentArxiu';
         });
 
 		var ctx = 'chartEntitat';

@@ -93,7 +93,7 @@
         formData.append("key", configKeyReplaced);
         formData.append("value", value);
         $.ajax({
-            url: "/distribucio/config/update",
+            url: webutilContextPath() + "/config/update",
             type: "post",
             processData: false,
             contentType: false,

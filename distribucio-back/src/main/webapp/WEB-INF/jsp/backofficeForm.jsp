@@ -62,7 +62,7 @@
 				
 				// Consulta les dades
 				$.ajax({
-					url: "/distribucio/backoffice/" + e.target.value + "/provarajax", 
+					url: webutilContextPath() + "/backoffice/" + e.target.value + "/provarajax", 
 		            type : 'GET',
 		            dataType : 'json',
 		            success : function(data) {

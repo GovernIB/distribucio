@@ -1,6 +1,6 @@
 
 function webutilContextPath() {
-	return '/distribucio';
+	return typeof ctxPath !== 'undefined' ? ctxPath : '/distribucioback';
 }
 function webutilModalTancarPath() {
 	return webutilContextPath() + '/modal/tancar';

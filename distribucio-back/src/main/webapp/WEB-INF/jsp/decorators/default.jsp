@@ -61,6 +61,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta name="description" content=""/>
 	<meta name="author" content=""/>
+	<script type="text/javascript">const ctxPath = "${pageContext.request.contextPath}"</script>
 	<!-- Estils CSS -->
 	<link href="<c:url value="/webjars/bootstrap/3.3.6/dist/css/bootstrap.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/font-awesome/4.7.0/css/font-awesome.min.css"/>" rel="stylesheet"/>
@@ -107,11 +108,11 @@ body {
 			var isVistaMoviments = getCookie("vistaMoviments");
 				
 			if (isVistaMoviments == "" || !JSON.parse(isVistaMoviments)) {
-				window.location.replace("/distribucio/registreUser/moviments");
+				window.location.replace(webutilContextPath() + "/registreUser/moviments");
 				$(this).addClass('active');
 				setCookie("vistaMoviments", true);
 			} else {
-				window.location.replace("/distribucio/registreUser");
+				window.location.replace(webutilContextPath() + "/registreUser");
 				$(this).removeClass('active');
 				setCookie("vistaMoviments", false);
 			}

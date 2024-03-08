@@ -59,7 +59,7 @@
                             <i class="fa fa-edit"></i>
                         </button>
                         <c:if test="${!config.jbossProperty}">
-                        <!-- <a href="/distribucio/config/propietatsEntitat?idEntitat=${idEntitat}" class="btn btn-primary"<c:if test="${config.jbossProperty}"> disabled</c:if> title="Anar a les propietats configurables de l'entitat '${idEntitat}' ">
+                        <!-- <a href=webutilContextPath() + "/config/propietatsEntitat?idEntitat=${idEntitat}" class="btn btn-primary"<c:if test="${config.jbossProperty}"> disabled</c:if> title="Anar a les propietats configurables de l'entitat '${idEntitat}' ">
                             <i class="fa fa-edit"></i>
                         </a> -->                        
                         

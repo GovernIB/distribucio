@@ -78,7 +78,7 @@
 			$("#header").append("<div style='float: right;'><button id='canviVistaBusties' class='btn btn-primary'><spring:message code='bustia.canvi.vista'/></button></div>");
 		
 			$("#canviVistaBusties").click(function(){
-				window.location.replace("/distribucio/bustiaAdminOrganigrama");
+				window.location.replace(webutilContextPath() + "/bustiaAdminOrganigrama");
 			});
 
 		});
