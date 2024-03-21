@@ -1238,6 +1238,7 @@ public class PluginHelper {
 		 procedimentPlugin.clear();
 		 gestioDocumentalPlugin.clear();
 		 distribucioPlugin.clear();
+		 signaturaPlugin.clear();
 	}
 
 	private DadesUsuariPlugin getDadesUsuariPlugin() {

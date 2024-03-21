@@ -27,6 +27,10 @@
 				$("#span-refresh-" + integracio).empty().addClass('fa-circle-o-notch');
 				$("#span-refresh-" + integracio).addClass('fa-spin');
 				$("#integracio_" + integracio + "_info").empty();
+				$("#span-refresh-" + integracio).removeClass("fa-check");
+				$("#span-refresh-" + integracio).removeClass("fa-times");
+				$("#span-refresh-" + integracio).removeClass("text-success");
+				$("#span-refresh-" + integracio).removeClass("text-danger");
 				$.ajax({
 					method: "GET",
 			        url: "<c:url value='/integracio/diagnosticAjax'/>/" + integracio, 

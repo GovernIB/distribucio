@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -55,6 +58,7 @@ public class UsuariController  extends BaseAdminController {
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		
 		model.addAttribute(UsuariCommand.asCommand(usuari));
+		model.addAttribute("rolsPerMostrar", this.getFiltraRolsPerMostrar(usuari.getRols()));
 		model.addAttribute(
 				"idiomaEnumOptions",
 				EnumHelper.getOptionsForEnum(
@@ -63,6 +67,19 @@ public class UsuariController  extends BaseAdminController {
 		if (bustiaPerDefecte != null)
 			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
 		return "usuariForm";
+	}
+
+	/** Filtra els rols per a que es mostrin només els que comencen per 'DIS_'*/
+	private String[] getFiltraRolsPerMostrar(String[] rols) {
+		List<String> rolsPerMostrar = new ArrayList<>();
+		if (rols != null) {
+			for (int i = 0; i < rols.length; i++) {
+				if (rols[i].startsWith("DIS_")) {
+					rolsPerMostrar.add(rols[i]);
+				}
+			}
+		}
+		return rolsPerMostrar.toArray(String[]::new);
 	}
 
 	@RequestMapping(value = "/configuracio", method = RequestMethod.POST)

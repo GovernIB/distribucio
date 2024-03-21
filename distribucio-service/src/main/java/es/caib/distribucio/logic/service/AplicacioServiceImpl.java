@@ -108,7 +108,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 				usuari = usuariRepository.save(
 						UsuariEntity.getBuilder(
 								dadesUsuari.getCodi(),
-								dadesUsuari.getNom(),
+								dadesUsuari.getNomSencer(),
 								dadesUsuari.getNif(),
 								dadesUsuari.getEmail(),
 								null,
