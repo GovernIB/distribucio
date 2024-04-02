@@ -349,6 +349,34 @@ public class AplicacioServiceImpl implements AplicacioService {
 		return dto;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(AplicacioServiceImpl.class);
+	@Override
+	@Transactional
+	public UsuariDto updateUsuari(String codi) {
+		UsuariDto usuari = null;
+		if (codi != null && !codi.isEmpty()) {
+			logger.trace("Actualitzant dades de l'usuari (codi=" + codi + ")");
+			UsuariEntity usuariEntity = usuariRepository.findById(codi).orElse(null);
+			if (usuariEntity != null) {
+				logger.trace("Consultant plugin de dades d'usuari (" +
+						"usuariCodi=" + codi + ")");
+				DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(codi);
+				if (dadesUsuari != null) {
+					usuariEntity.update(
+							dadesUsuari.getNomSencer(), 
+							dadesUsuari.getNif(), 
+							dadesUsuari.getEmail());
+				} else {
+					throw new NotFoundException(
+							codi,
+							DadesUsuari.class);
+				}
 
+				
+				usuari = toUsuariDtoAmbRols(usuariEntity);
+			}
+		}
+		return usuari;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(AplicacioServiceImpl.class);
 }

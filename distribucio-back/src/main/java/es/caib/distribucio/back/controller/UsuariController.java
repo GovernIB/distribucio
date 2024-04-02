@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import es.caib.distribucio.back.command.UsuariCommand;
 import es.caib.distribucio.back.helper.EnumHelper;
+import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.SessioHelper;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
@@ -53,7 +54,15 @@ public class UsuariController  extends BaseAdminController {
 	public String getConfiguracio(
 			HttpServletRequest request,
 			Model model) {
+		
 		UsuariDto usuari = aplicacioService.getUsuariActual();
+		// Consulta l'usuari amb el plugin i actualitza les dades a la taula d'usuaris.
+		try {
+			usuari = aplicacioService.updateUsuari(usuari.getCodi());
+		} catch(Exception e) {
+			MissatgesHelper.error(request, getMessage(request, "usuari.form.actualitzar.usuari.error", new Object[] {e.toString()}));
+		}
+		
 		EntitatDto entitatActual = this.getEntitatActual(request);
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 		

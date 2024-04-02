@@ -194,4 +194,12 @@ public interface AplicacioService {
 	 */
 	public Authentication getAuthentication();
 
+	/** Consulta les dades de l'usuari i actualitza les dades bàsiques a la taula d'usuaris. Aquesta
+	 * funció es crida en entrar a la pàgina de configuració del perfil.
+	 * 
+	 * @param codi Codi de l'usuari per actualitzar.
+	 * @return Retorna el DTO de l'usuari actualitzat.
+	 */
+	public UsuariDto updateUsuari(String codi);
+
 }

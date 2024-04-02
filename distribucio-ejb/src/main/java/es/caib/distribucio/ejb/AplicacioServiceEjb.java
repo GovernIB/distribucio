@@ -140,6 +140,12 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 		delegateService.setRolUsuariActual(rolActual);
 	}
 
+	@Override
+	@RolesAllowed("**")
+	public UsuariDto updateUsuari(String codi) {
+		return delegateService.updateUsuari(codi);
+	}
+
 	protected void setDelegateService(AplicacioService delegateService) {
 		this.delegateService = delegateService;
 	}
