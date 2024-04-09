@@ -90,6 +90,9 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 		http.authorizeHttpRequests().
 				requestMatchers(publicRequestMatchers()).permitAll().
 				anyRequest().authenticated();
+		http.headers().frameOptions().sameOrigin();
+		http.csrf().disable();
+		http.cors();
 		return http.build();
 	}
 

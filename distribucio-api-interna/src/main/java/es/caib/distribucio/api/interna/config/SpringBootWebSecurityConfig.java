@@ -75,7 +75,6 @@ public class SpringBootWebSecurityConfig extends BaseWebSecurityConfig {
 		http.csrf().disable();
 		http.cors();
 		http.authenticationProvider(new AuthenticationProvider() {
-			
 			@Override
 			@SneakyThrows
 			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
