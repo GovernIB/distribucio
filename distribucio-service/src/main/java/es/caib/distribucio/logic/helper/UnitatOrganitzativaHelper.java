@@ -23,7 +23,6 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.ArbreNodeDto;
 import es.caib.distribucio.logic.intf.dto.MunicipiDto;
-import es.caib.distribucio.logic.intf.dto.ProvinciaDto;
 import es.caib.distribucio.logic.intf.dto.TipusTransicioEnumDto;
 import es.caib.distribucio.logic.intf.dto.TipusViaDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
@@ -676,6 +675,7 @@ public class UnitatOrganitzativaHelper {
 				entity,
 				UnitatOrganitzativaDto.class);
 		if (unitat != null) {
+			/* No s'usen les dades 
 			unitat.setAdressa(
 					getAdressa(
 							unitat.getTipusVia(), 
@@ -706,6 +706,7 @@ public class UnitatOrganitzativaHelper {
 						logger.error("UNITAT ORGANITZATIVA. No s'ha trobat la localitat amb el nom: '" + unitat.getNomLocalitat() + "'");
 				}
 			}
+			*/
 		}
 		return unitat;
 	}

@@ -1767,17 +1767,17 @@ public class BustiaServiceImpl implements BustiaService {
 					}
 				}
 			}
-			if (comentari != null && !comentari.isEmpty()) {
-				for (ContingutEntity contingut: nousContinguts) {
-					//etiqueta reenviat
-					String reenviat = "<span class='label label-default'>" + messageHelper.getMessage("bustia.pendent.accio.reenviar.comentari") + "</span> " + comentari;
-					ContingutComentariEntity comentariReenviament = ContingutComentariEntity.getBuilder(
-							contingut, 
-							reenviat).build();
-					contingutComentariRepository.save(comentariReenviament);
-				}
-			}
 		}
+		if (comentari != null && !comentari.isEmpty()) {
+			for (ContingutEntity contingut: nousContinguts) {
+				//etiqueta reenviat
+				String reenviat = "<span class='label label-default'>" + messageHelper.getMessage("bustia.pendent.accio.reenviar.comentari") + "</span> " + comentari;
+				ContingutComentariEntity comentariReenviament = ContingutComentariEntity.getBuilder(
+						contingut, 
+						reenviat).build();
+				contingutComentariRepository.save(comentariReenviament);
+			}
+		}		
 	}
 	
 	private void updateMovimentDetail(

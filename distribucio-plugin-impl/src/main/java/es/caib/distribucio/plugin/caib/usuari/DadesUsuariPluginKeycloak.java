@@ -98,18 +98,18 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 			String appClient = this.getPropertyRequired("pluginsib.userinformation.keycloak.client_id");
 			usernamesClientApp = this.getUsernamesByRolOfClient(rol, appClient);
 		} catch (Exception ex) {
-			log.error("No s'han obtingut usuaris per client d'aplicació", ex);
+			log.warn("No s'han obtingut usuaris per client d'aplicació: " + ex.toString());
 		}
 		try {
 			String personsClient = this.getPropertyRequired("pluginsib.userinformation.keycloak.client_id_for_user_autentication");
 			usernamesClientPersons = this.getUsernamesByRolOfClient(rol, personsClient);
 		} catch (Exception ex) {
-			log.error("No s'han obtingut usuaris per client de persones", ex);
+			log.warn("No s'han obtingut usuaris per client de persones: " + ex.toString());
 		}
 		try {
 			usersRealm = this.getUsernamesByRolOfRealm(rol);
 		} catch (Exception ex) {
-			log.error("No s'han obtingut usuaris per realm", ex);
+			log.warn("No s'han obtingut usuaris per realm: " + ex.toString());
 		}
 		if (usernamesClientApp == null && usernamesClientPersons == null && usersRealm == null) {
 			return null;

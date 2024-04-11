@@ -359,7 +359,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 			if (usuariEntity != null) {
 				logger.trace("Consultant plugin de dades d'usuari (" +
 						"usuariCodi=" + codi + ")");
-				DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(codi);
+				DadesUsuari dadesUsuari = pluginHelper.dadesUsuariFindAmbCodi(codi);
 				if (dadesUsuari != null) {
 					usuariEntity.update(
 							dadesUsuari.getNomSencer(), 
@@ -370,8 +370,6 @@ public class AplicacioServiceImpl implements AplicacioService {
 							codi,
 							DadesUsuari.class);
 				}
-
-				
 				usuari = toUsuariDtoAmbRols(usuariEntity);
 			}
 		}

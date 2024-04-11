@@ -2,6 +2,7 @@ package es.caib.distribucio.persist.entity;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -29,7 +30,7 @@ public class RegistreFirmaDetallEntity extends DistribucioAuditable<Long> {
 	private String responsableNom;
 	@Column(name = "emissor_certificat", length = 2000)
 	private String emissorCertificat;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(
 			name = "firma_id",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "regfirdet_regfirma_fk"))

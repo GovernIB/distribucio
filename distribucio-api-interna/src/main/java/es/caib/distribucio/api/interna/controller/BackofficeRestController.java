@@ -9,9 +9,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import es.caib.distribucio.api.interna.model.InfoCanviEstat;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
@@ -19,7 +21,6 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracio
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -76,28 +77,39 @@ public class BackofficeRestController {
 			description = "Canvia l'estat d'una anotació de registre enviada a backoffice")
 	public ResponseEntity<Object> canviEstat(
 			HttpServletRequest request,
-			@Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true, in = ParameterIn.QUERY)
-			String indetificador,
-			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true, in = ParameterIn.QUERY)
-			String clauAcces,
-			@Parameter(name = "estat", description = "Codi de l'estat que es comunica per a l'anotació. Els possibles valors són 'PENDENT', 'REBUDA', 'PROCESSADA', 'REBUTJADA' i 'ERROR'", required = true, in = ParameterIn.QUERY)
-			Estat estat,
-			@Parameter(name = "observacions", description = "Cadena de text opcional per posar observacions en el processament i canvi d'estat per part del backoffice. Se sol usar per indicar un motiu"
-					+ "de rebuig o observacions sobre el resultat del processament.", in = ParameterIn.QUERY)
-			String observacions) throws SistemaExternException {
+			@io.swagger.v3.oas.annotations.parameters.RequestBody()
+			@RequestBody final InfoCanviEstat infoCanviEstat
+			) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
+		if (infoCanviEstat == null) {
+			return new ResponseEntity<Object>("No s'ha rebut en el cos de la petició la informació pel canvi d'estat", HttpStatus.BAD_REQUEST);
+		}
+		if (infoCanviEstat.getId() == null 
+				|| infoCanviEstat.getId().getIndetificador() == null 
+				|| infoCanviEstat.getId().getClauAcces() == null) {
+			return new ResponseEntity<Object>("Falta informació de l'identificador de l'anotació.", HttpStatus.BAD_REQUEST);		
+		}
+		if (infoCanviEstat.getEstat() == null) {
+			return new ResponseEntity<Object>("No s'ha informat el nou estat.", HttpStatus.BAD_REQUEST);		
+		}
+		Estat estat = null;
+		try {
+			estat = Estat.valueOf(infoCanviEstat.getEstat().toString());
+		} catch(Exception e) {
+			return new ResponseEntity<Object>("L'estat " + infoCanviEstat.getEstat() + " no és un estat vàlid.", HttpStatus.BAD_REQUEST);		
+		}
 		try {
 			AnotacioRegistreId id = new AnotacioRegistreId();
-			id.setIndetificador(indetificador);
-			id.setClauAcces(clauAcces);
+			id.setIndetificador(infoCanviEstat.getId().getIndetificador());
+			id.setClauAcces(infoCanviEstat.getId().getClauAcces());
 			backofficeIntegracioWsService.canviEstat(
 					id,
 					estat,
-					observacions);
+					infoCanviEstat.getObservacions());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch(Exception e) {
-			String errMsg = "Error no controlat canviant l'estat a l'anotació amb id " + indetificador + " i clau " + clauAcces + ": " + e.getMessage();
+			String errMsg = "Error no controlat canviant l'estat a l'anotació amb informació d'entrada infoCanviEstat =  " + infoCanviEstat + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

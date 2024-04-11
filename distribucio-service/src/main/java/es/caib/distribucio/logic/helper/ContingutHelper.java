@@ -580,15 +580,20 @@ public class ContingutHelper {
 					UsuariPermisDto usuariUserPermisDto = usuaris.get(permis.getPrincipalNom());
 					if (usuariUserPermisDto != null) { // if already exists
 						usuariUserPermisDto.setHasUsuariPermission(true);
-					} else { // if doesnt exists
-						DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
-						boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && dadesUsuari.isActiu();
-						if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
-							usuariUserPermisDto = new UsuariPermisDto();
-							usuariUserPermisDto.setCodi(permis.getPrincipalNom());
-							usuariUserPermisDto.setNom(dadesUsuari.getNom());
-							usuariUserPermisDto.setHasUsuariPermission(true);
-							usuaris.put(permis.getPrincipalNom(), usuariUserPermisDto);
+					} else { 
+						// if doesnt exists
+						try {
+							DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
+							boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && dadesUsuari.isActiu();
+							if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
+								usuariUserPermisDto = new UsuariPermisDto();
+								usuariUserPermisDto.setCodi(permis.getPrincipalNom());
+								usuariUserPermisDto.setNom(dadesUsuari.getNom());
+								usuariUserPermisDto.setHasUsuariPermission(true);
+								usuaris.put(permis.getPrincipalNom(), usuariUserPermisDto);
+							}
+						} catch(Exception e) {
+							logger.error("Error obtenint l'usuari " + permis.getPrincipalNom() + ": " + e.toString());
 						}
 					}
 				}

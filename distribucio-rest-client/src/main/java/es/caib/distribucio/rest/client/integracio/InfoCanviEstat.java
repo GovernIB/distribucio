@@ -1,5 +1,7 @@
 package es.caib.distribucio.rest.client.integracio;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId;
 import es.caib.distribucio.rest.client.integracio.domini.Estat;
 import lombok.Builder;
@@ -13,4 +15,8 @@ public class InfoCanviEstat {
     Estat estat;
     String observacions;
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }
