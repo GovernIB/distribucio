@@ -3,7 +3,9 @@
  */
 package es.caib.distribucio.rest.client.integracio.domini;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -12,6 +14,8 @@ import lombok.Setter;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnotacioRegistreId {
 
 	private String indetificador;

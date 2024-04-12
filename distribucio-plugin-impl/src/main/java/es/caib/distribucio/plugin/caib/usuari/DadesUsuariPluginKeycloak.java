@@ -3,14 +3,13 @@
  */
 package es.caib.distribucio.plugin.caib.usuari;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.NotFoundException;
@@ -74,26 +73,39 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 			String grupCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
-			var usuariCodis = getUsernamesByRol(grupCodi);
-//			var usuariCodis = getUsuarisByRol(grupCodi);
-			if (usuariCodis == null || usuariCodis.length == 0) {
-				return new ArrayList<>();
+			Collection<UserRepresentation> usuaris = internalGetUserNamesByRol(grupCodi);
+			if (usuaris != null) {
+				return usuaris.stream().
+						map(ur -> {
+							return DadesUsuari.builder().
+									codi(ur.getUsername()).
+									nom(ur.getFirstName() + ur.getLastName()).
+									actiu(ur.isEnabled()).
+									build();
+						}).
+						collect(Collectors.toList());
+			} else {
+				return Arrays.asList(new DadesUsuari[0]);
 			}
-			return Arrays.stream(usuariCodis).map(u -> DadesUsuari.builder().codi(u).build()).collect(Collectors.toList());
 		} catch (Exception ex) {
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup " + grupCodi,
 					ex);
 		}
 	}
-	
-	
+
 	@Override
 	public String[] getUsernamesByRol(String rol) throws Exception {
+		Collection<UserRepresentation> users = internalGetUserNamesByRol(rol);
+		return users.stream().
+				map(ur -> ur.getUsername()).
+				toArray(String[]::new);
+	}
 
-		Set<String> usernamesClientApp = null;
-		Set<String> usernamesClientPersons = null;
-		Set<String> usersRealm = null;
+	private Collection<UserRepresentation> internalGetUserNamesByRol(String rol) {
+		Set<UserRepresentation> usernamesClientApp = null;
+		Set<UserRepresentation> usernamesClientPersons = null;
+		Set<UserRepresentation> usersRealm = null;
 		try {
 			String appClient = this.getPropertyRequired("pluginsib.userinformation.keycloak.client_id");
 			usernamesClientApp = this.getUsernamesByRolOfClient(rol, appClient);
@@ -114,43 +126,35 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		if (usernamesClientApp == null && usernamesClientPersons == null && usersRealm == null) {
 			return null;
 		}
-		Set<String> users = new TreeSet();
+		Map<String, UserRepresentation> users = new HashMap<>();
 		if (usernamesClientApp != null) {
-			users.addAll(usernamesClientApp);
+			usernamesClientApp.stream().forEach(u -> {
+				users.put(u.getUsername(), u);
+			});
 		}
-
 		if (usernamesClientPersons != null) {
-			users.addAll(usernamesClientPersons);
+			usernamesClientPersons.stream().forEach(u -> {
+				users.put(u.getUsername(), u);
+			});
 		}
-
 		if (usersRealm != null) {
-			users.addAll(usersRealm);
+			usersRealm.stream().forEach(u -> {
+				users.put(u.getUsername(), u);
+			});
 		}
-
-		return users.toArray(new String[users.size()]);
+		return users.values();
 	}
 
-	private Set<String> getUsernamesByRolOfRealm(String rol) throws Exception {
-
+	private Set<UserRepresentation> getUsernamesByRolOfRealm(String rol) throws Exception {
 		RolesResource roleres = this.getKeyCloakConnectionForRoles();
 		try {
-			Set<UserRepresentation> userRep = roleres.get(rol).getRoleUserMembers();
-			Set<String> users = new HashSet();
-			Iterator var5 = userRep.iterator();
-
-			while(var5.hasNext()) {
-				UserRepresentation ur = (UserRepresentation)var5.next();
-				users.add(ur.getUsername());
-			}
-
-			return users;
+			return roleres.get(rol).getRoleUserMembers();
 		} catch (NotFoundException var7) {
 			return null;
 		}
 	}
 
-	private Set<String> getUsernamesByRolOfClient(String rol, String client) throws Exception {
-
+	private Set<UserRepresentation> getUsernamesByRolOfClient(String rol, String client) throws Exception {
 		Keycloak keycloak = this.getKeyCloakConnection();
 		ClientsResource clientsApi = keycloak.realm(this.getPropertyRequired("pluginsib.userinformation.keycloak.realm")).clients();
 		List<ClientRepresentation> crList = clientsApi.findByClientId(client);
@@ -159,19 +163,9 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		}
 		ClientResource c = clientsApi.get((crList.get(0)).getId());
 		RolesResource rrs = c.roles();
-
 		try {
-			Set<String> users = new HashSet();
 			RoleResource rr = rrs.get(rol);
-			Set<UserRepresentation> userRep = rr.getRoleUserMembers();
-			Iterator var11 = userRep.iterator();
-
-			while(var11.hasNext()) {
-				UserRepresentation ur = (UserRepresentation)var11.next();
-				users.add(ur.getUsername());
-			}
-
-			return users;
+			return rr.getRoleUserMembers();
 		} catch (NotFoundException var13) {
 			return null;
 		}
