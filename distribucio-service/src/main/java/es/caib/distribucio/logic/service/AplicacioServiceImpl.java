@@ -122,16 +122,21 @@ public class AplicacioServiceImpl implements AplicacioService {
 			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
-			if (dadesUsuari != null) {
+			if (dadesUsuari == null) {
+				throw new NotFoundException(auth.getName(), DadesUsuari.class);
+			}
+			if (dadesUsuari.getNomSencer() != null) {
 				usuari.update(
-						dadesUsuari.getNom(),
-						dadesUsuari.getNif(),
+						dadesUsuari.getNomSencer(), 
+						dadesUsuari.getNif(), 
 						dadesUsuari.getEmail());
 			} else {
-				throw new NotFoundException(
-						auth.getName(),
-						DadesUsuari.class);
+				usuari.update(
+						dadesUsuari.getNom() + " " + dadesUsuari.getLlinatges(),
+						dadesUsuari.getNif(),
+						dadesUsuari.getEmail());
 			}
+			cacheHelper.evictUsuariByCodi(dadesUsuari.getCodi());
 		}
 	}
 
@@ -371,6 +376,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 							DadesUsuari.class);
 				}
 				usuari = toUsuariDtoAmbRols(usuariEntity);
+				cacheHelper.evictUsuariByCodi(dadesUsuari.getCodi());
 			}
 		}
 		return usuari;

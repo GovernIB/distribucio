@@ -59,6 +59,7 @@ public class UsuariController  extends BaseAdminController {
 		// Consulta l'usuari amb el plugin i actualitza les dades a la taula d'usuaris.
 		try {
 			usuari = aplicacioService.updateUsuari(usuari.getCodi());
+			SessioHelper.setUsuariActual(request, usuari);
 		} catch(Exception e) {
 			MissatgesHelper.error(request, getMessage(request, "usuari.form.actualitzar.usuari.error", new Object[] {e.toString()}));
 		}

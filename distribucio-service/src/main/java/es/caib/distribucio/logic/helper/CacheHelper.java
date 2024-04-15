@@ -158,6 +158,11 @@ public class CacheHelper {
 		return pluginHelper.dadesUsuariFindAmbCodi(
 				usuariCodi);
 	}
+	@CacheEvict(value = "usuariAmbCodi",  key="#usuariCodi")
+	public void evictUsuariByCodi(final String usuariCodi) {
+		// evictUsuariByCodi
+	}
+
 
 	@Cacheable(value = "provinciesPerComunitat", key="#comunitatCodi")
 	public List<ProvinciaDto> findProvinciesPerComunitat(String comunitatCodi) {
