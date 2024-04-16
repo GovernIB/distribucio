@@ -13,7 +13,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.data.util.ProxyUtils;
 import org.springframework.lang.Nullable;
 
@@ -86,7 +85,7 @@ public abstract class DistribucioPersistable<PK extends Serializable> implements
 		if (!getClass().equals(ProxyUtils.getUserClass(obj))) {
 			return false;
 		}
-		AbstractPersistable<?> that = (AbstractPersistable<?>) obj;
+		DistribucioPersistable<?> that = (DistribucioPersistable<?>) obj;
 		return null == this.getId() ? false : this.getId().equals(that.getId());
 	}
 

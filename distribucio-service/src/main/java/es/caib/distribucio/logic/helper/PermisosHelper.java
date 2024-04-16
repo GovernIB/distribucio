@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -136,23 +135,21 @@ public class PermisosHelper {
 				new Permission[] {permission});
 	}
 
+	@SuppressWarnings({ "rawtypes"})
 	public void filterGrantedAny(
-			Collection<? extends AbstractPersistable<Long>> objects,
+			Collection<?> objects,
+			ObjectIdentifierExtractor objectIdentifierExtractor,
 			Class<?> clazz,
 			Permission[] permissions) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		filterGrantedAny(
 				objects,
-				new ObjectIdentifierExtractor<AbstractPersistable<Long>>() {
-					@Override
-					public Long getObjectIdentifier(AbstractPersistable<Long> entitat) {
-						return entitat.getId();
-					}
-				},
+				objectIdentifierExtractor,
 				clazz,
 				permissions,
 				auth);
 	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void filterGrantedAny(
 			Collection<?> objects,
@@ -189,19 +186,16 @@ public class PermisosHelper {
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void filterGrantedAll(
-			Collection<? extends AbstractPersistable<Long>> objects,
+			Collection<?> objects,
+			ObjectIdentifierExtractor objectIdentifierExtractor,
 			Class<?> clazz,
 			Permission[] permissions) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		filterGrantedAll(
 				objects,
-				new ObjectIdentifierExtractor<AbstractPersistable<Long>>() {
-					@Override
-					public Long getObjectIdentifier(AbstractPersistable<Long> entitat) {
-						return entitat.getId();
-					}
-				},
+				objectIdentifierExtractor,
 				clazz,
 				permissions,
 				auth);
