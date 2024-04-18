@@ -275,7 +275,7 @@ public class ContingutHelper {
 			// AUDITORIA
 			contingutDto.setCreatedBy(
 					conversioTipusHelper.convertir(
-							contingut.getCreatedBy(),
+							contingut.getCreatedBy().orElse(null),
 							UsuariDto.class));
 			if (contingut.getCreatedDate().isPresent()) {
 				contingutDto.setCreatedDate(
@@ -283,7 +283,7 @@ public class ContingutHelper {
 			}
 			contingutDto.setLastModifiedBy(
 					conversioTipusHelper.convertir(
-							contingut.getLastModifiedBy(),
+							contingut.getLastModifiedBy().orElse(null),
 							UsuariDto.class));
 			if (contingut.getLastModifiedDate().isPresent()) {
 				contingutDto.setLastModifiedDate(
@@ -441,7 +441,7 @@ public class ContingutHelper {
 		// AUDITORIA
 		contingutDto.setCreatedBy(
 				conversioTipusHelper.convertir(
-						registreEntity.getCreatedBy(),
+						registreEntity.getCreatedBy().orElse(null),
 						UsuariDto.class));
 		if (registreEntity.getCreatedDate().isPresent()) {
 			contingutDto.setCreatedDate(
@@ -449,7 +449,7 @@ public class ContingutHelper {
 		}
 		contingutDto.setLastModifiedBy(
 				conversioTipusHelper.convertir(
-						registreEntity.getLastModifiedBy(),
+						registreEntity.getLastModifiedBy().orElse(null),
 						UsuariDto.class));
 		if (registreEntity.getLastModifiedDate().isPresent()) {
 			contingutDto.setLastModifiedDate(

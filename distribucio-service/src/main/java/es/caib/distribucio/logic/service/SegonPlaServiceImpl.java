@@ -45,8 +45,10 @@ import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.UsuariRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -80,6 +82,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ConversioTipusHelper conversioTipusHelper;	
 	@Autowired
 	private ProcedimentService procedimentService;
+	@Autowired
+	private UsuariRepository usuariRepository;
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -337,19 +341,36 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
+		int descartats = 0;
 		logger.trace("Execució de tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + ")");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatFalseOrderByDestinatariAscBustiaAsc();
 		for (ContingutMovimentEmailEntity moviment : moviments) {
 			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarEmailsPendentsNoAgrupats"));
 			Timer.Context context = timer.time();
+			boolean enviar = true;
+			String email = moviment.getEmail();
 			try {
-				this.enviarEmailPendent(
-						moviment.getEmail(), 
-						Arrays.asList(moviment));
-				logger.trace("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail());
-				movimentsEnviats++;
+				// Consulta les dades del destinatari abans d'enviar el correu per evitar enviar correus antics si ha canviat les opcions o el correu alternatiu
+				UsuariEntity user = usuariRepository.findById(moviment.getDestinatari()).orElse(null);
+				if (user != null) {
+					enviar = user.isRebreEmailsBustia();
+					if (user.getEmailAlternatiu() != null && !user.getEmailAlternatiu().isBlank()) {
+						email = user.getEmailAlternatiu();
+					}
+				}
+				if (enviar) {
+					this.enviarEmailPendent(
+							email, 
+							Arrays.asList(moviment));
+					logger.trace("Enviat l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getDestinatari() + " amb email " + email);
+					movimentsEnviats++;
+				} else {
+					logger.trace("Es descarta l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getDestinatari() + " per no tenir l'opció de rebre emails de la bústia.");
+					contingutMovimentEmailRepository.delete(moviment);
+					descartats++;
+				}
 			} catch (Exception e) {
-				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + moviment.getEmail() + ": " + e.getMessage());
+				logger.error("Error enviant l'email d'avis del moviment " + moviment.getId() + " al destinatari " + email + ": " + e.getMessage());
 				errors++;
 				// remove pending email if it is older that one week
 				Date formattedToday = new Date();
@@ -363,7 +384,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			context.stop();
 		}
 		long stopTime = new Date().getTime();
-		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + "). Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
+		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia no agrupats (" + startTime + "). Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + ". Descartats: " + descartats + " en " + (stopTime - startTime) + "ms");
 	}
 
 	/** Tasca periòdica en segon pla per consultar la taula d'enviament d'avisos de moviments pendents agrupats per enviar
@@ -378,34 +399,52 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		int movimentsEnviats = 0;
 		int errors = 0;
 		int anticsEsborrats = 0;
+		int descartats = 0;
 		logger.trace("Execució de tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + ")");
 		List<ContingutMovimentEmailEntity> moviments = contingutMovimentEmailRepository.findByEnviamentAgrupatTrueOrderByDestinatariAscBustiaAsc();
-		// Agrupa per destinataris Map<email, continguts> 
+		// Agrupa per destinataris Map<codi_usuari, continguts> 
 		Map<String, List<ContingutMovimentEmailEntity>> contingutsEmail = new HashMap<String, List<ContingutMovimentEmailEntity>>();
 		for (ContingutMovimentEmailEntity contingutEmail : moviments) {
-			if (contingutsEmail.containsKey(contingutEmail.getEmail())) {
-				contingutsEmail.get(contingutEmail.getEmail()).add(contingutEmail);
+			if (contingutsEmail.containsKey(contingutEmail.getDestinatari())) {
+				contingutsEmail.get(contingutEmail.getDestinatari()).add(contingutEmail);
 			} else {
 				List<ContingutMovimentEmailEntity> lContingutEmails = new ArrayList<ContingutMovimentEmailEntity>();
 				lContingutEmails.add(contingutEmail);
-				contingutsEmail.put(contingutEmail.getEmail(), lContingutEmails);
+				contingutsEmail.put(contingutEmail.getDestinatari(), lContingutEmails);
 			}
 		}
 		// Envia i esborra per agrupació
-		for (String email: contingutsEmail.keySet()) {
+		for (String destinatari: contingutsEmail.keySet()) {
 			
 			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarEmailsPendentsAgrupats"));
 			Timer.Context context = timer.time();
 			
-			moviments = contingutsEmail.get(email);
+			moviments = contingutsEmail.get(destinatari);
+			boolean enviar = true;
+			String email = moviments.isEmpty() ? "-" : moviments.get(0).getEmail();
 			try {
-				this.enviarEmailPendent(
-						email, 
-						moviments);
-				logger.trace("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email);
-				movimentsEnviats += moviments.size();
+				UsuariEntity user = usuariRepository.findById(destinatari).orElse(null);
+				if (user != null) {
+					enviar = user.isRebreEmailsBustia();
+					if (user.getEmailAlternatiu() != null && !user.getEmailAlternatiu().isBlank()) {
+						email = user.getEmailAlternatiu();
+					}
+				}
+				if (enviar) {
+					this.enviarEmailPendent(
+							email, 
+							moviments);
+					logger.trace("Enviat l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + destinatari + " amb email " + email);
+					movimentsEnviats += moviments.size();
+				} else {
+					logger.trace("Es descarta l'email d'avis de " + moviments.size() + " al destinatari " + destinatari + " per no tenir l'opció de rebre emails de la bústia.");
+					for (ContingutMovimentEmailEntity moviment : moviments) {
+						contingutMovimentEmailRepository.delete(moviment);
+						descartats++;
+					}
+				}
 			} catch (Exception e) {
-				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + email + ": " + e.getMessage());
+				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + destinatari + " amb email " + email +": " + e.getMessage());
 				errors++;
 				
 				for (ContingutMovimentEmailEntity moviment : moviments) {
@@ -423,8 +462,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		
 		long stopTime = new Date().getTime();
-		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + "). Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + " en " + (stopTime - startTime) + "ms");
-		
+		logger.trace("Fi tasca segon pla enviament emails avis nous elemenents bustia agrupats (" + startTime + "). Agrupacions:" + contingutsEmail.keySet().size() + ". Moviments enviats: " + movimentsEnviats + ". Errors: " + errors + ". Antics esborrats: " + anticsEsborrats + ". Descartats: " + descartats + " en " + (stopTime - startTime) + "ms");
 	}
 	
 	/** 

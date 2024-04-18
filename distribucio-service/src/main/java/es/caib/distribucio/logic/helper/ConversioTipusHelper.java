@@ -91,12 +91,12 @@ public class ConversioTipusHelper {
 						ContingutComentariDto target = new ContingutComentariDto();
 						target.setId(source.getId());
 						target.setText(source.getText());
-						target.setCreatedBy(convertir(source.getCreatedBy().orElseGet(null), UsuariDto.class));
+						target.setCreatedBy(convertir(source.getCreatedBy().orElse(null), UsuariDto.class));
 						if (source.getCreatedDate().isPresent()) {
 							target.setCreatedDate(
 									java.sql.Timestamp.valueOf(source.getCreatedDate().get()));
 						}
-						target.setLastModifiedBy(convertir(source.getLastModifiedBy().orElseGet(null), UsuariDto.class));
+						target.setLastModifiedBy(convertir(source.getLastModifiedBy().orElse(null), UsuariDto.class));
 						if (source.getLastModifiedDate().isPresent()) {
 							target.setLastModifiedDate(
 									java.sql.Timestamp.valueOf(source.getLastModifiedDate().get()));

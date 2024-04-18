@@ -361,7 +361,7 @@ public class ContingutLogHelper {
 		}
 		dto.setCreatedBy(
 				conversioTipusHelper.convertir(
-						log.getCreatedBy(),
+						log.getCreatedBy().orElse(null),
 						UsuariDto.class));
 		if (log.getLastModifiedDate().isPresent()) {
 			dto.setLastModifiedDate(
@@ -369,7 +369,7 @@ public class ContingutLogHelper {
 		}
 		dto.setLastModifiedBy(
 				conversioTipusHelper.convertir(
-						log.getLastModifiedBy(),
+						log.getLastModifiedBy().orElse(null),
 						UsuariDto.class));
 		dto.setTipus(
 				LogTipusEnumDto.valueOf(

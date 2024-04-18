@@ -718,7 +718,7 @@ public class ContingutServiceImpl implements ContingutService {
 			}
 			logDto.setTipus(log.getTipus());
 			logDto.setTipusDesc(messageHelper.getMessage("log.tipus.enum." + log.getTipus()));
-			logDto.setUsuari(log.getCreatedBy() != null ? log.getCreatedBy().get().getCodi() : null);
+			logDto.setUsuari(log.getCreatedBy().isPresent() ? log.getCreatedBy().get().getCodi() : null);
 			logDto.setAnotacioId(log.getContingut().getId()); 
 			logDto.setAnotacioNumero(registre.getNumero());
 			logDto.setAnotacioEstat(registre.getProcesEstat());
