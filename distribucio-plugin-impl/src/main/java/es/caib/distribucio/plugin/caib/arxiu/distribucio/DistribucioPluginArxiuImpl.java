@@ -271,6 +271,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 							signatura.setTipusFirmaEni("TF04");
 						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
 							signatura.setPerfilFirmaEni("BES");
+					} else if ("pades".equals(StringUtils.lowerCase(signatura.getTipusFirma()))) {
+						logger.warn("Fixant el tipus de firma a TF06 i perfil BES");
+						if (StringUtils.isEmpty(signatura.getTipusFirmaEni()))
+							signatura.setTipusFirmaEni("TF06");
+						if (StringUtils.isEmpty(signatura.getPerfilFirmaEni()))
+							signatura.setPerfilFirmaEni("BES");
 					}
 				}
 				byte [] firmaDistribucioContingut = signatura.getContingut();
