@@ -44,18 +44,18 @@ public class BustiaV1Test {
 
 	private static final String REGISTRE_TIPUS = "E";//"S"
 	private static final String ENTITAT_DIST_CODI = "A04003003"; //A04003003 DEV | A04019281 DES
-	private static final String UNITAT_ADM_CODI = "A04003003"; //A04026923 DEV | A04032369 DES
+	private static final String UNITAT_ADM_CODI = "A04043876"; //A04026923 DEV | A04032369 DES
 	private static final String APLICACIO_CODI = "CLIENT_TEST";
 	private static final String APLICACIO_VERSIO = "2";
 	private static final String ASSUMPTE_CODI = null;
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK_HELIUM_DP"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
+	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice Helium
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova regles backoffice " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -69,7 +69,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
@@ -298,6 +298,7 @@ public class BustiaV1Test {
 			            firma.setTipusMime("application/pdf");
 			            firma.setContingut(
 			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+//			            		IOUtils.toByteArray(getContingutAnnexFirmaInvalida()));
 //			            firma.setContingut(null);
 			            firma.setTipus("TF06");
 			            firma.setPerfil("EPES");
@@ -590,6 +591,13 @@ public class BustiaV1Test {
         		"/annex_firmat.pdf");
 		return is;
 	}
+	
+	private InputStream getContingutAnnexFirmaInvalida() {
+		InputStream is = getClass().getResourceAsStream(
+        		"/annex_firmat_invalid.pdf");
+		return is;
+	}
+
 	private InputStream getContingutAltre(String arxiuNom) {
 		InputStream is = getClass().getResourceAsStream(
         		"/" + arxiuNom);
