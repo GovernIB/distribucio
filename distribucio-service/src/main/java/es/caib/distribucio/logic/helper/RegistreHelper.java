@@ -2107,10 +2107,10 @@ public class RegistreHelper {
 		documentEniRegistrableDto.setData(registre.getData());
 		documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
 		documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
-		// Només crea l'annex a dins el contenidor si encara no s'ha creat o s'ha creat i té documents com a esborrany i no té error de firmes
+		// Només crea l'annex a dins el contenidor si encara no s'ha creat o està com esborrany per tornar a provar de guardar com a definitiu
 		if (annex.getFitxerArxiuUuid() == null || 
-				( annex.getArxiuEstat() == AnnexEstat.ESBORRANY
-					&& ValidacioFirmaEnum.FIRMA_INVALIDA != distribucioAnnex.getValidacioFirmaEstat()) ) {
+				!AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat()) ) {
+			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 			List<DistribucioRegistreFirma> firmes = new ArrayList<>();
 			ValidacioFirmaEnum validacioFirma = this.validaFirmes(annex, firmes);
