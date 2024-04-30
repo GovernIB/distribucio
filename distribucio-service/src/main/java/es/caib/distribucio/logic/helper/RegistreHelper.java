@@ -600,14 +600,14 @@ public class RegistreHelper {
 		
 		long startTime = new Date().getTime();
     	
-    	Exception excepcio = null;
+    	Throwable excepcio = null;
         try {
 			excepcio = processarAnotacioPendentArxiu(registreId);
 		} catch (NotFoundException e) {
 			if (e.getObjectClass() == UnitatOrganitzativaDto.class) {
 				excepcio = null;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			excepcio = e;
 		} finally {
 			
@@ -631,7 +631,7 @@ public class RegistreHelper {
 	 * @param anotacioId
 	 * @return
 	 */
-	public Exception processarAnotacioPendentArxiu(Long anotacioId) {
+	public Throwable processarAnotacioPendentArxiu(Long anotacioId) {
 
 		if (TransactionSynchronizationManager.isActualTransactionActive()) {
 			logger.warn("La transacció actual està activa, es desactiva per poder tractar anotació i annexos per separat.");
@@ -639,7 +639,7 @@ public class RegistreHelper {
 		}
 		
 		// PROCESSAR ARXIU
-		List<Exception> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(anotacioId);
+		List<Throwable> exceptionsGuardantAnnexos = createRegistreAndAnnexosInArxiu(anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio = self.getDistribucioRegistreAnotacio(anotacioId);
@@ -702,14 +702,14 @@ public class RegistreHelper {
 	 * @param crearAutofirma
 	 * @return
 	 */
-	public List<Exception> createRegistreAndAnnexosInArxiu(
+	public List<Throwable> createRegistreAndAnnexosInArxiu(
 			long anotacioId) {
 		
 		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
 				self.getDistribucioRegistreAnotacio(anotacioId);
 		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
-		List<Exception> exceptions = null;
+		List<Throwable> exceptions = null;
 		
 		if (distribucioRegistreAnotacio.getAnnexos() != null && distribucioRegistreAnotacio.getAnnexos().size() > 0) {
 
@@ -757,10 +757,10 @@ public class RegistreHelper {
 								uuidExpedient, 
 								distribucioRegistreAnotacio.getProcedimentCodi(), 
 								titolRepetit);
-					} catch (Exception ex) {
+					} catch (Throwable th) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
-										+ distribucioRegistreAnotacio.getNumero() + ": " + ex.getMessage(), ex );
-						exceptions.add(ex);
+										+ distribucioRegistreAnotacio.getNumero() + ": " + th.getMessage(), th );
+						exceptions.add(th);
 					}
 				}				
 			}
@@ -2043,7 +2043,7 @@ public class RegistreHelper {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public List<Exception> crearExpedientArxiu(
+	public List<Throwable> crearExpedientArxiu(
 			DistribucioRegistreAnotacio distribucioRegistreAnotacio, 
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient) {
@@ -2167,7 +2167,7 @@ public class RegistreHelper {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void updateAnotacioEstat(long anotacioId, List<Exception> exceptionsGuardantAnnexos) {
+	public void updateAnotacioEstat(long anotacioId, List<Throwable> exceptionsGuardantAnnexos) {
 		RegistreEntity anotacio = registreRepository.getReferenceById(anotacioId);
 		if (exceptionsGuardantAnnexos == null) {
 			if (anotacio.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PROCESSADA) {

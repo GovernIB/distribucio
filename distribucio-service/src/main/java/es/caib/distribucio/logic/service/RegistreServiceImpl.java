@@ -1791,7 +1791,7 @@ public class RegistreServiceImpl implements RegistreService {
 		boolean annexEsborrany = RegistreProcesEstatEnum.BUSTIA_PENDENT.equals(anotacio.getProcesEstat())
 									&& anotacio.getAnnexosEstatEsborrany() > 0;
 		
-		Exception exceptionProcessant = null;
+		Throwable exceptionProcessant = null;
 		if (pendentArxiu || pendentRegla || annexEsborrany) {
 			
 			exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(
@@ -1832,7 +1832,7 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				true,
 				false);
-		Exception exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
+		Throwable exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(registreId);
 		return exceptionProcessant == null;
 	}
 
@@ -1844,7 +1844,7 @@ public class RegistreServiceImpl implements RegistreService {
 		logger.debug("Reintentant processament d'anotació pendent per usuaris (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
-		Exception exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
+		Throwable exceptionProcessant = processarAnotacioPendent(entitatId, registreId);
 		return exceptionProcessant == null;
 	}
 	
@@ -3034,7 +3034,7 @@ public class RegistreServiceImpl implements RegistreService {
 		return interessatBase;
 	}
 
-	private Exception processarAnotacioPendent(long entitatId, long anotacioId) {
+	private Throwable processarAnotacioPendent(long entitatId, long anotacioId) {
 		
 		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
 		entityComprovarHelper.comprovarEntitat(
@@ -3045,7 +3045,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 		boolean pendentArxiu = RegistreProcesEstatEnum.ARXIU_PENDENT.equals(anotacio.getProcesEstat()) || RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(anotacio.getProcesEstat());
 		boolean pendentRegla = RegistreProcesEstatEnum.REGLA_PENDENT.equals(anotacio.getProcesEstat());
-		Exception exceptionProcessant = null;
+		Throwable exceptionProcessant = null;
 		if (pendentArxiu || pendentRegla) {
 			if (pendentArxiu) {
 				exceptionProcessant = registreHelper.processarAnotacioPendentArxiu(

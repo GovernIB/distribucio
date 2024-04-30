@@ -137,7 +137,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
-	public Exception registreAnotacioCrearIProcessar(
+	public Throwable registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
@@ -165,7 +165,7 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_BUSTIA_WS)
-	public Exception registreAnotacioProcessar(
+	public Throwable registreAnotacioProcessar(
 			Long registreId) {
 		return delegateService.registreAnotacioProcessar(
 				registreId);

@@ -226,7 +226,7 @@ public interface BustiaService {
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
-	public Exception registreAnotacioCrearIProcessar(
+	public Throwable registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatAdministrativa,
@@ -265,7 +265,7 @@ public interface BustiaService {
 	 * @return Excepció en cas de produir-se
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_BUSTIA_WS + "')")
-	public Exception registreAnotacioProcessar(
+	public Throwable registreAnotacioProcessar(
 			Long registreId);
 
 

@@ -504,7 +504,7 @@ public class RegistreEntity extends ContingutEntity {
 	
 	public void updateProcesMultipleExcepcions(
 			RegistreProcesEstatEnum procesEstat,
-			List<Exception> exceptions) {
+			List<Throwable> exceptions) {
 		this.procesData = new Date();
 		if (procesEstat != null) {
 			this.procesEstat = procesEstat;

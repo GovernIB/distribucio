@@ -1067,7 +1067,7 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Transactional
 	@Override
-	public Exception registreAnotacioCrearIProcessar(
+	public Throwable registreAnotacioCrearIProcessar(
 			String entitatCodi,
 			RegistreTipusEnum tipus,
 			String unitatOrganitzativaCodi,
@@ -1144,7 +1144,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		//-- apply rules of type bustia or unitat ---
 		Timer.Context contextprocessarAnotacioPendentRegla = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.processarAnotacioPendentRegla")).time();
-		Exception exceptionProcessant = null;
+		Throwable exceptionProcessant = null;
 		if (reglaAplicable != null && (reglaAplicable.getTipus() == ReglaTipusEnumDto.BUSTIA || reglaAplicable.getTipus() == ReglaTipusEnumDto.UNITAT)) {
 			exceptionProcessant = registreHelper.processarAnotacioPendentRegla(anotacioEntity.getId());
 		}
@@ -1272,10 +1272,10 @@ public class BustiaServiceImpl implements BustiaService {
 	}
 
 	@Override
-	public Exception registreAnotacioProcessar(
+	public Throwable registreAnotacioProcessar(
 			Long registreId) {
 		
-		Exception exceptionProcessant = null;
+		Throwable exceptionProcessant = null;
 		
 		Timer.Context context = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar")).time();
 		
