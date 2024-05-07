@@ -788,7 +788,7 @@ public class PluginHelper {
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 			return resposta;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			String errorDescripcio = "Error al accedir al plugin de validar signatures";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_VALIDASIG,
@@ -849,9 +849,18 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 
 			return signatura;
-		}catch (Exception ex){
+		} catch (Throwable ex){
 			String msgError = "No s'ha pogut signar el document: " + ex.getMessage();
 			logger.error(msgError, ex);
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_SIGNATURA,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					msgError,
+					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_SIGNATURA,
 					msgError,

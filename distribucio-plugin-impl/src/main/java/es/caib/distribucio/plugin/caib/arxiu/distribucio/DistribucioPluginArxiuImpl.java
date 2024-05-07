@@ -219,6 +219,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						"No s'ha trobat cap contingut per l'annex (" +
 						"uuid=" + distribucioAnnex.getFitxerArxiuUuid() + ")");
 			}
+			if (DocumentEstat.DEFINITIU.equals(arxiuDocument.getEstat())) {
+				logger.info("L'annex " + distribucioAnnex.getId() + " " + distribucioAnnex.getFitxerNom() +  
+						" amb uuid " + distribucioAnnex.getFitxerArxiuUuid() + " ja està guardat com a definitiu.");
+				return distribucioAnnex.getFitxerArxiuUuid();
+			}
+			
 			// Llegeix les firmes de l'Arxiu
 			if (arxiuDocument.getFirmes() != null) {
 				arxiuFirmes = new ArrayList<ArxiuFirmaDto>();
@@ -343,7 +349,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		if (guardarDefinitiu) {
 			estatDocument = DocumentEstat.DEFINITIU;
 		}
-		
 		
 		// SAVE IN ARXIU
 		String uuidDocumentCreat = null;
@@ -988,7 +993,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					accioParams,
 					System.currentTimeMillis() - t0);
 			return signatura;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			String errorDescripcio = "Error al firmar document en servidor. ";
 			integracioAddAccioError(
 					integracioSignaturaCodi,

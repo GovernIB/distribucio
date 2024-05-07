@@ -918,10 +918,10 @@ public class RegistreHelper {
 								validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
 						}
 						firmes.add(toRegistreFirmes(validacioFirma, firmaContingut, firma.getTipusMime()));
-					} catch(Exception e) {
-						logger.error("Error validant una firma del document", e);
+					} catch(Throwable th) {
+						logger.error("Error validant una firma del document", th);
 						validacioFirmaEstat = ValidacioFirmaEnum.ERROR_VALIDANT;
-						validacioFirmaError = "Error no controlat validant les firmes del document: " + e.getMessage();
+						validacioFirmaError = "Error no controlat validant les firmes del document: " + th.getMessage();
 					}
 					// Si troba un error s'atura de valida
 					if (validacioFirmaEstat == ValidacioFirmaEnum.ERROR_VALIDANT 
