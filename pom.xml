@@ -31,9 +31,9 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<version.revision>51</version.revision>
+		<version.revision>51.1</version.revision>
 		<version.full>${project.version}.${version.revision}</version.full>
-		<version.date>2024.04.24 13:30h</version.date>
+		<version.date>2024.05.08 17:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-core</module>
