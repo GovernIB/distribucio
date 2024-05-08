@@ -219,6 +219,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						"No s'ha trobat cap contingut per l'annex (" +
 						"uuid=" + distribucioAnnex.getFitxerArxiuUuid() + ")");
 			}
+			if (DocumentEstat.DEFINITIU.equals(arxiuDocument.getEstat())) {
+				logger.info("L'annex " + distribucioAnnex.getId() + " " + distribucioAnnex.getFitxerNom() +  
+						" amb uuid " + distribucioAnnex.getFitxerArxiuUuid() + " ja està guardat com a definitiu.");
+				return distribucioAnnex.getFitxerArxiuUuid();
+			}
+
 			// Llegeix les firmes de l'Arxiu
 			if (arxiuDocument.getFirmes() != null) {
 				arxiuFirmes = new ArrayList<ArxiuFirmaDto>();
