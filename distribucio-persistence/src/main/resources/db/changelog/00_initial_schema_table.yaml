@@ -2224,7 +2224,7 @@ databaseChangeLog:
             constraints:
               nullable: false
             name: object_id_identity
-            type: ${acl_pk_type}
+            type: VARCHAR(255)
         - column:
             name: parent_object
             type: ${acl_pk_type}
