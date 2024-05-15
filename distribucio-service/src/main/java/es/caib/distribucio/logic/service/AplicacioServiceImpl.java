@@ -103,6 +103,9 @@ public class AplicacioServiceImpl implements AplicacioService {
 			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			String idioma = configHelper.getConfig("es.caib.distribucio.default.user.language");
+			if (idioma == null || idioma.trim().isEmpty()) {
+				idioma = "ca";
+			}
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari != null) {
 				usuari = usuariRepository.save(
