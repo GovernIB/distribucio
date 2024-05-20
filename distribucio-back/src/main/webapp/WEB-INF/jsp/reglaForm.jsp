@@ -71,7 +71,7 @@ $(document).ready(function() {
 		$('div#camps_tipus_UNITAT').css('display', 'none');
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
 		if ($(this).val() == 'BACKOFFICE') {
-			$('#unitatFiltreId').val('');
+// 			$('#unitatFiltreId').val('');
 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', 'none');
 			$('#bustiaFiltreId').val('');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');

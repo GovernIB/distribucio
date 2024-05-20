@@ -98,6 +98,9 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 				valid = false;
 			}
 			// No permetre crear regles de tipus "Gestionar amb backoffice" amb codis SIA ja definits en altres regles
+			boolean mateixCodiSiaMateixFiltreUnitat = false;
+			Long unitatOrganitzativaId = command.getUnitatFiltreId();
+			String unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
 			if (command.getProcedimentCodiFiltre() != null) {
 				Map<String, List<ReglaDto>> mapa;
 				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
@@ -105,25 +108,36 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 				mapa = reglaService.findReglesByCodiProcediment(procediments);
 				
 				if (mapa != null && !mapa.isEmpty()) {
-					for(String codiProcediment : mapa.keySet()) {
+					for(String codiProcediment : mapa.keySet()) {						
 						StringBuilder reglesNoms = new StringBuilder("");
 						for(ReglaDto regla : mapa.get(codiProcediment)) {
 							if (!regla.getId().equals(command.getId())) {
-								
-								reglesNoms.append(regla.getNom());
-								if (!regla.getEntitatId().equals(entitatActual.getId())) {
-									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+								if (
+										(unitatOrganitzativaId==null) ||
+										(regla.getUnitatOrganitzativaFiltre()==null) ||
+										(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
+								) {			
+									if (regla.getUnitatOrganitzativaFiltre()!=null) {
+										unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
+									}
+									mateixCodiSiaMateixFiltreUnitat = true;
+									reglesNoms.append(regla.getNom());
+									if (!regla.getEntitatId().equals(entitatActual.getId())) {
+										reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+									}
+									reglesNoms.append(", ");
 								}
-								reglesNoms.append(", ");
 							}
 						}
-						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
-							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment};
-							context.buildConstraintViolationWithTemplate(
-									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codiprocediment.existent", args, new RequestContext(request).getLocale()))
-							.addNode("procedimentCodiFiltre")
-							.addConstraintViolation();	
-							valid = false;
+						if (mateixCodiSiaMateixFiltreUnitat) {
+							if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
+								String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment, unitatOrganitzativaComparada};
+								context.buildConstraintViolationWithTemplate(
+										MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codiprocediment.igualUnitat.existent", args, new RequestContext(request).getLocale()))
+								.addNode("procedimentCodiFiltre")
+								.addConstraintViolation();	
+								valid = false;
+							}
 						}
 					}
 				}
