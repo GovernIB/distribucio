@@ -12,7 +12,6 @@
 	<dis:modalHead/>
 </head>
 <body>
-
 	<c:if test="${not empty integracio}">
 		<dl class="dl-horizontal">
 			<dt><spring:message code="integracio.detall.camp.data"/></dt>
@@ -36,10 +35,15 @@
 						</c:forEach>
 					</ul>
 				</dd>
-			</c:if>
+			</c:if>			
 			<c:if test="${integracio.estat == 'ERROR'}">
 				<dt><spring:message code="integracio.detall.camp.error.desc"/></dt>
-				<dd>${integracio.errorDescripcio}</dd>
+				<dd>
+				<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+					${fn:escapeXml(integracio.errorDescripcio)}
+					
+					
+				</dd>
 				<dt><spring:message code="integracio.detall.camp.excepcio.missatge"/></dt>
 				<dd>${integracio.excepcioMessage}</dd>
 			</c:if>
