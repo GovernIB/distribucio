@@ -452,7 +452,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="14"
+		data-default-order="15"
 		data-default-dir="desc"
 		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
@@ -468,6 +468,7 @@ $(document).ready(function() {
 				<th data-col-name="procesEstatSimple"  data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false"></th>
 				<th data-col-name="sobreescriure" data-visible="false"></th>
+				<th data-col-name="motiuRebuig" data-visible="false"></th>
 				<th data-col-name="arxiuTancat" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-visible="false"></th>
 				<th data-col-name="numero"><spring:message code="bustia.pendent.columna.numero"/></th>
@@ -497,6 +498,8 @@ $(document).ready(function() {
 				<th data-col-name="procesEstat" data-orderable="true"  data-template="#estatTemplate">
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
+						<div class="d-flex">
+						<div>
 						{{if procesEstat == 'ARXIU_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
@@ -538,6 +541,13 @@ $(document).ready(function() {
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>
 						{{/if}}
+						</div>
+						{{if motiuRebuig}}
+							<div class="d-flex" style="align-items: end;">
+    							<span class="fa fa-exclamation-circle text-warning" title="{{:motiuRebuig}}"></span>
+							</div>						
+						{{/if}}
+						</div>
 					</script>
 				</th>
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">

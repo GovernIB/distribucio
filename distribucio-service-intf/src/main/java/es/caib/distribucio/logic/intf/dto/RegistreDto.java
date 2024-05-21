@@ -112,6 +112,8 @@ public class RegistreDto extends ContingutDto {
 
 	private List<DadaDto> dades;
 	
+	private String motiuRebuig;
+	
 	public int getDadesCount() {
 		if (dades == null)
 			return 0;
@@ -641,6 +643,14 @@ public class RegistreDto extends ContingutDto {
 		this.regla = regla;
 	}
 	
+	public String getMotiuRebuig() {
+		return motiuRebuig;
+	}
+
+	public void setMotiuRebuig(String motiuRebuig) {
+		this.motiuRebuig = motiuRebuig;
+	}
+
 	public boolean isEstatPendent() {
 		return RegistreProcesEstatEnum.isPendent(procesEstat);
 	}

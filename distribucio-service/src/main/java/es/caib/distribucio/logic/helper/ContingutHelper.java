@@ -231,6 +231,7 @@ public class ContingutHelper {
 			}
 			registreDto.setProcesIntents(registreEntity.getProcesIntents());
 			registreDto.setMaxReintents(maxReintents);
+			registreDto.setMotiuRebuig(registreEntity.getMotiuRebuig());
 			
 			contingutDto = registreDto;
 		}
