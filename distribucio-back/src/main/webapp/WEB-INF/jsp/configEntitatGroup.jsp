@@ -32,7 +32,7 @@
                         span.addClass("fa-caret-up");
                     }
                     for (let entitat of entitats) {
-                        let keyReplaced = entitat.key.replaceAll('.', '_');
+                        let keyReplaced = entitat.key.replaceAll('_','__').replaceAll('.', '_');
                         let string = '<div>';                        
                         let disabled = false;//entitat.jbossProperty || !entitat.value ? 'disabled' : '';
                         let textGray = disabled ? "text-gray" : "";
@@ -156,7 +156,8 @@
 		var iconConfig = '#' + keyReplaced.id + '_button_config i';
 		$(iconConfig).addClass('fa-circle-o-notch');
 		$(iconConfig).addClass('fa-spin');
-    	var configKey = keyReplaced.id.replaceAll('_', '.');
+		debugger;
+    	var configKey = keyReplaced.id.replaceAll('_', '.').replaceAll('..','_');
     	var inputEvent = document.getElementById(keyReplaced.id);
     	var buttonTrash = document.getElementById(keyReplaced.id + '_button_trash');
     	var buttonSave = document.getElementById(keyReplaced.id + '_button_save');
