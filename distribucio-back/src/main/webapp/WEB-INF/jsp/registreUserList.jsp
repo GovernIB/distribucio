@@ -647,7 +647,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="15"
+		data-default-order="16"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -665,6 +665,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="reactivat"  data-visible="false">
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
+				<th data-col-name="motiuRebuig" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-orderable="true" data-template="#docFisTemplate" data-visible="false"></th>	
 			
 <!-- 				<th data-col-name="procesError" data-visible="false">#</th> -->
@@ -713,6 +714,8 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 <!-- 				<th data-col-name="procesEstat" data-orderable="true" data-template="#estatTemplate"> -->
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
 					<script id="estatTemplate" type="text/x-jsrender">
+						<div class="d-flex">
+						<div>
 						{{if procesEstat == 'ARXIU_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
 
@@ -753,6 +756,13 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>		
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>					
 						{{/if}}
+						</div>
+						{{if motiuRebuig}}
+							<div class="d-flex" style="align-items: end;">
+    							<span class="fa fa-exclamation-circle text-warning" title="{{:motiuRebuig}}"></span>
+							</div>						
+						{{/if}}
+						</div>
 					</script>
 				</th>
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
