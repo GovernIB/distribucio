@@ -1624,9 +1624,12 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				registreId,
 				bustiaOrigen);
-		List<String> assentamentsPerTramitar = new ArrayList<String>(), assentamentsPerConeixement = new ArrayList<String>();
+		
 		List<ContingutEntity> nousContinguts = new ArrayList<ContingutEntity>();
 		List<RegistreEntity> registresExistents = new ArrayList<RegistreEntity>();
+		
+		boolean crearComentariInformatiu = Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.crear.comentari"));
+				
 		for (int i = 0; i < bustiesDesti.size(); i++) {
 			BustiaEntity bustia = bustiesDesti.get(i);
 			boolean assentamentPerConeixement = bustiesPerConeixement.contains(bustia);
@@ -1733,11 +1736,6 @@ public class BustiaServiceImpl implements BustiaService {
 						opcioDeixarCopiaSelectada);
 			}
 			
-			if (assentamentPerConeixement) {
-				assentamentsPerConeixement.add(bustia.getNom());
-			} else {
-				assentamentsPerTramitar.add(bustia.getNom());
-			}
 			if (isPermesAssignarAnotacions()) {
 				String usuari = destinsUsuari.get(bustia.getId());
 				if (usuari != null && !usuari.isEmpty() && !usuari.equals("|")) {
@@ -1747,27 +1745,24 @@ public class BustiaServiceImpl implements BustiaService {
 					registreService.assignar(entitatId, registrePerReenviar.getId(), usuariCodi, comentariUsuari);	
 				}
 			}
-		}
-		
-		boolean crearComentariInformatiu = Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.crear.comentari"));
-		
-		if (crearComentariInformatiu) {
-			StringBuilder comentariContingut = generarTextDestins(
-					assentamentsPerTramitar, 
-					assentamentsPerConeixement);
-			if (comentariContingut.length() > 0 && nousContinguts.size() > 1) {
-				for (ContingutEntity contingut: nousContinguts) {
+			
+			if (crearComentariInformatiu) {				
+				StringBuilder comentariContingut = generarTextDesti(
+						assentamentPerConeixement?"":bustia.getNom(), 
+						assentamentPerConeixement?bustia.getNom():"");
+				if (comentariContingut.length() > 0) {
 					ContingutComentariEntity comentariAmbBustiesDesti = ContingutComentariEntity.getBuilder(
-							contingut, 
+							registrePerReenviar, 
 							comentariContingut.toString()).build();
 					contingutComentariRepository.save(comentariAmbBustiesDesti);
-					List<ContingutMovimentEntity> contingutMoviment= contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(contingut);
+					List<ContingutMovimentEntity> contingutMoviment= contingutMovimentRepository.findByContingutOrderByCreatedDateAsc(registrePerReenviar);
 					for (ContingutMovimentEntity moviment: contingutMoviment) {
 						moviment.updateComentariDestins(comentariContingut.toString());
 					}
-				}
-			}
-		}
+				}				
+			}				
+		}		
+		
 		if (comentari != null && !comentari.isEmpty()) {
 			for (ContingutEntity contingut: nousContinguts) {
 				//etiqueta reenviat
@@ -1960,36 +1955,23 @@ public class BustiaServiceImpl implements BustiaService {
 				" " + bustiaDesti.getNom() + "\"");
 		return ret;
 	}
-
-	private StringBuilder generarTextDestins(
-			List<String> assentamentsPerTramitar, 
-			List<String> assentamentsPerConeixement) {
+	
+	private StringBuilder generarTextDesti(
+			String assentamentPerTramitarNom, 
+			String assentamentPerConeixementNom) {
 		StringBuilder comentariContingut = new StringBuilder();
-		if (!assentamentsPerTramitar.isEmpty()) {
+		if (!assentamentPerTramitarNom.isEmpty()) {
 			String bustiesTramitacio = messageHelper.getMessage("registre.anotacio.enviat.pertramitar");
-			comentariContingut.append(bustiesTramitacio);
-			int i = 0;
-			for (String perTramitarNom: assentamentsPerTramitar) {
-				comentariContingut.append(perTramitarNom);
-				if(i++ != assentamentsPerTramitar.size() - 1){
-					comentariContingut.append(", ");
-				}
-			}
+			comentariContingut.append(bustiesTramitacio);			
+			comentariContingut.append(assentamentPerTramitarNom);			
 		}
 		
-		if (!assentamentsPerConeixement.isEmpty()) {
-			if (!assentamentsPerTramitar.isEmpty())
-				comentariContingut.append("\n\r");
-			
+		if (!assentamentPerConeixementNom.isEmpty()) {
+			if (!assentamentPerTramitarNom.isEmpty())
+				comentariContingut.append("\n\r");			
 			String bustiesConeixment = messageHelper.getMessage("registre.anotacio.enviat.perconeixment");
-			comentariContingut.append(bustiesConeixment);
-			int j = 0;
-			for (String perConeixementNom: assentamentsPerConeixement) {
-				comentariContingut.append(perConeixementNom);
-				if(j++ != assentamentsPerConeixement.size() - 1){
-					comentariContingut.append(", ");
-				}
-			}
+			comentariContingut.append(bustiesConeixment);			
+			comentariContingut.append(assentamentPerConeixementNom);	
 		}
 		return comentariContingut;
 	}
