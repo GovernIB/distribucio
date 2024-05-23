@@ -589,7 +589,7 @@ public class ContingutHelper {
 							if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
 								usuariUserPermisDto = new UsuariPermisDto();
 								usuariUserPermisDto.setCodi(permis.getPrincipalNom());
-								usuariUserPermisDto.setNom(dadesUsuari.getNom());
+								usuariUserPermisDto.setNom(dadesUsuari.getNomSencer());
 								usuariUserPermisDto.setHasUsuariPermission(true);
 								usuaris.put(permis.getPrincipalNom(), usuariUserPermisDto);
 							}
@@ -612,7 +612,7 @@ public class ContingutHelper {
 								} else { // if doesnt exists
 									usuariRolPermisDto = new UsuariPermisDto();
 									usuariRolPermisDto.setCodi(usuariGrup.getCodi());
-									usuariRolPermisDto.setNom(usuariGrup.getNom());
+									usuariRolPermisDto.setNom(usuariGrup.getNomSencer());
 									usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
 									usuaris.put(usuariGrup.getNom(), usuariRolPermisDto);
 								}

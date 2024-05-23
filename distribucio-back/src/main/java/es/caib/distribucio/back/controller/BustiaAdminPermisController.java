@@ -69,6 +69,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 					if (usuari != null) {
 						permis.setPrincipalDescripcio(usuari.getNom());	
 					}
+						
 				}
 			}
 		}
