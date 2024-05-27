@@ -223,6 +223,12 @@ div.exemple {
 	color: #721c24CC;
 }
 
+.menu-items-not-selected li a  {
+	color: #333 !important;
+	.disabled & {
+		color: #777 !important;
+	}
+}
 
 .entitats-config {
 	background-color: #f2f2f2;
