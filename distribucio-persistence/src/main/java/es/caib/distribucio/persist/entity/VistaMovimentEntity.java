@@ -132,12 +132,12 @@ public class VistaMovimentEntity {
 	@OrderBy("createdDate ASC")
 	protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
 	
-	@OneToMany(
-			mappedBy = "registre",
-			fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
-	private List<RegistreInteressatEntity> interessats = new ArrayList<RegistreInteressatEntity>();
+//	@OneToMany(
+//			mappedBy = "registre",
+//			fetch = FetchType.LAZY,
+//			cascade = CascadeType.ALL,
+//			orphanRemoval = true)
+//	private List<RegistreInteressatEntity> interessats = new ArrayList<RegistreInteressatEntity>();
 
 	public String getId() {
 		return id;
@@ -275,14 +275,14 @@ public class VistaMovimentEntity {
 		this.alertes = alertes;
 	}
 
-	public List<RegistreInteressatEntity> getInteressats() {
-		return interessats;
-	}
-
-	public void setInteressats(List<RegistreInteressatEntity> interessats) {
-		this.interessats = interessats;
-	}
-
+//	public List<RegistreInteressatEntity> getInteressats() {
+//		return interessats;
+//	}
+//
+//	public void setInteressats(List<RegistreInteressatEntity> interessats) {
+//		this.interessats = interessats;
+//	}
+//
 	public String getRemitent() {
 		return remitent;
 	}

@@ -47,13 +47,15 @@ public interface VistaMovimentRepository extends JpaRepository<VistaMovimentEnti
 			"and (:nomesAmbErrors = false or v.procesError != null ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
-			"			from v.interessats as interessat" +
+			"			from RegistreInteressatEntity interessat" +
 			"			where " +
-			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"				(interessat.registre.id = v.idRegistre) " + 
+			"				and (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " +
 			"and (:isNullBustiaOrigen = true or v.origen = :bustiaOrigen) " +
-			"and (:isNullBustiaDesti = true or v.desti = :bustiaDesti)")
+			"and (:isNullBustiaDesti = true or v.desti = :bustiaDesti)"
+			)
 	public Page<VistaMovimentEntity> findMovimentsByFiltre(
 			@Param("entitat") Long entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -114,9 +116,10 @@ public interface VistaMovimentRepository extends JpaRepository<VistaMovimentEnti
 			"and (:nomesAmbErrors = false or v.procesError != null ) " +
 			"and (:esNullInteressat = true " +
 			"		or (select count(interessat) " +
-			"			from v.interessats as interessat" +
+			"			from RegistreInteressatEntity interessat" +
 			"			where " +
-			"				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
+			"				(interessat.registre.id = v.idRegistre) " + 
+			"				and (lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') " + 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " +
 			"and (:isNullBustiaOrigen = true or v.origen = :bustiaOrigen) " +
