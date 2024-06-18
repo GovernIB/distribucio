@@ -63,13 +63,83 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2</version>
 		</dependency>
-
+		
 		<!-- valdiació amb afirma -->
+
+<!--	
 		<dependency>
-			<groupId>org.fundaciobit.pluginsib.validatesignature</groupId>
+			<groupId>org.fundaciobit.plugsib.validatesignature</groupId>
 			<artifactId>pluginsib-validatesignature-afirmacxf</artifactId>
-			<version>2.1.0-SNAPSHOT</version>
-		</dependency>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency> -->
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.validatesignature</groupId>
+            <artifactId>pluginsib-validatesignature-afirmacxf</artifactId>
+            <version>${plugins.validatesignature.version}</version>
+        </dependency>
+	
+	
+		<!--	
+        <dependency>
+            <groupId>es.gob.afirma</groupId>
+            <artifactId>Integra-commons</artifactId>
+            <version>2.2.1_000</version>
+        </dependency>
+        <dependency>
+            <groupId>es.gob.afirma</groupId>
+            <artifactId>Integra-commons-xml</artifactId>
+            <version>2.2.1_000</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.santuario</groupId>
+                    <artifactId>xmlsec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bctsp-jdk16</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>es.gob.afirma</groupId>
+            <artifactId>Integra-ws</artifactId>
+            <version>2.2.1_000</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>sun-jaxws</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.axis</groupId>
+                    <artifactId>axis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.axis</groupId>
+                    <artifactId>axis-jaxrpc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.wss</groupId>
+                    <artifactId>xws-security</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ws.security</groupId>
+                    <artifactId>wss4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		-->
 		
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
@@ -98,12 +168,28 @@
 		</dependency>
 
 		<dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+            <version>${cxf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <scope>provided</scope>     
+        </dependency>   
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
+          <scope>provided</scope>
+        </dependency>        
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
 
 		<!-- valdiació amb afirma -->
 		

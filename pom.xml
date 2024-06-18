@@ -11,7 +11,7 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.16</version>
 	</parent>
-	<properties>
+	<properties>		
 		<springboot.version>2.7.16</springboot.version>
 		<liquibase.version>4.4.3</liquibase.version>
 		<openapi.version>1.7.0</openapi.version>
@@ -19,8 +19,9 @@
 		<sitemesh.version>2.5.0</sitemesh.version>
 		<jerseyclient.version>1.19.3</jerseyclient.version>
 		<keycloak.version>22.0.4</keycloak.version>
+		<plugins.validatesignature.version>3.0.0-SNAPSHOT</plugins.validatesignature.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
-		<cxf.version>3.4.8</cxf.version>
+		<cxf.version>3.3.3</cxf.version>
 		<arxiu.api.version>2.0.27</arxiu.api.version>
 		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
 		<portafib.version>1.1</portafib.version>
@@ -50,6 +51,7 @@
 		<module>distribucio-backoffice-utils</module>
 		<module>distribucio-ws</module>
 	</modules>
+	
 	<build>
 		<plugins>
 			<plugin>
