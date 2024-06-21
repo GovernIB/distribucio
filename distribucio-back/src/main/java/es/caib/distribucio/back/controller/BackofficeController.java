@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -231,11 +232,18 @@ public class BackofficeController extends BaseAdminController {
 					request,
 					"redirect:../../backoffice",
 					"backoffice.controller.esborrat.ok");
-		} catch (Exception e) {
+		} catch (Exception e) {			
+			String errorMessage;
+			Throwable t = e.getCause();
+			if (t instanceof ConstraintViolationException) {
+				errorMessage = getMessage(request, "backoffice.controller.esborrat.ko.constraintviolation");				
+			} else {
+				errorMessage = ExceptionUtils.getRootCause(e).getMessage();
+			}
 			return getAjaxControllerReturnValueErrorMessage(
 					request,
 					"redirect:../../backoffice",
-					ExceptionUtils.getRootCause(e).getMessage());
+					errorMessage);
 		}
 	}
 	
