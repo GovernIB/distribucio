@@ -609,7 +609,7 @@ $(document).ready(function() {
 							<ul class="dropdown-menu dropdown-left-high">
 								<li>
 									<a id="detall-button"
-										href=".//registre/{{:id}}"
+										href="./registre/{{:id}}"
 											data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;<spring:message code="comu.boto.detalls"/></a>
 								</li>
 								<li><a href="../contingut/{{:id}}/log/moviments" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
