@@ -24,6 +24,11 @@
 			<version>${arxiu.api.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.fundaciobit.pluginsib.core.v3</groupId>
+			<artifactId>pluginsib-core</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-service-intf</artifactId>
 			<version>${project.version}</version>

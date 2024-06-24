@@ -63,13 +63,13 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2</version>
 		</dependency>
-
+		
 		<!-- valdiació amb afirma -->
-		<dependency>
-			<groupId>org.fundaciobit.pluginsib.validatesignature</groupId>
-			<artifactId>pluginsib-validatesignature-afirmacxf</artifactId>
-			<version>2.1.0-SNAPSHOT</version>
-		</dependency>
+        <dependency>
+            <groupId>org.fundaciobit.pluginsib.validatesignature</groupId>
+            <artifactId>pluginsib-validatesignature-afirmacxf</artifactId>
+            <version>${plugins.validatesignature.version}</version>
+        </dependency>
 		
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
@@ -98,12 +98,23 @@
 		</dependency>
 
 		<dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+            <version>${cxf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
+          <scope>provided</scope>
+        </dependency>        
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
 
 		<!-- valdiació amb afirma -->
 		
