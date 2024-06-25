@@ -884,7 +884,7 @@ public class ContingutHelper {
 				observacions(registreOriginal.getObservacions()).
 				exposa(registreOriginal.getExposa()).
 				solicita(registreOriginal.getSolicita()).
-				regla(registreOriginal.getRegla()).
+				regla(null).
 				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
 				presencial(registreOriginal.getPresencial()).
 				build();
