@@ -286,7 +286,7 @@ public class RegistreEntity extends ContingutEntity {
 		return identificador;
 	}
 	public String getEntitatCodi() {
-		return entitatCodi;
+		return entitatCodi;				
 	}
 	public String getEntitatDescripcio() {
 		return entitatDescripcio;

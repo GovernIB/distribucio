@@ -311,7 +311,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			for (RegistreEntity registre: pendents) {
 
 				EntitatDto entitatDto = new EntitatDto();
-				entitatDto.setCodi(registre.getEntitatCodi());
+				entitatDto.setCodi(registre.getEntitat().getCodi());
 				ConfigHelper.setEntitat(entitatDto);
 
 				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));

@@ -1533,7 +1533,7 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
 			EntitatDto entitatDto = new EntitatDto();
 
-			entitatDto.setCodi(registre.getEntitatCodi());
+			entitatDto.setCodi(registre.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 			switch (estat) {
 			case REBUDA:

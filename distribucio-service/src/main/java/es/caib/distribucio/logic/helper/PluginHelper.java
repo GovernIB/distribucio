@@ -519,7 +519,7 @@ public class PluginHelper {
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
 		accioParams.put("registreNom", registre.getNom());
 		accioParams.put("registreNumero", registre.getNumero());
-		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreEntitat", registre.getEntitat().getCodi());
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();
 		try {			
@@ -560,7 +560,7 @@ public class PluginHelper {
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
 		accioParams.put("registreNom", registre.getNom());
 		accioParams.put("registreNumero", registre.getNumero());
-		accioParams.put("registreEntitat", registre.getEntitatCodi());
+		accioParams.put("registreEntitat", registre.getEntitat().getCodi());
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();
 		try {			
@@ -674,7 +674,7 @@ public class PluginHelper {
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("annexFirmesSize", String.valueOf(annex.getFirmes() != null ? annex.getFirmes().size() : 0));
 		accioParams.put("registreNumero", annex.getRegistre().getNumero());
-		accioParams.put("entitat", annex.getRegistre().getEntitatCodi());
+		accioParams.put("entitat", annex.getRegistre().getEntitat().getCodi());
 		long t0 = System.currentTimeMillis();
 		try {
 			getDistribucioPlugin().documentSetDefinitiu(annex.getFitxerArxiuUuid());
