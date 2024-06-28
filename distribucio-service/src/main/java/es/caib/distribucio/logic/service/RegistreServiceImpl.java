@@ -1474,7 +1474,8 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreEntity registreEntity = registreRepository.findById(registreId).orElseThrow();
 
 			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(registreEntity.getEntitatCodi());
+//			entitatDto.setCodi(registreEntity.getEntitatCodi());
+			entitatDto.setCodi(registreEntity.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
