@@ -27,6 +27,8 @@ public class ReglaDto extends AuditoriaDto {
 	private String assumpteCodiFiltre;
 	private String procedimentCodiFiltre;
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
+	private String codiAndNomUnitatOrganitzativa;
+	private String estatUnitatOrganitzativa;
 	private Long bustiaFiltreId;
 	private String bustiaFiltreNom;
 	private ReglaPresencialEnumDto presencial;
@@ -122,6 +124,18 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setUnitatOrganitzativaFiltre(UnitatOrganitzativaDto unitatOrganitzativaFiltre) {
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
+	}	
+	public String getCodiAndNomUnitatOrganitzativa() {
+		return unitatOrganitzativaFiltre.getCodiAndNom();
+	}
+	public void setCodiAndNomUnitatOrganitzativa(String codiAndNomUnitatOrganitzativa) {
+		this.codiAndNomUnitatOrganitzativa = codiAndNomUnitatOrganitzativa;
+	}	
+	public String getEstatUnitatOrganitzativa() {
+		return unitatOrganitzativaFiltre.getEstat();
+	}
+	public void setEstatUnitatOrganitzativa(String estatUnitatOrganitzativa) {
+		this.estatUnitatOrganitzativa = estatUnitatOrganitzativa;
 	}
 	public Long getBustiaDestiId() {
 		return bustiaDestiId;

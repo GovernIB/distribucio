@@ -35,6 +35,7 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
@@ -161,7 +162,10 @@ public class ReglaController  extends BaseAdminController {
 			
 			if (regla.getUnitatOrganitzativaFiltre() != null && regla.getUnitatOrganitzativaFiltre().getTipusTransicio() != null) {
 				// setting last historicos to the unitat of this regla
-				regla.setUnitatOrganitzativaFiltre(unitatService.getLastHistoricos(regla.getUnitatOrganitzativaFiltre()));
+				UnitatOrganitzativaDto unitatOrganitzativaFiltre = unitatService.getLastHistoricos(regla.getUnitatOrganitzativaFiltre());
+				regla.setUnitatOrganitzativaFiltre(unitatOrganitzativaFiltre);
+				regla.setCodiAndNomUnitatOrganitzativa(unitatOrganitzativaFiltre.getCodiAndNom());
+				regla.setEstatUnitatOrganitzativa(unitatOrganitzativaFiltre.getEstat());
 			
 				// getting all the regles connected with old unitat excluding the
 				// one you are currently in
