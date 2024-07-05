@@ -575,6 +575,22 @@ public class ReglaServiceImpl implements ReglaService {
 		return resposta;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<ReglaDto> findByEntitatAndBackofficeDestiId(
+			Long entitatId, 
+			Long backofficeDestiId) {
+		logger.debug("Cercant las regles del backoffice destí (" 
+				+ "entitatId=" + entitatId 
+				+ ", " + "unitatCodi=" + backofficeDestiId
+				+ ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, true, false);
+
+		List<ReglaEntity> regles = reglaRepository.findByEntitatAndBackofficeDestiId(entitat, backofficeDestiId);
+		return conversioTipusHelper.convertirList(
+				regles, 
+				ReglaDto.class);
+	}
 	
 	@Override
 	@Transactional(readOnly = true)

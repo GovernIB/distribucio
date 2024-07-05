@@ -1229,7 +1229,7 @@ li[id^="anotacio_"] {
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + ${registreId} + "/" + ${annex.id} + "/true?isVistaMoviments=" + isVistaMoviments);
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes"/>/" + ${registreId} + "/" + ${annex.id} + "/true?isVistaMoviments=" + isVistaMoviments);
 															        $(this).data("loaded", true);
 															    }
 															    event.stopPropagation();

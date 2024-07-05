@@ -164,6 +164,12 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 				unitatCodi);
 	}
 
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
+	public List<ReglaDto> findByEntitatAndBackofficeDestiId(Long entitatId, Long backofficeDestiId) {
+		return delegateService.findByEntitatAndBackofficeDestiId(
+				entitatId,
+				backofficeDestiId);
+	}
 	
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })

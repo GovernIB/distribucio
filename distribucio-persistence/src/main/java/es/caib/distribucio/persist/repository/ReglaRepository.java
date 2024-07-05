@@ -33,6 +33,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 
 	List<ReglaEntity> findByEntitatAndUnitatDestiCodi(EntitatEntity entitat,String unitatDestiCodi);
 
+	List<ReglaEntity> findByEntitatAndBackofficeDestiId(EntitatEntity entitat, Long backofficeDestiId);
 	
 	List<ReglaEntity> findByEntitatOrderByOrdreAsc(EntitatEntity entitat);
 
