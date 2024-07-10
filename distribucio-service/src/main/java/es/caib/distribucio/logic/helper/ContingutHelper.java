@@ -912,11 +912,13 @@ public class ContingutHelper {
 					gestioDocumentalHelper.gestioDocumentalGet(
 							registreAnnex.getGesdocDocumentId(), 
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							contingutOut);
+							contingutOut,
+							registreOriginal.getNumero());
 					byte[] contingut = contingutOut.toByteArray();
 					gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							contingut);
+							contingut,
+							registreOriginal.getNumero());
 				}
 				RegistreAnnexEntity nouAnnex = RegistreAnnexEntity.getBuilder(
 						registreAnnex.getTitol(), 
@@ -951,11 +953,13 @@ public class ContingutHelper {
 						gestioDocumentalHelper.gestioDocumentalGet(
 								firma.getGesdocFirmaId(), 
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-								contingutOut);
+								contingutOut,
+								registreOriginal.getNumero());
 						byte[] contingut = contingutOut.toByteArray();
 						gestioDocumentalFirmaId = gestioDocumentalHelper.gestioDocumentalCreate(
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-								contingut);
+								contingut,
+								registreOriginal.getNumero());
 					}
 					RegistreAnnexFirmaEntity novaFirma = RegistreAnnexFirmaEntity.getBuilder(
 							firma.getTipus(), 

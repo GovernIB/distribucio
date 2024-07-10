@@ -146,8 +146,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 						registreId);
 			}
 			contextregistreAnotacioCrearIProcessar.stop();
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_BUSTIAWS,
+					registreEntrada.getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,

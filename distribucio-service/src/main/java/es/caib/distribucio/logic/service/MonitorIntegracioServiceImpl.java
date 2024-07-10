@@ -263,8 +263,9 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				diagnostic.setCorrecte(true); 
 				break;
 			case "VALIDASIG":
-				byte[] axiuSignat = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf"));	
-				pluginHelper.validaSignaturaObtenirDetalls(null, axiuSignat);
+				byte[] axiuSignat = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf"));
+				// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
+				pluginHelper.validaSignaturaObtenirDetalls(null, axiuSignat, "");
 				accioDescripcio = "Obtenir informació de document firmat";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
@@ -303,11 +304,13 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	    String aleatori_2 = new String(array2, Charset.forName("UTF-8"));	
 	    
 	    String codContingu = pluginHelper.saveRegistreAsExpedientInArxiu(aleatori_1, aleatori_2, "LIM");
-		pluginHelper.arxiuExpedientEliminar(codContingu);
+	 // PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
+		pluginHelper.arxiuExpedientEliminar(codContingu,"");
 	}
 
 	private void provaGestioDocumental() {
-		String indenti = pluginHelper.gestioDocumentalCreate(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0]);
+		// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
+		String indenti = pluginHelper.gestioDocumentalCreate(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], "");
 		pluginHelper.gestioDocumentalDelete(indenti, GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
 	}
 	

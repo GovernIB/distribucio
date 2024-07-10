@@ -53,6 +53,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
         try {
             logger.trace(">>> Abans de cridar el servei de registre");
             anotacioRegistreEntrada =  registreService.findOneForBackoffice(id);
+			// RegistreNumero no cal!!!
             integracioHelper.addAccioOk (
                     IntegracioHelper.INTCODI_BACKOFFICE,
                     accioDescripcio,
@@ -108,6 +109,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			long registreId = registreService.getRegistrePerIdentificador(id);
 			registreService.canviEstat(registreId, estat, observacions);
 
+			// RegistreNumero no cal!!!
             integracioHelper.addAccioOk (
                     IntegracioHelper.INTCODI_BACKOFFICE,
                     accioDescripcio,

@@ -37,21 +37,25 @@ public class GestioDocumentalHelper {
 	public void gestioDocumentalGet(
 			String id,
 			String agrupacio,
-			OutputStream contingutOut) {
+			OutputStream contingutOut,
+			String registreNumero) {
 		
 		pluginHelper.gestioDocumentalGet(
 				id, 
 				agrupacio, 
-				contingutOut);
+				contingutOut,
+				registreNumero);
 	}	
 
 	public String gestioDocumentalCreate(
 			String agrupacio,
-			byte[] contingut) {
+			byte[] contingut,
+			String registreNumero) {
 		
 		return pluginHelper.gestioDocumentalCreate(
 				agrupacio, 
-				contingut);	
+				contingut,
+				registreNumero);	
 	}
 
 	public void gestioDocumentalDelete(
@@ -70,6 +74,7 @@ public class GestioDocumentalHelper {
 		RegistreEntity anotacioEntity = registreRepository.getReferenceById(anotacioId);
 		logger.debug("Programant l'esborrat de temporals després del commit per l'anotació de registre " + anotacioEntity.getNumero());
 		EsborrarDocsTemporalsHandler esborrarDocsTemporalsHandler = new EsborrarDocsTemporalsHandler();
+		esborrarDocsTemporalsHandler.setNumeroRegistre(anotacioEntity.getNumero());
 		if (anotacioEntity.getAnnexos() != null && anotacioEntity.getAnnexos().size() > 0) {
 			for (RegistreAnnexEntity annex : anotacioEntity.getAnnexos()) {
 				// No s'esborren els documents originals pels documents que queden com esborranys
@@ -99,6 +104,7 @@ public class GestioDocumentalHelper {
 		/** Map amb el nom de l'agrupació i la llista d'identficadors a esborrar. 
 		 * Map<agrupacio, List<identificadors> */
 		private Map<String,List<String>> identificadors = new HashMap<>();
+		private String numeroRegistre;
 		
 		/** Afegeix un identificador a una agrupació
 		 * 
@@ -115,6 +121,7 @@ public class GestioDocumentalHelper {
 		@Transactional
 		public void afterCommit() {
 			logger.debug("Esborrant els arxius temporals");
+			
 			for (String agrupacio : identificadors.keySet())
 				for (String identificador : identificadors.get(agrupacio)) {
 					logger.debug("Esborrar arxiu temporal agrupacio=" + agrupacio + ", identificador=" + identificador);
@@ -137,6 +144,12 @@ public class GestioDocumentalHelper {
 		public void beforeCompletion() {}
 		@Override
 		public void afterCompletion(int status) {}
+		public String getNumeroRegistre() {
+			return numeroRegistre;
+		}
+		public void setNumeroRegistre(String numeroRegistre) {
+			this.numeroRegistre = numeroRegistre;
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(GestioDocumentalHelper.class);

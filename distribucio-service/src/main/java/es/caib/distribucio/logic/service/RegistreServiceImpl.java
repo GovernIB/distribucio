@@ -1912,6 +1912,7 @@ public class RegistreServiceImpl implements RegistreService {
 		
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
 		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
 
 		// if annex is already created in arxiu take firma content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null 
@@ -1933,7 +1934,8 @@ public class RegistreServiceImpl implements RegistreService {
 				gestioDocumentalHelper.gestioDocumentalGet(
 						firmaEntity.getGesdocFirmaId(), 
 						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-						streamAnnexFirma);
+						streamAnnexFirma,
+						registre.getNumero());
 				byte[] firmaContingut = streamAnnexFirma.toByteArray();
 				
 				fitxerDto.setNom(firmaEntity.getFitxerNom());
@@ -2160,7 +2162,7 @@ public class RegistreServiceImpl implements RegistreService {
 		RegistreEntity registre = registreRepository.getReferenceById(registreId);
 		FitxerDto arxiu = new FitxerDto();
 		Document document = null;
-		document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true, true);
+		document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true, true, registre.getNumero());
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
 			if (documentContingut != null) {
@@ -2281,7 +2283,7 @@ public class RegistreServiceImpl implements RegistreService {
 		ArxiuDetallDto arxiuDetall = null;
 		if (registre.getExpedientArxiuUuid() != null) {
 			arxiuDetall = new ArxiuDetallDto();
-			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
+			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid(), registre.getNumero());
 			List<ContingutArxiu> continguts = arxiuExpedient.getContinguts();
 			arxiuDetall.setIdentificador(arxiuExpedient.getIdentificador());
 			arxiuDetall.setNom(arxiuExpedient.getNom());
@@ -2700,7 +2702,7 @@ public class RegistreServiceImpl implements RegistreService {
 					Document document = pluginHelper.arxiuDocumentConsultar(
 							annexEntity.getFitxerArxiuUuid(),
 							null,
-							retornarAnnexIFirmaContingut);
+							retornarAnnexIFirmaContingut, registre.getNumero());
 	
 					if(retornarAnnexIFirmaContingut)
 						annexPerBackoffice.setContingut(document.getContingut().getContingut());

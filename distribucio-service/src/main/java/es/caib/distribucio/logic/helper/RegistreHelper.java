@@ -542,6 +542,7 @@ public class RegistreHelper {
 	public List<ArxiuFirmaDto> convertirFirmesAnnexToArxiuFirmaDto(
 			RegistreAnnexEntity annex,
 			byte[] firmaDistribucioContingut) {
+		RegistreEntity registre = annex.getRegistre();
 		List<ArxiuFirmaDto> firmes = null;
 		if (annex.getFirmes() != null) {
 			firmes = new ArrayList<ArxiuFirmaDto>();
@@ -549,7 +550,7 @@ public class RegistreHelper {
 				byte[] firmaContingut = null;
 				
 				if (annexFirma.getGesdocFirmaId() != null) {
-					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId());
+					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId(),registre.getNumero());
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
 				}
@@ -838,6 +839,7 @@ public class RegistreHelper {
 		FitxerDto fitxer = this.getAnnexFitxer(annex.getId(), false);
 		byte[] documentContingut = fitxer.getContingut();
 		byte[] firmaContingut = null;
+		RegistreEntity registre = annex.getRegistre();
 		if (firmes == null) {
 			firmes = new ArrayList<>();
 		}
@@ -888,7 +890,7 @@ public class RegistreHelper {
 					// Si encara no està a l'Arxiu o està en estat esborrany recupera el fitxer de firma de la gesió documental.
 					if (annex.getFitxerArxiuUuid() == null || AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
 						if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
-							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId());
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
 						}
 					} else {
 						// Altrament obté la 1a firma de l'Arxiu
@@ -901,7 +903,7 @@ public class RegistreHelper {
 						logger.debug("Validant la firma " + nFirma++ + "/" + annex.getFirmes().size() + " " + firma.getTipus()
 									 + " de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
 						
-						ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(documentContingut, firmaContingut);
+						ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(documentContingut, firmaContingut,registre.getNumero());
 						switch(validacioFirma.getStatus()) {
 							case ValidaSignaturaResposta.FIRMA_VALIDA:
 								validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
@@ -933,7 +935,7 @@ public class RegistreHelper {
 			} else {
 				// 1- Valida el document com si no tingués firmes
 				try {
-					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut);
+					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut,registre.getNumero());
 					switch(validacioFirma.getStatus()) {
 						case ValidaSignaturaResposta.FIRMA_VALIDA:
 							validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
@@ -1009,7 +1011,8 @@ public class RegistreHelper {
 		document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(),
 				null,
 				true,
-				true);
+				true,
+				registre.getNumero());
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
 			if (documentContingut != null) {
@@ -1027,6 +1030,7 @@ public class RegistreHelper {
 		final Timer timegetgetAnnexosAmbArxiu = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu"));
 		Timer.Context contexgetgetAnnexosAmbArxiu = timegetgetAnnexosAmbArxiu.time();
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
 		RegistreAnnexDto registreAnnexDto;
 		// if annex is already created in arxiu use document and firma content from arxiu
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
@@ -1060,16 +1064,18 @@ public class RegistreHelper {
 						gestioDocumentalHelper.gestioDocumentalGet(
 								registreAnnexEntity.getGesdocDocumentId(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
-								streamAnnex);
+								streamAnnex,
+								registre.getNumero());
 						documentContingut = streamAnnex.toByteArray();
 					}
 					byte[] firmaContingut = null;
 					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
-						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId());
+						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registre.getNumero());
 					}
 					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 							documentContingut,
-							firmaContingut); 
+							firmaContingut,
+							registre.getNumero()); 
 					arxiuFirmaDto.setDetalls(validacioFirma.getFirmaDetalls());
 				} else {
 					logger.warn("ValidaSignaturaPlugin is not configured");
@@ -1143,6 +1149,7 @@ public class RegistreHelper {
 		
 		logger.debug("Guardant els detalls de la firma a la BBDD de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() + " de l'anotació " + annexEntity.getRegistre().getNumero());
 		
+		RegistreEntity registre = annexEntity.getRegistre();
 		if (annexEntity.getFitxerArxiuUuid() == null || annexEntity.getFitxerArxiuUuid().isEmpty()) {
 			logger.warn("Intent de carregar dades de firmes per l'annex " + annexEntity.getTimestamp() + " de l'anotació " + annexEntity.getRegistre().getIdentificador() + " amb UUID d'Arxiu buit.");
 			return;
@@ -1154,7 +1161,8 @@ public class RegistreHelper {
 			Document document = pluginHelper.arxiuDocumentConsultar(
 					annexEntity.getFitxerArxiuUuid(), 
 					null, 
-					true);
+					true,
+					registre.getNumero());
 			contexarxiuDocumentConsultar.stop();
 
 			// set fitxer size if unset
@@ -1202,7 +1210,8 @@ public class RegistreHelper {
 							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
 							ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 									documentContingut,
-									firmaContingut) ;
+									firmaContingut,
+									registre.getNumero()) ;
 							List<ArxiuFirmaDetallDto> firmaDetalls = validacioFirma.getFirmaDetalls();
 							contevalidaSignaturaObtenirDetalls.stop();
 							
@@ -1236,16 +1245,16 @@ public class RegistreHelper {
 		Exception exception = null;
 		try {
 			if (registre.getExpedientArxiuUuid() != null) {
-				Expedient expedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
+				Expedient expedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid(),registre.getNumero());
 
 				if (expedient.getContinguts() == null || expedient.getContinguts().isEmpty()) {
 					// Si no té annexos esborra l'espedient, el tancament fallaria
-					pluginHelper.arxiuExpedientEliminar(registre.getExpedientArxiuUuid());
+					pluginHelper.arxiuExpedientEliminar(registre.getExpedientArxiuUuid(),registre.getNumero());
 				} else {
 					// Primer comprova si hi ha cap document en estat d'esborrany
 					for(ContingutArxiu contingut : expedient.getContinguts()) {
 						Document document = pluginHelper.arxiuDocumentConsultar(
-								contingut.getIdentificador(), null, false);
+								contingut.getIdentificador(), null, false,registre.getNumero());
 						if (ContingutTipus.DOCUMENT.equals(contingut.getTipus()) 
 								&& DocumentEstat.ESBORRANY.equals(document.getEstat())) 
 						{
@@ -1386,13 +1395,29 @@ public class RegistreHelper {
 						BackofficeWsService.class);
 				logger.trace(">>> Abans de cridar backoffice WS "+ backofficeDesti.getCodi());
 				backofficeClient.comunicarAnotacionsPendents(ids);
-				integracioHelper.addAccioOk(
-						IntegracioHelper.INTCODI_BACKOFFICE,
-						accioDescripcio,
-						usuari,
-						accioParams,
-						IntegracioAccioTipusEnumDto.ENVIAMENT,
-						System.currentTimeMillis() - t0);
+				
+				// RegistreNumero sí si només n'hi ha 1, però no et liis i menja kiwi				
+				if (ids.size()==1) {					
+					String identificador = ids.get(0).getIndetificador();
+					Long registreId = Long.valueOf(identificador);
+					RegistreEntity registre = registreRepository.findById(registreId).get();
+					integracioHelper.addAccioOk(
+							IntegracioHelper.INTCODI_BACKOFFICE,
+							registre.getNumero(),
+							accioDescripcio,
+							usuari,
+							accioParams,
+							IntegracioAccioTipusEnumDto.ENVIAMENT,
+							System.currentTimeMillis() - t0);
+				} else {
+					integracioHelper.addAccioOk(
+							IntegracioHelper.INTCODI_BACKOFFICE,
+							accioDescripcio,
+							usuari,
+							accioParams,
+							IntegracioAccioTipusEnumDto.ENVIAMENT,
+							System.currentTimeMillis() - t0);
+				}				
 			}
 			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
 			return null;
@@ -1732,7 +1757,8 @@ public class RegistreHelper {
 		if (registreAnnex.getFitxerContingut() != null) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
-					registreAnnex.getFitxerContingut());
+					registreAnnex.getFitxerContingut(),
+					registre.getNumero());
 		}
 		String metaDades = null;
 		if (registreAnnex.getMetaDades() != null) {
@@ -1782,10 +1808,12 @@ public class RegistreHelper {
 			Firma firma,
 			RegistreAnnexEntity annex) {
 		String gestioDocumentalId = null;
+		RegistreEntity registre = annex.getRegistre();
 		if (firma.getContingut() != null) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
-					firma.getContingut());
+					firma.getContingut(),
+					registre.getNumero());
 		}
 		RegistreAnnexFirmaEntity firmaEntity = RegistreAnnexFirmaEntity.getBuilder(
 				firma.getTipus(),
@@ -1860,6 +1888,7 @@ public class RegistreHelper {
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
 		String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
 		FitxerDto fitxerDto = new FitxerDto();
 		// if annex is already created in arxiu take content from arxiu
@@ -1868,7 +1897,7 @@ public class RegistreHelper {
 				try {
 					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
 				} catch (Exception ex) {
-					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
 					if (document != null) {
 						DocumentContingut documentContingut = document.getContingut();
 						if (documentContingut != null) {
@@ -1888,7 +1917,7 @@ public class RegistreHelper {
 					}
 				}
 			} else {
-				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false);
+				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false,registre.getNumero());
 				if (document != null) {
 					DocumentContingut documentContingut = document.getContingut();
 					if (documentContingut != null) {
@@ -1906,7 +1935,7 @@ public class RegistreHelper {
 					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
 				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
 				if (firmaEntity.getGesdocFirmaId() != null) {
-					byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId());
+					byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),registre.getNumero());
 					fitxerDto.setNom(firmaEntity.getFitxerNom());
 					fitxerDto.setContentType(firmaEntity.getTipusMime());
 					fitxerDto.setContingut(firmaContingut);
@@ -1917,7 +1946,8 @@ public class RegistreHelper {
 					gestioDocumentalHelper.gestioDocumentalGet(
 							registreAnnexEntity.getGesdocDocumentId(), 
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex);
+							streamAnnex,
+							registre.getNumero());
 					byte[] annexContingut = streamAnnex.toByteArray();
 					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
 					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
@@ -1931,7 +1961,8 @@ public class RegistreHelper {
 					gestioDocumentalHelper.gestioDocumentalGet(
 							registreAnnexEntity.getGesdocDocumentId(), 
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex);
+							streamAnnex,
+							registre.getNumero());
 					byte[] annexContingut = streamAnnex.toByteArray();
 					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
 					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
@@ -1960,14 +1991,15 @@ public class RegistreHelper {
 	}
 
 	/** Consulta el contingut de la firma en la gestió documental. */
-	private byte[] getFirmaContingut(String gesdocFirmaId) {
+	private byte[] getFirmaContingut(String gesdocFirmaId, String registreNumero) {
 		byte[] firmaContingut = null;
 		if (gesdocFirmaId != null) {
 			ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
 			gestioDocumentalHelper.gestioDocumentalGet(
 					gesdocFirmaId, 
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-					streamAnnexFirma);
+					streamAnnexFirma,
+					registreNumero);
 			firmaContingut = streamAnnexFirma.toByteArray();
 		}
 		return firmaContingut;
@@ -2196,7 +2228,7 @@ public class RegistreHelper {
 		RegistreAnnexEntity annex = new RegistreAnnexEntity();
 		try {
 			RegistreEntity registre = registreRepository.getReferenceById(registreId);
-			Document document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true);
+			Document document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true,registre.getNumero());
 			annex.updateFitxerArxiuUuid(registre.getJustificantArxiuUuid());
 			annex.updateFitxerNom(obtenirJustificantNom(document));
 			annex.updateFitxerTamany(document.getContingut().getContingut().length);
@@ -2331,7 +2363,8 @@ public class RegistreHelper {
 		if (registreAnnexEntity.getFitxerArxiuUuid() == null ) {
 			return null;
 		}
-		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
+		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, registre.getNumero());
 		if (document != null) {
 			List<es.caib.plugins.arxiu.api.Firma> firmes = document.getFirmes();
 			if (firmes != null && firmes.size() > indexFirma) {

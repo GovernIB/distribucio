@@ -548,7 +548,8 @@ public class ReglaHelper {
 				gestioDocumentalHelper.gestioDocumentalGet(
 					annex.getGesdocDocumentId(), 
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-					baos_doc);
+					baos_doc,
+					anotacio.getNumero());
 				annexContingut = baos_doc.toByteArray();
 				annex.updateGesdocDocumentId(null);
 			}

@@ -115,8 +115,10 @@ public class PluginHelper {
 			String contenidorUuid = getDistribucioPlugin().expedientCrear(
 					expedientNumero,
 					unitatOrganitzativaCodi);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -127,6 +129,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al crear contenidor pels documents annexos";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -175,8 +178,10 @@ public class PluginHelper {
 					uuidExpedient,
 					documentEniRegistrableDto, 
 					procedimentCodi);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -187,6 +192,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al crear el document annex (Titol=" + annex.getTitol() + ") a dins el contenidor";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -213,6 +219,7 @@ public class PluginHelper {
 		try {
 			DadesUsuari dadesUsuari = getDadesUsuariPlugin().findAmbCodi(
 					usuariCodi);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
@@ -250,6 +257,7 @@ public class PluginHelper {
 		try {
 			List<DadesUsuari> dadesUsuari = getDadesUsuariPlugin().findAmbGrup(
 					grupCodi);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_USUARIS,
 					accioDescripcio,
@@ -298,6 +306,7 @@ public class PluginHelper {
 			UnitatOrganitzativa unitat = getUnitatsOrganitzativesPlugin().findUnidad(
 					pareCodi, fechaActualizacion, fechaSincronizacion);
 			if (unitat != null) {
+				// RegistreNumero no cal!!!
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
@@ -315,7 +324,8 @@ public class PluginHelper {
 						accioParams,
 						IntegracioAccioTipusEnumDto.ENVIAMENT,
 						System.currentTimeMillis() - t0,
-						errorMissatge);
+						errorMissatge,
+						null);
 				throw new SistemaExternException(
 						IntegracioHelper.INTCODI_UNITATS,
 						errorMissatge);
@@ -369,7 +379,7 @@ public class PluginHelper {
 				for (UnitatOrganitzativa un : arbol) {
 					logger.info(ToStringBuilder.reflectionToString(un));
 				}
-				
+				// RegistreNumero no cal!!!
 				integracioHelper.addAccioOk(
 						IntegracioHelper.INTCODI_UNITATS,
 						accioDescripcio,
@@ -446,6 +456,7 @@ public class PluginHelper {
 							toLongValue(codiProvincia), 
 							codiLocalitat),
 					UnitatOrganitzativaDto.class);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_UNITATS,
 					accioDescripcio,
@@ -477,7 +488,8 @@ public class PluginHelper {
 	}
 
 	public void arxiuExpedientEliminar(
-			String idContingut) {
+			String idContingut,
+			String registreNumero) {
 		String accioDescripcio = "Eliminació d'un expedient";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -485,8 +497,10 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			getArxiuPlugin().expedientEsborrar(idContingut);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -496,6 +510,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -525,8 +540,10 @@ public class PluginHelper {
 		try {			
 			getArxiuPlugin().expedientReobrir(
 					registre.getExpedientArxiuUuid());
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
+					registre.getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -536,6 +553,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al reobrir expedient";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
+					registre.getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -566,8 +584,10 @@ public class PluginHelper {
 		try {			
 			getArxiuPlugin().expedientTancar(
 					registre.getExpedientArxiuUuid());
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
+					registre.getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -577,6 +597,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al marcar el contenidor com a processat";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
+					registre.getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -594,19 +615,22 @@ public class PluginHelper {
 	public Document arxiuDocumentConsultar(
 			String arxiuUuid,
 			String versio,
-			boolean ambContingut) {
+			boolean ambContingut,
+			String registreNumero) {
 		return arxiuDocumentConsultar(
 				arxiuUuid,
 				versio,
 				ambContingut,
-				false);
+				false,
+				registreNumero);
 	}
 
 	public Document arxiuDocumentConsultar(
 			String arxiuUuid,
 			String versio,
 			boolean ambContingut,
-			boolean ambVersioImprimible) {
+			boolean ambVersioImprimible,
+			String registreNumero) {
 		String accioDescripcio = "Consulta d'un document";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -617,8 +641,10 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -629,6 +655,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -678,8 +705,10 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			getDistribucioPlugin().documentSetDefinitiu(annex.getFitxerArxiuUuid());
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					annex.getRegistre().getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -689,6 +718,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error posant com a definitiu un annex per l'anotació " + annex.getRegistre().getNumero();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					annex.getRegistre().getNumero(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -710,7 +740,8 @@ public class PluginHelper {
 
 	public ValidaSignaturaResposta validaSignaturaObtenirDetalls(
 			byte[] documentContingut,
-			byte[] firmaContingut) {
+			byte[] firmaContingut,
+			String registreNumero) {
 
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 		
@@ -780,8 +811,10 @@ public class PluginHelper {
 						validateSignatureResponse.getSignType(),
 						validateSignatureResponse.getSignFormat()));
 			}
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_VALIDASIG,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -792,6 +825,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al accedir al plugin de validar signatures";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_VALIDASIG,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -839,7 +873,8 @@ public class PluginHelper {
 					", mime: " + signatura.getMime() + 
 					", grandaria: " + (signatura.getContingut() != null ? 
 							signatura.getContingut().length : "-"));
-
+			
+			// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_SIGNATURA,
 					accioDescripcio,
@@ -887,6 +922,7 @@ public class PluginHelper {
 			List<TipusViaDto> tipusVies = conversioTipusHelper.convertirList(
 					getDadesExternesPlugin().tipusViaFindAll(),
 					TipusViaDto.class);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
@@ -925,6 +961,7 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			List<Provincia> provincies = getDadesExternesPlugin().provinciaFindByComunitat(comunitatCodi);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
@@ -963,6 +1000,7 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			List<Municipi> municipis = getDadesExternesPlugin().municipiFindByProvincia(provinciaCodi);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DADESEXT,
 					accioDescripcio,
@@ -990,7 +1028,8 @@ public class PluginHelper {
 	}
 
 	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
-			String arxiuUuid) {
+			String arxiuUuid,
+			String registreNumero) {
 		String accioDescripcio = "Consulta d'un expedient";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -998,8 +1037,10 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			es.caib.plugins.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1010,6 +1051,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_ARXIU,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1041,6 +1083,7 @@ public class PluginHelper {
 		try {
 			//codiDir3 = "A04003003";
 			List<Procediment> procediments = getProcedimentPlugin().findAmbCodiDir3(codiDir3);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
@@ -1076,6 +1119,7 @@ public class PluginHelper {
 		try {
 			// codiDir3="A04003003" 		codiSia="874123"
 			ProcedimentDto procediment = getProcedimentPlugin().findAmbCodiSia(codiSia);
+			// RegistreNumero no cal!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
@@ -1109,7 +1153,8 @@ public class PluginHelper {
 	public void gestioDocumentalGet(
 			String id,
 			String agrupacio,
-			OutputStream contingutOut) {
+			OutputStream contingutOut,
+			String registreNumero) {
 		String accioDescripcio = "Consultant document a dins la gestió documental";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -1123,8 +1168,10 @@ public class PluginHelper {
 						agrupacio,
 						contingutOut);
 			}
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1134,6 +1181,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al consultar document a dins la gestió documental";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_GESDOC,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1150,7 +1198,8 @@ public class PluginHelper {
 
 	public String gestioDocumentalCreate(
 			String agrupacio,
-			byte[] contingut) {
+			byte[] contingut,
+			String registreNumero) {
 		String accioDescripcio = "Creant nou document a dins la gestió documental";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -1166,8 +1215,10 @@ public class PluginHelper {
 						new ByteArrayInputStream(contingut));
 			}
 			accioParams.put("idRetornat", gestioDocumentalId);
+			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1178,6 +1229,7 @@ public class PluginHelper {
 			String errorDescripcio = "Error al crear document a dins la gestió documental";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_GESDOC,
+					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1207,6 +1259,7 @@ public class PluginHelper {
 						id,
 						agrupacio);
 			}
+			// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					accioDescripcio,

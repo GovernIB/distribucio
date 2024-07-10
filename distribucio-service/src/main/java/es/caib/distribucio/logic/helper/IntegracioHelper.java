@@ -117,6 +117,23 @@ public class IntegracioHelper {
 
 	public void addAccioOk(
 			String integracioCodi,
+			String registreNumero,
+			String descripcio,
+			String usuariIntegracio,
+			Map<String, String> parametres,
+			IntegracioAccioTipusEnumDto tipus,
+			long tempsResposta) {
+		this.addAccioOk(
+				integracioCodi,				
+				descripcio + " " + registreNumero, 
+				usuariIntegracio, 
+				parametres, 
+				tipus, 
+				tempsResposta);		
+	}
+	
+	public void addAccioOk(
+			String integracioCodi,
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
@@ -131,32 +148,55 @@ public class IntegracioHelper {
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
-//		accio.setParametres(this.buildParams(parametres));
+
 		monitorIntegracioService.create(accio);
-//		monitorIntegracioCreate(accio);
+
 		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
 	}
+	
+	
+//	public void addAccioError(
+//			String integracioCodi,			
+//			String descripcio,
+//			String usuariIntegracio,
+//			Map<String, String> parametres,
+//			IntegracioAccioTipusEnumDto tipus,
+//			long tempsResposta,
+//			String errorDescripcio) {
+//		addAccioError(
+//				integracioCodi,				
+//				descripcio,
+//				usuariIntegracio,
+//				parametres,
+//				tipus,
+//				tempsResposta,
+//				errorDescripcio,
+//				null);
+//	}
+
 	public void addAccioError(
-			String integracioCodi,
+			String integracioCodi,	
+			String registreNumero,
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta,
-			String errorDescripcio) {
-		addAccioError(
+			String errorDescripcio,
+			Throwable throwable) {
+		this.addAccioError(
 				integracioCodi,
-				descripcio,
+				descripcio + " " + registreNumero, 
 				usuariIntegracio,
 				parametres,
 				tipus,
 				tempsResposta,
-				errorDescripcio,
-				null);
+				errorDescripcio + " " + registreNumero,
+				throwable);		
 	}
-
+	
 	public void addAccioError(
-			String integracioCodi,
+			String integracioCodi,			
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
@@ -173,7 +213,7 @@ public class IntegracioHelper {
 		accio.setTipus(tipus);
 		accio.setTempsResposta(tempsResposta);
 		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
-		accio.setErrorDescripcio(errorDescripcio);		
+		accio.setErrorDescripcio(errorDescripcio);
 		if (throwable != null){
 			accio.setExcepcioMessage(
 					ExceptionUtils.getMessage(throwable));
