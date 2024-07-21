@@ -122,7 +122,8 @@ public class AjaxUserController extends BaseUserController {
 	private static String[] enumPackages = {
 			"es.caib.distribucio.logic.intf.dto",
 			"es.caib.distribucio.logic.intf.dto.historic",
-			"es.caib.distribucio.logic.intf.registre"
+			"es.caib.distribucio.logic.intf.registre",
+			"es.caib.distribucio.logic.intf.service.ws.backoffice"
 	};
 
 	/** Busca l'enumeració en diferents rutes. Si no troba la classe llença excepció. */

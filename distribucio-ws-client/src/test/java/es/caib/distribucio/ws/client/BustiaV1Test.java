@@ -70,11 +70,11 @@ public class BustiaV1Test {
 
 	private static final int N_ANOTACIONS = 1;
 	private static final int N_ANNEXOS = 1;
-	private static final boolean TEST_ANNEX_FIRMAT = false;
+	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
-	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
+	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = true; //TF05 - CAdES attached
 	private static final boolean TEST_ANNEX_PDF = false;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	

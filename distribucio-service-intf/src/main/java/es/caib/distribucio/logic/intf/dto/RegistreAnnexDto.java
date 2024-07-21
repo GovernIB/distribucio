@@ -43,6 +43,11 @@ public class RegistreAnnexDto implements Serializable {
 	private String gesdocDocumentId;
 	private boolean signaturaDetallsDescarregat;
 	
+	private String registreNumero;
+	private String signaturaInfo;
+	private ArxiuFirmaTipusEnumDto tipusFirma;
+	private String fitxerExtension;	
+	
 	private Map<String, String> metaDadesMap;
 	
 	private ValidacioFirmaEnum validacioFirmaEstat;
@@ -64,6 +69,24 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	public void setSignaturaDetallsDescarregat(boolean signaturaDetallsDescarregat) {
 		this.signaturaDetallsDescarregat = signaturaDetallsDescarregat;
+	}	
+	public String getRegistreNumero() {
+		return registreNumero;
+	}
+	public void setRegistreNumero(String registreNumero) {
+		this.registreNumero = registreNumero;
+	}	
+	public String getSignaturaInfo() {
+		return signaturaInfo;
+	}
+	public void setSignaturaInfo(String signaturaInfo) {
+		this.signaturaInfo = signaturaInfo;
+	}	
+	public ArxiuFirmaTipusEnumDto getTipusFirma() {
+		return tipusFirma;
+	}
+	public void setTipusFirma(ArxiuFirmaTipusEnumDto tipusFirma) {
+		this.tipusFirma = tipusFirma;
 	}
 	public Long getRegistreId() {
 		return registreId;
@@ -200,9 +223,17 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	
 	public String getFitxerExtension() {
-		return fitxerNom != null && fitxerNom.contains(".") ?
+		if (fitxerExtension!=null) {
+			return fitxerExtension;
+		} else {
+			return fitxerNom != null && fitxerNom.contains(".") ?
 				fitxerNom.substring(fitxerNom.lastIndexOf('.') + 1, fitxerNom.length())
 				: null;
+		}
+	}
+	
+	public void setFitxerExtension(String fitxerExtension) {
+		this.fitxerExtension = fitxerExtension;
 	}
 	
 	private static String[] tamanyUnitats = {"b", "Kb", "Mb", "Gb", "Tb", "Pb"};

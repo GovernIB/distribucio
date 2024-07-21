@@ -16,17 +16,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.distribucio.logic.intf.dto.AlertaDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
 import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
 import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.persist.entity.AlertaEntity;
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
 import es.caib.distribucio.persist.entity.DadaEntity;
 import es.caib.distribucio.persist.entity.MetaDadaEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
+import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFacade;
@@ -45,9 +48,14 @@ public class ConversioTipusHelper {
 
 	private MapperFactory mapperFactory;
 
+	/**
+	 * 
+	 */
 	@SuppressWarnings("deprecation")
 	public ConversioTipusHelper() {
-		mapperFactory = new DefaultMapperFactory.Builder().build();
+		// mapperFactory = new DefaultMapperFactory.Builder().build();
+		MappingContext.Factory mappingContextFactory = new MappingContext.Factory();
+		mapperFactory= new DefaultMapperFactory.Builder().mappingContextFactory(mappingContextFactory).build();
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<DateTime, Date>() {
 					public Date convert(
@@ -149,6 +157,17 @@ public class ConversioTipusHelper {
 						target.setValidacioFirmaError(source.getValidacioFirmaError());
 						target.setArxiuEstat(source.getArxiuEstat());
 						target.setGesdocDocumentId(source.getGesdocDocumentId());
+						target.setRegistreNumero(source.getRegistre() != null ? source.getRegistre().getNumero() : null);						
+						target.setSignaturaInfo(getSignaturaInfo(source));
+						target.setTipusFirma(getTipusFirma(source));
+						target.setRegistreId(source.getRegistre().getId());
+						
+						if (source.getFitxerNom() != null && source.getFitxerNom().contains(".")) {
+							target.setFitxerExtension(source.getFitxerNom().substring(source.getFitxerNom().lastIndexOf('.') +1, source.getFitxerNom().length()));
+						} else {
+							target.setFitxerExtension(null);
+						}						
+						
 						return target;
 					}
 				});
@@ -207,6 +226,31 @@ public class ConversioTipusHelper {
 
 	private MapperFacade getMapperFacade() {
 		return mapperFactory.getMapperFacade();
+	}
+	
+	private String getSignaturaInfo(RegistreAnnexEntity source) {
+		String signaturaInfo = "";
+		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
+		if (firmes.size()>0) {
+			RegistreAnnexFirmaEntity firma = firmes.get(0);
+			String tipusFirma = firma.getTipus();
+			String perfilFirma = firma.getPerfil();
+			ArxiuFirmaTipusEnumDto arxiuFirmaTipus = ArxiuConversions.toArxiuFirmaTipus(tipusFirma);		
+			signaturaInfo = tipusFirma + " " + arxiuFirmaTipus.name() + " " + perfilFirma;		
+		}
+		return signaturaInfo;
+	}
+	
+	private ArxiuFirmaTipusEnumDto getTipusFirma(RegistreAnnexEntity source) {
+		String tipusFirmaSt = "";
+		ArxiuFirmaTipusEnumDto tipusFirma = null;
+		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
+		if (firmes.size()>0) {
+			RegistreAnnexFirmaEntity firma = firmes.get(0);
+			tipusFirmaSt = firma.getTipus();	
+			tipusFirma = ArxiuConversions.toArxiuFirmaTipus(tipusFirmaSt);			
+		}
+		return tipusFirma;
 	}
 
 }

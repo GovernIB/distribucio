@@ -84,7 +84,7 @@ public class RegistreAnnexEntity extends DistribucioAuditable<Long> {
 	private boolean signaturaDetallsDescarregat;
 	@Column(name = "meta_dades", length = 4000)
 	private String metaDades;
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "registre_id",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_annex_reg_fk"))

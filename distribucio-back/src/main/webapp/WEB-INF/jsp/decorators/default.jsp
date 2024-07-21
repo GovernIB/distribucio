@@ -285,6 +285,7 @@ body {
 										<ul class="dropdown-menu">
 											<c:if test="${isRolActualAdministrador}">
 												<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
+												<li><a href="<c:url value="/annexosAdmin"/>"><spring:message code="decorator.menu.annexos"/></a></li>
 											</c:if>
 											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
