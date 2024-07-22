@@ -6,6 +6,7 @@ package es.caib.distribucio.rest.client;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -31,7 +32,7 @@ public class BackofficeIntegracioRestTest {
 
 	private static final String IDENTIFICADOR = "GOIBE1707325316091/2024"; 
 	private static final String CLAU_ACCESS = "F1sm0tSDIORwHJEaVJwhZiB72st06qnvokYvCcntbGY=";
-
+	private static final String DATA_REGISTRE = "19/03/2024 08:13:17";
 
 	@Test
 	public void consulta() throws DatatypeConfigurationException, IOException {
@@ -117,6 +118,20 @@ public class BackofficeIntegracioRestTest {
 					anotacioRegistreId, 
 					Estat.ERROR,
 					"Error");
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void llistar() throws DatatypeConfigurationException, IOException {
+
+		try {
+			List<AnotacioRegistreEntrada> response = getClientRest().llistar(IDENTIFICADOR, DATA_REGISTRE);
+			
+			System.out.println("Test: " + response);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

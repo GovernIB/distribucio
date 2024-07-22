@@ -1,5 +1,9 @@
 package es.caib.distribucio.api.interna.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +117,39 @@ public class BackofficeRestController {
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(
+	        value= "/llistar",
+	        method = RequestMethod.GET,
+	        produces = "application/json")
+	@Operation(
+			summary = "Consulta el llistat d'anotacions per número i data de registre",
+					description = "Retorna en un llistat les dades de les anotacions del número i data de registre especificats")
+	public ResponseEntity<Object> llistarAnotacions(
+	        HttpServletRequest request,
+	        @Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
+			String indetificador,
+			@Parameter(name = "dataRegistre", description = "La data de registre en format dd/MM/yyyy HH:mm:ss", required = true)
+			String dataRegistreStr) throws SistemaExternException {
+
+	    if (!hasRole())
+	        return responseUnautorized();
+	    try {
+	    	
+	    	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date dataRegistre = formatter.parse(dataRegistreStr);
+            
+	        // Lógica para consultar la anotación usando los parámetros proporcionados en el objeto consultaParams
+	        List<AnotacioRegistreEntrada> anotacions = backofficeIntegracioWsService.llistar(
+	        		indetificador, 
+	        		dataRegistre);
+	        return new ResponseEntity<Object>(anotacions, HttpStatus.OK);
+	    } catch(Exception e) {
+	        String errMsg = "Error no controlat al consultar les anotacions del registre " + indetificador + " i la data " + dataRegistreStr + ": " + e.getMessage();
+	        return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+
 
 	/** Comprova que que l'usuari autenticat té el rol DIS_BACKWS.
 	 * 

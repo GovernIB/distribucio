@@ -1,7 +1,9 @@
 package es.caib.distribucio.rest.client.integracio;
 
 import java.net.URLEncoder;
+import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 
@@ -68,6 +70,18 @@ public class BackofficeIntegracioRestClient extends RestClientBase{
                 type("application/json").
                 get(String.class);
         return getMapper().readValue(json, AnotacioRegistreEntrada.class);
+    }
+	
+	public List<AnotacioRegistreEntrada> llistar(String identificador, String dataRegistre) throws Exception {
+        String urlAmbMetode = baseUrl + BACKOFFICE_SERVICE_PATH + "/llistar";
+        Client jerseyClient = generarClient(urlAmbMetode);
+        String json = jerseyClient.
+                resource(urlAmbMetode).
+                queryParam("identificador", URLEncoder.encode(identificador, "UTF-8")).
+                queryParam("dataRegistre", URLEncoder.encode(dataRegistre, "UTF-8")).
+                type("application/json").
+                get(String.class);
+        return getMapper().readValue(json, new TypeReference<List<AnotacioRegistreEntrada>>() {});
     }
 
 
