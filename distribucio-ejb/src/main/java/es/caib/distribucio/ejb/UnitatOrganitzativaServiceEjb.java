@@ -117,14 +117,14 @@ public class UnitatOrganitzativaServiceEjb extends AbstractServiceEjb<UnitatOrga
 	
 	@Override
 	@RolesAllowed("**")
-	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties) {
-		return delegateService.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel, nomesAmbBusties);
+	public List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties, boolean isUsuari) {
+		return delegateService.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel, nomesAmbBusties, isUsuari);
 	}
 	
 	@Override
 	@RolesAllowed("**")
 	public List<UnitatOrganitzativaDto> findByEntitatAndCodiUnitatSuperiorAndFiltre(String entitatCodi, String codiUnitatSuperior, String filtre, boolean ambArrel, boolean nomesAmbBusties) {
-		return delegateService.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel, nomesAmbBusties);
+		return delegateService.findByEntitatAndFiltre(entitatCodi, filtre, ambArrel, nomesAmbBusties, false);
 	}
 	
 	@Override

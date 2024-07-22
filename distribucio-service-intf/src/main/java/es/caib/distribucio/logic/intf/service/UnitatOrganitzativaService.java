@@ -109,7 +109,7 @@ public interface UnitatOrganitzativaService {
 	List<UnitatOrganitzativaDto> predictFirstSynchronization(Long entitatId);
 
 	@PreAuthorize("isAuthenticated()")
-	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties);
+	List<UnitatOrganitzativaDto> findByEntitatAndFiltre(String entitatCodi, String filtre, boolean ambArrel, boolean nomesAmbBusties, boolean isUsuari);
 
 	@PreAuthorize("isAuthenticated()")
 	List<UnitatOrganitzativaDto> findByEntitatAndCodiUnitatSuperiorAndFiltre(String entitatCodi, String codiUnitatSuperior, String filtre, boolean ambArrel, boolean nomesAmbBusties);
