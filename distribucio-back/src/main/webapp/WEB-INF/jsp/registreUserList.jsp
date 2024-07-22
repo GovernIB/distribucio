@@ -182,11 +182,16 @@ button#filtrar {
 $.views.helpers({
 	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
 	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat,
-	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions}
+	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions},
+	upper: toUpperCase
 });
 
+function toUpperCase(val) {
+	return val.toUpperCase();
+};
+
 function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
-	return !${isPermesReservarAnotacions} || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}');
+	return !${isPermesReservarAnotacions} || !agafat || (agafat && toUpperCase(agafatPer.codi) == toUpperCase('${pageContext.request.userPrincipal.name}'));
 }
 
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
@@ -919,7 +924,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 										{{if ~hlpIsPermesAssignarAnotacions}}
 											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
 										{{/if}}
-										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
+										{{if ~upper(agafatPer.codi) != ~upper('${pageContext.request.userPrincipal.name}')}}									
 											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}
 									{{/if}}
