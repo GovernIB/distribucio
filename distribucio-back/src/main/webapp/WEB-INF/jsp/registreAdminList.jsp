@@ -222,6 +222,7 @@ $(document).ready(function() {
 		return false;
 	});
 	$(document).on('hidden.bs.modal', function (event) {
+		debugger;
 		var data = sessionStorage.getItem('selectedElements');
 		if (data != null) {
 			// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut

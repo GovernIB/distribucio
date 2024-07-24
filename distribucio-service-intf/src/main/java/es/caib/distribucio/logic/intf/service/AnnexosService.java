@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.logic.intf.service;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -39,6 +41,13 @@ public interface AnnexosService {
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public void guardarComADefinitiu(			
+	public List<Long> findAnnexIds(AnnexosFiltreDto filtre) throws NotFoundException;
+	
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+	public String guardarComADefinitiu(			
 			Long id);
+	
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+	public void guardarComADefinitiuMultiple(			
+			List<Long> ids);
 }

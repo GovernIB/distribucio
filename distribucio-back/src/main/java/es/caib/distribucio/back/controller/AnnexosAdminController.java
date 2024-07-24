@@ -3,6 +3,10 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -33,6 +37,7 @@ import es.caib.distribucio.logic.intf.service.ConfigService;
 public class AnnexosAdminController extends BaseAdminController {
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "AnnexosAdminController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "AnnexosAdminController.session.seleccio";
 
 	@Autowired
 	private AnnexosService annexosService;
@@ -86,7 +91,8 @@ public class AnnexosAdminController extends BaseAdminController {
 				annexosService.findAdmin(						
 						AnnexosFiltreCommand.asDto(filtreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id");
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
 	}
 
 	@RequestMapping(value = "/{id}/guardarDefinitiu", method = RequestMethod.GET)
@@ -100,6 +106,82 @@ public class AnnexosAdminController extends BaseAdminController {
 				"redirect:../../annexosAdmin",
 				"annexos.accio.guardar.definitiu.ok");
 	}
+	
+	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
+	public String guardarDefinitiuMultiple(
+			HttpServletRequest request,
+			Model model) {		
+		
+		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
+		annexosService.guardarComADefinitiuMultiple(					 
+				ids);		
+		
+		RequestSessionHelper.actualitzarObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO,
+				null);
+		
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../annexosAdmin",
+				"annexos.accio.multiple.guardar.definitiu.ok");
+	}
+	
+	@RequestMapping(value = "/select", method = RequestMethod.GET)
+	@ResponseBody
+	public int select(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {				
+			AnnexosFiltreCommand filtreCommand = getFiltreCommand(request);
+			seleccio.addAll(
+				annexosService.findAnnexIds(AnnexosFiltreCommand.asDto(filtreCommand))
+			);
+		}
+		return seleccio.size();
+	}
+	
+	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselect(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
+	}
+
 	
 //	@RequestMapping(value = "/{id}/guardarDefinitiu", method = RequestMethod.GET)
 //	public AjaxFormResponse guardarDefinitiu(

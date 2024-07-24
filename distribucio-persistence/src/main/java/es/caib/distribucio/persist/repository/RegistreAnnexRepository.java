@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.persist.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -70,5 +72,30 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("esNullFitxerTipusMime") boolean esNullFitxerTipusMime,
 			@Param("fitxerTipusMime") String fitxerTipusMime,
 			Pageable pageable);
+	
+	@Query(	"Select ra.id from"
+			+ "	RegistreAnnexEntity ra "
+			+ " join ra.firmes raf"
+			+ " where "
+			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
+			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
+			+ " (:esNullTipusFirma = true or raf.tipus = :tipusFirma) and "
+			+ " (:esNullTitol = true or lower(ra.titol) like lower('%'||:titol||'%')) and "
+			+ " (:esNullFitxerNom = true or lower(ra.fitxerNom) like lower('%'||:fitxerNom||'%')) and "
+			+ " (:esNullFitxerTipusMime = true or lower(ra.fitxerTipusMime) like lower('%'||:fitxerTipusMime||'%')) "
+			+ "")
+	public List<Long> findIdsByFiltre(
+			@Param("esNullNumero") boolean esNullNumero,
+			@Param("numero") String numero,
+			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,
+			@Param("arxiuEstat") AnnexEstat arxiuEstat,
+			@Param("esNullTipusFirma") boolean esNullTipusFirma,
+			@Param("tipusFirma") String tipusFirma,
+			@Param("esNullTitol") boolean esNullTitol,
+			@Param("titol") String titol,
+			@Param("esNullFitxerNom") boolean esNullFitxerNom,
+			@Param("fitxerNom") String fitxerNom,
+			@Param("esNullFitxerTipusMime") boolean esNullFitxerTipusMime,
+			@Param("fitxerTipusMime") String fitxerTipusMime);
 	
 }

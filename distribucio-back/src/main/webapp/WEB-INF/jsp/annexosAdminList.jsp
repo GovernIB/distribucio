@@ -25,6 +25,7 @@ pageContext.setAttribute(
 		<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script> 
 	</c:if>
 	<script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
+	<script src="<c:url value="/js/select2-locales/select2_locale_ca.js"/>"></script>
 	<script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
 	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
@@ -33,6 +34,9 @@ pageContext.setAttribute(
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
+	
+	<script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	
 	<style type="text/css">
 		
@@ -61,8 +65,87 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$(document).on('hidden.bs.modal', function (event) {
+				debugger;
+				var data = sessionStorage.getItem('selectedElements');
+				if (data != null) {
+					// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
+					$(".seleccioCount").html(data);
+					$('#taulaDades').webutilDatatable('refresh');
+					
+					sessionStorage.removeItem('selectedElements');
+				}
+			});
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();			
 // 			$("#taulaDades").dataTable();
+
+			$('form').submit(function() {				
+				$.get(
+						"annexosAdmin/deselect",
+						function(data) {
+							$("#seleccioCount").html(data);
+							$('#taulaDades').webutilDatatable('select-none');
+						}
+				);
+				return false;
+			});
+			
+			var selectButtonsInitialized = false;
+			$('#taulaDades').on( 'draw.dt', function () {
+				if (!selectButtonsInitialized) {					
+					selectButtonsInitialized = true;
+					$('#seleccioAll').on('click', function(e) {
+						debugger;
+						$.get(
+								"annexosAdmin/select",
+								function(data) {
+									$("#seleccioCount").html(data);
+									$('#taulaDades').webutilDatatable('refresh');
+								}
+						);
+						return false;
+					});
+					$('#seleccioNone').on('click', function() {						
+						$.get(
+								"annexosAdmin/deselect",
+								function(data) {
+									$("#seleccioCount").html(data);
+									$('#taulaDades').webutilDatatable('select-none');
+								}
+						);
+						return false;
+					});
+				}
+				$("tr", this).each(function(){					
+					if ($(this).find("#detall-button").length > 0) {
+						var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
+						var registreTotal = pageInfo.recordsTotal;
+						var registreNumero = $(this).data('rowIndex');
+						// Afegeix els paràmetres a l'enllaç dels detalls
+						var url = new URL(window.location);
+						var params = url.searchParams;
+						params.set("registreNumero", registreNumero);
+						params.set("registreTotal", registreTotal);
+						var sort = $('#taulaDades').dataTable().fnSettings().aaSorting
+						if (sort.length > 0) {
+							params.set("ordreColumn", $($('#taulaDades').dataTable().api().column(sort[0][0]).header()).data('colName'))
+							params.set("ordreDir", sort[0][1]);
+						}			
+						var $a = $($(this).find("#detall-button"));
+						$a.attr('href', $a.attr('href') + '?' + params.toString());
+						// Afegeix els paràmetres a l'enllaç de la fila
+						$(this).data('href', $(this).data('href') + '?' + params.toString());
+					}
+				});
+			}).on('selectionchange.dataTable', function (e, accio, ids) {				
+				$.get(
+						"annexosAdmin/" + accio,
+						{ids: ids},
+						function(data) {
+							$("#seleccioCount").html(data);
+						}
+				);
+			});			
 		});
 	</script>
 </head>
@@ -114,22 +197,26 @@ pageContext.setAttribute(
 			</div>
 		</div>
 	</script>
-
+	<script id="rowhrefTemplate" type="text/x-jsrender">./registreUser/registreAnnex/{{:registreId}}/{{:id}}</script>
 	<table
 		id="taulaDades"
 		data-refresh-tancar="true"
 		data-toggle="datatable"
 		data-url="<c:url value="/annexosAdmin/datatable"/>"
+		data-filter="#annexosFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="1"
+		data-default-order="0"
 		data-default-dir="desc"		
-		class="table table-bordered table-striped"		
+		class="table table-bordered table-striped"	
+		data-rowhref-template="#rowhrefTemplate" 	
+		data-rowhref-toggle="modal"
+		data-rowhref-maximized="true"
 		>
 		<thead>
 			<tr>
-				<th data-col-name="registreId" data-visible="false"></th>
 				<th data-col-name="id" data-visible="false"></th>
+				<th data-col-name="registreId" data-visible="false"></th>				
 				<th data-col-name="registreNumero" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/></th>				
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
 				<th data-col-name="fitxerNom" width="20%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>
