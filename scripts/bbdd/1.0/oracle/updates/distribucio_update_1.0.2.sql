@@ -41,3 +41,9 @@ WHERE
 --WHERE 
 --	KEY like '%plugins.validatesignature.%' 
 --	AND NOT KEY LIKE '%plugins.validatesignature.maxBytes';
+
+
+-- Creació de l'índex per la consulta d'anotacions pendents per bústia
+CREATE INDEX DIS_I_REGISTRE_ID_PENDENT ON DIS_REGISTRE (ID, PENDENT);
+
+	
