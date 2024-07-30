@@ -249,28 +249,33 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 			String entitatCodi, 
 			String filtre, 
 			boolean ambArrel, 
-			boolean nomesAmbBusties) {
+			boolean nomesAmbBusties,
+			boolean isUsuari) {
 		EntitatEntity entitat = entitatRepository.findByCodi(entitatCodi);
 		
 		List<UnitatOrganitzativaEntity> unitats = null;
 		
-		if (nomesAmbBusties) {
-			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBusties(
-					entitat.getCodiDir3(),
-					filtre == null || filtre.isEmpty(), 
-					filtre != null ? filtre : "",
+		if (isUsuari) {
+			unitats = unitatOrganitzativaHelper.findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBustiesUsuariActual(
+					entitat, 
+					filtre, 
 					ambArrel);
-			
 		} else {
-			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
-					entitat.getCodiDir3(),
-					filtre == null || filtre.isEmpty(), 
-					filtre != null ? filtre : "",
-					ambArrel);
+			if (nomesAmbBusties) {
+				unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBusties(
+						entitat.getCodiDir3(),
+						filtre == null || filtre.isEmpty(), 
+						filtre != null ? filtre : "",
+						ambArrel);
+				
+			} else {
+				unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioFiltre(
+						entitat.getCodiDir3(),
+						filtre == null || filtre.isEmpty(), 
+						filtre != null ? filtre : "",
+						ambArrel);
+			}
 		}
-
-		
-		
 		
 		return conversioTipusHelper.convertirList(
 				unitats,

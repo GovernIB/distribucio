@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.caib.distribucio.back.helper.RolHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.service.BustiaService;
@@ -62,7 +63,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, false);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, false, RolHelper.isRolActualUsuari(request));
 		
 		return unitatsEntitat;
 	}
@@ -121,7 +122,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, true);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, true, RolHelper.isRolActualUsuari(request));
 		
 		return unitatsEntitat;
 	}
@@ -177,7 +178,7 @@ public class AjaxUnitatsController extends BaseAdminController {
 		}
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
-				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false, false);
+				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, false, false, RolHelper.isRolActualUsuari(request));
 		
 		return unitatsEntitat;
 	}

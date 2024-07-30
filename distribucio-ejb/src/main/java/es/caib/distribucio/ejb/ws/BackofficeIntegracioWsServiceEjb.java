@@ -3,6 +3,9 @@
  */
 package es.caib.distribucio.ejb.ws;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
@@ -42,6 +45,12 @@ public class BackofficeIntegracioWsServiceEjb extends AbstractServiceEjb<Backoff
 			String observacions) {
 		propagateEjbAuthenticationToSpringSecurity(BaseConfig.ROLE_BACKOFFICE_WS);
 		delegateService.canviEstat(id, estat, observacions);
+	}
+	
+	@Override
+	public List<AnotacioRegistreEntrada> llistar(String identificador, Date dataRegistre) {
+		propagateEjbAuthenticationToSpringSecurity(BaseConfig.ROLE_BACKOFFICE_WS);
+		return delegateService.llistar(identificador, dataRegistre);
 	}
 
 	protected void setDelegateService(BackofficeIntegracioWsService delegateService) {

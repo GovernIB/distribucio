@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.logic.intf.service.ws.backoffice;
 
+import java.util.Date;
+import java.util.List;
 
 /**
  * Declaració dels mètodes per al servei per a processar anotacions
@@ -35,4 +37,16 @@ public interface BackofficeIntegracioWsService {
 			String observacions);
 	
 
+	/**
+	 * Consulta el llistat d'anotacions per número i data de registre
+	 * 
+	 * @param numeroRegistre
+	 *            Número del registre d'entrada.
+	 * @param dataRegistre
+	 *            Data del registre d'entrada.
+	 * @return llistat de les anotacions trobades.
+	 */
+	public List<AnotacioRegistreEntrada> llistar(
+			String identificador,
+			Date dataRegistre);
 }

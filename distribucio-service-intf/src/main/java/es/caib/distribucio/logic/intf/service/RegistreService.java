@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.intf.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -234,6 +235,8 @@ public interface RegistreService {
 	@PreAuthorize("isAuthenticated()")
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id);
 
+	public List<AnotacioRegistreEntrada> findForBackoffice(String identificador, Date dataRegistre);
+	
 	/** Mètode per trobar l'id del registre a partir de l'identificador clau+número.
 	 * 
 	 * @param id Objecte amb la clau + número.

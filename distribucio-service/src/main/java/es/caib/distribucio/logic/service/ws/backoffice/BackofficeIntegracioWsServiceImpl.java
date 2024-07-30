@@ -3,7 +3,9 @@
  */
 package es.caib.distribucio.logic.service.ws.backoffice;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -85,6 +87,65 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
         }
     }
 
+    @Override
+	public List<AnotacioRegistreEntrada> llistar(String identificador, Date dataRegistre) {
+		List<AnotacioRegistreEntrada> anotacionsRegistreEntrada;
+		String accioDescripcio = "Consulta anotacions registre "+ identificador;
+		String usuariIntegracio = this.getUsuariIntegracio();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		
+		accioParams.put("Número de registre", identificador);
+		accioParams.put("Data de registre", dataRegistre.toString());
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth!=null) {
+			String usuariCodi = auth.getName();
+			accioParams.put("Usuari", usuariCodi);
+		}
+		
+		long t0 = System.currentTimeMillis();
+		
+		try {
+			
+			logger.trace(">>> Abans de cridar el servei de consulta de registre");					
+			
+			anotacionsRegistreEntrada =  registreService.findForBackoffice(identificador, dataRegistre);
+						
+			integracioHelper.addAccioOk (
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0
+			);			
+			logger.trace(">>> Despres de cridar el servei de consulta de registre");	
+			
+			return anotacionsRegistreEntrada;
+
+		} catch (Exception ex) {
+			logger.error(
+					"Error al consultar registres d'entrada en el servei web de backoffice integració (" + "numeroRegistre="
+					+ identificador + ex);			
+			
+			String errorDescripcio = "Error al consultar registres d'entrada en el servei web de backoffice integració";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					errorDescripcio,
+					ex);
+		}
+	}
+    
     @Override
     public void canviEstat(
             AnotacioRegistreId id,

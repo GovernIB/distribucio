@@ -105,7 +105,6 @@ td,
     overflow-wrap: break-word;
     overflow-wrap: anywhere;
 	font-size: 1.4rem;
-	width: 0%; 
 	/* width: fit-content; */
 } 
 
@@ -183,11 +182,16 @@ button#filtrar {
 $.views.helpers({
 	hlpIsPermesReservarAnotacions: ${isPermesReservarAnotacions},
 	hlpIsPermesReservarAnotacionsAndAgafat: isPermesReservarAnotacionsAndAgafat,
-	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions}
+	hlpIsPermesAssignarAnotacions: ${isPermesAssignarAnotacions},
+	upper: toUpperCase
 });
 
+function toUpperCase(val) {
+	return val.toUpperCase();
+};
+
 function isPermesReservarAnotacionsAndAgafat(agafat, agafatPer) {
-	return !${isPermesReservarAnotacions} || !agafat || (agafat && agafatPer.codi == '${pageContext.request.userPrincipal.name}');
+	return !${isPermesReservarAnotacions} || !agafat || (agafat && toUpperCase(agafatPer.codi) == toUpperCase('${pageContext.request.userPrincipal.name}'));
 }
 
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
@@ -509,6 +513,19 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
 			</div>
 			<div class="col-md-3">
+				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
+				<dis:inputSuggest 
+					name="unitatId"
+					urlConsultaInicial="${urlConsultaInicial}" 
+					urlConsultaLlistat="${urlConsultaLlistat}" 
+					inline="true" 
+					placeholderKey="contingut.admin.filtre.uo"
+					suggestValue="id"
+					suggestText="codiAndNom" 
+					optionTemplateFunction="formatSelectUnitat" />
+			</div>
+			<div class="col-md-3">
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect 
@@ -533,14 +550,14 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
-			</div>			
+			</div>	
+		</div>
+		<div class="row">	
 			<div class="col-md-2">
 				<dis:inputSelect name="enviatPerEmail" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
-			</div>
-		</div>
-		<div class="row">			
+			</div>		
 			<div class="col-md-4">			
 				<dis:inputSelect 
 					name="tipusDocFisica" 
@@ -591,12 +608,21 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 					</div>
 				</div>
 			</c:if>
-			<div class="${isPermesAssignarAnotacions ? 'col-md-1' : 'col-md-3'}"></div>
-			<div class="col-md-2 d-flex">
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-			</div>
+			<c:if test="${! isPermesAssignarAnotacions}">
+				<div class="col-md-2 d-flex">
+					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+				</div>
+			</c:if>
 		</div>
+		<c:if test="${isPermesAssignarAnotacions}">
+			<div class="row">
+				<div class="col-md-2 d-flex" style="float: right;">
+					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+				</div>
+			</div>
+		</c:if>
 	</form:form>
 	
 	<c:set var="rol" value="user"/>	
@@ -832,6 +858,9 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="interessatsResum" data-orderable="false">				
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>	
+				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}">
++					<spring:message code="bustia.pendent.columna.agafat"/>
++				</th>
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
@@ -895,7 +924,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 										{{if ~hlpIsPermesAssignarAnotacions}}
 											<li ><a href="./registreUser/assignar/{{:id}}" data-toggle="modal"><span class="fa fa-user-plus"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.reassignar"/> ...</a></li>
 										{{/if}}
-										{{if agafatPer.codi != '${pageContext.request.userPrincipal.name}'}}									
+										{{if ~upper(agafatPer.codi) != ~upper('${pageContext.request.userPrincipal.name}')}}									
 											<li class="opt_agafat_{{:id}} list-info"><spring:message code="bustia.pendent.accio.agafatper"/>&nbsp;&nbsp;{{:agafatPer.codi}}</li>									
 										{{/if}}
 									{{/if}}

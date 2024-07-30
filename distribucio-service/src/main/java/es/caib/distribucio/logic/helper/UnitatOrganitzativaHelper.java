@@ -14,12 +14,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.logic.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.ArbreNodeDto;
 import es.caib.distribucio.logic.intf.dto.MunicipiDto;
@@ -27,9 +31,13 @@ import es.caib.distribucio.logic.intf.dto.TipusTransicioEnumDto;
 import es.caib.distribucio.logic.intf.dto.TipusViaDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
+import es.caib.distribucio.logic.permission.ExtendedPermission;
+import es.caib.distribucio.logic.service.BustiaServiceImpl;
+import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
@@ -60,6 +68,10 @@ public class UnitatOrganitzativaHelper {
 	private MetricRegistry metricRegistry;
 	@Autowired
 	private ArbreNodeHelper arbreNodeHelper;
+	@Autowired
+	private PermisosHelper permisosHelper;
+	@Autowired
+	private BustiaRepository bustiaRepository;
 
 	public List<String> getCodisOfUnitatsDescendants(EntitatEntity entitat, String codi) {
 		List<String> codisOfUnitatsDescendants = new ArrayList<String>();
@@ -860,7 +872,64 @@ public class UnitatOrganitzativaHelper {
 		}
 	}
 
-	
+	public List<UnitatOrganitzativaEntity> findByCodiDir3UnitatAndCodiAndDenominacioFiltreNomesAmbBustiesUsuariActual(EntitatEntity entitat, String filtre, boolean ambArrel) {
+		// Filtra unitats amb bústies permeses a l'usuari actual
+		List<UnitatOrganitzativaEntity> unitats = null;
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		final Timer findByEntitatAndFiltreTimerfindByEntitatAndActiva = metricRegistry
+				.timer(MetricRegistry.name(BustiaServiceImpl.class,
+						"findByEntitatAndFiltre.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc"));
+		Timer.Context findByEntitatAndFiltreContextfindByEntitatAndActiva = findByEntitatAndFiltreTimerfindByEntitatAndActiva
+				.time();
+
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+
+		findByEntitatAndFiltreContextfindByEntitatAndActiva.stop();
+
+		final Timer findByEntitatAndFiltreTimerfilterGrantedAll = metricRegistry
+				.timer(MetricRegistry.name(BustiaServiceImpl.class, "findByEntitatAndFiltre.filterGrantedAll"));
+		Timer.Context findByEntitatAndFiltreContextfilterGrantedAll = findByEntitatAndFiltreTimerfilterGrantedAll
+				.time();
+		// Filtra la llista de bústies segons els permisos
+		permisosHelper.filterGrantedAll(
+				busties, 
+				new ObjectIdentifierExtractor<BustiaEntity>() {
+					@Override
+					public Long getObjectIdentifier(BustiaEntity bustia) {
+						return bustia.getId();
+					}
+				}, 
+				BustiaEntity.class, 
+				new Permission[] { ExtendedPermission.READ }, 
+				auth);
+		findByEntitatAndFiltreContextfilterGrantedAll.stop();
+
+		if (busties != null && !busties.isEmpty()) {
+			final Timer findByEntitatAndFiltreTimerfindByCodiDir3Unitat = metricRegistry.timer(MetricRegistry.name(
+					BustiaServiceImpl.class,
+					"findByEntitatAndFiltre.findByCodiDir3UnitatAndCodiAndDenominacioAndBustiesPermesesFiltre"));
+
+			List<Long> bustiesPermesesIds = new ArrayList<Long>();
+
+			for (BustiaEntity bustia : busties) {
+				bustiesPermesesIds.add(bustia.getId());
+			}
+
+			Timer.Context findByEntitatAndFiltreContextfindByCodiDir3Unitat = findByEntitatAndFiltreTimerfindByCodiDir3Unitat
+					.time();
+			unitats = unitatOrganitzativaRepository.findByCodiDir3UnitatAndCodiAndDenominacioAndBustiesPermesesFiltre(
+					entitat.getCodiDir3(), 
+					filtre == null || filtre.isEmpty(), 
+					filtre != null ? filtre : "", 
+					ambArrel,
+					bustiesPermesesIds);
+			findByEntitatAndFiltreContextfindByCodiDir3Unitat.stop();
+		}
+		
+		return unitats;
+	}
 
 	private String getAdressa(
 			Long tipusVia,

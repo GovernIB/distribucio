@@ -48,7 +48,8 @@ public class AnotacioRegistreBase {
 	private List<Interessat> interessats;
 	private List<Annex> annexos;
 	private String justificantFitxerArxiuUuid;
-		
+	private String clauAcces;
+	
 	public String getIdentificador() {
 		return identificador;
 	}
@@ -258,5 +259,11 @@ public class AnotacioRegistreBase {
 	}
 	public void setJustificantFitxerArxiuUuid(String justificantFitxerArxiuUuid) {
 		this.justificantFitxerArxiuUuid = justificantFitxerArxiuUuid;
+	}
+	public String getClauAcces() {
+		return clauAcces;
+	}
+	public void setClauAcces(String clauAcces) {
+		this.clauAcces = clauAcces;
 	}
 }

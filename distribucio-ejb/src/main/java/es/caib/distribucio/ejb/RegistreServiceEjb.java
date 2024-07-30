@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.ejb;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -425,6 +426,14 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 				registreId,
 				usuariCodi,
 				comentari);
+	}
+	
+	@Override
+	@RolesAllowed("**")
+	public List<AnotacioRegistreEntrada> findForBackoffice(String identificador, Date dataRegistre) {
+		return delegateService.findForBackoffice(
+				identificador, 
+				dataRegistre);
 	}
 
 	protected void setDelegateService(RegistreService delegateService) {
