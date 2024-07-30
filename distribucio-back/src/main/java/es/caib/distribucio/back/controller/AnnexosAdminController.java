@@ -24,6 +24,8 @@ import es.caib.distribucio.back.command.AnnexosFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
+import es.caib.distribucio.logic.helper.IntegracioHelper;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 
@@ -99,8 +101,15 @@ public class AnnexosAdminController extends BaseAdminController {
 	public String guardarDefinitiu(
 			HttpServletRequest request,
 			@PathVariable Long id) {
-		annexosService.guardarComADefinitiu(					 
-				id);
+		try {
+			annexosService.guardarComADefinitiu(id);
+		} catch (Exception ex) {
+			return getModalControllerReturnValueError(
+					request,
+					"redirect:.",
+					"contingut.controller.document.descarregar.error",
+					new Object[] {ex.getMessage()});
+		}
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../annexosAdmin",

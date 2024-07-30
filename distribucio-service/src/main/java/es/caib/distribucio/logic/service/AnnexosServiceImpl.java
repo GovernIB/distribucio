@@ -19,6 +19,7 @@ import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.logic.helper.PluginHelper;
+import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.AnnexosFiltreDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
@@ -26,12 +27,17 @@ import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
+import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
+import es.caib.plugins.arxiu.api.Document;
+import es.caib.plugins.arxiu.api.DocumentEstat;
 
 /**
  * Implementació dels mètodes per a gestionar annexos.
@@ -50,12 +56,12 @@ public class AnnexosServiceImpl implements AnnexosService {
 	@Resource
 	private RegistreAnnexRepository registreAnnexRepository;
 	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
-	@Autowired
 	private RegistreService registreService;
 	@Autowired
 	private PluginHelper pluginHelper;
-
+	@Autowired
+	private RegistreHelper registreHelper;
+	
 	@Transactional(readOnly = true)
 	@Override
 	public PaginaDto<RegistreAnnexDto> findAdmin(			
@@ -132,19 +138,43 @@ public class AnnexosServiceImpl implements AnnexosService {
 	@Override
 	public String guardarComADefinitiu(			
 			Long annexId) {
-
 		
 		logger.debug("Guardar com a definitiu l'annex " + annexId);		
 		RegistreAnnexEntity registreAnnex = registreAnnexRepository.findById(annexId).get();
 		
-		// si el registre està tancat ja no cal continuar
-		ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registreAnnex.getRegistre().getId());
-		if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {
-			return "L'expedient està tancat en l'arxiu"; 
+		RegistreEntity registre = registreAnnex.getRegistre();
+		
+		// Comprovar si a Distribució hi ha l'annex ja marcat com a definitiu:
+		AnnexEstat arxiuEstat = registreAnnex.getArxiuEstat();
+		if (arxiuEstat.equals(AnnexEstat.DEFINITIU)) {
+//			return "L'annex ja consta com a Definitiu a Distribució";
+			throw new ValidationException("L'annex ja consta com a Definitiu a Distribució");
 		}
 		
-		// obtenir els detalls d'ARxiu de l'expedient si té uuid
-		// si està tancat a l'arxiu no continuar
+		// Si el registre està tancat ja no cal continuar:
+		ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registre.getId());
+		if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {
+//			return "L'expedient està tancat a l'arxiu";
+			throw new ValidationException("L'expedient està tancat a l'arxiu");
+		}
+		
+		// Si el document està com a definitiu en l'arxiu posar com a definitiu a distribució:
+		Document document = pluginHelper.arxiuDocumentConsultar(null, null, false, null);
+		if (document.getEstat().equals(DocumentEstat.DEFINITIU)) {
+			registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);	
+			registreAnnexRepository.save(registreAnnex);
+//			return "El document ja estava com a definitiu a l'arxiu";
+			throw new ValidationException("El document ja estava com a definitiu a l'arxiu");
+		}
+
+		// Si el document s'ha mogut a un expedient del backoffice no continuem
+		String expedientUuid = document.getExpedientMetadades().getIdentificador();
+//		String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
+		String arxiuDistribucioUuid = registre.getArxiuUuid();
+		if (!expedientUuid.equals(arxiuDistribucioUuid)) {
+//			return "El document s'ha mogut a un expedient del backoffice";
+			throw new ValidationException("El document s'ha mogut a un expedient del backoffice");
+		}
 		
 		// obtenir els detalls de l'Arxiu sense contingut de l'annjex
 //		Document document = pluginHelper.arxiuDocumentConsultar(null, null, false, null);
@@ -156,24 +186,21 @@ public class AnnexosServiceImpl implements AnnexosService {
 
 		// si arribem fins aquí podem reintentar guardar l'annex  a l'arxiu i provarà de validar i firmar en cas que sigui necessari
 		
+		List<Throwable> exceptions = null;
 		
-		// 
-//		String arxiuUuid = registreAnnex.getFitxerArxiuUuid();
-//		
-//		DistribucioRegistreAnnex distribucioAnnex = conversioTipusHelper.convertir(
-//				registreAnnex, 
-//				DistribucioRegistreAnnex.class);		
-//		Document arxiuDocument = getArxiuPlugin().documentDetalls(
-//				arxiuUuid,
-//				null,
-//				false);
+		DistribucioRegistreAnotacio distribucioRegistreAnotacio = 
+				registreHelper.getDistribucioRegistreAnotacio(registre.getId());		
+		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		
-//		arxiuDocument.getExpedientMetadades().getEstat()==es.caib.plugins.arxiu.api.ExpedientEstat.TANCAT		
+		exceptions = registreHelper.crearExpedientArxiu(
+				distribucioRegistreAnotacio, 
+				unitatOrganitzativaCodi, 
+				arxiuDistribucioUuid);
 		
+		if (exceptions != null && !exceptions.isEmpty()) {
+			return "Ha ocurregut un error en el moment de crear/modificar a l'arxiu";
+		}		
 		
-		
-		registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);	
-		registreAnnexRepository.save(registreAnnex);
 		return "";
 	}
 	
