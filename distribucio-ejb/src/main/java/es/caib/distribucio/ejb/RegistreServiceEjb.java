@@ -6,6 +6,7 @@ package es.caib.distribucio.ejb;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
@@ -164,8 +165,8 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 		return delegateService.getAnnexFirmaFitxer(annexId, indexFirma);
 	}
 
-	@Override
-	@RolesAllowed("**")
+	@Override	
+	@PermitAll
 	public FitxerDto getZipDocumentacio(Long registreId, String rolActual) throws Exception{
 		return delegateService.getZipDocumentacio(registreId, rolActual);
 	}
@@ -379,8 +380,9 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	public String obtenirRegistreIdEncriptat(Long registreId) {
 		return delegateService.obtenirRegistreIdEncriptat(registreId);
 	}
-
+	
 	@Override
+	@PermitAll
 	public String obtenirRegistreIdDesencriptat(String clau) throws Exception{
 		return delegateService.obtenirRegistreIdDesencriptat(clau);
 	}
