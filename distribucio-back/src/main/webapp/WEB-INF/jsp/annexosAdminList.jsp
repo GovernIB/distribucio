@@ -186,10 +186,10 @@ pageContext.setAttribute(
 				<button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
 				<button id="seleccioNone" title="<spring:message code="bustia.pendent.contingut.seleccio.cap"/>" class="btn btn-default"><span class="fa fa-square-o"></span></button>
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
-				<ul class="dropdown-menu dropdown-left-medium">
+				<ul class="dropdown-menu dropdown-left">
 					<c:if test="${isRolActualAdministrador}">					
 						<li><a href="annexosAdmin/guardarDefinitiuMultiple" data-toggle="ajax">
-							<span class="fa fa-times"></span>
+							<span class="fa fa-pencil-square"></span>
 							<spring:message code="annexos.admin.boto.guardar.definitiu.multiple"/>
 						</a></li>	
 					</c:if>							
@@ -219,7 +219,7 @@ pageContext.setAttribute(
 				<th data-col-name="registreId" data-visible="false"></th>				
 				<th data-col-name="registreNumero" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/></th>				
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
-				<th data-col-name="fitxerNom" width="20%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>
+				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>
 				<th data-col-name="fitxerTipusMime" width="10%"><spring:message code="annexos.admin.columna.fitxerTipusMime"/></th>
 				<th data-col-name="signaturaInfo" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
 				<th data-col-name="tipusFirma" data-visible="false"></th>		
@@ -237,25 +237,26 @@ pageContext.setAttribute(
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu">
-								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:registreId}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.detalls.anotacio"/></a></li>								
+								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:registreId}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-dot-circle-o"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.detalls.anotacio"/></a></li>								
 
 								<li><a data-refresh-tancar="true" id="detall-annex-button" href="registreUser/registreAnnex/{{:registreId}}/{{:id}}?isVistaMoviments=false" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.detalls.annex"/></a></li>
 								
-								{{if arxiuEstat!='DEFINITIU'}}
-									<li><a href="annexosAdmin/{{:id}}/guardarDefinitiu" data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.guardar.definitiu"/></a></li>								
-								{{/if}}
-								
-								<li><a href="contingut/registre/{{:registreId}}/annex/{{:id}}/arxiu/DOCUMENT_ORIGINAL" data-maximized="true"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.descarregar.original"/></a></li>
+								<li><a href="contingut/registre/{{:registreId}}/annex/{{:id}}/arxiu/DOCUMENT_ORIGINAL" data-maximized="true"><span class="fa fa-download"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.descarregar.original"/></a></li>
 								
 								{{if fitxerExtension=='csv'}}
-									<li><a href="contingut/registre/{{:registreId}}/annex/{{:id}}/arxiu/DOCUMENT" data-maximized="true"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.descarregar.imprimible"/></a></li>
+									<li><a href="contingut/registre/{{:registreId}}/annex/{{:id}}/arxiu/DOCUMENT" data-maximized="true"><span class="fa fa-download"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.descarregar.imprimible"/></a></li>
 								{{/if}}
 
 								{{if firmaCsv is not empty}}	
 									{{if '${concsvBaseUrl}' is not empty}}								
-										<li><a href="${concsvBaseUrl}/view.xhtml?hash={{:firmaCsv}}" target="_blank" data-maximized="true"><span class="fa fa-list"></span>&nbsp;&nbsp;<spring:message code="registre.annex.detalls.camp.firmaCsv.consv"/></a></li>
+										<li><a href="${concsvBaseUrl}/view.xhtml?hash={{:firmaCsv}}" target="_blank" data-maximized="true"><span class="fa fa-external-link"></span>&nbsp;&nbsp;<spring:message code="registre.annex.detalls.camp.firmaCsv.consv"/></a></li>
 									{{/if}}
-								{{/if}}								
+								{{/if}}		
+
+								{{if arxiuEstat!='DEFINITIU'}}
+									<li><a href="annexosAdmin/{{:id}}/guardarDefinitiu" data-toggle="ajax"><span class="fa fa-pencil-square"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.guardar.definitiu"/></a></li>								
+								{{/if}}
+						
 							</ul>
 						</div>
 					</script>

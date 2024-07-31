@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.helper.AnnexosAdminHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper.Converter;
@@ -27,7 +26,7 @@ import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -136,55 +135,56 @@ public class AnnexosServiceImpl implements AnnexosService {
 			
 	@Transactional(readOnly = false)
 	@Override
-	public String guardarComADefinitiu(			
-			Long annexId) {
+	public ResultatAnnexDefinitiuDto guardarComADefinitiu(Long annexId) {		
 		
 		logger.debug("Guardar com a definitiu l'annex " + annexId);		
-		RegistreAnnexEntity registreAnnex = registreAnnexRepository.findById(annexId).get();
-		
+		RegistreAnnexEntity registreAnnex = registreAnnexRepository.findById(annexId).get();		
 		RegistreEntity registre = registreAnnex.getRegistre();
+		Long anotacioId = registre.getId();
+		
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = new ResultatAnnexDefinitiuDto();
+		resultatAnnexDefinitiu.setAnnexId(annexId);
+		resultatAnnexDefinitiu.setAnotacioNumero(anotacioId);
+		
 		
 		// Comprovar si a Distribució hi ha l'annex ja marcat com a definitiu:
 		AnnexEstat arxiuEstat = registreAnnex.getArxiuEstat();
-		if (arxiuEstat.equals(AnnexEstat.DEFINITIU)) {
-//			return "L'annex ja consta com a Definitiu a Distribució";
-			throw new ValidationException("L'annex ja consta com a Definitiu a Distribució");
+		if ((arxiuEstat!=null)&&(arxiuEstat.equals(AnnexEstat.DEFINITIU))) {		
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.jaDefinitiu");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;						
 		}
 		
 		// Si el registre està tancat ja no cal continuar:
 		ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registre.getId());
-		if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {
-//			return "L'expedient està tancat a l'arxiu";
-			throw new ValidationException("L'expedient està tancat a l'arxiu");
+		if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {	
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.expedientTancat");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;								
 		}
 		
-		// Si el document està com a definitiu en l'arxiu posar com a definitiu a distribució:
-		Document document = pluginHelper.arxiuDocumentConsultar(null, null, false, null);
+		// Si el document està com a definitiu en l'arxiu posar com a definitiu a distribució:		
+		Document document = pluginHelper.arxiuDocumentConsultar(
+				registreAnnex.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
 		if (document.getEstat().equals(DocumentEstat.DEFINITIU)) {
 			registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);	
 			registreAnnexRepository.save(registreAnnex);
-//			return "El document ja estava com a definitiu a l'arxiu";
-			throw new ValidationException("El document ja estava com a definitiu a l'arxiu");
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.definitiuArxiu");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;	
 		}
 
 		// Si el document s'ha mogut a un expedient del backoffice no continuem
 		String expedientUuid = document.getExpedientMetadades().getIdentificador();
 //		String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
 		String arxiuDistribucioUuid = registre.getArxiuUuid();
-		if (!expedientUuid.equals(arxiuDistribucioUuid)) {
-//			return "El document s'ha mogut a un expedient del backoffice";
-			throw new ValidationException("El document s'ha mogut a un expedient del backoffice");
+		if (!expedientUuid.equals(arxiuDistribucioUuid)) {			
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.mogutBackoffice");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;	
 		}
-		
-		// obtenir els detalls de l'Arxiu sense contingut de l'annjex
-//		Document document = pluginHelper.arxiuDocumentConsultar(null, null, false, null);
-		
-		// si el document és definitiu i el registreAnnex no llavors actualitzar la info a bbdd arxiuEstat
-		
-		// si l'uuid de l'annex a l'Arxiu no coincideix amb l'uuide del registre no continuar, s'ha mogut
-//		document.getExpedientMetadades().getIdentificador()
 
-		// si arribem fins aquí podem reintentar guardar l'annex  a l'arxiu i provarà de validar i firmar en cas que sigui necessari
+		// Si arribem fins aquí podem reintentar guardar l'annex  a l'arxiu i provarà de validar i firmar en cas que sigui necessari
 		
 		List<Throwable> exceptions = null;
 		
@@ -198,23 +198,15 @@ public class AnnexosServiceImpl implements AnnexosService {
 				arxiuDistribucioUuid);
 		
 		if (exceptions != null && !exceptions.isEmpty()) {
-			return "Ha ocurregut un error en el moment de crear/modificar a l'arxiu";
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;						
 		}		
 		
-		return "";
+		resultatAnnexDefinitiu.setKeyMessage("L'annex s'ha marcat com a definitiu");
+		resultatAnnexDefinitiu.setOk(false);
+		return resultatAnnexDefinitiu;				
 	}
 	
-	@Transactional(readOnly = false)
-	@Override
-	public void guardarComADefinitiuMultiple(			
-			List<Long> ids) {
-		logger.debug("Guardar com a definitiu els annexos " + ids.toString());		
-		List<RegistreAnnexEntity> registreAnnexList = registreAnnexRepository.findAllById(ids);
-		for (RegistreAnnexEntity registreAnnex: registreAnnexList) {
-			registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);			
-			registreAnnexRepository.save(registreAnnex);
-		}
-	}
-
 	private static final Logger logger = LoggerFactory.getLogger(AnnexosServiceImpl.class);
 }

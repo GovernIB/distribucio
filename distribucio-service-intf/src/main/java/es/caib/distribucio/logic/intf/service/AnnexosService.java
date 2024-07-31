@@ -12,6 +12,7 @@ import es.caib.distribucio.logic.intf.dto.AnnexosFiltreDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 
 /**
@@ -44,10 +45,8 @@ public interface AnnexosService {
 	public List<Long> findAnnexIds(AnnexosFiltreDto filtre) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public String guardarComADefinitiu(			
-			Long id);
+	public ResultatAnnexDefinitiuDto guardarComADefinitiu(Long id);
 	
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public void guardarComADefinitiuMultiple(			
-			List<Long> ids);
+//	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+//	public String guardarComADefinitiuMultiple(List<Long> ids);
 }

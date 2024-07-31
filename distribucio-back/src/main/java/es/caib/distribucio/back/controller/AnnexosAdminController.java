@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.command.AnnexosFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
-import es.caib.distribucio.logic.helper.IntegracioHelper;
-import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 
@@ -100,20 +100,39 @@ public class AnnexosAdminController extends BaseAdminController {
 	@RequestMapping(value = "/{id}/guardarDefinitiu", method = RequestMethod.GET)
 	public String guardarDefinitiu(
 			HttpServletRequest request,
-			@PathVariable Long id) {
-		try {
-			annexosService.guardarComADefinitiu(id);
-		} catch (Exception ex) {
-			return getModalControllerReturnValueError(
+			@PathVariable Long id,
+			boolean multiple,
+			Model model) {		
+		
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
+		
+		if (resultatAnnexDefinitiu.isOk()) {			
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							resultatAnnexDefinitiu.getKeyMessage(),
+							new Object[] {resultatAnnexDefinitiu.getAnnexId(), resultatAnnexDefinitiu.getAnotacioNumero()}
+					));
+		} else {
+			MissatgesHelper.warning(
+					request, 
+					getMessage(
+							request, 
+							resultatAnnexDefinitiu.getKeyMessage(),
+							new Object[] {resultatAnnexDefinitiu.getAnnexId(), resultatAnnexDefinitiu.getAnotacioNumero()}
+					));
+		}			
+		
+		if (!multiple) {
+			return getAjaxControllerReturnValueSuccess(
 					request,
-					"redirect:.",
-					"contingut.controller.document.descarregar.error",
-					new Object[] {ex.getMessage()});
+					"redirect:../../annexosAdmin",
+					"annex.accio.marcardefinitiu.accioCompletada"				
+			);		
 		}
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../annexosAdmin",
-				"annexos.accio.guardar.definitiu.ok");
+		
+		return "";
 	}
 	
 	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
@@ -122,18 +141,22 @@ public class AnnexosAdminController extends BaseAdminController {
 			Model model) {		
 		
 		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
-		annexosService.guardarComADefinitiuMultiple(					 
-				ids);		
 		
 		RequestSessionHelper.actualitzarObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO,
-				null);
+				null);		
+		
+		for (Long id: ids) {
+			this.guardarDefinitiu(request, id, true, model);
+		}
 		
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../annexosAdmin",
-				"annexos.accio.multiple.guardar.definitiu.ok");
+				"annex.accio.marcardefinitiu.accioCompletada"				
+		);		
+		
 	}
 	
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
