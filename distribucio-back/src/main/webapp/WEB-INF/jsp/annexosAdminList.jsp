@@ -65,8 +65,7 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$(document).on('hidden.bs.modal', function (event) {
-				debugger;
+			$(document).on('hidden.bs.modal', function (event) {				
 				var data = sessionStorage.getItem('selectedElements');
 				if (data != null) {
 					// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
@@ -180,6 +179,7 @@ pageContext.setAttribute(
 		</div>
 	</form:form>
 	<c:set var="rol" value="admin"/>
+	
 	<script id="botonsTemplate" type="text/x-jsrender">
 		<div class="text-right">
 			<div class="btn-group">

@@ -508,6 +508,59 @@ public class ReglaServiceImpl implements ReglaService {
 		return resultPagina;
 	}	
 	
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	@Override
+	public List<Long> findReglaIds(Long entitatId,
+			ReglaFiltreDto filtre) {
+		logger.debug("Cercant les regles segons el filtre ("
+				+ "entitatId=" + entitatId + ", "
+				+ "filtre=" + filtre + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		
+		
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatId()).orElse(null);
+		
+		BustiaEntity bustia = filtre.getBustiaId() == null ? null : bustiaRepository.findById(filtre.getBustiaId()).orElse(null);
+
+		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findById(filtre.getBackofficeId()).orElse(null);
+		
+		boolean totes = false;
+		boolean activa = false;
+		if (filtre.getActiva() == null) {
+			totes = true;
+		}else if (filtre.getActiva().equals(ReglaFiltreActivaEnumDto.ACTIVES)) {
+			activa = true;
+		}
+
+		List<Long> ids = reglaRepository.findIdsByFiltre(
+						entitat,
+						filtre.getUnitatId() == null, 
+						unitat,
+						filtre.getNom() == null || filtre.getNom().isEmpty(), 
+						filtre.getNom() != null ? filtre.getNom() : "",
+						filtre.getCodiAssumpte() == null, 
+						filtre.getCodiAssumpte() != null ? filtre.getCodiAssumpte() : "", 
+						filtre.getCodiSIA() == null || filtre.getCodiSIA().isEmpty(), 
+						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
+						filtre.getTipus() == null , 
+						filtre.getTipus(),
+						filtre.getPresencial() == null,
+						filtre.getPresencial(),
+						bustia == null, 
+						bustia, 
+						backoffice == null ,
+						backoffice,
+						totes,
+						activa);
+		
+		return ids;
+	}
+	
 	/**
 	 * Consulta les regles per codi de procediment.
 	 * @return Map<codiProcediment, List<ReglasExistents>>

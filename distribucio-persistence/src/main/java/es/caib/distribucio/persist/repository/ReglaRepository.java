@@ -88,6 +88,40 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("activa") boolean activa, 
 			Pageable pageable);
 	
+	@Query(	"Select r.id from " +
+			"    ReglaEntity r " +
+			"where " +
+			"    r.entitat = :entitat " +
+			"and (:esNullFiltreUnitat = true or r.unitatOrganitzativaFiltre = :unitatOrganitzativaFiltre) " +
+			"and (:esNullFiltreNom = true or lower(r.nom) like lower('%'||:filtreNom||'%')) " + 
+			"and (:esNullCodiAssumpte = true or lower(r.assumpteCodiFiltre) like lower('%'||:codiAssumpte||'%')) " +
+			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " + 
+			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " +
+			"and (:esNullPresencial = true or r.presencial = :isPresencial) " +
+			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
+			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice) " + 
+			"and (:esNullActiva = true or r.activa = :activa)")
+	public List<Long> findIdsByFiltre(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
+			@Param("unitatOrganitzativaFiltre") UnitatOrganitzativaEntity unitatOrganitzativaFiltre, 
+			@Param("esNullFiltreNom") boolean esNullFiltreNom,
+			@Param("filtreNom") String filtreNom,
+			@Param("esNullCodiAssumpte") boolean esNullCodiAssumpte, 
+			@Param("codiAssumpte") String codiAssumpte, 
+			@Param("esNullFiltreCodiSIA") boolean esNullFiltreCodiSIA,
+			@Param("filtreCodiSIA") String filtreCodiSIA,
+			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
+			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,
+			@Param("esNullPresencial") boolean esNullPresencial, 
+			@Param("isPresencial") ReglaPresencialEnumDto isPresencial, 
+			@Param("esNullBustia") boolean esNullBustia, 
+			@Param("bustia") BustiaEntity bustia, 
+			@Param("esNullBackoffice") boolean esNullBackoffice,
+			@Param("backoffice") BackofficeEntity backoffice,
+			@Param("esNullActiva") boolean esNullActiva, 
+			@Param("activa") boolean activa);
+	
 	
 	List<ReglaEntity> findByBustiaDesti(BustiaEntity bustiaDesti);
 	

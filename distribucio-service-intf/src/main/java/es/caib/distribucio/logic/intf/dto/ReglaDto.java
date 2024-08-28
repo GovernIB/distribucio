@@ -126,13 +126,21 @@ public class ReglaDto extends AuditoriaDto {
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 	}	
 	public String getCodiAndNomUnitatOrganitzativa() {
-		return unitatOrganitzativaFiltre.getCodiAndNom();
+		if (unitatOrganitzativaFiltre!=null) {
+			return unitatOrganitzativaFiltre.getCodiAndNom();
+		} else {
+			return "";
+		}
 	}
 	public void setCodiAndNomUnitatOrganitzativa(String codiAndNomUnitatOrganitzativa) {
 		this.codiAndNomUnitatOrganitzativa = codiAndNomUnitatOrganitzativa;
 	}	
 	public String getEstatUnitatOrganitzativa() {
-		return unitatOrganitzativaFiltre.getEstat();
+		if (unitatOrganitzativaFiltre!=null) {
+			return unitatOrganitzativaFiltre.getEstat();
+		} else {
+			return "";
+		}
 	}
 	public void setEstatUnitatOrganitzativa(String estatUnitatOrganitzativa) {
 		this.estatUnitatOrganitzativa = estatUnitatOrganitzativa;

@@ -4,7 +4,9 @@
 package es.caib.distribucio.back.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -63,6 +65,7 @@ public class ReglaController  extends BaseAdminController {
 	private AplicacioService aplicacioService;
 
 	private static final String SESSION_ATTRIBUTE_FILTRE = "ReglaController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_SELECCIO = "ReglaController.session.seleccio";
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -95,7 +98,8 @@ public class ReglaController  extends BaseAdminController {
 						entitatActual.getId(),
 						ReglaFiltreCommand.asDto(reglaFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id");
+				"id",
+				SESSION_ATTRIBUTE_SELECCIO);
 		return dtr;
 	}
 
@@ -295,7 +299,23 @@ public class ReglaController  extends BaseAdminController {
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../regla",
-				"regla.controller.activada.ok");
+				"regla.controller.activada.ok",
+				new Object[] {reglaId});
+	}
+	@RequestMapping(value = "/enableMultiple", method = RequestMethod.GET)
+	public String enableMultiple(
+			HttpServletRequest request) {		
+		
+		List<Long> reglaIds = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);			
+		
+		for (Long reglaId: reglaIds) {
+			this.enable(request, reglaId);
+		}		
+		
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../regla",
+				"regla.accio.accioMultiple.accioCompletada");
 	}
 	@RequestMapping(value = "/{reglaId}/disable", method = RequestMethod.GET)
 	public String disable(
@@ -309,9 +329,25 @@ public class ReglaController  extends BaseAdminController {
 		return getAjaxControllerReturnValueSuccess(
 				request,
 				"redirect:../../regla",
-				"regla.controller.desactivada.ok");
+				"regla.controller.desactivada.ok",
+				new Object[] {reglaId});
 	}
-
+	@RequestMapping(value = "/disableMultiple", method = RequestMethod.GET)
+	public String disableMultiple(
+			HttpServletRequest request) {		
+		
+		List<Long> reglaIds = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
+				
+		for (Long reglaId: reglaIds) {
+			this.disable(request, reglaId);
+		}
+				
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../regla",
+				"regla.accio.accioMultiple.accioCompletada");
+	}
+	
 	@RequestMapping(value = "/{reglaId}/up", method = RequestMethod.GET)
 	public String up(
 			HttpServletRequest request,
@@ -367,7 +403,8 @@ public class ReglaController  extends BaseAdminController {
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../regla",
-					"regla.controller.esborrada.ok");
+					"regla.controller.esborrada.ok",
+					new Object[] {reglaId});
 		} catch (RuntimeException ve) {
 			return getAjaxControllerReturnValueError(
 					request,
@@ -376,7 +413,26 @@ public class ReglaController  extends BaseAdminController {
 					new Object[] {ve.getClass() + ": " + ve.getMessage()});			
 		}
 	}
-	
+	@RequestMapping(value = "/deleteMultiple", method = RequestMethod.GET)
+	public String deleteMultiple(
+			HttpServletRequest request) {		
+		
+		List<Long> reglaIds = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
+		
+		RequestSessionHelper.actualitzarObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO,
+				null);		
+		
+		for (Long reglaId: reglaIds) {
+			this.delete(request, reglaId);
+		}
+		
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"redirect:../../regla",
+				"regla.accio.accioMultiple.accioCompletada");
+	}
 	/** Mètode per aplicar una regla manualment. S'avaluen els registres pendents de bústia
 	 * sense regla assignada i se'ls assigna la regla a aquells que coincideixin amb el filtre.
 	 * 
@@ -449,6 +505,64 @@ public class ReglaController  extends BaseAdminController {
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
 		
+	}
+	
+	@RequestMapping(value = "/select", method = RequestMethod.GET)
+	@ResponseBody
+	public int select(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.add(id);
+			}
+		} else {				
+			ReglaFiltreCommand filtreCommand = getFiltreCommand(request);
+			seleccio.addAll(				
+				reglaService.findReglaIds(
+						entitatActual.getId(),
+						ReglaFiltreCommand.asDto(filtreCommand))				
+			);
+		}
+		return seleccio.size();
+	}
+	
+	@RequestMapping(value = "/deselect", method = RequestMethod.GET)
+	@ResponseBody
+	public int deselect(
+			HttpServletRequest request,
+			@RequestParam(value="ids[]", required = false) Long[] ids) {
+		@SuppressWarnings("unchecked")
+		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO);
+		if (seleccio == null) {
+			seleccio = new HashSet<Long>();
+			RequestSessionHelper.actualitzarObjecteSessio(
+					request,
+					SESSION_ATTRIBUTE_SELECCIO,
+					seleccio);
+		}
+		if (ids != null) {
+			for (Long id: ids) {
+				seleccio.remove(id);
+			}
+		} else {
+			seleccio.clear();
+		}
+		return seleccio.size();
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaController.class);
