@@ -95,6 +95,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
@@ -134,6 +135,7 @@ import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.ServeiEntity;
 import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.entity.VistaMovimentEntity;
@@ -145,6 +147,7 @@ import es.caib.distribucio.persist.repository.ProcedimentRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
+import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
@@ -213,6 +216,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private ConfigHelper configHelper;
 	@Autowired
 	private ProcedimentRepository procedimentRepository;
+	@Autowired
+	private ServeiRepository serveiRepository;
 	@Autowired
 	private DadaRepository dadaRepository;
 	@Autowired
@@ -2576,6 +2581,42 @@ public class RegistreServiceImpl implements RegistreService {
 		return dtos;
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ServeiDto> classificarFindServeis(
+			Long entitatId,
+			Long bustiaId) {
+		logger.debug("classificant l'anotació de registre (" +
+				"entitatId=" + entitatId + ", " +
+				"bustiaId=" + bustiaId + ")");
+		List<ServeiDto> dtos = new ArrayList<ServeiDto>();
+		if (bustiaId != null && bustiaId > 0) {
+			
+			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+					entitatId,
+					true,
+					false,
+					false);
+			BustiaEntity bustia = entityComprovarHelper.comprovarBustia(	
+															entitat,
+															bustiaId,
+															this.comprovarPermisLectura());
+			String codiUnitatOrganitzativaBustia = bustia.getUnitatOrganitzativa().getCodi();	//Per depurar a DES: codiUnitatOrganitzativaBustia="A04025121";
+			List<String> llistaUnitatsDescendents = unitatOrganitzativaHelper.getCodisOfUnitatsDescendants(entitat, codiUnitatOrganitzativaBustia);		
+			llistaUnitatsDescendents.add(bustia.getUnitatOrganitzativa().getCodi());
+			// Cerca del llistat de serveis amb consulta a la bbdd
+			List<ServeiEntity> serveis = getServeisPerUnitatOrganitzativaIDescendents(entitatId, llistaUnitatsDescendents);
+			if (serveis != null) {
+				dtos = conversioTipusHelper.convertirList(serveis, ServeiDto.class);
+			}
+		}
+		// Ordenar per codi SIA
+		if (!dtos.isEmpty()) {
+			Collections.sort(dtos);
+		}
+		return dtos;
+	}
+	
 	@Transactional
 	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
 		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
@@ -2598,6 +2639,16 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		
 		return llistaProcediments;
+	}
+	
+	private List<ServeiEntity> getServeisPerUnitatOrganitzativaIDescendents(Long entitatId, List<String> llistaUnitatsOrganitzatives) {
+		List<ServeiEntity> llistaServeis = new ArrayList<>(); 
+		for (String codiUnitatOrganitzativa : llistaUnitatsOrganitzatives) {
+			List<ServeiEntity> serveis = serveiRepository.findByCodiUnitatOrganitzativa(entitatId, codiUnitatOrganitzativa);
+			llistaServeis.addAll(serveis);
+		}
+		
+		return llistaServeis;
 	}
 
 	/** Retorna true si no és administrador nii admin lectura. */

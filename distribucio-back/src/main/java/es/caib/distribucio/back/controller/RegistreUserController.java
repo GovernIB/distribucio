@@ -2140,6 +2140,13 @@ public class RegistreUserController extends BaseUserController {
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
 						registre.getPareId()));
+		
+		model.addAttribute(
+				"serveis",
+				registreService.classificarFindServeis(
+						entitatActual.getId(),
+						registre.getPareId()));
+		
 		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
 		return registre.getProcedimentCodi();
 	}

@@ -10,6 +10,7 @@ import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.AlertaService;
+import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.AvisService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
@@ -26,6 +27,7 @@ import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
+import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +43,12 @@ public class EjbClientConfig {
 	static final String EJB_JNDI_PREFIX = "java:app/" + BaseConfig.APP_NAME + "-ejb/";
 	static final String EJB_JNDI_SUFFIX = "Ejb";
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean AnnexosService() {
+		return getLocalEjbFactoyBean(AnnexosService.class);
+	}
+	
 	@Bean
 	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean alertaService() {
@@ -123,6 +131,12 @@ public class EjbClientConfig {
 	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean procedimentService() {
 		return getLocalEjbFactoyBean(ProcedimentService.class);
+	}
+	
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean serveiService() {
+		return getLocalEjbFactoyBean(ServeiService.class);
 	}
 
 	@Bean

@@ -23,6 +23,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -299,6 +300,22 @@ public interface RegistreService {
 	 */
 	@PreAuthorize("isAuthenticated()")
 	public List<ProcedimentDto> classificarFindProcediments(
+			Long entitatId,
+			Long bustiaId);
+	
+	/** 
+	 * Mètode que retorna la llista de serveis disponibles donada una bústia.
+	 * 
+	 * @param entitatId
+	 *            Atribut id de l'entitat.
+	 * @param bustiaId
+	 *            Atribut id de la bústia.
+	 * @return la llista de serveis.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("isAuthenticated()")
+	public List<ServeiDto> classificarFindServeis(
 			Long entitatId,
 			Long bustiaId);
 

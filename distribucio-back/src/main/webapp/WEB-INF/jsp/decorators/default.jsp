@@ -288,6 +288,7 @@ body {
 												<li><a href="<c:url value="/annexosAdmin"/>"><spring:message code="decorator.menu.annexos"/></a></li>
 											</c:if>
 											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
+											<li><a href="<c:url value="/servei"/>"><spring:message code="decorator.menu.serveis"/></a></li>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 										</ul>

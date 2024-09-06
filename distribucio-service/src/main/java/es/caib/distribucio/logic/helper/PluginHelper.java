@@ -51,6 +51,8 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.servei.Servei;
+import es.caib.distribucio.plugin.servei.ServeiPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
@@ -76,6 +78,7 @@ public class PluginHelper {
 	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
 	private Map<String, IValidateSignaturePlugin> validaSignaturaPlugin = new HashMap<>();
 	private Map<String, ProcedimentPlugin> procedimentPlugin = new HashMap<>();
+	private Map<String, ServeiPlugin> serveiPlugin = new HashMap<>();
 	private Map<String, GestioDocumentalPlugin> gestioDocumentalPlugin = new HashMap<>();
 	private Map<String, DistribucioPlugin> distribucioPlugin = new HashMap<>();
 	private Map<String, SignaturaPlugin> signaturaPlugin = new HashMap<>();
@@ -1069,6 +1072,10 @@ public class PluginHelper {
 	public boolean isProcedimentPluginActiu() {
 		return getProcedimentPlugin() != null;
 	}
+	
+	public boolean isServeiPluginActiu() {
+		return getServeiPlugin() != null;
+	}
 
 	public List<Procediment> procedimentFindByCodiDir3(
 			String codiDir3) {
@@ -1105,6 +1112,46 @@ public class PluginHelper {
 					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
+					errorDescripcio,
+					ex);
+		}
+	}
+	
+	public List<Servei> serveiFindByCodiDir3(
+			String codiDir3) {
+		String accioDescripcio = "Consulta dels serveis pel codi DIR3 " + codiDir3;
+
+		ServeiPlugin serveiPlugin = this.getServeiPlugin();
+		String usuariIntegracio = serveiPlugin.getUsuariIntegracio();
+		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codiDir3", codiDir3);
+		long t0 = System.currentTimeMillis();
+		try {
+			//codiDir3 = "A04003003";
+			List<Servei> serveis = getServeiPlugin().findAmbCodiDir3(codiDir3);
+			// RegistreNumero no cal!!!
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_SERVEI,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return serveis;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de serveis: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_SERVEI,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_SERVEI,
 					errorDescripcio,
 					ex);
 		}
@@ -1445,6 +1492,34 @@ public class PluginHelper {
 		return plugin;
 	}
 	
+	private ServeiPlugin getServeiPlugin() {
+		loadPluginProperties("SERVEIS");
+		String codiEntitat = getCodiEntitatActual();
+		ServeiPlugin plugin = serveiPlugin.get(codiEntitat);
+		if (plugin == null) {
+			String pluginClass = getPropertyPluginServei();
+			if (pluginClass != null && pluginClass.length() > 0) {
+				try {
+					Class<?> clazz = Class.forName(pluginClass);
+					plugin = (ServeiPlugin)clazz.
+							getDeclaredConstructor(Properties.class).
+							newInstance(configHelper.getAllEntityProperties(codiEntitat));
+					serveiPlugin.put(codiEntitat, plugin);
+				} catch (Exception ex) {
+					throw new SistemaExternException(
+							IntegracioHelper.INTCODI_SERVEI,
+							"Error al crear la instància del plugin de serveis amb el nom de la classe " + pluginClass,
+							ex);
+				}
+			} else {
+				throw new SistemaExternException(
+						IntegracioHelper.INTCODI_SERVEI,
+						"No està configurada la classe pel plugin de serveis");
+			}
+		}
+		return plugin;
+	}
+	
 	private GestioDocumentalPlugin getGestioDocumentalPlugin() {
 		loadPluginProperties("GES_DOC");
 		String codiEntitat = getCodiEntitatActual();
@@ -1645,6 +1720,10 @@ public class PluginHelper {
 	private String getPropertyPluginProcediment() {
 		return configHelper.getConfig(
 				"es.caib.distribucio.plugin.procediment.class");
+	}
+	private String getPropertyPluginServei() {
+		return configHelper.getConfig(
+				"es.caib.distribucio.plugin.servei.class");
 	}
 	private String getPropertyPluginGestioDocumental() {
 		return configHelper.getConfig(

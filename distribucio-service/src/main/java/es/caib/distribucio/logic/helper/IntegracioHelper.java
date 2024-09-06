@@ -38,6 +38,7 @@ public class IntegracioHelper {
 	public static final String INTCODI_GESDOC = "GESDOC";
 	public static final String INTCODI_BUSTIAWS = "BUSTIAWS";
 	public static final String INTCODI_PROCEDIMENT = "PROCEDIMENT";
+	public static final String INTCODI_SERVEI= "SERVEI";
 	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 	public static final String INTCODI_BACKOFFICE = "BACKOFFICE";
 
