@@ -6,8 +6,8 @@ import java.util.List;
 
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
-import es.caib.plugins.arxiu.api.Expedient;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.Expedient;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 
 /** Interfície amb els métodes de les funcions d'utilitats per a backoffices
  * 

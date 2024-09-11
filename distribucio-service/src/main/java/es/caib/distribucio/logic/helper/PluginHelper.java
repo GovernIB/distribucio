@@ -17,12 +17,12 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.fundaciobit.pluginsib.validatecertificate.InformacioCertificat;
-import org.fundaciobit.plugins.validatesignature.api.IValidateSignaturePlugin;
-import org.fundaciobit.plugins.validatesignature.api.SignatureDetailInfo;
-import org.fundaciobit.plugins.validatesignature.api.SignatureRequestedInformation;
-import org.fundaciobit.plugins.validatesignature.api.TimeStampInfo;
-import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureRequest;
-import org.fundaciobit.plugins.validatesignature.api.ValidateSignatureResponse;
+import org.fundaciobit.pluginsib.validatesignature.api.IValidateSignaturePlugin;
+import org.fundaciobit.pluginsib.validatesignature.api.SignatureDetailInfo;
+import org.fundaciobit.pluginsib.validatesignature.api.SignatureRequestedInformation;
+import org.fundaciobit.pluginsib.validatesignature.api.TimeStampInfo;
+import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureRequest;
+import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +58,9 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 
 /**
  * Helper per a interactuar amb els plugins.
@@ -989,7 +989,7 @@ public class PluginHelper {
 		}
 	}
 
-	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
+	public es.caib.pluginsib.arxiu.api.Expedient arxiuExpedientInfo(
 			String arxiuUuid) {
 		String accioDescripcio = "Consulta d'un expedient";
 		String usuariIntegracio = this.getUsuariAutenticat();
@@ -997,7 +997,7 @@ public class PluginHelper {
 		accioParams.put("expedientArxiuUuid", arxiuUuid);
 		long t0 = System.currentTimeMillis();
 		try {
-			es.caib.plugins.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
+			es.caib.pluginsib.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,

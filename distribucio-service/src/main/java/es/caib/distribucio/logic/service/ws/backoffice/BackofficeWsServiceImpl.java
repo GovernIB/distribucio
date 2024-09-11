@@ -36,10 +36,10 @@ import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient
 import es.caib.distribucio.rest.client.integracio.domini.Annex;
 import es.caib.distribucio.rest.client.integracio.domini.AnnexEstat;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.Expedient;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.Expedient;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 
 /**
  * Exemple de WS Backoffice Distribucio per rebre peticions d'anotacions pendents

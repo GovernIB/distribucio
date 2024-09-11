@@ -33,8 +33,7 @@
 		<repository>
 			<id>github-governib-maven-repos</id>
 			<name>GovernIB Maven Repository</name>
-			<!--url>http://governib.github.io/maven/maven/</url-->
-			<url>https://raw.githubusercontent.com/GovernIB/maven/gh-pages/maven</url>
+			<url>http://governib.github.io/maven/maven/</url>
 		</repository>
 	</repositories>
 </project>

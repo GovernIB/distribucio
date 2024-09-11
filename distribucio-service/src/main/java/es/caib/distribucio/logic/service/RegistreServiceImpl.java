@@ -147,12 +147,12 @@ import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.plugins.arxiu.api.ExpedientMetadades;
-import es.caib.plugins.arxiu.api.Firma;
-import es.caib.plugins.arxiu.api.FirmaTipus;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
+import es.caib.pluginsib.arxiu.api.Firma;
+import es.caib.pluginsib.arxiu.api.FirmaTipus;
 
 /**
  * Implementació dels mètodes per a gestionar anotacions
@@ -2280,7 +2280,7 @@ public class RegistreServiceImpl implements RegistreService {
 		ArxiuDetallDto arxiuDetall = null;
 		if (registre.getExpedientArxiuUuid() != null) {
 			arxiuDetall = new ArxiuDetallDto();
-			es.caib.plugins.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
+			es.caib.pluginsib.arxiu.api.Expedient arxiuExpedient = pluginHelper.arxiuExpedientInfo(registre.getExpedientArxiuUuid());
 			List<ContingutArxiu> continguts = arxiuExpedient.getContinguts();
 			arxiuDetall.setIdentificador(arxiuExpedient.getIdentificador());
 			arxiuDetall.setNom(arxiuExpedient.getNom());

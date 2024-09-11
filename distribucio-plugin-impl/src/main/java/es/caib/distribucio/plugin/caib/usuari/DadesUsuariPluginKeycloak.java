@@ -97,9 +97,13 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 	@Override
 	public String[] getUsernamesByRol(String rol) throws Exception {
 		Collection<UserRepresentation> users = internalGetUserNamesByRol(rol);
-		return users.stream().
-				map(ur -> ur.getUsername()).
-				toArray(String[]::new);
+		if (users != null) {
+			return users.stream().
+					map(ur -> ur.getUsername()).
+					toArray(String[]::new);
+		} else {
+			return new String[0];
+		}
 	}
 
 	private Collection<UserRepresentation> internalGetUserNamesByRol(String rol) {

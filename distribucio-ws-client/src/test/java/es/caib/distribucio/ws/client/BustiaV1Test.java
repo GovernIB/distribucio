@@ -51,11 +51,11 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "BACK_HELIUM_DP"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
+	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova regles backoffice " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
+	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) ;
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -69,7 +69,7 @@ public class BustiaV1Test {
 	
 
 	private static final int N_ANOTACIONS = 1;
-	private static final int N_ANNEXOS = 1;
+	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = false;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
@@ -327,6 +327,7 @@ public class BustiaV1Test {
 				        		"ànnex.pdf",				        		
 				        		"application/pdf",
 				        		null,
+				        		//getContingutAltre("annex_gran.pdf"),
 				        		getContingutAnnexSenseFirmaPdf(),
 				        		"0",
 				        		"EE01",
