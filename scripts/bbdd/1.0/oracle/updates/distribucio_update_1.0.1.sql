@@ -38,6 +38,12 @@ SET KEY = REPLACE(KEY, '.plugin.arxiu.caib','.pluginsib.arxiu.caib')
 WHERE 
 	KEY like '%.plugin.arxiu.caib%';
 	
+UPDATE DIS_CONFIG
+SET KEY = REPLACE(KEY, '.plugins.validatesignature','.pluginsib.validatesignature')
+WHERE 
+	KEY like '%.plugins.validatesignature%';
+	
+	
 -- Propietats pel plugin d'usuaris de LDAP per poder-les visualitzar
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.ldap.host_url', NULL, 'URL del servidor LDAP CAIB', 'USUARIS', '13', '1', 'TEXT', null, null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.ldap.security_principal', NULL, 'Security principal pel servidor LDAP CAIB', 'USUARIS', '14', '1', 'TEXT', null, null);
@@ -64,3 +70,8 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 --SET KEY = REPLACE(KEY, '.pluginsib.arxiu.caib','.plugin.arxiu.caib')
 --WHERE 
 --	KEY like '%.pluginsib.arxiu.caib%';
+--
+--UPDATE DIS_CONFIG
+--SET KEY = REPLACE(KEY, '.pluginsib.validatesignature','.plugins.validatesignature')
+--WHERE 
+--	KEY like '%.pluginsib.validatesignature%';

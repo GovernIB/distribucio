@@ -1617,7 +1617,7 @@ public class PluginHelper {
 
 	private Integer getPropertyMaxBytesValidacioFirma() {
 		Integer maxBytes = null;
-		String configKey = "es.caib.distribucio.plugins.validatesignature.maxBytes";
+		String configKey = "es.caib.distribucio.pluginsib.validatesignature.maxBytes";
 		try {
 			maxBytes = Integer.valueOf(configHelper.getConfig(configKey));
 		} catch(Exception e) {
