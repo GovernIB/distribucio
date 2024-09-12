@@ -28,6 +28,10 @@ INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 UPDATE DIS_CONFIG SET VALUE = 'es.caib.pluginsib.arxiu.caib.ArxiuPluginCaib' 
 WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.class';
 
+-- Actualita el plugin de validació de firmes a la versió 3.0.0-SNAPSHOT
+UPDATE DIS_CONFIG SET VALUE = 'org.fundaciobit.pluginsib.validatesignature.afirmacxf.AfirmaCxfValidateSignaturePlugin' 
+WHERE KEY LIKE 'es.caib.distribucio.plugin.validatesignature.class';
+
 -- Canvi de claus en les propietats
 UPDATE DIS_CONFIG
 SET KEY = REPLACE(KEY, '.plugin.arxiu.caib','.pluginsib.arxiu.caib')
