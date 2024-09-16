@@ -50,12 +50,15 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	protected String descripcio;
 	
 	
-	// ------------- FILRE ----------------------
+	// ------------- FILTRE ----------------------
 	@Column(name = "assumpte_codi", length = 16)
 	protected String assumpteCodiFiltre;
 	
 	@Column(name = "procediment_codi", length = 1024, nullable = false)
 	private String procedimentCodiFiltre;
+	
+	@Column(name = "servei_codi", length = 1024, nullable = false)
+	private String serveiCodiFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
@@ -136,6 +139,9 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public String getProcedimentCodiFiltre() {
 		return procedimentCodiFiltre;
 	}
+	public String getServeiCodiFiltre() {
+		return serveiCodiFiltre;
+	}
 	public BustiaEntity getBustiaDesti() {
 		return bustiaDesti;
 	}
@@ -177,6 +183,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
+			String serveiCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre, 
 			boolean aturarAvaluacio) {
@@ -187,6 +194,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.presencial = presencial;
 		this.assumpteCodiFiltre = assumpteCodiFiltre;
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
+		this.serveiCodiFiltre = serveiCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 		this.bustiaFiltre = bustiaFiltre;
 		this.aturarAvaluacio = aturarAvaluacio;
@@ -224,6 +232,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
+			String serveiCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre,
 			int ordre) {
@@ -234,6 +243,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				presencial, 
 				assumpteCodiFiltre,
 				procedimentCodiFiltre,
+				serveiCodiFiltre,
 				unitatOrganitzativaFiltre,
 				bustiaFiltre,
 				ordre);
@@ -247,6 +257,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				ReglaPresencialEnumDto presencial, 
 				String assumpteCodiFiltre,
 				String procedimentCodiFiltre,
+				String serveiCodiFiltre,
 				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 				BustiaEntity bustiaFiltre,
 				int ordre) {
@@ -257,6 +268,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.presencial = presencial;
 			built.assumpteCodiFiltre = assumpteCodiFiltre;
 			built.procedimentCodiFiltre = procedimentCodiFiltre;
+			built.serveiCodiFiltre = serveiCodiFiltre;
 			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 			built.bustiaFiltre = bustiaFiltre;
 			built.ordre = ordre;
@@ -303,6 +315,11 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			if (other.procedimentCodiFiltre != null)
 				return false;
 		} else if (!procedimentCodiFiltre.equals(other.procedimentCodiFiltre))
+			return false;
+		if (serveiCodiFiltre == null) {
+			if (other.serveiCodiFiltre != null)
+				return false;
+		} else if (!serveiCodiFiltre.equals(other.serveiCodiFiltre))
 			return false;
 		if (entitat == null) {
 			if (other.entitat != null)

@@ -117,8 +117,7 @@
 	}	
 	
 	$(document).ready(function() {
-		$(document).on('hidden.bs.modal', function (event) {		
-			debugger;
+		$(document).on('hidden.bs.modal', function (event) {			
 			var data = sessionStorage.getItem('selectedElements');
 			if (data != null) {
 				// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
@@ -293,6 +292,9 @@
 		</div>
 		<div class="row">
 			<div class="col-md-3">
+				<dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
+			</div>		
+			<div class="col-md-3">
 				<dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
 			</div>
 			<div class="col-md-6"></div>
@@ -366,6 +368,7 @@
 				</th>
 				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>
+				<th data-col-name="serveiCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.servei.codi"/></th>
 				<!-- <th data-col-name="codiAndNomUnitatOrganitzativa" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th> -->
 				
 				<th data-col-name="estatUnitatOrganitzativa" data-visible="false"></th>

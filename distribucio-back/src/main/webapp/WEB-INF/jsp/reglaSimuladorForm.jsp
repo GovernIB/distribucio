@@ -94,6 +94,7 @@ $(document).ready(function() {
 			required="true"/>
 		<dis:inputSelect name="bustiaId" textKey="regla.simulador.form.camp.bustia" optionItems="${busties}" optionValueAttribute="id" optionTextAttribute="nom" emptyOption="true" optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="procedimentCodi" textKey="regla.simulador.form.camp.procediment.codi"/>
+		<dis:inputText name="serveiCodi" textKey="regla.simulador.form.camp.servei.codi"/>
 		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
 		<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 		

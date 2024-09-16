@@ -285,6 +285,7 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
 			String procedimentCodi,
+			String serveiCodi,
 			String titol) throws NotFoundException;
 
 	/** 

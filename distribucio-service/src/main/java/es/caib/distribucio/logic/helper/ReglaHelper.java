@@ -85,6 +85,7 @@ public class ReglaHelper {
 			Long unitatId,
 			Long bustiaId,
 			String procedimentCodi,
+			String serveiCodi,
 			String assumpteCodi,
 			Boolean presencial) {
 		if (reglaActual != null && reglaActual.isAturarAvaluacio()) {
@@ -99,6 +100,7 @@ public class ReglaHelper {
 				unitatId,
 				bustiaId,
 				procedimentCodi != null ? procedimentCodi : "",
+				serveiCodi != null ? serveiCodi : "",
 				assumpteCodi != null ? assumpteCodi : "", 
 				esPresencial == null,
 				esPresencial);
@@ -131,6 +133,7 @@ public class ReglaHelper {
 			Long unitatId,
 			Long bustiaId,
 			String procedimentCodi,
+			String serveiCodi,
 			String assumpteCodi,
 			Boolean presencial) {
 		ReglaEntity reglaAplicable = null;
@@ -144,6 +147,7 @@ public class ReglaHelper {
 					unitatId,
 					bustiaId,
 					procedimentCodi != null ? procedimentCodi : "",
+					serveiCodi != null ? serveiCodi : "",
 					assumpteCodi != null ? assumpteCodi : "", 
 					esPresencial == null,
 					esPresencial);
@@ -295,6 +299,7 @@ public class ReglaHelper {
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getProcedimentCodi(),
+						registreSimulatDto.getServeiCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);
 			} else {
@@ -304,6 +309,7 @@ public class ReglaHelper {
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getProcedimentCodi(),
+						registreSimulatDto.getServeiCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);
 			}
@@ -484,6 +490,7 @@ public class ReglaHelper {
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
 							registre.getProcedimentCodi(),
+							registre.getServeiCodi(),
 							registre.getAssumpteCodi(), 
 							presencial);
 				} else {
@@ -493,6 +500,7 @@ public class ReglaHelper {
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
 							registre.getProcedimentCodi(),
+							registre.getServeiCodi(),
 							registre.getAssumpteCodi(), 
 							presencial);
 				}

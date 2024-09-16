@@ -1810,6 +1810,7 @@ public class RegistreServiceImpl implements RegistreService {
 							unitat.getId(),
 							bustia.getId(),
 							anotacio.getProcedimentCodi(),
+							anotacio.getServeiCodi(),
 							anotacio.getAssumpteCodi(), 
 							presencial);
 					anotacio.updateRegla(reglaAplicable);
@@ -2438,12 +2439,14 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			Long registreId,
 			String procedimentCodi,
+			String serveiCodi,			
 			String titol)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ", " +
-				"procedimentCodi=" + procedimentCodi + ")");
+				"procedimentCodi=" + procedimentCodi + ", " +
+				"serveiCodi=" + serveiCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -2456,23 +2459,39 @@ public class RegistreServiceImpl implements RegistreService {
 			throw new ValidationException(
 					registreId,
 					RegistreEntity.class,
-					"El registre (id=" + registreId + ") no té cap bústia assignada i per tant no es pot recuperar la llista de procediments associats a la bústia per procedir a la classificació.");
+					"El registre (id=" + registreId + ") no té cap bústia assignada i per tant no es pot recuperar la llista de procediments/serveis associats a la bústia per procedir a la classificació.");
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				registre.getPareId(),
-				this.comprovarPermisLectura());
-		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) 
-			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
-			registre.updateProcedimentCodi(procedimentCodi);
-		if (titol != null)
-			registre.updateTitol(titol);
-		if (procedimentCodi != null)
-			registre.updateProcedimentCodi(procedimentCodi);
+				this.comprovarPermisLectura());		
+		
+//		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) {
+//			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+//			registre.updateProcedimentCodi(procedimentCodi);
+//		}
+		
+		if ((procedimentCodi == null || serveiCodi == null) && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) {
+			if (procedimentCodi == null && serveiCodi == null) {
+				registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment i sense servei " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));				
+			} else {
+				if (procedimentCodi == null) {
+					registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+				} else {
+					registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense servei " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+				}
+			}			
+		} 
+		registre.updateProcedimentCodi(procedimentCodi);
+		registre.updateServeiCodi(serveiCodi);		
+		
+		if (titol != null) registre.updateTitol(titol);
+		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
+				registre.getServeiCodi(),
 				registre.getAssumpteCodi(), 
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();

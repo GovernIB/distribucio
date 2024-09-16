@@ -35,15 +35,18 @@ var inicialitzarClassificacio = function(element) {
 	$botoCancel = $('#accio-cancel', $(element).parent());
 	$botoCancel.attr('disabled', 'disabled');
 	$('select#codiProcediment').attr('disabled', 'disabled');
+	$('select#codiServei').attr('disabled', 'disabled');
 	$botoClassificar = $(element);
 	$botoClassificar.attr('disabled', 'disabled');
 	$('#registres-list h3.panel-title span.state-icon').addClass('fa-circle-o-notch fa-spin text-muted');
 }
 var processarRegistres = function(index, element) {
 	if (index < registres.length) {
+		debugger;
 		let registre = registres[index];
 		let codiProcediment = $('select#codiProcediment').val();
-		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "?codiProcediment=" + codiProcediment;
+		let codiServei = $('select#codiServei').val();
+		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "?codiProcediment=" + codiProcediment + "&codiServei=" + codiServei;
 		$.post(classificarUrl, function(response) {
 			actualitzarEstatRegistre(index, true, response);
 			processarRegistres(index + 1, element);
@@ -101,7 +104,7 @@ var finalitzarClassificacio = function(element) {
 	/*$('button.close', $modal).click();*/
 }
 $(document).ready(function() {
-	if (${fn:length(procediments)} > 0) {
+	if ((${fn:length(procediments)} > 0) ||	(${fn:length(serveis)} > 0)) {
 		$('#accio-classificar').removeAttr('disabled');
 	}
 	$(window.frameElement).load(function() {
@@ -127,6 +130,16 @@ function formatProcedimentSelect(item) {
 		return $("<span>" + procedimentSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span> </span>");
 	}else{
 		return $("<span>" + procedimentSplit[0] + " </span>");
+	}
+}
+
+//Funció per advertir a l'usuari dels serveis que estàn obsolets
+function formatServeiSelect(item) {
+	const serveiSplit = item.text.split(" => ");
+	if (serveiSplit[1] == 'EXTINGIT') {
+		return $("<span>" + serveiSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span> </span>");
+	}else{
+		return $("<span>" + serveiSplit[0] + " </span>");
 	}
 }
 
@@ -233,6 +246,29 @@ function formatProcedimentSelect(item) {
 				placeholderKey="bustia.pendent.classificar.camp.codi.procediment"
 				optionMinimumResultsForSearch="0" 
 				optionTemplateFunction="formatProcedimentSelect"/>
+			</c:otherwise>
+		</c:choose>
+		<c:choose>
+			<c:when test="${empty serveis}">
+				<dis:inputFixed name="codiServei" textKey="bustia.pendent.classificar.camp.codi.servei">
+					<p class="text-danger">
+						<spring:message code="bustia.pendent.classificar.no.serveis"/>
+						"${registres[0].pare.nom}"
+					</p>
+				</dis:inputFixed>
+			</c:when>
+			<c:otherwise>
+				<dis:inputSelect 
+				name="codiServei" 
+				textKey="bustia.pendent.classificar.camp.codi.servei" 
+				optionItems="${serveis}" 
+				optionValueAttribute="codiSia" 
+				optionTextAttribute="codiNomEstat" 
+				emptyOption="true"
+				required="false"
+				placeholderKey="bustia.pendent.classificar.camp.codi.servei"
+				optionMinimumResultsForSearch="0" 
+				optionTemplateFunction="formatServeiSelect"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

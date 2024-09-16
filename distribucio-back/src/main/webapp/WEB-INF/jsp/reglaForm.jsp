@@ -77,6 +77,7 @@ $(document).ready(function() {
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');
 			$('#assumpteCodiFiltre').val('');
 			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
+			$('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
 		} else {
 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
@@ -89,6 +90,8 @@ $(document).ready(function() {
 			$('#bustiaFiltreId').parent().closest('.form-group').find("p.help-block").remove();
 			$('#procedimentCodiFiltre').parent().closest('.form-group').removeClass('has-error');
 			$('#procedimentCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
+			$('#serveiCodiFiltre').parent().closest('.form-group').removeClass('has-error');
+			$('#serveiCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
 			$('#assumpteCodiFiltre').parent().closest('.form-group').removeClass('has-error');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
 		} else {
@@ -192,6 +195,7 @@ $(document).ready(function() {
 				netejar="true"
 				optionMinimumResultsForSearch="0"/>
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
+			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info"/>
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			
 			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>

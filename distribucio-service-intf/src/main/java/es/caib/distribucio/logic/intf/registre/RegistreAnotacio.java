@@ -32,6 +32,7 @@ public class RegistreAnotacio {
 	private String assumpteTipusDescripcio;//Deprecated, will be alliminated
 	private String assumpteCodi;//16
 	private String procedimentCodi;//19 (Long to String)
+	private String serveiCodi;//19 (Long to String)
 	private String assumpteDescripcio;//255
 	private String referencia;//16
 	private String expedientNumero;//80
@@ -157,6 +158,12 @@ public class RegistreAnotacio {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}	
+	public String getServeiCodi() {
+		return serveiCodi;
+	}
+	public void setServeiCodi(String serveiCodi) {
+		this.serveiCodi = serveiCodi;
 	}	
 	public String getAssumpteDescripcio() {
 		return assumpteDescripcio;

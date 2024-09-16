@@ -28,6 +28,7 @@ public class RegistreSimulatCommand {
 	private String assumpteCodi;
 	@Size(max = 64)
 	private String procedimentCodi;
+	private String serveiCodi;
 	private Long bustiaId;
 	private ReglaPresencialEnumDto presencial;
 
@@ -49,15 +50,19 @@ public class RegistreSimulatCommand {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}	
+	public String getServeiCodi() {
+		return serveiCodi;
+	}
+	public void setServeiCodi(String serveiCodi) {
+		this.serveiCodi = serveiCodi;
 	}
 	public Long getBustiaId() {
 		return bustiaId;
 	}
 	public void setBustiaId(Long bustiaId) {
 		this.bustiaId = bustiaId;
-	}
-	
-	
+	}	
 	public ReglaPresencialEnumDto getPresencial() {
 		return presencial;
 	}

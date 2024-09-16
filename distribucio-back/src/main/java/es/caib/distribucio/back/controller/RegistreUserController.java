@@ -1719,14 +1719,30 @@ public class RegistreUserController extends BaseUserController {
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			Model model) {
-		try {
-			String procedimentCodi = emplenarModelClassificar(
-					request,
+		try {			
+			
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);			
+			RegistreDto registre = registreService.findOne(
+					entitatActual.getId(),
 					registreId,
+					false);
+			model.addAttribute("registre", registre);
+			model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
+			
+			String procedimentCodi = emplenarModelProcedimentClassificar(
+					entitatActual,
+					registre,
 					model);
+			
+			String serveiCodi = emplenarModelServeiClassificar(
+					entitatActual,
+					registre,
+					model);
+			
 			RegistreClassificarCommand command = new RegistreClassificarCommand();
 			command.setContingutId(registreId);
 			command.setCodiProcediment(procedimentCodi);
+			command.setCodiServei(serveiCodi);
 			model.addAttribute(command);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -1746,10 +1762,18 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		RegistreDto registre = registreService.findOne(
+				entitatActual.getId(),
+				registreId,
+				false);
 		if (bindingResult.hasErrors()) {
-			emplenarModelClassificar(
-					request,
-					registreId,
+			emplenarModelProcedimentClassificar(
+					entitatActual,
+					registre,
+					model);
+			emplenarModelServeiClassificar(
+					entitatActual,
+					registre,
 					model);
 			return "registreClassificar";
 		}
@@ -1757,6 +1781,7 @@ public class RegistreUserController extends BaseUserController {
 				entitatActual.getId(),
 				registreId,
 				command.getCodiProcediment(),
+				command.getCodiServei(),
 				command.getTitol());
 		switch (resultat.getResultat()) {
 		case SENSE_CANVIS:
@@ -1804,22 +1829,23 @@ public class RegistreUserController extends BaseUserController {
 				"bustia.controller.pendent.contingut.classificat.ok");
 	}
 	
-
-	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}", method = RequestMethod.GET)
-	@ResponseBody
-	public ClassificacioResultatDto classificarMultiplePost(
-			HttpServletRequest request,
-			@PathVariable Long registreId,
-			@PathVariable String codiProcediment,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		ClassificacioResultatDto resultat = registreService.classificar(
-				entitatActual.getId(),
-				registreId,
-				codiProcediment,
-				null);
-		return resultat;
-	}
+//	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}/{codiServei}", method = RequestMethod.GET)
+//	@ResponseBody
+//	public ClassificacioResultatDto classificarMultiplePost(
+//			HttpServletRequest request,
+//			@PathVariable Long registreId,
+//			@PathVariable String codiProcediment,
+//			@PathVariable String codiServei,
+//			Model model) {
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+//		ClassificacioResultatDto resultat = registreService.classificar(
+//				entitatActual.getId(),
+//				registreId,
+//				codiProcediment,
+//				codiServei,
+//				null);
+//		return resultat;
+//	}
 	
 	
 	//Gestió bústies favorits
@@ -2125,30 +2151,32 @@ public class RegistreUserController extends BaseUserController {
 		return filtreCommand;
 	}
 
-	private String emplenarModelClassificar(
-			HttpServletRequest request,
-			Long registreId,
-			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		RegistreDto registre = registreService.findOne(
-				entitatActual.getId(),
-				registreId,
-				false);
-		model.addAttribute("registre", registre);
+	private String emplenarModelProcedimentClassificar(
+			EntitatDto entitatActual,
+			RegistreDto registre,		
+			Model model) {		
+		
 		model.addAttribute(
 				"procediments",
 				registreService.classificarFindProcediments(
 						entitatActual.getId(),
-						registre.getPareId()));
+						registre.getPareId()));		
+		
+		return registre.getProcedimentCodi();
+	}
+	
+	private String emplenarModelServeiClassificar(
+			EntitatDto entitatActual,
+			RegistreDto registre,		
+			Model model) {		
 		
 		model.addAttribute(
 				"serveis",
 				registreService.classificarFindServeis(
 						entitatActual.getId(),
-						registre.getPareId()));
+						registre.getPareId()));		
 		
-		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
-		return registre.getProcedimentCodi();
+		return registre.getServeiCodi();
 	}
 	
 	

@@ -91,6 +91,8 @@ public class RegistreEntity extends ContingutEntity {
 	private String assumpteDescripcio;
 	@Column(name = "procediment_codi", length = 64)
 	private String procedimentCodi;
+	@Column(name = "servei_codi", length = 64)
+	private String serveiCodi;
 	@Column(name = "referencia", length = 16)
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
@@ -329,6 +331,9 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public String getProcedimentCodi() {
 		return procedimentCodi;
+	}
+	public String getServeiCodi() {
+		return serveiCodi;
 	}
 	public String getReferencia() {
 		return referencia;
@@ -596,6 +601,9 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
 	}
+	public void updateServeiCodi(String serveiCodi) {
+		this.serveiCodi = serveiCodi;
+	}
 	public void updateLlegida(Boolean llegida) {
 		this.llegida = llegida;
 	}
@@ -740,6 +748,10 @@ public class RegistreEntity extends ContingutEntity {
 			built.procedimentCodi = procedimentCodi;
 			return this;
 		}
+		public Builder serveiCodi(String serveiCodi) {
+			built.serveiCodi = serveiCodi;
+			return this;
+		}
 		public Builder referencia(String referencia) {
 			built.referencia = referencia;
 			return this;
@@ -870,6 +882,7 @@ public class RegistreEntity extends ContingutEntity {
 			String assumpteCodi,
 			String assumpteDescripcio,
 			String procedimentCodi,
+			String serveiCodi,
 			String referencia,
 			String expedientNumero,
 			String numeroOrigen,
@@ -927,6 +940,7 @@ public class RegistreEntity extends ContingutEntity {
 		this.assumpteCodi = assumpteCodi;
 		this.assumpteDescripcio = assumpteDescripcio;
 		this.procedimentCodi = procedimentCodi;
+		this.serveiCodi = serveiCodi;
 		this.referencia = referencia;
 		this.expedientNumero = expedientNumero;
 		this.numeroOrigen = numeroOrigen;

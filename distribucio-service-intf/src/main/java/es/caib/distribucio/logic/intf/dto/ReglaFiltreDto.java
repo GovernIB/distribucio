@@ -21,6 +21,7 @@ public class ReglaFiltreDto implements Serializable {
 	private ReglaTipusEnumDto tipus;
 	private Long backofficeId;
 	private String codiSIA;
+	private String codiServei;
 	private String codiAssumpte;
 	private Long bustiaId;
 //	private boolean activa = true;
@@ -57,6 +58,12 @@ public class ReglaFiltreDto implements Serializable {
 	}
 	public void setCodiSIA(String codiSIA) {
 		this.codiSIA = codiSIA;
+	}	
+	public String getCodiServei() {
+		return codiServei;
+	}
+	public void setCodiServei(String codiServei) {
+		this.codiServei = codiServei;
 	}
 	public Long getBackofficeId() {
 		return backofficeId;

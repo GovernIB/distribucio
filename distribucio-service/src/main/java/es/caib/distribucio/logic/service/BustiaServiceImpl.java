@@ -1094,6 +1094,7 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat.getId(),
 				bustia.getId(),
 				registreAnotacio.getProcedimentCodi(),
+				registreAnotacio.getServeiCodi(),
 				registreAnotacio.getAssumpteCodi(), 
 				registreAnotacio.isPresencial());
 		RegistreProcesEstatEnum estat;
@@ -1207,6 +1208,7 @@ public class BustiaServiceImpl implements BustiaService {
 				unitat.getId(),
 				bustia.getId(),
 				registreAnotacio.getProcedimentCodi(),
+				registreAnotacio.getServeiCodi(),
 				registreAnotacio.getAssumpteCodi(), 
 				registreAnotacio.isPresencial());
 		RegistreProcesEstatEnum estat;

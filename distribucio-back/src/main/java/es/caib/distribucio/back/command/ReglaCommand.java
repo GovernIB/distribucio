@@ -37,6 +37,7 @@ public class ReglaCommand {
 	private String assumpteCodiFiltre;
 	@Size(max = 1024, groups = {CreateUpdate.class})
 	private String procedimentCodiFiltre;
+	private String serveiCodiFiltre;
 	private Long unitatFiltreId;
 	private Long bustiaFiltreId;
 	private ReglaPresencialEnumDto presencial;
@@ -96,6 +97,12 @@ public class ReglaCommand {
 	}
 	public void setProcedimentCodiFiltre(String procedimentCodiFiltre) {
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
+	}	
+	public String getServeiCodiFiltre() {
+		return serveiCodiFiltre;
+	}
+	public void setServeiCodiFiltre(String serveiCodiFiltre) {
+		this.serveiCodiFiltre = serveiCodiFiltre;
 	}
 	public Long getUnitatFiltreId() {
 		return unitatFiltreId;

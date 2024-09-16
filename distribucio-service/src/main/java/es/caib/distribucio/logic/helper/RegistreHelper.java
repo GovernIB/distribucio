@@ -313,6 +313,7 @@ public class RegistreHelper {
 					registreAnotacio.getAssumpteCodi(),
 					registreAnotacio.getAssumpteDescripcio(),
 					registreAnotacio.getProcedimentCodi(),
+					registreAnotacio.getServeiCodi(),
 					registreAnotacio.getReferencia(),
 					registreAnotacio.getExpedientNumero(),
 					registreAnotacio.getNumeroOrigen(),

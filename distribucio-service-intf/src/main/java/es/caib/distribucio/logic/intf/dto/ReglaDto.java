@@ -26,6 +26,7 @@ public class ReglaDto extends AuditoriaDto {
 	// ------------- FILRE ----------------------
 	private String assumpteCodiFiltre;
 	private String procedimentCodiFiltre;
+	private String serveiCodiFiltre;
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private String codiAndNomUnitatOrganitzativa;
 	private String estatUnitatOrganitzativa;
@@ -118,6 +119,12 @@ public class ReglaDto extends AuditoriaDto {
 	}
 	public void setProcedimentCodiFiltre(String procedimentCodiFiltre) {
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
+	}	
+	public String getServeiCodiFiltre() {
+		return serveiCodiFiltre;
+	}
+	public void setServeiCodiFiltre(String serveiCodiFiltre) {
+		this.serveiCodiFiltre = serveiCodiFiltre;
 	}
 	public UnitatOrganitzativaDto getUnitatOrganitzativaFiltre() {
 		return unitatOrganitzativaFiltre;

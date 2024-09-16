@@ -6,6 +6,7 @@ public class RegistreClassificarCommand {
 	Long contingutId;
 	//@NotEmpty(groups = {Classificar.class})
 	String codiProcediment;
+	String codiServei;
 	
 	public String getTitol() {
 		return titol;
@@ -24,6 +25,12 @@ public class RegistreClassificarCommand {
 	}
 	public void setCodiProcediment(String codiProcediment) {
 		this.codiProcediment = codiProcediment;
+	}
+	public String getCodiServei() {
+		return codiServei;
+	}
+	public void setCodiServei(String codiServei) {
+		this.codiServei = codiServei;
 	}
 
 	public interface Classificar {}

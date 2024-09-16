@@ -30,10 +30,20 @@ function formatProcedimentSelect(item) {
 	}
 }
 
-$(document).ready(function() {
-	if (${fn:length(procediments)} > 0) {
-		$('#accio-classificar').removeAttr('disabled');
+//Funció per advertir a l'usuari dels serveis que estàn obsolets
+function formatServeiSelect(item) {
+	const serveiSplit = item.text.split(" => ");
+	if (serveiSplit[1] == 'EXTINGIT') {
+		return $("<span>" + serveiSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span> </span>");
+	}else{
+		return $("<span>" + serveiSplit[0] + " </span>");
 	}
+}
+
+$(document).ready(function() {
+	if ((${fn:length(procediments)} > 0) ||	(${fn:length(serveis)} > 0)) {
+		$('#accio-classificar').removeAttr('disabled');
+	}	
 });
 </script>
 </head>
@@ -114,6 +124,28 @@ $(document).ready(function() {
 					placeholderKey="bustia.pendent.classificar.camp.codi.procediment"
 					optionMinimumResultsForSearch="0" 
 					optionTemplateFunction="formatProcedimentSelect"/>
+			</c:otherwise>
+		</c:choose>
+		<c:choose>
+			<c:when test="${empty serveis}">
+				<dis:inputFixed name="codiServei" textKey="bustia.pendent.classificar.camp.codi.servei">
+					<p class="text-danger">
+						<spring:message code="bustia.pendent.classificar.no.serveis"/>
+					</p>
+				</dis:inputFixed>
+			</c:when>
+			<c:otherwise>
+				<dis:inputSelect 
+					name="codiServei" 
+					textKey="bustia.pendent.classificar.camp.codi.servei" 
+					optionItems="${serveis}" 
+					optionValueAttribute="codiSia" 
+					optionTextAttribute="codiNomEstat" 
+					emptyOption="true"
+					required="false"
+					placeholderKey="bustia.pendent.classificar.camp.codi.servei"
+					optionMinimumResultsForSearch="0" 
+					optionTemplateFunction="formatServeiSelect"/>
 			</c:otherwise>
 		</c:choose>
 		<div id="modal-botons" class="well">

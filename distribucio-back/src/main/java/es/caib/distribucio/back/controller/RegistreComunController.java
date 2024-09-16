@@ -57,18 +57,21 @@ public class RegistreComunController extends BaseController{
 	@Autowired
 	private RegistreHelper registreHelper;
 
+	// TO DO: Hem de obtenir el codi del servei en la classificacio multiple
 	@RequestMapping(value = "/classificarMultiple/{registreId}", method = RequestMethod.POST)
 	@ResponseBody
 	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
 			@RequestParam(value="codiProcediment", required=false) String codiProcediment,
+			@RequestParam(value="codiServei", required=false) String codiServei,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, BaseConfig.ROLE_USER);
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
 				codiProcediment,
+				codiServei,				
 				null);
 		return resultat;
 	}
@@ -152,6 +155,11 @@ public class RegistreComunController extends BaseController{
 			model.addAttribute(
 					"procediments",
 					registreService.classificarFindProcediments(
+							entitatActual.getId(),
+							bustiaIdActual));
+			model.addAttribute(
+					"serveis",
+					registreService.classificarFindServeis(
 							entitatActual.getId(),
 							bustiaIdActual));
 		}

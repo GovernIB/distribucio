@@ -24,6 +24,7 @@ public class ReglaFiltreCommand {
 	private Long unitatId;
 	private ReglaTipusEnumDto tipus;
 	private String codiSIA;
+	private String codiServei;
 	private Long backofficeId;
 	private String codiAssumpte;
 	private Long bustiaId;
@@ -55,6 +56,12 @@ public class ReglaFiltreCommand {
 	}
 	public void setCodiSIA(String codiSIA) {
 		this.codiSIA = codiSIA;
+	}	
+	public String getCodiServei() {
+		return codiServei;
+	}
+	public void setCodiServei(String codiServei) {
+		this.codiServei = codiServei;
 	}
 	public String getUnitatCodi() {
 		return unitatCodi;

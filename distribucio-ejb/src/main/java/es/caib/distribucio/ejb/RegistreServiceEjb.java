@@ -245,11 +245,13 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 			Long entitatId,
 			Long registreId,
 			String procedimentCodi,
+			String serveiCodi,
 			String titol) throws NotFoundException {
 		return delegateService.classificar(
 				entitatId,
 				registreId,
 				procedimentCodi,
+				serveiCodi,
 				titol);
 	}
 
