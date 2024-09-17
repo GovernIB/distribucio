@@ -144,6 +144,7 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 				logger.debug("Roles from ServletRequest for " + context.getUserPrincipal().getName() + ": " + j2eeUserRoles);
 				PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails result;
 				if (context.getUserPrincipal() instanceof KeycloakPrincipal) {
+					logger.debug("Info from KeycloakPrincipal " + context.getUserPrincipal());
 					KeycloakPrincipal<?> keycloakPrincipal = ((KeycloakPrincipal<?>)context.getUserPrincipal());
 					keycloakPrincipal.getKeycloakSecurityContext().getIdTokenString();
 					Set<String> roles = new HashSet<>();
@@ -159,7 +160,24 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 						// Rols a nivell de client
 						Map<String, Access> resourceAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getResourceAccess();
 						if (resourceAccess != null) {
-							resourceAccess.get(getResourceAccess()).getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+							Access access = resourceAccess.get(getResourceAccess());
+							logger.debug("Keycloak token resource roles for resource " + getResourceAccess() + ": " + access + " and roles " + (access != null ? access.getRoles() : "(null)"));
+							if (access != null && access.getRoles() != null) {
+								access.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+							} else {
+								
+								Access realmAccess = null;
+								if (keycloakPrincipal.getKeycloakSecurityContext() != null && keycloakPrincipal.getKeycloakSecurityContext().getToken() != null) {
+									realmAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getRealmAccess();
+								}
+								logger.warn("No s'ha trobat informació de rols per realm ni pel recurs " + getResourceAccess() + ". Altres resources: " + resourceAccess + 
+										". Es provarà pel realm " + realmAccess);
+								// Rols a nivell de realm
+								if (realmAccess != null && realmAccess.getRoles() != null) {
+									logger.debug("Keycloak token realm roles: " + realmAccess.getRoles());
+									realmAccess.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+								}
+							}
 						}
 					}
 					logger.debug("Creating WebAuthenticationDetails for " + keycloakPrincipal.getName() + " with roles " + roles);
