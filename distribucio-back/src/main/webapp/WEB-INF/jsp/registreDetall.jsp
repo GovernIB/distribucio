@@ -40,6 +40,10 @@
 			</c:if>
 		</c:forEach>
 	</c:if>
+	<c:set var="countCopies" value="0"/>
+	<c:if test="${not empty copies}">		
+		<c:set var="countCopies" value="${copies.size()}"/>		
+	</c:if>
 	<title><spring:message code="contingut.admin.info.titol"/></title>
 	<dis:modalHead/>
 	
@@ -898,6 +902,9 @@ li[id^="anotacio_"] {
 				<a href="#dades" aria-controls="dades" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.dades"/>&nbsp;<span class="badge" id="dades-count">${registre.dadesCount}</span></a>
 			</li>
 		</c:if>
+		<li role="presentation">
+			<a href="#copies" aria-controls="copies" role="tab" data-toggle="tab"><spring:message code="registre.detalls.pipella.copies"/>&nbsp;<span class="badge">${countCopies}</span></a>
+		</li>
 	</ul>	
 	</div>
 	
@@ -2068,6 +2075,66 @@ li[id^="anotacio_"] {
 				</c:if>
 			</div>
 		</c:if>
+		
+		
+		
+		<!------------------------------------------- TABPANEL COPIES --------------------------------------------->
+		<div class="tab-pane" id="copies" role="tabpanel">
+			<c:choose>
+				<c:when test="${not empty copies}">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.datacreacio"/></th>
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.estat"/></th>								
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.bustia"/></th>
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.numerocopia"/></th>
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.actual"/></th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="copia" items="${copies}" varStatus="status">
+								<tr>
+									<td>${copia.data}</td>
+									<td>${copia.estatDescripcio}</td>
+									<td>${copia.bustiaNom}</td>									
+									<c:if test="${copia.numeroCopia == 0}">
+										<td>Original</td>
+									</c:if>
+									<c:if test="${copia.numeroCopia != 0}">
+										<td>${copia.numeroCopia}</td>
+									</c:if>	
+									<c:if test="${copia.numeroCopia == registre.numeroCopia}">								
+										<td><i class="fa fa-circle" style="color:#46ff33" aria-hidden="true"></i></td>
+									</c:if>
+									<c:if test="${copia.numeroCopia != registre.numeroCopia}">													
+										<td>
+											<a href='../registre/${copia.id}' target="blank">	
+												<i class="fa fa-external-link" aria-hidden="true"></i>
+											</a>
+										</td>
+										
+									</c:if>	
+								</tr>										
+							</c:forEach>
+						</tbody>
+					</table>
+				</c:when>
+				<c:otherwise>
+					<div class="row col-xs-12">
+						<div class="well">
+							<spring:message code="registre.interessat.buit"/>
+						</div>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</div>
+		
+		
+		
+		
+		
+		
 		<div class="col-md-12 datatable-dades-carregant" style="display: none; text-align: center; margin-top: 50px;">
 			<span class="fa fa-circle-o-notch fa-spin fa-3x"></span>
 		</div>

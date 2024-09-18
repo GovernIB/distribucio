@@ -97,6 +97,11 @@ public interface RegistreService {
 			List<Long> multipleRegistreIds,
 			boolean isAdmin) throws NotFoundException;
 	
+	@PreAuthorize("isAuthenticated()")
+	public List<RegistreDto> findByEntitatCodiAndNumero(
+			Long entitatId,
+			String numero) throws NotFoundException;
+	
 	/**
 	 * Consulta el registre
 	 * 

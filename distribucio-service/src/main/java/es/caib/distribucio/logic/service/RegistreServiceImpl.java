@@ -337,6 +337,39 @@ public class RegistreServiceImpl implements RegistreService {
 		return resposta;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<RegistreDto> findByEntitatCodiAndNumero(
+			Long entitatId,
+			String numero) {
+		logger.debug("Obtenint anotació de registre ("
+				+ "entitatId=" + entitatId + ")");					
+		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
+		List<RegistreEntity> registres = registreRepository.findByEntitatCodiAndNumero(
+				entitat.getCodiDir3(),
+				numero);		
+
+		List<RegistreDto> resposta = new ArrayList<RegistreDto>();
+		for (RegistreEntity registre: registres) {
+			resposta.add((RegistreDto)contingutHelper.toContingutDto(
+					registre,
+					false,
+					false,
+					false,
+					false,
+					true,
+					false,
+					true));
+		}
+		return resposta;
+	}
+
 
 
 	@SuppressWarnings("unchecked")

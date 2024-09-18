@@ -453,6 +453,7 @@ public class RegistreUserController extends BaseUserController {
 							((RegistreDto)registre).getDades()));
 			model.addAttribute("metadadesActives", isMetadadesActives());
 			model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
+			model.addAttribute("copies", emplenarModelCopies(request, entitatActual, registre));
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -2177,6 +2178,17 @@ public class RegistreUserController extends BaseUserController {
 						registre.getPareId()));		
 		
 		return registre.getServeiCodi();
+	}
+	
+	private List<RegistreDto> emplenarModelCopies(
+			HttpServletRequest request,
+			EntitatDto entitatActual,
+			RegistreDto registre) {			
+		List<RegistreDto> copies = registreService.findByEntitatCodiAndNumero(entitatActual.getId(), registre.getNumero());
+		for (RegistreDto copia : copies) {
+			copia.setEstatDescripcio(getMessage(request, "registre.proces.estat.enum."+copia.getProcesEstat()));
+		}		
+		return copies;		
 	}
 	
 	

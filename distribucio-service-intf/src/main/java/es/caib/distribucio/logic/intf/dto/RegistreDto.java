@@ -24,6 +24,7 @@ public class RegistreDto extends ContingutDto {
 	private String unitatAdministrativaDescripcio;
 	private Date procesData;
 	private RegistreProcesEstatEnum procesEstat;
+	private String estatDescripcio;
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
 	private Integer procesIntents;
@@ -81,6 +82,8 @@ public class RegistreDto extends ContingutDto {
 	private String interessatsNoms;
 	private List<RegistreAnnexDto> annexos;
 	private RegistreAnnexDto justificant;
+	private Integer numeroCopia;
+	private String bustiaNom;
 	
 	private String justificantArxiuUuid;
 	private boolean justificantDescarregat;
@@ -287,6 +290,22 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setProcesEstat(RegistreProcesEstatEnum procesEstat) {
 		this.procesEstat = procesEstat;
+	}	
+	public String getEstatDescripcio() {		
+		return estatDescripcio;
+	}
+	public void setEstatDescripcio(String estatDescripcio) {
+		this.estatDescripcio = estatDescripcio;
+	}
+	public String getBustiaNom() {
+		if  (getPath().size()>0) {
+			return getPath().get(0).getNom();
+		} else {
+			return "";
+		}		
+	}
+	public void setBustiaNom(String bustiaNom) {
+		this.bustiaNom = bustiaNom;
 	}
 	public RegistreProcesEstatSistraEnum getProcesEstatSistra() {
 		return procesEstatSistra;
@@ -567,6 +586,14 @@ public class RegistreDto extends ContingutDto {
 	public void setJustificant(RegistreAnnexDto justificant) {
 		this.justificant = justificant;
 	}
+	
+	public Integer getNumeroCopia() {
+		return numeroCopia;
+	}
+	public void setNumeroCopia(Integer numeroCopia) {
+		this.numeroCopia = numeroCopia;
+	}
+
 	public boolean isReactivat() {
 		return reactivat;
 	}

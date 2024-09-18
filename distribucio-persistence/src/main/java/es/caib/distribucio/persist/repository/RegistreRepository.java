@@ -151,6 +151,10 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			String numero,
 			Date data);
 
+	List<RegistreEntity> findByEntitatCodiAndNumero(
+			String entitatCodi,			
+			String numero);
+	
 	/** Registres duplicats */
 	List<RegistreEntity> findRegistresByEntitatCodiAndLlibreCodiAndRegistreTipusAndNumeroAndDataAndEsborrat(
 			String entitatCodi,
