@@ -107,8 +107,11 @@ public interface AplicacioService {
 	 * 
 	 * @param exception
 	 *             L'excepció a emmagatzemar.
+	 *             
+	 * @param source
+	 *             
 	 */
-	public void excepcioSave(Throwable exception);
+	public void excepcioSave(Throwable exception, String source);
 
 	/**
 	 * Consulta la informació d'una excepció donat el seu índex.

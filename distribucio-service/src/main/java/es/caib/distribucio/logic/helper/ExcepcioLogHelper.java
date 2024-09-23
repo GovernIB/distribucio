@@ -33,14 +33,15 @@ public class ExcepcioLogHelper {
 	}
 
 	public void addExcepcio(
-			Throwable exception) {
+			Throwable exception,
+			String source) {
 		synchronized(excepcions) {
 			while (excepcions.size() >= DEFAULT_MAX_EXCEPCIONS) {
 				excepcions.remove(excepcions.size() - 1);
 			}
 			excepcions.add(
 					0,
-					new ExcepcioLogDto(exception));
+					new ExcepcioLogDto(exception, source));
 		}
 	}
 

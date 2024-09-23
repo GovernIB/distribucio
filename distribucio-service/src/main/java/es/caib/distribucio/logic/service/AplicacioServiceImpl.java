@@ -227,10 +227,10 @@ public class AplicacioServiceImpl implements AplicacioService {
 	}
 
 	@Override
-	public void excepcioSave(Throwable exception) {
+	public void excepcioSave(Throwable exception, String source) {
 		logger.trace("Emmagatzemant excepció (" +
 				"exception=" + exception + ")");
-		excepcioLogHelper.addExcepcio(exception);
+		excepcioLogHelper.addExcepcio(exception, source);
 	}
 
 	@Override

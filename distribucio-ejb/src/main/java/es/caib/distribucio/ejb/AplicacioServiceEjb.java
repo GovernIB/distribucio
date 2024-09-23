@@ -78,8 +78,8 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 	}
 
 	@Override
-	public void excepcioSave(Throwable exception) {
-		delegateService.excepcioSave(exception);
+	public void excepcioSave(Throwable exception, String source) {
+		delegateService.excepcioSave(exception, source);
 	}
 
 	@Override

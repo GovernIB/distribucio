@@ -38,6 +38,10 @@
 				<dt><spring:message code="excepcio.detall.camp.message"/></dt>
 				<dd>${excepcio.message}</dd>
 			</c:if>
+			<c:if test="${not empty excepcio.origen}">
+				<dt><spring:message code="excepcio.detall.camp.origen"/></dt>
+				<dd>${excepcio.origen}</dd>
+			</c:if>
 		</dl>
 		<c:if test="${not empty excepcio.stacktrace}">
 			<div class="panel-body" >

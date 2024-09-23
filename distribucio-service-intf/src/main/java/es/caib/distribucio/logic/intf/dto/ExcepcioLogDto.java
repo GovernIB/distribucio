@@ -29,11 +29,12 @@ public class ExcepcioLogDto implements Serializable {
 	private String param1;
 	private String param2;
 	private String message;
+	private String origen;
 	private String stacktrace;
 
 
 
-	public ExcepcioLogDto(Throwable exception) {
+	public ExcepcioLogDto(Throwable exception, String source) {
 		if (exception instanceof NotFoundException) {
 			this.objectId = ((NotFoundException)exception).getObjectId();
 			this.objectClass = ((NotFoundException)exception).getObjectClass();
@@ -49,6 +50,7 @@ public class ExcepcioLogDto implements Serializable {
 		}
 		this.setTipus(exception.getClass());
 		this.setMessage(exception.getMessage());
+		this.setOrigen(source);
 		this.setStacktrace(ExceptionUtils.getStackTrace(exception));
 	}
 
@@ -102,6 +104,12 @@ public class ExcepcioLogDto implements Serializable {
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}	
+	public String getOrigen() {
+		return origen;
+	}
+	public void setOrigen(String origen) {
+		this.origen = origen;
 	}
 	public String getStacktrace() {
 		return stacktrace;
