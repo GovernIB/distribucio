@@ -253,6 +253,16 @@ public interface RegistreService {
 	@PreAuthorize("isAuthenticated()")
 	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception;
 
+	/** Mètode per canviar l'estat a rebuda si el seu estat inicial es comunicada al backoffice en un registre d'anotació.
+	 * 
+	 * @param registreId
+	 * @param observacions
+	 */
+	@PreAuthorize("isAuthenticated()")
+	public void canviEstatComunicadaARebuda(
+    		long registreId,
+    		String observacions);
+	
 	/** Mètode per canviar l'estat a un registre d'anotació.
 	 * 
 	 * @param id

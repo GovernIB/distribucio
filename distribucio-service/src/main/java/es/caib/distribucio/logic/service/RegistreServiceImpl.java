@@ -1633,6 +1633,21 @@ public class RegistreServiceImpl implements RegistreService {
 	@SuppressWarnings("incomplete-switch")
 	@Transactional
 	@Override
+    public void canviEstatComunicadaARebuda(
+    		long registreId,
+    		String observacions) {
+    	RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
+    	RegistreProcesEstatEnum backEstatActual = registre.getProcesEstat();
+    	if (backEstatActual.equals(RegistreProcesEstatEnum.BACK_COMUNICADA)) {
+    		registre.updateBackEstat(
+				RegistreProcesEstatEnum.BACK_REBUDA,
+				observacions);
+    	}
+    }
+	
+	@SuppressWarnings("incomplete-switch")
+	@Transactional
+	@Override
 	public void canviEstat(
 			long registreId,
 			Estat estat,

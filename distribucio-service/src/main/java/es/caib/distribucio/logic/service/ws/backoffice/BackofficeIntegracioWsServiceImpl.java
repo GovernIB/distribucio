@@ -147,6 +147,18 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	}
     
     @Override
+    public void canviEstatComunicadaARebuda(
+    		 AnotacioRegistreId id,             
+             String observacions) {
+    	try {
+    		long registreId = registreService.getRegistrePerIdentificador(id);
+    		registreService.canviEstatComunicadaARebuda(registreId, observacions);
+    	} catch (Exception ex) {
+    		logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="+ id + ex);
+    	}
+    }
+    
+    @Override
     public void canviEstat(
             AnotacioRegistreId id,
             Estat estat,

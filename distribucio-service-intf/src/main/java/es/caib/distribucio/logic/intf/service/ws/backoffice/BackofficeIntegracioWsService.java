@@ -24,6 +24,19 @@ public interface BackofficeIntegracioWsService {
 	public AnotacioRegistreEntrada consulta(
 			AnotacioRegistreId id);
 
+	
+	/**
+	 * Processa una anotació de registre d'entrada des del seu estat inicial comunicada a rebuda pel backoffice
+	 * 
+	 * @param id
+	 *           Id de l'anotació
+	 * @param observacions
+	 *
+	 */
+	public void canviEstatComunicadaARebuda(
+			AnotacioRegistreId id,            
+            String observacions);
+	
 	/**
 	 * Processa una anotació de registre d'entrada.
 	 * 

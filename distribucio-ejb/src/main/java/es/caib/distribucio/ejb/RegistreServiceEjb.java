@@ -221,6 +221,14 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	public AnotacioRegistreEntrada findOneForBackoffice(AnotacioRegistreId id) {
 		return delegateService.findOneForBackoffice(id);
 	}
+	
+	@Override
+	@RolesAllowed("**")
+	public void canviEstatComunicadaARebuda(
+			long registreId,			
+			String observacions) {
+		delegateService.canviEstatComunicadaARebuda(registreId, observacions);
+	}
 
 	@Override
 	@RolesAllowed("**")

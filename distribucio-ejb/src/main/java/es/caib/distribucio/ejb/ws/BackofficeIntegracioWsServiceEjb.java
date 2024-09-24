@@ -37,6 +37,14 @@ public class BackofficeIntegracioWsServiceEjb extends AbstractServiceEjb<Backoff
 		propagateEjbAuthenticationToSpringSecurity(BaseConfig.ROLE_BACKOFFICE_WS);
 		return delegateService.consulta(id);
 	}
+	
+	@Override
+	public void canviEstatComunicadaARebuda(
+			AnotacioRegistreId id,			
+			String observacions) {
+		propagateEjbAuthenticationToSpringSecurity(BaseConfig.ROLE_BACKOFFICE_WS);
+		delegateService.canviEstatComunicadaARebuda(id, observacions);
+	}
 
 	@Override
 	public void canviEstat(

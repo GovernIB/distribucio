@@ -65,7 +65,12 @@ public class BackofficeRestController {
 			id.setIndetificador(indetificador);
 			id.setClauAcces(clauAcces);
 			AnotacioRegistreEntrada anotacio = backofficeIntegracioWsService.consulta(id);
-			return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
+			
+			// Canvi d'estat de "Comunicada al backoffice" a "Rebuda pel backoffice"
+			backofficeIntegracioWsService.canviEstatComunicadaARebuda(
+					id,
+					"Canvi a nivell de consulta des de l'estat comunicada a rebuda pel backoffice");
+				return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
 		} catch(Exception e) {
 			String errMsg = "Error no controlat consultant l'anotació amb id " + indetificador + " i clau " + clauAcces + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
