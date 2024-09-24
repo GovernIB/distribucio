@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.fundaciobit.pluginsib.userinformation.UserInfo;
 import org.fundaciobit.pluginsib.userinformation.ldap.LdapUserInformationPlugin;
-import org.fundaciobit.pluginsib.utils.ldap.LDAPUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,26 +60,20 @@ public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin impleme
 		LOGGER.debug("Consulta dels usuaris del grup LDAP CAIB (grupCodi=" + grupCodi + ")");
 		try {
 			List<DadesUsuari> dadesUsuaris = new ArrayList<>();
-			List<LDAPUser> ldapUsers = this.getLDAPUserManager().getUsersByRol(grupCodi);
-			if (ldapUsers != null) {
-				for (LDAPUser ldapUser : ldapUsers) {
-					// Mateixa transformació
-					UserInfo info = new UserInfo();
-			        info.setLanguage("ca");
-			        info.setName(ldapUser.getName());
-			        if (ldapUser.getSurname1() == null) {
-			            info.setSurname1(ldapUser.getSurnames());
-			        } else {
-			            info.setSurname1(ldapUser.getSurname1());
-			        }
-			        info.setSurname2(ldapUser.getSurname2());
-
-			        info.setAdministrationID(ldapUser.getAdministrationID());
-			        info.setUsername(ldapUser.getUserName());
-			        info.setEmail(ldapUser.getEmail());
-			        info.setPhoneNumber(ldapUser.getTelephoneNumber());
-
-			        dadesUsuaris.add(this.toDadesUsuari(info));
+			String [] codisUsuaris = this.getUsernamesByRol(grupCodi);
+			if (codisUsuaris != null) {
+				String codiUsuari;
+				DadesUsuari dadaUsuari;
+				for (int i = 0; i < codisUsuaris.length; i++) {
+					codiUsuari= codisUsuaris[i];
+					try {
+						dadaUsuari = this.findAmbCodi(codiUsuari);
+						if (dadaUsuari != null) {
+							dadesUsuaris.add(dadaUsuari);
+						}
+					} catch(Exception e) {
+						LOGGER.error("Error consultant l'usuari amb codi \"" + codiUsuari + "\" en la conslta per rol \"" + grupCodi + "\".");
+					}
 				}
 			}
 			return dadesUsuaris;

@@ -165,18 +165,7 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 							if (access != null && access.getRoles() != null) {
 								access.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
 							} else {
-								
-								Access realmAccess = null;
-								if (keycloakPrincipal.getKeycloakSecurityContext() != null && keycloakPrincipal.getKeycloakSecurityContext().getToken() != null) {
-									realmAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getRealmAccess();
-								}
-								logger.warn("No s'ha trobat informació de rols per realm ni pel recurs " + getResourceAccess() + ". Altres resources: " + resourceAccess + 
-										". Es provarà pel realm " + realmAccess);
-								// Rols a nivell de realm
-								if (realmAccess != null && realmAccess.getRoles() != null) {
-									logger.debug("Keycloak token realm roles: " + realmAccess.getRoles());
-									realmAccess.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
-								}
+								logger.error("No s'ha trobat informació de rols pel recurs " + getResourceAccess() + ". Altres resources: " + resourceAccess.keySet() + ".");
 							}
 						}
 					}
