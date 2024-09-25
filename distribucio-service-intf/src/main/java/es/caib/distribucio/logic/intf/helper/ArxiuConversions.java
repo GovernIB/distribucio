@@ -46,15 +46,15 @@ public class ArxiuConversions {
 	public static String toFirmaTipus(String tipus, String format) {
 		
 		String tipusFirma = null;
-		if (tipus.equals("XAdES") && format.equals("explicit/detached")) {
+		if ("XAdES".equals(tipus) && "explicit/detached".equals(format)) {
 			tipusFirma = "TF02"; // ArxiuFirmaTipusEnumDto.XADES_DET
-		} else if (tipus.equals("XAdES") && format.equals("implicit_enveloping/attached")) {
+		} else if ("XAdES".equals(tipus) && "implicit_enveloping/attached".equals(format)) {
 			tipusFirma = "TF03"; // ArxiuFirmaTipusEnumDto.XADES_ENV;
-		} else if (tipus.equals("CAdES") && format.equals("explicit/detached")) {
+		} else if ("CAdES".equals(tipus) && "explicit/detached".equals(format)) {
 			tipusFirma = "TF04"; // ArxiuFirmaTipusEnumDto.CADES_DET;
-		} else if (tipus.equals("CAdES") && format.equals("implicit_enveloping/attached")) {
+		} else if ("CAdES".equals(tipus) && "implicit_enveloping/attached".equals(format)) {
 			tipusFirma = "TF05"; // ArxiuFirmaTipusEnumDto.CADES_ATT;
-		} else if (tipus.equals("PAdES") || format.equals("implicit_enveloped/attached")) {
+		} else if ("PAdES".equals(tipus) || "implicit_enveloped/attached".equals(format)) {
 				tipusFirma = "TF06"; // ArxiuFirmaTipusEnumDto.PADES
 		} else {
 			tipusFirma = tipus;
