@@ -35,8 +35,8 @@ import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentEstat;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentEstat;
 
 /**
  * Implementació dels mètodes per a gestionar annexos.

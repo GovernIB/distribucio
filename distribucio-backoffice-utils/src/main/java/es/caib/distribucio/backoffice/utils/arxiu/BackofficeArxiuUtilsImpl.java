@@ -16,13 +16,13 @@ import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.rest.client.integracio.domini.Annex;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
 import es.caib.distribucio.rest.client.integracio.domini.Interessat;
-import es.caib.plugins.arxiu.api.Carpeta;
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.ContingutTipus;
-import es.caib.plugins.arxiu.api.Expedient;
-import es.caib.plugins.arxiu.api.ExpedientEstat;
-import es.caib.plugins.arxiu.api.ExpedientMetadades;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.Carpeta;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.ContingutTipus;
+import es.caib.pluginsib.arxiu.api.Expedient;
+import es.caib.pluginsib.arxiu.api.ExpedientEstat;
+import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 
 public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 	
@@ -237,7 +237,7 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 				String nom = null;
 				// Consulta el nom real a l'Arxiu per veure si existeix a la carpeta destí
 				try {
-					es.caib.plugins.arxiu.api.Document arxiuDocument = getArxiuPlugin().documentDetalls(
+					es.caib.pluginsib.arxiu.api.Document arxiuDocument = getArxiuPlugin().documentDetalls(
 							annex.getUuid(),
 							null,
 							false);

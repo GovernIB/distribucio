@@ -57,5 +57,11 @@
             </CAMPO>
         </ELEMENTO>
     </CAMPO>
+    
+    
+	<CAMPO id="LLENCAR_EXCEPCIO" tipo="simple">
+		<VALOR>false</VALOR>
+	</CAMPO>
+    
 	
 </ns2:FORMULARIO>

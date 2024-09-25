@@ -3,11 +3,12 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,8 +25,9 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
-
+import es.caib.distribucio.logic.intf.service.ReglaService;
 
 
 @Controller
@@ -34,6 +36,8 @@ public class BackofficeController extends BaseAdminController {
 
 	@Autowired
 	private BackofficeService backofficeService;
+	@Autowired
+	private ReglaService reglaService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -225,6 +229,14 @@ public class BackofficeController extends BaseAdminController {
 			@PathVariable Long backofficeId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
+			List<ReglaDto> reglesBackoffice = reglaService.findByEntitatAndBackofficeDestiId(entitatActual.getId(), backofficeId);
+			if (!reglesBackoffice.isEmpty()) {
+				throw new Exception(
+							getMessage(
+									request, 
+									"backoffice.controller.esborrat.ko.constraintviolation",
+									new Object[] {reglesBackoffice.size()}));
+			}
 			backofficeService.delete(
 					entitatActual.getId(),
 					backofficeId);
@@ -232,18 +244,11 @@ public class BackofficeController extends BaseAdminController {
 					request,
 					"redirect:../../backoffice",
 					"backoffice.controller.esborrat.ok");
-		} catch (Exception e) {			
-			String errorMessage;
-			Throwable t = e.getCause();
-			if (t instanceof ConstraintViolationException) {
-				errorMessage = getMessage(request, "backoffice.controller.esborrat.ko.constraintviolation");				
-			} else {
-				errorMessage = ExceptionUtils.getRootCause(e).getMessage();
-			}
+		} catch (Exception e) {
 			return getAjaxControllerReturnValueErrorMessage(
 					request,
 					"redirect:../../backoffice",
-					errorMessage);
+					e.getMessage());
 		}
 	}
 	

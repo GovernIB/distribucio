@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.caib.distribucio</groupId>
 	<artifactId>distribucio</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<packaging>pom</packaging>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -21,9 +21,11 @@
 		<keycloak.version>22.0.4</keycloak.version>
 		<plugins.validatesignature.version>3.0.0-SNAPSHOT</plugins.validatesignature.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
-		<cxf.version>3.3.3</cxf.version>
-		<arxiu.api.version>2.0.27</arxiu.api.version>
-		<arxiu.filesystem.version>2.0.6</arxiu.filesystem.version>
+
+		<cxf.version>3.2.5.redhat-00001</cxf.version>
+		<arxiu.api.version>3.0.0-SNAPSHOT</arxiu.api.version>
+		<arxiu.filesystem.version>3.0.0-SNAPSHOT</arxiu.filesystem.version>
+
 		<portafib.version>1.1</portafib.version>
 		<regweb.version>3.0.5</regweb.version>
 		<dir3caib.version>1.0.7</dir3caib.version>
@@ -33,7 +35,7 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 		<skipTests>true</skipTests>
-		<version.date>2024.03.21 16:00h</version.date>
+		<version.date>2024.09.24 12:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-api-externa</module>
@@ -89,6 +91,17 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+
+		<repository>
+			<id>github-governib-maven-repos</id>
+			<name>GitHub GovernIB Maven Repository</name>
+			<url>https://governib.github.io/maven/maven/</url>
+		</repository>
+
+	</repositories>
+
 	<distributionManagement>
 		<repository>
 			<id>github_governib_maven</id>
@@ -96,4 +109,5 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
+	
 </project>

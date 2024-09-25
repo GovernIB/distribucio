@@ -130,14 +130,14 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.ContingutTipus;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.plugins.arxiu.api.DocumentEstat;
-import es.caib.plugins.arxiu.api.DocumentMetadades;
-import es.caib.plugins.arxiu.api.Expedient;
-import es.caib.plugins.arxiu.api.FirmaTipus;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.ContingutTipus;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.DocumentEstat;
+import es.caib.pluginsib.arxiu.api.DocumentMetadades;
+import es.caib.pluginsib.arxiu.api.Expedient;
+import es.caib.pluginsib.arxiu.api.FirmaTipus;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -898,7 +898,7 @@ public class RegistreHelper {
 						}
 					} else {
 						// Altrament obté la 1a firma de l'Arxiu
-						es.caib.plugins.arxiu.api.Firma firmaArxiu = this.getFirma(annex, 0);
+						es.caib.pluginsib.arxiu.api.Firma firmaArxiu = this.getFirma(annex, 0);
 						if (firmaArxiu != null) {
 							firmaContingut = firmaArxiu.getContingut();
 						}
@@ -1197,11 +1197,11 @@ public class RegistreHelper {
 			
 			if (document.getFirmes() != null && document.getFirmes().size() > 0 && annexEntity.getFirmes().size() > 0) {
 				List<RegistreAnnexFirmaEntity> firmes = annexEntity.getFirmes();
-				Iterator<es.caib.plugins.arxiu.api.Firma> it = document.getFirmes().iterator();
+				Iterator<es.caib.pluginsib.arxiu.api.Firma> it = document.getFirmes().iterator();
 				
 				int firmaIndex = 0;
 				while (it.hasNext()) {
-					es.caib.plugins.arxiu.api.Firma arxiuFirma = it.next();
+					es.caib.pluginsib.arxiu.api.Firma arxiuFirma = it.next();
 					if (!FirmaTipus.CSV.equals(arxiuFirma.getTipus())) {
 						RegistreAnnexFirmaEntity firma = firmes.get(firmaIndex);
 						if (pluginHelper.isValidaSignaturaPluginActiu()) {
@@ -2363,19 +2363,19 @@ public class RegistreHelper {
 	}
 
 	/** Consulta la firma amb l'índex assenayalat per paràmetre excloent les firmes CSV. */
-	public es.caib.plugins.arxiu.api.Firma getFirma(RegistreAnnexEntity registreAnnexEntity, int indexFirma) {
-		es.caib.plugins.arxiu.api.Firma firma = null;
+	public es.caib.pluginsib.arxiu.api.Firma getFirma(RegistreAnnexEntity registreAnnexEntity, int indexFirma) {
+		es.caib.pluginsib.arxiu.api.Firma firma = null;
 		if (registreAnnexEntity.getFitxerArxiuUuid() == null ) {
 			return null;
 		}
 		RegistreEntity registre = registreAnnexEntity.getRegistre();
 		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, registre.getNumero());
 		if (document != null) {
-			List<es.caib.plugins.arxiu.api.Firma> firmes = document.getFirmes();
+			List<es.caib.pluginsib.arxiu.api.Firma> firmes = document.getFirmes();
 			if (firmes != null && firmes.size() > indexFirma) {
-				Iterator<es.caib.plugins.arxiu.api.Firma> it = firmes.iterator();
+				Iterator<es.caib.pluginsib.arxiu.api.Firma> it = firmes.iterator();
 				while (it.hasNext()) {
-					es.caib.plugins.arxiu.api.Firma f = it.next();
+					es.caib.pluginsib.arxiu.api.Firma f = it.next();
 					if (f.getTipus() == FirmaTipus.CSV) {
 						it.remove();
 					}

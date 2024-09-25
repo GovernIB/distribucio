@@ -196,8 +196,7 @@ public interface RegistreService {
 	 * @param rolActual Rol de l'usuari actual
 	 * @return Objecte FitxerDto amb la documentacio en un arxiu .zip.
 	 * @throws Error en el cas d'haver error consultant documents o creant un zip.
-	 */
-	@PreAuthorize("isAuthenticated()")
+	 */	
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
 			String rolActual) throws Exception;

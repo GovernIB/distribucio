@@ -14,7 +14,7 @@ import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import es.caib.plugins.arxiu.api.FirmaPerfil;
+import es.caib.pluginsib.arxiu.api.FirmaPerfil;
 
 /**
  * Implementació mock del plugin de signatura. Retorna una signatura falsa 

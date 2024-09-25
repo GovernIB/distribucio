@@ -218,6 +218,9 @@ public interface ReglaService {
 	public List<ReglaDto> findByEntitatAndUnitatDestiCodi(Long entitatId, String unitatCodi);
 
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+	public List<ReglaDto> findByEntitatAndBackofficeDestiId(Long entitatId, Long backofficeDestiId);
+
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")

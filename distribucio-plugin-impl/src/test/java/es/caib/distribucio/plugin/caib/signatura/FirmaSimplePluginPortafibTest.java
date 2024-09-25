@@ -31,8 +31,8 @@ public class FirmaSimplePluginPortafibTest {
 
 	private static final String API_ENDPOINT_ADDRESS = "https://dev.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
 	//private static final String API_ENDPOINT_ADDRESS = "https://proves.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";	
-	private static final String API_USERNAME = "$distribucio_portafib";
-	private static final String API_PASSWORD = "distribucio_portafib";
+	private static final String API_USERNAME = "$distribucio_portafib_dev";
+	private static final String API_PASSWORD = "distribucio_portafib_dev";
 	private static final String PERFIL = "FIRMAAPISIMPLE";
 	//private static final String PERFIL = "XADES_DETACHED"; //TF02
 	//private static final String PERFIL = "CADES_DETACHED"; //TF04

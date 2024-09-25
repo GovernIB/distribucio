@@ -5,9 +5,10 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
+	<version>1.0.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>javax.xml.ws</groupId>
@@ -17,11 +18,6 @@
 			<groupId>javax.jws</groupId>
 			<artifactId>javax.jws-api</artifactId>
 			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>distribucio-service-intf</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -67,12 +63,12 @@
 		<dependency>
 			<groupId>es.caib.distribucio</groupId>
 			<artifactId>distribucio-rest-client</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>es.caib.distribucio</groupId>
 			<artifactId>distribucio-service-intf</artifactId>
-			<version>${project.version}</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -120,8 +116,7 @@
 		<repository>
 			<id>github-governib-maven-repos</id>
 			<name>GitHub GovernIB Maven Repository</name>
-			<!--url>http://governib.github.io/maven/maven/</url-->
-			<url>https://raw.githubusercontent.com/GovernIB/maven/gh-pages/maven</url>
+			<url>http://governib.github.io/maven/maven/</url>
 		</repository>
 		<repository>
 			<name>Local Maven repository</name>
