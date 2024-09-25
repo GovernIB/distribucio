@@ -959,9 +959,10 @@ public class RegistreHelper {
 				} catch(Exception e) {
 					// Determina si és error perquè no té firmes o validant
 					Throwable throwable = ExceptionHelper.getRootCauseOrItself(e);
-					if (throwable.getMessage().contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
-							|| throwable.getMessage().contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
-							|| throwable.getMessage().contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
+					String message = throwable.getMessage() != null ? throwable.getMessage() : String.valueOf(throwable);
+					if (message.contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+							|| message.contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
+							|| message.contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
 						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
 					} else {
 						logger.error("Error validant les firmes del document", e);

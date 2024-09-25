@@ -65,14 +65,18 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.ldap.suffix_role_match_memberof', NULL, 'Attribute suffix role match member of pel servidor LDAP CAIB', 'USUARIS', '30', '1', 'TEXT', null, null);
 
 ---- ROLLBACK
---UPDATE DIS_CONFIG SET VALUE = 'es.caib.plugin.arxiu.caib.ArxiuPluginCaib' 
+--UPDATE DIS_CONFIG SET VALUE = 'es.caib.plugins.arxiu.caib.ArxiuPluginCaib' 
 --WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.class';
 --UPDATE DIS_CONFIG
 --SET KEY = REPLACE(KEY, '.pluginsib.arxiu.caib','.plugin.arxiu.caib')
 --WHERE 
 --	KEY like '%.pluginsib.arxiu.caib%';
 --
+--UPDATE DIS_CONFIG SET VALUE = 'org.fundaciobit.plugins.validatesignature.afirmacxf.AfirmaCxfValidateSignaturePlugin' 
+--WHERE KEY LIKE 'es.caib.distribucio.plugin.validatesignature.class';
+
 --UPDATE DIS_CONFIG
 --SET KEY = REPLACE(KEY, '.pluginsib.validatesignature','.plugins.validatesignature')
 --WHERE 
 --	KEY like '%.pluginsib.validatesignature%';
+
