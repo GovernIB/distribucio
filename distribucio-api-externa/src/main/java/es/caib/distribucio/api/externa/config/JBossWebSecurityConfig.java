@@ -92,6 +92,9 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 		http.authorizeHttpRequests().
 				requestMatchers(publicRequestMatchers()).permitAll().
 				anyRequest().authenticated();
+		http.headers().frameOptions().sameOrigin();
+		http.csrf().disable();
+		http.cors();
 		return http.build();
 	}
 
@@ -143,6 +146,7 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 				logger.debug("Roles from ServletRequest for " + context.getUserPrincipal().getName() + ": " + j2eeUserRoles);
 				PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails result;
 				if (context.getUserPrincipal() instanceof KeycloakPrincipal) {
+					logger.debug("Info from KeycloakPrincipal " + context.getUserPrincipal());
 					KeycloakPrincipal<?> keycloakPrincipal = ((KeycloakPrincipal<?>)context.getUserPrincipal());
 					keycloakPrincipal.getKeycloakSecurityContext().getIdTokenString();
 					Set<String> roles = new HashSet<>();
@@ -158,7 +162,13 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 						// Rols a nivell de client
 						Map<String, Access> resourceAccess = keycloakPrincipal.getKeycloakSecurityContext().getToken().getResourceAccess();
 						if (resourceAccess != null) {
-							resourceAccess.get(getResourceAccess()).getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+							Access access = resourceAccess.get(getResourceAccess());
+							logger.debug("Keycloak token resource roles for resource " + getResourceAccess() + ": " + access + " and roles " + (access != null ? access.getRoles() : "(null)"));
+							if (access != null && access.getRoles() != null) {
+								access.getRoles().stream().map(r -> ROLE_PREFIX + r).forEach(roles::add);
+							} else {
+								logger.error("No s'ha trobat informació de rols pel recurs " + getResourceAccess() + ". Altres resources: " + resourceAccess.keySet() + ".");
+							}
 						}
 					}
 					logger.debug("Creating WebAuthenticationDetails for " + keycloakPrincipal.getName() + " with roles " + roles);

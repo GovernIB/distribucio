@@ -5,8 +5,8 @@ import java.util.Map;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.plugin.IntegracioPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
 
 /**
  * Plugin per a la distribució de contingut contra sistemes externs. No és realment

@@ -58,9 +58,9 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 
 /**
  * Helper per a interactuar amb els plugins.
@@ -989,7 +989,7 @@ public class PluginHelper {
 		}
 	}
 
-	public es.caib.plugins.arxiu.api.Expedient arxiuExpedientInfo(
+	public es.caib.pluginsib.arxiu.api.Expedient arxiuExpedientInfo(
 			String arxiuUuid) {
 		String accioDescripcio = "Consulta d'un expedient";
 		String usuariIntegracio = this.getUsuariAutenticat();
@@ -997,7 +997,7 @@ public class PluginHelper {
 		accioParams.put("expedientArxiuUuid", arxiuUuid);
 		long t0 = System.currentTimeMillis();
 		try {
-			es.caib.plugins.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
+			es.caib.pluginsib.arxiu.api.Expedient exp = getArxiuPlugin().expedientDetalls(arxiuUuid, null);
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					accioDescripcio,
@@ -1617,7 +1617,7 @@ public class PluginHelper {
 
 	private Integer getPropertyMaxBytesValidacioFirma() {
 		Integer maxBytes = null;
-		String configKey = "es.caib.distribucio.plugins.validatesignature.maxBytes";
+		String configKey = "es.caib.distribucio.pluginsib.validatesignature.maxBytes";
 		try {
 			maxBytes = Integer.valueOf(configHelper.getConfig(configKey));
 		} catch(Exception e) {

@@ -50,26 +50,27 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import es.caib.plugins.arxiu.api.ArxiuException;
-import es.caib.plugins.arxiu.api.ContingutArxiu;
-import es.caib.plugins.arxiu.api.ContingutOrigen;
-import es.caib.plugins.arxiu.api.Document;
-import es.caib.plugins.arxiu.api.DocumentContingut;
-import es.caib.plugins.arxiu.api.DocumentEstat;
-import es.caib.plugins.arxiu.api.DocumentEstatElaboracio;
-import es.caib.plugins.arxiu.api.DocumentExtensio;
-import es.caib.plugins.arxiu.api.DocumentFormat;
-import es.caib.plugins.arxiu.api.DocumentMetadades;
-import es.caib.plugins.arxiu.api.DocumentTipus;
-import es.caib.plugins.arxiu.api.Expedient;
-import es.caib.plugins.arxiu.api.ExpedientEstat;
-import es.caib.plugins.arxiu.api.ExpedientMetadades;
-import es.caib.plugins.arxiu.api.Firma;
-import es.caib.plugins.arxiu.api.FirmaPerfil;
-import es.caib.plugins.arxiu.api.FirmaTipus;
-import es.caib.plugins.arxiu.api.IArxiuPlugin;
-import es.caib.plugins.arxiu.caib.ArxiuConversioHelper;
-import es.caib.plugins.arxiu.filesystem.ArxiuPluginFilesystem;
+import es.caib.pluginsib.arxiu.api.ArxiuException;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.ContingutOrigen;
+import es.caib.pluginsib.arxiu.api.Document;
+import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import es.caib.pluginsib.arxiu.api.DocumentEstat;
+import es.caib.pluginsib.arxiu.api.DocumentEstatElaboracio;
+import es.caib.pluginsib.arxiu.api.DocumentExtensio;
+import es.caib.pluginsib.arxiu.api.DocumentFormat;
+import es.caib.pluginsib.arxiu.api.DocumentMetadades;
+import es.caib.pluginsib.arxiu.api.DocumentTipus;
+import es.caib.pluginsib.arxiu.api.Expedient;
+import es.caib.pluginsib.arxiu.api.ExpedientEstat;
+import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
+import es.caib.pluginsib.arxiu.api.Firma;
+import es.caib.pluginsib.arxiu.api.FirmaPerfil;
+import es.caib.pluginsib.arxiu.api.FirmaTipus;
+import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
+import es.caib.pluginsib.arxiu.caib.ArxiuConversioHelper;
+//import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
+import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
 
 /**
  * Implementació del plugin de distribució que utilitza
@@ -1347,7 +1348,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (primeraFirma.getTipus() != null && TIPUS_FIRMES_ATTACHED.contains(FirmaTipus.valueOf(primeraFirma.getTipus().name()))) {
 
 				// Firma attached
-				if (es.caib.plugins.arxiu.api.FirmaTipus.PADES.equals(primeraFirma.getTipus())) {
+				if (es.caib.pluginsib.arxiu.api.FirmaTipus.PADES.equals(primeraFirma.getTipus())) {
 					// Pot ser que el contingut hagi vingut informat com a contingut i no com a firma
 					if (primeraFirma.getContingut() == null) {
 						primeraFirma.setContingut(contingut.getContingut());
@@ -1363,7 +1364,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					if (primeraFirma.getContingut() != null)
 						contingut.setContingut(primeraFirma.getContingut());
 
-					if (es.caib.plugins.arxiu.api.FirmaTipus.XADES_ENV.equals(primeraFirma.getTipus())) {
+					if (es.caib.pluginsib.arxiu.api.FirmaTipus.XADES_ENV.equals(primeraFirma.getTipus())) {
 						if (contingut.getArxiuNom() == null) {
 							contingut.setArxiuNom(primeraFirma.getFitxerNom() != null ? primeraFirma.getFitxerNom() : "firma.xsig");
 						} else if (!contingut.getArxiuNom().toLowerCase().endsWith(".xsig")) {

@@ -172,8 +172,7 @@
 					<version>6</version>
 					<initializeInOrder>true</initializeInOrder>
 					<skinnyWars>true</skinnyWars>
-					<packagingExcludes>lib/es.caib.distribucio-distribucio-api-*,lib/es.caib.distribucio-distribucio-back-*,lib/org.apache.cxf-*
-                    </packagingExcludes>
+					<packagingExcludes>lib/es.caib.distribucio-distribucio-api-*,lib/es.caib.distribucio-distribucio-back-*,lib/org.apache.cxf-cxf*</packagingExcludes>
 					<archive>
 						<manifestEntries>
 							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
