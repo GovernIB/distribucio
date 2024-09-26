@@ -23,12 +23,13 @@ import es.caib.distribucio.logic.intf.service.AplicacioService;
 @Component
 public class ControllerAfterThrowingAdvice {
 
-	@Autowired
-	private AplicacioService aplicacioService;
+	//@Autowired
+	//private AplicacioService aplicacioService;
 	
 	@AfterThrowing(pointcut="execution(* es.caib.api.externa.controller.*Controller*.*(..))", throwing="exception")
 	public void doAfterThrowing(JoinPoint joinPoint, Throwable exception) {
-		aplicacioService.excepcioSave(exception, "External application controller");
+		//aplicacioService.excepcioSave(exception, "External application controller");
+		System.out.println("aplicacioService.excepcioSave(exception, \"External application controller\"");
 	}
 	
 }
