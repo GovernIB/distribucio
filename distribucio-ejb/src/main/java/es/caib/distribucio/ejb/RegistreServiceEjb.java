@@ -26,6 +26,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -270,6 +271,16 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 			Long entitatId,
 			Long bustiaId) {
 		return delegateService.classificarFindProcediments(
+				entitatId,
+				bustiaId);
+	}
+	
+	@Override
+	@RolesAllowed("**")
+	public List<ServeiDto> classificarFindServeis(
+			Long entitatId,
+			Long bustiaId) {
+		return delegateService.classificarFindServeis(
 				entitatId,
 				bustiaId);
 	}
