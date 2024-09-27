@@ -2108,12 +2108,16 @@ li[id^="anotacio_"] {
 										<td><i class="fa fa-circle" style="color:#46ff33" aria-hidden="true"></i></td>
 									</c:if>
 									<c:if test="${copia.numeroCopia != registre.numeroCopia}">													
-										<td>
-											<a href='../registre/${copia.id}' target="blank">	
-												<i class="fa fa-external-link" aria-hidden="true"></i>
-											</a>
-										</td>
-										
+										<td>											
+											<c:if test="${isRolActualAdministrador or isRolActualAdminLectura}">
+												<a href='../${copia.id}/detall' target="blank">
+											</c:if>
+											<c:if test="${!isRolActualAdministrador and !isRolActualAdminLectura}">
+												<a href='../registre/${copia.id}' target="blank">
+											</c:if>
+													<i class="fa fa-external-link" aria-hidden="true"></i>
+												</a>											
+										</td>										
 									</c:if>	
 								</tr>										
 							</c:forEach>

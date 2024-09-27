@@ -39,6 +39,7 @@ import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.ExceptionHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
+import es.caib.distribucio.back.helper.RolHelper;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
@@ -177,9 +178,16 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
 			@RequestParam(value="ordreDir", required = false) String ordreDir,
+			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			Model model) throws Exception {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		try {
+			
+			RegistreDto registre = registreService.findOneAmbDades(
+					entitatActual.getId(),
+					registreId,
+					isVistaMoviments,
+					RolHelper.getRolActual(request));
 			
 			ContingutDto registreDto = contingutService.findAmbIdAdmin(
 					entitatActual.getId(),
@@ -219,6 +227,7 @@ public class RegistreAdminController extends BaseAdminController {
 							entitatActual.getId(),
 							((RegistreDto)registreDto).getDades()));
 			model.addAttribute("metadadesActives", isMetadadesActives());
+			model.addAttribute("copies", emplenarModelCopies(request, entitatActual, registre));
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -829,6 +838,17 @@ public class RegistreAdminController extends BaseAdminController {
 							"contingut.admin.controller.validar.firmes.no.valides"));
 		}
 		return "redirect:" + request.getHeader("referer");
+	}
+	
+	private List<RegistreDto> emplenarModelCopies(
+			HttpServletRequest request,
+			EntitatDto entitatActual,
+			RegistreDto registre) {			
+		List<RegistreDto> copies = registreService.findByEntitatCodiAndNumero(entitatActual.getId(), registre.getNumero());
+		for (RegistreDto copia : copies) {
+			copia.setEstatDescripcio(getMessage(request, "registre.proces.estat.enum."+copia.getProcesEstat()));
+		}		
+		return copies;		
 	}
 
 	private boolean isMetadadesActives() {
