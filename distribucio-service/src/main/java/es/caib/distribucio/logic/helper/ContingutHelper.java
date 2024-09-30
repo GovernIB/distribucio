@@ -558,7 +558,7 @@ public class ContingutHelper {
 		}
 	}
 
-	/** Retorna una llista d'usuaris amb permís de lectura sobre el contenidor
+	/** Retorna una llista d'usuaris amb permís de lectura sobre el contenidor. No es consulten usuaris pel rol "tothom".
 	 * 
 	 * @param contingut Contingut pel qual han de tenir permís.
 	 * @param directe Incloure usuaris amb permís directe.
@@ -584,6 +584,18 @@ public class ContingutHelper {
 						// if doesnt exists
 						try {
 							DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(permis.getPrincipalNom());
+							if (dadesUsuari == null) {
+								// Cerca l'usuari a la taula d'usuaris
+								UsuariEntity usuari = usuariRepository.findByCodi(permis.getPrincipalNom());
+								dadesUsuari = new DadesUsuari(
+										usuari.getCodi(), 
+										usuari.getNom(), 
+										usuari.getNom(), 
+										null, 
+										usuari.getNif(), 
+										usuari.getEmail(), 
+										false); // No considerem un usuari que no es troba com a actiu
+							}
 							boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && dadesUsuari.isActiu();
 							if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
 								usuariUserPermisDto = new UsuariPermisDto();
@@ -599,7 +611,8 @@ public class ContingutHelper {
 				}
 				break;
 			case ROL:
-				if (perRol) {
+				if (perRol 
+						&& !"tothom".equals(permis.getPrincipalNom()) ) {
 					List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(permis.getPrincipalNom());
 					if (usuarisGrup != null) {
 						for (DadesUsuari usuariGrup : usuarisGrup) {

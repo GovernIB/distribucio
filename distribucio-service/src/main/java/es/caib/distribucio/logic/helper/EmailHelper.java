@@ -499,11 +499,13 @@ public class EmailHelper {
 				usuaris.add(permis.getPrincipalNom());
 				break;
 			case ROL:
-				List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(
-						permis.getPrincipalNom());
-				if (usuarisGrup != null) {
-					for (DadesUsuari usuariGrup: usuarisGrup) {
-						usuaris.add(usuariGrup.getCodi());
+				if (!"tothom".equals(permis.getPrincipalNom())) {
+					List<DadesUsuari> usuarisGrup = pluginHelper.dadesUsuariFindAmbGrup(
+							permis.getPrincipalNom());
+					if (usuarisGrup != null) {
+						for (DadesUsuari usuariGrup: usuarisGrup) {
+							usuaris.add(usuariGrup.getCodi());
+						}
 					}
 				}
 				break;

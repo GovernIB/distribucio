@@ -28,7 +28,6 @@ import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
-import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.entity.BustiaDefaultEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
@@ -114,16 +113,30 @@ public class AplicacioServiceImpl implements AplicacioService {
 								null,
 								idioma).build());
 			} else {
-				throw new NotFoundException(
-						auth.getName(),
-						DadesUsuari.class);
+				// Pot ser que sigui un usuari d'integració sense dades d'usuari
+				usuari = usuariRepository.save(
+						UsuariEntity.getBuilder(
+								auth.getName(),
+								auth.getName(),
+								null,
+								null,
+								null,
+								idioma).build());
 			}
 		} else {
 			logger.trace("Consultant plugin de dades d'usuari (" +
 					"usuariCodi=" + auth.getName() + ")");
 			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(auth.getName());
 			if (dadesUsuari == null) {
-				throw new NotFoundException(auth.getName(), DadesUsuari.class);
+				// Pot ser que sigui un usuari d'integracio
+				dadesUsuari = new DadesUsuari(
+						usuari.getCodi(), 
+						usuari.getNom(),
+						usuari.getNom(), 
+						null, 
+						usuari.getNif(),
+						usuari.getEmailAlternatiu() != null ? usuari.getEmailAlternatiu() : usuari.getEmail(),
+						true);
 			}
 			if (dadesUsuari.getNomSencer() != null) {
 				usuari.update(
@@ -371,9 +384,11 @@ public class AplicacioServiceImpl implements AplicacioService {
 							dadesUsuari.getNif(), 
 							dadesUsuari.getEmail());
 				} else {
-					throw new NotFoundException(
-							codi,
-							DadesUsuari.class);
+					// No hi ha dades d'usuari, pot ser un usuari d'integració
+					usuariEntity.update(
+							codi, 
+							null, 
+							null);
 				}
 				usuari = toUsuariDtoAmbRols(usuariEntity);
 				cacheHelper.evictUsuariByCodi(dadesUsuari.getCodi());
