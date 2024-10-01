@@ -79,7 +79,7 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 						map(ur -> {
 							return DadesUsuari.builder().
 									codi(ur.getUsername()).
-									nom(ur.getFirstName() + ur.getLastName()).
+									nom(ur.getFirstName() + (ur.getLastName() != null ? " " + ur.getLastName() : "")).
 									actiu(ur.isEnabled()).
 									build();
 						}).

@@ -594,13 +594,13 @@ public class ContingutHelper {
 										null, 
 										usuari.getNif(), 
 										usuari.getEmail(), 
-										false); // No considerem un usuari que no es troba com a actiu
+										true); // No considerem un usuari que no es troba com a actiu
 							}
 							boolean isUsuariActiu = !isMostrarUsuarisInactiusEnabled() && dadesUsuari.isActiu();
 							if (dadesUsuari != null && (isMostrarUsuarisInactiusEnabled() || isUsuariActiu)) {
 								usuariUserPermisDto = new UsuariPermisDto();
 								usuariUserPermisDto.setCodi(permis.getPrincipalNom());
-								usuariUserPermisDto.setNom(dadesUsuari.getNom());
+								usuariUserPermisDto.setNom(dadesUsuari.getNomSencer());
 								usuariUserPermisDto.setHasUsuariPermission(true);
 								usuaris.put(permis.getPrincipalNom(), usuariUserPermisDto);
 							}
@@ -624,7 +624,7 @@ public class ContingutHelper {
 								} else { // if doesnt exists
 									usuariRolPermisDto = new UsuariPermisDto();
 									usuariRolPermisDto.setCodi(usuariGrup.getCodi());
-									usuariRolPermisDto.setNom(usuariGrup.getNom());
+									usuariRolPermisDto.setNom(usuariGrup.getNomSencer());
 									usuariRolPermisDto.getRols().add(permis.getPrincipalNom());
 									usuaris.put(usuariGrup.getNom(), usuariRolPermisDto);
 								}
