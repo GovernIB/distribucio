@@ -104,12 +104,14 @@ public class UsuariHelper {
 						dadesUsuari.getNom(),
 						dadesUsuari.getNif(),
 						dadesUsuari.getEmail());
-				usuariRepository.save(usuari);
 			} else {
-				throw new NotFoundException(
+				// Pot ser un usuari d'integració que no estigui a LDAP
+				usuari.update(
 						auth.getName(),
-						UsuariEntity.class);
+						null,
+						null);
 			}
+			usuari = usuariRepository.save(usuari);
 		}
 		return usuari;
 	}
@@ -137,12 +139,13 @@ public class UsuariHelper {
 						dadesUsuari.getNom(),
 						dadesUsuari.getNif(),
 						dadesUsuari.getEmail());
-				usuariRepository.save(usuari);
 			} else {
-				throw new NotFoundException(
+				usuari.update(
 						codi,
-						UsuariEntity.class);
+						null,
+						null);
 			}
+			usuariRepository.save(usuari);
 		}
 		return usuari;
 	}

@@ -402,7 +402,8 @@ public class HistoricHelper {
 			usuarisPermis = new HashSet<>();
 			usuarisRol = new HashSet<>();
 			for (PermisDto permis : permisosBustia) {
-				if (PrincipalTipusEnumDto.ROL.equals(permis.getPrincipalTipus())) {
+				if (PrincipalTipusEnumDto.ROL.equals(permis.getPrincipalTipus())
+						&& !"tothom".equals(permis.getPrincipalNom())) {
 					// Rol
 					usuarisRol.addAll(getUsuarisRol(rols, permis.getPrincipalNom()));
 				} else {
