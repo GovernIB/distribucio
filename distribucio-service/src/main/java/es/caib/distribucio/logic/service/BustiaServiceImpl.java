@@ -1400,8 +1400,20 @@ public class BustiaServiceImpl implements BustiaService {
 		// ### Usuari que reenvia l'anotació ###
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		DadesUsuari dadesUsuariActual = null;
-		if (auth != null)
+		if (auth != null) {
 			dadesUsuariActual = cacheHelper.findUsuariAmbCodi(auth.getName());
+		}
+		if (dadesUsuariActual == null) {
+			UsuariEntity usuari = usuariHelper.getUsuariByCodi(auth.getName());
+			dadesUsuariActual = new DadesUsuari(
+					usuari.getCodi(), 
+					usuari.getNom(), 
+					usuari.getNom(), 
+					null,
+					usuari.getNif(),
+					usuari.getEmailAlternatiu() != null ? usuari.getEmailAlternatiu() : usuari.getEmail(), 
+					true);
+		}
 		
 		StringBuilder html = getHtml(
 				registre,
@@ -2490,7 +2502,7 @@ public class BustiaServiceImpl implements BustiaService {
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.remitent.email")).append("</th>")
-					.append("				<td>").append(usuariActual.getEmail()).append("</td>")
+					.append("				<td>").append(usuariActual.getEmail() != null ? usuariActual.getEmail() : "-").append("</td>")
 					.append("			</tr>")
 					.append("			<tr>")
 					.append("				<th>").append(messageHelper.getMessage("registre.bustia")).append("</th>")

@@ -64,6 +64,9 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.ldap.prefix_role_match_memberof', NULL, 'Attribute prefix role match member of pel servidor LDAP CAIB', 'USUARIS', '29', '1', 'TEXT', null, null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.ldap.suffix_role_match_memberof', NULL, 'Attribute suffix role match member of pel servidor LDAP CAIB', 'USUARIS', '30', '1', 'TEXT', null, null);
 
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.security.resourceAcces.api-interna','null','Codi del client per agafar els rols en l''autenticació de l''API REST interna. Per ex. goib-ws.','GENERAL','24','1','TEXT',null,null);
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.security.resourceAcces.api-externa','null','Codi del client per agafar els rols en l''autenticació de l''API REST externa. Per ex. goib-ws.','GENERAL','25','1','TEXT',null,null);
+
 ---- ROLLBACK
 --UPDATE DIS_CONFIG SET VALUE = 'es.caib.plugins.arxiu.caib.ArxiuPluginCaib' 
 --WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.class';
