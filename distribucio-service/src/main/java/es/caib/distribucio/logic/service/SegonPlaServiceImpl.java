@@ -550,6 +550,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 
 	@Override
+	@Transactional
 	public void reintentarProcessamentBackoffice() {
 		
 		long startTime = new Date().getTime();
