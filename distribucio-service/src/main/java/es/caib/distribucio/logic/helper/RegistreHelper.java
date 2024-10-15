@@ -427,14 +427,15 @@ public class RegistreHelper {
 		contextsaveInteressats.stop();
 		final Timer timersaveAnnexos = metricRegistry.timer(MetricRegistry.name(RegistreHelper.class, "crearRegistreEntity.saveAnnexos"));
 		Timer.Context contextsaveAnnexos = timersaveAnnexos.time();
-		// Si ve informat amb uuid no guardar en filesystem
-		Boolean isRegistreArxiuPendent = registreRepository.isRegistreArxiuPendentByUuid(registre.getId(), entitat);
+
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
 		if (registreAnotacio.getAnnexos() != null) { 
 			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
+				// Si ve informat amb uuid no guardar en filesystem
+				boolean isGuardarEnFilesystem = registreAnnex.getFitxerArxiuUuid() == null;
 				registre.getAnnexos().add(
 						crearAnnexEntity(
-								isRegistreArxiuPendent,
+								isGuardarEnFilesystem,
 								registreAnnex,
 								registre));
 			}

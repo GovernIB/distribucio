@@ -463,7 +463,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"from " +
 			"    RegistreEntity r JOIN r.annexos a " +
 			"where r.id = :registreId " +
-			"	and (r.justificantArxiuUuid = null or a.fitxerArxiuUuid = null) " +
+			"	and (r.justificantArxiuUuid is null or a.fitxerArxiuUuid is null) " +
 			"	and r.entitat = :entitat")
 	public Boolean isRegistreArxiuPendentByUuid(@Param("registreId") Long registreId, @Param("entitat") EntitatEntity entitat);
 	
