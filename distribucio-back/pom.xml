@@ -92,6 +92,14 @@
 			<version>${xdocreport.version}</version>
 		</dependency>
 		<!-- XDocReports -->
+		
+		<!-- Dependencia para visualizar PDFs -->
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>pdf-js</artifactId>
+		    <version>2.13.216</version>
+		</dependency>
+		
         <!-- Dependencia para poder llegir documents de tipus .odt -->
         <dependency>
             <groupId>fr.opensagres.xdocreport</groupId>
