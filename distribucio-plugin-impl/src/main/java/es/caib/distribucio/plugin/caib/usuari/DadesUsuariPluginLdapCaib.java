@@ -60,20 +60,10 @@ public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin impleme
 		LOGGER.debug("Consulta dels usuaris del grup LDAP CAIB (grupCodi=" + grupCodi + ")");
 		try {
 			List<DadesUsuari> dadesUsuaris = new ArrayList<>();
-			String [] codisUsuaris = this.getUsernamesByRol(grupCodi);
-			if (codisUsuaris != null) {
-				String codiUsuari;
-				DadesUsuari dadaUsuari;
-				for (int i = 0; i < codisUsuaris.length; i++) {
-					codiUsuari= codisUsuaris[i];
-					try {
-						dadaUsuari = this.findAmbCodi(codiUsuari);
-						if (dadaUsuari != null) {
-							dadesUsuaris.add(dadaUsuari);
-						}
-					} catch(Exception e) {
-						LOGGER.error("Error consultant l'usuari amb codi \"" + codiUsuari + "\" en la conslta per rol \"" + grupCodi + "\".");
-					}
+			UserInfo[] usersInfo = this.getUserInfoByRol(grupCodi);
+			if (usersInfo != null) {
+				for (int i = 0; i < usersInfo.length; i++) {
+					dadesUsuaris.add(toDadesUsuari(usersInfo[i]));
 				}
 			}
 			return dadesUsuaris;
