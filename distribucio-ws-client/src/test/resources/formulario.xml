@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:FORMULARIO accion="accion" xmlns:ns2="urn:es:caib:sistra2:xml:formulario:v1:model">
 	<CAMPO id="PREU" tipo="simple">
-		<VALOR>1.234.567,123</VALOR>
+		<VALOR>2.222.222,222</VALOR>
 	</CAMPO>
 	<CAMPO id="SISTRA2" tipo="simple">
-		<VALOR>text</VALOR>
+		<VALOR>text 2</VALOR>
 	</CAMPO>
 	<CAMPO id="SISTRA2_SELECCION" tipo="compuesto">
 		<VALOR codigo="prova">Prueba</VALOR>

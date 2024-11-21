@@ -53,7 +53,7 @@ tr.clicable {
 		    if (!$(this).data("loaded")) {
 		        var registreId = $(this).data("registreId"); 
 		        $("#collapse-justificant").append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/registreJustificant");
+		        $("#collapse-justificant").load("<c:url value="/nodeco/contingut"/>/registre/" + registreId + "/registreJustificant");
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -62,7 +62,7 @@ tr.clicable {
 		    	var registreId = $(this).data("registreId"); 
 		        var annexId = $(this).data("annexId");
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex/"/>/" + registreId + "/" + annexId);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnex"/>/" + registreId + "/" + annexId);
 		        $(this).data("loaded", true);
 		    }
 	    });
@@ -72,7 +72,7 @@ tr.clicable {
 
 		    	var vistaMovimentsCookie = getCookie("vistaMoviments");
 		    	var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
-		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut/"/>/registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
+		        $('#arxiuInfo').load("<c:url value="/nodeco/contingut"/>/registre/" + registreId + "/arxiuInfo?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 		});		    

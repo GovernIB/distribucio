@@ -26,7 +26,7 @@
 		    if (!$(this).data("loaded")) {
 		    	var registreId = $(this).parents(".collapse-annex").data("registreId"); 
 		        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>/" + registreId + "/" + ${annex.id} + "/false?isVistaMoviments=" + isVistaMoviments);
+		        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes"/>/" + registreId + "/" + ${annex.id} + "/false?isVistaMoviments=" + isVistaMoviments);
 		        $(this).data("loaded", true);
 		    }
 	    });
