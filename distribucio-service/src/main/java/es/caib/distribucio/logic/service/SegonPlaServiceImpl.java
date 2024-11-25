@@ -37,6 +37,7 @@ import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
 import es.caib.distribucio.logic.helper.HistoricHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
@@ -44,7 +45,6 @@ import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
@@ -218,39 +218,23 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		logger.debug("Execució de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice");
 		
-		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
-			
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(entitat.getCodi());
-			ConfigHelper.setEntitat(entitatDto);
-
-			int maxReintents = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+		// Obtenir la llista de pendents agrupats per regles
+		Map<ReglaDto, List<Long>> pendentsByRegla = registreHelper.getPendentsEnviarBackoffice();
 		
-			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
-			List<RegistreEntity> pendents = registreHelper.findAmbEstatPendentEnviarBackoffice(entitat, new Date(), maxReintents);
-			if (pendents != null && !pendents.isEmpty()) {
-				
-				Map<ReglaEntity, List<Long>> pendentsByRegla = new HashMap<ReglaEntity, List<Long>>();
-				for (RegistreEntity pendent : pendents) {
-					if (!pendentsByRegla.containsKey(pendent.getRegla())) {
-						pendentsByRegla.put(pendent.getRegla(), new ArrayList<Long>());
-					}
-					pendentsByRegla.get(pendent.getRegla()).add(pendent.getId());
-				}
-				
-				for (ReglaEntity regla : pendentsByRegla.keySet()) {
-					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
-					Timer.Context context = timer.time();
-					List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
-					logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + " per la regla " + regla.getNom());
-					Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
-					if (t != null) {
-						logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDesti().getNom() + " per la regla " + 
-									regla.getNom() + ": " + t.getMessage());
-					}
-					context.stop();
-				}
+		// Envia les anotacions pendents agrupades per regla
+		for (ReglaDto regla : pendentsByRegla.keySet()) {
+			
+			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
+			Timer.Context context = timer.time();
+			
+			List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
+			logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom());
+			Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
+			if (t != null) {
+				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + 
+							regla.getNom() + ": " + t.getMessage());
 			}
+			context.stop();
 		}
 		long stopTime = new Date().getTime();
 		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
@@ -554,19 +538,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		logger.trace("Execució de tasca programada (" + startTime + "): reintentar enviament d'una anotació al backoffice");
+
+		// Obtenir la llista d'anotacions pendents amb error de processament
+		List<Long> registresBackError = registreHelper.findRegistresBackError();
 		
-		String maxReintentsString = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
-		int maxReintents = 2;
-		if (maxReintentsString != null) {
-			try {
-				maxReintents = Integer.parseInt(maxReintentsString);
-			} catch (Exception e) {
-				logger.error("Error llegint la propietat es.caib.distribucio.backoffice.reintentar.processament.max.reintents amb valor \"" + maxReintentsString 
-						+ "\" com a enter per establir el màxim de reintents per reprocessar anotacions, es deixen per defecte "  + maxReintents + " intents." );
-			}
-		}
-		
-		List<Long> registresBackError = registreHelper.findRegistresBackError(maxReintents);
 		for (int i=0; i<registresBackError.size(); i++) {
 			try {
 				List<Long> pendents = new ArrayList<Long>();
