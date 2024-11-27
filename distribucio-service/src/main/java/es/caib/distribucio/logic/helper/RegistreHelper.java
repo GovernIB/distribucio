@@ -128,7 +128,6 @@ import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.repository.RegistreFirmaDetallRepository;
 import es.caib.distribucio.persist.repository.RegistreInteressatRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
-import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -163,8 +162,6 @@ public class RegistreHelper {
 	private RegistreInteressatRepository registreInteressatRepository;
 	@Autowired
 	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
-	@Autowired
-	private ReglaRepository reglaRepository;
 	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
@@ -1545,9 +1542,15 @@ public class RegistreHelper {
 	 * @param pendentsIdsGroupedByRegla
 	 * @return
 	 */
-	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
+	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 		Date dataComunicacio = new Date();
-		Exception throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		Throwable throwable; 
+		try {
+			throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		} catch(Throwable th) {
+			logger.error("Error no controlat enviant ids d'anotacions pendents: " + th.getMessage());
+			throwable = th;
+		}
 		int minutesEspera = 1;
 		String tempsEspera = configHelper.getConfig(
 				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
@@ -1565,7 +1568,7 @@ public class RegistreHelper {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
-			Exception throwable, 
+			Throwable throwable, 
 			Date dataComunicacio,
 			int minutesEspera) {
 

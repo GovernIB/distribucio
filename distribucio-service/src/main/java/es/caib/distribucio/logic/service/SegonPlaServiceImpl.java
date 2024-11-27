@@ -231,7 +231,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 			logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom());
 			Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 			if (t != null) {
-				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + 
+				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + 
 							regla.getNom() + ": " + t.getMessage());
 			}
 			context.stop();
