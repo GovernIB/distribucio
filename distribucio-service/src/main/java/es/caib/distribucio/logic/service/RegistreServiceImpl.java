@@ -688,10 +688,12 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa) ");
 			parametres.put("unitatOrganitzativa", unitatOrganitzativa);
 		}
-		if (!esNullReintentsPendents) {
-			sqlWhere.append("and ((:reintentsPendents = true and r.procesIntents < :maxReintents) ");
-			sqlWhere.append("		or (:reintentsPendents = false and r.procesIntents >= :maxReintents)) ");
-			parametres.put("reintentsPendents", reintentsPendents);
+		if (!esNullReintentsPendents && reintentsPendents != null) {
+			if (reintentsPendents.booleanValue()) {
+				sqlWhere.append("and (r.procesIntents < :maxReintents) ");				
+			} else {
+				sqlWhere.append("and (r.procesIntents >= :maxReintents) ");
+			}
 			parametres.put("maxReintents", maxReintents);
 		}
 		if (!esNullProcesEstat) {

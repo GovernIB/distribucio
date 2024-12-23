@@ -87,6 +87,7 @@ import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
@@ -121,6 +122,7 @@ import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.repository.RegistreFirmaDetallRepository;
@@ -160,6 +162,8 @@ public class RegistreHelper {
 	private RegistreInteressatRepository registreInteressatRepository;
 	@Autowired
 	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	private EntitatRepository entitatRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
@@ -1280,53 +1284,68 @@ public class RegistreHelper {
 			registre.updateArxiuTancat(true);
 		}
 	}
-	
-	// sends ids of anotacions to backoffice
+
+	/** Envia els identificadors pendents d'una regla. */
 	@Transactional(readOnly = true)
 	public Exception enviarIdsAnotacionsBackoffice(List<Long> pendentsIdsGroupedByRegla) {
-		
-		List <RegistreEntity> pendentsByRegla = new ArrayList<>();
-		Map<String, String> accioParams = new HashMap<String, String>();
-
-		for(Long id: pendentsIdsGroupedByRegla){
-			RegistreEntity pendent = registreRepository.getReferenceById(id);
-			pendentsByRegla.add(pendent);
-		}
-
-		String clauSecreta = configHelper.getConfig(
-				"es.caib.distribucio.backoffice.integracio.clau");
-		if (clauSecreta == null) {
-			return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
-		}
-		
-		ReglaEntity regla = pendentsByRegla.get(0).getRegla();
-		BackofficeEntity backofficeDesti = regla.getBackofficeDesti();
-		if (backofficeDesti == null) {
-			return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + regla.getNom());
-		}
-		accioParams.put("Regla", regla.getId() + " - " + regla.getNom());
-		accioParams.put("Backoffice", backofficeDesti.getCodi());
-		List<AnotacioRegistreId> ids = new ArrayList<>();
-		for (RegistreEntity pendent : pendentsByRegla) {
-			
-			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(pendent.getNumero());			
-			
-			try {
-				anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
-						clauSecreta));
-			} catch (Exception ex) {
-				String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;
-				logger.error(errMsg, ex);
-				return new RuntimeException(
-						errMsg,
-						ex);
+		Exception exception = null;
+		ReglaEntity regla = null;
+		try {
+			List <RegistreEntity> pendentsByRegla = new ArrayList<>();
+			for(Long id: pendentsIdsGroupedByRegla){
+				RegistreEntity pendent = registreRepository.getReferenceById(id);
+				pendentsByRegla.add(pendent);
 			}
-			ids.add(anotacioRegistreId);
-			accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
+			if (pendentsByRegla.isEmpty())
+				return new Exception("La llista d'anotacions pendents és buida");
+
+			Map<String, String> accioParams = new HashMap<String, String>();
+			regla = pendentsByRegla.get(0).getRegla();
+			
+			BackofficeEntity backofficeDesti = regla.getBackofficeDesti();
+			if (backofficeDesti == null) {
+				return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + regla.getNom());
+			}
+			accioParams.put("Regla", regla.getId() + " - " + regla.getNom());
+			accioParams.put("Backoffice", backofficeDesti.getCodi());
+
+
+			String clauSecreta = configHelper.getConfig(
+					"es.caib.distribucio.backoffice.integracio.clau");
+			if (clauSecreta == null) {
+				return new RuntimeException("Clau secreta no especificada al fitxer de propietats");
+			}
+			
+			List<AnotacioRegistreId> ids = new ArrayList<>();
+			for (RegistreEntity pendent : pendentsByRegla) {
+				
+				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+				anotacioRegistreId.setIndetificador(pendent.getNumero());			
+				
+				try {
+					anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
+							clauSecreta));
+				} catch (Exception ex) {
+					String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;
+					logger.error(errMsg, ex);
+					return new RuntimeException(
+							errMsg,
+							ex);
+				}
+				ids.add(anotacioRegistreId);
+				accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
+			}
+			
+			exception = comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
+		} catch(Exception e) {
+			String errMsg = "Error no controlat comunicant " + pendentsIdsGroupedByRegla.size() + " annotacions al backoffice";
+			if (regla != null) {
+				errMsg += " " + regla.getBackofficeDesti().getNom() + " per la regla " + regla.getId() + " " + regla.getNom();
+			}
+			logger.error(errMsg);
+			exception = e;
 		}
-		
-		return comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
+		return exception;
 	}
 	
 	/** Mètode per provar la connexió amb un backoffice comunicant una llista buida d'identificadors d'anotacions de registre.
@@ -1553,9 +1572,15 @@ public class RegistreHelper {
 	 * @param pendentsIdsGroupedByRegla
 	 * @return
 	 */
-	public Exception enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
+	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
 		Date dataComunicacio = new Date();
-		Exception throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		Throwable throwable; 
+		try {
+			throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+		} catch(Throwable th) {
+			logger.error("Error no controlat enviant ids d'anotacions pendents: " + th.getMessage());
+			throwable = th;
+		}
 		int minutesEspera = 1;
 		String tempsEspera = configHelper.getConfig(
 				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
@@ -1573,7 +1598,7 @@ public class RegistreHelper {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
-			Exception throwable, 
+			Throwable throwable, 
 			Date dataComunicacio,
 			int minutesEspera) {
 
@@ -1982,15 +2007,28 @@ public class RegistreHelper {
 	}
 
 	/**
-	 * Mètode per retornar un llistat de les anotacions processades al backoffice
-	 * amb errors
+	 * Mètode per retornar un llistat dels identificadors de les anotacions processades al backoffice
+	 * amb errors i la regla aplicada.
 	 **/
-	public List<Long> findRegistresBackError(int maxReintents) {
-		List<Long> registresBackError = new ArrayList<>();
+	@Transactional(readOnly = true)
+	public List<Long> findRegistresBackError() {
 		
+		// Primer consulta la propietat del màxim de reintents.
+		String maxReintentsString = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+		int maxReintents = 2;
+		if (maxReintentsString != null) {
+			try {
+				maxReintents = Integer.parseInt(maxReintentsString);
+			} catch (Exception e) {
+				logger.error("Error llegint la propietat es.caib.distribucio.backoffice.reintentar.processament.max.reintents amb valor \"" + maxReintentsString 
+						+ "\" com a enter per establir el màxim de reintents per reprocessar anotacions, es deixen per defecte "  + maxReintents + " intents." );
+			}
+		}
+
+		// Consulta els registres amb error de processament amb un màxim de reintents
+		List<Long> registresBackError = new ArrayList<>();
 		List<RegistreEntity> llistatRegistresBackError = registreRepository.findRegistresBackError(new Date(), maxReintents);
 		for(RegistreEntity registre : llistatRegistresBackError) {
-			
 			registresBackError.add(registre.getId());
 		}
 		
@@ -2389,5 +2427,48 @@ public class RegistreHelper {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
+
+	/** Mètode per consultar totes les anotacions pendents d'enviar agrupades per ReglaDto, cal tenir en compte que cada entitat
+	 * pot tenir el seu número màxim de reintents diferent.
+	 * 
+	 * @return Retorna un Map<ReglaDto, List<Long>> agrupant els identificadors dels registres pendents per regla.
+	 */
+	@Transactional(readOnly = true)
+	public Map<ReglaDto, List<Long>> getPendentsEnviarBackoffice() {
+		
+		Map<Long, ReglaDto> regles = new HashMap<>();
+		Map<Long, List<Long>> pendentsIds = new HashMap<>();
+		// Per cada entitat
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
+			
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
+
+			int maxReintents = this.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+		
+			// getting annotacions pendents to send to backoffice with active regla and past retry time, grouped by regla
+			List<RegistreEntity> pendents = this.findAmbEstatPendentEnviarBackoffice(entitat, new Date(), maxReintents);
+			if (pendents != null && !pendents.isEmpty()) {
+				for (RegistreEntity pendent : pendents) {
+					if (pendent.getRegla() == null) {
+						continue;
+					}
+					if (!pendentsIds.containsKey(pendent.getRegla().getId())) {
+						ReglaDto regla = conversioTipusHelper.convertir(pendent.getRegla(), ReglaDto.class);
+						pendentsIds.put(regla.getId(), new ArrayList<Long>());
+						regles.put(regla.getId(), regla);
+					}
+					pendentsIds.get(pendent.getRegla().getId()).add(pendent.getId());
+				}
+			}
+		}
+		// Construeix el map resultat.
+		Map<ReglaDto, List<Long>> pendentsByRegla = new HashMap<ReglaDto, List<Long>>();
+		for (Long reglaId : pendentsIds.keySet()) {
+			pendentsByRegla.put(regles.get(reglaId), pendentsIds.get(reglaId));
+		}
+		return pendentsByRegla;
+	}
 
 }

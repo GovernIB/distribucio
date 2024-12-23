@@ -255,7 +255,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						String.valueOf( new Date().getTime()), 
 						"test_firmat.pdf", 
 						"Prova firma en servidor diagnòstic Distribucio", 
-						imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf")), 
+						imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firma.pdf")), 
 						"application/pdf", 
 						"TD99");
 				accioDescripcio = "Comunicació amb el plugin de firma en servidor correcta";
@@ -263,7 +263,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				diagnostic.setCorrecte(true); 
 				break;
 			case "VALIDASIG":
-				byte[] axiuSignat = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firmat.pdf"));
+				byte[] axiuSignat = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_validacio_firma.pdf"));	
 				// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
 				pluginHelper.validaSignaturaObtenirDetalls(null, axiuSignat, "");
 				accioDescripcio = "Obtenir informació de document firmat";

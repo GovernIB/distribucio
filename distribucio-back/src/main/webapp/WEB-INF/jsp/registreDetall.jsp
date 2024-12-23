@@ -22,7 +22,7 @@
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
-	<script src="<c:url value="/webjars/pdf-js/2.5.207/build/pdf.js"/>"></script>
+	<script src="<c:url value="/webjars/pdf-js/2.13.216/build/pdf.js"/>"></script>
 	<script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
 	<link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
 	<link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
@@ -591,7 +591,7 @@ li[id^="anotacio_"] {
 		            var file = new File([blob], response.contentType, {type: response.contentType});
 		            link = URL.createObjectURL(file);
 		            
-		            var viewerUrl = "<c:url value="/webjars/pdf-js/2.5.207/web/viewer.html"/>" + '?file=' + encodeURIComponent(link);
+		            var viewerUrl = "<c:url value="/webjars/pdf-js/2.13.216/web/viewer.html"/>" + '?file=' + encodeURIComponent(link);
 				    $('#container').removeClass('rmodal_loading');
 				    $('#container').attr('src', viewerUrl);
 				}
@@ -1236,7 +1236,7 @@ li[id^="anotacio_"] {
 														    $("#collapse-resum-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(event){  	
 															    if (!$(this).data("loaded")) {
 															        $(this).append("<div style='text-align: center; margin-bottom: 60px; margin-top: 60px;''><span class='fa fa-circle-o-notch fa-spin fa-3x'/></div>");
-															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes"/>/" + ${registreId} + "/" + ${annex.id} + "/true?isVistaMoviments=" + isVistaMoviments);
+															        $(this).load("<c:url value="/nodeco/registreUser/registreAnnexFirmes/"/>" + ${registreId} + "/" + ${annex.id} + "/true?isVistaMoviments=" + isVistaMoviments);
 															        $(this).data("loaded", true);
 															    }
 															    event.stopPropagation();

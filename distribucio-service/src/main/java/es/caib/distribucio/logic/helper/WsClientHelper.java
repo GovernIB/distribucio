@@ -46,7 +46,7 @@ public class WsClientHelper<T> {
 			else
 				url = new URL(endpoint);
 		}
-		Service service = Service.create(url, qname);
+		Service service = Service.create(null, qname);
 		T bustiaWs = service.getPort(clazz);
 		BindingProvider bindingProvider = (BindingProvider)bustiaWs;
 		// Configura l'adreça del servei

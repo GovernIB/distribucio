@@ -35,7 +35,7 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 	@Query( "from " + 
 			"MonitorIntegracioEntity mon " + 
 			"where " + 
-			"lower(mon.codi) like lower(:codiMonitor) " + 
+			"mon.codi like :codiMonitor " + 
 			"and (:isDataNula = true or mon.data between :data and :dataFi) " + 
 			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " + 
 			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" + 

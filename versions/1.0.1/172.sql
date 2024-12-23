@@ -147,6 +147,17 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 
 
 
+-- Propietats per poder veure la configuració per certificat del plugin de validació de firmes.
+--es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.ks.type=JKS
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES ('es.caib.distribucio.pluginsib.validatesignature.afirmacxf.authorization.ks.type',null,'Tipus de magatzem de claus per l''autenticació a Afirm@','VALID_SIGN',8,1,'TEXT',1);
+--es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.ks.password=****
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES ('es.caib.distribucio.pluginsib.validatesignature.afirmacxf.authorization.ks.password',null,'Password del magatzem de claus per l''autenticació a Afirm@','VALID_SIGN',9,1,'CREDENTIALS',1);
+--es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.ks.cert.alias=preprod-dgmad
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES ('es.caib.distribucio.pluginsib.validatesignature.afirmacxf.authorization.ks.cert.alias',null,'Alies del certificat a emprar del magatzem de claus per l''autenticació a Afirm@','VALID_SIGN',10,1,'TEXT',1);
+--es.caib.distribucio.plugins.validatesignature.afirmacxf.authorization.ks.cert.password=****
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES ('es.caib.distribucio.pluginsib.validatesignature.afirmacxf.authorization.ks.cert.password',null,'Password del certificat del magatzem de claus per l''autenticació a Afirm@','VALID_SIGN',11,1,'CREDENTIALS',1);
+
+
 ---- ROLLBACK
 --UPDATE DIS_CONFIG SET VALUE = 'es.caib.plugin.arxiu.caib.ArxiuPluginCaib' 
 --WHERE KEY LIKE 'es.caib.distribucio.plugin.arxiu.class';

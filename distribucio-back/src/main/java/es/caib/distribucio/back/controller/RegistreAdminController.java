@@ -498,7 +498,7 @@ public class RegistreAdminController extends BaseAdminController {
 			return response;
 		}
 		boolean correcte = false;
-		String missatge = null;
+		String missatge = "";
 		ContingutDto contingutDto = null;
 		RegistreDto registreDto = null;
 		try {
@@ -527,10 +527,10 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 		if (correcte) {
 			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(missatge.toString());
+			response.setMissatge(missatge);
 			
 		} else {
-			response = AjaxHelper.generarAjaxError(missatge.toString());
+			response = AjaxHelper.generarAjaxError(missatge);
 		}
 		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
 		return response;

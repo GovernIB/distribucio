@@ -435,34 +435,47 @@ public class EmailHelper {
 		return url.toString();
 	}
 
+	/** Mètode per consultar tots els usuaris amb permís sobre la bústia ja sigui per rol o per
+	 * permís directe. Si falla la consulta al plugin d'usuaris llavors no es propagar l'excepció per 
+	 * no interrompre la creació de l'anotació i es posa un missatge d'error als logs.
+	 * 
+	 * @param bustia
+	 * @return
+	 */
 	public List<UsuariDto> obtenirCodiDestinatarisPerEmail(BustiaEntity bustia) {
 		List<UsuariDto> destinataris = new ArrayList<UsuariDto>();
-		Set<String> usuaris = findUsuarisCodisAmbPermisReadPerContenidor(bustia);
-		for (String usuari: usuaris) {
-			DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
-			if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
-				UsuariEntity user = usuariRepository.findById(usuari).orElse(null);
-				UsuariDto u = new UsuariDto();
-				if (user != null) {
-					if (user.isRebreEmailsBustia()) {
-						u = conversioTipusHelper.convertir(user,UsuariDto.class);
-						if ((user.getEmailAlternatiu()!=null)&&(!user.getEmailAlternatiu().equals(""))) {
-							u.setEmailAlternatiu(user.getEmailAlternatiu());
-						} else {
-							u.setEmailAlternatiu(dadesUsuari.getEmail());
+		try {
+			Set<String> usuaris = findUsuarisCodisAmbPermisReadPerContenidor(bustia);
+			for (String usuari: usuaris) {
+				DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(usuari);
+				if (dadesUsuari != null && dadesUsuari.getEmail() != null) {
+					UsuariEntity user = usuariRepository.findById(usuari).orElse(null);
+					UsuariDto u = new UsuariDto();
+					if (user != null) {
+						if (user.isRebreEmailsBustia()) {
+							u = conversioTipusHelper.convertir(user,UsuariDto.class);
+							if ((user.getEmailAlternatiu()!=null)&&(!user.getEmailAlternatiu().equals(""))) {
+								u.setEmailAlternatiu(user.getEmailAlternatiu());
+							} else {
+								u.setEmailAlternatiu(dadesUsuari.getEmail());
+							}
+							u.setRebreEmailsAgrupats(user.isRebreEmailsAgrupats());
+							destinataris.add(u);
 						}
-						u.setRebreEmailsAgrupats(user.isRebreEmailsAgrupats());
+					} else {
+						u = new UsuariDto();
+						u.setCodi(usuari);
+						u.setEmail(dadesUsuari.getEmail());
+						u.setEmailAlternatiu(dadesUsuari.getEmail());
+						u.setRebreEmailsAgrupats(true);
 						destinataris.add(u);
 					}
-				} else {
-					u = new UsuariDto();
-					u.setCodi(usuari);
-					u.setEmail(dadesUsuari.getEmail());
-					u.setEmailAlternatiu(dadesUsuari.getEmail());
-					u.setRebreEmailsAgrupats(true);
-					destinataris.add(u);
 				}
 			}
+		} catch(Exception e) {
+			logger.error("Error consultant els usuaris amb permís per la bústia " + bustia.getId() + bustia.getNom() + " " + 
+						 	(bustia.getPare() != null ? "(" + bustia.getPare().getNom() + ") " : "") + ": " + e.toString(), 
+						 e);
 		}
 		return destinataris;
 	}
