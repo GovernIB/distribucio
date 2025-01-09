@@ -60,7 +60,7 @@ public class AjaxProcedimentsController extends BaseAdminController{
 			String msgError = "No s'ha pogut consultar el text " + text + ": " + e.getMessage();
 			logger.error(msgError);
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);		
+		EntitatDto entitatActual = getEntitatActual(request);		
 		List<ProcedimentDto> procediments = procedimentService.findByNomOrCodiSia(
 				entitatActual.getId(), 
 				decodedToUTF8);
