@@ -56,11 +56,6 @@
 	</style>
 	
 	<script>
-		function actualitzarProcediments() {
-			$("#span-refresh").addClass('fa-spin');
-			$("#actualitzarProcediments").addClass('disabled');
-		}
-
 		function formatSelectUnitat(item) {
 			if (!item.id) {
 			    return item.text;
@@ -112,7 +107,15 @@
 <script id="botonsTemplate" type="text/x-jsrender">
 	<c:if test="${isRolActualAdministrador}">
 		<div class="f-right"> 
-			<a href="<c:url value='/procediment/actualitzar'/>" onclick="actualitzarProcediments()" id="actualitzarProcediments" class="btn btn-default"><span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/></a>
+			<a href="<c:url value='/procediment/actualitzar'/>" 
+					id="actualitzarProcediments" 
+					data-toggle="modal" 
+					data-maximized="true" 
+					data-refresh-tancar="true" 
+					data-data-table-id="procediments" 
+					class="btn btn-default">
+				<span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/> ...
+			</a>
 		</div>
 	</c:if>
 </script>

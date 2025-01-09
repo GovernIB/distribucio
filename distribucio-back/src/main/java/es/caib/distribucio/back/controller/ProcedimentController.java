@@ -3,6 +3,8 @@ package es.caib.distribucio.back.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 
 /**
@@ -74,33 +77,6 @@ public class ProcedimentController extends BaseAdminController{
 		
 	}
 	
-	
-	@RequestMapping(value = "/actualitzar")
-	public String actualitzar(
-			HttpServletRequest request, 
-			Model model) throws Exception {
-		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
-		try {
-			procedimentService.findAndUpdateProcediments(entitatActual.getId());
-			
-			MissatgesHelper.success(
-					request, 
-					getMessage(
-							request, 
-							"procediment.controller.actualitzar.ok"));
-		} catch (Exception e) {
-			MissatgesHelper.error(
-					request, 
-					getMessage(
-							request, 
-							"procediment.controller.actualitzar.error", 
-							new Object[] {e.getMessage()}));
-		}
-		return "redirect:/procediment";
-	}
-	
-	
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
@@ -135,5 +111,67 @@ public class ProcedimentController extends BaseAdminController{
 		return procedimentFiltreCommand;
 	}
 	
-
+	/** Mètode per obrir la modal i iniciar o veure el progrés de l'actualització de procediments.
+	 * 
+	 * @param request
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/actualitzar")
+	public String actualitzar(
+			HttpServletRequest request, 
+			Model model) throws Exception {
+		
+		EntitatDto entitat = getEntitatActualComprovantPermisAdminLectura(request);
+		
+		model.addAttribute(
+				"isUpdatingProcediments", 
+				procedimentService.isUpdatingProcediments(entitat.getId()));
+		
+		return "procedimentUpdateForm";
+	}
+	
+	@RequestMapping(value = "/actualitzar", method = RequestMethod.POST)
+	public String actualitzarPost(
+			HttpServletRequest request, 
+			Model model) throws Exception {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
+		try {
+			procedimentService.findAndUpdateProcediments(entitatActual.getId());
+			MissatgesHelper.success(
+					request, 
+					getMessage(
+							request, 
+							"procediment.controller.actualitzar.ok"));
+		} catch (Exception e) {
+			String errMsg = getMessage(
+					request, 
+					"procediment.controller.actualitzar.error", 
+					new Object[] {e.getMessage()});
+			logger.error(errMsg);
+			MissatgesHelper.error(
+					request, 
+					errMsg);
+		}
+		return getAjaxControllerReturnValueSuccess(
+				request,
+				"procedimentUpdateForm",
+				"procediment.controller.actualitzar.ok");
+	}
+	
+	
+	@RequestMapping(value = "/actualitzar/progres", method = RequestMethod.GET)
+	@ResponseBody
+	public ProcedimentUpdateProgressDto getProgresActualitzacio(
+			HttpServletRequest request) {
+		
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		
+		return procedimentService.getProgresActualitzacio(entitatActual.getId());
+	}
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProcedimentController.class);
 }

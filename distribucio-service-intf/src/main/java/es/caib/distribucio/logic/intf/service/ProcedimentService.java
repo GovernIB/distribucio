@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
 
 /**
  * Declaració dels mètodes per a gestionar procediments.
@@ -45,5 +46,17 @@ public interface ProcedimentService {
 	 * 
 	 */
 	public List<ProcedimentDto> findByNomOrCodiSia(Long entitatId, String nom);
+
+	/** Mètode per consultar si hi ha cap actualització en curs per actualitzar procediments.
+	 * 
+	 * @return
+	 */
+	public boolean isUpdatingProcediments(Long entitatId);
+
+	/** Mètode per consultar l'estat del progrés d'actualització, retorna un objecte amb la informació.
+	 * 
+	 * @return
+	 */
+	public ProcedimentUpdateProgressDto getProgresActualitzacio(Long entitatId);
 
 }

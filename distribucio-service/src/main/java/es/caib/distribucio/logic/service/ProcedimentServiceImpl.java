@@ -24,6 +24,8 @@ import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto.Estat;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -57,6 +59,9 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+	
+	/** Progrés d'acualització actual.*/
+	private static Map<Long, ProcedimentUpdateProgressDto> progressosActualitzacio = new HashMap<Long, ProcedimentUpdateProgressDto>();
 
 	@Override
 	@Transactional(readOnly = true) 
@@ -93,15 +98,30 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		return llistaProcediments;
 	}
 
+	/** Mètode per trobar i actualitzar els procediments. Es pot fer manualment o des de la tasca
+	 * programada.
+	 */
 	@Override
 	@Transactional	
 	public void findAndUpdateProcediments(Long entitatId) throws Exception {
-		int max_intents = 5;
+		
+		ProcedimentUpdateProgressDto progres = null;
+		// Comprova si hi ha una altre instància del procés en execució
+		if (isUpdatingProcediments(entitatId)) {
+			logger.debug("Ja existeix un altre procés que està executant l'actualització de procediments per l'entitat " + entitatId + ".");
+			return;	// S'està executant l'actualitzacio
+		} else {
+			progres = new ProcedimentUpdateProgressDto();
+			progressosActualitzacio.put(entitatId, progres);
+		}
+
+		// Inicialitza i consulta els procediments		
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 		ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
 		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
 		logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
-		
+		progres.setEstat(Estat.INICIALITZANT);
+
 		// Marca'm els procediments de Distribució com a extingits
 		List<ProcedimentEntity> llistaProcedimentsDistribucio = procedimentRepository.findByEntitat(entitat);
 		for (ProcedimentEntity procedimentDistribucio : llistaProcedimentsDistribucio) {
@@ -116,10 +136,14 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 			procedimentRepository.save(procedimentDistribucio);
 		}
 		
-		// Consulta l'arbre
+		// Consulta els procediments dins l'arbre
 		ArbreDto<UnitatOrganitzativaDto> unitatsArbre = 
 				unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
+		progres.setEstat(Estat.ACTUALITZANT);
+		progres.setUnitatsTotal(unitatsArbre.toDadesList().size());
+		
 		int reintents = 0;
+		int max_intents = 5;
 		if (unitatsArbre != null) {
 			logger.debug("Actualitzant els procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + unitatsArbre.toList().size() + " unitats.");
 			List<ArbreNodeDto<UnitatOrganitzativaDto>> unitats = new ArrayList<>();
@@ -133,7 +157,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							unitat, 
 							nodesUosAmbError, 
 							reintents, 
-							max_intents);
+							max_intents,
+							progres);
 				}
 				unitats = nodesUosAmbError;
 				reintents++;
@@ -148,10 +173,14 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 					if (i < nodesUosAmbError.size()-1) {
 						errMsg.append(", ");
 					}
-				}			
+				}
 				errMsg.append("]");
+				progres.setEstat(ProcedimentUpdateProgressDto.Estat.ERROR);
+				progres.setErrorMsg(errMsg.toString());
 				throw new Exception(errMsg.toString());
-			}	
+			} else {
+				progres.setEstat(ProcedimentUpdateProgressDto.Estat.FINALITZAT);
+			}
 		}		
 	}
 	
@@ -161,7 +190,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 			ArbreNodeDto<UnitatOrganitzativaDto> nodeUo, 
 			List<ArbreNodeDto<UnitatOrganitzativaDto>> nodesUosAmbError, 
 			int reintents, 
-			int max_intents) {
+			int max_intents,
+			ProcedimentUpdateProgressDto progres) {
 
 		if (nodeUo != null) {
 			UnitatOrganitzativaDto uoDto = nodeUo.getDades();	
@@ -172,6 +202,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 				} else {
 					logger.debug("No hi ha procediments associats al codiDir3 " + uoDto.getCodi());
 				}
+				// Compta la unitat com a processada en el progrés de l'actualització
+				progres.incUnitatsProcessades();
 			}catch (Exception e) {
 				logger.error("Error consultant els procediments de la UO " + uoDto.getCodiAndNom() + " intent " + reintents + " de " + max_intents + ": " + e.getMessage(), e);
 				nodesUosAmbError.add(nodeUo);
@@ -183,7 +215,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							fill, 
 							nodesUosAmbError, 
 							reintents, 
-							max_intents);
+							max_intents,
+							progres);
 				}
 			}
 		}
@@ -247,6 +280,19 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 				ProcedimentDto.class);
 	}
 
+	@Override
+	public boolean isUpdatingProcediments(Long entitatId) {
+		ProcedimentUpdateProgressDto progres = progressosActualitzacio.get(entitatId);
+		return progres != null 
+				&& progres.getEstat() != ProcedimentUpdateProgressDto.Estat.FINALITZAT
+				&& progres.getEstat() != ProcedimentUpdateProgressDto.Estat.ERROR;
+	}
+	
+	@Override
+	public ProcedimentUpdateProgressDto getProgresActualitzacio(Long entitatId) {
+		return progressosActualitzacio.get(entitatId);
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentServiceImpl.class);
 
 }
