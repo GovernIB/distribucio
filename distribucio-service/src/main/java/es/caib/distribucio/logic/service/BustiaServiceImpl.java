@@ -1682,7 +1682,7 @@ public class BustiaServiceImpl implements BustiaService {
 					
 //					### Tornar a marcar l'anotació com a pendent si estava processada i es reb per duplicat ###
 					registre = (RegistreEntity)registrePerReenviar;
-					if (!registre.getPendent()) {
+					if (!registre.getPendent() && ! isMantenirEstatReenviades()) {
 						registresAmbCanviEstat.put(registre, contingutMovimentEntity);
 					}
 //					### Actualitzar històric i crear coa correus per cada registre a crear ###
@@ -3200,6 +3200,9 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return configHelper.getAsBoolean("es.caib.distribucio.assignar.anotacions");
 	}
 	
+	private boolean isMantenirEstatReenviades() {
+		return configHelper.getAsBoolean("es.caib.distribucio.anotacions.reenviades.mantenir.estat");
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
