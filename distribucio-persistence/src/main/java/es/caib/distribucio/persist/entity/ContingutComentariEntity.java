@@ -11,6 +11,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -35,7 +36,9 @@ public class ContingutComentariEntity extends DistribucioAuditable<Long> {
 			name = "contingut_id",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_comment_cont_fk"))
 	protected ContingutEntity contingut;
-	@Column(name = "text", length = 4000)
+	
+	@Lob
+	@Column(name = "text")
 	protected String text;
 
 	public ContingutEntity getContingut() {

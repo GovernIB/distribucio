@@ -1109,9 +1109,6 @@ public class ContingutHelper {
 				false,
 				false,
 				true);
-		//truncam a 1024 caracters
-		if (text.length() > 1024)
-			text = text.substring(0, 1024);
 		String origianlText = text;
 		String[] textArr = text.split(" ");
 		for (String paraula: textArr) {
