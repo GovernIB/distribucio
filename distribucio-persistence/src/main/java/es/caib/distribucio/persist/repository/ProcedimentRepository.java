@@ -47,6 +47,11 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 			@Param("estat") ProcedimentEstatEnumDto estat,
 			Pageable pageable);
 	
+	@Query( "from " + 
+			"ProcedimentEntity pro " + 
+			"where pro.codi = :codi ")
+	ProcedimentEntity findByCodi(
+			@Param("codi") String codi);
 	
 	@Query( "from " + 
 			"ProcedimentEntity pro " + 
@@ -100,5 +105,12 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 	List<ProcedimentEntity> findByCodiUnitatOrganitzativa(
 			@Param("entitatId") Long entitatId, 
 			@Param("unitatOrganitzativaCodi") String unitatOrganitzativaCodi);
+	
+	/** Troba tots els procediments per estat.
+	 * 
+	 * @param estat
+	 * @return Llistat de procediments que tenen aquell estat.
+	 */
+	List<ProcedimentEntity> findAllByEstat(ProcedimentEstatEnumDto estat);
 
 }

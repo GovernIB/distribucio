@@ -11,6 +11,7 @@ import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 
 /**
  * Implementació del plugin de consulta de procediments emprant MOCK.
@@ -42,6 +43,16 @@ public class ProcedimentPluginMock implements ProcedimentPlugin {
 		response.setCodiSia(codiSia);
 		response.setNom("Procediment mock " + codiSia);
 		return response;
+	}
+	
+	@Override
+	public UnitatAdministrativa findUnitatAdministrativaAmbCodi(String codi) throws SistemaExternException {
+		UnitatAdministrativa ua = new UnitatAdministrativa();
+		ua.setCodi(codi);
+		ua.setCodiDir3("123456789");
+		ua.setNom("Unitat Administrativa Mock");
+		ua.setPareCodi(null);
+		return ua;
 	}
 
 }

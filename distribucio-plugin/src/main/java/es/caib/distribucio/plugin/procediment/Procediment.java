@@ -3,6 +3,10 @@
  */
 package es.caib.distribucio.plugin.procediment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import es.caib.distribucio.plugin.Link;
+
 /**
  * Informació d'un procediment.
  * 
@@ -14,6 +18,8 @@ public class Procediment {
 	private String codigoSIA;
 	private String codigoSia;
 	private String nombre;
+	@JsonProperty("link_unidadAdministrativa")
+	private Link unidadAdministrativa;
 
 	public String getCodigo() {
 		return codigo;
@@ -38,6 +44,12 @@ public class Procediment {
 	}
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+	public Link getUnidadAdministrativa() {
+		return unidadAdministrativa;
+	}
+	public void setUnidadAdministrativa(Link unidadAdministrativa) {
+		this.unidadAdministrativa = unidadAdministrativa;
 	}
 
 }

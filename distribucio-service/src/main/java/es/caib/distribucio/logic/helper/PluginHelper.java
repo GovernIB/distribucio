@@ -51,6 +51,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
@@ -1077,6 +1078,46 @@ public class PluginHelper {
 	
 	public boolean isServeiPluginActiu() {
 		return getServeiPlugin() != null;
+	}
+	
+	public UnitatAdministrativa procedimentGetUnitatAdministrativa(String codi) {
+		String accioDescripcio = "Consulta de la unitat organitzativa per codi " + codi;
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codi", codi);
+		
+		long t0 = System.currentTimeMillis();
+		UnitatAdministrativa unitatAdministrativa = null;
+		try {
+			unitatAdministrativa = getProcedimentPlugin().findUnitatAdministrativaAmbCodi(codi);
+
+			accioParams.put("resultat", unitatAdministrativa != null ? 
+					unitatAdministrativa.getCodiDir3() + " " + unitatAdministrativa.getNom() 
+					: "(no trobada)");
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					"USUARI_INTEGRACIO",
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);							
+		} catch (Exception ex) {
+			String errorDescripcio = "Error consultant la unitat organitzativa amb codi " + codi+ ": " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					"NUMERO_REGISTRE",
+					accioDescripcio,
+					"USUARI_INTEGRACIO",
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+//			throw tractarExcepcioEnSistemaExtern(
+//					IntegracioHelper.INTCODI_PROCEDIMENT,
+//					errorDescripcio, 
+//					ex);
+		}
+		return unitatAdministrativa;
 	}
 
 	public List<Procediment> procedimentFindByCodiDir3(

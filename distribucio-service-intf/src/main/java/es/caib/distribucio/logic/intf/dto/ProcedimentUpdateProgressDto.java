@@ -21,9 +21,9 @@ public class ProcedimentUpdateProgressDto {
 	}
 	Estat estat;
 	
-	/** Número total d'unitats en l'arbre d'unitats. */
-	int unitatsTotal = 0;
-	int unitatsProcessades = 0;
+	/** Número total de procediments que s'han de processar. */
+	int procedimentsTotal = 0;
+	int procedimentsProcessats = 0;
 	
 	/** Comptador de progrés de 0 a 100 per la barra de progrés. */
 	int progres = 0;
@@ -32,9 +32,9 @@ public class ProcedimentUpdateProgressDto {
 	
 	/// Comptadors pel resum
 	public void incUnitatsProcessades() { 
-		unitatsProcessades++;
-		if (unitatsTotal > 0) {
-			progres = unitatsProcessades *100 / unitatsTotal;
+		procedimentsProcessats++;
+		if (procedimentsTotal > 0) {
+			progres = procedimentsProcessats *100 / procedimentsTotal;
 		}
 	}
 }

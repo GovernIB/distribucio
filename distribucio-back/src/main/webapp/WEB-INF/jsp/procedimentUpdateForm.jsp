@@ -124,8 +124,8 @@
 					case 'ERROR': estat = "<spring:message code='procediment.actualitzacio.progres.estat.ERROR'></spring:message>"; break;
 				}
 				$('#estat').html(estat);
-				$('#unitatsTotal').html(data.unitatsTotal);
-				$('#unitatsProcessades').html(data.unitatsProcessades);
+				$('#procedimentsTotal').html(data.procedimentsTotal);
+				$('#procedimentsProcessats').html(data.procedimentsProcessats);
 				if (data.errorMsg != null) {					
 					$('#divErrMsg').show();
 					$('#errMsg').html(data.errorMsg);
@@ -153,10 +153,10 @@
 			<ul>
 				<li><spring:message code="procediment.actualitzacio.progres.estat"></spring:message>: 
 					<span id="estat">-</span></li>
-				<li><spring:message code="procediment.actualitzacio.progres.unitatsTotals"></spring:message>: 
-					<span id="unitatsTotal">-</span></li>
-				<li><spring:message code="procediment.actualitzacio.progres.unitatsProcessades"></spring:message>: 
-					<span id="unitatsProcessades">-</span></li>
+				<li><spring:message code="procediment.actualitzacio.progres.procedimentsTotal"></spring:message>: 
+					<span id="procedimentsTotal">-</span></li>
+				<li><spring:message code="procediment.actualitzacio.progres.procedimentsProcessats"></spring:message>: 
+					<span id="procedimentsProcessats">-</span></li>
 			</ul>
 			<div id="divErrMsg" class="alert alert-danger" style="display: none;">
 				<span class="fa fa-warning text-danger"></span>

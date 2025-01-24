@@ -38,5 +38,7 @@ public interface ProcedimentPlugin extends IntegracioPlugin {
 	 *            Si es produeix un error al consultar el procediment.
 	 */
 	public ProcedimentDto findAmbCodiSia(String codiSia) throws SistemaExternException;
+	
+	public UnitatAdministrativa findUnitatAdministrativaAmbCodi(String codi) throws SistemaExternException;
 
 }

@@ -22,9 +22,12 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
+import es.caib.distribucio.plugin.RespostaUnitatAdministrativa;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.UnitatAdministrativaRolsac;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 
 /**
@@ -172,6 +175,45 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		return dto;
 	}
 
+	@Override
+	public UnitatAdministrativa findUnitatAdministrativaAmbCodi(String codi) throws SistemaExternException {
+
+		logger.debug("Consulta de la unitat administrativa amb codi (" +
+				"codi=" + codi + ")");
+
+		UnitatAdministrativa unitatAdministrativa = null;
+		try {
+			String urlAmbMetode = getRolsacServiceUrl() + "/unidades_administrativas/" + codi;
+			
+			Client jerseyClient = getJerseyClient();
+			
+			String json = jerseyClient.
+					resource(urlAmbMetode).
+					post(String.class);
+			
+			RespostaUnitatAdministrativa resposta = mapper.readValue(json, RespostaUnitatAdministrativa.class);
+			if (resposta.getResultado() != null && !resposta.getResultado().isEmpty()) {
+				UnitatAdministrativaRolsac unitatAdministrativaRolsac = resposta.getResultado().get(0);
+				unitatAdministrativa = new UnitatAdministrativa();
+				unitatAdministrativa.setCodi(String.valueOf(unitatAdministrativaRolsac.getCodigo()));
+				unitatAdministrativa.setCodiDir3(unitatAdministrativaRolsac.getCodigoDIR3());
+				unitatAdministrativa.setNom(unitatAdministrativaRolsac.getNombre());
+				if (unitatAdministrativaRolsac.getPadre() != null) {
+					unitatAdministrativa.setPareCodi(unitatAdministrativaRolsac.getPadre().getCodigo());					
+				}
+			}
+		} catch (Exception ex) {
+			throw new SistemaExternException(
+					"No s'ha pogut consultar la unitat administrativa amb codi " + codi + " via REST: " + ex.toString(),
+					ex);
+		}
+		return unitatAdministrativa;
+	}
+	
+	public String getRolsacServiceUrl() {
+		return getProperty(
+				"es.caib.distribucio.plugin.rolsac.service.url");
+	}
 	
 	public String getServiceUrl() {
 		return getProperty(
