@@ -9,7 +9,7 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import lombok.experimental.Delegate;
 
@@ -53,7 +53,7 @@ public class ProcedimentServiceEjb extends AbstractServiceEjb<ProcedimentService
 	}
 
 	@Override
-	public ProcedimentUpdateProgressDto getProgresActualitzacio(Long entitatId) {
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
 		return delegateService.getProgresActualitzacio(entitatId);
 	}
 

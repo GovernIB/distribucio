@@ -1075,11 +1075,7 @@ public class PluginHelper {
 	public boolean isProcedimentPluginActiu() {
 		return getProcedimentPlugin() != null;
 	}
-	
-	public boolean isServeiPluginActiu() {
-		return getServeiPlugin() != null;
-	}
-	
+		
 	public UnitatAdministrativa procedimentGetUnitatAdministrativa(String codi) {
 		String accioDescripcio = "Consulta de la unitat organitzativa per codi " + codi;
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -1160,6 +1156,10 @@ public class PluginHelper {
 		}
 	}
 	
+	public boolean isServeiPluginActiu() {
+		return getServeiPlugin() != null;
+	}
+
 	public List<Servei> serveiFindByCodiDir3(
 			String codiDir3) {
 		String accioDescripcio = "Consulta dels serveis pel codi DIR3 " + codiDir3;
@@ -1198,6 +1198,51 @@ public class PluginHelper {
 					errorDescripcio,
 					ex);
 		}
+	}
+	
+	/** Consulta de l'unitat organitzativa d'un servei.
+	 * 
+	 * @param codi
+	 * @return
+	 */
+	public UnitatAdministrativa serveiGetUnitatAdministrativa(String codi) {
+		String accioDescripcio = "Consulta de la unitat organitzativa per codi " + codi;
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codi", codi);
+		
+		long t0 = System.currentTimeMillis();
+		UnitatAdministrativa unitatAdministrativa = null;
+		try {
+			unitatAdministrativa = getProcedimentPlugin().findUnitatAdministrativaAmbCodi(codi);
+
+			accioParams.put("resultat", unitatAdministrativa != null ? 
+					unitatAdministrativa.getCodiDir3() + " " + unitatAdministrativa.getNom() 
+					: "(no trobada)");
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					accioDescripcio,
+					"USUARI_INTEGRACIO",
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);							
+		} catch (Exception ex) {
+			String errorDescripcio = "Error consultant la unitat organitzativa amb codi " + codi+ ": " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_PROCEDIMENT,
+					"NUMERO_REGISTRE",
+					accioDescripcio,
+					"USUARI_INTEGRACIO",
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+//			throw tractarExcepcioEnSistemaExtern(
+//					IntegracioHelper.INTCODI_PROCEDIMENT,
+//					errorDescripcio, 
+//					ex);
+		}
+		return unitatAdministrativa;
 	}
 	
 	public ProcedimentDto procedimentFindByCodiSia(String codiSia) {

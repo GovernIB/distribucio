@@ -7,19 +7,19 @@
 
 <html>
 <head>
-	<title><spring:message code="procediment.actualitzacio.titol"/></title>
+	<title><spring:message code="servei.actualitzacio.titol"/></title>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>	
 	<dis:modalHead/>
 	
 	<script>
 
 		var intervalProgres;
-		var title="<spring:message code="procediment.actualitzacio.titol"/>";
-		var content="<spring:message code="procediment.actualitzacio.cancelarActu"/>";
+		var title="<spring:message code="servei.actualitzacio.titol"/>";
+		var content="<spring:message code="servei.actualitzacio.cancelarActu"/>";
 		var acceptar="<spring:message code="comu.boto.acceptar"/>";
 		var cancelar="<spring:message code="comu.boto.cancelar"/>";
 
-		var isUpdating = '${isUpdatingProcediments}' == 'true';
+		var isUpdating = '${isUpdatingServeis}' == 'true';
 		
 		$(document).ready(function(e) {
 			 
@@ -65,7 +65,7 @@
 				tancar = true;
 			}
 			if (tancar) {
-				// Recarrega la finestra de procediments
+				// Recarrega la finestra de serveis
             	window.top.location.reload();
 			} else {
 				e.preventDefault();
@@ -81,7 +81,7 @@
 		function getProgres() {
 			$.ajax({
 				type: 'GET',
-				url: "<c:url value='/procediment/actualitzar/progres'/>",
+				url: "<c:url value='/servei/actualitzar/progres'/>",
 				success: function(data) {
 					if (data) {
 						$('#divErrMsg').hide();
@@ -118,14 +118,14 @@
 			if (data) {
 				let estat = '-';
 				switch(data.estat) {
-					case 'INICIALITZANT': estat = "<spring:message code='procediment.actualitzacio.progres.estat.INICIALITZANT'></spring:message>"; break;
-					case 'ACTUALITZANT': estat = "<spring:message code='procediment.actualitzacio.progres.estat.ACTUALITZANT'></spring:message>"; break;
-					case 'FINALITZAT': estat = "<spring:message code='procediment.actualitzacio.progres.estat.FINALITZAT'></spring:message>"; break;
-					case 'ERROR': estat = "<spring:message code='procediment.actualitzacio.progres.estat.ERROR'></spring:message>"; break;
+					case 'INICIALITZANT': estat = "<spring:message code='servei.actualitzacio.progres.estat.INICIALITZANT'></spring:message>"; break;
+					case 'ACTUALITZANT': estat = "<spring:message code='servei.actualitzacio.progres.estat.ACTUALITZANT'></spring:message>"; break;
+					case 'FINALITZAT': estat = "<spring:message code='servei.actualitzacio.progres.estat.FINALITZAT'></spring:message>"; break;
+					case 'ERROR': estat = "<spring:message code='servei.actualitzacio.progres.estat.ERROR'></spring:message>"; break;
 				}
 				$('#estat').html(estat);
-				$('#procedimentsTotal').html(data.total);
-				$('#procedimentsProcessats').html(data.processats);
+				$('#serveisTotal').html(data.total);
+				$('#serveisProcessats').html(data.processats);
 				if (data.errorMsg != null) {					
 					$('#divErrMsg').show();
 					$('#errMsg').html(data.errorMsg);
@@ -138,25 +138,25 @@
 	</script>
 </head>
 <body>
-	<c:if test="${not isUpdatingProcediments}">
+	<c:if test="${not isUpdatingServeis}">
 		<div class="confirmacio">
-			<h4><spring:message code="procediment.actualitzacio.confirmacio"/></h4>
+			<h4><spring:message code="servei.actualitzacio.confirmacio"/></h4>
 		</div>
 	</c:if>
 
-	<c:set var="formAction"><dis:modalUrl value="/procediment/actualitzar"/></c:set>
+	<c:set var="formAction"><dis:modalUrl value="/servei/actualitzar"/></c:set>
 	<form:form action="${formAction}" id="formUpdateAuto" method="post" cssClass="form-horizontal" role="form">
 		<div class="progress" style="display: none">
 			<div id="bar" class="progress-bar" role="progressbar progress-bar-striped active" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
 		</div>
 		<div id="actualitzacioInfo" style="overflow: auto; max-height: 80vh;">
 			<ul>
-				<li><spring:message code="procediment.actualitzacio.progres.estat"></spring:message>: 
+				<li><spring:message code="servei.actualitzacio.progres.estat"></spring:message>: 
 					<span id="estat">-</span></li>
-				<li><spring:message code="procediment.actualitzacio.progres.procedimentsTotal"></spring:message>: 
-					<span id="procedimentsTotal">-</span></li>
-				<li><spring:message code="procediment.actualitzacio.progres.procedimentsProcessats"></spring:message>: 
-					<span id="procedimentsProcessats">-</span></li>
+				<li><spring:message code="servei.actualitzacio.progres.serveisTotal"></spring:message>: 
+					<span id="serveisTotal">-</span></li>
+				<li><spring:message code="servei.actualitzacio.progres.serveisProcessats"></spring:message>: 
+					<span id="serveisProcessats">-</span></li>
 			</ul>
 			<div id="divErrMsg" class="alert alert-danger" style="display: none;">
 				<span class="fa fa-warning text-danger"></span>

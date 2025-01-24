@@ -6,7 +6,7 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 
 /**
  * Declaració dels mètodes per a gestionar procediments.
@@ -57,6 +57,6 @@ public interface ProcedimentService {
 	 * 
 	 * @return
 	 */
-	public ProcedimentUpdateProgressDto getProgresActualitzacio(Long entitatId);
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId);
 
 }

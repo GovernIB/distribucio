@@ -100,5 +100,14 @@ public interface ServeiRepository extends JpaRepository<ServeiEntity, Long>{
 	List<ServeiEntity> findByCodiUnitatOrganitzativa(
 			@Param("entitatId") Long entitatId, 
 			@Param("unitatOrganitzativaCodi") String unitatOrganitzativaCodi);
-
+	
+	/** Troba tots els serveis per entitat i estat.
+	 * 
+	 * @param entitat
+	 * @param estat
+	 * @return Llistat de serveis que tenen aquell estat per l'entitat.
+	 */
+	List<ServeiEntity> findAllByEntitatAndEstat(
+			EntitatEntity entitat, 
+			ServeiEstatEnumDto estat);
 }

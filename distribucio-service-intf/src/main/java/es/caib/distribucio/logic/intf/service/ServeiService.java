@@ -4,6 +4,7 @@ import java.util.List;
 
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiFiltreDto;
 
@@ -45,5 +46,17 @@ public interface ServeiService {
 	 * 
 	 */
 	public List<ServeiDto> findByNomOrCodiSia(Long entitatId, String nom);
+
+	/** Mètode per consultar si hi ha cap actualització en curs per actualitzar serveis.
+	 * 
+	 * @return
+	 */
+	public boolean isUpdatingServeis(Long entitatId);
+
+	/** Mètode per consultar l'estat del progrés d'actualització, retorna un objecte amb la informació.
+	 * 
+	 * @return
+	 */
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId);
 
 }

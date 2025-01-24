@@ -9,6 +9,7 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiFiltreDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import lombok.experimental.Delegate;
 
@@ -44,6 +45,16 @@ public class ServeiServiceEjb extends AbstractServiceEjb<ServeiService> implemen
 	@Override
 	public List<ServeiDto> findByNomOrCodiSia(Long entitatId, String nom) {
 		return delegateService.findByNomOrCodiSia(entitatId, nom);
+	}
+
+	@Override
+	public boolean isUpdatingServeis(Long entitatId) {
+		return delegateService.isUpdatingServeis(entitatId);
+	}
+
+	@Override
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
+		return delegateService.getProgresActualitzacio(entitatId);
 	}
 
 	protected void setDelegateService(ServeiService delegateService) {

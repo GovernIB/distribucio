@@ -51,5 +51,4 @@ public class Procediment {
 	public void setUnidadAdministrativa(Link unidadAdministrativa) {
 		this.unidadAdministrativa = unidadAdministrativa;
 	}
-
 }

@@ -15,14 +15,13 @@ import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.ProcedimentHelper;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto.Estat;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto.Estat;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ProcedimentEntity;
@@ -46,8 +45,6 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
 	private PluginHelper pluginHelper;
@@ -59,7 +56,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	private ProcedimentHelper procedimentHelper;
 	
 	/** Progrés d'acualització actual.*/
-	private static Map<Long, ProcedimentUpdateProgressDto> progressosActualitzacio = new HashMap<Long, ProcedimentUpdateProgressDto>();
+	private static Map<Long, UpdateProgressDto> progressosActualitzacio = new HashMap<Long, UpdateProgressDto>();
 
 	@Override
 	@Transactional(readOnly = true) 
@@ -104,13 +101,13 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	public void findAndUpdateProcediments(Long entitatId) throws Exception {
 		
 		String msgInfo;
-		ProcedimentUpdateProgressDto progres = null;
+		UpdateProgressDto progres = null;
 		// Comprova si hi ha una altre instància del procés en execució
 		if (isUpdatingProcediments(entitatId)) {
 			logger.debug("Ja existeix un altre procés que està executant l'actualització de procediments per l'entitat " + entitatId + ".");
 			return;	// S'està executant l'actualitzacio
 		} else {
-			progres = new ProcedimentUpdateProgressDto();
+			progres = new UpdateProgressDto();
 			progressosActualitzacio.put(entitatId, progres);
 		}
 		
@@ -139,7 +136,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		
 		// Comprova si hi ha hagut errors consultant els procediments
 		if (errorConsultaProcediments) {
-			progres.setEstat(ProcedimentUpdateProgressDto.Estat.ERROR);
+			progres.setEstat(UpdateProgressDto.Estat.ERROR);
 			throw new Exception(errMsg, exConsultaProcediments);
 		}
 		if (procedimentList == null || procedimentList.isEmpty()) {
@@ -152,7 +149,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		msgInfo="S'han obtingut " + procedimentList.size() + " procediments vigents a Distribucio.";
 		logger.info(msgInfo);
 		progres.setEstat(Estat.ACTUALITZANT);
-		progres.setProcedimentsTotal(procedimentList.size());
+		progres.setTotal(procedimentList.size());
 		
 		// Crea un Map amb els procediments de Distribucio per codi
 		Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
@@ -161,7 +158,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		}
 		
 		// Deshabilita els procediments que no hagi retornat Distribucio
-		procedimentHelper.actualtizarProcedimentsNoVigents(procedimentMap);
+		procedimentHelper.actualtizarProcedimentsNoVigents(entitat, procedimentMap);
 		
 		// Processa tots els procediments, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
 		msgInfo = "Es procedeix a processar els " + procedimentList.size() + " procediments consultats a Distribucio.";
@@ -172,9 +169,9 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		for (Procediment procediment : procedimentList) {
 			// Tracta el procediment en una transacció a part.
 			procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
-			progres.incUnitatsProcessades();
+			progres.incProcessats();
 		}
-		progres.setEstat(ProcedimentUpdateProgressDto.Estat.FINALITZAT);
+		progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
 	}
 
 	@Transactional
@@ -237,14 +234,14 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	public boolean isUpdatingProcediments(Long entitatId) {
-		ProcedimentUpdateProgressDto progres = progressosActualitzacio.get(entitatId);
+		UpdateProgressDto progres = progressosActualitzacio.get(entitatId);
 		return progres != null 
-				&& progres.getEstat() != ProcedimentUpdateProgressDto.Estat.FINALITZAT
-				&& progres.getEstat() != ProcedimentUpdateProgressDto.Estat.ERROR;
+				&& progres.getEstat() != UpdateProgressDto.Estat.FINALITZAT
+				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
 	}
 	
 	@Override
-	public ProcedimentUpdateProgressDto getProgresActualitzacio(Long entitatId) {
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
 		return progressosActualitzacio.get(entitatId);
 	}
 	

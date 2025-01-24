@@ -38,8 +38,6 @@ public class ProcedimentHelper {
 	private ProcedimentRepository procedimentRepository;
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
-//	@Autowired
-//	private ParametreRepository parametreRepository;
 
 	@Resource
 	private PluginHelper pluginHelper;
@@ -50,6 +48,7 @@ public class ProcedimentHelper {
 	 */
 	@Transactional( propagation = Propagation.REQUIRES_NEW)
 	public void actualtizarProcedimentsNoVigents(
+			EntitatEntity entitatActual,
 			Map<String, Procediment> procedimentMap) {		
 
 		String msgInfo;		
@@ -57,7 +56,7 @@ public class ProcedimentHelper {
 		logger.info(msgInfo);
 		
 		// Consulta els procediments vigents
-		List<ProcedimentEntity> procedimentsVigents = procedimentRepository.findAllByEstat(ProcedimentEstatEnumDto.VIGENT);
+		List<ProcedimentEntity> procedimentsVigents = procedimentRepository.findAllByEntitatAndEstat(entitatActual, ProcedimentEstatEnumDto.VIGENT);
 		msgInfo = "Actualment a la BBDD hi ha " + procedimentsVigents.size() + " procediments vigents.";
 		logger.info(msgInfo);
 		
@@ -109,7 +108,7 @@ public class ProcedimentHelper {
 					procediment,
 					entitatEntity.getCodiDir3());		
 			// Consulta el procediment a la BBDD
-			ProcedimentEntity procedimentEntity = procedimentRepository.findByCodi(procediment.getCodigo());
+			ProcedimentEntity procedimentEntity = procedimentRepository.findByCodi(entitatEntity.getId(), procediment.getCodigo());
 			if (procedimentEntity == null) {
 				// Crea el nou procediment
 				procedimentEntity = ProcedimentEntity.getBuilder(

@@ -11,20 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.logic.intf.dto.ArbreDto;
-import es.caib.distribucio.logic.intf.dto.ArbreNodeDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.helper.ServeiHelper;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ServeiFiltreDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto.Estat;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ServeiEntity;
@@ -48,8 +45,6 @@ public class ServeiServiceImpl implements ServeiService{
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
 	private PluginHelper pluginHelper;
@@ -57,6 +52,11 @@ public class ServeiServiceImpl implements ServeiService{
 	private PaginacioHelper paginacioHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+	@Autowired
+	private ServeiHelper serveiHelper;
+
+	/** Progrés d'acualització actual.*/
+	private static Map<Long, UpdateProgressDto> serveisActualitzacio = new HashMap<Long, UpdateProgressDto>();
 
 	@Override
 	@Transactional(readOnly = true) 
@@ -93,100 +93,85 @@ public class ServeiServiceImpl implements ServeiService{
 		return llistaServeis;
 	}
 
+	/** Mètode per trobar i actualitzar els serveis. Es pot fer manualment o des de la tasca
+	 * programada.
+	 */
 	@Override
 	@Transactional	
 	public void findAndUpdateServeis(Long entitatId) throws Exception {
-		int max_intents = 5;
+		
+		String msgInfo;
+		UpdateProgressDto progres = null;
+		// Comprova si hi ha una altre instància del procés en execució
+		if (isUpdatingServeis(entitatId)) {
+			logger.debug("Ja existeix un altre procés que està executant l'actualització de serveis per l'entitat " + entitatId + ".");
+			return;	// S'està executant l'actualitzacio
+		} else {
+			progres = new UpdateProgressDto();
+			serveisActualitzacio.put(entitatId, progres);
+		}
+		
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
-		ConfigHelper.setEntitat(conversioTipusHelper.convertir(entitat, EntitatDto.class));
-		List<UnitatOrganitzativaEntity> llistaUnitatsOrganitzatives = unitatOrganitzativaRepository.findByCodiDir3Entitat(entitat.getCodiDir3());
-		logger.debug("Actualitzant els serveis de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + llistaUnitatsOrganitzatives.size() + " unitats.");
+		msgInfo = "Inici del procés d'actualització de serveis de l'entitat " + entitat.getCodi() + " " + entitat.getNom();
+		progres.setEstat(Estat.INICIALITZANT);
+		logger.info(msgInfo);
 		
-		// Marca'm els serveis de Distribució com a extingits
-		List<ServeiEntity> llistaServeisDistribucio = serveiRepository.findByEntitat(entitat);
-		for (ServeiEntity serveiDistribucio : llistaServeisDistribucio) {
-			serveiDistribucio.update(
-					serveiDistribucio.getCodi(), 
-					serveiDistribucio.getNom(), 
-					serveiDistribucio.getCodiSia(),
-					ServeiEstatEnumDto.EXTINGIT,
-					serveiDistribucio.getUnitatOrganitzativa(), 
-					entitatRepository.getReferenceById(entitatId));
-			
-			serveiRepository.save(serveiDistribucio);
-		}
-		
-		// Consulta l'arbre
-		ArbreDto<UnitatOrganitzativaDto> unitatsArbre = 
-				unitatOrganitzativaHelper.unitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
-		int reintents = 0;
-		if (unitatsArbre != null) {
-			logger.debug("Actualitzant els serveis de l'entitat " + entitat.getCodi() + " " + entitat.getNom() + " amb " + unitatsArbre.toList().size() + " unitats.");
-			List<ArbreNodeDto<UnitatOrganitzativaDto>> unitats = new ArrayList<>();
-			unitats.add(unitatsArbre.getArrel());
-			List<ArbreNodeDto<UnitatOrganitzativaDto>> nodesUosAmbError = new ArrayList<>();
-			do {
-				nodesUosAmbError = new ArrayList<>();
-				for(ArbreNodeDto<UnitatOrganitzativaDto> unitat : unitats) {
-					updateServeisArbre(
-							entitatId, 
-							unitat, 
-							nodesUosAmbError, 
-							reintents, 
-							max_intents);
-				}
-				unitats = nodesUosAmbError;
-				reintents++;
-			} while (reintents <= max_intents 
-					&& !nodesUosAmbError.isEmpty());
-
-			if (nodesUosAmbError.size() > 0) {
-				// Llença excepció
-				StringBuilder errMsg = new StringBuilder("No S'han pogut consultar i actualitzar correctament els serveis per les següents unitats organitzatives després de " + max_intents + " reintents :[");
-				for (int i=0; i < nodesUosAmbError.size(); i++) {
-					errMsg.append(nodesUosAmbError.get(i).getDades().getCodiAndNom());
-					if (i < nodesUosAmbError.size()-1) {
-						errMsg.append(", ");
-					}
-				}			
-				errMsg.append("]");
-				throw new Exception(errMsg.toString());
-			}	
-		}		
-	}
-	
-
-	private void updateServeisArbre(
-			Long entitatId, 
-			ArbreNodeDto<UnitatOrganitzativaDto> nodeUo, 
-			List<ArbreNodeDto<UnitatOrganitzativaDto>> nodesUosAmbError, 
-			int reintents, 
-			int max_intents) {
-
-		if (nodeUo != null) {
-			UnitatOrganitzativaDto uoDto = nodeUo.getDades();	
+		List<Servei> serveiList = null;
+		int reintents = 1;
+		boolean errorConsultaServeis = false;
+		Exception exConsultaServeis = null;
+		String errMsg = "-";
+		do {
 			try {
-				List<Servei> serveis = pluginHelper.serveiFindByCodiDir3(uoDto.getCodi());
-				if (serveis != null && !serveis.isEmpty()) {
-					updateServeis(serveis, entitatId, uoDto.getId());
-				} else {
-					logger.debug("No hi ha serveis associats al codiDir3 " + uoDto.getCodi());
-				}
-			}catch (Exception e) {
-				logger.error("Error consultant els serveis de la UO " + uoDto.getCodiAndNom() + " intent " + reintents + " de " + max_intents + ": " + e.getMessage(), e);
-				nodesUosAmbError.add(nodeUo);
+				msgInfo = "Obtenint el llistat de serveis per a l'entitat " + entitat.getCodiDir3();
+				logger.info(msgInfo);
+				serveiList = pluginHelper.serveiFindByCodiDir3(entitat.getCodiDir3());				
+			} catch (Exception e) {
+				exConsultaServeis = e;
+				errMsg = "Error consultant els procediments per l'entitat: " + entitat.getCodiDir3();
+				errorConsultaServeis = reintents++ >= 3;				
 			}
-			if (nodeUo.getFills() != null) {
-				for (ArbreNodeDto<UnitatOrganitzativaDto> fill : nodeUo.getFills()) {
-					updateServeisArbre(
-							entitatId, 
-							fill, 
-							nodesUosAmbError, 
-							reintents, 
-							max_intents);
-				}
-			}
+		} 
+		while (serveiList == null && !errorConsultaServeis);
+		
+		// Comprova si hi ha hagut errors consultant els serveis
+		if (errorConsultaServeis) {
+			progres.setEstat(UpdateProgressDto.Estat.ERROR);
+			throw new Exception(errMsg, exConsultaServeis);
 		}
+		if (serveiList == null || serveiList.isEmpty()) {
+			throw new Exception(
+					"No s'ha obtingut cap llista o resultat per la consulta de serveis: (llista " + (serveiList == null? "nul·la" :  "buida") + ")"
+			);
+		}
+		
+		// Processa els serveis consultats
+		msgInfo="S'han obtingut " + serveiList.size() + " serveis vigents a Rolsac.";
+		logger.info(msgInfo);
+		progres.setEstat(Estat.ACTUALITZANT);
+		progres.setTotal(serveiList.size());
+		
+		// Crea un Map amb els serveis de Distribucio per codi
+		Map<String, Servei> serveiMap = new HashMap<String, Servei>();
+		for (Servei servei : serveiList) {
+			serveiMap.put(servei.getCodigo(), servei);
+		}
+		
+		// Deshabilita els serveis que no hagi retornat Distribucio
+		serveiHelper.actualtizarServeisNoVigents(entitat, serveiMap);
+		
+		// Processa tots els serveis, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
+		msgInfo = "Es procedeix a processar els " + serveiList.size() + " serveis consultats a Rolsac.";
+		logger.info(msgInfo);
+		
+		// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+		Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+		for (Servei servei : serveiList) {
+			// Tracta el servei en una transacció a part.
+			serveiHelper.actualitzaServei(servei, unitatsOrganitzatives, entitat);
+			progres.incProcessats();
+		}
+		progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
 	}
 
 	@Transactional
@@ -245,6 +230,19 @@ public class ServeiServiceImpl implements ServeiService{
 						entitatId, 
 						search != null ? search : ""), 
 				ServeiDto.class);
+	}
+
+	@Override
+	public boolean isUpdatingServeis(Long entitatId) {
+		UpdateProgressDto progres = serveisActualitzacio.get(entitatId);
+		return progres != null 
+				&& progres.getEstat() != UpdateProgressDto.Estat.FINALITZAT
+				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
+	}
+	
+	@Override
+	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
+		return serveisActualitzacio.get(entitatId);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ServeiServiceImpl.class);

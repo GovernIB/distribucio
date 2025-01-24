@@ -3,6 +3,10 @@
  */
 package es.caib.distribucio.plugin.servei;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import es.caib.distribucio.plugin.Link;
+
 /**
  * Informació d'un servei.
  * 
@@ -14,6 +18,10 @@ public class Servei {
 	private String codigoSIA;
 	private String codigoSia;
 	private String nombre;
+	@JsonProperty("link_unidadAdministrativa")
+	private Link unidadAdministrativa;
+	@JsonProperty("link_organoInstructor")
+	private Link organoInstructor;
 
 	public String getCodigo() {
 		return codigo;
@@ -39,5 +47,16 @@ public class Servei {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
+	public Link getUnidadAdministrativa() {
+		return unidadAdministrativa;
+	}
+	public void setUnidadAdministrativa(Link unidadAdministrativa) {
+		this.unidadAdministrativa = unidadAdministrativa;
+	}
+	public Link getOrganoInstructor() {
+		return organoInstructor;
+	}
+	public void setOrganoInstructor(Link organoInstructor) {
+		this.organoInstructor = organoInstructor;
+	}
 }

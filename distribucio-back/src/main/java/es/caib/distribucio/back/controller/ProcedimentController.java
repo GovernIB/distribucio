@@ -20,7 +20,7 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentUpdateProgressDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 
 /**
@@ -123,11 +123,11 @@ public class ProcedimentController extends BaseAdminController{
 			HttpServletRequest request, 
 			Model model) throws Exception {
 		
-		EntitatDto entitat = getEntitatActualComprovantPermisAdminLectura(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		
 		model.addAttribute(
 				"isUpdatingProcediments", 
-				procedimentService.isUpdatingProcediments(entitat.getId()));
+				procedimentService.isUpdatingProcediments(entitatActual.getId()));
 		
 		return "procedimentUpdateForm";
 	}
@@ -137,8 +137,8 @@ public class ProcedimentController extends BaseAdminController{
 			HttpServletRequest request, 
 			Model model) throws Exception {
 		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
 		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);		
 			procedimentService.findAndUpdateProcediments(entitatActual.getId());
 			MissatgesHelper.success(
 					request, 
@@ -160,18 +160,16 @@ public class ProcedimentController extends BaseAdminController{
 				"procedimentUpdateForm",
 				"procediment.controller.actualitzar.ok");
 	}
-	
-	
+
 	@RequestMapping(value = "/actualitzar/progres", method = RequestMethod.GET)
 	@ResponseBody
-	public ProcedimentUpdateProgressDto getProgresActualitzacio(
+	public UpdateProgressDto getProgresActualitzacio(
 			HttpServletRequest request) {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		return procedimentService.getProgresActualitzacio(entitatActual.getId());
 	}
-	
-	
-	private static final Logger logger = LoggerFactory.getLogger(ProcedimentController.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(ServeiController.class);
 }

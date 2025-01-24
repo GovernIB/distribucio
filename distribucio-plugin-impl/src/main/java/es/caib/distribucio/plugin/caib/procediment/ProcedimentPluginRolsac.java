@@ -211,8 +211,18 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	}
 	
 	public String getRolsacServiceUrl() {
-		return getProperty(
+		String rolsacUrl = getProperty(
 				"es.caib.distribucio.plugin.rolsac.service.url");
+		if (rolsacUrl == null || rolsacUrl.isBlank()) {
+			// si no troba la propietat llavors obté la url base a partir de la url
+			rolsacUrl = getServiceUrl();
+			if (rolsacUrl.endsWith("/procedimientos")) {
+				rolsacUrl = rolsacUrl.replace("/procedimientos", "");
+			} else if (rolsacUrl.endsWith("/procedimientos")) {
+				rolsacUrl = rolsacUrl.replace("/procedimientos", "");
+			}
+		}
+		return rolsacUrl;
 	}
 	
 	public String getServiceUrl() {
