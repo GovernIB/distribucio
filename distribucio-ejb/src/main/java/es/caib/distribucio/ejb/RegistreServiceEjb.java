@@ -75,6 +75,16 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 
 	@Override
 	@RolesAllowed("**")
+	public List<RegistreDto> findByEntitatCodiAndNumero(
+			Long entitatId,
+			String numero) throws NotFoundException {
+		return delegateService.findByEntitatCodiAndNumero(
+				entitatId,
+				numero);
+	}
+
+	@Override
+	@RolesAllowed("**")
 	public List<RegistreDto> findMultiple(
 			Long entitatId,
 			List<Long> multipleRegistreIds,

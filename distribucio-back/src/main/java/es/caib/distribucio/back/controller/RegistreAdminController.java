@@ -54,6 +54,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -65,6 +66,7 @@ import es.caib.distribucio.logic.intf.service.ContingutService;
 import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 
 /**
@@ -97,6 +99,8 @@ public class RegistreAdminController extends BaseAdminController {
 	private AplicacioService aplicacioService;
 	@Autowired
 	private ProcedimentService procedimentService;
+	@Autowired
+	private ServeiService serveiService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -210,6 +214,17 @@ public class RegistreAdminController extends BaseAdminController {
 						procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
 					}
 					model.addAttribute("procedimentDades", procediment);
+				}
+				String codiServei = registre.getServeiCodi();
+				if (codiServei != null) {
+					ServeiDto servei = serveiService.findByCodiSia(entitatActual.getId(), codiServei);
+					if (servei == null) {
+						servei = new ServeiDto();
+						servei.setCodi(codiServei);
+						servei.setCodiSia(codiServei);
+						servei.setNom(getMessage(request, "registre.detalls.camp.servei.no.trobat", new Object[] {codiServei}));
+					}
+					model.addAttribute("serveiDades", servei);				
 				}
 			}
 			model.addAttribute("registre", registreDto);

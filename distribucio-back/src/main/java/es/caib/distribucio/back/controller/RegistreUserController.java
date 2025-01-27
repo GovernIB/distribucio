@@ -73,6 +73,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
 import es.caib.distribucio.logic.intf.dto.ResultatDominiDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.exception.DominiException;
@@ -89,6 +90,7 @@ import es.caib.distribucio.logic.intf.service.DominiService;
 import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.ServeiService;
 
 /**
  * Controlador per al manteniment de registres.
@@ -125,6 +127,8 @@ public class RegistreUserController extends BaseUserController {
 	private DominiService dominiService;
 	@Autowired
 	private ProcedimentService procedimentService;
+	@Autowired
+	private ServeiService serveiService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -432,6 +436,20 @@ public class RegistreUserController extends BaseUserController {
 					procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
 				}
 				model.addAttribute("procedimentDades", procediment);				
+			}
+
+			// Nom del servei
+
+			String codiServei = registre.getServeiCodi();
+			if (codiServei != null) {
+				ServeiDto servei = serveiService.findByCodiSia(entitatActual.getId(), codiServei);
+				if (servei == null) {
+					servei = new ServeiDto();
+					servei.setCodi(codiServei);
+					servei.setCodiSia(codiServei);
+					servei.setNom(getMessage(request, "registre.detalls.camp.servei.no.trobat", new Object[] {codiServei}));
+				}
+				model.addAttribute("serveiDades", servei);				
 			}
 
 			model.addAttribute("registre", registre);

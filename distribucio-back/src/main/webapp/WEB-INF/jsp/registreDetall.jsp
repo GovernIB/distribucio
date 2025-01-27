@@ -960,6 +960,18 @@ li[id^="anotacio_"] {
 					<td>${registre.expedientNumero}</td>
 				</tr>				
 				<tr>
+					<td><strong><spring:message code="registre.detalls.camp.servei"/></strong></td>
+					<td colspan="3">
+						<c:if test="${serveiDades != null }">
+							${serveiDades.codiSia} - ${serveiDades.nom}
+							<c:if test="${serveiDades.estat == 'EXTINGIT'}">
+								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span>
+							</c:if>		
+						</c:if>
+					</td>
+					<td colspan="2">&nbsp;</td>
+				</tr>				
+				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
 					<td colspan="5">${registre.observacions}</td>
 				</tr>	
