@@ -42,6 +42,7 @@ import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
+import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
@@ -82,6 +83,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ConversioTipusHelper conversioTipusHelper;	
 	@Autowired
 	private ProcedimentService procedimentService;
+	@Autowired
+	private ServeiService serveiService;
 	@Autowired
 	private UsuariRepository usuariRepository;
 
@@ -571,6 +574,23 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		if (!entitatsError.isEmpty()) {
 			throw new Exception("No s'han pogut sincronitzar tots els procediments per les següents entitats: " + entitatsError);
+		}
+	}
+	
+	@Override
+	public void actualitzarServeis() throws Exception {
+		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+		List<String> entitatsError = new ArrayList<>();		
+		for (EntitatEntity entitat : llistaEntitats) {
+			try {
+				serveiService.findAndUpdateServeis(entitat.getId());
+			} catch (Exception e) {
+				entitatsError.add(entitat.getCodi());
+				logger.error("Error sincronitzant els serveis per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
+			}			
+		}
+		if (!entitatsError.isEmpty()) {
+			throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
 		}
 	}
 	

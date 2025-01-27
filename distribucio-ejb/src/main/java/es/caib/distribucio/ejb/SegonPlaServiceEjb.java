@@ -85,6 +85,11 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 	public void actualitzarProcediments() throws Exception {
 		delegateService.actualitzarProcediments();
 	}
+	
+	@Override
+	public void actualitzarServeis() throws Exception {
+		delegateService.actualitzarServeis();
+	}
 
 	protected void setDelegateService(SegonPlaService delegateService) {
 		this.delegateService = delegateService;

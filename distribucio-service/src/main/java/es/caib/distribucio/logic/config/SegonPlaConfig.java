@@ -411,6 +411,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						if (propertyValue == null) {
 							propertyValue = "0 30 15 * * 5";
 						}
+						log.info("Actualitzant procediments");
 						CronTrigger trigger = new CronTrigger(propertyValue);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
 						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
@@ -419,6 +420,43 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					}
 				});
 		monitorTasquesService.addTasca(codiActualitzarProcediments);
+		// Actualitzar els serveis
+		final String codiActualitzarServeis = "actualitzarServeis";
+		monitorTasquesService.addTasca(codiActualitzarServeis);
+		taskRegistrar.addTriggerTask(
+				new Runnable() {
+					@Override
+					public void run() {
+						monitorTasquesService.inici(codiActualitzarServeis);
+						try {
+							segonPlaService.actualitzarServeis();
+							monitorTasquesService.fi(codiActualitzarServeis);
+						} catch(Throwable th) {
+							tractarErrorTascaSegonPla(th, codiActualitzarServeis);
+						}
+					}
+				}, 
+				new Trigger() {
+					@Override
+					public Date nextExecutionTime(TriggerContext triggerContext) {
+						String propertyValue = null;
+						try {
+							propertyValue = configService.getConfig("es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis");
+						} catch (Exception e) {
+							log.warn("Error consultant la propietat per la propera execució per actualitzar la taula de serveis");
+						}
+						if (propertyValue == null) {
+							propertyValue = "0 30 15 * * 5";
+						}
+						log.info("Actualitzant serveis");
+						CronTrigger trigger = new CronTrigger(propertyValue);
+						Date nextExecution = trigger.nextExecutionTime(triggerContext);
+						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+						monitorTasquesService.updateProperaExecucio(codiActualitzarServeis, longNextExecution);
+						return nextExecution;
+					}
+				});
+		monitorTasquesService.addTasca(codiActualitzarServeis);
 	}
 
 	/** Enregistre l'error als logs i marca la tasca amb error. */

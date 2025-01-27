@@ -65,4 +65,10 @@ public interface SegonPlaService {
 	 **/
 	public void actualitzarProcediments() throws Exception;
 
+	/**
+	 * Actualitza els serveis 
+	 * @throws Exception 
+	 **/
+	public void actualitzarServeis() throws Exception;
+	
 }
