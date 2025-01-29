@@ -1739,30 +1739,17 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		try {			
-			
-			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);			
-			RegistreDto registre = registreService.findOne(
-					entitatActual.getId(),
-					registreId,
-					false);
-			model.addAttribute("registre", registre);
-			model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
-			
-			String procedimentCodi = emplenarModelProcedimentClassificar(
-					entitatActual,
-					registre,
-					model);
-			
-			String serveiCodi = emplenarModelServeiClassificar(
-					entitatActual,
-					registre,
-					model);
-			
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 			RegistreClassificarCommand command = new RegistreClassificarCommand();
+			RegistreDto registre = this.emplenarModelClassificar(
+					entitatActual, 
+					registreId,
+					model);
 			command.setContingutId(registreId);
-			command.setCodiProcediment(procedimentCodi);
-			command.setCodiServei(serveiCodi);
+			command.setCodiProcediment(registre.getProcedimentCodi());
+			command.setCodiServei(registre.getServeiCodi());
 			model.addAttribute(command);
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			return getModalControllerReturnValueErrorNoKey(
@@ -1773,6 +1760,32 @@ public class RegistreUserController extends BaseUserController {
 		return "registreClassificar";
 	}
 
+	/** Mètode comú per emplenar el model per classificar un registre o quan falla la validació.
+	 * 
+	 * @param entitatActual
+	 * @param registreId
+	 * @param model
+	 */
+	private RegistreDto emplenarModelClassificar(EntitatDto entitatActual, Long registreId, Model model) {
+		
+		RegistreDto registre = registreService.findOne(
+				entitatActual.getId(),
+				registreId,
+				false);
+		model.addAttribute("registre", registre);
+		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
+		emplenarModelProcedimentClassificar(
+				entitatActual,
+				registre,
+				model);
+		emplenarModelServeiClassificar(
+				entitatActual,
+				registre,
+				model);
+		
+		return registre;
+	}
+
 	@RequestMapping(value = "/classificar/{registreId}", method = RequestMethod.POST)
 	public String bustiaClassificarPost(
 			HttpServletRequest request,
@@ -1781,18 +1794,10 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		RegistreDto registre = registreService.findOne(
-				entitatActual.getId(),
-				registreId,
-				false);
 		if (bindingResult.hasErrors()) {
-			emplenarModelProcedimentClassificar(
-					entitatActual,
-					registre,
-					model);
-			emplenarModelServeiClassificar(
-					entitatActual,
-					registre,
+			this.emplenarModelClassificar(
+					entitatActual, 
+					registreId, 
 					model);
 			return "registreClassificar";
 		}
@@ -1846,26 +1851,7 @@ public class RegistreUserController extends BaseUserController {
 				request,
 				"redirect:/registreUser/registre/" + registreId,
 				"bustia.controller.pendent.contingut.classificat.ok");
-	}
-	
-//	@RequestMapping(value = "/classificarMultiple/{registreId}/{codiProcediment}/{codiServei}", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ClassificacioResultatDto classificarMultiplePost(
-//			HttpServletRequest request,
-//			@PathVariable Long registreId,
-//			@PathVariable String codiProcediment,
-//			@PathVariable String codiServei,
-//			Model model) {
-//		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-//		ClassificacioResultatDto resultat = registreService.classificar(
-//				entitatActual.getId(),
-//				registreId,
-//				codiProcediment,
-//				codiServei,
-//				null);
-//		return resultat;
-//	}
-	
+	}	
 	
 	//Gestió bústies favorits
 	@RequestMapping(value = "/favorits/add/{bustiaId}", method = RequestMethod.GET)

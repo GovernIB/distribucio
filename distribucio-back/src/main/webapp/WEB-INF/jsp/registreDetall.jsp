@@ -945,9 +945,20 @@ li[id^="anotacio_"] {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.extracte"/></strong></td>
 					<td colspan="5">${registre.extracte}</td>
-				</tr>							
+				</tr>			
+				<c:set var="codisProcedimentServei" value="${procedimentDades != null && serveiDades != null}"></c:set>				
 				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
+					<td>
+						<c:if test="${procedimentDades != null || serveiDades == null}">
+							<strong><spring:message code="registre.detalls.camp.procediment"/></strong>
+						</c:if>
+						<c:if test="${codisProcedimentServei}">
+							<br/>
+						</c:if>
+						<c:if test="${serveiDades != null }">
+							<strong><spring:message code="registre.detalls.camp.servei"/></strong>
+						</c:if>
+					</td>
 					<td colspan="3">
 						<c:if test="${procedimentDades != null }">
 							${procedimentDades.codiSia} - ${procedimentDades.nom}
@@ -955,21 +966,25 @@ li[id^="anotacio_"] {
 								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span>
 							</c:if>		
 						</c:if>
-					</td>
-					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
-					<td>${registre.expedientNumero}</td>
-				</tr>				
-				<tr>
-					<td><strong><spring:message code="registre.detalls.camp.servei"/></strong></td>
-					<td colspan="3">
+						<c:if test="${codisProcedimentServei}">
+							<br/>
+						</c:if>
 						<c:if test="${serveiDades != null }">
 							${serveiDades.codiSia} - ${serveiDades.nom}
 							<c:if test="${serveiDades.estat == 'EXTINGIT'}">
 								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span>
 							</c:if>		
 						</c:if>
+						<c:if test="${codisProcedimentServei}">
+							<div class="panel-body">
+									<div class="alert alert-danger">
+										<spring:message code="regla.validacio.codis.procediment.servei"/>
+									</div>
+							</div>						
+						</c:if>
 					</td>
-					<td colspan="2">&nbsp;</td>
+					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
+					<td>${registre.expedientNumero}</td>
 				</tr>				
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>

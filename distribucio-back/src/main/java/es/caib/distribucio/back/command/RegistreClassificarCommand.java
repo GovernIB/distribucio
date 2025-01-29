@@ -1,10 +1,13 @@
 package es.caib.distribucio.back.command;
 
+import es.caib.distribucio.back.command.RegistreClassificarCommand.Classificar;
+import es.caib.distribucio.back.validation.RegistreClassificar;
+
+@RegistreClassificar(groups = {Classificar.class})
 public class RegistreClassificarCommand {
 	
 	String titol;
 	Long contingutId;
-	//@NotEmpty(groups = {Classificar.class})
 	String codiProcediment;
 	String codiServei;
 	

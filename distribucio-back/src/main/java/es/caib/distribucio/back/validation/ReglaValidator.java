@@ -143,6 +143,21 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 				}
 			}
 		}
+		// Comrova que només s'informi el codi de procediment o el codi de servei, però no tots dos a l'hora
+		if (command.getProcedimentCodiFiltre() != null 
+				&& command.getServeiCodiFiltre() != null) {
+			String errMsg = MessageHelper.getInstance().getMessage(codiMissatge + ".codis.procediment.servei", null, new RequestContext(request).getLocale());
+			context.buildConstraintViolationWithTemplate(
+					errMsg)
+					.addNode("procedimentCodiFiltre")
+					.addConstraintViolation();	
+			context.buildConstraintViolationWithTemplate(
+					errMsg)
+					.addNode("serveiCodiFiltre")
+					.addConstraintViolation();	
+			valid = false;
+		}
+		
 		if (!valid)
 			context.disableDefaultConstraintViolation();
 		return valid;

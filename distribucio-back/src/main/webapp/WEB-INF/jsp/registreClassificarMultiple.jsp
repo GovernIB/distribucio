@@ -111,7 +111,17 @@ $(document).ready(function() {
 		var $modalFooter = $('.modal-footer', $(this).parent().parent());
 		var $botoClassificar = $('button#accio-classificar', $modalFooter);
 		
-	    $("#registreClassificarCommand").submit(function(event){
+		$('#codiProcediment,#codiServei').change(function(){
+			if ($('#codiProcediment').val() != "" && $('#codiServei').val() != "") {
+				$botoClassificar.attr('disabled', 'disabled');
+				$('#divAvisCodiUnic').show();
+			} else {
+				$botoClassificar.removeAttr('disabled');
+				$('#divAvisCodiUnic').hide();
+			}
+		}).change();
+	    
+		$("#registreClassificarCommand").submit(function(event){
 			event.preventDefault();
 			event.stopPropagation();
 			inicialitzarClassificacio(this);
@@ -271,6 +281,16 @@ function formatServeiSelect(item) {
 				optionTemplateFunction="formatServeiSelect"/>
 			</c:otherwise>
 		</c:choose>
+		<div class="form-group">
+			<label class="col-xs-4"></label>
+			<div id="divAvisCodiUnic" class="alert alert-warning well-sm col-xs-8" style="display:none;" role="alert">
+				<span class="fa fa-warning"></span>
+				<spring:message code="bustia.controller.pendent.contingut.classificar.validacio.codis.servei.procediment"/>
+			</div>			
+		</div>
+
+		
+		
 		<div id="modal-botons" class="well">
 			<button id="accio-classificar" class="btn btn-success" disabled="disabled" data-nosubmit="true"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>
 			<a id="accio-cancel" href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
