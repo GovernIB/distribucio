@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
@@ -78,6 +79,7 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 	}
 
 	@Override
+	@PermitAll
 	public void excepcioSave(Throwable exception, String source) {
 		delegateService.excepcioSave(exception, source);
 	}
