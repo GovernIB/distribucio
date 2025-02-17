@@ -174,9 +174,11 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			" and r.dataTancament <= :ara " +
 			" and r.arxiuTancat = false" +
 			" and r.arxiuTancatError = false " +
+			" and r.entitat = :entitat " +
 		    " order by r.dataTancament asc")
-	List<RegistreEntity> findPendentsTancarArxiu(
-			@Param("ara") Date ara);
+	List<RegistreEntity> findPendentsTancarArxiuByEntitat(
+			@Param("ara") Date ara,
+			@Param("entitat") EntitatEntity entitat);
 
 	/** Mètode per consultar el número màxim pel valor de la columna numero_copia. Serveix per crear una nova còpia 
 	 * incrementant el valor a partir del resultat d'aquesta consulta.

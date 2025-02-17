@@ -291,23 +291,24 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		long startTime = new Date().getTime();
 		
-		logger.trace("Execució de tasca programada (" + startTime + "): tancar contenidors arxiu pendents");
-		List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiu(new Date());
-		if (pendents != null && !pendents.isEmpty()) {
-			logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
-			for (RegistreEntity registre: pendents) {
+		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 
-				EntitatDto entitatDto = new EntitatDto();
-				entitatDto.setCodi(registre.getEntitat().getCodi());
-				ConfigHelper.setEntitat(entitatDto);
-
-				final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
-				Timer.Context context = timer.time();
-				registreHelper.tancarExpedientArxiu(registre.getId());
-				context.stop();
+			EntitatDto entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitat.getCodi());
+			ConfigHelper.setEntitat(entitatDto);
+			
+			List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiuByEntitat(new Date(), entitat);
+			if (pendents != null && !pendents.isEmpty()) {
+				logger.trace("Tancant contenidors d'arxiu de " + pendents.size() + " anotacions de registre pendents");
+				for (RegistreEntity registre: pendents) {
+					final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "tancarContenidorsArxiuPendents"));
+					Timer.Context context = timer.time();
+					registreHelper.tancarExpedientArxiu(registre.getId());
+					context.stop();
+				}
+			} else {
+				logger.trace("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar (entitat = {})", entitat.getNom());
 			}
-		} else {
-			logger.trace("No hi ha anotacions de registre amb contenidors d'arxiu pendents de tancar");
 		}
 		
 		long stopTime = new Date().getTime();

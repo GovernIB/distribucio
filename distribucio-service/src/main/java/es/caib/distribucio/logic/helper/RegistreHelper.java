@@ -1913,8 +1913,8 @@ public class RegistreHelper {
 
 	/** Consulta les anotacions pendents de tancar a l'arxiu. */
 	@Transactional
-	public List<RegistreEntity> findPendentsTancarArxiu(Date date) {
-		return registreRepository.findPendentsTancarArxiu(date);
+	public List<RegistreEntity> findPendentsTancarArxiuByEntitat(Date date, EntitatEntity entitat) {
+		return registreRepository.findPendentsTancarArxiuByEntitat(date, entitat);
 	}
 
 	@Transactional
