@@ -42,11 +42,11 @@ var inicialitzarClassificacio = function(element) {
 }
 var processarRegistres = function(index, element) {
 	if (index < registres.length) {
-		debugger;
 		let registre = registres[index];
+		let tipus = $('input:radio[name=tipus]:checked').val();
 		let codiProcediment = $('select#codiProcediment').val();
 		let codiServei = $('select#codiServei').val();
-		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "?codiProcediment=" + codiProcediment + "&codiServei=" + codiServei;
+		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "?tipus=" + tipus + "&codiProcediment=" + codiProcediment + "&codiServei=" + codiServei;
 		$.post(classificarUrl, function(response) {
 			actualitzarEstatRegistre(index, true, response);
 			processarRegistres(index + 1, element);
@@ -101,6 +101,8 @@ var finalitzarClassificacio = function(element) {
 	$botoCancel.text('<spring:message code="comu.boto.tancar"/>');
 	$modal = $(element).closest('div.modal').parent();
 	$modal.removeAttr('data-nohide');
+	$('select#codiProcediment').removeAttr('disabled');
+	$('select#codiServei').removeAttr('disabled');
 	/*$('button.close', $modal).click();*/
 }
 $(document).ready(function() {
@@ -110,17 +112,7 @@ $(document).ready(function() {
 	$(window.frameElement).load(function() {
 		var $modalFooter = $('.modal-footer', $(this).parent().parent());
 		var $botoClassificar = $('button#accio-classificar', $modalFooter);
-		
-		$('#codiProcediment,#codiServei').change(function(){
-			if ($('#codiProcediment').val() != "" && $('#codiServei').val() != "") {
-				$botoClassificar.attr('disabled', 'disabled');
-				$('#divAvisCodiUnic').show();
-			} else {
-				$botoClassificar.removeAttr('disabled');
-				$('#divAvisCodiUnic').hide();
-			}
-		}).change();
-	    
+			    
 		$("#registreClassificarCommand").submit(function(event){
 			event.preventDefault();
 			event.stopPropagation();
@@ -128,10 +120,22 @@ $(document).ready(function() {
 			processarRegistres(0, this);
 			return false;
 	    });
-
-		
 	});
+	$('input:radio[name=tipus]').change(function(){
+		mostarProcedimentServei($(this).val());
+	});
+	$("#tipus1").prop("checked", true).change();	
 });
+
+function mostarProcedimentServei (tipus) {
+	if (tipus == 'SERVEI') {
+		$('#codiProcediment').closest('.form-group').hide();
+		$('#codiServei').closest('.form-group').show();
+	} else {
+		$('#codiProcediment').closest('.form-group').show();
+		$('#codiServei').closest('.form-group').hide();		
+	}
+}
 
 //Funció per advertir a l'usuari dels procediments que estàn obsolets
 function formatProcedimentSelect(item) {
@@ -235,6 +239,13 @@ function formatServeiSelect(item) {
 		</div>
 	</div>
 	<form:form cssClass="form-horizontal" modelAttribute="registreClassificarCommand">
+		<dis:inputRadio
+					name="tipus" 
+					textKey="bustia.pendent.classificar.camp.tipus" 
+					optionItems="${tipus}" 
+					optionValueAttribute="value" 
+					optionTextKeyAttribute="text" 
+					required="false"/>
 		<c:choose>
 			<c:when test="${empty procediments}">
 				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">
@@ -281,15 +292,6 @@ function formatServeiSelect(item) {
 				optionTemplateFunction="formatServeiSelect"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="form-group">
-			<label class="col-xs-4"></label>
-			<div id="divAvisCodiUnic" class="alert alert-warning well-sm col-xs-8" style="display:none;" role="alert">
-				<span class="fa fa-warning"></span>
-				<spring:message code="bustia.controller.pendent.contingut.classificar.validacio.codis.servei.procediment"/>
-			</div>			
-		</div>
-
-		
 		
 		<div id="modal-botons" class="well">
 			<button id="accio-classificar" class="btn btn-success" disabled="disabled" data-nosubmit="true"><span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.classificar.submit"/></button>

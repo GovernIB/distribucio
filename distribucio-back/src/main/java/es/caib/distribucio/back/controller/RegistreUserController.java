@@ -42,6 +42,7 @@ import es.caib.distribucio.back.command.ContingutReenviarCommand;
 import es.caib.distribucio.back.command.MarcarProcessatCommand;
 import es.caib.distribucio.back.command.RegistreClassificarCommand;
 import es.caib.distribucio.back.command.RegistreClassificarCommand.Classificar;
+import es.caib.distribucio.back.command.RegistreClassificarTipusEnum;
 import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.back.command.RegistreFiltreCommand;
@@ -1745,6 +1746,7 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual, 
 					registreId,
 					model);
+			command.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT.name());
 			command.setContingutId(registreId);
 			command.setCodiProcediment(registre.getProcedimentCodi());
 			command.setCodiServei(registre.getServeiCodi());
@@ -1774,11 +1776,16 @@ public class RegistreUserController extends BaseUserController {
 				false);
 		model.addAttribute("registre", registre);
 		model.addAttribute("isPermesModificarTitol", isPermesModificarTitol());
-		emplenarModelProcedimentClassificar(
+		model.addAttribute(
+				"tipus",
+				EnumHelper.getOptionsForEnum(
+						RegistreClassificarTipusEnum.class,
+						"registre.classificar.tipus.enum."));
+		this.emplenarModelProcedimentClassificar(
 				entitatActual,
 				registre,
 				model);
-		emplenarModelServeiClassificar(
+		this.emplenarModelServeiClassificar(
 				entitatActual,
 				registre,
 				model);
@@ -1801,11 +1808,19 @@ public class RegistreUserController extends BaseUserController {
 					model);
 			return "registreClassificar";
 		}
+		String codiProcediment = null;
+		if (command.getTipus() != null && RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(command.getTipus()) ) {
+				codiProcediment = command.getCodiProcediment();
+		}
+		String codiServei = null;
+		if (command.getTipus() != null && RegistreClassificarTipusEnum.SERVEI.name().equals(command.getTipus()) ) {
+				codiServei = command.getCodiServei();
+		}
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-				command.getCodiProcediment(),
-				command.getCodiServei(),
+				codiProcediment,
+				codiServei,
 				command.getTitol());
 		switch (resultat.getResultat()) {
 		case SENSE_CANVIS:

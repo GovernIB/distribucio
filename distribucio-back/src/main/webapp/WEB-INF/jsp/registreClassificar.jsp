@@ -43,8 +43,24 @@ function formatServeiSelect(item) {
 $(document).ready(function() {
 	if ((${fn:length(procediments)} > 0) ||	(${fn:length(serveis)} > 0)) {
 		$('#accio-classificar').removeAttr('disabled');
-	}	
+	}
+	
+	$('input:radio[name=tipus]').change(function(){
+		mostarProcedimentServei($(this).val());
+	});
+	$('input:radio[name=tipus]:checked').change();	
 });
+
+
+function mostarProcedimentServei (tipus) {
+	if (tipus == 'SERVEI') {
+		$('#codiProcediment').closest('.form-group').hide();
+		$('#codiServei').closest('.form-group').show();
+	} else {
+		$('#codiProcediment').closest('.form-group').show();
+		$('#codiServei').closest('.form-group').hide();		
+	}
+}
 </script>
 </head>
 <body>
@@ -104,6 +120,13 @@ $(document).ready(function() {
 			<dis:inputText name="titol" textKey="bustia.pendent.classificar.camp.titol" />
 		</c:if>
 		<form:hidden path="contingutId"/>
+		<dis:inputRadio
+					name="tipus" 
+					textKey="bustia.pendent.classificar.camp.tipus" 
+					optionItems="${tipus}" 
+					optionValueAttribute="value" 
+					optionTextKeyAttribute="text" 
+					required="false"/>
 		<c:choose>
 			<c:when test="${empty procediments}">
 				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">

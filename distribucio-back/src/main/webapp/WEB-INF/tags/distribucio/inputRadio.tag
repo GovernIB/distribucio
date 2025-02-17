@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ attribute name="name" required="true" rtexprvalue="true"%>
@@ -29,7 +30,7 @@
 		</c:choose>
 			<c:if test="${required}">*</c:if>
 	</label>
-	<div class="controls col-xs-${campInputSize} btn-group" data-toggle="buttons">
+	<div class="controls col-xs-${campInputSize}">
 		
 		<c:forEach var="opt" items="${optionItems}">
 			<c:set var="labelClass" value="checkbox-inline"/>

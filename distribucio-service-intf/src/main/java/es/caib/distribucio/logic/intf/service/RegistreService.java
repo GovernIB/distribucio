@@ -290,6 +290,7 @@ public interface RegistreService {
 	 *            Codi del procediment que es vol assignar a l'anotació.
 	 * @param titol
 	 *            nou titol pel l'anotació.
+	 * @param string 
 	 * @return true si l'anotació ha canviat de bústia o d'estat, false en cas contrari.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.

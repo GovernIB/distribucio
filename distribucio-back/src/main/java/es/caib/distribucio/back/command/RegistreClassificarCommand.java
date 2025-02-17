@@ -1,15 +1,13 @@
 package es.caib.distribucio.back.command;
 
-import es.caib.distribucio.back.command.RegistreClassificarCommand.Classificar;
-import es.caib.distribucio.back.validation.RegistreClassificar;
-
-@RegistreClassificar(groups = {Classificar.class})
 public class RegistreClassificarCommand {
 	
 	String titol;
 	Long contingutId;
 	String codiProcediment;
 	String codiServei;
+	// RegistreClassificarTipusEnum PROCEDIMENT / SERVEI 
+	String tipus;
 	
 	public String getTitol() {
 		return titol;
@@ -34,6 +32,12 @@ public class RegistreClassificarCommand {
 	}
 	public void setCodiServei(String codiServei) {
 		this.codiServei = codiServei;
+	}
+	public String getTipus() {
+		return tipus;
+	}
+	public void setTipus(String tipus) {
+		this.tipus = tipus;
 	}
 
 	public interface Classificar {}

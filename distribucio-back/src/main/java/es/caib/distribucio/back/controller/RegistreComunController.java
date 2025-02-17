@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.command.ContingutReenviarCommand;
 import es.caib.distribucio.back.command.MarcarProcessatCommand;
 import es.caib.distribucio.back.command.RegistreClassificarCommand;
+import es.caib.distribucio.back.command.RegistreClassificarTipusEnum;
 import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
 import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
+import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -63,10 +65,17 @@ public class RegistreComunController extends BaseController{
 	public ClassificacioResultatDto classificarMultiplePost(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@RequestParam(value="tipus", required=true) String tipus,
 			@RequestParam(value="codiProcediment", required=false) String codiProcediment,
 			@RequestParam(value="codiServei", required=false) String codiServei,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, BaseConfig.ROLE_USER);
+		if (tipus == null || !tipus.equals(RegistreClassificarTipusEnum.PROCEDIMENT.name())) {
+			codiProcediment = null;
+		}
+		if (tipus == null || !tipus.equals(RegistreClassificarTipusEnum.SERVEI.name())) {
+			codiServei = null;
+		}
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
@@ -151,6 +160,11 @@ public class RegistreComunController extends BaseController{
 				}
 			}
 		}
+		model.addAttribute(
+				"tipus",
+				EnumHelper.getOptionsForEnum(
+						RegistreClassificarTipusEnum.class,
+						"registre.classificar.tipus.enum."));
 		if (mateixPare && bustiaIdActual != null) {
 			model.addAttribute(
 					"procediments",
