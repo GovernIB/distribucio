@@ -1746,7 +1746,11 @@ public class RegistreUserController extends BaseUserController {
 					entitatActual, 
 					registreId,
 					model);
-			command.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT.name());
+			if (registre.getServeiCodi() != null) {
+				command.setTipus(RegistreClassificarTipusEnum.SERVEI.name());
+			} else {				
+				command.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT.name());
+			}
 			command.setContingutId(registreId);
 			command.setCodiProcediment(registre.getProcedimentCodi());
 			command.setCodiServei(registre.getServeiCodi());
