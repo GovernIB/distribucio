@@ -103,6 +103,8 @@
 					}
 				},
 				error: function() {
+					if (isUpdating) // Evitar que es mostri el warning d'interrupció de la crida AJAX en tancar la modal
+						return;
 					console.error("error obtenint progrés...");
 					$('#divErrMsg').show();
 					$('#errMsg').html("Error consultant progrés.");
