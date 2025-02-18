@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	private ProcedimentHelper procedimentHelper;
 	
 	/** Progrés d'acualització actual.*/
-	private static Map<Long, UpdateProgressDto> progressosActualitzacio = new HashMap<Long, UpdateProgressDto>();
+	private static Map<Long, UpdateProgressDto> progressosActualitzacio = new ConcurrentHashMap<Long, UpdateProgressDto>();
 
 	@Override
 	@Transactional(readOnly = true) 

@@ -24,6 +24,7 @@ public interface AlertaService {
 	 *            Informació de l'alerta a crear.
 	 * @return L'Alerta creada.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public AlertaDto create(AlertaDto alerta);
 
 	/**
@@ -36,6 +37,7 @@ public interface AlertaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public AlertaDto update(
 			AlertaDto alerta) throws NotFoundException;
 	
@@ -48,6 +50,7 @@ public interface AlertaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public AlertaDto delete(
 			Long id) throws NotFoundException;
 	
@@ -60,6 +63,7 @@ public interface AlertaService {
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
 	 */
+	@PreAuthorize("isAuthenticated()")
 	public AlertaDto find(
 			Long id);
 
