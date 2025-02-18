@@ -638,7 +638,7 @@ $(document).ready(function() {
 				</th>				
 				<th data-col-name="numComentaris"   style ="text-align: center;" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
+						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
 							<span class="fa fa-lg fa-comments"></span>
 							<span class="badge">{{:numComentaris}}</span>
 						</a>

@@ -56,21 +56,15 @@ button:focus[aria-pressed="false"] {
 	padding: 5px;
 }
 
-
-th, 
-td, 
-#link-comentaris span, 
 #div-btn-accions button span {
     word-wrap: break-word;
     overflow-wrap: break-word;
     overflow-wrap: anywhere;
 	font-size: 1.2rem;
 	width: 0%; 
-	/* width: fit-content; */
 } 
 
-#div-btn-accions button, 
-#link-comentaris {
+#div-btn-accions button {
 	white-space: normal;
 	word-wrap: break-word;
 	font-size: 1.5rem;
@@ -79,7 +73,7 @@ td,
 
 span.badge {
 	font-size: 1.2rem !important;
-	padding-right: 1.2rem !important;
+/* 	padding-right: 1.2rem !important; */
 }
 
 span.fa-comments {
@@ -135,10 +129,12 @@ button#filtrar {
 	width: 50%;
 }
 
+/*
 .datepicker td, 
 .datepicker th {
 	width: 4rem !important;
 }
+*/
 
 </style>
 <script>
@@ -599,7 +595,7 @@ $(document).ready(function() {
 				</th>			
 				<th data-col-name="numComentaris" style="max-width: 10%; min-width: 70px" data-orderable="false" data-template="#cellPermisosTemplate" width="5%">
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
-						<a id="link-comentaris" href="../contingut/{{:id}}/comentaris/?isVistaMoviments=true" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
+						<a href="../contingut/{{:id}}/comentaris/?isVistaMoviments=true" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">{{:numComentaris}}</span></a>
 					</script>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" width="5%">
@@ -614,7 +610,7 @@ $(document).ready(function() {
 								</li>
 								<li><a href="../contingut/{{:id}}/log/moviments" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
-									<li><a href="../pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
+									<li><a href="../registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
 								<li><a href="../registreUser/pendent/{{:id}}/{{:destiLogic}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								<li role="separator" class="divider"></li>

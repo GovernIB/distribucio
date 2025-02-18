@@ -26,7 +26,7 @@
 		function obre() {
 			var arbre = $('#arbreUnitats');
 			var selectedNode = arbre.jstree("get_selected");
-			arbre.jstree("open_all", selectedNode, 0, arbre);
+			arbre.jstree("open_node", selectedNode);
 		}
 		function checkSelectedNodes() {
 			// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma

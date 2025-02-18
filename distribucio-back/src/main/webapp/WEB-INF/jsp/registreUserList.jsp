@@ -96,25 +96,6 @@ li[id^="anotacio_"] {
 	cursor: pointer;
 }
 
-
-
-th, 
-td, 
-#link-comentaris span {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    overflow-wrap: anywhere;
-	font-size: 1.4rem;
-	/* width: fit-content; */
-} 
-
-#link-comentaris {
-	white-space: normal;
-	word-wrap: break-word;
-	font-size: 1.2rem;
-	width: 80%; 
-}
-
 span.badge {
 	font-size: 1.2rem !important;
 /* 	padding-right: 1.2rem !important; */
@@ -168,11 +149,13 @@ button#filtrar {
 	width: 50%;
 }
 
+/*
 .datepicker td, 
 .datepicker th {
-	width: 4rem !important;
+	 width: 4rem !important;
 }
-
+*/
+ 
 .btn-default .badge {
 /*   padding-right: 2rem !important; */
 }
