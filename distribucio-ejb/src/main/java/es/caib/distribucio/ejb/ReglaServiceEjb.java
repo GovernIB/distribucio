@@ -182,6 +182,14 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 				filtre,
 				paginacioParams);
 	}
+	
+	@Override
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
+	public List<Long> findReglaIds(Long entitatId,ReglaFiltreDto filtre) {
+		return delegateService.findReglaIds(
+				entitatId, 
+				filtre);
+	}
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_ADMIN)

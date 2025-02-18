@@ -753,7 +753,8 @@ public class RegistreServiceImpl implements RegistreService {
 			Order order;
 			while (orders.hasNext()) {
 				order = orders.next();
-				sqlOrder.append(order.getProperty()).append(" ").append(order.getDirection());
+				String camp = "r." + order.getProperty();
+				sqlOrder.append(camp).append(" ").append(order.getDirection());
 				if (orders.hasNext()) {
 					sqlOrder.append(", ");
 				}

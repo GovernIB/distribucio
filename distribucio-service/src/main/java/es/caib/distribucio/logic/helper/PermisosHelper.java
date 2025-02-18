@@ -6,6 +6,7 @@ package es.caib.distribucio.logic.helper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,9 +31,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
+import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 
 /**
@@ -49,6 +52,8 @@ public class PermisosHelper {
 	private MutableAclService aclService;
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private CacheHelper cacheHelper;
 
 	public void assignarPermisUsuari(
 			String userName,
@@ -343,6 +348,12 @@ public class PermisosHelper {
 						permis.setId((Long)ace.getId());
 						permis.setPrincipalNom(principal);
 						permis.setPrincipalTipus(PrincipalTipusEnumDto.USUARI);
+						DadesUsuari usuari = cacheHelper.findUsuariAmbCodi(principal);
+						if(usuari != null) {
+							permis.setPrincipalDescripcio(usuari.getNomSencer()!=null ? usuari.getNomSencer() : principal);
+						} else {
+							permis.setPrincipalDescripcio(principal);
+						}
 						permisosUsuari.put(principal, permis);
 					}
 				} else if (ace.getSid() instanceof GrantedAuthoritySid) {
@@ -352,6 +363,7 @@ public class PermisosHelper {
 						permis = new PermisDto();
 						permis.setId((Long)ace.getId());
 						permis.setPrincipalNom(grantedAuthority);
+						permis.setPrincipalDescripcio(grantedAuthority);
 						permis.setPrincipalTipus(PrincipalTipusEnumDto.ROL);
 						permisosRol.put(grantedAuthority, permis);
 					}
@@ -497,6 +509,38 @@ public class PermisosHelper {
 
 	public interface ObjectIdentifierExtractor<T> {
 		public Long getObjectIdentifier(T object);
+	}
+
+	public List<PermisDto> ordenarPermisos(PaginacioParamsDto paginacioParams, List<PermisDto> permisos) {
+
+		if (paginacioParams == null || permisos == null) {
+			return permisos;
+		}
+		final String ordre = paginacioParams.getOrdres() != null && !paginacioParams.getOrdres().isEmpty() && paginacioParams.getOrdres().get(0).getCamp() != null
+				? paginacioParams.getOrdres().get(0).getCamp() : null;
+
+		if (ordre == null) {
+			return permisos;
+		}
+		var desc = paginacioParams.getOrdres().get(0).getDireccio().equals(PaginacioParamsDto.OrdreDireccioDto.DESCENDENT);
+		Comparator<PermisDto> comp = null;
+		switch (ordre) {
+			case "tipus":
+				comp = desc ? PermisDto.decending(PermisDto.sortByTipus()) : PermisDto.sortByTipus();
+				break;
+			case "principalNom":
+				comp = desc ? PermisDto.decending(PermisDto.sortByPrincipalNom()) : PermisDto.sortByPrincipalNom();
+				break;
+			case "principalDescripcio":
+				comp = desc ? PermisDto.decending(PermisDto.sortByPrincipalDescripcio()) : PermisDto.sortByPrincipalDescripcio();
+				break;
+			default:
+				break;
+		}
+		if (comp != null) {
+			permisos.sort(comp);
+		}
+		return permisos;
 	}
 
 }

@@ -224,7 +224,7 @@ public interface ReglaService {
 	PaginaDto<ReglaDto> findAmbFiltrePaginat(Long entitatId, ReglaFiltreDto filtre, PaginacioParamsDto paginacioParams);
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	List<Long> findReglaIds(Long entitatId,ReglaFiltreDto filtre);	
+	public List<Long> findReglaIds(Long entitatId,ReglaFiltreDto filtre);	
 
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
 	public List<RegistreSimulatAccionDto> simularReglaAplicacio(

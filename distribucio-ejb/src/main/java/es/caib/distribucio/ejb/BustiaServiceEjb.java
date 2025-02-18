@@ -101,6 +101,12 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	}	
 
 	@Override
+	@RolesAllowed("**")
+	public BustiaDto findByIdAmbPermisosOrdenats(Long entitatId, Long id, PaginacioParamsDto paginacio) {
+		return delegateService.findByIdAmbPermisosOrdenats(entitatId, id, paginacio);
+	}
+	
+	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public List<BustiaDto> findAmbUnitatCodiAdmin(
 			Long entitatId,

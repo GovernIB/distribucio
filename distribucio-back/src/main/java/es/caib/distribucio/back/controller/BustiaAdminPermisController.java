@@ -4,7 +4,6 @@
 package es.caib.distribucio.back.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,9 +22,8 @@ import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
-import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 
 /**
@@ -59,20 +57,9 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			@PathVariable Long bustiaId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		List<PermisDto> permisos = bustiaService.findById(entitatActual.getId(), bustiaId).getPermisos();
+		PaginacioParamsDto paginacioParams = DatatablesHelper.getPaginacioDtoFromRequest(request);
+		List<PermisDto> permisos = bustiaService.findByIdAmbPermisosOrdenats(entitatActual.getId(), bustiaId, paginacioParams).getPermisos();
 		// Completa la informació dels permisos amb el nom complet per usuaris
-		Map<String, UsuariPermisDto> usuarisBustia = bustiaService.getUsuarisPerBustia(bustiaId, true, false);
-		if (permisos != null) {
-			for (PermisDto permis : permisos) {
-				if (PrincipalTipusEnumDto.USUARI.equals(permis.getPrincipalTipus())) {
-					UsuariPermisDto usuari = usuarisBustia.get(permis.getPrincipalNom());
-					if (usuari != null) {
-						permis.setPrincipalDescripcio(usuari.getNom());	
-					}
-						
-				}
-			}
-		}
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				permisos,

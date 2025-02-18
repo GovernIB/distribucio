@@ -566,7 +566,37 @@ public class BustiaServiceImpl implements BustiaService {
 		// Ompl els permisos
 		List<BustiaDto> llista = new ArrayList<BustiaDto>();
 		llista.add(resposta);
-		omplirPermisosPerBusties(llista, true);
+		omplirPermisosPerBusties(llista, true, null);
+		return resposta;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public BustiaDto findByIdAmbPermisosOrdenats(
+			Long entitatId,
+			Long id,
+			PaginacioParamsDto paginacio) {
+		logger.trace("Cercant la bústia ("
+				+ "entitatId=" + entitatId + ", "
+				+ "id=" + id + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
+				entitat,
+				id,
+				false);
+		BustiaDto resposta = bustiaHelper.toBustiaDto(
+				bustia,
+				false,
+				false,
+				true);
+		// Ompl els permisos
+		List<BustiaDto> llista = new ArrayList<BustiaDto>();
+		llista.add(resposta);
+		omplirPermisosPerBusties(llista, true, paginacio);
 		return resposta;
 	}
 
@@ -586,7 +616,7 @@ public class BustiaServiceImpl implements BustiaService {
 		// Ompl els permisos
 		List<BustiaDto> llista = new ArrayList<BustiaDto>();
 		llista.add(resposta);
-		omplirPermisosPerBusties(llista, true);
+		omplirPermisosPerBusties(llista, true, null);
 		return resposta;
 	}
 	
@@ -610,7 +640,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				true);
-		omplirPermisosPerBusties(resposta, false);
+		omplirPermisosPerBusties(resposta, false, null);
 		return resposta;
 	}
 	
@@ -634,7 +664,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				true);
-		omplirPermisosPerBusties(resposta, false);
+		omplirPermisosPerBusties(resposta, false, null);
 		return resposta;
 	}
 
@@ -707,7 +737,7 @@ public class BustiaServiceImpl implements BustiaService {
 								true);
 					}
 				});
-		omplirPermisosPerBusties(resultPagina.getContingut(), true);
+		omplirPermisosPerBusties(resultPagina.getContingut(), true, null);
 		return resultPagina;
 	}
 
@@ -1992,7 +2022,8 @@ public class BustiaServiceImpl implements BustiaService {
 
 	private void omplirPermisosPerBusties(
 			List<? extends BustiaDto> busties,
-			boolean ambLlistaPermisos) {
+			boolean ambLlistaPermisos,
+			PaginacioParamsDto paginacio) {
 		// Filtra les entitats per saber els permisos per a l'usuari actual
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<BustiaDto> bustiesRead = new ArrayList<BustiaDto>();
@@ -2019,8 +2050,14 @@ public class BustiaServiceImpl implements BustiaService {
 			Map<Long, List<PermisDto>> permisos = permisosHelper.findPermisos(
 					ids,
 					BustiaEntity.class);
-			for (BustiaDto bustia: busties)
-				bustia.setPermisos(permisos.get(bustia.getId()));
+			for (BustiaDto bustia: busties) {
+				List<PermisDto> permisosBustia = permisos.get(bustia.getId());
+
+				permisosHelper.ordenarPermisos(paginacio, permisosBustia);
+				
+				bustia.setPermisos(permisosBustia);
+			
+			}
 		}
 	}
 	

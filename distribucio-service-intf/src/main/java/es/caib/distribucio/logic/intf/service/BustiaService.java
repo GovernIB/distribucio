@@ -151,6 +151,21 @@ public interface BustiaService {
 	
 	
 	/**
+	 * Consulta una bústia donat el seu id i amb els permisos ordenats.
+	 * 
+	 * @param entitatId
+	 *            Id de l'entitat.
+	 * @param id
+	 *             Atribut id de la bústia a trobar.
+	 * @return La bústia amb l'id especificat o null si no s'ha trobat.
+	 * @throws NotFoundException
+	 *             Si no s'ha trobat l'objecte amb l'id especificat.
+	 */
+	@PreAuthorize("isAuthenticated()")
+	public BustiaDto findByIdAmbPermisosOrdenats(Long entitatId, Long id, PaginacioParamsDto paginacio);
+	
+	
+	/**
 	 * Consulta les bústies donat el codi de la seva unitat.
 	 * 
 	 * @param entitatId
