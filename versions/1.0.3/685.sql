@@ -1,4 +1,4 @@
--- Oracle
+-- Afegir un plugin de consulta de serveis #685
 
 -- Oracle
 
