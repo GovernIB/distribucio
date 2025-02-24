@@ -1421,14 +1421,12 @@ public class RegistreHelper {
 				logger.trace(">>> Abans de cridar backoffice WS "+ backofficeDesti.getCodi());
 				backofficeClient.comunicarAnotacionsPendents(ids);
 				
-				// RegistreNumero sí si només n'hi ha 1, però no et liis i menja kiwi				
+				// RegistreNumero sí si només n'hi ha 1				
 				if (ids.size()==1) {					
 					String identificador = ids.get(0).getIndetificador();
-					Long registreId = Long.valueOf(identificador);
-					RegistreEntity registre = registreRepository.findById(registreId).get();
 					integracioHelper.addAccioOk(
 							IntegracioHelper.INTCODI_BACKOFFICE,
-							registre.getNumero(),
+							identificador,
 							accioDescripcio,
 							usuari,
 							accioParams,

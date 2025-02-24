@@ -114,7 +114,7 @@
 					data-refresh-tancar="true" 
 					data-data-table-id="serveis" 
 					class="btn btn-default">
-				<span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="procediment.taula.actualitzar"/> ...
+				<span id="span-refresh" class="fa fa-refresh"></span>&nbsp; <spring:message code="servei.taula.actualitzar"/> ...
 			</a>
 		</div>
 	</c:if>
