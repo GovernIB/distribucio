@@ -28,7 +28,7 @@ ALTER TABLE dis_servei ADD CONSTRAINT dis_servei_unitat_fk FOREIGN KEY (id_unita
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SERVEIS',null,'23','Plugin de consulta de serveis');
 
 INSERT INTO dis_config (key, value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
-VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', 0, 'TEXT', NULL, 1, 'dis_super', null, 0);
+VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', 0, 'TEXT', NULL, 1, NULL, null, 0);
 
 INSERT INTO dis_config
 (key, value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
@@ -72,7 +72,7 @@ Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SE
 
 INSERT INTO dis_config
 ("key", value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, "position")
-VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', false, 'TEXT', NULL, true, 'dis_super', '2024-05-14 11:50:22.533', 0);
+VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', false, 'TEXT', NULL, true, NULL, '2024-05-14 11:50:22.533', 0);
 
 INSERT INTO dis_config
 ("key", value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, "position")

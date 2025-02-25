@@ -28,7 +28,7 @@ ALTER TABLE dis_servei ADD CONSTRAINT dis_servei_unitat_fk FOREIGN KEY (id_unita
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SERVEIS',null,'23','Plugin de consulta de serveis');
 
 INSERT INTO dis_config (key, value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
-VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', 0, 'TEXT', NULL, 1, 'dis_super', null, 0);
+VALUES('es.caib.distribucio.plugin.servei.class', 'es.caib.distribucio.plugin.caib.servei.ServeiPluginRolsac', 'Classe de plugin de serveis', 'SERVEIS', 0, 'TEXT', NULL, 1, NULL, null, 0);
 
 INSERT INTO dis_config
 (key, value, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
@@ -69,7 +69,7 @@ VALUES('es.caib.distribucio.plugin.rolsac.service.url', 'https://dev.caib.es/rol
 
 INSERT INTO DIS_CONFIG
 ("KEY", VALUE, DESCRIPTION, GROUP_CODE, "POSITION", JBOSS_PROPERTY, TYPE_CODE, LASTMODIFIEDBY_CODI, CONFIGURABLE, ENTITAT_CODI, LASTMODIFIEDDATE)
-VALUES('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis', '0 0 17 * * *', 'Especificar l''expressió ''cron'' indicant l''interval de temps de les actualitzacions dels serveis en segon pla. Per defecte s''aplicarà el cron corresponent per actualitzar cada divendres a les 15:30h', 'SCHEDULLED_PROCEDIMENT', 7, 0, 'TEXT', 'dis_super', 0, NULL, TIMESTAMP '2025-01-09 15:39:49.120000');
+VALUES('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis', '0 0 17 * * *', 'Especificar l''expressió ''cron'' indicant l''interval de temps de les actualitzacions dels serveis en segon pla. Per defecte s''aplicarà el cron corresponent per actualitzar cada divendres a les 15:30h', 'SCHEDULLED_PROCEDIMENT', 7, 0, 'TEXT', NULL, 0, NULL, TIMESTAMP '2025-01-09 15:39:49.120000');
 
 INSERT INTO DIS_CONFIG_GROUP
 (CODE, PARENT_CODE, "POSITION", DESCRIPTION)
