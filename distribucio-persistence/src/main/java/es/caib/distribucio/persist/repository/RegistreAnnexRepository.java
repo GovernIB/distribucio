@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
+import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 
@@ -51,6 +52,7 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ "	RegistreAnnexEntity ra "
 			+ " join ra.firmes raf"
 			+ " where "
+			+ " (ra.registre.entitat = :entitat) and "
 			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
 			+ " (:esNullTipusFirma = true or raf.tipus = :tipusFirma) and "
@@ -59,6 +61,7 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ " (:esNullFitxerTipusMime = true or lower(ra.fitxerTipusMime) like lower('%'||:fitxerTipusMime||'%')) "
 			+ "")
 	public Page<RegistreAnnexEntity> findByFiltrePaginat(
+			@Param("entitat") EntitatEntity entitat, 
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
 			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,

@@ -34,6 +34,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
 import es.caib.pluginsib.arxiu.api.ContingutOrigen;
 import es.caib.pluginsib.arxiu.api.DocumentEstatElaboracio;
@@ -60,6 +61,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private ConfigService configService;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+	@Autowired
+	private EntitatService entitatService;
 
 	@Override
 	public void enviarAnotacioRegistreEntrada(
@@ -76,8 +79,11 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		} else {
 			entitatOArrel = entitat;
 		}
-		EntitatDto entitatDto = new EntitatDto();
-		entitatDto.setCodi(entitatOArrel);
+		EntitatDto entitatDto = entitatService.findByCodiDir3(entitatOArrel);
+		if (entitatDto == null) {
+			entitatDto = new EntitatDto();
+			entitatDto.setCodi(entitatOArrel);
+		}
 		configService.setEntitatPerPropietat(entitatDto);
 		String registreEntradaNumero = (registreEntrada != null) ? registreEntrada.getNumero() : null;
 		String registreEntradaExtracte = (registreEntrada != null) ? registreEntrada.getExtracte() : null;

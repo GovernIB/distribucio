@@ -25,7 +25,9 @@ import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 
@@ -87,10 +89,12 @@ public class AnnexosAdminController extends BaseAdminController {
 	public DatatablesResponse datatable(
 			HttpServletRequest request) {		
 		AnnexosFiltreCommand filtreCommand = getFiltreCommand(request);
-
+		EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+		
 		return DatatablesHelper.getDatatableResponse(
 				request,
-				annexosService.findAdmin(						
+				annexosService.findAdmin(
+						entitatActual.getId(),
 						AnnexosFiltreCommand.asDto(filtreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
 				"id",
@@ -104,9 +108,31 @@ public class AnnexosAdminController extends BaseAdminController {
 			boolean multiple,
 			Model model) {		
 		
-		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = new ResultatAnnexDefinitiuDto();
 		
-		if (resultatAnnexDefinitiu.isOk()) {			
+		try {
+			resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
+		} catch (SistemaExternException ex) {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							"annex.accio.marcardefinitiu.errorArxiu",
+							new Object[] {id, ex.getMessage()}
+					));
+			
+			if (!multiple) {
+				return getAjaxControllerReturnValueSuccess(
+						request,
+						"redirect:../../annexosAdmin",
+						"annex.accio.marcardefinitiu.accioCompletada"				
+				);		
+			}
+			
+			return "";
+		}
+		
+		if (resultatAnnexDefinitiu.isOk()) {		
 			MissatgesHelper.success(
 					request, 
 					getMessage(
@@ -140,16 +166,16 @@ public class AnnexosAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {		
 		
-		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
-		
-		RequestSessionHelper.actualitzarObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO,
-				null);		
+		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);	
 		
 		for (Long id: ids) {
 			this.guardarDefinitiu(request, id, true, model);
 		}
+
+		RequestSessionHelper.actualitzarObjecteSessio(
+				request,
+				SESSION_ATTRIBUTE_SELECCIO,
+				null);		
 		
 		return getAjaxControllerReturnValueSuccess(
 				request,

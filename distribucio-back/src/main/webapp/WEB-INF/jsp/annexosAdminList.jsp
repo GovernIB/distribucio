@@ -39,7 +39,12 @@ pageContext.setAttribute(
 	<link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	
 	<style type="text/css">
-		
+		table.dataTable thead > tr.selectable > :first-child, table.dataTable tbody > tr.selectable > :first-child {
+			cursor: pointer;
+		}
+		table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
+		    color: #333;
+		}
 		span.badge {
 			font-size: 1.2rem !important;
 			padding-right: 1.2rem !important;

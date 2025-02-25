@@ -38,6 +38,7 @@ public interface AnnexosService {
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public PaginaDto<RegistreAnnexDto> findAdmin(			
+			Long entitatId, 
 			AnnexosFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 	

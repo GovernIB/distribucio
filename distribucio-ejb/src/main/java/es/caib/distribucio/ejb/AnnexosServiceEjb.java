@@ -28,10 +28,11 @@ public class AnnexosServiceEjb extends AbstractServiceEjb<AnnexosService> implem
 	private AnnexosService delegateService = null;
 
 	@Override
-	public PaginaDto<RegistreAnnexDto> findAdmin(			
+	public PaginaDto<RegistreAnnexDto> findAdmin(
+			Long entitatId,
 			AnnexosFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException {
-		return delegateService.findAdmin(filtre, paginacioParams);
+		return delegateService.findAdmin(entitatId, filtre, paginacioParams);
 	}
 	
 	@Override

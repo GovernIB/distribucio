@@ -27,10 +27,12 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
+import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
@@ -63,12 +65,17 @@ public class AnnexosServiceImpl implements AnnexosService {
 	
 	@Transactional(readOnly = true)
 	@Override
-	public PaginaDto<RegistreAnnexDto> findAdmin(			
+	public PaginaDto<RegistreAnnexDto> findAdmin(
+			Long entitatId,
 			AnnexosFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) {
 		logger.debug("Consulta d'annexos per usuari admin ("				
 				+ "filtre=" + filtre + ")");		
-		
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
 		
 		String tipusFirma = "";
 		ArxiuFirmaTipusEnumDto arxiuFirmaTipusEnumDto = filtre.getTipusFirma();
@@ -81,6 +88,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 				
 				
 				registreAnnexRepository.findByFiltrePaginat(
+						entitat,
 						!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
 						filtre.getNumero(),
 						filtre.getArxiuEstat()==null,
@@ -141,7 +149,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 		RegistreAnnexEntity registreAnnex = registreAnnexRepository.findById(annexId).get();		
 		RegistreEntity registre = registreAnnex.getRegistre();
 		Long anotacioId = registre.getId();
-		
+		String arxiuDistribucioUuid = null;
 		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = new ResultatAnnexDefinitiuDto();
 		resultatAnnexDefinitiu.setAnnexId(annexId);
 		resultatAnnexDefinitiu.setAnotacioNumero(anotacioId);
@@ -155,33 +163,38 @@ public class AnnexosServiceImpl implements AnnexosService {
 			return resultatAnnexDefinitiu;						
 		}
 		
-		// Si el registre està tancat ja no cal continuar:
-		ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registre.getId());
-		if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {	
-			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.expedientTancat");
-			resultatAnnexDefinitiu.setOk(false);
-			return resultatAnnexDefinitiu;								
-		}
 		
-		// Si el document està com a definitiu en l'arxiu posar com a definitiu a distribució:		
-		Document document = pluginHelper.arxiuDocumentConsultar(
-				registreAnnex.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
-		if (document.getEstat().equals(DocumentEstat.DEFINITIU)) {
-			registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);	
-			registreAnnexRepository.save(registreAnnex);
-			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.definitiuArxiu");
-			resultatAnnexDefinitiu.setOk(false);
-			return resultatAnnexDefinitiu;	
-		}
-
-		// Si el document s'ha mogut a un expedient del backoffice no continuem
-		String expedientUuid = document.getExpedientMetadades().getIdentificador();
-//		String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
-		String arxiuDistribucioUuid = registre.getArxiuUuid();
-		if (!expedientUuid.equals(arxiuDistribucioUuid)) {			
-			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.mogutBackoffice");
-			resultatAnnexDefinitiu.setOk(false);
-			return resultatAnnexDefinitiu;	
+		try {
+			// Si el registre està tancat ja no cal continuar:
+			ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registre.getId());
+			if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {	
+				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.expedientTancat");
+				resultatAnnexDefinitiu.setOk(false);
+				return resultatAnnexDefinitiu;								
+			}
+		
+			// Si el document està com a definitiu en l'arxiu posar com a definitiu a distribució:
+			Document document = pluginHelper.arxiuDocumentConsultar(
+					registreAnnex.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
+			if (document.getEstat().equals(DocumentEstat.DEFINITIU)) {
+				registreAnnex.setArxiuEstat(AnnexEstat.DEFINITIU);	
+				registreAnnexRepository.save(registreAnnex);
+				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.definitiuArxiu");
+				resultatAnnexDefinitiu.setOk(false);
+				return resultatAnnexDefinitiu;	
+			}
+			
+			// Si el document s'ha mogut a un expedient del backoffice no continuem
+			String expedientUuid = document.getExpedientMetadades().getIdentificador();
+	//		String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
+			arxiuDistribucioUuid = registre.getArxiuUuid();
+			if (!expedientUuid.equals(arxiuDistribucioUuid)) {			
+				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.mogutBackoffice");
+				resultatAnnexDefinitiu.setOk(false);
+				return resultatAnnexDefinitiu;	
+			}
+		} catch (SistemaExternException ex) {
+			throw ex;
 		}
 
 		// Si arribem fins aquí podem reintentar guardar l'annex  a l'arxiu i provarà de validar i firmar en cas que sigui necessari
