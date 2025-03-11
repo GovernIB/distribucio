@@ -376,8 +376,8 @@
 					<spring:message code="regla.list.columna.unitat.organitzativa"/>
 					<script id="procesErrorTemplate" type="text/x-jsrender">
 						{{:codiAndNomUnitatOrganitzativa}}		
-						{{if codiAndNomUnitatOrganitzativa!=null}}				
-							{{if estatUnitatOrganitzativa!='V'}}																
+						{{if codiAndNomUnitatOrganitzativa}}			
+							{{if estatUnitatOrganitzativa != 'V'}}																
 								<span class="fa fa-warning" title="<spring:message code="regla.list.columna.unitat.organitzativa"/>"> </span>							
 							{{/if}}
 						{{/if}}						
