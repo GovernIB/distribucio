@@ -110,7 +110,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				first = false;
 			}
 		}
-		String accioDescripcio = "Nou registre d'entrada "+ registreEntrada.getNumero();
+		String accioDescripcio = "Nou registre d'entrada ";
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
@@ -152,7 +152,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 						registreId);
 			}
 			contextregistreAnotacioCrearIProcessar.stop();
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_BUSTIAWS,
 					registreEntrada.getNumero(),

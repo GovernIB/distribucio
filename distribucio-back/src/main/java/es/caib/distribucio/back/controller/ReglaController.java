@@ -292,7 +292,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		reglaService.updateActiva(
+		ReglaDto regla = reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
 				true);
@@ -300,7 +300,7 @@ public class ReglaController  extends BaseAdminController {
 				request,
 				"redirect:../../regla",
 				"regla.controller.activada.ok",
-				new Object[] {reglaId});
+				new Object[] {regla.getNom()});
 	}
 	@RequestMapping(value = "/enableMultiple", method = RequestMethod.GET)
 	public String enableMultiple(
@@ -322,7 +322,7 @@ public class ReglaController  extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long reglaId) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		reglaService.updateActiva(
+		ReglaDto regla = reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
 				false);
@@ -330,7 +330,7 @@ public class ReglaController  extends BaseAdminController {
 				request,
 				"redirect:../../regla",
 				"regla.controller.desactivada.ok",
-				new Object[] {reglaId});
+				new Object[] {regla.getNom()});
 	}
 	@RequestMapping(value = "/disableMultiple", method = RequestMethod.GET)
 	public String disableMultiple(
@@ -397,14 +397,14 @@ public class ReglaController  extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		
 		try {
-			reglaService.delete(
+			ReglaDto regla = reglaService.delete(
 					entitatActual.getId(),
 					reglaId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../regla",
 					"regla.controller.esborrada.ok",
-					new Object[] {reglaId});
+					new Object[] {regla.getNom()});
 		} catch (RuntimeException ve) {
 			return getAjaxControllerReturnValueError(
 					request,

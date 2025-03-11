@@ -119,7 +119,6 @@ public class PluginHelper {
 			String contenidorUuid = getDistribucioPlugin().expedientCrear(
 					expedientNumero,
 					unitatOrganitzativaCodi);
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -182,7 +181,6 @@ public class PluginHelper {
 					uuidExpedient,
 					documentEniRegistrableDto, 
 					procedimentCodi);
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -501,7 +499,6 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			getArxiuPlugin().expedientEsborrar(idContingut);
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					registreNumero,
@@ -544,7 +541,6 @@ public class PluginHelper {
 		try {			
 			getArxiuPlugin().expedientReobrir(
 					registre.getExpedientArxiuUuid());
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					registre.getNumero(),
@@ -588,7 +584,6 @@ public class PluginHelper {
 		try {			
 			getArxiuPlugin().expedientTancar(
 					registre.getExpedientArxiuUuid());
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_ARXIU,
 					registre.getNumero(),
@@ -645,7 +640,6 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -709,7 +703,6 @@ public class PluginHelper {
 		long t0 = System.currentTimeMillis();
 		try {
 			getDistribucioPlugin().documentSetDefinitiu(annex.getFitxerArxiuUuid());
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					annex.getRegistre().getNumero(),
@@ -815,7 +808,6 @@ public class PluginHelper {
 						validateSignatureResponse.getSignType(),
 						validateSignatureResponse.getSignFormat()));
 			}
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_VALIDASIG,
 					registreNumero,
@@ -1303,7 +1295,6 @@ public class PluginHelper {
 						agrupacio,
 						contingutOut);
 			}
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					registreNumero,
@@ -1350,7 +1341,6 @@ public class PluginHelper {
 						new ByteArrayInputStream(contingut));
 			}
 			accioParams.put("idRetornat", gestioDocumentalId);
-			// RegistreNumero Afegit!!!
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
 					registreNumero,
