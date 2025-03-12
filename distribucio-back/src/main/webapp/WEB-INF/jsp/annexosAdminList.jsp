@@ -61,15 +61,13 @@ pageContext.setAttribute(
 		span.select2-container {
 			width: 100% !important;
 		}
-		
-		button#netejarFiltre, 
-		button#filtrar {
-			width: 50%;
-		}
 	</style>
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$('#netejarFiltre').click(function(e) {
+				$('#arxiuEstat').val('ESBORRANY').change();
+			});
 			$(document).on('hidden.bs.modal', function (event) {				
 				var data = sessionStorage.getItem('selectedElements');
 				if (data != null) {
@@ -160,7 +158,7 @@ pageContext.setAttribute(
 				<dis:inputText name="numero" inline="true" placeholderKey="annex.admin.filtre.numero"/>
 			</div>	
 			<div class="col-md-3">
-				<dis:inputSelect name="arxiuEstat" optionEnum="AnnexEstat" emptyOption="true" placeholderKey="annex.admin.filtre.estat" inline="true"/>
+				<dis:inputSelect name="arxiuEstat" optionEnum="AnnexEstat" netejar="false" emptyOption="true" placeholderKey="annex.admin.filtre.estat" inline="true"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputSelect name="tipusFirma" optionEnum="ArxiuFirmaTipusEnumDto" emptyOption="true" placeholderKey="annex.admin.filtre.tipusFirma" inline="true"/>
@@ -177,8 +175,7 @@ pageContext.setAttribute(
 				<dis:inputText name="fitxerTipusMime" inline="true" placeholderKey="annex.admin.filtre.fitxerTipusMime"/>
 			</div>	
 			<div class="col-md-4 d-flex justify-content-end">
-				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>

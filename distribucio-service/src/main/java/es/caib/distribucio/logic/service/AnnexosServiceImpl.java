@@ -185,13 +185,15 @@ public class AnnexosServiceImpl implements AnnexosService {
 			}
 			
 			// Si el document s'ha mogut a un expedient del backoffice no continuem
-			String expedientUuid = document.getExpedientMetadades().getIdentificador();
-	//		String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
-			arxiuDistribucioUuid = registre.getArxiuUuid();
-			if (!expedientUuid.equals(arxiuDistribucioUuid)) {			
-				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.mogutBackoffice");
-				resultatAnnexDefinitiu.setOk(false);
-				return resultatAnnexDefinitiu;	
+			if (document.getExpedientMetadades() != null) {
+				String expedientUuid = document.getExpedientMetadades().getIdentificador();
+				//String arxiuDistribucioUuid = registreAnnex.getFitxerArxiuUuid();
+				arxiuDistribucioUuid = registre.getArxiuUuid();
+				if (!expedientUuid.equals(arxiuDistribucioUuid)) {	
+					resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.mogutBackoffice");
+					resultatAnnexDefinitiu.setOk(false);
+					return resultatAnnexDefinitiu;	
+				}
 			}
 		} catch (SistemaExternException ex) {
 			throw ex;

@@ -30,6 +30,7 @@ import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -397,7 +398,8 @@ public class AnnexosAdminController extends BaseAdminController {
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
-			filtreCommand = new AnnexosFiltreCommand();			
+			filtreCommand = new AnnexosFiltreCommand();		
+			filtreCommand.setArxiuEstat(AnnexEstat.ESBORRANY);
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
