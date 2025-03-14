@@ -60,6 +60,7 @@ import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
+import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
@@ -116,9 +117,11 @@ public class PluginHelper {
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		long t0 = System.currentTimeMillis();
 		try {
+			TemporalThreadStorage.set("numeroRegistre", registreNumero);
 			String contenidorUuid = getDistribucioPlugin().expedientCrear(
 					expedientNumero,
 					unitatOrganitzativaCodi);
+			TemporalThreadStorage.clear();
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -129,6 +132,7 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 			return contenidorUuid;
 		} catch (Exception ex) {
+			TemporalThreadStorage.clear();
 			String errorDescripcio = "Error al crear contenidor pels documents annexos";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -174,13 +178,14 @@ public class PluginHelper {
 			if(throwException){
 				throw new RuntimeException("Mock exception when saving annex in arxiu");
 			}
-			
+			TemporalThreadStorage.set("numeroRegistre", registreNumero);
 			String documentUuid = getDistribucioPlugin().saveAnnexAsDocumentInArxiu(
 					annex,
 					unitatOrganitzativaCodi,
 					uuidExpedient,
 					documentEniRegistrableDto, 
 					procedimentCodi);
+			TemporalThreadStorage.clear();
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -191,6 +196,7 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 			return documentUuid;
 		} catch (Exception ex) {
+			TemporalThreadStorage.clear();
 			String errorDescripcio = "Error al crear el document annex (Titol=" + annex.getTitol() + ") a dins el contenidor";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -639,7 +645,9 @@ public class PluginHelper {
 		accioParams.put("ambContingut", Boolean.valueOf(ambContingut).toString());
 		long t0 = System.currentTimeMillis();
 		try {
+			TemporalThreadStorage.set("numeroRegistre", registreNumero);
 			Document documentDetalls = getDistribucioPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
+			TemporalThreadStorage.clear();
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					registreNumero,
@@ -650,6 +658,7 @@ public class PluginHelper {
 					System.currentTimeMillis() - t0);
 			return documentDetalls;
 		} catch (Exception ex) {
+			TemporalThreadStorage.clear();
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
@@ -674,6 +683,7 @@ public class PluginHelper {
 		
 		try {
 			DocumentContingut documentImprimible = getDistribucioPlugin().documentImprimible(fitxerArxiuUuid);
+			TemporalThreadStorage.clear();
 			if (documentImprimible != null) {
 				fitxerDto.setNom(titol);
 				fitxerDto.setContentType(documentImprimible.getTipusMime());
@@ -681,6 +691,7 @@ public class PluginHelper {
 				fitxerDto.setTamany(documentImprimible.getContingut().length);
 			}
 		} catch (Exception e) {
+			TemporalThreadStorage.clear();
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_ARXIU,
 					"Error consultant el contingut imprimible del document " + fitxerArxiuUuid,

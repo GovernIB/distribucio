@@ -50,6 +50,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
+import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.pluginsib.arxiu.api.ArxiuException;
 import es.caib.pluginsib.arxiu.api.ContingutArxiu;
 import es.caib.pluginsib.arxiu.api.ContingutOrigen;
@@ -94,7 +95,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private IArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
-
+		
 	public DistribucioPluginArxiuImpl() {
 		super();
 	}
@@ -578,8 +579,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		//creating info for integracio logs
 		String accioDescripcio = annex.getFitxerArxiuUuid() != null ?
-				"Modificar documenta annex"
-				: "Creant document annex";
+				"Modificar document annex " +  obtenirNumeroRegistre() 
+				: "Creant document annex"  + obtenirNumeroRegistre();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", annex.getId().toString());
 		accioParams.put("titol", annex.getTitol());
@@ -677,7 +678,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			return annexFitxerArxiuUuid;
 		} catch (Exception ex) {
 			
-			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + " i amb estat ";
+			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + obtenirNumeroRegistre() + " i amb estat ";
 			if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 				errorDescripcio = errorDescripcio + "esborrany. ";
 			} else {
@@ -1049,7 +1050,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			boolean ambContingut) throws SistemaExternException {
 		Document documentDetalls = null;
 		
-		String accioDescripcio = "Obtenint detalls del document";
+		String accioDescripcio = "Obtenint detalls del document " + obtenirNumeroRegistre();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuUuid", arxiuUuid);
 		accioParams.put("versio", versio);
@@ -1070,7 +1071,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (ex.getCause() != null && !ex.getCause().getClass().equals(ex.getClass())) {
 				excMsg += ": " + ex.getCause().getMessage();
 			}
-			String errorDescripcio = "Error al obtenir detalls del document: " + excMsg;
+			String errorDescripcio = "Error al obtenir detalls del document " + obtenirNumeroRegistre() + ": " + excMsg;
 			integracioAddAccioError(
 					integracioArxiuCodi,
 					accioDescripcio,
@@ -1510,6 +1511,13 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				break;
 			}
 		}
+	}
+	
+	private String obtenirNumeroRegistre() {
+		if (TemporalThreadStorage.get("numeroRegistre") != null)
+			return " de l'anotació " + TemporalThreadStorage.get("numeroRegistre");
+		
+		return "";
 	}
 
 

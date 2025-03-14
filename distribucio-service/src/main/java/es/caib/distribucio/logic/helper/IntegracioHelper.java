@@ -126,7 +126,7 @@ public class IntegracioHelper {
 			long tempsResposta) {
 		this.addAccioOk(
 				integracioCodi,				
-				descripcio + " " + registreNumero, 
+				descripcio + " de l'anotació " + registreNumero, 
 				usuariIntegracio, 
 				parametres, 
 				tipus, 
@@ -187,7 +187,7 @@ public class IntegracioHelper {
 			Throwable throwable) {
 		this.addAccioError(
 				integracioCodi,
-				descripcio + " " + registreNumero, 
+				descripcio + " de l'anotació " + registreNumero, 
 				usuariIntegracio,
 				parametres,
 				tipus,

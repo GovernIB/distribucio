@@ -131,6 +131,7 @@ import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
+import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.pluginsib.arxiu.api.ContingutArxiu;
 import es.caib.pluginsib.arxiu.api.ContingutTipus;
@@ -1925,6 +1926,7 @@ public class RegistreHelper {
 		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
 				try {
+					TemporalThreadStorage.set("numeroRegistre", registre.getNumero());
 					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
 				} catch (Exception ex) {
 					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
