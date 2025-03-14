@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.helper.AnnexosAdminHelper;
+import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper.Converter;
@@ -36,6 +38,7 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentEstat;
@@ -62,6 +65,8 @@ public class AnnexosServiceImpl implements AnnexosService {
 	private PluginHelper pluginHelper;
 	@Autowired
 	private RegistreHelper registreHelper;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -207,19 +212,42 @@ public class AnnexosServiceImpl implements AnnexosService {
 				registreHelper.getDistribucioRegistreAnotacio(registre.getId());		
 		String unitatOrganitzativaCodi = distribucioRegistreAnotacio.getUnitatOrganitzativaCodi();
 		
-		exceptions = registreHelper.crearExpedientArxiu(
-				distribucioRegistreAnotacio, 
-				unitatOrganitzativaCodi, 
-				arxiuDistribucioUuid);
-		
+		if (distribucioRegistreAnotacio.getExpedientArxiuUuid() == null)
+			exceptions = registreHelper.crearExpedientArxiu(
+					distribucioRegistreAnotacio, 
+					unitatOrganitzativaCodi, 
+					arxiuDistribucioUuid);
+
 		if (exceptions != null && !exceptions.isEmpty()) {
 			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
 			resultatAnnexDefinitiu.setOk(false);
 			return resultatAnnexDefinitiu;						
 		}		
 		
-		resultatAnnexDefinitiu.setKeyMessage("L'annex s'ha marcat com a definitiu");
-		resultatAnnexDefinitiu.setOk(false);
+		try {
+			DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
+					registreAnnex, 
+					DistribucioRegistreAnnex.class);
+			
+			List<String> titolsAnnexes = annexosAdminHelper.getTitolsAnnexes(registre);
+			
+			boolean titolRepetit = Collections.frequency(titolsAnnexes, distribucioRegistreAnnex.getTitol()) > 1;
+
+			registreHelper.crearAnnexInArxiu(
+					annexId, 
+					distribucioRegistreAnnex, 
+					unitatOrganitzativaCodi,
+					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
+					distribucioRegistreAnotacio.getProcedimentCodi(), 
+					titolRepetit);
+		} catch (Throwable th) {
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
+			resultatAnnexDefinitiu.setOk(false);
+			return resultatAnnexDefinitiu;
+		}
+		
+		resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");
+		resultatAnnexDefinitiu.setOk(true);
 		return resultatAnnexDefinitiu;				
 	}
 	

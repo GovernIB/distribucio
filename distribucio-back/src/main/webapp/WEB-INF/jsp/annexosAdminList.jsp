@@ -221,11 +221,21 @@ pageContext.setAttribute(
 				<th data-col-name="registreId" data-visible="false"></th>				
 				<th data-col-name="registreNumero" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/></th>				
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
-				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>
+				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>	
+				<th data-col-name="arxiuEstat" data-template="#cellArxiuEstatTemplate" width="10%"><spring:message code="annexos.admin.columna.arxiuEstat"/>
+					<script id="cellArxiuEstatTemplate" type="text/x-jsrender">
+                		{{if arxiuEstat == 'ESBORRANY'}}
+                    		<spring:message code="annex.estat.ESBORRANY"/>
+                		{{else arxiuEstat == 'DEFINITIU'}}
+                    		<spring:message code="annex.estat.DEFINITIU"/>	
+               		 	{{else}}
+                    		<span class="fa fa-warning text-warning" title="<spring:message code="registre.annex.detalls.camp.arxiu.uuid.buit.avis"/>"></span>
+               		 	{{/if}}
+           			 </script>
+				</th>
 				<th data-col-name="fitxerTipusMime" width="10%"><spring:message code="annexos.admin.columna.fitxerTipusMime"/></th>
 				<th data-col-name="signaturaInfo" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
-				<th data-col-name="tipusFirma" data-visible="false"></th>		
-				<th data-col-name="arxiuEstat" data-visible="false"></th>
+				<th data-col-name="tipusFirma" data-visible="false"></th>	
 				<th data-col-name="fitxerExtension" data-visible="false"></th>
 				<th data-col-name="firmaCsv" data-visible="false"></th>												
 				

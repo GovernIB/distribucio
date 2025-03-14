@@ -752,15 +752,13 @@ public class RegistreHelper {
 						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");				
 				exceptions = new ArrayList<>();
+				List<String> titolsAnnexes = new ArrayList<>();
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
 					try {
-						boolean titolRepetit = false;
-						List<String> titolsAnnexes = new ArrayList<>();
-						if (titolsAnnexes.contains(annex.getTitol())) {
-							titolRepetit = true;
-						}else {
-							titolsAnnexes.add(annex.getTitol());
-						}
+						boolean titolRepetit = titolsAnnexes.contains(annex.getTitol());
+				        if (!titolRepetit) {
+				            titolsAnnexes.add(annex.getTitol());
+				        }
 						self.crearAnnexInArxiu(
 								annex.getId(), 
 								annex, 

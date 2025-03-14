@@ -101,4 +101,6 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("esNullFitxerTipusMime") boolean esNullFitxerTipusMime,
 			@Param("fitxerTipusMime") String fitxerTipusMime);
 	
+	@Query("Select ra.titol from RegistreAnnexEntity ra where ra.registre = :registre")
+	public List<String> findTitolByRegistre(@Param("registre") RegistreEntity registre);
 }
