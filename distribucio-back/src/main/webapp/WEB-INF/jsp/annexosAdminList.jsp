@@ -190,7 +190,7 @@ pageContext.setAttribute(
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu dropdown-left">
 					<c:if test="${isRolActualAdministrador}">					
-						<li><a href="annexosAdmin/guardarDefinitiuMultiple" data-toggle="ajax">
+						<li><a href="annexosAdmin/guardarDefinitiuMultiple">
 							<span class="fa fa-pencil-square"></span>
 							<spring:message code="annexos.admin.boto.guardar.definitiu.multiple"/>
 						</a></li>	
@@ -266,7 +266,7 @@ pageContext.setAttribute(
 								{{/if}}		
 
 								{{if arxiuEstat!='DEFINITIU'}}
-									<li><a href="annexosAdmin/{{:id}}/guardarDefinitiu" data-toggle="ajax"><span class="fa fa-pencil-square"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.guardar.definitiu"/></a></li>								
+									<li><a href="annexosAdmin/{{:id}}/guardarDefinitiu"><span class="fa fa-pencil-square"></span>&nbsp;&nbsp;<spring:message code="annexos.admin.boto.guardar.definitiu"/></a></li>								
 								{{/if}}
 						
 							</ul>

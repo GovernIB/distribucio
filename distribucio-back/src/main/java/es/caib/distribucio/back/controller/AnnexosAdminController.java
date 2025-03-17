@@ -113,7 +113,7 @@ public class AnnexosAdminController extends BaseAdminController {
 		
 		try {
 			resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			MissatgesHelper.error(
 					request, 
 					getMessage(
@@ -123,11 +123,7 @@ public class AnnexosAdminController extends BaseAdminController {
 					));
 			
 			if (!multiple) {
-				return getAjaxControllerReturnValueSuccess(
-						request,
-						"redirect:../../annexosAdmin",
-						"annex.accio.marcardefinitiu.accioCompletada"				
-				);		
+				return "redirect:../../annexosAdmin";
 			}
 			
 			return "";
@@ -152,11 +148,7 @@ public class AnnexosAdminController extends BaseAdminController {
 		}			
 		
 		if (!multiple) {
-			return getAjaxControllerReturnValueSuccess(
-					request,
-					"redirect:../../annexosAdmin",
-					"annex.accio.marcardefinitiu.accioCompletada"				
-			);		
+			return "redirect:../../annexosAdmin";
 		}
 		
 		return "";
@@ -172,18 +164,23 @@ public class AnnexosAdminController extends BaseAdminController {
 		for (Long id: ids) {
 			this.guardarDefinitiu(request, id, true, model);
 		}
+		
+		if (ids.isEmpty()) {
+			MissatgesHelper.warning(
+					request, 
+					getMessage(
+							request, 
+							"annexos.admin.missatge.fila.no.seleccionada"
+					));
+			
+		}
 
 		RequestSessionHelper.actualitzarObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO,
 				null);		
 		
-		return getAjaxControllerReturnValueSuccess(
-				request,
-				"redirect:../../annexosAdmin",
-				"annex.accio.marcardefinitiu.accioCompletada"				
-		);		
-		
+		return "redirect:../annexosAdmin";
 	}
 	
 	@RequestMapping(value = "/select", method = RequestMethod.GET)

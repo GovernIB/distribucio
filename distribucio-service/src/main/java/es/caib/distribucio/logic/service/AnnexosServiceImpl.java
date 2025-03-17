@@ -200,7 +200,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 					return resultatAnnexDefinitiu;	
 				}
 			}
-		} catch (SistemaExternException ex) {
+		} catch (Exception ex) {
 			throw ex;
 		}
 
@@ -240,10 +240,8 @@ public class AnnexosServiceImpl implements AnnexosService {
 					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
 					distribucioRegistreAnotacio.getProcedimentCodi(), 
 					titolRepetit);
-		} catch (Throwable th) {
-			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
-			resultatAnnexDefinitiu.setOk(false);
-			return resultatAnnexDefinitiu;
+		} catch (Exception ex) {
+			throw ex;
 		}
 		
 		resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");
