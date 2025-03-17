@@ -378,7 +378,7 @@
 						{{:codiAndNomUnitatOrganitzativa}}		
 						{{if codiAndNomUnitatOrganitzativa}}			
 							{{if estatUnitatOrganitzativa != 'V'}}																
-								<span class="fa fa-warning" title="<spring:message code="regla.list.columna.unitat.organitzativa"/>"> </span>							
+								<span class="fa fa-warning" title="<spring:message code="regla.list.unitatObsoleta"/>"> </span>							
 							{{/if}}
 						{{/if}}						
 					</script>
