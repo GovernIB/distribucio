@@ -30,6 +30,7 @@ import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
@@ -240,6 +241,16 @@ public class AnnexosServiceImpl implements AnnexosService {
 					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
 					distribucioRegistreAnotacio.getProcedimentCodi(), 
 					titolRepetit);
+			
+			ValidacioFirmaEnum estatValidacioFirma = distribucioRegistreAnnex.getValidacioFirmaEstat();
+			
+			if (estatValidacioFirma != null && 
+					(estatValidacioFirma.equals(ValidacioFirmaEnum.FIRMA_INVALIDA) || estatValidacioFirma.equals(ValidacioFirmaEnum.ERROR_VALIDANT))) {
+				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorFirma");
+				resultatAnnexDefinitiu.setOk(false);
+				return resultatAnnexDefinitiu;		
+			}
+			
 			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");
 			resultatAnnexDefinitiu.setOk(true);
 		} catch (Exception ex) {
