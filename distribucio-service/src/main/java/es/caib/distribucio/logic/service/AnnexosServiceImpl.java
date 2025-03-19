@@ -29,7 +29,6 @@ import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
-import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -153,11 +152,11 @@ public class AnnexosServiceImpl implements AnnexosService {
 		logger.debug("Guardar com a definitiu l'annex " + annexId);		
 		RegistreAnnexEntity registreAnnex = registreAnnexRepository.findById(annexId).get();		
 		RegistreEntity registre = registreAnnex.getRegistre();
-		Long anotacioId = registre.getId();
 		String arxiuDistribucioUuid = null;
 		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = new ResultatAnnexDefinitiuDto();
 		resultatAnnexDefinitiu.setAnnexId(annexId);
-		resultatAnnexDefinitiu.setAnotacioNumero(anotacioId);
+		resultatAnnexDefinitiu.setAnnexTitol(registreAnnex.getTitol());
+		resultatAnnexDefinitiu.setAnotacioNumero(registre.getNumero());
 		
 		
 		// Comprovar si a Distribució hi ha l'annex ja marcat com a definitiu:
@@ -221,6 +220,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 		if (exceptions != null && !exceptions.isEmpty()) {
 			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
 			resultatAnnexDefinitiu.setOk(false);
+			resultatAnnexDefinitiu.setThrowable(exceptions.get(0));
 			return resultatAnnexDefinitiu;						
 		}		
 		
@@ -240,12 +240,13 @@ public class AnnexosServiceImpl implements AnnexosService {
 					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
 					distribucioRegistreAnotacio.getProcedimentCodi(), 
 					titolRepetit);
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");
+			resultatAnnexDefinitiu.setOk(true);
 		} catch (Exception ex) {
-			throw ex;
-		}
-		
-		resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");
-		resultatAnnexDefinitiu.setOk(true);
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorUpdate");
+			resultatAnnexDefinitiu.setOk(false);
+			resultatAnnexDefinitiu.setThrowable(ex);
+		}		
 		return resultatAnnexDefinitiu;				
 	}
 	

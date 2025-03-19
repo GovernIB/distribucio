@@ -12,15 +12,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class ResultatAnnexDefinitiuDto extends AuditoriaDto {
 
-	private Long anotacioNumero;
+	private String anotacioNumero;
 	private Long annexId;
+	private String annexTitol;
 	private boolean ok;
-	private String keyMessage;	
+	private String keyMessage;
+	private Throwable throwable;
 
-	public Long getAnotacioNumero() {
+	public String getAnotacioNumero() {
 		return anotacioNumero;
 	}
-	public void setAnotacioNumero(Long anotacioNumero) {
+	public void setAnotacioNumero(String anotacioNumero) {
 		this.anotacioNumero = anotacioNumero;
 	}
 	public Long getAnnexId() {
@@ -28,6 +30,12 @@ public class ResultatAnnexDefinitiuDto extends AuditoriaDto {
 	}
 	public void setAnnexId(Long annexId) {
 		this.annexId = annexId;
+	}
+	public String getAnnexTitol() {
+		return annexTitol;
+	}
+	public void setAnnexTitol(String annexTitol) {
+		this.annexTitol = annexTitol;
 	}
 	public boolean isOk() {
 		return ok;
@@ -42,6 +50,12 @@ public class ResultatAnnexDefinitiuDto extends AuditoriaDto {
 		this.keyMessage = keyMessage;
 	}
 
+	public Throwable getThrowable() {
+		return throwable;
+	}
+	public void setThrowable(Throwable throwable) {
+		this.throwable = throwable;
+	}
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -27,7 +27,6 @@ import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
-import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
@@ -119,7 +118,9 @@ public class AnnexosAdminController extends BaseAdminController {
 					getMessage(
 							request, 
 							"annex.accio.marcardefinitiu.errorArxiu",
-							new Object[] {id, ex.getMessage()}
+							new Object[] {
+									id, 
+									ex.getMessage()}
 					));
 			
 			if (!multiple) {
@@ -129,13 +130,21 @@ public class AnnexosAdminController extends BaseAdminController {
 			return "";
 		}
 		
-		if (resultatAnnexDefinitiu.isOk()) {		
+		if (resultatAnnexDefinitiu.isOk()) {	
 			MissatgesHelper.success(
 					request, 
 					getMessage(
 							request, 
 							resultatAnnexDefinitiu.getKeyMessage(),
-							new Object[] {resultatAnnexDefinitiu.getAnnexId(), resultatAnnexDefinitiu.getAnotacioNumero()}
+							new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero()}
+					));
+		} else if (resultatAnnexDefinitiu.getThrowable() != null) {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							resultatAnnexDefinitiu.getKeyMessage(),
+							new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero(), resultatAnnexDefinitiu.getThrowable()}
 					));
 		} else {
 			MissatgesHelper.warning(
@@ -143,7 +152,7 @@ public class AnnexosAdminController extends BaseAdminController {
 					getMessage(
 							request, 
 							resultatAnnexDefinitiu.getKeyMessage(),
-							new Object[] {resultatAnnexDefinitiu.getAnnexId(), resultatAnnexDefinitiu.getAnotacioNumero()}
+							new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero()}
 					));
 		}			
 		
