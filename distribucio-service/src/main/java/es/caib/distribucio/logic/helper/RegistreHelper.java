@@ -966,7 +966,8 @@ public class RegistreHelper {
 					String message = throwable.getMessage() != null ? throwable.getMessage() : String.valueOf(throwable);
 					if (message.contains("El formato de la firma no es valido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
 							|| message.contains("El formato de la firma no es válido(urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError)") 
-							|| message.contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
+							|| message.contains("El documento OOXML no está firmado(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")
+							|| message.contains("El documento OOXML no está firmado.(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)")) {
 						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
 					} else {
 						logger.error("Error validant les firmes del document", e);

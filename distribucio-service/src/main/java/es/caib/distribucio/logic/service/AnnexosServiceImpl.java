@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,9 @@ public class AnnexosServiceImpl implements AnnexosService {
 	private RegistreHelper registreHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	@Transactional(readOnly = true)
 	@Override
@@ -201,7 +206,10 @@ public class AnnexosServiceImpl implements AnnexosService {
 				}
 			}
 		} catch (Exception ex) {
-			throw ex;
+			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorArxiu");
+			resultatAnnexDefinitiu.setOk(false);
+			resultatAnnexDefinitiu.setThrowable(ex);
+			return resultatAnnexDefinitiu;
 		}
 
 		// Si arribem fins aquí podem reintentar guardar l'annex  a l'arxiu i provarà de validar i firmar en cas que sigui necessari
@@ -249,6 +257,14 @@ public class AnnexosServiceImpl implements AnnexosService {
 				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.errorFirma");
 				resultatAnnexDefinitiu.setOk(false);
 				return resultatAnnexDefinitiu;		
+			}
+			
+			entityManager.refresh(registreAnnex);
+			
+			if (registreAnnex.getArxiuEstat().equals(AnnexEstat.ESBORRANY)) {
+				resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.senseFirma");
+				resultatAnnexDefinitiu.setOk(false);
+				return resultatAnnexDefinitiu;
 			}
 			
 			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.updated");

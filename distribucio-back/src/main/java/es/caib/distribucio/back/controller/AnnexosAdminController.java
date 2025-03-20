@@ -108,27 +108,7 @@ public class AnnexosAdminController extends BaseAdminController {
 			boolean multiple,
 			Model model) {		
 		
-		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = new ResultatAnnexDefinitiuDto();
-		
-		try {
-			resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
-		} catch (Exception ex) {
-			MissatgesHelper.error(
-					request, 
-					getMessage(
-							request, 
-							"annex.accio.marcardefinitiu.errorArxiu",
-							new Object[] {
-									id, 
-									ex.getMessage()}
-					));
-			
-			if (!multiple) {
-				return "redirect:../../annexosAdmin";
-			}
-			
-			return "";
-		}
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
 		
 		if (resultatAnnexDefinitiu.isOk()) {	
 			MissatgesHelper.success(
