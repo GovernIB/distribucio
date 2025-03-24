@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
@@ -431,6 +432,14 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 						descartats++;
 					}
 				}
+			} catch (MailSendException e) { 
+				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + destinatari + " amb email " + email +": " + e.getMessage());
+				
+				if (e.getMessage().contains("Invalid Addresses")) {
+		            logger.warn("Direcció de correu no vàlida: {}. Esborrant moviments associats.", email);
+		            
+		            contingutMovimentEmailRepository.deleteAll(moviments);
+		        }
 			} catch (Exception e) {
 				logger.error("Error enviant l'email d'avis de " + moviments.size() + " moviments agrupats al destinatari " + destinatari + " amb email " + email +": " + e.getMessage());
 				errors++;
