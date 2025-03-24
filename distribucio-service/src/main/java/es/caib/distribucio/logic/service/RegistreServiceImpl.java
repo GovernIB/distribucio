@@ -416,8 +416,8 @@ public class RegistreServiceImpl implements RegistreService {
 				"darrerMovimentData",
 				new String[] {"darrerMoviment.createdDate"});
 		mapeigOrdenacio.put(
-				"darrerMovimentUsuari.nom",
-				new String[] {"remitent.nom"});
+				"darrerMovimentUsuari",
+				new String[] {"darrerMoviment.remitent.nom"});
 		mapeigOrdenacio.put(
 				"darrerMovimentComentari",
 				new String[] {"darrerMoviment.comentari"});
@@ -895,7 +895,7 @@ public class RegistreServiceImpl implements RegistreService {
 				new String[] {"darrerMoviment.createdDate"});
 		mapeigOrdenacio.put(
 				"darrerMovimentUsuari.nom",
-				new String[] {"remitent.nom"});
+				new String[] {"remitent"});
 		mapeigOrdenacio.put(
 				"darrerMovimentComentari",
 				new String[] {"darrerMoviment.comentari"});

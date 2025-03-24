@@ -489,7 +489,7 @@ $(document).ready(function() {
 					<spring:message code="bustia.pendent.columna.titol"/>
 				</th>							
 				<th data-col-name="numeroOrigen" style="max-width: 10%; min-width: 50px"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari.nom"style="max-width: 10%; min-width: 50px" data-orderable="false"><spring:message code="bustia.pendent.columna.remitent"/></th>
+				<th data-col-name="darrerMovimentUsuari.nom"style="max-width: 10%; min-width: 50px" data-orderable="true"><spring:message code="bustia.pendent.columna.remitent"/></th>
 				<th data-col-name="data" style="min-width: 55px" data-converter="datetime" ><spring:message code="bustia.pendent.columna.data"/></th>
 				
 				<th data-col-name="procesError" style="max-width: 10%; min-width: 50px" data-orderable="false" data-template="#procesErrorTemplate">
