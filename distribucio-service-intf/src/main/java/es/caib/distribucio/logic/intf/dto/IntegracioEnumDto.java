@@ -17,5 +17,6 @@ public enum IntegracioEnumDto {
 	GESDOC,
 	BUSTIAWS,
 	PROCEDIMENT,
+	SERVEI,
 	BACKOFFICE
 }

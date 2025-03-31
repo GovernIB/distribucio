@@ -138,6 +138,11 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		// Comprova si hi ha hagut errors consultant els procediments
 		if (errorConsultaProcediments) {
 			progres.setEstat(UpdateProgressDto.Estat.ERROR);
+			String errorMessage = exConsultaProcediments.getMessage();
+			if (errorMessage != null)
+				progres.setErrorMsg(errorMessage);
+			else
+				progres.setErrorMsg(errMsg);
 			throw new Exception(errMsg, exConsultaProcediments);
 		}
 		if (procedimentList == null || procedimentList.isEmpty()) {

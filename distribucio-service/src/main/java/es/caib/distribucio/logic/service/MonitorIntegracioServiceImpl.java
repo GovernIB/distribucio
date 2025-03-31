@@ -285,6 +285,13 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				diagnostic.setCorrecte(true); 
 				break;
 				
+			case "SERVEI":
+				pluginHelper.serveiFindByCodiDir3("A04019281");
+				accioDescripcio = "Consulta dels serveis pel codi DIR3";
+				diagnostic.setProva(accioDescripcio);
+				diagnostic.setCorrecte(true); 
+				break;
+				
 }
 		} catch (Exception e) {
 			StringBuilder err = new StringBuilder();

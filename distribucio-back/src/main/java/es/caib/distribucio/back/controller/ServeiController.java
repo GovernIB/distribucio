@@ -158,8 +158,8 @@ public class ServeiController extends BaseAdminController{
 		}
 		return getAjaxControllerReturnValueSuccess(
 				request,
-				"procedimentUpdateForm",
-				"procediment.controller.actualitzar.ok");
+				"serveiUpdateForm",
+				"servei.controller.actualitzar.ok");
 	}
 
 	@RequestMapping(value = "/actualitzar/progres", method = RequestMethod.GET)

@@ -128,7 +128,7 @@ public class ServeiServiceImpl implements ServeiService{
 				serveiList = pluginHelper.serveiFindByCodiDir3(entitat.getCodiDir3());				
 			} catch (Exception e) {
 				exConsultaServeis = e;
-				errMsg = "Error consultant els procediments per l'entitat: " + entitat.getCodiDir3();
+				errMsg = "Error consultant els serveis per l'entitat: " + entitat.getCodiDir3();
 				errorConsultaServeis = reintents++ >= 3;				
 			}
 		} 
@@ -137,6 +137,11 @@ public class ServeiServiceImpl implements ServeiService{
 		// Comprova si hi ha hagut errors consultant els serveis
 		if (errorConsultaServeis) {
 			progres.setEstat(UpdateProgressDto.Estat.ERROR);
+			String errorMessage = exConsultaServeis.getMessage();
+			if (errorMessage != null)
+				progres.setErrorMsg(errorMessage);
+			else
+				progres.setErrorMsg(errMsg);
 			throw new Exception(errMsg, exConsultaServeis);
 		}
 		if (serveiList == null || serveiList.isEmpty()) {

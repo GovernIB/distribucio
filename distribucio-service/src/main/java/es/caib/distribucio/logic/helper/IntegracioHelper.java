@@ -81,6 +81,9 @@ public class IntegracioHelper {
 						INTCODI_DISTRIBUCIO));
 		integracions.add(
 				novaIntegracio(
+						INTCODI_SERVEI));
+		integracions.add(
+				novaIntegracio(
 						INTCODI_BACKOFFICE));
 				
 		return integracions;
@@ -112,6 +115,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_PROCEDIMENT));
+		integracions.add(
+				novaIntegracio(
+						INTCODI_SERVEI));
 				
 		return integracions;
 	}
@@ -268,6 +274,8 @@ public class IntegracioHelper {
 			integracio.setNom("Bústia WS");
 		} else if (INTCODI_PROCEDIMENT.equals(codi)) {
 			integracio.setNom("Procediments");
+		} else if (INTCODI_SERVEI.equals(codi)) {
+			integracio.setNom("Serveis");
 		} else if (INTCODI_DISTRIBUCIO.equals(codi)) {
 			integracio.setNom("Distribució");
 		} else if (INTCODI_BACKOFFICE.equals(codi)) {
