@@ -1648,7 +1648,6 @@ public class RegistreServiceImpl implements RegistreService {
     	}
     }
 	
-	@SuppressWarnings("incomplete-switch")
 	@Transactional
 	@Override
 	public void canviEstat(
@@ -1663,6 +1662,7 @@ public class RegistreServiceImpl implements RegistreService {
 			entitatDto.setCodi(registre.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 			switch (estat) {
+			case PENDENT:
 			case REBUDA:
 				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_REBUDA,
