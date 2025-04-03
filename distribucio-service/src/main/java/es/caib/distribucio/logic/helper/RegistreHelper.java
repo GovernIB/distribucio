@@ -897,13 +897,17 @@ public class RegistreHelper {
 					
 					// Si encara no està a l'Arxiu o està en estat esborrany recupera el fitxer de firma de la gesió documental.
 					if (annex.getFitxerArxiuUuid() == null || AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
-						if (!"TF05".equals(firma.getTipus())) { // <> TF05 CAdDES attached
+						if (documentContingut != null && "TF04".equals(firma.getTipus())) { // <> TF04 CAdDES dettached (unica firma realment dettached)
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
+						}
+						
+						if (documentContingut == null) {
 							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
 						}
 					} else {
 						// Altrament obté la 1a firma de l'Arxiu
 						es.caib.pluginsib.arxiu.api.Firma firmaArxiu = this.getFirma(annex, 0);
-						if (firmaArxiu != null) {
+						if (firmaArxiu != null && firmaArxiu.getTipus().equals(FirmaTipus.CADES_DET)) { // És la unica firma realment detached (2 fitxers separats)
 							firmaContingut = firmaArxiu.getContingut();
 						}
 					}
@@ -1212,9 +1216,9 @@ public class RegistreHelper {
 						RegistreAnnexFirmaEntity firma = firmes.get(firmaIndex);
 						if (pluginHelper.isValidaSignaturaPluginActiu()) {
 							byte[] documentContingut = document.getContingut() != null? document.getContingut().getContingut() : null;
-							byte[] firmaContingut = arxiuFirma.getContingut();
-							if ("TF05".equals(firma.getTipus())) { // TF05 CAdDES attached
-								firmaContingut = null;
+							byte[] firmaContingut = null;
+							if ("TF04".equals(firma.getTipus())) { // TF04 CAdDES dettached ((unica firma en dos fitxers separats)
+								firmaContingut = arxiuFirma.getContingut();
 							}
 							final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
 							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();

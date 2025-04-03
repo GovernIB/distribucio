@@ -1375,6 +1375,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						contingut.setTipusMime("application/xml");
 					}
 				}
+			} else if (contingut.getContingut() == null && primeraFirma.getTipus() != null && FirmaTipus.XADES_DET.equals(primeraFirma.getTipus())) { 
+				contingut.setContingut(primeraFirma.getContingut()); // XAdES Dettached ve en un únic fitxer .xsig
 			}
 		}
 		DocumentFormat format = null;
