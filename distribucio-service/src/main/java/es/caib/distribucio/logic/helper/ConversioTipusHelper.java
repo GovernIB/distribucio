@@ -231,7 +231,7 @@ public class ConversioTipusHelper {
 	private String getSignaturaInfo(RegistreAnnexEntity source) {
 		String signaturaInfo = "";
 		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
-		if (firmes.size()>0) {
+		if (firmes != null && firmes.size() > 0) {
 			RegistreAnnexFirmaEntity firma = firmes.get(0);
 			String tipusFirma = firma.getTipus();
 			String perfilFirma = firma.getPerfil();
@@ -245,7 +245,7 @@ public class ConversioTipusHelper {
 		String tipusFirmaSt = "";
 		ArxiuFirmaTipusEnumDto tipusFirma = null;
 		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
-		if (firmes.size()>0) {
+		if (firmes != null && firmes.size() > 0) {
 			RegistreAnnexFirmaEntity firma = firmes.get(0);
 			tipusFirmaSt = firma.getTipus();	
 			tipusFirma = ArxiuConversions.toArxiuFirmaTipus(tipusFirmaSt);			
