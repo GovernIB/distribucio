@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -815,23 +814,22 @@ public class RegistreUserController extends BaseUserController {
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		
-		
+				
 		// Valida les adreces
 		String adreces = this.revisarAdreces(request, command.getAddresses(), bindingResult);
-		// Valida l'estat del registre
-		RegistreDto registreDto = registreService.findOne(
-				entitatActual.getId(), 
-				command.getContingutId(), 
-				false,
-				RolHelper.getRolActual(request));
-		this.revisarEstatPerEnviarViaEmail(request, entitatActual, registreDto, bindingResult);
-
-		if (bindingResult.hasErrors()) {
-			return "registreViaEmail";
-		}
 
 		try {
+			// Valida l'estat del registre
+			RegistreDto registreDto = registreService.findOne(
+					entitatActual.getId(), 
+					command.getContingutId(), 
+					false,
+					RolHelper.getRolActual(request));
+			this.revisarEstatPerEnviarViaEmail(request, entitatActual, registreDto, bindingResult);
+
+			if (bindingResult.hasErrors()) {
+				return "registreViaEmail";
+			}
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					command.getContingutId(),
@@ -844,14 +842,15 @@ public class RegistreUserController extends BaseUserController {
 					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
 			return modalUrlTancar();
 		} catch (Exception exception) {
+			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
 			String errMsg = getMessage(
 					request, 	
 					"bustia.controller.pendent.contingut.enviat.email.ko",
-					new Object[] {ExceptionUtils.getRootCauseMessage(exception)});
+					new Object[] {thr.getMessage()});
 			MissatgesHelper.error(
 					request,
 					errMsg);
-			logger.error(errMsg);
+			logger.error(errMsg, exception);
 			return "registreViaEmail";
 		}
 		
@@ -905,11 +904,13 @@ public class RegistreUserController extends BaseUserController {
 			response = AjaxHelper.generarAjaxFormOk();
 			response.setMissatge(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
 		} catch (Exception exception) {
-			response = AjaxHelper.generarAjaxError(
-					getMessage(
-						request, 
-						"bustia.controller.pendent.contingut.enviat.email.ko",
-						new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
+			String errMsg = getMessage(
+					request, 	
+					"bustia.controller.pendent.contingut.enviat.email.ko",
+					new Object[] {thr.getMessage()});
+			logger.error(errMsg, exception);
+			response = AjaxHelper.generarAjaxError(errMsg);
 		} finally {
 			this.sortirSemafor(registreId);
 		}
@@ -963,12 +964,14 @@ public class RegistreUserController extends BaseUserController {
 					RolHelper.getRolActual(request));
 			missatge.append(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));	
 		} catch (Exception exception) {
+			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
 			correcte = false;
-			missatge.append(
-					getMessage(
-							request, 
-							"bustia.controller.pendent.contingut.enviat.email.ko",
-							new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+			String errMsg = getMessage(
+					request, 	
+					"bustia.controller.pendent.contingut.enviat.email.ko",
+					new Object[] {thr.getMessage()});
+			logger.error(errMsg, exception);
+			missatge.append(errMsg);
 		} finally {
 			this.sortirSemafor(registreId);
 		}
@@ -990,11 +993,13 @@ public class RegistreUserController extends BaseUserController {
 				missatge.append(getMessage(request, "bustia.controller.pendent.contingut.marcat.processat.ok"));	
 			} catch (Exception exception) {
 				correcte = false;
-				missatge.append(
-						getMessage(
-								request, 
-								"bustia.pendent.accio.marcar.processat.error",
-								new Object[] {ExceptionUtils.getRootCauseMessage(exception)}));
+				Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
+				String errMsg = getMessage(
+						request, 	
+						"bustia.pendent.accio.marcar.processat.error",
+						new Object[] {thr.getMessage()});
+				logger.error(errMsg, exception);
+				missatge.append(errMsg);
 			}
 		} else {
 			missatge.append(getMessage(request, "registre.user.controller.marcar.processat.cancelat"));
