@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -41,4 +42,13 @@ public interface UsuariBustiaFavoritRepository extends JpaRepository<UsuariBusti
 			"where ub.bustia.id = :bustia")
 	public List<UsuariBustiaFavoritEntity> findByBustia (
 			@Param("bustia") long bustia);
+	
+	@Modifying
+	@Query(value = "update dis_bustia_favorit " +
+			"set createdby_codi = :codiNou, lastmodifiedby_codi = :codiNou, usuari_codi = :codiNou" +
+			"where createdby_codi = :codiAntic or lastmodifiedby_codi = :codiAntic or usuari_codi = :codiAntic",
+			nativeQuery = true)
+	void updateUsuariAuditoria(
+			@Param("codiAntic") String codiAntic, 
+			@Param("codiNou") String codiNou);
 }

@@ -205,4 +205,7 @@ public interface AplicacioService {
 	 */
 	public UsuariDto updateUsuari(String codi);
 
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
+	public Long updateUsuariCodi(String codiAntic, String codiNou);
+	
 }

@@ -80,5 +80,14 @@ public interface ConfigRepository extends JpaRepository<ConfigEntity, String> {
 			+ "and c.entitatCodi = null"
 			)
 	public List<ConfigEntity> findConfigurablesAmbEntitatNull();
+	
+	@Modifying
+	@Query(value = "update dis_config " +
+			"set lastmodifiedby_codi = :codiNou " +
+			"where lastmodifiedby_codi = :codiAntic",
+			nativeQuery = true)
+	int updateUsuariAuditoria(
+			@Param("codiAntic") String codiAntic, 
+			@Param("codiNou") String codiNou);
 
 }
