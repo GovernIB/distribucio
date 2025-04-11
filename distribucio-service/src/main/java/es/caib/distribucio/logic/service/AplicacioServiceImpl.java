@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -140,6 +141,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private ReglaRepository reglaRepository;
 	@Autowired
 	private ServeiRepository serveiRepository;
+	@Autowired
+	private AclCache aclCache;
 	
 	@Override
 	public String getVersioActual() {
@@ -495,7 +498,13 @@ public class AplicacioServiceImpl implements AplicacioService {
 		
 		// Actualitzam les referencis a l'usuari a taules:
 		registresModificats += updateUsuariReferencies(codiAntic, codiNou);
-				
+		
+		cacheHelper.evictUsuariByCodi(codiAntic);
+		cacheHelper.evictUsuariByCodi(codiNou);
+		cacheHelper.evictEntitatsAccessiblesUsuari(codiAntic);
+		cacheHelper.evictEntitatsAccessiblesUsuari(codiNou);
+		aclCache.clearCache();
+		
 		usuariRepository.delete(usuariAntic);
 		
 		return registresModificats;
