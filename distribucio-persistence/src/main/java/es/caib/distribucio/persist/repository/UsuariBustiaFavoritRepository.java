@@ -45,10 +45,20 @@ public interface UsuariBustiaFavoritRepository extends JpaRepository<UsuariBusti
 	
 	@Modifying
 	@Query(value = "update dis_bustia_favorit " +
-			"set createdby_codi = :codiNou, lastmodifiedby_codi = :codiNou, usuari_codi = :codiNou" +
-			"where createdby_codi = :codiAntic or lastmodifiedby_codi = :codiAntic or usuari_codi = :codiAntic",
+			"set usuari_codi = :codiNou " +
+			"where usuari_codi = :codiAntic",
 			nativeQuery = true)
-	void updateUsuariAuditoria(
+	void updateUsuariCodi(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
+	
+	@Modifying
+	@Query(value = "update dis_bustia_favorit " +
+			"set createdby_codi = :codiNou, lastmodifiedby_codi = :codiNou " +
+			"where createdby_codi = :codiAntic or lastmodifiedby_codi = :codiAntic ",
+			nativeQuery = true)
+	int updateUsuariAuditoria(
+			@Param("codiAntic") String codiAntic, 
+			@Param("codiNou") String codiNou);
+
 }

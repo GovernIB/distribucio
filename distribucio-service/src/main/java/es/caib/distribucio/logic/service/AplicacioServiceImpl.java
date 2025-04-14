@@ -60,6 +60,7 @@ import es.caib.distribucio.persist.repository.RegistreInteressatRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
+import es.caib.distribucio.persist.repository.UsuariBustiaFavoritRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -141,6 +142,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private ReglaRepository reglaRepository;
 	@Autowired
 	private ServeiRepository serveiRepository;
+	@Autowired
+	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
 	@Autowired
 	private AclCache aclCache;
 	
@@ -542,8 +545,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 		logger.info("> Llista backoffices: " + (System.currentTimeMillis() - t0) + " ms");
 		
 		t0 = System.currentTimeMillis();
-		registresModificats += bustiaDefaultRepository.updateUsuariCodi(codiAntic, codiNou);
-		logger.info("> Busties per defecte: " + (System.currentTimeMillis() - t0) + " ms");
+		registresModificats += usuariBustiaFavoritRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
 		
 		t0 = System.currentTimeMillis();
 		registresModificats += configRepository.updateUsuariAuditoria(codiAntic, codiNou);
@@ -629,6 +632,10 @@ public class AplicacioServiceImpl implements AplicacioService {
 		serveiRepository.updateUsuariAuditoria(codiAntic, codiNou);
 		logger.info("> Llista serveis: " + (System.currentTimeMillis() - t0) + " ms");
 		
+		t0 = System.currentTimeMillis();
+		usuariBustiaFavoritRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
+		
 		return registresModificats;
 	}
 
@@ -644,6 +651,10 @@ public class AplicacioServiceImpl implements AplicacioService {
 		Long t0 = System.currentTimeMillis();
 		bustiaDefaultRepository.updateUsuariCodi(codiAntic, codiNou);
 		logger.info("> Busties per defecte: " + (System.currentTimeMillis() - t0) + " ms");
+
+		t0 = System.currentTimeMillis();
+		usuariBustiaFavoritRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
 		
 		t0 = System.currentTimeMillis();
 		contingutMovimentEmailRepository.updateUsuariCodi(codiAntic, codiNou);
