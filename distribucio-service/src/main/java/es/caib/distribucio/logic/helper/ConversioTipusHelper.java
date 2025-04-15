@@ -160,7 +160,7 @@ public class ConversioTipusHelper {
 						target.setRegistreNumero(source.getRegistre() != null ? source.getRegistre().getNumero() : null);						
 						target.setSignaturaInfo(getSignaturaInfo(source));
 						target.setTipusFirma(getTipusFirma(source));
-						target.setRegistreId(source.getRegistre().getId());
+						target.setRegistreId(source.getRegistre() != null ? source.getRegistre().getId() : null);
 						
 						if (source.getFitxerNom() != null && source.getFitxerNom().contains(".")) {
 							target.setFitxerExtension(source.getFitxerNom().substring(source.getFitxerNom().lastIndexOf('.') +1, source.getFitxerNom().length()));
