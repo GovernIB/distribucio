@@ -147,6 +147,12 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 	public UsuariDto updateUsuari(String codi) {
 		return delegateService.updateUsuari(codi);
 	}
+	
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public Long updateUsuariCodi(String codiAntic, String codiNou) {
+		return delegateService.updateUsuariCodi(codiAntic, codiNou);
+	}
 
 	protected void setDelegateService(AplicacioService delegateService) {
 		this.delegateService = delegateService;

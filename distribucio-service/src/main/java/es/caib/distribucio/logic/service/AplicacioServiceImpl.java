@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +29,38 @@ import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.entity.BustiaDefaultEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.AclSidRepository;
+import es.caib.distribucio.persist.repository.AlertaRepository;
+import es.caib.distribucio.persist.repository.AvisRepository;
+import es.caib.distribucio.persist.repository.BackofficeRepository;
 import es.caib.distribucio.persist.repository.BustiaDefaultRepository;
+import es.caib.distribucio.persist.repository.ConfigRepository;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
+import es.caib.distribucio.persist.repository.ContingutLogParamRepository;
+import es.caib.distribucio.persist.repository.ContingutLogRepository;
+import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
+import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
+import es.caib.distribucio.persist.repository.ContingutRepository;
+import es.caib.distribucio.persist.repository.DadaRepository;
+import es.caib.distribucio.persist.repository.DominiRepository;
+import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.MetaDadaRepository;
+import es.caib.distribucio.persist.repository.MonitorIntegracioRepository;
+import es.caib.distribucio.persist.repository.ProcedimentRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
+import es.caib.distribucio.persist.repository.RegistreFirmaDetallRepository;
+import es.caib.distribucio.persist.repository.RegistreInteressatRepository;
+import es.caib.distribucio.persist.repository.RegistreRepository;
+import es.caib.distribucio.persist.repository.ReglaRepository;
+import es.caib.distribucio.persist.repository.ServeiRepository;
+import es.caib.distribucio.persist.repository.UsuariBustiaFavoritRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
@@ -69,6 +95,57 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private BustiaDefaultRepository bustiaDefaultRepository;
 	@Autowired
 	private BustiaHelper bustiaHelper;
+	
+	@Autowired
+	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
+	@Autowired
+	private ContingutMovimentRepository contingutMovimentRepository;
+	@Autowired
+	private MonitorIntegracioRepository monitorIntegracioRepository;
+	@Autowired
+	private RegistreRepository registreRepository;
+	@Autowired
+	private AlertaRepository alertaRepository;
+	@Autowired
+	private AvisRepository avisRepository;
+	@Autowired
+	private BackofficeRepository backofficeRepository;
+	@Autowired
+	private ConfigRepository configRepository;
+	@Autowired
+	private ContingutRepository contingutRepository;
+	@Autowired
+	private ContingutComentariRepository contingutComentariRepository;
+	@Autowired
+	private ContingutLogRepository contingutLogRepository;
+	@Autowired
+	private ContingutLogParamRepository contingutLogParamRepository;
+	@Autowired
+	private DadaRepository dadaRepository;
+	@Autowired
+	private DominiRepository dominiRepository;
+	@Autowired
+	private EntitatRepository entitatRepository;
+	@Autowired
+	private MetaDadaRepository metaDadaRepository;
+	@Autowired
+	private ProcedimentRepository procedimentRepository;
+	@Autowired
+	private RegistreAnnexRepository registreAnnexRepository;
+	@Autowired
+	private RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
+	@Autowired
+	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
+	@Autowired
+	private RegistreInteressatRepository registreInteressatRepository;
+	@Autowired
+	private ReglaRepository reglaRepository;
+	@Autowired
+	private ServeiRepository serveiRepository;
+	@Autowired
+	private UsuariBustiaFavoritRepository usuariBustiaFavoritRepository;
+	@Autowired
+	private AclCache aclCache;
 	
 	@Override
 	public String getVersioActual() {
@@ -399,6 +476,204 @@ public class AplicacioServiceImpl implements AplicacioService {
 		}
 		return usuari;
 	}
+	
+	@Override
+	@Transactional(timeout = 1200)
+	public Long updateUsuariCodi(String codiAntic, String codiNou) {
+		logger.trace("Actualitzant dades de l'usuari (codiAntic={}, codiNou={})", codiAntic, codiNou);
+		UsuariEntity usuariAntic = usuariRepository.findByCodi(codiAntic);
+		if (usuariAntic == null) {
+			throw new NotFoundException(codiAntic, UsuariEntity.class);
+		}
+		
+		UsuariEntity usuariNou = usuariRepository.findByCodi(codiNou);
+		if (usuariNou == null) {
+			usuariNou = cloneUsuari(codiNou, usuariAntic);
+		}
+		
+		Long registresModificats = 0L;
+		
+		// Actualitzam la informació de auditoria de les taules (createdby i lastmodifiedby):
+		registresModificats += updateUsuariAuditoria(codiAntic, codiNou);
+		
+		// Actualitazam els permisos assignats per ACL
+		registresModificats += updateUsuariPermisos(codiAntic, codiNou);
+		
+		// Actualitzam les referencis a l'usuari a taules:
+		registresModificats += updateUsuariReferencies(codiAntic, codiNou);
+		
+		cacheHelper.evictUsuariByCodi(codiAntic);
+		cacheHelper.evictUsuariByCodi(codiNou);
+		cacheHelper.evictEntitatsAccessiblesUsuari(codiAntic);
+		cacheHelper.evictEntitatsAccessiblesUsuari(codiNou);
+		aclCache.clearCache();
+		
+		usuariRepository.delete(usuariAntic);
+		
+		return registresModificats;
+	}
+	
+	private UsuariEntity cloneUsuari(
+			String codiNou,
+			UsuariEntity usuariAntic) {
+		UsuariEntity usuariNou = UsuariEntity.getBuilder(
+				codiNou,
+				usuariAntic.getNom(),
+				usuariAntic.getNif(),
+				usuariAntic.getEmail(),
+				null,
+				usuariAntic.getIdioma()).build();
+		
+		return usuariRepository.saveAndFlush(usuariNou);
+	}
+	
+	private Long updateUsuariAuditoria(String codiAntic, String codiNou) {
+		Long registresModificats = 0L;
+		
+		logger.debug(">>> UPDATE USUARIS AUDITORIA:");
+		
+		Long t0 = System.currentTimeMillis();
+		registresModificats += alertaRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista alertes: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += avisRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista avisos: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += backofficeRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista backoffices: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += usuariBustiaFavoritRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += configRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista configuracio: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Taula contingut: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutComentariRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Comentaris: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutLogRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Historic contingut: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutLogParamRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Parametres historic contingut: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutMovimentRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Moviments registres: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += contingutMovimentEmailRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Email moviments registres: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += dadaRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Dades anotacions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += dominiRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista dominis: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += entitatRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista entitats: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += metaDadaRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista metadades: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += monitorIntegracioRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Monitor d'integracions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registresModificats += registreRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista anotacions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		procedimentRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista procediments: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista anotacions de registre: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreAnnexRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Annexos anotacions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreAnnexFirmaRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Firma annexos: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreFirmaDetallRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Detall firma annexos: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreInteressatRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Interessats anotacions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		reglaRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista regles: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		serveiRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista serveis: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		usuariBustiaFavoritRepository.updateUsuariAuditoria(codiAntic, codiNou);
+		logger.info("> Llista busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		return registresModificats;
+	}
 
+	private int updateUsuariPermisos(String codiAntic, String codiNou) {
+		return aclSidRepository.updateUsuariPermis(codiAntic, codiNou);
+	}
+	
+	private Long updateUsuariReferencies(String codiAntic, String codiNou) {
+		Long registresModificats = 0L;
+		
+		logger.debug(">>> UPDATE USUARIS TAULES AMB REFERENCIES:");
+		
+		Long t0 = System.currentTimeMillis();
+		bustiaDefaultRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Busties per defecte: " + (System.currentTimeMillis() - t0) + " ms");
+
+		t0 = System.currentTimeMillis();
+		usuariBustiaFavoritRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Busties favorites: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		contingutMovimentEmailRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Historic email agrupat: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		contingutMovimentRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Historic moviments: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		monitorIntegracioRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Monitor integracions: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		t0 = System.currentTimeMillis();
+		registreRepository.updateUsuariCodi(codiAntic, codiNou);
+		logger.info("> Llista anotacions de registre: " + (System.currentTimeMillis() - t0) + " ms");
+		
+		return registresModificats;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(AplicacioServiceImpl.class);
 }

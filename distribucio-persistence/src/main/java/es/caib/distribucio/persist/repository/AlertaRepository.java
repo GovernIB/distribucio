@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -82,4 +83,13 @@ public interface AlertaRepository extends JpaRepository<AlertaEntity, Long> {
 			@Param("llegida") boolean llegida,
 			@Param("continguts") List<ContingutEntity> continguts,
 			Sort sort);
+	
+	@Modifying
+	@Query(value = "update dis_alerta " +
+			"set createdby_codi = :codiNou, lastmodifiedby_codi = :codiNou " +
+			"where createdby_codi = :codiAntic or lastmodifiedby_codi = :codiAntic",
+			nativeQuery = true)
+	int updateUsuariAuditoria(
+			@Param("codiAntic") String codiAntic, 
+			@Param("codiNou") String codiNou);
 }

@@ -80,4 +80,12 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"where mon.codi = :codi")
 	public void deleteByCodiMonitor(
 			@Param("codi") String codi);
+	
+	@Modifying
+	@Query(value = "update dis_mon_int " +
+			"set codi_usuari = :codiNou where codi_usuari = :codiAntic",
+			nativeQuery = true)
+	int updateUsuariCodi(
+			@Param("codiAntic") String codiAntic, 
+			@Param("codiNou") String codiNou);
 }
