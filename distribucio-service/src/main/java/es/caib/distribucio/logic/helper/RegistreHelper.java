@@ -2168,6 +2168,8 @@ public class RegistreHelper {
 		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
 		String fitxerTitol = "";
 		String titolData = ""; 
+		boolean isAnnexDefinitiuInArxiu = false;
+		
 		if (titolRepetit) {
 			do {
 				fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
@@ -2187,9 +2189,21 @@ public class RegistreHelper {
 		documentEniRegistrableDto.setData(registre.getData());
 		documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
 		documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
+		
+		// Comprovar si l'annex està custodiat i si està com a definitiu
+		if (annex.getFitxerArxiuUuid() != null) {
+			Document annexArxiu = pluginHelper.arxiuDocumentConsultar(
+					annex.getFitxerArxiuUuid(), 
+					null, 
+					false, 
+					registre.getNumero());
+			
+			isAnnexDefinitiuInArxiu = DocumentEstat.DEFINITIU.equals(annexArxiu.getEstat());
+		}
+		
 		// Només crea l'annex a dins el contenidor si encara no s'ha creat o està com esborrany per tornar a provar de guardar com a definitiu
-		if (annex.getFitxerArxiuUuid() == null || 
-				!AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat()) ) {
+		if ((annex.getFitxerArxiuUuid() == null || 
+				!AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat())) && ! isAnnexDefinitiuInArxiu) {
 			
 			// Valida si l'annex té o no firmes invàlides, si no pot validar-ho falla
 			List<DistribucioRegistreFirma> firmes = new ArrayList<>();
@@ -2241,6 +2255,11 @@ public class RegistreHelper {
 				this.loadSignaturaDetallsToDB(annex);
 			}
 		}
+		
+		if (isAnnexDefinitiuInArxiu) {
+			annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+		}
+		
 		if(annex.getArxiuEstat() == AnnexEstat.ESBORRANY) {
 				registre.setAnnexosEstatEsborrany(registre.getAnnexosEstatEsborrany() + 1);
 		}
