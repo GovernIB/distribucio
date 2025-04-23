@@ -160,7 +160,7 @@ public class ConversioTipusHelper {
 						target.setRegistreNumero(source.getRegistre() != null ? source.getRegistre().getNumero() : null);						
 						target.setSignaturaInfo(getSignaturaInfo(source));
 						target.setTipusFirma(getTipusFirma(source));
-						target.setRegistreId(source.getRegistre().getId());
+						target.setRegistreId(source.getRegistre() != null ? source.getRegistre().getId() : null);
 						
 						if (source.getFitxerNom() != null && source.getFitxerNom().contains(".")) {
 							target.setFitxerExtension(source.getFitxerNom().substring(source.getFitxerNom().lastIndexOf('.') +1, source.getFitxerNom().length()));
@@ -231,7 +231,7 @@ public class ConversioTipusHelper {
 	private String getSignaturaInfo(RegistreAnnexEntity source) {
 		String signaturaInfo = "";
 		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
-		if (firmes.size()>0) {
+		if (firmes != null && firmes.size() > 0) {
 			RegistreAnnexFirmaEntity firma = firmes.get(0);
 			String tipusFirma = firma.getTipus();
 			String perfilFirma = firma.getPerfil();
@@ -245,7 +245,7 @@ public class ConversioTipusHelper {
 		String tipusFirmaSt = "";
 		ArxiuFirmaTipusEnumDto tipusFirma = null;
 		List<RegistreAnnexFirmaEntity> firmes = source.getFirmes();
-		if (firmes.size()>0) {
+		if (firmes != null && firmes.size() > 0) {
 			RegistreAnnexFirmaEntity firma = firmes.get(0);
 			tipusFirmaSt = firma.getTipus();	
 			tipusFirma = ArxiuConversions.toArxiuFirmaTipus(tipusFirmaSt);			

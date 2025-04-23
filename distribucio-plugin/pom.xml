@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.3.1</version>
 	</parent>
 	<artifactId>distribucio-plugin</artifactId>
 	<dependencies>

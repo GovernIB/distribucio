@@ -521,7 +521,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 				usuariAntic.getNom(),
 				usuariAntic.getNif(),
 				usuariAntic.getEmail(),
-				null,
+				usuariAntic.getEmailAlternatiu(),
 				usuariAntic.getIdioma()).build();
 		
 		return usuariRepository.saveAndFlush(usuariNou);
