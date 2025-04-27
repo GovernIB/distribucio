@@ -3,8 +3,14 @@
  */
 package es.caib.distribucio.logic.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -13,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,25 +100,41 @@ public class AnnexosServiceImpl implements AnnexosService {
 			tipusFirma = ArxiuConversions.toArxiuFirmaTipusEnumDto(arxiuFirmaTipusEnumDto);
 		}
 		
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
+		
+		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
+		mapeigOrdenacio.put(
+				"dataAnotacio",
+				new String[] {"registre.data"});
+		
+		Page<RegistreAnnexEntity> annexosPage = registreAnnexRepository.findByFiltrePaginat(
+				entitat,
+				!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
+				filtre.getNumero(),
+				filtre.getArxiuEstat()==null,
+				filtre.getArxiuEstat(),
+				filtre.getDataRecepcioInici() == null,
+				filtre.getDataRecepcioInici(),
+				dataRecepcioFi == null,
+				dataRecepcioFi,
+				!(tipusFirma!=null &&  !tipusFirma.isEmpty()),
+				tipusFirma,
+				!(filtre.getTitol()!=null &&  !filtre.getTitol().isEmpty()),
+				filtre.getTitol(),
+				!(filtre.getFitxerNom()!=null &&  !filtre.getFitxerNom().isEmpty()),
+				filtre.getFitxerNom(),
+				!(filtre.getFitxerTipusMime()!=null &&  !filtre.getFitxerTipusMime().isEmpty()),
+				filtre.getFitxerTipusMime(),
+				paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
+		
 		return paginacioHelper.toPaginaDto(
-//				registreAnnexRepository.findAll(paginacioHelper.toSpringDataPageable(paginacioParams)),
-				
-				
-				registreAnnexRepository.findByFiltrePaginat(
-						entitat,
-						!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
-						filtre.getNumero(),
-						filtre.getArxiuEstat()==null,
-						filtre.getArxiuEstat(),
-						!(tipusFirma!=null &&  !tipusFirma.isEmpty()),
-						tipusFirma,
-						!(filtre.getTitol()!=null &&  !filtre.getTitol().isEmpty()),
-						filtre.getTitol(),
-						!(filtre.getFitxerNom()!=null &&  !filtre.getFitxerNom().isEmpty()),
-						filtre.getFitxerNom(),
-						!(filtre.getFitxerTipusMime()!=null &&  !filtre.getFitxerTipusMime().isEmpty()),
-						filtre.getFitxerTipusMime(),
-						paginacioHelper.toSpringDataPageable(paginacioParams)),
+				annexosPage,
 				RegistreAnnexDto.class,
 				new Converter<RegistreAnnexEntity, RegistreAnnexDto>() {
 					@Override
@@ -175,6 +198,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 		
 		
 		try {
+			
 			// Si el registre està tancat ja no cal continuar:
 			ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(registre.getId());
 			if (arxiuDetall.getEniEstat()==ExpedientEstatEnumDto.TANCAT) {	
@@ -275,6 +299,38 @@ public class AnnexosServiceImpl implements AnnexosService {
 			resultatAnnexDefinitiu.setThrowable(ex);
 		}		
 		return resultatAnnexDefinitiu;				
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<RegistreAnnexDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleAnnexosIds,
+			boolean isAdmin) {
+		logger.debug("Obtenint annexos per processar ("
+				+ "entitatId=" + entitatId + ", "
+				+ "multipleRegistreIds=" + multipleAnnexosIds
+				+ "isAdmin=" + isAdmin + " )");
+		
+		if (multipleAnnexosIds == null || multipleAnnexosIds.isEmpty()) {
+			return new ArrayList<RegistreAnnexDto>();
+		}
+		
+		entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				false,
+				true);
+		
+		List<RegistreAnnexEntity> annexos = registreAnnexRepository.findByIdIn(multipleAnnexosIds);
+
+		List<RegistreAnnexDto> resposta = new ArrayList<RegistreAnnexDto>();
+		for (RegistreAnnexEntity registreAnnexEntity: annexos) {
+			RegistreAnnexDto registreAnnexDto = conversioTipusHelper.convertir(registreAnnexEntity, RegistreAnnexDto.class);
+			
+			resposta.add(registreAnnexDto);
+		}
+		return resposta;
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(AnnexosServiceImpl.class);

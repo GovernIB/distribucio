@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.persist.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -56,6 +57,8 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ " (ra.registre.entitat = :entitat) and "
 			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
+			+ " (:esNullDataRecepcioInici = true or ra.registre.data >= :dataRecepcioInici) and "
+			+ " (:esNullDataRecepcioFi = true or ra.registre.data <= :dataRecepcioFi) and "
 			+ " (:esNullTipusFirma = true or (raf is not null and raf.tipus = :tipusFirma)) and "
 			+ " (:esNullTitol = true or lower(ra.titol) like lower('%'||:titol||'%')) and "
 			+ " (:esNullFitxerNom = true or lower(ra.fitxerNom) like lower('%'||:fitxerNom||'%')) and "
@@ -67,6 +70,10 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("numero") String numero,
 			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,
 			@Param("arxiuEstat") AnnexEstat arxiuEstat,
+			@Param("esNullDataRecepcioInici") boolean esNullDataRecepcioInici,
+			@Param("dataRecepcioInici") Date dataRecepcioInici,
+			@Param("esNullDataRecepcioFi") boolean esNullDataRecepcioFi, 
+			@Param("dataRecepcioFi") Date dataRecepcioFi, 
 			@Param("esNullTipusFirma") boolean esNullTipusFirma,
 			@Param("tipusFirma") String tipusFirma,
 			@Param("esNullTitol") boolean esNullTitol,
@@ -113,4 +120,6 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 	void updateUsuariAuditoria(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
+
+	public List<RegistreAnnexEntity> findByIdIn(List<Long> multipleAnnexosIds);
 }

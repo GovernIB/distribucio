@@ -3,17 +3,23 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.back.command.AnnexosFiltreCommand;
+import es.caib.distribucio.back.helper.AjaxHelper;
+import es.caib.distribucio.back.helper.AjaxHelper.AjaxFormResponse;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
@@ -108,7 +116,19 @@ public class AnnexosAdminController extends BaseAdminController {
 			boolean multiple,
 			Model model) {		
 		
-		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = null;
+		
+		try {
+			resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(id);
+		} catch (Exception e) {
+			MissatgesHelper.error(
+					request, 
+					getMessage(
+							request, 
+							resultatAnnexDefinitiu.getKeyMessage(),
+							new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero(), resultatAnnexDefinitiu.getThrowable()}
+					));
+		}
 		
 		if (resultatAnnexDefinitiu.isOk()) {	
 			MissatgesHelper.success(
@@ -143,33 +163,111 @@ public class AnnexosAdminController extends BaseAdminController {
 		return "";
 	}
 	
+//	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
+//	public String guardarDefinitiuMultiple(
+//			HttpServletRequest request,
+//			Model model) {		
+//		
+//		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);	
+//		
+//		for (Long id: ids) {
+//			this.guardarDefinitiu(request, id, true, model);
+//		}
+//		
+//		if (ids.isEmpty()) {
+//			MissatgesHelper.warning(
+//					request, 
+//					getMessage(
+//							request, 
+//							"annexos.admin.missatge.fila.no.seleccionada"
+//					));
+//			
+//		}
+//
+//		RequestSessionHelper.actualitzarObjecteSessio(
+//				request,
+//				SESSION_ATTRIBUTE_SELECCIO,
+//				null);		
+//		
+//		return "redirect:../annexosAdmin";
+//	}
+	
 	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
-	public String guardarDefinitiuMultiple(
+	public String reintentarProcessamentMultipleGet(
 			HttpServletRequest request,
-			Model model) {		
-		
-		List<Long> ids = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);	
-		
-		for (Long id: ids) {
-			this.guardarDefinitiu(request, id, true, model);
+			Model model) {
+		Object command = new Object();
+		model.addAttribute("processamentAnnexosMultiple", command);
+		model.addAttribute("annexos",
+				annexosService.findMultiple(
+						getEntitatActualComprovantPermisAdmin(request).getId(),
+						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+						true));
+		return "processamentAnnexosMultiple";
+	}
+	
+	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
+	 * de l'administrador.
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/processamentAjax/{annexId}", method = RequestMethod.POST)
+	public AjaxFormResponse reintentarProcessamentAjaxPost(
+			HttpServletRequest request,
+			@PathVariable Long annexId,
+			@Valid Object command,
+			BindingResult bindingResult) {
+		AjaxFormResponse response;
+		if (bindingResult.hasErrors()) {
+			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+			return response;
 		}
-		
-		if (ids.isEmpty()) {
-			MissatgesHelper.warning(
-					request, 
-					getMessage(
-							request, 
-							"annexos.admin.missatge.fila.no.seleccionada"
-					));
-			
+		try {
+			this.entrarSemafor(annexId);
+			response = this.processament(request, annexId);
+		} catch(InterruptedException e) {
+			response = AjaxHelper.generarAjaxError("Error no controlat reintentant el processament: " + e.getMessage());
+		} finally {
+			this.sortirSemafor(annexId);
 		}
+		logger.debug("L'annex amb id " + annexId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
+		return response;
+	}
 
-		RequestSessionHelper.actualitzarObjecteSessio(
-				request,
-				SESSION_ATTRIBUTE_SELECCIO,
-				null);		
+	private AjaxFormResponse processament(HttpServletRequest request, Long annexId) {
+		AjaxFormResponse response = null;
 		
-		return "redirect:../annexosAdmin";
+		logger.debug("Reprocessar annex amb id " + annexId);
+			
+		ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(annexId);
+		
+		String missatge = getMessage(
+				request, 
+				resultatAnnexDefinitiu.getKeyMessage(), 
+				new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero()});
+		
+		if (resultatAnnexDefinitiu.getThrowable() != null) {
+			missatge = getMessage(
+					request, 
+					resultatAnnexDefinitiu.getKeyMessage(), 
+					new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero(), resultatAnnexDefinitiu.getThrowable()});
+		} else {
+			missatge = getMessage(
+					request, 
+					resultatAnnexDefinitiu.getKeyMessage(), 
+					new Object[] {resultatAnnexDefinitiu.getAnnexTitol(), resultatAnnexDefinitiu.getAnotacioNumero()});
+		}	
+		
+		if (resultatAnnexDefinitiu.isOk()) {
+			response = AjaxHelper.generarAjaxFormOk();
+			response.setMissatge(missatge.toString());
+		} else {
+			response = AjaxHelper.generarAjaxError(missatge);
+		}
+		return response;
 	}
 	
 	@RequestMapping(value = "/select", method = RequestMethod.GET)
@@ -378,6 +476,11 @@ public class AnnexosAdminController extends BaseAdminController {
 //						true));
 //	}
 
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
+	}
+	
 	private AnnexosFiltreCommand getFiltreCommand(
 			HttpServletRequest request) {
 		AnnexosFiltreCommand filtreCommand = (AnnexosFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
@@ -394,4 +497,5 @@ public class AnnexosAdminController extends BaseAdminController {
 		return filtreCommand;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(AnnexosAdminController.class);
 }

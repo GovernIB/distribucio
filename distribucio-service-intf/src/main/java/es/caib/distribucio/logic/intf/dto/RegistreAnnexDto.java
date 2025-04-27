@@ -55,6 +55,7 @@ public class RegistreAnnexDto implements Serializable {
 
 	private AnnexEstat arxiuEstat;
 
+	private Date dataAnotacio;
 	private static final long serialVersionUID = -8656873728034274066L;
 
 	
@@ -221,7 +222,12 @@ public class RegistreAnnexDto implements Serializable {
 	public void setFitxerContingut(byte[] fitxerContingut) {
 		this.fitxerContingut = fitxerContingut;
 	}
-	
+	public Date getDataAnotacio() {
+		return dataAnotacio;
+	}
+	public void setDataAnotacio(Date dataAnotacio) {
+		this.dataAnotacio = dataAnotacio;
+	}
 	public String getFitxerExtension() {
 		if (fitxerExtension!=null) {
 			return fitxerExtension;

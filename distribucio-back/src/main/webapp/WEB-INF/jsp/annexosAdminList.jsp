@@ -51,7 +51,7 @@ pageContext.setAttribute(
 		}
 		
 		span.fa-cog {
-			margin: 4px 1.5rem 0 0; 
+			margin: 2px 0.5rem 0 0; 
 		}
 		
 		tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
@@ -154,27 +154,33 @@ pageContext.setAttribute(
 <body>
 	<form:form action="" method="post" cssClass="well" modelAttribute="annexosFiltreCommand">
 		<div class="row">
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputText name="numero" inline="true" placeholderKey="annex.admin.filtre.numero"/>
 			</div>	
 			<div class="col-md-3">
-				<dis:inputSelect name="arxiuEstat" optionEnum="AnnexEstat" netejar="false" emptyOption="true" placeholderKey="annex.admin.filtre.estat" inline="true"/>
-			</div>
-			<div class="col-md-3">
-				<dis:inputSelect name="tipusFirma" optionEnum="ArxiuFirmaTipusEnumDto" emptyOption="true" placeholderKey="annex.admin.filtre.tipusFirma" inline="true"/>
-			</div>
-		</div>
-		<div class="row">	
-			<div class="col-md-2">
 				<dis:inputText name="titol" inline="true" placeholderKey="annex.admin.filtre.titol"/>
 			</div>	
+			<div class="col-md-2">
+				<dis:inputSelect name="arxiuEstat" optionEnum="AnnexEstat" netejar="false" emptyOption="true" placeholderKey="annex.admin.filtre.estat" inline="true"/>
+			</div>
+			<div class="col-md-2">
+				<dis:inputSelect name="tipusFirma" optionEnum="ArxiuFirmaTipusEnumDto" emptyOption="true" placeholderKey="annex.admin.filtre.tipusFirma" inline="true"/>
+			</div>
+			<div class="col-md-2">
+				<dis:inputText name="fitxerTipusMime" inline="true" placeholderKey="annex.admin.filtre.fitxerTipusMime"/>
+			</div>	
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
+			</div>
+			<div class="col-md-3">
+				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
+			</div>
 			<div class="col-md-3">
 				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
 			</div>	
-			<div class="col-md-3">
-				<dis:inputText name="fitxerTipusMime" inline="true" placeholderKey="annex.admin.filtre.fitxerTipusMime"/>
-			</div>	
-			<div class="col-md-4 d-flex justify-content-end">
+			<div class="col-md-3 d-flex justify-content-end">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
@@ -190,7 +196,7 @@ pageContext.setAttribute(
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu dropdown-left">
 					<c:if test="${isRolActualAdministrador}">					
-						<li><a href="annexosAdmin/guardarDefinitiuMultiple">
+						<li><a href="annexosAdmin/guardarDefinitiuMultiple" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-pencil-square"></span>
 							<spring:message code="annexos.admin.boto.guardar.definitiu.multiple"/>
 						</a></li>	
@@ -208,7 +214,7 @@ pageContext.setAttribute(
 		data-filter="#annexosFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="0"
+		data-default-order="4"
 		data-default-dir="desc"		
 		class="table table-bordered table-striped"	
 		data-rowhref-template="#rowhrefTemplate" 	
@@ -221,6 +227,7 @@ pageContext.setAttribute(
 				<th data-col-name="registreId" data-visible="false"></th>				
 				<th data-col-name="registreNumero" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/></th>				
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
+				<th data-col-name="dataAnotacio" width="10%" data-converter="datetime"><spring:message code="annexos.admin.columna.data"/></th>
 				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>	
 				<th data-col-name="arxiuEstat" data-template="#cellArxiuEstatTemplate" width="10%"><spring:message code="annexos.admin.columna.arxiuEstat"/>
 					<script id="cellArxiuEstatTemplate" type="text/x-jsrender">
@@ -242,10 +249,10 @@ pageContext.setAttribute(
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<div class="dropdown d-flex justify-content-center">
-							<button class="btn btn-primary" data-toggle="dropdown">
+						<div id="div-btn-accions" class="dropdown">
+							<button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex; width:100%;">
 								<span class="fa fa-cog"></span>
-								<span class="hidden_dis"><spring:message code="comu.boto.accions"/>
+								<span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu">

@@ -2,6 +2,8 @@
  * 
  */
 package es.caib.distribucio.back.command;
+import java.util.Date;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
@@ -23,6 +25,8 @@ public class AnnexosFiltreCommand {
 	private String titol;
 	private String fitxerNom;
 	private String fitxerTipusMime;
+	private Date dataRecepcioInici;
+	private Date dataRecepcioFi;
 	
 	public String getNumero() {
 		return numero;
@@ -59,6 +63,18 @@ public class AnnexosFiltreCommand {
 	}
 	public void setFitxerTipusMime(String fitxerTipusMime) {
 		this.fitxerTipusMime = fitxerTipusMime;
+	}
+	public Date getDataRecepcioInici() {
+		return dataRecepcioInici;
+	}
+	public void setDataRecepcioInici(Date dataRecepcioInici) {
+		this.dataRecepcioInici = dataRecepcioInici;
+	}
+	public Date getDataRecepcioFi() {
+		return dataRecepcioFi;
+	}
+	public void setDataRecepcioFi(Date dataRecepcioFi) {
+		this.dataRecepcioFi = dataRecepcioFi;
 	}
 	public static AnnexosFiltreCommand asCommand(AnnexosFiltreDto dto) {
 		AnnexosFiltreCommand command = ConversioTipusHelper.convertir(

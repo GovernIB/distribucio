@@ -167,7 +167,7 @@ public class ConversioTipusHelper {
 						} else {
 							target.setFitxerExtension(null);
 						}						
-						
+						target.setDataAnotacio(source.getRegistre().getData());
 						return target;
 					}
 				});

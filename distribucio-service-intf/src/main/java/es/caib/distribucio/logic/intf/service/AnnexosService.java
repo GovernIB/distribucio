@@ -48,6 +48,12 @@ public interface AnnexosService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public ResultatAnnexDefinitiuDto guardarComADefinitiu(Long id);
 	
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+	public List<RegistreAnnexDto> findMultiple(
+			Long entitatId,
+			List<Long> multipleAnnexosIds,
+			boolean isAdmin) throws NotFoundException;
+	
 //	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 //	public String guardarComADefinitiuMultiple(List<Long> ids);
 }

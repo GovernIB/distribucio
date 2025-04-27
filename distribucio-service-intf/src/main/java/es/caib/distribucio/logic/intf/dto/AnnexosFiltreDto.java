@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.intf.dto;
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -21,6 +22,8 @@ public class AnnexosFiltreDto implements Serializable {
 	private String titol;
 	private String fitxerNom;
 	private String fitxerTipusMime;
+	private Date dataRecepcioInici;
+	private Date dataRecepcioFi;
 	
 	public String getNumero() {
 		return numero;
@@ -57,6 +60,18 @@ public class AnnexosFiltreDto implements Serializable {
 	}
 	public void setFitxerTipusMime(String fitxerTipusMime) {
 		this.fitxerTipusMime = fitxerTipusMime;
+	}
+	public Date getDataRecepcioInici() {
+		return dataRecepcioInici;
+	}
+	public void setDataRecepcioInici(Date dataRecepcioInici) {
+		this.dataRecepcioInici = dataRecepcioInici;
+	}
+	public Date getDataRecepcioFi() {
+		return dataRecepcioFi;
+	}
+	public void setDataRecepcioFi(Date dataRecepcioFi) {
+		this.dataRecepcioFi = dataRecepcioFi;
 	}
 	@Override
 	public String toString() {
