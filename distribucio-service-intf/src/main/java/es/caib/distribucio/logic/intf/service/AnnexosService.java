@@ -53,6 +53,9 @@ public interface AnnexosService {
 			Long entitatId,
 			List<Long> multipleAnnexosIds,
 			boolean isAdmin) throws NotFoundException;
+
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+	public List<Integer> findCopiesRegistre(String numero);
 	
 //	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 //	public String guardarComADefinitiuMultiple(List<Long> ids);

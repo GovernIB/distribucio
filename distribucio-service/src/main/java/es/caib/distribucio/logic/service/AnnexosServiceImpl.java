@@ -111,12 +111,17 @@ public class AnnexosServiceImpl implements AnnexosService {
 		Map<String, String[]> mapeigOrdenacio = new HashMap<String, String[]>();
 		mapeigOrdenacio.put(
 				"dataAnotacio",
-				new String[] {"registre.data"});
+				new String[] {"registre.data", "dataCaptura"});
+		mapeigOrdenacio.put(
+				"registreNumero",
+				new String[] {"registre.numero"});
 		
 		Page<RegistreAnnexEntity> annexosPage = registreAnnexRepository.findByFiltrePaginat(
 				entitat,
 				!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
 				filtre.getNumero(),
+				filtre.getNumeroCopia() == null,
+				filtre.getNumeroCopia(),
 				filtre.getArxiuEstat()==null,
 				filtre.getArxiuEstat(),
 				filtre.getDataRecepcioInici() == null,
@@ -159,6 +164,8 @@ public class AnnexosServiceImpl implements AnnexosService {
 		List<Long> ids = registreAnnexRepository.findIdsByFiltre(
 				!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
 				filtre.getNumero(),
+				filtre.getNumeroCopia() != null,
+				filtre.getNumeroCopia(),
 				filtre.getArxiuEstat()==null,
 				filtre.getArxiuEstat(),
 				!(tipusFirma!=null &&  !tipusFirma.isEmpty()),
@@ -332,6 +339,11 @@ public class AnnexosServiceImpl implements AnnexosService {
 		}
 		return resposta;
 	}
-	
+
+	@Override
+	public List<Integer> findCopiesRegistre(String numero) {
+		return registreHelper.findCopiesRegistre(numero);
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(AnnexosServiceImpl.class);
 }

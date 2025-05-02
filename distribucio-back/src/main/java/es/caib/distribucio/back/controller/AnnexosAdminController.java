@@ -4,8 +4,11 @@
 package es.caib.distribucio.back.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +37,7 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.RegistreCopiesDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
@@ -161,6 +165,36 @@ public class AnnexosAdminController extends BaseAdminController {
 		}
 		
 		return "";
+	}
+	
+	@RequestMapping(value = {"/copies/**"}, method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public RegistreCopiesDto copiesRegistre(
+			HttpServletRequest request,
+			Model model) {
+		RegistreCopiesDto resultat = new RegistreCopiesDto();
+		List<Integer> copies = new ArrayList<Integer>();
+		String numero = extractNumero(request);
+		
+		if (numero != null)
+			copies = annexosService.findCopiesRegistre(numero);
+		
+		if (! copies.isEmpty())
+			resultat.setRegistreTrobat(true);
+		
+		if (copies.isEmpty() || numero == null)
+			copies = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10);
+		
+		resultat.setCopies(copies);
+		
+		return resultat;
+	}
+	
+	protected String extractNumero(HttpServletRequest request) {
+
+		var url = request.getRequestURL().toString();
+		var urlArr = url.split("/copies");
+		return urlArr.length > 1 ? urlArr[1].substring(1) : null;
 	}
 	
 //	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)

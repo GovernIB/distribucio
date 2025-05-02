@@ -2406,7 +2406,11 @@ public class RegistreHelper {
 		}
 		return registreAnotacio;
 	}
-
+	
+	public List<Integer> findCopiesRegistre(String numero) {
+		return registreRepository.findCopiesByNumero(numero);
+	}
+	
 	public String getClauSecretaProperty() {
 		String clauSecreta = configHelper.getConfig("es.caib.distribucio.backoffice.integracio.clau");
 		if (clauSecreta == null)

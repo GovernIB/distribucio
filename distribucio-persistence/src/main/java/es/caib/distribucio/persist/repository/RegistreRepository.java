@@ -41,6 +41,14 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			ReglaEntity regla);
 	
 	List<RegistreEntity> findByNumero(String numero);
+
+	@Query(
+			"select r.numeroCopia " + 
+			"from RegistreEntity r " +
+			"where r.numero = :numero " +
+			"order by " +
+		    "    r.numeroCopia asc")
+	List<Integer> findCopiesByNumero(String numero);
 	
 	List<RegistreEntity> findByNumeroAndData(String numero, Date data);
 	

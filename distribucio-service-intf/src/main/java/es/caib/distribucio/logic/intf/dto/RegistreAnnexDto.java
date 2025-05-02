@@ -42,7 +42,7 @@ public class RegistreAnnexDto implements Serializable {
 	private Long registreId;
 	private String gesdocDocumentId;
 	private boolean signaturaDetallsDescarregat;
-	
+	private Integer numeroCopia;
 	private String registreNumero;
 	private String signaturaInfo;
 	private ArxiuFirmaTipusEnumDto tipusFirma;
@@ -227,6 +227,12 @@ public class RegistreAnnexDto implements Serializable {
 	}
 	public void setDataAnotacio(Date dataAnotacio) {
 		this.dataAnotacio = dataAnotacio;
+	}
+	public Integer getNumeroCopia() {
+		return numeroCopia;
+	}
+	public void setNumeroCopia(Integer numeroCopia) {
+		this.numeroCopia = numeroCopia;
 	}
 	public String getFitxerExtension() {
 		if (fitxerExtension!=null) {

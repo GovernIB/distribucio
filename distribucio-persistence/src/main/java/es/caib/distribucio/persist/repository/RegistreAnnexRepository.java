@@ -56,6 +56,7 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ " where "
 			+ " (ra.registre.entitat = :entitat) and "
 			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
+			+ " (:esNullNumeroCopia = true or ra.registre.numeroCopia = :numeroCopia) and "
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
 			+ " (:esNullDataRecepcioInici = true or ra.registre.data >= :dataRecepcioInici) and "
 			+ " (:esNullDataRecepcioFi = true or ra.registre.data <= :dataRecepcioFi) and "
@@ -68,6 +69,8 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("entitat") EntitatEntity entitat, 
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
+			@Param("esNullNumeroCopia") boolean esNullNumeroCopia,
+			@Param("numeroCopia") Integer numeroCopia,
 			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,
 			@Param("arxiuEstat") AnnexEstat arxiuEstat,
 			@Param("esNullDataRecepcioInici") boolean esNullDataRecepcioInici,
@@ -89,6 +92,7 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ " left join ra.firmes raf"
 			+ " where "
 			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
+			+ " (:esNullNumeroCopia = true or ra.registre.numeroCopia = :numeroCopia) and "
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
 			+ " (:esNullTipusFirma = true or (raf is not null and raf.tipus = :tipusFirma)) and "
 			+ " (:esNullTitol = true or lower(ra.titol) like lower('%'||:titol||'%')) and "
@@ -98,6 +102,8 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 	public List<Long> findIdsByFiltre(
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
+			@Param("esNullNumeroCopia") boolean esNullNumeroCopia,
+			@Param("numeroCopia") Integer numeroCopia,
 			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,
 			@Param("arxiuEstat") AnnexEstat arxiuEstat,
 			@Param("esNullTipusFirma") boolean esNullTipusFirma,

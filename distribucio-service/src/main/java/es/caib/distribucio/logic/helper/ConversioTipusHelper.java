@@ -168,6 +168,7 @@ public class ConversioTipusHelper {
 							target.setFitxerExtension(null);
 						}						
 						target.setDataAnotacio(source.getRegistre().getData());
+						target.setNumeroCopia(source.getRegistre().getNumeroCopia());
 						return target;
 					}
 				});
@@ -204,6 +205,18 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
+//		mapperFactory.getConverterFactory().registerConverter(
+//				new CustomConverter<RegistreEntity, NumeroCopiaDto>() {
+//					public NumeroCopiaDto convert(
+//							RegistreEntity source,
+//							Type<? extends NumeroCopiaDto> destinationClass,
+//							MappingContext mappingContext) {
+//						NumeroCopiaDto target = new NumeroCopiaDto();
+//						target.setNumero(source.getNumero());
+//						target.setNumeroCopia(source.getNumeroCopia());
+//						return target;
+//					}
+//				});
 	}
 
 	public <T> T convertir(Object source, Class<T> targetType) {

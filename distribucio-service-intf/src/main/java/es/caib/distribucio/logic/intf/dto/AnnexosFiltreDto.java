@@ -24,6 +24,7 @@ public class AnnexosFiltreDto implements Serializable {
 	private String fitxerTipusMime;
 	private Date dataRecepcioInici;
 	private Date dataRecepcioFi;
+	private Integer numeroCopia;
 	
 	public String getNumero() {
 		return numero;
@@ -72,6 +73,12 @@ public class AnnexosFiltreDto implements Serializable {
 	}
 	public void setDataRecepcioFi(Date dataRecepcioFi) {
 		this.dataRecepcioFi = dataRecepcioFi;
+	}
+	public Integer getNumeroCopia() {
+		return numeroCopia;
+	}
+	public void setNumeroCopia(Integer numeroCopia) {
+		this.numeroCopia = numeroCopia;
 	}
 	@Override
 	public String toString() {

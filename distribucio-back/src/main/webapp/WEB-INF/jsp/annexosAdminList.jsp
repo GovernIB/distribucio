@@ -147,8 +147,51 @@ pageContext.setAttribute(
 							$("#seleccioCount").html(data);
 						}
 				);
-			});			
+			});		
+
+			var baseUrl = "<c:url value="/annexosAdmin/copies/"/>";
+			if (/;jsessionid/.test(baseUrl))
+				baseUrl = baseUrl.substring(0, baseUrl.indexOf(";jsessionid"));
+			
+			recuperarNumeroCopies(baseUrl);
+			
+			$('#numero').on('blur', function() {
+				var numeroAnotacio = $(this).val();
+				if (numeroAnotacio) {
+					recuperarNumeroCopies(baseUrl + numeroAnotacio);
+				}
+			});
 		});
+		
+		function recuperarNumeroCopies(baseUrl) {
+			$.get(baseUrl)
+			.done(function(resultat) {
+				$('#numeroCopia').select2('val', '', true);
+				$('#numeroCopia option[value!=""]').remove();
+				
+				if (resultat) {
+					var copies = resultat["copies"];
+					var registreTrobat = resultat["registreTrobat"];
+					
+					$(copies).each(function(index, numeroCopia) {
+						if (numeroCopia == 0) {
+							$('#numeroCopia').append('<option value="' + numeroCopia + '"' + (registreTrobat ? "selected" : "" ) + ' ><spring:message code="annex.admin.filtre.numerocopia.original"/></option>');
+						} else {
+							$('#numeroCopia').append('<option value="' + numeroCopia + '"><spring:message code="annex.admin.filtre.numerocopia.copia" arguments="' + numeroCopia + '"/></option>');
+						}
+					});
+				}
+				var select2Options = {
+						language: "${requestLocale}",
+				        theme: 'bootstrap',
+						allowClear: true
+				}
+				$('#numeroCopia').select2(select2Options);
+			})
+			.fail(function() {
+				alert("<spring:message code="error.jquery.ajax"/>");
+			});
+		}
 	</script>
 </head>
 <body>
@@ -157,13 +200,13 @@ pageContext.setAttribute(
 			<div class="col-md-3">
 				<dis:inputText name="numero" inline="true" placeholderKey="annex.admin.filtre.numero"/>
 			</div>	
-			<div class="col-md-3">
-				<dis:inputText name="titol" inline="true" placeholderKey="annex.admin.filtre.titol"/>
-			</div>	
+			<div class="col-md-2">
+				<dis:inputSelect name="numeroCopia" netejar="true" emptyOption="true" placeholderKey="annex.admin.filtre.numerocopia" inline="true"/>
+			</div>
 			<div class="col-md-2">
 				<dis:inputSelect name="arxiuEstat" optionEnum="AnnexEstat" netejar="false" emptyOption="true" placeholderKey="annex.admin.filtre.estat" inline="true"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-3">
 				<dis:inputSelect name="tipusFirma" optionEnum="ArxiuFirmaTipusEnumDto" emptyOption="true" placeholderKey="annex.admin.filtre.tipusFirma" inline="true"/>
 			</div>
 			<div class="col-md-2">
@@ -172,15 +215,18 @@ pageContext.setAttribute(
 		</div>
 		<div class="row">
 			<div class="col-md-3">
+				<dis:inputText name="titol" inline="true" placeholderKey="annex.admin.filtre.titol"/>
+			</div>	
+			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-2">
 				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
 			</div>	
-			<div class="col-md-3 d-flex justify-content-end">
+			<div class="col-md-2 d-flex justify-content-end">
 				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
@@ -214,7 +260,7 @@ pageContext.setAttribute(
 		data-filter="#annexosFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="4"
+		data-default-order="5"
 		data-default-dir="desc"		
 		class="table table-bordered table-striped"	
 		data-rowhref-template="#rowhrefTemplate" 	
@@ -224,8 +270,17 @@ pageContext.setAttribute(
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
-				<th data-col-name="registreId" data-visible="false"></th>				
-				<th data-col-name="registreNumero" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/></th>				
+				<th data-col-name="numeroCopia" data-visible="false"></th>
+				<th data-col-name="registreId" data-visible="false"></th>
+				<th data-col-name="registreNumero" data-template="#cellRegistreNumeroTemplate" width="20%"><spring:message code="annexos.admin.columna.registreNumero"/>
+					<script id="cellRegistreNumeroTemplate" type="text/x-jsrender">
+						{{if numeroCopia == 0}}
+                			{{:registreNumero}} (<spring:message code="annexos.admin.columna.original"/>)
+						{{else}}
+							{{:registreNumero}} (<spring:message code="annexos.admin.columna.copia"/> {{:numeroCopia}})
+						{{/if}}
+           			 </script>
+           		</th>
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
 				<th data-col-name="dataAnotacio" width="10%" data-converter="datetime"><spring:message code="annexos.admin.columna.data"/></th>
 				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>	
