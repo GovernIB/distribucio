@@ -474,7 +474,7 @@ $(document).ready(function() {
 				<th data-col-name="numero"><spring:message code="bustia.pendent.columna.numero"/></th>
 				<th data-col-name="extracte"><spring:message code="bustia.pendent.columna.titol"/></th>
 				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
-				<th data-col-name="darrerMovimentUsuari" data-orderable="false" data-template="#darrerMovimentTemplate">
+				<th data-col-name="darrerMovimentUsuari" data-orderable="true" data-template="#darrerMovimentTemplate">
 					<spring:message code="bustia.pendent.columna.remitent"/>
 					<script id="darrerMovimentTemplate" type="text/x-jsrender">
 						{{if darrerMovimentUsuari}}
