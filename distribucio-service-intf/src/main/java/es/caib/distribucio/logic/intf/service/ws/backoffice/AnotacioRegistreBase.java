@@ -49,6 +49,7 @@ public class AnotacioRegistreBase {
 	private List<Annex> annexos;
 	private String justificantFitxerArxiuUuid;
 	private String clauAcces;
+	private boolean presencial;
 	
 	public String getIdentificador() {
 		return identificador;
@@ -265,5 +266,11 @@ public class AnotacioRegistreBase {
 	}
 	public void setClauAcces(String clauAcces) {
 		this.clauAcces = clauAcces;
+	}
+	public boolean isPresencial() {
+		return presencial;
+	}
+	public void setPresencial(boolean presencial) {
+		this.presencial = presencial;
 	}
 }
