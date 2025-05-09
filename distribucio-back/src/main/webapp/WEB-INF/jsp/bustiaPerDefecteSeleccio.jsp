@@ -20,10 +20,10 @@
 	<dis:modalHead/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			adjustModalPerFlux();
+			adjustModal();
 		});
 		
-		function adjustModalPerFlux() {
+		function adjustModal() {
 			var $iframe = $(window.frameElement);
 			
 			$iframe.on("load", function () {
