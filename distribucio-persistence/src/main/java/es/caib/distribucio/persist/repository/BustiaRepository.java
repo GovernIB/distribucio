@@ -41,6 +41,22 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	UnitatOrganitzativaEntity unitatOrganitzativa);
 	
 	/**
+	 * Finds all the enabled busties of given unitat except root bustia
+	 * @param entitat
+	 * @param unitatOrganitzativa
+	 * @return
+	 */
+	List<BustiaEntity> findByEntitatAndUnitatOrganitzativaAndActivaTrueAndPareNotNull(
+	EntitatEntity entitat,
+	UnitatOrganitzativaEntity unitatOrganitzativa);
+	
+	
+	Long countByEntitatAndUnitatOrganitzativaAndPareNotNull(
+		    EntitatEntity entitat,
+		    UnitatOrganitzativaEntity unitatOrganitzativa);
+
+	
+	/**
 	 * Finds root bustia of unitat
 	 * @param entitat
 	 * @param unitatOrganitzativa
@@ -62,6 +78,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"    b.entitat = :entitat " +
 			"and b.pare != null " +
 			"and b.unitatOrganitzativa = :unitatOrganitzativa " +
+			"and b.activa = true " +
 			"and b.perDefecte = true ")
 	List<BustiaEntity> findPerDefecte(
 			@Param("entitat") EntitatEntity entitat,

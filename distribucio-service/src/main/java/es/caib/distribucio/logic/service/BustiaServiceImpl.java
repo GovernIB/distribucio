@@ -396,14 +396,21 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				true,
 				false);
-		BustiaEntity entity = entityComprovarHelper.comprovarBustia(
+ 		BustiaEntity entity = entityComprovarHelper.comprovarBustia(
 				entitat,
 				id,
 				false);
-		entity.updateActiva(activa);
-		// Registra al log la modificació de la bústia
-		
 
+		entity.updateActiva(activa);
+		
+		// Comprovar que hi ha una bústia al mateix nivell o a la UO superior activa
+		try {
+			bustiaHelper.findBustiaDesti(entitat, entity.getUnitatOrganitzativa().getCodi());
+		} catch (ValidationException e) {
+			throw new RuntimeException(messageHelper.getMessage("bustia.service.desactivar.perdefecte.error", new Object[] {entity.getNom()}));
+		}
+		
+		// Registra al log la modificació de la bústia
 		contingutLogHelper.logMoviment(
 				entity,
 				activa ? LogTipusEnumDto.ACTIVACIO : LogTipusEnumDto.DESACTIVACIO,
@@ -1227,6 +1234,15 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		//---- find estat of anotacio -----
 		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
+		
+		// Si no hi ha cap bústia activa a la unitat, les anotacions s'envien a la unitat superior
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(unitatOrganitzativaCodi);
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndActivaTrueAndPareNotNull(entitat, unitatOrganitzativa);
+		
+		if (busties.isEmpty()) {
+			unitatOrganitzativaCodi = unitatOrganitzativa.getCodiUnitatSuperior();
+		}
+		
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
 				unitatOrganitzativaCodi);

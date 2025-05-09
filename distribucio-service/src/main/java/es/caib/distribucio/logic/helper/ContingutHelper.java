@@ -165,6 +165,8 @@ public class ContingutHelper {
 						UnitatOrganitzativaDto.class);
 				unitatDto = UnitatOrganitzativaHelper.assignAltresUnitatsFusionades(unitatEntity,
 						unitatDto);
+				Long bustiesCount = bustiaRepository.countByEntitatAndUnitatOrganitzativaAndPareNotNull(bustiaEntity.getEntitat(), unitatEntity);
+				unitatDto.setBustiesCount(bustiesCount);
 				bustiaDto.setUnitatOrganitzativa(unitatDto);
 				bustiaDto.setUnitatCodi(bustiaEntity.getUnitatOrganitzativa().getCodi());
 				contextToContingutDtoUnitatOrganitzativa.stop();

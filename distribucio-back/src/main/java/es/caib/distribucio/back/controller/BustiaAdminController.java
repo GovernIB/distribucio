@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.command.BustiaCommand;
 import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.back.command.BustiaFiltreCommand;
+import es.caib.distribucio.back.command.BustiaPerDefecteCommand;
 import es.caib.distribucio.back.command.MoureAnotacionsCommand;
 import es.caib.distribucio.back.helper.BustiaHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper;
@@ -399,13 +400,81 @@ public class BustiaAdminController extends BaseAdminController {
 					"bustia.controller.desactivat.ok");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return getModalControllerReturnValueErrorNoKey(
+			return getAjaxControllerReturnValueErrorMessage(
 					request,
 					"redirect:../../bustiaAdmin",
 					e.getMessage());
 		}
 	}
 
+	@RequestMapping(value = "/{bustiaId}/default/disable", method = RequestMethod.GET)
+	public String disablePerDefecte(
+			HttpServletRequest request,
+			Model model,
+			@PathVariable Long bustiaId) {
+		try {
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			
+			BustiaDto bustia = bustiaService.findById(
+					entitatActual.getId(),
+					bustiaId);
+			
+			List<BustiaDto> bustiesUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatCodi());
+			
+			if (! bustiesUnitat.isEmpty()) {
+				BustiaPerDefecteCommand bustiaPerDefecteCommand = new BustiaPerDefecteCommand();
+				
+				model.addAttribute(bustiaPerDefecteCommand);
+				model.addAttribute("bustiaId", bustiaId);
+				model.addAttribute("bustiesUnitat", bustiesUnitat);
+				
+			}
+
+			return "bustiaPerDefecteSeleccio";
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"redirect:../../bustiaAdmin",
+					e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/{bustiaId}/default/disable", method = RequestMethod.POST)
+	public String disablePerDefecte(
+			HttpServletRequest request,
+			@Valid BustiaPerDefecteCommand bustiaPerDefecteCommand,
+			BindingResult bindingResult,
+			@PathVariable Long bustiaId) {
+		try {
+			if (bindingResult.hasErrors()) {
+				return "bustiaPerDefecteSeleccio";
+			}
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+
+			bustiaService.updateActiva(
+					entitatActual.getId(),
+					bustiaId,
+					false);
+
+			bustiaService.marcarPerDefecte(
+					entitatActual.getId(),
+					bustiaPerDefecteCommand.getBustiaId());
+			
+			return getAjaxControllerReturnValueSuccess(
+					request,
+					"redirect:../../bustiaAdmin",
+					"bustia.controller.desactivat.ok");
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return getModalControllerReturnValueErrorNoKey(
+					request,
+					"redirect:../../bustiaAdmin",
+					e.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = "/{bustiaId}/default", method = RequestMethod.GET)
 	public String defecte(
 			HttpServletRequest request,

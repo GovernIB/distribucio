@@ -51,6 +51,7 @@ public class UnitatOrganitzativaDto implements Serializable {
 	
 	private String denominacioUnitatSuperior;
 	
+	private Long bustiesCount;
 	
 	public boolean isObsoleta() {
 		if (estat.equals("E") || estat.equals("A") || estat.equals("T")) {
@@ -221,7 +222,13 @@ public class UnitatOrganitzativaDto implements Serializable {
 	public void setNumVia(String numVia) {
 		this.numVia = numVia;
 	}
-
+	public Long getBustiesCount() {
+		return bustiesCount;
+	}
+	public void setBustiesCount(Long bustiesCount) {
+		this.bustiesCount = bustiesCount;
+	}
+	
 	public String getNom() {
 		return this.denominacio + " (" + this.codi + ")";
 	}

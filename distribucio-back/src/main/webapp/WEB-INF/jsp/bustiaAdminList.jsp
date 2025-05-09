@@ -144,6 +144,7 @@
 			<tr>
 				<th data-col-name="id" data-visible="false">#</th>
 				<th data-col-name="entitat.codi" data-visible="false"></th>
+				<th data-col-name="unitatOrganitzativa.bustiesCount" data-visible="false"></th>
 				<th data-col-name="nom" data-template="#nomTemplate">
 					<spring:message code="bustia.list.columna.nom"/>
 					<script id="nomTemplate" type="text/x-jsrender">
@@ -186,7 +187,11 @@
 								{{if !activa}}
 									<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/enable" data-toggle="ajax"><span class="fa fa-check"></span>&nbsp;&nbsp;<spring:message code="comu.boto.activar"/></a></li>
 								{{else}}
-									<li {{if perDefecte}}class="disabled"{{/if}} ><a {{if !perDefecte}}href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable"{{/if}}  data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
+									{{if perDefecte && unitatOrganitzativa.bustiesCount > 1}}
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/default/disable" data-toggle="modal"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
+									{{else}}
+										<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/disable" data-toggle="ajax"><span class="fa fa-times"></span>&nbsp;&nbsp;<spring:message code="comu.boto.desactivar"/></a></li>
+									{{/if}}
 								{{/if}}
 								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/moureAnotacions/${tipusVista}" data-toggle="modal" data-maximized="true"><span class="fa fa-share"></span>&nbsp;&nbsp;<spring:message code="bustia.list.accio.moure.anotacions"/></a></li>
 								<li><a href="${unitatCodiUrlPrefix}bustiaAdmin/{{:id}}/delete" data-toggle="ajax" data-confirm="<spring:message code="bustia.list.confirmacio.esborrar"/>"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;<spring:message code="comu.boto.esborrar"/></a></li>
