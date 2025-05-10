@@ -688,14 +688,6 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.pare.id in (select b.id from BustiaEntity b where b.unitatOrganitzativa = :unitatOrganitzativa) ");
 			parametres.put("unitatOrganitzativa", unitatOrganitzativa);
 		}
-		if (!esNullReintentsPendents && reintentsPendents != null) {
-			if (reintentsPendents.booleanValue()) {
-				sqlWhere.append("and (r.procesIntents < :maxReintents) ");				
-			} else {
-				sqlWhere.append("and (r.procesIntents >= :maxReintents) ");
-			}
-			parametres.put("maxReintents", maxReintents);
-		}
 		if (!esNullProcesEstat) {
 			sqlWhere.append("and r.procesEstat = :procesEstat ");
 			parametres.put("procesEstat", procesEstat);
@@ -723,13 +715,12 @@ public class RegistreServiceImpl implements RegistreService {
 				parametres.put("backCodi", backCodi);
 			}
 		}
-		if (!esNullReintentsPendents) {
-			if (reintentsPendents) {
-				sqlWhere.append("and r.procesIntents < :maxReintents ");
-			} else {
-				sqlWhere.append("and r.procesIntents >= :maxReintents ");
-			}
-			parametres.put("maxReintents", maxReintents);
+		if (!esNullReintentsPendents && Boolean.TRUE.equals(reintentsPendents)) {
+		    sqlWhere.append("and r.procesIntents < :maxReintents ");
+		    parametres.put("maxReintents", maxReintents);
+		} else if (!esNullReintentsPendents && Boolean.FALSE.equals(reintentsPendents)) {
+		    sqlWhere.append("and r.procesIntents >= :maxReintents ");
+		    parametres.put("maxReintents", maxReintents);
 		}
 		if (!esNullProcedimentCodi) {
 			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");
