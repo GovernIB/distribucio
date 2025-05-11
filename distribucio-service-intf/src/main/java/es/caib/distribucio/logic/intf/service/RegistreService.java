@@ -242,15 +242,15 @@ public interface RegistreService {
 
 	public List<AnotacioRegistreEntrada> findForBackoffice(String identificador, Date dataRegistre);
 	
-	/** Mètode per trobar l'id del registre a partir de l'identificador clau+número.
+	/** Mètode per trobar l'id del registre i les seves còpies a partir de l'identificador clau+número.
 	 * 
-	 * @param id Objecte amb la clau + número.
-	 * @return Retorna l'id del registre que coincideix amb el número i la clau.
+	 * @param ids Objectes amb la clau + número.
+	 * @return Retorna l'id del registre i les seves còpies que coincideixen amb el número i la clau.
 	 * 
 	 * @throws Excepció si no pot trobar el registre.
 	 */
 	@PreAuthorize("isAuthenticated()")
-	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception;
+	public List<Long> findRegistresPerIdentificador(AnotacioRegistreId id) throws Exception;
 
 	/** Mètode per canviar l'estat a rebuda si el seu estat inicial es comunicada al backoffice en un registre d'anotació.
 	 * 

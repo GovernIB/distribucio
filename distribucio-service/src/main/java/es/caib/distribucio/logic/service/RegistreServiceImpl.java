@@ -1502,8 +1502,8 @@ public class RegistreServiceImpl implements RegistreService {
 				+ "id=" + id + ")");
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 		try {
-			long registreId = this.getRegistrePerIdentificador(id);
-			RegistreEntity registreEntity = registreRepository.findById(registreId).orElseThrow();
+			List<Long> registresId = this.findRegistresPerIdentificador(id);
+			RegistreEntity registreEntity = registreRepository.findById(registresId.get(0)).orElseThrow();
 
 			EntitatDto entitatDto = new EntitatDto();
 //			entitatDto.setCodi(registreEntity.getEntitatCodi());
@@ -1715,15 +1715,14 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	/**
-	 * Obté el registre per identificador. Com que les anotacions reenviades tenen el mateix identificador si se'n troba més d'una
-	 * es retorna la darrera comunicada a un backoffice.
+	 * Obté el registre i les seves còpies per identificador.
 	 * 
 	 * @param id
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public long getRegistrePerIdentificador(AnotacioRegistreId id) throws Exception {
-		RegistreEntity registre = null;
+	public List<Long> findRegistresPerIdentificador(AnotacioRegistreId id) throws Exception {
+		List<Long> registresId = new ArrayList<Long>();
 		String clauSecreta = registreHelper.getClauSecretaProperty();
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
 		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
@@ -1738,28 +1737,26 @@ public class RegistreServiceImpl implements RegistreService {
 					id.getIndetificador() + "_" + Long.valueOf(r.getId()),
 					clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
-				registre = r;
-				break;
+				registresId.add(r.getId());
 			}
 		}
-		if (registre == null && registres.size() > 0) {
+		if (registresId.isEmpty() && registres.size() > 0) {
 			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
 			encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(), clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
-				registre = registres.get(0);
-				if (registres.size() > 1) {
-					logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
-					registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIndetificador());
-					if (registres != null && !registres.isEmpty()) {
-						registre = registres.get(0);
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
+				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIndetificador());
+				if (registres != null && !registres.isEmpty()) {
+					for (RegistreEntity r : registres) {
+						registresId.add(r.getId());
 					}
 				}
 			}
 		}
-		if (registre == null) {
+		if (registresId.isEmpty()) {
 			throw new RuntimeException("La clau o identificador és incorrecte");
-		}		
-		return registre.getId();
+		}
+		return registresId;
 	}
 
 	@Transactional

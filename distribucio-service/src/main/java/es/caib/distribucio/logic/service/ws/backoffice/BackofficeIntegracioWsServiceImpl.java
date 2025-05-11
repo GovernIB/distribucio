@@ -151,8 +151,11 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
     		 AnotacioRegistreId id,             
              String observacions) {
     	try {
-    		long registreId = registreService.getRegistrePerIdentificador(id);
-    		registreService.canviEstatComunicadaARebuda(registreId, observacions);
+    		List<Long> registresId = registreService.findRegistresPerIdentificador(id);
+			
+			for (Long registreId : registresId) {
+				registreService.canviEstatComunicadaARebuda(registreId, observacions);
+			}
     	} catch (Exception ex) {
     		logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="+ id + ex);
     	}
@@ -179,8 +182,11 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
         try {
             logger.trace(">>> Abans de cridar el servei de canvi d'estat");
             
-			long registreId = registreService.getRegistrePerIdentificador(id);
-			registreService.canviEstat(registreId, estat, observacions);
+			List<Long> registresId = registreService.findRegistresPerIdentificador(id);
+			
+			for (Long registreId : registresId) {
+				registreService.canviEstat(registreId, estat, observacions);
+			}
 
 			// RegistreNumero no cal!!!
             integracioHelper.addAccioOk (
