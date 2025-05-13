@@ -2124,7 +2124,25 @@ li[id^="anotacio_"] {
 								<tr>
 									<td>${copia.data}</td>
 									<td>${copia.estatDescripcio}</td>
-									<td>${copia.bustiaNom}</td>									
+									<td>
+										<c:forEach var="item" items="${copia.path}" varStatus="status">
+										   /<c:if test="${item.bustia}">
+										        <c:choose>
+										            <c:when test="${status.index == 0}">
+										                <span class="fa ${iconaUnitat}" title="<spring:message code='contingut.icona.unitat' />"></span>
+										            </c:when>
+										            <c:otherwise>
+										                <span class="fa ${iconaBustia}" title="<spring:message code='contingut.icona.bustia' />"></span>
+										            </c:otherwise>
+										        </c:choose>
+										    </c:if>
+										    ${item.nom}
+										</c:forEach>
+										
+										<c:if test="${!copia.bustiaActiva}">
+										    <span class="fa fa-exclamation-triangle text-warning" title="<spring:message code='bustia.list.avis.bustia.inactiva' />"></span>
+										</c:if>
+									</td>									
 									<c:if test="${copia.numeroCopia == 0}">
 										<td>Original</td>
 									</c:if>
