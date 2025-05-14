@@ -103,12 +103,17 @@ tr.clicable {
 	font-weight: normal;
 }
 
-#dropAccions > label.tramitacio {
+#dropAccions > label.tramitacio, td.tramitacio {
 	background-color: #f99957;
 }
 
-#dropAccions > label.coneixement {
+#dropAccions > label.coneixement, td.coneixement {
 	background-color: #5bc0de;
+}
+
+#copies th.perConeixement, td.tramitacio, td.coneixement {
+	padding: 1px !important;
+	width: 5px;
 }
 
 #dropAccions ul.dropdown-menu {
@@ -2112,6 +2117,9 @@ li[id^="anotacio_"] {
 					<table class="table table-bordered">
 						<thead>
 							<tr>
+								<c:if test="${isEnviarConeixementActiu}">
+									<th class="perConeixement"></th>
+								</c:if>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.datacreacio"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.estat"/></th>								
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.bustia"/></th>
@@ -2122,6 +2130,10 @@ li[id^="anotacio_"] {
 						<tbody>
 							<c:forEach var="copia" items="${copies}" varStatus="status">
 								<tr>
+									<c:if test="${isEnviarConeixementActiu}">
+										<td class="${copia.perConeixement ? 'coneixement' : 'tramitacio'}" 
+											title='<spring:message code="${copia.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>'></td>
+									</c:if>
 									<td>${copia.data}</td>
 									<td>${copia.estatDescripcio}</td>
 									<td>
