@@ -2083,11 +2083,10 @@ public class RegistreServiceImpl implements RegistreService {
 		List<String> errors = new ArrayList<String>();	
 		try {
 			String nom;
-			FitxerDto fitxer = null;
 			// Annexos
 			if (!registre.getAnnexos().isEmpty()) {
 				Set<String> nomsArxius = new HashSet<String>();
-				
+				List<FitxerDto> zipItems = Collections.synchronizedList(new ArrayList<>());
 				int nThreads = getPropertyZipNumThrads();
 				ExecutorService executor = Executors.newFixedThreadPool(nThreads);
 
@@ -2110,6 +2109,7 @@ public class RegistreServiceImpl implements RegistreService {
 								annex.getFitxerNom(),
 								nomsArxius,
 								zos,
+								zipItems,
 								executor,
 								errors);
 						
@@ -2117,21 +2117,37 @@ public class RegistreServiceImpl implements RegistreService {
 						executor.execute(wrappedRunnable);					}
 				}
 
-				try {Thread.sleep(200);} catch(Exception e) {};				
-		        executor.shutdown();
-		        
-		        while (!executor.isTerminated()) {
-		        	try {
-		        		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
-		        	} catch (InterruptedException e) {}
-		        }
+				executor.shutdown();
+				
+				if (!executor.isTerminated()) {
+					try {
+					    if (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
+					        executor.shutdownNow();
+					        throw new RuntimeException("Temps d'espera esgotat durant la generació del zip.");
+					    }
+					} catch (InterruptedException e) {
+					    executor.shutdownNow();
+					    Thread.currentThread().interrupt();
+					    throw new RuntimeException("El procés de generació del zip va ser interromput.", e);
+					}
+				}
+				
 		        if (!errors.isEmpty()) {
 		        	throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
 		        }
+		        
+		        for (FitxerDto fitxer: zipItems) {
+		            ZipEntry entry = new ZipEntry(fitxer.getNom());
+		            entry.setSize(fitxer.getContingut().length);
+		            zos.putNextEntry(entry);
+		            zos.write(fitxer.getContingut());
+		            zos.closeEntry();
+		        }
+
 			} else {
 				// Justificant en cas de no tenir annexos
 				try {
-					fitxer = registreHelper.getJustificant(registreId);
+					FitxerDto fitxer = registreHelper.getJustificant(registreId);
 					nom = fitxer.getNom();
 					ZipEntry entry = new ZipEntry(revisarContingutNom(nom));
 					entry.setSize(fitxer.getContingut().length);
@@ -2176,6 +2192,7 @@ public class RegistreServiceImpl implements RegistreService {
 		private String annexFitxerNom;
 		private Set<String> nomsArxius;
 		private ZipOutputStream zip;
+		private List<FitxerDto> zipItems;
 		ExecutorService executor;
 		private List<String> errors;		
 		
@@ -2193,6 +2210,7 @@ public class RegistreServiceImpl implements RegistreService {
 				String annexFitxerNom, 
 				Set<String> nomsArxius,
 				ZipOutputStream zip, 
+				List<FitxerDto> zipItems,
 				ExecutorService executor, 
 				List<String> errors) {
 			this.entitatActual = entitatActual;
@@ -2203,6 +2221,7 @@ public class RegistreServiceImpl implements RegistreService {
 			this.annexFitxerNom = annexFitxerNom;
 			this.nomsArxius = nomsArxius;
 			this.zip = zip;
+			this.zipItems = zipItems;
 			this.executor = executor;
 			this.errors = errors;			
 		}
@@ -2233,18 +2252,17 @@ public class RegistreServiceImpl implements RegistreService {
 					nom = fitxerNom;
 				}
 				synchronized (nomsArxius) {
-					ZipEntry entry = new ZipEntry(getZipRecursNom(revisarContingutNom(nom), nomsArxius));
-					entry.setSize(fitxer.getContingut().length);
-					zip.putNextEntry(entry);
-					zip.write(fitxer.getContingut());
-					zip.closeEntry();
+					String itemZipNom = getZipRecursNom(revisarContingutNom(nom), nomsArxius);
+					fitxer.setNom(itemZipNom);
 				}
+				// Es fa així per evitar la perdua d'annexos emprant múltiples threads (zipOutputStream no es thread-safe)
+				zipItems.add(fitxer);
 			} catch (Throwable  e) {
 				String errMsg = "Error afegint l'annex " + annexTitol + " del registre " + registreNumero + " al document zip comprimit: " + e.getMessage();
 				logger.error(errMsg);				
 				errors.add(errMsg);
-				executor.shutdownNow();				
-			}						
+				executor.shutdownNow();			
+			}					
 		}		
 	}
 	
