@@ -38,7 +38,15 @@
 
 	<c:if test="${registres != null}">
 		<dis:processamentMultiple 
-			registres="${registres}"
+			items="${registres}"
+			itemId="id"
+			itemUrl="/registreUser/registre"
+			itemUrlParam1="id"
+			itemKey="numero"
+			itemText="extracte"
+			missatgeCap="registre.user.controller.massiva.cap"
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
+			missatgeColumn="registresSeleccionats.anotacio"
 			btnSubmit="button[name='btnEnviarIProcessarSubmit']"
 			form="#registreEnviarIProcessarCommand"
 			postUrl="/registreUser/enviarIProcessarAjax/"
