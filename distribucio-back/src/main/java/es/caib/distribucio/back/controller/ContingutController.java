@@ -298,7 +298,11 @@ public class ContingutController extends BaseUserController {
 					"contingut.controller.document.descarregar.error",
 					new Object[] {ex.getMessage()});
 			logger.error(errMsg, ex);
-			throw new Exception(errMsg, ex);
+			
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType("text/plain");
+			response.getWriter().write(errMsg);
+			response.getWriter().flush();
 		}
 	}
 
