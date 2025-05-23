@@ -93,6 +93,7 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.helper.AnnexUtil;
 import es.caib.distribucio.logic.intf.registre.Firma;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnex;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
@@ -434,7 +435,8 @@ public class RegistreHelper {
 		Timer.Context contextsaveAnnexos = timersaveAnnexos.time();
 
 		// save annexos and firmes in db and their byte content in the folder in local filesystem
-		if (registreAnotacio.getAnnexos() != null) { 
+		if (registreAnotacio.getAnnexos() != null) {
+			Map<String, Integer> titolsComprovats = new HashMap<String, Integer>();
 			for (RegistreAnnex registreAnnex: registreAnotacio.getAnnexos()) {
 				// Si ve informat amb uuid no guardar en filesystem
 				boolean isGuardarEnFilesystem = registreAnnex.getFitxerArxiuUuid() == null;
@@ -442,7 +444,8 @@ public class RegistreHelper {
 						crearAnnexEntity(
 								isGuardarEnFilesystem,
 								registreAnnex,
-								registre));
+								registre,
+								titolsComprovats));
 			}
 		}
 		contextsaveAnnexos.stop();
@@ -752,20 +755,14 @@ public class RegistreHelper {
 						"anotacioNumero=" + distribucioRegistreAnotacio.getNumero() + ", " +
 						"unitatOrganitzativaCodi=" + unitatOrganitzativaCodi + ") amb uuid " + uuidExpedient + " a l'Arxiu.");				
 				exceptions = new ArrayList<>();
-				List<String> titolsAnnexes = new ArrayList<>();
 				for (DistribucioRegistreAnnex annex : distribucioRegistreAnotacio.getAnnexos()) {
 					try {
-						boolean titolRepetit = titolsAnnexes.contains(annex.getTitol());
-				        if (!titolRepetit) {
-				            titolsAnnexes.add(annex.getTitol());
-				        }
 						self.crearAnnexInArxiu(
 								annex.getId(), 
 								annex, 
 								unitatOrganitzativaCodi,
 								uuidExpedient, 
-								distribucioRegistreAnotacio.getProcedimentCodi(), 
-								titolRepetit);
+								distribucioRegistreAnotacio.getProcedimentCodi());
 					} catch (Throwable th) {
 						logger.error("Error creant l'annex " + annex.getId() + " " + annex.getFitxerNom() + " de l'anotació " 
 										+ distribucioRegistreAnotacio.getNumero() + ": " + th.getMessage(), th );
@@ -1786,7 +1783,8 @@ public class RegistreHelper {
 	private RegistreAnnexEntity crearAnnexEntity(
 			Boolean isRegistreArxiuPendent,
 			RegistreAnnex registreAnnex,
-			RegistreEntity registre) {
+			RegistreEntity registre,
+			Map<String, Integer> titolsComprovats) {
 		String gestioDocumentalId = null;
 		if (registreAnnex.getFitxerContingut() != null && isRegistreArxiuPendent) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
@@ -1809,9 +1807,15 @@ public class RegistreHelper {
 		} else if (tipusMime == null || tipusMime.trim().isEmpty()) {
 			tipusMime = new MimetypesFileTypeMap().getContentType(registreAnnex.getFitxerNom());
 		}
+		
+		// Soluciona problema llargària camps registre CHAR
+		String titol = AnnexUtil.prepararTitol(registreAnnex.getTitol(), AnnexUtil.MAX_FITXER_TITOL, titolsComprovats);
+		String nomFitxer = AnnexUtil.truncarNomFitxer(registreAnnex.getFitxerNom(), AnnexUtil.MAX_FITXER_NOM);
+		String observacions = AnnexUtil.truncar(registreAnnex.getObservacions(), AnnexUtil.MAX_FITXER_OBSERVACIO);
+		
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
-				registreAnnex.getTitol(),
-				registreAnnex.getFitxerNom(),
+				titol,
+				nomFitxer,
 				registreAnnex.getFitxerTamany(),
 				registreAnnex.getFitxerArxiuUuid(),
 				registreAnnex.getEniDataCaptura(),
@@ -1822,7 +1826,7 @@ public class RegistreHelper {
 				fitxerTipusMime(tipusMime).
 				localitzacio(registreAnnex.getLocalitzacio()).
 				ntiElaboracioEstat(RegistreAnnexElaboracioEstatEnum.valorAsEnum(registreAnnex.getEniEstatElaboracio())).
-				observacions(registreAnnex.getObservacions()).
+				observacions(observacions).
 				metaDades(metaDades).
 				build();
 		annexEntity.updateGesdocDocumentId(gestioDocumentalId);
@@ -2163,26 +2167,9 @@ public class RegistreHelper {
 			DistribucioRegistreAnnex distribucioAnnex, 
 			String unitatOrganitzativaCodi, 
 			String uuidExpedient, 
-			String procedimentCodi, 
-			boolean titolRepetit) {
+			String procedimentCodi) {
 		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
-		String fitxerTitol = "";
-		String titolData = ""; 
 		boolean isAnnexDefinitiuInArxiu = false;
-		
-		if (titolRepetit) {
-			do {
-				fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
-			}while(fitxerTitol.equals(titolData));
-			annex.updateTitol(fitxerTitol);
-		}
-		if (annex.getTitol().equals("") || 
-				annex.getTitol().startsWith(".")) {
-			do {
-				fitxerTitol = String.valueOf(new Date().getTime()) + annex.getTitol();
-			}while(fitxerTitol.equals(titolData));
-			annex.updateTitol(fitxerTitol);
-		}
 		RegistreEntity registre = annex.getRegistre();
 		DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
 		documentEniRegistrableDto.setNumero(registre.getNumero());
