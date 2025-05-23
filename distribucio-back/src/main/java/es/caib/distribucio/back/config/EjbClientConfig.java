@@ -19,6 +19,7 @@ import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.ContingutService;
 import es.caib.distribucio.logic.intf.service.DominiService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
+import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.HistoricService;
 import es.caib.distribucio.logic.intf.service.MetaDadaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
@@ -161,6 +162,12 @@ public class EjbClientConfig {
 	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean unitatOrganitzativaService() {
 		return getLocalEjbFactoyBean(UnitatOrganitzativaService.class);
+	}
+	
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean execucioMassivaService() {
+		return getLocalEjbFactoyBean(ExecucioMassivaService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
