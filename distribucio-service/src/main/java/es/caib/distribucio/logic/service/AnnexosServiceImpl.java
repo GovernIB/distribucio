@@ -5,7 +5,6 @@ package es.caib.distribucio.logic.service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -269,17 +268,12 @@ public class AnnexosServiceImpl implements AnnexosService {
 					registreAnnex, 
 					DistribucioRegistreAnnex.class);
 			
-			List<String> titolsAnnexes = annexosAdminHelper.getTitolsAnnexes(registre);
-			
-			boolean titolRepetit = Collections.frequency(titolsAnnexes, distribucioRegistreAnnex.getTitol()) > 1;
-
 			registreHelper.crearAnnexInArxiu(
 					annexId, 
 					distribucioRegistreAnnex, 
 					unitatOrganitzativaCodi,
 					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
-					distribucioRegistreAnotacio.getProcedimentCodi(), 
-					titolRepetit);
+					distribucioRegistreAnotacio.getProcedimentCodi());
 			
 			ValidacioFirmaEnum estatValidacioFirma = distribucioRegistreAnnex.getValidacioFirmaEstat();
 			
