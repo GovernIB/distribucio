@@ -242,7 +242,7 @@ pageContext.setAttribute(
 				<button class="btn btn-default" data-toggle="dropdown"><span id="seleccioCount" class="badge">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 				<ul class="dropdown-menu dropdown-left">
 					<c:if test="${isRolActualAdministrador}">					
-						<li><a href="annexosAdmin/guardarDefinitiuMultiple" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/guardarDefinitiu" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-pencil-square"></span>
 							<spring:message code="annexos.admin.boto.guardar.definitiu.multiple"/>
 						</a></li>	

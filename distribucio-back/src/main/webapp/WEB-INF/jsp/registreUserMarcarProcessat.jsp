@@ -40,26 +40,20 @@
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			btnSubmit="button[name='btnMarcarProcessatSubmit']"
-			form="#marcarProcessatCommand"
-			postUrl="/registreUser/marcarProcessatAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 
-	<form:form action="" class="form-horizontal" modelAttribute="marcarProcessatCommand">
+	<form:form class="form-horizontal" modelAttribute="marcarProcessatCommand">
 		<dis:inputTextarea required="true" name="motiu" textKey="bustia.pendent.contingut.camp.motiu"/>
 		<div id="modal-botons" class="well">
-			<button name="btnMarcarProcessatSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success" data-nosubmit="true"><span class="fa fa-check-circle-o"></span> <spring:message code="bustia.pendent.contingut.marcar.processat.boto"/></button>
+			<button name="btnMarcarProcessatSubmit" type="submit" class="btn btn-success" data-nosubmit="true"><span class="fa fa-check-circle-o"></span> <spring:message code="bustia.pendent.contingut.marcar.processat.boto"/></button>
 			<a href="<c:url value="/registreUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

@@ -617,22 +617,22 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu dropdown-left-medium">
-						<li><a href="registreComun/classificarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/classificar/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.accio.classificar"/>
 						</a></li>
-						<li><a href="registreComun/registreReenviarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/reenviar/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-send"></span> <spring:message code="bustia.pendent.accio.reenviar"/>
 						</a></li>
-						<li><a href="registreComun/marcarProcessatMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/marcarProcessat/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-check-circle-o"></span> <spring:message code="bustia.pendent.accio.marcar.processat"/>
 						</a></li>
-						<li><a href="registreComun/marcarPendentMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/marcarPendent/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-undo"></span> <spring:message code="registre.user.accio.marcar.pendent"/>
 						</a></li>
-						<li><a href="registreComun/enviarViaEmailMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/enviarViaEmail/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-envelope"></span> <spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 						</a></li>
-						<li><a href="registreComun/enviarIProcessarMultiple/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<li><a href="massiva/enviarIProcessar/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-envelope"></span>+<span class="fa fa-check-circle-o"></span>
 							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
 						</a></li>

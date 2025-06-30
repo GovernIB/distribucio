@@ -41,23 +41,17 @@
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			btnSubmit="button[name='btnEnviarViaEmailSubmit']"
-			form="#registreEnviarViaEmailCommand"
-			postUrl="/registreUser/enviarViaEmailAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 
-	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreEnviarViaEmailCommand">
+	<form:form method="post" cssClass="form-horizontal" modelAttribute="registreEnviarViaEmailCommand">
 		<c:set var="isVistaMoviments" value="${cookie['vistaMoviments'].value}"/>
 		<c:if test="${isVistaMoviments}">
 			<p class="alert alert-warning"><spring:message code="bustia.pendent.contingut.seleccio.info.2"/></p>
@@ -72,7 +66,7 @@
   		</div>		
 		<dis:inputTextarea name="motiu" textKey="bustia.pendent.contingut.enviarViaEmail.motiu"/>
 		<div id="modal-botons" class="well">
-			<button name="btnEnviarViaEmailSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>
+			<button name="btnEnviarViaEmailSubmit" type="submit" class="btn btn-success"><span class="fa fa-envelope"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 

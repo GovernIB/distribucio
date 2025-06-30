@@ -71,4 +71,10 @@ public interface SegonPlaService {
 	 **/
 	public void actualitzarServeis() throws Exception;
 	
+	/**
+	 * Executa les execucions massives en cua
+	 * @throws Exception 
+	 **/
+	public void executeNextMassiveScheduledTask() throws Exception;
+	
 }

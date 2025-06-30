@@ -41,23 +41,19 @@ var inicialitzarClassificacio = function(element) {
 	$('#registres-list h3.panel-title span.state-icon').addClass('fa-circle-o-notch fa-spin text-muted');
 }
 var processarRegistres = function(index, element) {
-	if (index < registres.length) {
-		let registre = registres[index];
-		let tipus = $('input:radio[name=tipus]:checked').val();
-		let codiProcediment = $('select#codiProcediment').val();
-		let codiServei = $('select#codiServei').val();
-		let classificarUrl = "<c:url value='/registreComun/classificarMultiple'/>" + "/" + registre.id + "?tipus=" + tipus + "&codiProcediment=" + codiProcediment + "&codiServei=" + codiServei;
-		$.post(classificarUrl, function(response) {
-			actualitzarEstatRegistre(index, true, response);
-			processarRegistres(index + 1, element);
-		}).fail(function() {
-			actualitzarEstatRegistre(index, false);
-			processarRegistres(index + 1, element);
-		});
-		return false;
-	} else {
-		finalitzarClassificacio(element);
-	}
+	let rol = '${rol}';
+	let tipus = $('input:radio[name=tipus]:checked').val();
+	let codiProcediment = $('select#codiProcediment').val();
+	let codiServei = $('select#codiServei').val();
+	let classificarUrl = "<c:url value='/massiva/classificar'/>" + "?rol=" + rol + "&tipus=" + tipus + "&codiProcediment=" + codiProcediment + "&codiServei=" + codiServei;
+	$.post(classificarUrl, function(response) {
+		actualitzarEstatRegistre(index, true, response);
+		//processarRegistres(index + 1, element);
+	}).fail(function() {
+		actualitzarEstatRegistre(index, false);
+		//processarRegistres(index + 1, element);
+	});
+	return false;
 }
 var actualitzarEstatRegistre = function(index, success, response) {
 	if (success) {
@@ -109,7 +105,7 @@ $(document).ready(function() {
 	if ((${fn:length(procediments)} > 0) ||	(${fn:length(serveis)} > 0)) {
 		$('#accio-classificar').removeAttr('disabled');
 	}
-	$(window.frameElement).load(function() {
+/*	$(window.frameElement).load(function() {
 		var $modalFooter = $('.modal-footer', $(this).parent().parent());
 		var $botoClassificar = $('button#accio-classificar', $modalFooter);
 			    
@@ -120,7 +116,7 @@ $(document).ready(function() {
 			processarRegistres(0, this);
 			return false;
 	    });
-	});
+	});*/
 	$('input:radio[name=tipus]').change(function(){
 		mostarProcedimentServei($(this).val());
 	});
@@ -230,6 +226,7 @@ function formatServeiSelect(item) {
 			</div>
 		</c:forEach>
 	</div>
+	<!-- 
 	<div id="classificacio-progress" class="progress">
 		<div id="classificacio-progress-success" class="progress-bar progress-bar-success" style="width: 0%">
 			<span></span>
@@ -238,7 +235,8 @@ function formatServeiSelect(item) {
 			<span></span>
 		</div>
 	</div>
-	<form:form cssClass="form-horizontal" modelAttribute="registreClassificarCommand">
+	 -->
+	<form:form cssClass="form-horizontal" method="post" modelAttribute="registreClassificarCommand">
 		<dis:inputRadio
 					name="tipus" 
 					textKey="bustia.pendent.classificar.camp.tipus" 

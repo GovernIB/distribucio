@@ -457,6 +457,42 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					}
 				});
 		monitorTasquesService.addTasca(codiActualitzarServeis);
+		//Execució de les accions massives pendents
+		final String codiExecucionMassives = "execucionsMassives";
+		monitorTasquesService.addTasca(codiExecucionMassives);
+		taskRegistrar.addTriggerTask(
+				new Runnable() {
+					@Override
+					public void run() {
+						monitorTasquesService.inici(codiExecucionMassives);
+						try {
+							segonPlaService.executeNextMassiveScheduledTask();
+							monitorTasquesService.fi(codiExecucionMassives);
+						} catch(Throwable th) {
+							tractarErrorTascaSegonPla(th, codiExecucionMassives);
+						}
+					}
+				},
+				new Trigger() {
+					@Override
+					public Date nextExecutionTime(TriggerContext triggerContext) {
+						Long value = null;
+						try {
+							value = configService.getConfigAsLong("es.caib.distribucio.segonpla.interval.execucio.massiva");
+						} catch (Exception e) {
+							log.warn("Error consultant la propietat per la propera execució de les massives: " + e.getMessage());
+						}
+						if (value == null) 
+							value = Long.valueOf("900000"); // 15 min
+						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+						trigger.setInitialDelay(value);
+						Date nextExecution = trigger.nextExecutionTime(triggerContext);
+						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+						monitorTasquesService.updateProperaExecucio(codiExecucionMassives, longNextExecution);
+						return nextExecution;
+					}
+				});
+		monitorTasquesService.addTasca(codiExecucionMassives);
 	}
 
 	/** Enregistre l'error als logs i marca la tasca amb error. */

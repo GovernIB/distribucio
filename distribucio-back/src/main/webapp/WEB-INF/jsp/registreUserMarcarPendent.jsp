@@ -40,26 +40,20 @@
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			btnSubmit="button[name='btnMarcarPendentSubmit']"
-			form="#marcarPendentCommand"
-			postUrl="/registreUser/marcarPendentAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" modelAttribute="marcarPendentCommand">
+	<form:form class="form-horizontal" modelAttribute="marcarPendentCommand">
 		<dis:inputTextarea required="true" name="motiu" textKey="registre.user.marcar.pendent.camp.motiu"/>
 		<div id="modal-botons" class="well">
-			<button name="btnMarcarPendentSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-undo"></span> <spring:message code="registre.user.marcar.pendent.boto"/></button>
+			<button name="btnMarcarPendentSubmit" type="submit" class="btn btn-success"><span class="fa fa-undo"></span> <spring:message code="registre.user.marcar.pendent.boto"/></button>
 			<a href="<c:url value="/registreUser"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

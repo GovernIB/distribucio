@@ -36,27 +36,20 @@
 <body>
 
 	<c:if test="${annexos != null}">
-		<dis:processamentMultiple 
-			items="${annexos}"
+		<dis:seleccioMultiple 
+			items="${annexos}" 
 			itemId="id"
-			itemUrl="/registreUser/registreAnnex"
+			itemUrl="/registreUser/registreAnnex"  
 			itemUrlParam1="registreId"
 			itemUrlParam2="id"
 			itemKey="fitxerNom"
 			itemText="fitxerNom"
-			missatgeCap="annexosSeleccionats.annexos.seleccionats.cap"
-			missatgeHeader="annexosSeleccionats.annexos.seleccionats"
-			missatgeColumn="annexosSeleccionats.annex"
-			start="true"
-			btnSubmit="button[name='btnProcessamentAnnexosMultipleSubmit']"
-			form="#processamentAnnexosMultiple"
-			postUrl="/annexosAdmin/processamentAjax/"
-			deselectUrl="/registreUser/deselect"/>
+			missatgeHeader="annexosSeleccionats.annexos.seleccionats"/>
 	</c:if>
 	
-	<form:form action="" class="form-horizontal" modelAttribute="processamentAnnexosMultiple">
+	<form:form class="form-horizontal" modelAttribute="processamentAnnexosMultiple">
 		<div id="modal-botons" class="well">
-			<button name="btnProcessamentAnnexosMultipleSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
+			<button name="btnProcessamentAnnexosMultipleSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

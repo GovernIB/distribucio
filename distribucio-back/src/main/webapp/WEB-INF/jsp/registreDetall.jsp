@@ -2206,13 +2206,13 @@ li[id^="anotacio_"] {
 			<button name="btnAnterior" class="btn btn-default pull-left" 
 							data-registre-numero="${registreNumero - 1}"
 							${registreNumero <= 1 ? "disabled='disabled'" : "" }>
-						&lt;&lt; <spring:message code="comuns.boto.previous"/></button>
+						&lt;&lt; <spring:message code="comu.boto.previous"/></button>
 			<button name="btnNavegacio" class="btn btn-default pull-left disable-events">
 				 ${registreNumero} / ${registreTotal}</button>
 			<button name="btnSeguent" class="btn btn-default pull-left" 
 							data-registre-numero="${registreNumero + 1}"
 							${registreNumero >= registreTotal ? "disabled='disabled'" : "" }>
-						<spring:message code="comuns.boto.next"/> &gt;&gt;</button>
+						<spring:message code="comu.boto.next"/> &gt;&gt;</button>
 		</c:if>
 		<a href="<c:url value="/registreUser"/>" class="btn btn-default modal-tancar" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 	</div>

@@ -292,6 +292,12 @@ body {
 											<li><a href="<c:url value="/servei"/>"><spring:message code="decorator.menu.serveis"/></a></li>
 											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
+											<li class="divider"></li>
+											<li>
+												<a href="<c:url value="/massiva/consulta/0"/>" data-toggle="modal" data-maximized="true">
+													<spring:message code="decorator.menu.accions.massives"/>
+												</a>
+											</li>
 										</ul>
 									</div>
 								</c:when>
@@ -306,6 +312,16 @@ body {
 									<a href="#" id="canviVistaReenvios" class="btn btn-primary">
 										<spring:message code='bustia.list.vista.moviments'/>
 									</a>
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.consultar"/>&nbsp;<span class="caret caret-white"></span></button>
+										<ul class="dropdown-menu">
+											<li>
+												<a href="<c:url value="/massiva/consulta/0"/>" data-toggle="modal" data-maximized="true">
+													<spring:message code="decorator.menu.accions.massives"/>
+												</a>
+											</li>
+										</ul>
+									</div>
 								</c:when>
 							</c:choose>
 						</div>

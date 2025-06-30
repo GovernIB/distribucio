@@ -33,5 +33,13 @@ public class BaseUserOAdminController extends BaseController {
 			throw new SecurityException("No te permisos per accedir a aquesta entitat com a administrador o usuari");
 		return entitat;
 	}
+	
+	public EntitatDto getEntitatActualComprovantPermisAdmin(
+			HttpServletRequest request) {
+		EntitatDto entitat = this.getEntitatActual(request);
+		if (!entitat.isUsuariActualAdministration())
+			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.admin"));
+		return entitat;
+	}
 
 }

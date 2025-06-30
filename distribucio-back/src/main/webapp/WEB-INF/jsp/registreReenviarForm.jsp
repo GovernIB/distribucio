@@ -386,9 +386,9 @@
 				if (${isPermesAssignarAnotacions}) {
 					mapBustiaUsuari();				
 				}
-				if (multiple) {
-					processaAnotacions();
-				}
+				//if (multiple) {
+				//	processaAnotacions();
+				//}
 		    });
 		});
 		
@@ -841,23 +841,17 @@
 </head>
 <body>
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			btnSubmit="button[name='btnReenviarSubmit']"
-			form="#contingutReenviarCommand"
-			postUrl="/registreUser/registreReenviarAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 
-	<form:form action="" class="form-horizontal" modelAttribute="contingutReenviarCommand" onsubmit="updateConeixement()">
+	<form:form class="form-horizontal" modelAttribute="contingutReenviarCommand" onsubmit="updateConeixement()">
 		<form:hidden path="params"/>
 	    <%--<c:choose>
 	    	<c:when test="${isFavoritsPermes}"> --%>
@@ -959,7 +953,7 @@
 		</c:choose>
 	     --%>
 		<div id="modal-botons" class="well">
-			<button name="btnReenviarSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
+			<button name="btnReenviarSubmit" type="submit" class="btn btn-success"><span class="fa fa-send"></span> <spring:message code="comu.boto.enviar"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

@@ -225,21 +225,21 @@ public class AnnexosAdminController extends BaseAdminController {
 //		
 //		return "redirect:../annexosAdmin";
 //	}
-	
-	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
-	public String reintentarProcessamentMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		Object command = new Object();
-		model.addAttribute("processamentAnnexosMultiple", command);
-		model.addAttribute("annexos",
-				annexosService.findMultiple(
-						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						true));
-		return "processamentAnnexosMultiple";
-	}
-	
+//	
+//	@RequestMapping(value = "/guardarDefinitiuMultiple", method = RequestMethod.GET)
+//	public String reintentarProcessamentMultipleGet(
+//			HttpServletRequest request,
+//			Model model) {
+//		Object command = new Object();
+//		model.addAttribute("processamentAnnexosMultiple", command);
+//		model.addAttribute("annexos",
+//				annexosService.findMultiple(
+//						getEntitatActualComprovantPermisAdmin(request).getId(),
+//						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+//						true));
+//		return "processamentAnnexosMultiple";
+//	}
+//	
 	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
 	 * de l'administrador.
 	 * @param request

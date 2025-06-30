@@ -434,13 +434,13 @@ $(document).ready(function() {
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)} <spring:message code="bustia.pendent.contingut.seleccio.moviments"/></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu">
 						<li>
-							<a href="../registreUser/registreReenviarMultiple?isVistaMoviments=true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<a href="../massiva/reenviar/user?isVistaMoviments=true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 								<spring:message code="bustia.pendent.accio.reenviar"/>
 								<span class="fa fa-info-circle" title="<spring:message code="bustia.pendent.contingut.seleccio.info.3"/>"></span>
 							</a>
 						</li>
 						<li>
-							<a href="../registreUser/enviarViaEmailMultiple?isVistaMoviments=true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<a href="../massiva/enviarViaEmail/user?isVistaMoviments=true" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 								<spring:message code="bustia.pendent.accio.enviarViaEmail"/>
 								<span class="fa fa-info-circle" title="<spring:message code="bustia.pendent.contingut.seleccio.info.2"/>"></span>
 							</a>
@@ -459,7 +459,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="12"
+		data-default-order="13"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -470,6 +470,7 @@ $(document).ready(function() {
 				<th data-col-name="movimentId" data-visible="false"></th>
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
+				<th data-col-name="regla" data-visible="false"></th>
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false">

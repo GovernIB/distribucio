@@ -36,25 +36,19 @@
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			start="true"
-			btnSubmit="button[name='btnMarcarSobreescriureSubmit']"
-			form="#marcarSobreescriureCommand"
-			postUrl="/registreAdmin/marcarSobreescriureAjax/"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 	
 	<form:form action="" class="form-horizontal" modelAttribute="marcarSobreescriureCommand">
 		<div id="modal-botons" class="well">
-			<button name="btnMarcarSobreescriureSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></button>
+			<button name="btnMarcarSobreescriureSubmit" type="submit" class="btn btn-success"><span class="fa fa-history"></span> <spring:message code="registre.admin.list.accio.marcar.sobreescriure"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

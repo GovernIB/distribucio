@@ -1,0 +1,14 @@
+package es.caib.distribucio.logic.intf.dto;
+
+public enum ExecucioMassivaTipusDto {
+	PROCESSAR,
+	BACKOFFICE,
+	CLASSIFICAR,
+	SOBREESCRIURE,
+	REENVIAR,
+	MARCAR_PROCESSAT,
+	MARCAR_PENDENT,
+	ENVIAR_VIA_EMAIL,
+	ENVIAR_VIA_EMAIL_PROCESSAR,
+	CUSTODIAR
+}

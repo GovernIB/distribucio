@@ -18,6 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.logic.intf.dto.AlertaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
 import es.caib.distribucio.logic.intf.dto.MetaDadaDto;
 import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
@@ -27,6 +31,8 @@ import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.persist.entity.AlertaEntity;
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
 import es.caib.distribucio.persist.entity.DadaEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaEntity;
 import es.caib.distribucio.persist.entity.MetaDadaEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
@@ -217,6 +223,46 @@ public class ConversioTipusHelper {
 //						return target;
 //					}
 //				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<ExecucioMassivaEntity, ExecucioMassivaDto>() {
+					@Override
+					public ExecucioMassivaDto convert(ExecucioMassivaEntity source, Type<? extends ExecucioMassivaDto> destinationClass, MappingContext mappingContext) {
+						ExecucioMassivaDto target = new ExecucioMassivaDto();
+						target.setId(source.getId());
+						target.setTipus(source.getTipus());
+						target.setEstat(ExecucioMassivaEstatDto.valueOf(source.getEstat().name()));
+						target.setDataCreacio(source.getDataCreacio());
+						target.setDataInici(source.getDataInici());
+						target.setDataFi(source.getDataFi());
+						target.setUsuari(convertir(source.getUsuari(), UsuariDto.class));
+//						target.setContinguts(convertirList(source.getContinguts(), ExecucioMassivaContingutDto.class));
+						boolean emcPausat = source.getContinguts() != null && 
+								source.getContinguts()
+									.stream()
+									.anyMatch(emc -> ExecucioMassivaContingutEstatDto.PAUSADA.equals(emc.getEstat()));
+						target.setEmcPausat(emcPausat);
+						target.setParametres(source.getParametres());
+						return target;
+					}
+				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<ExecucioMassivaContingutEntity, ExecucioMassivaContingutDto>() {
+					public ExecucioMassivaContingutDto convert(ExecucioMassivaContingutEntity source, Type<? extends ExecucioMassivaContingutDto>destinationClass, MappingContext mappingContext) {
+						ExecucioMassivaContingutDto target = new ExecucioMassivaContingutDto();
+						target.setDataCreacio(source.getDataCreacio());
+						target.setDataInici(source.getDataInici());
+						target.setDataFi(source.getDataFi());
+						target.setEstat(ExecucioMassivaContingutEstatDto.valueOf(source.getEstat().name()));
+						target.setError(source.getError());
+						target.setOrdre(source.getOrdre());
+						target.setExecucioMassiva(convertir(source.getExecucioMassiva(), ExecucioMassivaDto.class));
+						target.setMissatge(source.getMissatge());
+						target.setElementId(source.getElementId());
+						target.setElementNom(source.getElementNom());
+						target.setElementTipus(source.getElementTipus());
+						return target;
+					}
+				});
 	}
 
 	public <T> T convertir(Object source, Class<T> targetType) {

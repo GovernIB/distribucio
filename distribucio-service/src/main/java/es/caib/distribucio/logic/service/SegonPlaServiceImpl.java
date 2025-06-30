@@ -40,6 +40,7 @@ import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
+import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
@@ -86,6 +87,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
+	@Autowired
+	private ExecucioMassivaService execucioMassivaService;
 	@Autowired
 	private UsuariRepository usuariRepository;
 
@@ -601,6 +604,23 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 		if (!entitatsError.isEmpty()) {
 			throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
+		}
+	}
+	
+	@Override
+	public void executeNextMassiveScheduledTask() throws Exception {
+		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+		List<String> entitatsError = new ArrayList<>();		
+		for (EntitatEntity entitat : llistaEntitats) {
+			try {
+				execucioMassivaService.executeNextMassiveScheduledTask(entitat.getId());
+			} catch (Exception e) {
+				entitatsError.add(entitat.getCodi());
+				logger.error("Error executant les execucions massives pendents per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
+			}			
+		}
+		if (!entitatsError.isEmpty()) {
+			throw new Exception("No s'han pogut executar totes les execucions massives pendents per les següents entitats: " + entitatsError);
 		}
 	}
 	

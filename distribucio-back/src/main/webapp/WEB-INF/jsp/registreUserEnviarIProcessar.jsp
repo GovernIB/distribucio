@@ -37,23 +37,17 @@
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			btnSubmit="button[name='btnEnviarIProcessarSubmit']"
-			form="#registreEnviarIProcessarCommand"
-			postUrl="/registreUser/enviarIProcessarAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 
-	<form:form action="" method="post" cssClass="form-horizontal" modelAttribute="registreEnviarIProcessarCommand">
+	<form:form method="post" cssClass="form-horizontal" modelAttribute="registreEnviarIProcessarCommand">
 
 		<form:hidden path="contingutId"/>
 		
@@ -66,7 +60,7 @@
   		</div>		
 		<dis:inputTextarea required="true" name="motiu" textKey="bustia.pendent.contingut.camp.motiu"/>
 		<div id="modal-botons" class="well">
-			<button name="btnEnviarIProcessarSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="bustia.pendent.contingut.enviarViaEmail.i.marcarProcessat.boto"/></button>
+			<button name="btnEnviarIProcessarSubmit" type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="bustia.pendent.contingut.enviarViaEmail.i.marcarProcessat.boto"/></button>
 			<a href="#" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

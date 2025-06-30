@@ -18,44 +18,23 @@
 	<title>${titol}</title>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
-	
-	<script type="text/javascript">
-
-		var multiple = ${registres != null};
-
-		$(document).ready(function() {
-			$("button[name='btnReintentarProcessamentSubmit']").click(function(){
-				if (multiple) {
-					processaAnotacions();
-				}
-		    });
-		});
-		
-	</script>
 </head>
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:processamentMultiple 
-			items="${registres}"
+		<dis:seleccioMultiple 
+			items="${registres}" 
 			itemId="id"
-			itemUrl="/registreUser/registre"
+			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
-			itemText="extracte"
-			missatgeCap="registre.user.controller.massiva.cap"
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-			missatgeColumn="registresSeleccionats.anotacio"
-			start="true"
-			btnSubmit="button[name='btnReintentarProcessamentSubmit']"
-			form="#reintentarProcessamentCommand"
-			postUrl="/registreAdmin/reintentarProcessamentAjax/"
-			deselectUrl="/registreUser/deselect"></dis:processamentMultiple>
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 	
 	<form:form action="" class="form-horizontal" modelAttribute="reintentarProcessamentCommand">
 		<div id="modal-botons" class="well">
-			<button name="btnReintentarProcessamentSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
+			<button name="btnReintentarProcessamentSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

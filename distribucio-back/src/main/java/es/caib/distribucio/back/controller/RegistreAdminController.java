@@ -402,15 +402,15 @@ public class RegistreAdminController extends BaseAdminController {
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};
 
-	/** Estats que permeten el renviament al backoffice */
-	private static RegistreProcesEstatEnum[] estatsReenviablesBackoffices = {
-			RegistreProcesEstatEnum.BACK_PENDENT,
-			RegistreProcesEstatEnum.BACK_COMUNICADA,
-			RegistreProcesEstatEnum.BACK_REBUDA,
-			RegistreProcesEstatEnum.BACK_ERROR,
-			RegistreProcesEstatEnum.BACK_PROCESSADA,
-			RegistreProcesEstatEnum.BACK_REBUTJADA,
-	};
+//	/** Estats que permeten el renviament al backoffice */
+//	private static RegistreProcesEstatEnum[] estatsReenviablesBackoffices = {
+//			RegistreProcesEstatEnum.BACK_PENDENT,
+//			RegistreProcesEstatEnum.BACK_COMUNICADA,
+//			RegistreProcesEstatEnum.BACK_REBUDA,
+//			RegistreProcesEstatEnum.BACK_ERROR,
+//			RegistreProcesEstatEnum.BACK_PROCESSADA,
+//			RegistreProcesEstatEnum.BACK_REBUTJADA,
+//	};
 
 	@RequestMapping(value = "/registre/{registreId}/reintentar", method = RequestMethod.GET)
 	public String reintentar(
@@ -480,76 +480,76 @@ public class RegistreAdminController extends BaseAdminController {
 		return "redirect:" + request.getHeader("referer");
 	}
 
-	@RequestMapping(value = "/reintentarEnviamentBackofficeMultiple", method = RequestMethod.GET)
-	public String reintentarEnviamentBackofficeMultiple(
-			HttpServletRequest request,
-			Model model) {
-		Object command = new Object();
-		model.addAttribute("reintentarEnviamentBackofficeCommand", command);
-		model.addAttribute("registres", registreService.findMultiple(
-				getEntitatActualComprovantPermisAdmin(request).getId(), 
-				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
-				true));
-		return "reintentarEnviamentBackofficeMultiple";
-	}
-
-	/** Mèdode per enviar al backoffice una anotacions de registre via ajax des del llistat d'anotacions
-	 * de l'administrador.
-	 * @param request
-	 * @param model
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/reintentarEnviamentBackofficeAjax/{registreId}", method = RequestMethod.POST)
-	public AjaxFormResponse reintentarEnviamentBackofficeAjaxPost(
-			HttpServletRequest request, 
-			@PathVariable Long registreId, 
-			@Valid Object command, 
-			BindingResult bindingResult) {
-		AjaxFormResponse response = null;
-		if (bindingResult.hasErrors()) {
-			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
-			response.setMissatge(getMessage(request, "enviamentMultiple.error.validacio"));
-			return response;
-		}
-		boolean correcte = false;
-		String missatge = "";
-		ContingutDto contingutDto = null;
-		RegistreDto registreDto = null;
-		try {
-			this.entrarSemafor(registreId);
-			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
-			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
-			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
-			registreDto = (RegistreDto) contingutDto;
-			
-			if (ArrayUtils.contains(estatsReenviablesBackoffices, registreDto.getProcesEstat())) {
-				correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
-				missatge = "Anotació reenviada al backoffice " + (registreDto.getBackCodi()) + " " + (correcte ? "correctament" : "amb error");
-			}else {
-				missatge = getMessage(request, "registre.admin.reintentar.enviament.backoffice.estat.incompatible", new Object[] {registreDto.getId()}); 
-				correcte = true;
-			}
-		}catch (Exception e) {
-			logger.error("Error incontrolat enviant al backoffice l'anotació amb id " + registreId + ": " + e.getMessage(), e);
-			String errMsg = getMessage(
-					request, 
-					"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat", 
-					new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
-			response = AjaxHelper.generarAjaxError(errMsg);
-		} finally {
-			this.sortirSemafor(registreId);
-		}
-		if (correcte) {
-			response = AjaxHelper.generarAjaxFormOk();
-			response.setMissatge(missatge);
-			
-		} else {
-			response = AjaxHelper.generarAjaxError(missatge);
-		}
-		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
-		return response;
-	}
+//	@RequestMapping(value = "/reintentarEnviamentBackofficeMultiple", method = RequestMethod.GET)
+//	public String reintentarEnviamentBackofficeMultiple(
+//			HttpServletRequest request,
+//			Model model) {
+//		Object command = new Object();
+//		model.addAttribute("reintentarEnviamentBackofficeCommand", command);
+//		model.addAttribute("registres", registreService.findMultiple(
+//				getEntitatActualComprovantPermisAdmin(request).getId(), 
+//				this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO), 
+//				true));
+//		return "reintentarEnviamentBackofficeMultiple";
+//	}
+//
+//	/** Mèdode per enviar al backoffice una anotacions de registre via ajax des del llistat d'anotacions
+//	 * de l'administrador.
+//	 * @param request
+//	 * @param model
+//	 * @return
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "/reintentarEnviamentBackofficeAjax/{registreId}", method = RequestMethod.POST)
+//	public AjaxFormResponse reintentarEnviamentBackofficeAjaxPost(
+//			HttpServletRequest request, 
+//			@PathVariable Long registreId, 
+//			@Valid Object command, 
+//			BindingResult bindingResult) {
+//		AjaxFormResponse response = null;
+//		if (bindingResult.hasErrors()) {
+//			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+//			response.setMissatge(getMessage(request, "enviamentMultiple.error.validacio"));
+//			return response;
+//		}
+//		boolean correcte = false;
+//		String missatge = "";
+//		ContingutDto contingutDto = null;
+//		RegistreDto registreDto = null;
+//		try {
+//			this.entrarSemafor(registreId);
+//			logger.debug("Reintentar enviament al backoffice l'anotació amb id " + registreId);
+//			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+//			contingutDto = contingutService.findAmbIdAdmin(entitatActual.getId(), registreId, false);
+//			registreDto = (RegistreDto) contingutDto;
+//			
+//			if (ArrayUtils.contains(estatsReenviablesBackoffices, registreDto.getProcesEstat())) {
+//				correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
+//				missatge = "Anotació reenviada al backoffice " + (registreDto.getBackCodi()) + " " + (correcte ? "correctament" : "amb error");
+//			}else {
+//				missatge = getMessage(request, "registre.admin.reintentar.enviament.backoffice.estat.incompatible", new Object[] {registreDto.getId()}); 
+//				correcte = true;
+//			}
+//		}catch (Exception e) {
+//			logger.error("Error incontrolat enviant al backoffice l'anotació amb id " + registreId + ": " + e.getMessage(), e);
+//			String errMsg = getMessage(
+//					request, 
+//					"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat", 
+//					new Object[] {(contingutDto != null ? contingutDto.getNom() : String.valueOf(registreId)), e.getMessage()});
+//			response = AjaxHelper.generarAjaxError(errMsg);
+//		} finally {
+//			this.sortirSemafor(registreId);
+//		}
+//		if (correcte) {
+//			response = AjaxHelper.generarAjaxFormOk();
+//			response.setMissatge(missatge);
+//			
+//		} else {
+//			response = AjaxHelper.generarAjaxError(missatge);
+//		}
+//		logger.debug("L'anotació amb id " + registreId + " " + (registreDto != null ? registreDto.getNom() : "") + " s'ha enviat al backoffice " + (correcte ? "correctament" : "amb error"));
+//		return response;
+//	}
 
 	@RequestMapping(value = "/{registreId}/marcarSobreescriure", method = RequestMethod.GET)
 	public String marcarSobreescriure(
@@ -571,118 +571,118 @@ public class RegistreAdminController extends BaseAdminController {
 		}
 	}
 
-	@RequestMapping(value = "/marcarSobreescriureMultiple", method = RequestMethod.GET)
-	public String marcarSobreescriureMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		Object command = new Object();
-		model.addAttribute("marcarSobreescriureCommand", command);
-		model.addAttribute("registres",
-				registreService.findMultiple(
-						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						true));
-		return "marcarSobreescriure";
-	}
-
-	/** Mèdode per marcar per sobreescriure una anotació de registre via ajax des del llistat d'anotacions
-	 * de l'administrador.
-	 * @param request
-	 * @param model
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/marcarSobreescriureAjax/{registreId}", method = RequestMethod.POST)
-	public AjaxFormResponse marcarSobreescriureAjaxPost(
-			HttpServletRequest request,
-			@PathVariable Long registreId,
-			@Valid Object command,
-			BindingResult bindingResult) {
-		AjaxFormResponse response;
-		if (bindingResult.hasErrors()) {
-			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
-			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
-			return response;
-		}
-		boolean correcte = false;
-		String missatge = null;
-		RegistreDto registreDto = null;
-		try {
-			this.entrarSemafor(registreId);
-			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);
-			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
-			registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
-			if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
-				registreService.marcarSobreescriure(entitatActual.getId(), registreId);
-				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.ok", new Object[] {registreId});
-				correcte = true;
-			} else {
-				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.estat.error", new Object[] {registreId, registreDto.getProcesEstat()});
-				correcte = false;
-			}
-			if (correcte) {
-				response = AjaxHelper.generarAjaxFormOk();
-				response.setMissatge(missatge.toString());
-			} else {
-				response = AjaxHelper.generarAjaxError(missatge.toString());
-			}
-			logger.debug(missatge);
-		} catch(Exception e) {
-			logger.error("Error incontrolat marcant per sobreescriure l'anotació amb id " + registreId + ": " + e.getMessage() , e);
-			String errMsg = getMessage(request, 
-										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
-										new Object[] {(registreDto != null ? registreDto.getIdentificador() : String.valueOf(registreId)), e.getMessage()});
-			response = AjaxHelper.generarAjaxError(errMsg);
-		} finally {
-			this.sortirSemafor(registreId);
-		}
-		return response;
-	}
-
-	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
-	public String reintentarProcessamentMultipleGet(
-			HttpServletRequest request,
-			Model model) {
-		Object command = new Object();
-		model.addAttribute("reintentarProcessamentCommand", command);
-		model.addAttribute("registres",
-				registreService.findMultiple(
-						getEntitatActualComprovantPermisAdmin(request).getId(),
-						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
-						true));
-		return "reintentarProcessamentMultiple";
-	}
-
-	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
-	 * de l'administrador.
-	 * @param request
-	 * @param model
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/reintentarProcessamentAjax/{registreId}", method = RequestMethod.POST)
-	public AjaxFormResponse reintentarProcessamentAjaxPost(
-			HttpServletRequest request,
-			@PathVariable Long registreId,
-			@Valid Object command,
-			BindingResult bindingResult) {
-		AjaxFormResponse response;
-		if (bindingResult.hasErrors()) {
-			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
-			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
-			return response;
-		}
-		try {
-			this.entrarSemafor(registreId);
-			response = this.reintentarProcessament(request, registreId);
-		} catch(Exception e) {
-			response = AjaxHelper.generarAjaxError("Error no controlat reintentant el processament: " + e.getMessage());
-		} finally {
-			this.sortirSemafor(registreId);
-		}
-		logger.debug("L'anotació amb id " + registreId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
-		return response;
-	}
+//	@RequestMapping(value = "/marcarSobreescriureMultiple", method = RequestMethod.GET)
+//	public String marcarSobreescriureMultipleGet(
+//			HttpServletRequest request,
+//			Model model) {
+//		Object command = new Object();
+//		model.addAttribute("marcarSobreescriureCommand", command);
+//		model.addAttribute("registres",
+//				registreService.findMultiple(
+//						getEntitatActualComprovantPermisAdmin(request).getId(),
+//						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+//						true));
+//		return "marcarSobreescriure";
+//	}
+//
+//	/** Mèdode per marcar per sobreescriure una anotació de registre via ajax des del llistat d'anotacions
+//	 * de l'administrador.
+//	 * @param request
+//	 * @param model
+//	 * @return
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "/marcarSobreescriureAjax/{registreId}", method = RequestMethod.POST)
+//	public AjaxFormResponse marcarSobreescriureAjaxPost(
+//			HttpServletRequest request,
+//			@PathVariable Long registreId,
+//			@Valid Object command,
+//			BindingResult bindingResult) {
+//		AjaxFormResponse response;
+//		if (bindingResult.hasErrors()) {
+//			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+//			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+//			return response;
+//		}
+//		boolean correcte = false;
+//		String missatge = null;
+//		RegistreDto registreDto = null;
+//		try {
+//			this.entrarSemafor(registreId);
+//			logger.debug("Marcar per sobreescriure l'anotació amb id " + registreId);
+//			EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
+//			registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
+//			if (RegistreProcesEstatEnum.isPendent(registreDto.getProcesEstat()) && !registreDto.isArxiuTancat()) {
+//				registreService.marcarSobreescriure(entitatActual.getId(), registreId);
+//				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.ok", new Object[] {registreId});
+//				correcte = true;
+//			} else {
+//				missatge = getMessage(request, "registre.admin.controller.marcar.sobreescriure.estat.error", new Object[] {registreId, registreDto.getProcesEstat()});
+//				correcte = false;
+//			}
+//			if (correcte) {
+//				response = AjaxHelper.generarAjaxFormOk();
+//				response.setMissatge(missatge.toString());
+//			} else {
+//				response = AjaxHelper.generarAjaxError(missatge.toString());
+//			}
+//			logger.debug(missatge);
+//		} catch(Exception e) {
+//			logger.error("Error incontrolat marcant per sobreescriure l'anotació amb id " + registreId + ": " + e.getMessage() , e);
+//			String errMsg = getMessage(request, 
+//										"contingut.admin.controller.registre.reintentat.massiva.errorNoControlat",
+//										new Object[] {(registreDto != null ? registreDto.getIdentificador() : String.valueOf(registreId)), e.getMessage()});
+//			response = AjaxHelper.generarAjaxError(errMsg);
+//		} finally {
+//			this.sortirSemafor(registreId);
+//		}
+//		return response;
+//	}
+//
+//	@RequestMapping(value = "/reintentarProcessamentMultiple", method = RequestMethod.GET)
+//	public String reintentarProcessamentMultipleGet(
+//			HttpServletRequest request,
+//			Model model) {
+//		Object command = new Object();
+//		model.addAttribute("reintentarProcessamentCommand", command);
+//		model.addAttribute("registres",
+//				registreService.findMultiple(
+//						getEntitatActualComprovantPermisAdmin(request).getId(),
+//						this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO),
+//						true));
+//		return "reintentarProcessamentMultiple";
+//	}
+//
+//	/** Mèdode per reprocessar una anotacions de registre via ajax des del llistat d'anotacions
+//	 * de l'administrador.
+//	 * @param request
+//	 * @param model
+//	 * @return
+//	 */
+//	@ResponseBody
+//	@RequestMapping(value = "/reintentarProcessamentAjax/{registreId}", method = RequestMethod.POST)
+//	public AjaxFormResponse reintentarProcessamentAjaxPost(
+//			HttpServletRequest request,
+//			@PathVariable Long registreId,
+//			@Valid Object command,
+//			BindingResult bindingResult) {
+//		AjaxFormResponse response;
+//		if (bindingResult.hasErrors()) {
+//			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
+//			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
+//			return response;
+//		}
+//		try {
+//			this.entrarSemafor(registreId);
+//			response = this.reintentarProcessament(request, registreId);
+//		} catch(Exception e) {
+//			response = AjaxHelper.generarAjaxError("Error no controlat reintentant el processament: " + e.getMessage());
+//		} finally {
+//			this.sortirSemafor(registreId);
+//		}
+//		logger.debug("L'anotació amb id " + registreId + " s'ha processat " + (response.isEstatOk() ? "correctament." : "amb error.") + response.getMissatge());
+//		return response;
+//	}
 
 	private AjaxFormResponse reintentarProcessament(HttpServletRequest request, Long registreId) {
 		AjaxFormResponse response = null;
