@@ -1,11 +1,12 @@
 package es.caib.distribucio.ejb;
 
 import java.util.List;
-import javax.ejb.Stateless;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
 
+import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
@@ -22,7 +23,7 @@ import lombok.experimental.Delegate;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Stateless
-public class ExecucioMassivaServiceEjb implements ExecucioMassivaService {
+public class ExecucioMassivaServiceEjb extends AbstractServiceEjb<ExecucioMassivaService> implements ExecucioMassivaService {
 
 	@Delegate
 	private ExecucioMassivaService delegateService = null;
@@ -77,4 +78,7 @@ public class ExecucioMassivaServiceEjb implements ExecucioMassivaService {
 		delegateService.executeNextMassiveScheduledTask(entitatId);
 	}
 
+	protected void setDelegateService(ExecucioMassivaService delegateService) {
+		this.delegateService = delegateService;
+	}
 }
