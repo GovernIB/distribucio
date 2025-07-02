@@ -20,22 +20,6 @@
 	<script src="<c:url value="/js/jstree.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
-	
-	<script type="text/javascript">
-		
-		var multiple = ${registres != null};
-		
-		$(document).ready(function() {
-			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
-
-			$("button[name='btnMarcarProcessatSubmit']").click(function(){
-				if (multiple) {
-					processaAnotacions();
-				}
-		    });
-		});
-		
-	</script>
 </head>
 <body>
 

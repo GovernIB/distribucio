@@ -18,36 +18,23 @@
 	<title>${titol}</title>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
-	
-	<script type="text/javascript">
-
-		var multiple = ${registres != null};
-
-		$(document).ready(function() {
-			$("button[name='btnReintentarEnviamentBackofficeSubmit']").click(function(){
-				if (multiple) {
-					enviaBackofficeAnotacions();
-				}
-		    });
-		});
-		
-	</script>
 </head>
 <body>
 
 	<c:if test="${registres != null}">
-		<dis:enviamentBackofficeMultiple 
-			registres="${registres}"
-			start="true"
-			btnSubmit="button[name='btnReintentarEnviamentBackofficeSubmit']"
-			form="#reintentarEnviamentBackofficeCommand"
-			postUrl="/registreAdmin/reintentarEnviamentBackofficeAjax/">
-		</dis:enviamentBackofficeMultiple>
+		<dis:seleccioMultiple 
+			items="${registres}" 
+			itemId="id"
+			itemUrl="/registreUser/registre"  
+			itemUrlParam1="id"
+			itemKey="numero"
+			itemText="extracte" 
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
 	</c:if>
 	
 	<form:form action="" class="form-horizontal" modelAttribute="reintentarEnviamentBackofficeCommand">
 		<div id="modal-botons" class="well">
-			<button name="btnReintentarEnviamentBackofficeSubmit" type="${multiple ? 'button' : 'submit' }" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></button>
+			<button name="btnReintentarEnviamentBackofficeSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

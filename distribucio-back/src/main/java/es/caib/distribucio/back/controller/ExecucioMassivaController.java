@@ -754,7 +754,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		
-		return "registreViaEmail";
+		return "registreUserEnviarIProcessar";
 	}
 	
 	@RequestMapping(value = "/reintentarProcessament", method = RequestMethod.GET)

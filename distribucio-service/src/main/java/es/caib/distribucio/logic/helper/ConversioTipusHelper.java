@@ -173,8 +173,8 @@ public class ConversioTipusHelper {
 						} else {
 							target.setFitxerExtension(null);
 						}						
-						target.setDataAnotacio(source.getRegistre().getData());
-						target.setNumeroCopia(source.getRegistre().getNumeroCopia());
+						target.setDataAnotacio(source.getRegistre() != null ? source.getRegistre().getData() : null);
+						target.setNumeroCopia(source.getRegistre() != null ? source.getRegistre().getNumeroCopia() : null);
 						return target;
 					}
 				});

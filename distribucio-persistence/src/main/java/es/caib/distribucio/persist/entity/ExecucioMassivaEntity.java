@@ -88,7 +88,8 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 		this.estat = ExecucioMassivaEstatDto.CANCELADA;
 		
 		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			execucioMassivaContingutEntity.updateCancelat();
+			if (execucioMassivaContingutEntity.getError() == null)
+				execucioMassivaContingutEntity.updateCancelat();
 		}
 	}
 
@@ -101,7 +102,8 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 		this.estat = ExecucioMassivaEstatDto.PAUSADA;
 		
 		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			execucioMassivaContingutEntity.updatePausat();
+			if (execucioMassivaContingutEntity.getError() == null)
+				execucioMassivaContingutEntity.updatePausat();
 		}
 	}
 
@@ -109,7 +111,8 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 		this.estat = ExecucioMassivaEstatDto.PENDENT;
 		
 		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			execucioMassivaContingutEntity.updatePendent();
+			if (execucioMassivaContingutEntity.getError() == null)
+				execucioMassivaContingutEntity.updatePendent();
 		}
 	}
 	

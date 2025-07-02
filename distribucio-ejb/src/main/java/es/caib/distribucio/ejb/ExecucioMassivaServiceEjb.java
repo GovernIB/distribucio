@@ -55,7 +55,7 @@ public class ExecucioMassivaServiceEjb extends AbstractServiceEjb<ExecucioMassiv
 	}
 
 	@Override
-	@RolesAllowed({ BaseConfig.ROLE_ADMIN })
+	@RolesAllowed("**")
 	public List<ExecucioMassivaContingutDto> findContingutPerExecucioMassiva(Long exm_id) throws NotFoundException {
 		return delegateService.findContingutPerExecucioMassiva(exm_id);
 	}

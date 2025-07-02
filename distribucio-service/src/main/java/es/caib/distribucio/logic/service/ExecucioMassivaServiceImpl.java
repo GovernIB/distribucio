@@ -208,6 +208,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 											entitat.getId(), 
 											emc.getElementId(),
 											em.getParametres());
+									break;
 								case MARCAR_PENDENT:
 									execucioMassivaHelper.marcarPendentNewTransaction(
 											entitat.getId(), 
@@ -232,9 +233,9 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 											em.getParametres());
 									break;
 								case CUSTODIAR:
-									execucioMassivaHelper.custodiarAnnexosNewTransaction(
-											entitat.getId(), 
-											emc.getElementId());
+									missatge = execucioMassivaHelper.custodiarAnnexosNewTransaction(emc.getElementId());
+									
+									emc.updateMissatge(missatge);
 									break;
 								case PROCESSAR:
 									missatge = execucioMassivaHelper.reintentarProcessamentNewTransaction(
@@ -262,6 +263,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 									break;
 								}
 							} catch (Exception e) {
+								logger.error("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId() + "]", e);
 								execucioMassivaHelper.updateErrorNewTransaction(
 										emc, 
 										e.getMessage());

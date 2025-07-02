@@ -18,20 +18,6 @@
 	<title>${titol}</title>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
-	
-	<script type="text/javascript">
-
-		var multiple = ${registres != null};
-
-		$(document).ready(function() {
-			$("button[name='btnMarcarSobreescriureSubmit']").click(function(){
-				if (multiple) {
-					processaAnotacions();
-				}
-		    });
-		});
-		
-	</script>
 </head>
 <body>
 

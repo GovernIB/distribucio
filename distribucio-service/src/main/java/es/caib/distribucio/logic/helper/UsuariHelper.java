@@ -10,12 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -59,6 +60,18 @@ public class UsuariHelper {
 		return auth;
 	}
 
+	public Authentication generarUsuariAutenticat(
+			String usuariCodi,
+			boolean establirComAUsuariActual,
+			List<GrantedAuthority> authorities) {
+		Authentication auth =  new DadesUsuariAuthenticationToken(
+				usuariCodi,
+				authorities);
+		if (establirComAUsuariActual)
+			SecurityContextHolder.getContext().setAuthentication(auth);
+		return auth;
+	}
+	
 	public class DadesUsuariAuthenticationToken extends AbstractAuthenticationToken {
 		String principal;
 		public DadesUsuariAuthenticationToken(

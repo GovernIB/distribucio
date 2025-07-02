@@ -11,7 +11,7 @@ public class AnnexUtil {
 
 	public static final int MAX_FITXER_TITOL = 200;
 	public static final int MAX_FITXER_NOM = 200;
-	public static final int MAX_FITXER_OBSERVACIO = 50;
+	public static final int MAX_OBSERVACIONS = 50;
 	
     public static String truncar(String text, int maxLen) {
         if (text == null) return null;

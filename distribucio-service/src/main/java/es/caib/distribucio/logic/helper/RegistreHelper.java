@@ -363,6 +363,8 @@ public class RegistreHelper {
 					params,
 					false);
 		} else {
+			String observacions = AnnexUtil.truncar(registreAnotacio.getObservacions(), AnnexUtil.MAX_OBSERVACIONS);
+			
 			// save annotacio in db
 			RegistreEntity registreEntity = RegistreEntity.getBuilder(
 					entitat,
@@ -402,7 +404,7 @@ public class RegistreHelper {
 			aplicacioVersio(registreAnotacio.getAplicacioVersio()).
 			documentacioFisicaCodi(registreAnotacio.getDocumentacioFisicaCodi()).
 			documentacioFisicaDescripcio(registreAnotacio.getDocumentacioFisicaDescripcio()).
-			observacions(registreAnotacio.getObservacions()).
+			observacions(observacions).
 			exposa(registreAnotacio.getExposa()).
 			solicita(registreAnotacio.getSolicita()).
 			regla(regla).
@@ -1811,7 +1813,7 @@ public class RegistreHelper {
 		// Soluciona problema llargària camps registre CHAR
 		String titol = AnnexUtil.prepararTitol(registreAnnex.getTitol(), AnnexUtil.MAX_FITXER_TITOL, titolsComprovats);
 		String nomFitxer = AnnexUtil.truncarNomFitxer(registreAnnex.getFitxerNom(), AnnexUtil.MAX_FITXER_NOM);
-		String observacions = AnnexUtil.truncar(registreAnnex.getObservacions(), AnnexUtil.MAX_FITXER_OBSERVACIO);
+		String observacions = AnnexUtil.truncar(registreAnnex.getObservacions(), AnnexUtil.MAX_OBSERVACIONS);
 		
 		RegistreAnnexEntity annexEntity = RegistreAnnexEntity.getBuilder(
 				titol,

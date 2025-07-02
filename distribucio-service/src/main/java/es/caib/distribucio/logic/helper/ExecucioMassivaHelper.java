@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
@@ -59,8 +60,8 @@ public class ExecucioMassivaHelper {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
 		String titol = getValorParametre(parametres, "titol", String.class);
-		String procedimentCodi = getValorParametre(parametres, "procediment", String.class);
-		String serveiCodi = getValorParametre(parametres, "serveiCodi", String.class);
+		String procedimentCodi = getValorParametre(parametres, "codiProcediment", String.class);
+		String serveiCodi = getValorParametre(parametres, "codiServei", String.class);
 		
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatId, 
@@ -142,9 +143,33 @@ public class ExecucioMassivaHelper {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void custodiarAnnexosNewTransaction(Long id, Long elementId) {
+	public String custodiarAnnexosNewTransaction(Long elementId) {
 		try {
-			annexosService.guardarComADefinitiu(id);
+			String missatge = null;
+			ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(elementId);
+			
+			String annexTitol = resultatAnnexDefinitiu.getAnnexTitol();
+			String anotacioNumero = resultatAnnexDefinitiu.getAnotacioNumero();
+			
+			if (resultatAnnexDefinitiu.isOk()) {
+				missatge = messageHelper.getMessage(
+						resultatAnnexDefinitiu.getKeyMessage(),
+						new Object[] {annexTitol, anotacioNumero});
+				
+				return missatge;
+			} else if (resultatAnnexDefinitiu.getThrowable() != null) {	
+				missatge = messageHelper.getMessage(
+						resultatAnnexDefinitiu.getKeyMessage(),
+						new Object[] {annexTitol, anotacioNumero, resultatAnnexDefinitiu.getThrowable()});
+				
+				throw new RuntimeException(missatge);
+			} else {
+				missatge = messageHelper.getMessage(
+						resultatAnnexDefinitiu.getKeyMessage(),
+						new Object[] {annexTitol, anotacioNumero});
+				
+				throw new RuntimeException(missatge);
+			}
 		} catch (Exception e) {
 			throw e;
 		}
@@ -368,7 +393,7 @@ public class ExecucioMassivaHelper {
         try {
             JsonNode root = mapper.readTree(json);
             JsonNode node = root.get(clau);
-            return node != null ? mapper.treeToValue(node, clazz) : null;
+            return node != null ? mapper.treeToValue(node, clazz) : (clazz == Boolean.class ? clazz.cast(Boolean.FALSE) : null);
         } catch (Exception e) {
             throw new RuntimeException("Error llegint '" + clau + "' com a " + clazz.getSimpleName(), e);
         }

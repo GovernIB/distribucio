@@ -18,20 +18,6 @@
 	<title>${titol}</title>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<dis:modalHead/>
-	
-	<script type="text/javascript">
-
-		var multiple = ${annexos != null};
-
-		$(document).ready(function() {
-			$("button[name='btnProcessamentAnnexosMultipleSubmit']").click(function(){
-				if (multiple) {
-					processaAnotacions();
-				}
-		    });
-		});
-		
-	</script>
 </head>
 <body>
 

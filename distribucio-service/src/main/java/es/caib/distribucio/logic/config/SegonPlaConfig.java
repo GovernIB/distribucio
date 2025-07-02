@@ -476,16 +476,15 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 				new Trigger() {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
-						Long value = null;
+						String value = null;
 						try {
-							value = configService.getConfigAsLong("es.caib.distribucio.segonpla.interval.execucio.massiva");
+							value = configService.getConfig("es.caib.distribucio.segonpla.cron.execucio.massiva");
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució de les massives: " + e.getMessage());
 						}
 						if (value == null) 
-							value = Long.valueOf("900000"); // 15 min
-						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
-						trigger.setInitialDelay(value);
+							value = "0 */15 * * * *"; // Cada 15 min
+						CronTrigger trigger = new CronTrigger(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
 						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
 						monitorTasquesService.updateProperaExecucio(codiExecucionMassives, longNextExecution);

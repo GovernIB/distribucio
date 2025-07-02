@@ -68,7 +68,7 @@ public interface ExecucioMassivaService {
 	 * @return
 	 * @throws NotFoundException
 	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+	@PreAuthorize("isAuthenticated()")
 	public List<ExecucioMassivaContingutDto> findContingutPerExecucioMassiva(Long exm_id) throws NotFoundException;
 	
 	/**
