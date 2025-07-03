@@ -91,6 +91,14 @@ body {
 		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
 	}
 </c:if>
+<c:if test="${sessionScope['EntitatHelper.entitatActual'].colorLletra != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorLletra}">
+	.navbar-app {
+		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+	}
+	.navbar-app .list-inline li.dropdown>a {
+		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+	}
+</c:if>
 </style>
 <script type="text/javascript">
 	// Guarda l'idioma de la configuració de l'usuari a local storage
