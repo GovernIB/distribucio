@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.3.1</version>
+		<version>1.0.4</version>
 	</parent>
 	<artifactId>distribucio-ws-client</artifactId>
     <version>1.0.1</version>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-service-intf</artifactId>
-			<version>${project.version}</version>
+			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

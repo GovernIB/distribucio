@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.3.1</version>
+		<version>1.0.4</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
 	<version>1.0.1</version>
@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>es.caib.distribucio</groupId>
 			<artifactId>distribucio-service-intf</artifactId>
-			<version>1.0.1</version>
+			<version>${parent.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
