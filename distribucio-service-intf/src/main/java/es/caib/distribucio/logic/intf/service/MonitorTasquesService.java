@@ -30,5 +30,7 @@ public interface MonitorTasquesService {
 	 * 
 	 */
 	public void reiniciarTasquesEnSegonPla();
+	
+	public void reiniciarTasquesEnSegonPla(String codiTasca);
 
 }

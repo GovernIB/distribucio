@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import es.caib.distribucio.logic.config.SchedulingConfig;
 import es.caib.distribucio.logic.helper.BustiaHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
@@ -91,6 +92,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private ExecucioMassivaService execucioMassivaService;
 	@Autowired
 	private UsuariRepository usuariRepository;
+	@Autowired
+	private SchedulingConfig schedulingConfig;
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -624,6 +627,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		}
 	}
 	
+	@Override
+	public void restartSchedulledTasks(String taskCodi) {
+		schedulingConfig.restartSchedulledTasks(taskCodi);
+	}	
 	
 	private static final Logger logger = LoggerFactory.getLogger(SegonPlaServiceImpl.class);
 

@@ -61,6 +61,11 @@ public class MonitorTasquesServiceEjb extends AbstractServiceEjb<MonitorTasquesS
 	public void reiniciarTasquesEnSegonPla() {
 		delegateService.reiniciarTasquesEnSegonPla();
 	}
+	
+	@Override
+	public void reiniciarTasquesEnSegonPla(String codiTasca) {
+		delegateService.reiniciarTasquesEnSegonPla(codiTasca);
+	}
 
 	protected void setDelegateService(MonitorTasquesService delegateService) {
 		this.delegateService = delegateService;

@@ -77,4 +77,6 @@ public interface SegonPlaService {
 	 **/
 	public void executeNextMassiveScheduledTask() throws Exception;
 	
+	public void restartSchedulledTasks(String taskCodi);
+	
 }

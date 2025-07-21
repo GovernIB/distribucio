@@ -263,6 +263,7 @@ body {
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.config"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
 											<li><a href="<c:url value="/config"/>"> <spring:message code="decorator.menu.config.properties"/></a></li>
+											<li><a href="<c:url value="/scheduled"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.reinici.scheduler"/> ...</a></li>											
 											<li><a href="<c:url value="/usuari/usernames/change"/>"> <spring:message code="decorator.menu.canvi.usuari.codis"/></a></li>
 										</ul>
 									</div> 
