@@ -28,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -1510,7 +1511,7 @@ public class RegistreUserController extends BaseUserController {
 	public String marcarPendentPost(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
-			@Valid MarcarProcessatCommand command,
+			@Valid @ModelAttribute("marcarPendentCommand") MarcarProcessatCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);

@@ -36,8 +36,8 @@ public class AnnexosServiceEjb extends AbstractServiceEjb<AnnexosService> implem
 	}
 	
 	@Override
-	public List<Long> findAnnexIds(AnnexosFiltreDto filtre) throws NotFoundException {
-		return delegateService.findAnnexIds(filtre);
+	public List<Long> findAnnexIds(Long entitatId, AnnexosFiltreDto filtre) throws NotFoundException {
+		return delegateService.findAnnexIds(entitatId, filtre);
 	}
 	
 	@Override

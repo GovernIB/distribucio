@@ -174,6 +174,7 @@ $(document).ready(function() {
 				var pageInfo = $('#taulaDades').dataTable().api().table().page.info();
 				var registreTotal = pageInfo.recordsTotal;
 				var registreNumero = $(this).data('rowIndex');
+				registreNumero = (registreNumero > 10) ? 1 : registreNumero;
 				// Afegeix els paràmetres a l'enllaç dels detalls
 				var url = new URL(window.location);
 				var params = url.searchParams;

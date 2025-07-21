@@ -525,7 +525,7 @@ public class PermisosHelper {
 		var desc = paginacioParams.getOrdres().get(0).getDireccio().equals(PaginacioParamsDto.OrdreDireccioDto.DESCENDENT);
 		Comparator<PermisDto> comp = null;
 		switch (ordre) {
-			case "tipus":
+			case "principalTipus":
 				comp = desc ? PermisDto.decending(PermisDto.sortByTipus()) : PermisDto.sortByTipus();
 				break;
 			case "principalNom":

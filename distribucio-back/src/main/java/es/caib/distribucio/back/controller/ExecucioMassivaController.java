@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -495,11 +496,16 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@RequestMapping(value = "/marcarProcessat/{rol}", method = RequestMethod.POST)
 	public String registreMarcarProcessatPost(
 			HttpServletRequest request,
-			Model model, 
+			@PathVariable String rol,
 			@Valid MarcarProcessatCommand command,
-			@PathVariable String rol) {
+			BindingResult bindingResult,
+			Model model) {
 		
 		try {
+			if (bindingResult.hasErrors()) {
+				omplirModelAmbRegistres(request, rol, model);
+				return "registreUserMarcarProcessat";
+			}
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
@@ -566,11 +572,17 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@RequestMapping(value = "/marcarPendent/{rol}", method = RequestMethod.POST)
 	public String registreMarcarPendentPost(
 			HttpServletRequest request,
-			Model model, 
-			@Valid MarcarProcessatCommand command,
-			@PathVariable String rol) {
+			@PathVariable String rol,
+			@Valid @ModelAttribute("marcarPendentCommand") MarcarProcessatCommand command,
+			BindingResult bindingResult,
+			Model model) {
 		
 		try {
+			if (bindingResult.hasErrors()) {
+				omplirModelAmbRegistres(request, rol, model);
+				return "registreUserMarcarPendent";
+			}
+			
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
@@ -637,12 +649,18 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@RequestMapping(value = "/enviarViaEmail/{rol}", method = RequestMethod.POST)
 	public String registreEnviarViaEmailPost(
 			HttpServletRequest request,
-			Model model, 
+			@PathVariable String rol,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@Valid RegistreEnviarViaEmailCommand command,
-			@PathVariable String rol) {
+			BindingResult bindingResult,
+			Model model) {
 		
 		try {
+			if (bindingResult.hasErrors()) {
+				omplirModelAmbRegistres(request, rol, model);
+				return "registreViaEmail";
+			}
+			
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
 			
@@ -710,11 +728,17 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@RequestMapping(value = "/enviarIProcessar/{rol}", method = RequestMethod.POST)
 	public String registreEnviarIProcessarPost(
 			HttpServletRequest request,
-			Model model, 
+			@PathVariable String rol,
 			@Valid RegistreEnviarIProcessarCommand command,
-			@PathVariable String rol) {
+			BindingResult bindingResult,
+			Model model) {
 		
 		try {
+			if (bindingResult.hasErrors()) {
+				omplirModelAmbRegistres(request, rol, model);
+				return "registreUserEnviarIProcessar";
+			}
+			
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
@@ -1208,6 +1232,11 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 						"admin".equals(rol)));
 	}
 
+	private void omplirModelAmbRegistres(HttpServletRequest request, String rol, Model model) {
+		List<RegistreDto> registres = obtenirSeleccioRegistres(request, rol, false);
+		model.addAttribute("registres", registres);
+	}
+	
 	private int getMaxLevelArbre() {
 		String maxLevelStr = aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.arbre.nivell");
 		int maxLevel = maxLevelStr != null ? Integer.parseInt(maxLevelStr) : 1;
