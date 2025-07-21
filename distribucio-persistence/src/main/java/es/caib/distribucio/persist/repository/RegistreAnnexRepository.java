@@ -91,21 +91,29 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ "	RegistreAnnexEntity ra "
 			+ " left join ra.firmes raf"
 			+ " where "
+			+ " (ra.registre.entitat = :entitat) and "
 			+ " (:esNullNumero = true or lower(ra.registre.numero) like lower('%'||:numero||'%')) and "
 			+ " (:esNullNumeroCopia = true or ra.registre.numeroCopia = :numeroCopia) and "
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
+			+ " (:esNullDataRecepcioInici = true or ra.registre.data >= :dataRecepcioInici) and "
+			+ " (:esNullDataRecepcioFi = true or ra.registre.data <= :dataRecepcioFi) and "
 			+ " (:esNullTipusFirma = true or (raf is not null and raf.tipus = :tipusFirma)) and "
 			+ " (:esNullTitol = true or lower(ra.titol) like lower('%'||:titol||'%')) and "
 			+ " (:esNullFitxerNom = true or lower(ra.fitxerNom) like lower('%'||:fitxerNom||'%')) and "
 			+ " (:esNullFitxerTipusMime = true or lower(ra.fitxerTipusMime) like lower('%'||:fitxerTipusMime||'%')) "
 			+ "")
 	public List<Long> findIdsByFiltre(
+			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullNumero") boolean esNullNumero,
 			@Param("numero") String numero,
 			@Param("esNullNumeroCopia") boolean esNullNumeroCopia,
 			@Param("numeroCopia") Integer numeroCopia,
 			@Param("esNullArxiuEstat") boolean esNullArxiuEstat,
 			@Param("arxiuEstat") AnnexEstat arxiuEstat,
+			@Param("esNullDataRecepcioInici") boolean esNullDataRecepcioInici,
+			@Param("dataRecepcioInici") Date dataRecepcioInici,
+			@Param("esNullDataRecepcioFi") boolean esNullDataRecepcioFi, 
+			@Param("dataRecepcioFi") Date dataRecepcioFi, 
 			@Param("esNullTipusFirma") boolean esNullTipusFirma,
 			@Param("tipusFirma") String tipusFirma,
 			@Param("esNullTitol") boolean esNullTitol,

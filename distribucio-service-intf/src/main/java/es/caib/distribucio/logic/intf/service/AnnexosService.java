@@ -43,7 +43,7 @@ public interface AnnexosService {
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public List<Long> findAnnexIds(AnnexosFiltreDto filtre) throws NotFoundException;
+	public List<Long> findAnnexIds(Long entitatId, AnnexosFiltreDto filtre) throws NotFoundException;
 	
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public ResultatAnnexDefinitiuDto guardarComADefinitiu(Long id);

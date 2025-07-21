@@ -313,6 +313,7 @@ public class AnnexosAdminController extends BaseAdminController {
 		Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_SELECCIO);
+		EntitatDto entitatActual = this.getEntitatActualComprovantPermisAdmin(request);
 		if (seleccio == null) {
 			seleccio = new HashSet<Long>();
 			RequestSessionHelper.actualitzarObjecteSessio(
@@ -327,7 +328,9 @@ public class AnnexosAdminController extends BaseAdminController {
 		} else {				
 			AnnexosFiltreCommand filtreCommand = getFiltreCommand(request);
 			seleccio.addAll(
-				annexosService.findAnnexIds(AnnexosFiltreCommand.asDto(filtreCommand))
+				annexosService.findAnnexIds(
+						entitatActual.getId(),
+						AnnexosFiltreCommand.asDto(filtreCommand))
 			);
 		}
 		return seleccio.size();

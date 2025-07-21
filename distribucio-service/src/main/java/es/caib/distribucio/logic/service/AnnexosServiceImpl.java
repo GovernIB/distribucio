@@ -152,21 +152,41 @@ public class AnnexosServiceImpl implements AnnexosService {
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override
-	public List<Long> findAnnexIds(AnnexosFiltreDto filtre) {
+	public List<Long> findAnnexIds(
+			Long entitatId,
+			AnnexosFiltreDto filtre) {
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				true,
+				false,
+				false);
 		
 		String tipusFirma = "";
 		ArxiuFirmaTipusEnumDto arxiuFirmaTipusEnumDto = filtre.getTipusFirma();
 		if (arxiuFirmaTipusEnumDto!=null) {
 			tipusFirma = ArxiuConversions.toArxiuFirmaTipusEnumDto(arxiuFirmaTipusEnumDto);
 		}
+
+		Date dataRecepcioFi = filtre.getDataRecepcioFi();
+		if (dataRecepcioFi != null) {
+			Calendar c = new GregorianCalendar();
+			c.setTime(dataRecepcioFi);
+			c.add(Calendar.HOUR, 24);
+			dataRecepcioFi = c.getTime();
+		}
 		
 		List<Long> ids = registreAnnexRepository.findIdsByFiltre(
+				entitat,
 				!(filtre.getNumero()!=null &&  !filtre.getNumero().isEmpty()),
 				filtre.getNumero(),
-				filtre.getNumeroCopia() != null,
+				filtre.getNumeroCopia() == null,
 				filtre.getNumeroCopia(),
 				filtre.getArxiuEstat()==null,
 				filtre.getArxiuEstat(),
+				filtre.getDataRecepcioInici() == null,
+				filtre.getDataRecepcioInici(),
+				dataRecepcioFi == null,
+				dataRecepcioFi,
 				!(tipusFirma!=null &&  !tipusFirma.isEmpty()),
 				tipusFirma,
 				!(filtre.getTitol()!=null &&  !filtre.getTitol().isEmpty()),
