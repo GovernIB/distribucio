@@ -37,7 +37,16 @@
 	<c:set var="formAction"><dis:modalUrl value="/bustiaAdmin/${bustiaId}/default/disable"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="bustiaPerDefecteCommand" role="form">
 		
-		<dis:inputSelect name="bustiaId" textKey="bustia.seleccio.perdefecte.form.camp.bustia" optionItems="${bustiesUnitat}" optionTextAttribute="nom" optionValueAttribute="id"/>
+		<dis:inputSelect 
+			name="bustiaId" 
+			textKey="bustia.seleccio.perdefecte.form.camp.bustia" 
+			placeholderKey="bustia.seleccio.perdefecte.form.camp.bustia"
+			optionItems="${bustiesUnitat}" 
+			optionTextAttribute="nom" 
+			optionValueAttribute="id"
+			optionMinimumResultsForSearch="0" 
+			emptyOption="true"
+			required="false" />
 		
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>

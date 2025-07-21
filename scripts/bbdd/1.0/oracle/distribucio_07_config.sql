@@ -21,6 +21,7 @@ Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values (
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_PROCEDIMENT', 'SCHEDULLED', '22', 'Tasca periòdica per actualitzar la taula de procediments');
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values('SCHEDULLED_SERVEI', 'SCHEDULLED', '23', 'Tasca periòdica per actualitzar la taula de serveis');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SERVEIS',null,'23','Plugin de consulta de serveis');
+INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_EXECUCIONS_MASSIVES','SCHEDULLED','20','Tasca periòdica d''executar les execucions massives pendents');
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
@@ -180,6 +181,8 @@ Insert INTO DIS_CONFIG (KEY,VALUE, description, group_code, jboss_property, type
 
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis', '0 0 17 * * *', 'Especificar l''expressió ''cron'' indicant l''interval de temps de les actualitzacions dels serveis en segon pla. Per defecte s''aplicarà el cron corresponent per actualitzar cada divendres a les 15:30h', 'SCHEDULLED_SERVEI', 0, 0, 'TEXT', null, 0, null, null);
 
+Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.segonpla.cron.execucio.massiva',null,'Especificar l''expressió ''cron'' indicant l''interval de temps de les execucions de la tasca','SCHEDULLED_EXECUCIONS_MASSIVES','0','0','CRON',null,null);
+
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
@@ -248,3 +251,5 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca
 
 INSERT INTO DIS_ACL_CLASS (ID,CLASS,CLASS_ID_TYPE) VALUES (41,'es.caib.distribucio.persist.entity.BustiaEntity','java.lang.Long');
 INSERT INTO DIS_ACL_CLASS (ID,CLASS,CLASS_ID_TYPE) VALUES (21,'es.caib.distribucio.persist.entity.EntitatEntity','java.lang.Long');
+
+

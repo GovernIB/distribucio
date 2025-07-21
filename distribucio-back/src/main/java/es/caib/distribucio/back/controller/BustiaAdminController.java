@@ -457,13 +457,20 @@ public class BustiaAdminController extends BaseAdminController {
 					bustiaId,
 					false);
 
-			bustiaService.marcarPerDefecte(
-					entitatActual.getId(),
-					bustiaPerDefecteCommand.getBustiaId());
+			if (bustiaPerDefecteCommand.getBustiaId() != null) {
+				bustiaService.marcarPerDefecte(
+						entitatActual.getId(),
+						bustiaPerDefecteCommand.getBustiaId());
+				
+				bustiaService.updateActiva(
+						entitatActual.getId(),
+						bustiaPerDefecteCommand.getBustiaId(),
+						true);
+			}
 			
-			return getAjaxControllerReturnValueSuccess(
+			return getModalControllerReturnValueSuccess (
 					request,
-					"redirect:../../bustiaAdmin",
+					"redirect:bustiaAdmin",
 					"bustia.controller.desactivat.ok");
 			
 		} catch (Exception e) {

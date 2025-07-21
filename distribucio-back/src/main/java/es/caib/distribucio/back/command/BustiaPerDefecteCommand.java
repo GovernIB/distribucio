@@ -1,7 +1,5 @@
 package es.caib.distribucio.back.command;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Command selecció bústia destí per defecte en desactivar bústia
  * 
@@ -9,7 +7,6 @@ import javax.validation.constraints.NotNull;
  */
 public class BustiaPerDefecteCommand {
 	
-	@NotNull
 	private Long bustiaId;
 
 	public Long getBustiaId() {

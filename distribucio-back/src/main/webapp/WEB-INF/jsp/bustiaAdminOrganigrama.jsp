@@ -122,11 +122,12 @@
 		        if (isActiva) {
 		            $('#activarBtn').hide();
 		            $('#desactivarBtn').show();
-		            if (bustiaDto.perDefecte) {
-		                $('#desactivarBtn').prop("disabled", true);
+		            // Si és per defecte i hi ha més d'una bústia llavors mostra la modal per seleccionar la nova per defecte
+		            if (bustiaDto.perDefecte && bustiaDto.unitatOrganitzativa.bustiesCount > 1) {
+		            	$('#desactivarBtn').attr('onclick', 'desactivarDefault()');
 		            } else {
-		            	$('#desactivarBtn').prop("disabled", false);
-			        }
+		            	$('#desactivarBtn').attr('onclick', 'desactivar()');
+		            }
 		        } else {
 		            $('#activarBtn').show();
 		            $('#desactivarBtn').hide();
@@ -263,6 +264,12 @@
 
 	}
 
+	function desactivarDefault() {
+		$('#desactivarBtn').attr('href', 'bustiaAdmin/' + $('#id').val() + "/default/disable");
+		$('#desactivarBtn');
+	}
+
+	
 	function checkSelectedNodes() {
 		// Se declara esta función para evitar error JS en el arbre.tag durante la llamada a la misma
 	}
@@ -478,7 +485,7 @@
 							
 							<div class="ml-6">
 								<button id="activarBtn" type="button" onclick="activar()" style="display: none;" class="btn btn-default"><span class="fa fa-check"></span> <spring:message code="comu.boto.activar"/></button>
-								<button id="desactivarBtn" type="button" onclick="desactivar()" style="display: none;" class="btn btn-default" ><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></button>
+								<a id="desactivarBtn" onclick="desactivar()" href="" class="btn btn-default" data-toggle="modal" data-maximized="true" data-refresh-pagina="true"><span class="fa fa-times"></span> <spring:message code="comu.boto.desactivar"/></a>
 							</div>
 						
 							<div class="ml-6" style="margin-left: 15px;">
