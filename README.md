@@ -1,4 +1,4 @@
-![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logoDistribucio.png)
+![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo_distribucio.png)
 
 # DISTRIBUCIO
 
