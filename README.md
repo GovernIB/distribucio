@@ -1,4 +1,6 @@
-# ![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logo.png) DISTRIBUCIO
+![Logo distribucio](https://github.com/GovernIB/distribucio/raw/master/assets/logoDistribucio.png)
+
+# DISTRIBUCIO
 
 > - Versió Estable: __1.0.3.1__ (tag [Distribucio_1.0.3](https://github.com/GovernIB/distribucio/tree/Distribucio_1.0.3.1))
 > - Versió Desenvolupament: __1.0.4__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
