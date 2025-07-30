@@ -120,13 +120,28 @@ public class AjaxUnitatsController extends BaseAdminController {
 		} catch (UnsupportedEncodingException e) {
 			logger.error("No s'ha pogut consultar el text " + text + ": " + e.getMessage());
 		}
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		
+		EntitatDto entitatActual;
+		if (RolHelper.isRolActualUsuari(request)) {
+			entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		} else {
+			entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		}		
 		List<UnitatOrganitzativaDto> unitatsEntitat = unitatOrganitzativaService
 				.findByEntitatAndFiltre(entitatActual.getCodi(), decodedToUTF8, true, true, RolHelper.isRolActualUsuari(request));
 		
 		return unitatsEntitat;
 	}
 	
+	private EntitatDto getEntitatActualComprovantPermisUsuari(
+			HttpServletRequest request) {
+		EntitatDto entitat = this.getEntitatActual(request);
+		if (entitat.isUsuariActualRead() || entitat.isUsuariActualAdminLectura()) {
+			return entitat;
+		}else {
+			throw new SecurityException(getMessage(request, "entitat.actual.error.permis.usuari"));
+		}
+	}
 	
 	
 	@RequestMapping(value = "/unitatSuperior/{unitatSuperiorCodi}", method = RequestMethod.GET)
