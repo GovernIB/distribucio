@@ -646,7 +646,11 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));
 			break;
 		case BACK_PROCESSADA:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_PROCESSADA"));
+			if ((registre!=null)&&(registre.getBackCodi()!=null)) {
+				sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_PROCESSADA_KNOW", new Object[] {registre.getBackCodi()}));
+			} else {
+				sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_PROCESSADA"));
+			}			
 			break;
 		case BACK_REBUTJADA:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUTJADA"));
