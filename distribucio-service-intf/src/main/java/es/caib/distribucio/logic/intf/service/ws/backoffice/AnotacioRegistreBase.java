@@ -6,6 +6,8 @@ package es.caib.distribucio.logic.intf.service.ws.backoffice;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * Classe que representa la base d'anotació de registre.
  * 
@@ -267,6 +269,7 @@ public class AnotacioRegistreBase {
 	public void setClauAcces(String clauAcces) {
 		this.clauAcces = clauAcces;
 	}
+	@XmlTransient
 	public boolean isPresencial() {
 		return presencial;
 	}
