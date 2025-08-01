@@ -221,7 +221,7 @@ pageContext.setAttribute(
 				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
 			</div>
 			<div class="col-md-2">
-				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
+				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.final"/>
 			</div>
 			<div class="col-md-3">
 				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>

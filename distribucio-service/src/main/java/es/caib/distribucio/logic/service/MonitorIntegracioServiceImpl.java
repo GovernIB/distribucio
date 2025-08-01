@@ -21,8 +21,8 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
@@ -85,7 +85,9 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		return integracioHelper.findPerDiagnostic();
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	/** Mètode asíncron de creació del registre a la taula de monitor. */
+	@Async
+	@Transactional
 	@Override
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
 		logger.trace("Creant una nova monitorIntegracio (" +

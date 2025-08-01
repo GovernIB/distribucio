@@ -1625,7 +1625,6 @@ public class RegistreServiceImpl implements RegistreService {
 		return anotaciosPerBackoffice;
 	}
 	
-	@SuppressWarnings("incomplete-switch")
 	@Transactional
 	@Override
     public void canviEstatComunicadaARebuda(
@@ -1826,7 +1825,7 @@ public class RegistreServiceImpl implements RegistreService {
 				false,
 				false,
 				true);
-		RegistreEntity anotacio = registreRepository.findByEntitatAndId(entitat, registreId);		
+		RegistreEntity anotacio = registreRepository.findOneAmbBloqueig(entitat.getId(), registreId);		
 		boolean success = true;
 		if (anotacio.getPare() == null) {
 			try {

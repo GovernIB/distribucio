@@ -1914,13 +1914,13 @@ public class RegistreHelper {
 	}
 
 	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<RegistreEntity> findAmbReglaPendentAplicar(EntitatEntity entitat, int maxReintents) {
 		return registreRepository.findAmbReglaPendentAplicar(entitat, maxReintents);
 	}
 
 	/** Consulta les anotacions pendents de tancar a l'arxiu. */
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<RegistreEntity> findPendentsTancarArxiuByEntitat(Date date, EntitatEntity entitat) {
 		return registreRepository.findPendentsTancarArxiuByEntitat(date, entitat);
 	}
@@ -2280,6 +2280,7 @@ public class RegistreHelper {
 		}
 	}
 
+	@Transactional
 	public RegistreAnnexEntity loadJustificantToDB(Long registreId) {
 		RegistreAnnexEntity annex = new RegistreAnnexEntity();
 		try {
@@ -2396,6 +2397,7 @@ public class RegistreHelper {
 		return registreAnotacio;
 	}
 	
+	@Transactional(readOnly = true)
 	public List<Integer> findCopiesRegistre(String numero) {
 		return registreRepository.findCopiesByNumero(numero);
 	}
@@ -2441,8 +2443,6 @@ public class RegistreHelper {
 		return firma;
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
-
 	/** Mètode per consultar totes les anotacions pendents d'enviar agrupades per ReglaDto, cal tenir en compte que cada entitat
 	 * pot tenir el seu número màxim de reintents diferent.
 	 * 
@@ -2486,4 +2486,5 @@ public class RegistreHelper {
 		return pendentsByRegla;
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 }
