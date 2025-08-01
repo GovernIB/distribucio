@@ -47,11 +47,11 @@ public class MonitorIntegracioServiceEjb extends AbstractServiceEjb<MonitorInteg
 		return delegateService.findPerDiagnostic();
 	}
 
-	@Override
-	@RolesAllowed(BaseConfig.ROLE_SUPER)
-	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
-		return delegateService.create(monitorIntegracio);
-	}
+//	@Override
+//	@RolesAllowed(BaseConfig.ROLE_SUPER)
+//	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
+//		return delegateService.create(monitorIntegracio);
+//	}
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_SUPER)

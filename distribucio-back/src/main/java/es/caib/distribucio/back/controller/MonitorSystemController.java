@@ -72,7 +72,7 @@ public class MonitorSystemController extends BaseController {
 		sistema.add(getMessage(request, "monitor.os-name")+": " + MonitorHelper.getName());
 		sistema.add(getMessage(request, "monitor.os-arch") + ": " + MonitorHelper.getArch());
 		sistema.add(getMessage(request, "monitor.os-version") + ": " + MonitorHelper.getVersion());
-		sistema.add(getMessage(request, "monitor.carga_cpu") + ": " + MonitorHelper.getCPULoad());
+		sistema.add(getMessage(request, "monitor.carga_cpu") + ": " + MonitorHelper.getProcessCPULoad());
 		
 		for (File root : File.listRoots()) {
 			sistema.add(getMessage(request, "monitor.space.total") + " " + root.getAbsolutePath()+": " + MonitorHelper.humanReadableByteCount(root.getTotalSpace()));

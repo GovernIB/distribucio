@@ -39,6 +39,9 @@ public class BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/swagger-ui/**/*"),
 				new AntPathRequestMatcher("/apidocs"),
 				new AntPathRequestMatcher("/apidocs/**/*"),
+				new AntPathRequestMatcher("/appInfo"),
+				new AntPathRequestMatcher("/salut"),
+				new AntPathRequestMatcher("/salutPerformance")
 		};
 	}
 

@@ -28,6 +28,11 @@ public interface EntitatRepository extends JpaRepository<EntitatEntity, Long> {
 	EntitatEntity findByCodiDir3(String codiDir3);
 
 	List<EntitatEntity> findByActiva(boolean activa);
+	
+	@Query(	"select distinct e.codi " +
+			"  from EntitatEntity e " +
+			" where e.activa = true ")
+    List<String> findCodiActives();
 
 	@Query(	"from " +
 			"    EntitatEntity ent " +

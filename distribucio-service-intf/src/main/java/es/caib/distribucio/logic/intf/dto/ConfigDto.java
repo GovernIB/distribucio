@@ -17,7 +17,7 @@ public class ConfigDto {
     private String typeCode;
     private List<String> validValues;
     
-    private static final String prefix = "es.caib.distribucio";    
+    public static final String prefix = "es.caib.distribucio";    
 	
     public String addEntitatKey(EntitatDto entitat) {
     	String[] splitKey = key.split(prefix);

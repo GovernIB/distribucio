@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.comanda.salut.model.MissatgeSalut;
 import es.caib.distribucio.logic.intf.dto.AlertaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
@@ -29,6 +30,7 @@ import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.persist.entity.AlertaEntity;
+import es.caib.distribucio.persist.entity.AvisEntity;
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
 import es.caib.distribucio.persist.entity.DadaEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
@@ -260,6 +262,16 @@ public class ConversioTipusHelper {
 						target.setElementId(source.getElementId());
 						target.setElementNom(source.getElementNom());
 						target.setElementTipus(source.getElementTipus());
+						return target;
+					}
+				});
+		mapperFactory.getConverterFactory().registerConverter(
+				new CustomConverter<AvisEntity, MissatgeSalut>() {
+					public MissatgeSalut convert(AvisEntity source, Type<? extends MissatgeSalut>destinationClass, MappingContext mappingContext) {
+						MissatgeSalut target = new MissatgeSalut(
+								source.getDataInici(), 
+								source.getAvisNivell().name(), 
+								source.getMissatge());
 						return target;
 					}
 				});

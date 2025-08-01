@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import es.caib.distribucio.logic.helper.plugin.DadesUsuarisPluginHelper;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
@@ -59,12 +60,12 @@ import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
-import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
 import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Helper per a interactuar amb els plugins.
@@ -72,9 +73,12 @@ import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Component
+@RequiredArgsConstructor
 public class PluginHelper {
 
-	private DadesUsuariPlugin dadesUsuariPlugin = null;
+//	private DadesUsuariPlugin dadesUsuariPlugin = null;
+	private final DadesUsuarisPluginHelper dadesUsuarisPluginHelper;
+	
 	private Map<String, UnitatsOrganitzativesPlugin> unitatsOrganitzativesPlugin = new HashMap<>();
 	private Map<String, DadesExternesPlugin> dadesExternesPlugin = new HashMap<>();
 	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
@@ -215,81 +219,12 @@ public class PluginHelper {
 		}
 	}
 
-	public DadesUsuari dadesUsuariFindAmbCodi(
-			String usuariCodi) {
-		String accioDescripcio = "Consulta d'usuari amb codi";
-		
-		String usuariIntegracio = this.getUsuariAutenticat();
-		
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("codi", usuariCodi);
-		long t0 = System.currentTimeMillis();
-		try {
-			DadesUsuari dadesUsuari = getDadesUsuariPlugin().findAmbCodi(
-					usuariCodi);
-			// RegistreNumero no cal!!!
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return dadesUsuari;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_USUARIS,
-					errorDescripcio,
-					ex);
-		}
+	public DadesUsuari dadesUsuariFindAmbCodi(String usuariCodi) {
+		return dadesUsuarisPluginHelper.dadesUsuariFindAmbCodi(usuariCodi);
 	}
-	public List<DadesUsuari> dadesUsuariFindAmbGrup(
-			String grupCodi) {
-		String accioDescripcio = "Consulta d'usuaris d'un grup";
-
-		String usuariIntegracio = this.getUsuariAutenticat();
-		
-		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("grup", grupCodi);
-		long t0 = System.currentTimeMillis();
-		try {
-			List<DadesUsuari> dadesUsuari = getDadesUsuariPlugin().findAmbGrup(
-					grupCodi);
-			// RegistreNumero no cal!!!
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
-			return dadesUsuari;
-		} catch (Exception ex) {
-			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
-			throw new SistemaExternException(
-					IntegracioHelper.INTCODI_USUARIS,
-					errorDescripcio,
-					ex);
-		}
+	
+	public List<DadesUsuari> dadesUsuariFindAmbGrup(String grupCodi) {
+		return dadesUsuarisPluginHelper.findAmbGrup(grupCodi);
 	}
 	
 	public boolean isActiuPluginUnitatsOrganitzatives() {
@@ -1428,41 +1363,55 @@ public class PluginHelper {
 	}
 
 	public void resetPlugins() {
-		 dadesUsuariPlugin = null;
-		 unitatsOrganitzativesPlugin.clear();
-		 dadesExternesPlugin.clear();
-		 arxiuPlugin.clear();
-		 validaSignaturaPlugin.clear();
-		 procedimentPlugin.clear();
-		 gestioDocumentalPlugin.clear();
-		 distribucioPlugin.clear();
-		 signaturaPlugin.clear();
+		dadesUsuarisPluginHelper.resetPlugin();
+
+		unitatsOrganitzativesPlugin.clear();
+		dadesExternesPlugin.clear();
+		arxiuPlugin.clear();
+		validaSignaturaPlugin.clear();
+		procedimentPlugin.clear();
+		gestioDocumentalPlugin.clear();
+		distribucioPlugin.clear();
+		signaturaPlugin.clear();
+	}
+	
+	public List<AbstractPluginHelper<?>> getPluginHelpers() {
+		return List.of(
+//				arxiuPluginHelper,
+				dadesUsuarisPluginHelper
+//				firmaPluginHelper,
+//				validaSignaturaPluginHelper,
+//				gestorDocumentalAdministratiuPluginHelper,
+//				registrePluginHelper,
+//				unitatsOrganitzativesPluginHelper,
+//				carpetaPluginHelper
+		);
 	}
 
-	private DadesUsuariPlugin getDadesUsuariPlugin() {
-		loadPluginProperties("USUARIS");
-		if (dadesUsuariPlugin == null) {
-			String pluginClass = getPropertyPluginDadesUsuari();
-			if (pluginClass != null && pluginClass.length() > 0) {
-				try {
-					Class<?> clazz = Class.forName(pluginClass);
-					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.
-							getDeclaredConstructor(String.class, Properties.class).
-							newInstance("es.caib.distribucio.plugin.dades.usuari.", configHelper.getAllEntityProperties(null));
-				} catch (Exception ex) {
-					throw new SistemaExternException(
-							IntegracioHelper.INTCODI_USUARIS,
-							"Error al crear la instància del plugin de dades d'usuari amb el nom de la classe " + pluginClass,
-							ex);
-				}
-			} else {
-				throw new SistemaExternException(
-						IntegracioHelper.INTCODI_USUARIS,
-						"No està configurada la classe pel plugin de dades d'usuari");
-			}
-		}
-		return dadesUsuariPlugin;
-	}
+//	private DadesUsuariPlugin getDadesUsuariPlugin() {
+//		loadPluginProperties("USUARIS");
+//		if (dadesUsuariPlugin == null) {
+//			String pluginClass = getPropertyPluginDadesUsuari();
+//			if (pluginClass != null && pluginClass.length() > 0) {
+//				try {
+//					Class<?> clazz = Class.forName(pluginClass);
+//					dadesUsuariPlugin = (DadesUsuariPlugin)clazz.
+//							getDeclaredConstructor(String.class, Properties.class).
+//							newInstance("es.caib.distribucio.plugin.dades.usuari.", configHelper.getAllEntityProperties(null));
+//				} catch (Exception ex) {
+//					throw new SistemaExternException(
+//							IntegracioHelper.INTCODI_USUARIS,
+//							"Error al crear la instància del plugin de dades d'usuari amb el nom de la classe " + pluginClass,
+//							ex);
+//				}
+//			} else {
+//				throw new SistemaExternException(
+//						IntegracioHelper.INTCODI_USUARIS,
+//						"No està configurada la classe pel plugin de dades d'usuari");
+//			}
+//		}
+//		return dadesUsuariPlugin;
+//	}
 	
 	private UnitatsOrganitzativesPlugin getUnitatsOrganitzativesPlugin() {
 		loadPluginProperties("UNITATS");

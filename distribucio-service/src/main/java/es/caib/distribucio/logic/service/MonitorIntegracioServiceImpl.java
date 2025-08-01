@@ -85,36 +85,36 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		return integracioHelper.findPerDiagnostic();
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	@Override
-	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
-		logger.trace("Creant una nova monitorIntegracio (" +
-				"monitorIntegracio=" + monitorIntegracio + ")");
-		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
-				MonitorIntegracioEntity.getBuilder(
-						monitorIntegracio.getCodi(),
-						monitorIntegracio.getData(),
-						monitorIntegracio.getDescripcio(),
-						monitorIntegracio.getTipus(),
-						monitorIntegracio.getTempsResposta(),
-						monitorIntegracio.getEstat(),
-						monitorIntegracio.getCodiUsuari(),
-						monitorIntegracio.getCodiEntitat(),
-						monitorIntegracio.getErrorDescripcio(),
-						monitorIntegracio.getExcepcioMessage(),
-						monitorIntegracio.getExcepcioStacktrace()).build());
-		for (MonitorIntegracioParamDto paramDto : monitorIntegracio.getParametres()) {
-			MonitorIntegracioParamEntity paramEntity = MonitorIntegracioParamEntity.getBuilder(
-							entity, 
-							paramDto.getNom(), 
-							paramDto.getDescripcio()).build();
-			paramEntity = monitorIntegracioParamRepository.save(paramEntity); 
-			entity.getParametres().add(paramEntity);
-		}
-		return conversioTipusHelper.convertir(
-				entity,
-				MonitorIntegracioDto.class);
-	}
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
+//	@Override
+//	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
+//		logger.trace("Creant una nova monitorIntegracio (" +
+//				"monitorIntegracio=" + monitorIntegracio + ")");
+//		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
+//				MonitorIntegracioEntity.getBuilder(
+//						monitorIntegracio.getCodi(),
+//						monitorIntegracio.getData(),
+//						monitorIntegracio.getDescripcio(),
+//						monitorIntegracio.getTipus(),
+//						monitorIntegracio.getTempsResposta(),
+//						monitorIntegracio.getEstat(),
+//						monitorIntegracio.getCodiUsuari(),
+//						monitorIntegracio.getCodiEntitat(),
+//						monitorIntegracio.getErrorDescripcio(),
+//						monitorIntegracio.getExcepcioMessage(),
+//						monitorIntegracio.getExcepcioStacktrace()).build());
+//		for (MonitorIntegracioParamDto paramDto : monitorIntegracio.getParametres()) {
+//			MonitorIntegracioParamEntity paramEntity = MonitorIntegracioParamEntity.getBuilder(
+//							entity, 
+//							paramDto.getNom(), 
+//							paramDto.getDescripcio()).build();
+//			paramEntity = monitorIntegracioParamRepository.save(paramEntity); 
+//			entity.getParametres().add(paramEntity);
+//		}
+//		return conversioTipusHelper.convertir(
+//				entity,
+//				MonitorIntegracioDto.class);
+//	}
 
 	@Transactional(readOnly = true)
 	@Override

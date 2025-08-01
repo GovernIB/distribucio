@@ -14,6 +14,7 @@ import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
+import es.caib.distribucio.logic.intf.service.SalutService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +73,11 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(ServeiService.class);
 	}
 
+	@Bean
+	public LocalStatelessSessionProxyFactoryBean salutService() {
+		return getLocalEjbFactoyBean(SalutService.class);
+	}
+	
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass, false);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);

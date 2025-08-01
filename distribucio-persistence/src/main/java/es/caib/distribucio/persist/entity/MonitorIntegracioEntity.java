@@ -150,10 +150,21 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 		return excepcioMessage;
 	}
 
+	public void setExcepcioMessage(String excepcioMessage) {
+		this.excepcioMessage = excepcioMessage;
+	}
+
+	public void setExcepcioStacktrace(String excepcioStacktrace) {
+		this.excepcioStacktrace = excepcioStacktrace;
+	}
+
 	public String getExcepcioStacktrace() {
 		return excepcioStacktrace;
 	}
 
+	public void setParametres(List<MonitorIntegracioParamEntity> parametres) {
+		this.parametres = parametres;
+	}
 
 	public void update(
 			String codi,

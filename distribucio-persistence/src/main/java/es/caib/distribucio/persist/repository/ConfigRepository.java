@@ -90,4 +90,7 @@ public interface ConfigRepository extends JpaRepository<ConfigEntity, String> {
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
 
+    @Query("FROM ConfigEntity c WHERE c.groupCode = :grup")
+    List<ConfigEntity> findByGrupCodi(@Param("grup") String grup);
+    
 }
