@@ -2,9 +2,9 @@ package es.caib.distribucio.logic.intf.service;
 
 import java.util.List;
 
-import es.caib.comanda.salut.model.AppInfo;
-import es.caib.comanda.salut.model.IntegracioInfo;
-import es.caib.comanda.salut.model.SalutInfo;
+import es.caib.comanda.ms.salut.model.AppInfo;
+import es.caib.comanda.ms.salut.model.IntegracioInfo;
+import es.caib.comanda.ms.salut.model.SalutInfo;
 
 public interface SalutService {
 

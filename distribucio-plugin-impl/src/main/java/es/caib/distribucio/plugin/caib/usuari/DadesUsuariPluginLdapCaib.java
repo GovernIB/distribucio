@@ -14,9 +14,9 @@ import org.fundaciobit.pluginsib.userinformation.ldap.LdapUserInformationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.comanda.salut.model.EstatSalut;
-import es.caib.comanda.salut.model.EstatSalutEnum;
-import es.caib.comanda.salut.model.IntegracioPeticions;
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;

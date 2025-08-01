@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.salut.model.EstatSalut;
-import es.caib.comanda.salut.model.EstatSalutEnum;
-import es.caib.comanda.salut.model.IntegracioApp;
-import es.caib.comanda.salut.model.IntegracioInfo;
-import es.caib.comanda.salut.model.IntegracioSalut;
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioApp;
+import es.caib.comanda.ms.salut.model.IntegracioInfo;
+import es.caib.comanda.ms.salut.model.IntegracioSalut;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.SalutPlugin;

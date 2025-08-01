@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.caib.comanda.salut.model.AppInfo;
-import es.caib.comanda.salut.model.SalutInfo;
+import es.caib.comanda.ms.salut.model.AppInfo;
+import es.caib.comanda.ms.salut.model.SalutInfo;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package es.caib.distribucio.plugin;
 
-import es.caib.comanda.salut.model.EstatSalut;
-import es.caib.comanda.salut.model.IntegracioPeticions;
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 
 public interface SalutPlugin {
 

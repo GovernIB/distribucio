@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.comanda.salut.model.MissatgeSalut;
+import es.caib.comanda.ms.salut.model.MissatgeSalut;
 import es.caib.distribucio.logic.intf.dto.AlertaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
