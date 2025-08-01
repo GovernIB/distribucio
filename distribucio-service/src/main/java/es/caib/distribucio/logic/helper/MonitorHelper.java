@@ -1,4 +1,4 @@
-package es.caib.distribucio.back.helper;
+package es.caib.distribucio.logic.helper;
 
 import lombok.extern.slf4j.Slf4j;
 

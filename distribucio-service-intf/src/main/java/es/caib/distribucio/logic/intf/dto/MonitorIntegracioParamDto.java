@@ -7,16 +7,25 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Informació d'una entitat.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@NoArgsConstructor
 public class MonitorIntegracioParamDto implements Serializable{
 
 	private Long id;
 	private String nom;	
 	private String descripcio;
+
+	public MonitorIntegracioParamDto(String nom, String descripcio) {
+		super();
+		this.nom = nom;
+		this.descripcio = descripcio;
+	}
 
 	public Long getId() {
 		return id;

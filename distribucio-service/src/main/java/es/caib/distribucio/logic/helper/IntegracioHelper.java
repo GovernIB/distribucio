@@ -7,19 +7,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioInfo;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
+import es.caib.distribucio.persist.entity.MonitorIntegracioEntity;
+import es.caib.distribucio.persist.entity.MonitorIntegracioParamEntity;
+import es.caib.distribucio.persist.repository.MonitorIntegracioRepository;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -42,8 +47,8 @@ public class IntegracioHelper {
 	public static final String INTCODI_DISTRIBUCIO = "DISTRIBUCIO";
 	public static final String INTCODI_BACKOFFICE = "BACKOFFICE";
 
-	@Autowired 
-	private MonitorIntegracioService monitorIntegracioService;
+	@Autowired
+	private MonitorIntegracioRepository monitorIntegracioRepository;
 
 //	@Autowired
 //	private MonitorIntegracioRepository monitorIntegracioRepository;
@@ -139,24 +144,62 @@ public class IntegracioHelper {
 				tempsResposta);		
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void addAccioOk(IntegracioInfo info, boolean obtenirUsuari) {
+		
+//		MonitorIntegracioDto accio = new MonitorIntegracioDto();
+//		accio.setTempsResposta(info.getTempsResposta());
+//		accio.setCodi(info.getCodi().name());
+//		accio.setData(new Date());
+//		accio.setDescripcio(info.getDescripcio());
+//		accio.setCodiUsuari(info.getUsuariIntegracio());
+//		accio.setTipus(info.getTipus());
+//		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
+//		
+//		assignarAccioAParams(info, accio);
+//		
+//		monitorIntegracioService.create(accio);	
+		
+		MonitorIntegracioEntity accio = MonitorIntegracioEntity.getBuilder(
+				info.getCodi().name(),
+				new Date(),
+				info.getDescripcio(),
+				info.getTipus(),
+				info.getTempsResposta(),
+				IntegracioAccioEstatEnumDto.OK,
+				info.getUsuariIntegracio(),
+				info.getCodiEntitat(),
+				null,
+				null,
+				null).build();
+				
+		buildParams(info, accio);
+		
+		addAccio(accio);
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void addAccioOk(
 			String integracioCodi,
 			String descripcio,
 			String usuariIntegracio,
-			Map<String, String> parametres,
+			Map<String, String> parametres ,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta) {
-		MonitorIntegracioDto accio = new MonitorIntegracioDto();
-		accio.setCodi(integracioCodi);
-		accio.setData(new Date());
-		accio.setDescripcio(descripcio);
-		accio.setCodiUsuari(usuariIntegracio);
-		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
-		accio.setTipus(tipus);
-		accio.setTempsResposta(tempsResposta);
-		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
-
-		monitorIntegracioService.create(accio);
+		MonitorIntegracioEntity accio = MonitorIntegracioEntity.getBuilder(
+				integracioCodi,
+				new Date(),
+				descripcio,
+				tipus,
+				tempsResposta,
+				IntegracioAccioEstatEnumDto.OK,
+				usuariIntegracio,
+				ConfigHelper.getEntitatActualCodi(),
+				null,
+				null,
+				null).build();
+		
+		addAccio(accio);
 
 		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
 	}
@@ -181,6 +224,7 @@ public class IntegracioHelper {
 //				null);
 //	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void addAccioError(
 			String integracioCodi,	
 			String registreNumero,
@@ -201,7 +245,49 @@ public class IntegracioHelper {
 				errorDescripcio + " " + registreNumero,
 				throwable);		
 	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void addAccioError(IntegracioInfo info, String errorDescripcio, Throwable throwable) {
+//		MonitorIntegracioDto accio = new MonitorIntegracioDto();
+//		accio.setCodi(info.getCodi().name());
+//		accio.setData(new Date());
+//		accio.setDescripcio(info.getDescripcio());
+//		accio.setCodiUsuari(info.getUsuariIntegracio());
+//		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
+//		accio.setTipus(info.getTipus());
+//		accio.setTempsResposta(info.getTempsResposta());
+//		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
+//		accio.setErrorDescripcio(errorDescripcio);
+//		if (throwable != null){
+//			accio.setExcepcioMessage(
+//					ExceptionUtils.getMessage(throwable));
+//			accio.setExcepcioStacktrace(
+//					ExceptionUtils.getStackTrace(throwable));
+//		}
+//		
+//		assignarAccioAParams(info, accio);
+//		
+//		monitorIntegracioService.create(accio);
+		
+		MonitorIntegracioEntity accio = MonitorIntegracioEntity.getBuilder(
+				info.getCodi().name(),
+				new Date(),
+				info.getDescripcio(),
+				info.getTipus(),
+				info.getTempsResposta(),
+				IntegracioAccioEstatEnumDto.ERROR,
+				info.getUsuariIntegracio(),
+				ConfigHelper.getEntitatActualCodi(),
+				errorDescripcio,
+				ExceptionUtils.getMessage(throwable),
+				ExceptionUtils.getStackTrace(throwable)).build();
+		
+		buildParams(info, accio);
+		
+		addAccio(accio);
+	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void addAccioError(
 			String integracioCodi,			
 			String descripcio,
@@ -211,24 +297,42 @@ public class IntegracioHelper {
 			long tempsResposta,
 			String errorDescripcio,
 			Throwable throwable) {
-		MonitorIntegracioDto accio = new MonitorIntegracioDto();
-		accio.setCodi(integracioCodi);
-		accio.setData(new Date());
-		accio.setDescripcio(descripcio);
-		accio.setCodiUsuari(usuariIntegracio);
-		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
-		accio.setTipus(tipus);
-		accio.setTempsResposta(tempsResposta);
-		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
-		accio.setErrorDescripcio(errorDescripcio);
-		if (throwable != null){
-			accio.setExcepcioMessage(
-					ExceptionUtils.getMessage(throwable));
-			accio.setExcepcioStacktrace(
-					ExceptionUtils.getStackTrace(throwable));
-		}
-		accio.setParametres(this.buildParams(parametres));
-		monitorIntegracioService.create(accio);
+//		MonitorIntegracioDto accio = new MonitorIntegracioDto();
+//		accio.setCodi(integracioCodi);
+//		accio.setData(new Date());
+//		accio.setDescripcio(descripcio);
+//		accio.setCodiUsuari(usuariIntegracio);
+//		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
+//		accio.setTipus(tipus);
+//		accio.setTempsResposta(tempsResposta);
+//		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
+//		accio.setErrorDescripcio(errorDescripcio);
+//		if (throwable != null){
+//			accio.setExcepcioMessage(
+//					ExceptionUtils.getMessage(throwable));
+//			accio.setExcepcioStacktrace(
+//					ExceptionUtils.getStackTrace(throwable));
+//		}
+//		accio.setParametres(this.buildParams(parametres));
+//		monitorIntegracioService.create(accio);
+		
+		MonitorIntegracioEntity accio = MonitorIntegracioEntity.getBuilder(
+				integracioCodi,
+				new Date(),
+				descripcio,
+				tipus,
+				tempsResposta,
+				IntegracioAccioEstatEnumDto.ERROR,
+				usuariIntegracio,
+				ConfigHelper.getEntitatActualCodi(),
+				errorDescripcio,
+				ExceptionUtils.getMessage(throwable),
+				ExceptionUtils.getStackTrace(throwable)).build();
+		
+		buildParams(parametres, accio);
+		
+		addAccio(accio);
+		
 		logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
 				+ "integracioCodi=" + integracioCodi + ", "
 				+ "parametres=" + parametres + ", "
@@ -238,19 +342,55 @@ public class IntegracioHelper {
 				throwable);
 	}
 
-
-	private List<MonitorIntegracioParamDto> buildParams(Map<String, String> parametres) {
-		List<MonitorIntegracioParamDto> parametresDto = new ArrayList<>();
-		if (parametres != null && !parametres.isEmpty()) {
-			for (String nom : parametres.keySet()) {
-				MonitorIntegracioParamDto paramDto = new MonitorIntegracioParamDto();
-				paramDto.setNom(nom);
-				paramDto.setDescripcio(parametres.get(nom));
-				parametresDto.add(paramDto);
-			}
-		}
-		return parametresDto;
+	private void buildParams(IntegracioInfo info, MonitorIntegracioEntity accio) {
+		var params = info.getParams().stream()
+				.map(p -> MonitorIntegracioParamEntity.getBuilder(
+						accio, 
+						p.getCodi(), 
+						p.getValor()).build())
+				.collect(Collectors.toList());
+		accio.setParametres(params);
 	}
+	
+	private void buildParams(Map<String, String> parametres, MonitorIntegracioEntity accio) {
+		if (parametres != null && !parametres.isEmpty()) {
+			List<MonitorIntegracioParamEntity> params = new ArrayList<MonitorIntegracioParamEntity>();
+			for (String nom : parametres.keySet()) {
+				var param = MonitorIntegracioParamEntity.getBuilder(
+						accio, 
+						nom, 
+						parametres.get(nom)).build();
+				params.add(param);
+			}
+			
+			accio.setParametres(params);
+		}
+	}
+	
+	private void addAccio(MonitorIntegracioEntity accio) {
+		var st = accio.getExcepcioStacktrace();
+		accio.setExcepcioStacktrace(st != null && st.getBytes().length > 2000 ? st.substring(0, 1997) + "..." : st);
+		try {
+			monitorIntegracioRepository.save(accio);
+		} catch (Exception ex) {
+			logger.error("Error al desar la acció del monitor.");
+			logger.error("Acció: {}", accio);
+			logger.error("Excepció: ", ex);
+		}
+	}
+
+//	private List<MonitorIntegracioParamDto> buildParams(Map<String, String> parametres) {
+//		List<MonitorIntegracioParamDto> parametresDto = new ArrayList<>();
+//		if (parametres != null && !parametres.isEmpty()) {
+//			for (String nom : parametres.keySet()) {
+//				MonitorIntegracioParamDto paramDto = new MonitorIntegracioParamDto();
+//				paramDto.setNom(nom);
+//				paramDto.setDescripcio(parametres.get(nom));
+//				parametresDto.add(paramDto);
+//			}
+//		}
+//		return parametresDto;
+//	}
 
 	private IntegracioDto novaIntegracio(
 			String codi) {

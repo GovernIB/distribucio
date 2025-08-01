@@ -41,14 +41,14 @@ public interface MonitorIntegracioService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public List<IntegracioDto> findPerDiagnostic();
 
-	/**
-	 * Crea un nou item monitorIntegracio.
-	 * 
-	 * @param monitorIntegracio
-	 *            Informació de l'item monitorIntegracio a crear.
-	 * @return El/La MonitorIntegracio creat/creada
-	 */
-	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio);
+//	/**
+//	 * Crea un nou item monitorIntegracio.
+//	 * 
+//	 * @param monitorIntegracio
+//	 *            Informació de l'item monitorIntegracio a crear.
+//	 * @return El/La MonitorIntegracio creat/creada
+//	 */
+//	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio);
 
 	/**
 	 * Consulta un/una monitorIntegracio donat el seu id.
