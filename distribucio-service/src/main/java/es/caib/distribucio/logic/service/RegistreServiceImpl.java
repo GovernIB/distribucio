@@ -2120,10 +2120,7 @@ public class RegistreServiceImpl implements RegistreService {
 				
 				if (!executor.isTerminated()) {
 					try {
-					    if (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
-					        executor.shutdownNow();
-					        throw new RuntimeException("Temps d'espera esgotat durant la generació del zip.");
-					    }
+					    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 					} catch (InterruptedException e) {
 					    executor.shutdownNow();
 					    Thread.currentThread().interrupt();
@@ -2225,7 +2222,7 @@ public class RegistreServiceImpl implements RegistreService {
 			this.errors = errors;			
 		}
 
-		@Transactional(propagation=Propagation.REQUIRED)
+		@Transactional(readOnly = true)
 		@Override
 		public void run() {
 			ConfigHelper.setEntitat(this.entitatActual);
