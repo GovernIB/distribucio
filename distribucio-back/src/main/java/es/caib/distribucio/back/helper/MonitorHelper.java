@@ -102,8 +102,22 @@ public class MonitorHelper {
 		var pre = "kMGTPE".charAt(exp - 1);
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
+	
+	public static String getSystemCpuLoad() {
+        try {
+            double cpuLoad = sunOSMBean.getSystemCpuLoad();
 
-	public static String getCPULoad() {
+            if (cpuLoad >= 0) {
+                return String.format("%.2f%%", cpuLoad * 100);
+            } else {
+                return NO_DISPONIBLE;
+            }
+        } catch (Exception e) {
+            return NO_DISPONIBLE;
+        }
+    }
+
+	public static String getProcessCPULoad() {
 
 		try {
 			result.upTime = rmBean.getUptime();

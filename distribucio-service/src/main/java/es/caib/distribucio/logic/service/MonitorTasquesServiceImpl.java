@@ -97,4 +97,15 @@ public class MonitorTasquesServiceImpl implements MonitorTasquesService {
 			tasca.setEstat(MonitorTascaEstatEnum.EN_ESPERA);
 		}
 	}
+	
+	@Override
+	public void reiniciarTasquesEnSegonPla(String codiTasca) {
+		
+		List<MonitorTascaInfo> tasques = this.findAll();
+		for (MonitorTascaInfo tasca : tasques) {
+			if (tasca.getCodi().equals(codiTasca) || "totes".equals(codiTasca)) {
+				tasca.setEstat(MonitorTascaEstatEnum.EN_ESPERA);
+			}
+		}
+	}
 }

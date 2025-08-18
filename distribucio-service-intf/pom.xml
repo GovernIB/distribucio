@@ -53,5 +53,10 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+            <groupId>es.caib.comanda</groupId>
+            <artifactId>comanda-lib</artifactId>
+            <version>0.0.1</version>
+        </dependency>
 	</dependencies>
 </project>

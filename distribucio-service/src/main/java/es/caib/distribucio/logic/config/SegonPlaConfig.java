@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
@@ -34,6 +33,10 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 	private ConfigService configService;
 
 	private ScheduledTaskRegistrar taskRegistrar;
+	
+	@Autowired
+    @Qualifier("taskScheduler")
+    private TaskScheduler taskScheduler;
 
 	public void reiniciarTasquesSegonPla() {
 		if (taskRegistrar != null) {
@@ -42,16 +45,16 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 		}
 	}
 
-	@Bean
-	public TaskScheduler taskScheduler() {
-		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-		taskScheduler.setPoolSize(10);
-		return taskScheduler;
-	}
+//	@Bean
+//	public TaskScheduler taskScheduler() {
+//		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+//		taskScheduler.setPoolSize(10);
+//		return taskScheduler;
+//	}
 
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		taskRegistrar.setScheduler(taskScheduler());
+		taskRegistrar.setScheduler(taskScheduler);
 		this.taskRegistrar = taskRegistrar;
 		final String codiGuardarAnotacionsPendents = "guardarAnotacionsPendents";
 		//Guardar anotacions de registre amb estat pendent de guardar a l'arxiu.

@@ -187,17 +187,20 @@ public class ReglaHelper {
 			ReglaEntity lastRegla = reglesApplied.get(reglesApplied.size() - 1);
 			if (lastRegla.getTipus() != ReglaTipusEnumDto.BACKOFFICE || (lastRegla.getTipus() == ReglaTipusEnumDto.BACKOFFICE && isAnotacioAlreadySavedInArxiu(registre))) {
 				ContingutEntity pare = registre.getPare();
-				if (pare != null) {
-					if (HibernateHelper.isProxy(pare))
-						pare = HibernateHelper.deproxy(pare);
-					emailHelper.createEmailsPendingToSend(
-							(BustiaEntity)pare,
-							registre,
-							registre.getDarrerMoviment());
+				if (pare != null) {					
+					ContingutMovimentEntity darrerMoviment = registre.getDarrerMoviment();
+					if (darrerMoviment!=null) {
+						if (!darrerMoviment.getOrigenId().equals(darrerMoviment.getDestiId())) {
+							if (HibernateHelper.isProxy(pare))
+								pare = HibernateHelper.deproxy(pare);
+							emailHelper.createEmailsPendingToSend(
+									(BustiaEntity)pare,
+									registre,
+									registre.getDarrerMoviment());
+						}
+					}					
 				}
-			}
-			
-			
+			}			
 			logger.debug("Processament anotació OK (id=" + registre.getId() + ", núm.=" + registre.getNumero() + ")");
 			alertaHelper.crearAlerta(
 					messageHelper.getMessage(

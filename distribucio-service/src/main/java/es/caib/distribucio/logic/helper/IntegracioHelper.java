@@ -5,6 +5,7 @@ package es.caib.distribucio.logic.helper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.caib.distribucio.logic.intf.dto.AccioParam;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioInfo;
 import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
 import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
@@ -44,11 +47,6 @@ public class IntegracioHelper {
 
 	@Autowired 
 	private MonitorIntegracioService monitorIntegracioService;
-
-//	@Autowired
-//	private MonitorIntegracioRepository monitorIntegracioRepository;
-//	@Autowired
-//	private MonitorIntegracioParamRepository monitorIntegracioParamRepository;
 
 	public List<IntegracioDto> findAll() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
@@ -139,6 +137,37 @@ public class IntegracioHelper {
 				tempsResposta);		
 	}
 	
+	public void addAccioOk(IntegracioInfo info, boolean obtenirUsuari) {
+		
+//		MonitorIntegracioDto accio = new MonitorIntegracioDto();
+//		accio.setTempsResposta(info.getTempsResposta());
+//		accio.setCodi(info.getCodi().name());
+//		accio.setData(new Date());
+//		accio.setDescripcio(info.getDescripcio());
+//		accio.setCodiUsuari(info.getUsuariIntegracio());
+//		accio.setTipus(info.getTipus());
+//		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
+//		
+//		monitorIntegracioService.create(accio);	
+//		
+//		MonitorIntegracioEntity accio = MonitorIntegracioEntity.getBuilder(
+//				info.getCodi().name(),
+//				new Date(),
+//				info.getDescripcio(),
+//				info.getTipus(),
+//				info.getTempsResposta(),
+//				IntegracioAccioEstatEnumDto.OK,
+//				info.getUsuariIntegracio(),
+//				info.getCodiEntitat(),
+//				null,
+//				null,
+//				null).build();
+//				
+//		buildParams(info, accio);
+//		
+//		addAccio(accio);
+	}
+	
 	public void addAccioOk(
 			String integracioCodi,
 			String descripcio,
@@ -201,7 +230,19 @@ public class IntegracioHelper {
 				errorDescripcio + " " + registreNumero,
 				throwable);		
 	}
-	
+
+	public void addAccioError(IntegracioInfo info, String errorDescripcio, Throwable throwable) {
+		this.addAccioError(
+				info.getCodi().name(), 
+				info.getDescripcio(), 
+				info.getUsuariIntegracio(),
+				buildParams(info.getParams()),
+				info.getTipus(),
+				info.getTempsResposta(),
+				errorDescripcio,
+				throwable);
+	}
+
 	public void addAccioError(
 			String integracioCodi,			
 			String descripcio,
@@ -251,6 +292,18 @@ public class IntegracioHelper {
 		}
 		return parametresDto;
 	}
+	
+	private Map<String, String> buildParams(List<AccioParam> params) {
+		Map<String, String> parametresMap = null;
+		if (params != null) {
+			parametresMap = new HashMap<String, String>();
+			for (AccioParam param : params) {
+				parametresMap.put(param.getCodi(), param.getValor());
+			}
+		}
+		return parametresMap;
+	}
+
 
 	private IntegracioDto novaIntegracio(
 			String codi) {

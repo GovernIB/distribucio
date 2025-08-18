@@ -25,6 +25,9 @@
 			<url-pattern>/swagger-ui/*</url-pattern>
 			<url-pattern>/apidocs</url-pattern>
 			<url-pattern>/apidocs/*</url-pattern>
+			<url-pattern>/appInfo</url-pattern>
+            <url-pattern>/salut</url-pattern>
+            <url-pattern>/salutPerformance</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>

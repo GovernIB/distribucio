@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +71,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	private PaginacioHelper paginacioHelper;
 	@Resource
 	private EntityComprovarHelper entityComprovarHelper;
+	@Lazy
 	@Resource
 	private PluginHelper pluginHelper;
 

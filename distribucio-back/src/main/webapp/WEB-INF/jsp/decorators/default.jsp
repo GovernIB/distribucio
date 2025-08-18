@@ -91,6 +91,14 @@ body {
 		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
 	}
 </c:if>
+<c:if test="${sessionScope['EntitatHelper.entitatActual'].colorLletra != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorLletra}">
+	.navbar-app {
+		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+	}
+	.navbar-app .list-inline li.dropdown>a {
+		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+	}
+</c:if>
 </style>
 <script type="text/javascript">
 	// Guarda l'idioma de la configuració de l'usuari a local storage
@@ -255,6 +263,7 @@ body {
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.config"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
 											<li><a href="<c:url value="/config"/>"> <spring:message code="decorator.menu.config.properties"/></a></li>
+											<li><a href="<c:url value="/scheduled"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.reinici.scheduler"/> ...</a></li>											
 											<li><a href="<c:url value="/usuari/usernames/change"/>"> <spring:message code="decorator.menu.canvi.usuari.codis"/></a></li>
 										</ul>
 									</div> 

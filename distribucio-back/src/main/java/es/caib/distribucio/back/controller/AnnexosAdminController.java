@@ -6,6 +6,7 @@ package es.caib.distribucio.back.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -525,7 +526,11 @@ public class AnnexosAdminController extends BaseAdminController {
 				SESSION_ATTRIBUTE_FILTRE);
 		if (filtreCommand == null) {
 			filtreCommand = new AnnexosFiltreCommand();		
-			filtreCommand.setArxiuEstat(AnnexEstat.ESBORRANY);
+			filtreCommand.setArxiuEstat(AnnexEstat.ESBORRANY);			
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.MONTH, -3); // Restar 3 meses a la fecha actual			
+			filtreCommand.setDataRecepcioInici(calendar.getTime());
+			
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
