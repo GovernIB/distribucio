@@ -151,7 +151,9 @@ import es.caib.pluginsib.arxiu.api.FirmaTipus;
 @Component
 public class RegistreHelper {
 
-//	private static final String URL_API_BACKOFFICE = "/distribucio/api/rest/backoffice";
+    private static final String CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+    
+    //	private static final String URL_API_BACKOFFICE = "/distribucio/api/rest/backoffice";
 	private boolean autenticacioBasic = true;
 
 	@Autowired
@@ -479,6 +481,7 @@ public class RegistreHelper {
 				false);
 	}
 
+	/** Encriptacio usat en la comunicació d'anotacions a backoffices. */
 	public static String encrypt
 	(String messageToEncrypt,
 			String clauSecreta) throws Exception {
@@ -496,21 +499,38 @@ public class RegistreHelper {
 		return clauAcces;
 	}
 
+	/** Després de la versió 1.0.5 s'ha canviat l'encriptació per evitar caràcters estranys. */
 	public String encriptar(String missatgeAEncriptar) throws Exception {
 		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
-		Cipher cipher = Cipher.getInstance("AES");
+		Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		String encriptat = new String(Base64.getEncoder().encode(cipher.doFinal(missatgeAEncriptar.getBytes("UTF-8"))));
-		encriptat = encriptat.replace("/", "%252F");
-		encriptat = encriptat.replace("==", "");
+		String encriptat = Base64.getUrlEncoder().withoutPadding().encodeToString(cipher.doFinal(missatgeAEncriptar.getBytes()));
 		return encriptat;
 	}
 
-	public String desencriptar(String missatgeADesencriptar) throws Exception {
+	/** Desencriptació de l'identificador antic per compatibilitat amb els codis de descàrrega de documentació enviats per correu abans de la versió 1.0.5. */
+	private String desencriptarAntic(String missatgeADesencriptar) throws Exception {
+		missatgeADesencriptar = missatgeADesencriptar.replaceAll("%", "/");
+		missatgeADesencriptar = missatgeADesencriptar.replaceAll("/2F", "/");
+		missatgeADesencriptar = missatgeADesencriptar.replace("%252F", "/");
+		missatgeADesencriptar = missatgeADesencriptar + "==";
 		SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		return new String(cipher.doFinal(Base64.getDecoder().decode(missatgeADesencriptar)));
+	}
+
+
+	public String desencriptar(String missatgeADesencriptar) throws Exception {
+		try {
+			SecretKeySpec secretKey = generarClau(this.getClauSecretaProperty());
+			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+			cipher.init(Cipher.DECRYPT_MODE, secretKey);
+			return new String(cipher.doFinal(Base64.getUrlDecoder().decode(missatgeADesencriptar)));
+        } catch (IllegalArgumentException e) {
+            // En cas d'error es prova a desencriptar amb l'algoritme antic anterior a la versió 1.0.5
+            return desencriptarAntic(missatgeADesencriptar);
+        }
 	}
 
 	public static SecretKeySpec generarClau(String clauSecreta) throws Exception {
