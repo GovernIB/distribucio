@@ -20,6 +20,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.logic.helper.IntegracioHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
@@ -71,6 +73,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			RegistreAnotacio registreEntrada) {
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
 		Timer.Context context = timer.time();
+		long start = System.currentTimeMillis();
 		String entitatOArrel;
 		if (entitat == null || entitat.isEmpty()) {
 			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
@@ -160,6 +163,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
 					System.currentTimeMillis() - t0);
+			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.AWS, System.currentTimeMillis() - start);
 			context.stop();	
 		} catch (Exception ex) {
 			logger.error(
@@ -180,6 +184,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					System.currentTimeMillis() - t0,
 					"Error al processar registre d'entrada al servei web de bústia",
 					ex);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.AWS, System.currentTimeMillis() - start);
 			throw new RuntimeException(ex);
 		}
 	}

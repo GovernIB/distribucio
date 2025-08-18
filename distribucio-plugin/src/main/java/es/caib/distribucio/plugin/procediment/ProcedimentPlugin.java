@@ -7,6 +7,7 @@ import java.util.List;
 
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.plugin.IntegracioPlugin;
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 /**
@@ -14,7 +15,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface ProcedimentPlugin extends IntegracioPlugin {
+public interface ProcedimentPlugin extends IntegracioPlugin, SalutPlugin {
 
 	/**
 	 * Retorna els procediment associats a una unitat organitzativa.

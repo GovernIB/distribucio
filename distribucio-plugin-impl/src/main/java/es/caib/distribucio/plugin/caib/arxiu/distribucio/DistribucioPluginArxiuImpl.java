@@ -6,6 +6,8 @@ package es.caib.distribucio.plugin.caib.arxiu.distribucio;
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +29,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
@@ -72,6 +77,7 @@ import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 import es.caib.pluginsib.arxiu.caib.ArxiuConversioHelper;
 //import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
 import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
+import lombok.Synchronized;
 
 /**
  * Implementació del plugin de distribució que utilitza
@@ -103,7 +109,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	public DistribucioPluginArxiuImpl(Properties properties) {
 		super(properties);
 	}
-
 	
 	@Override
 	public String expedientCrear(
@@ -1713,7 +1718,58 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		return authentication != null ? authentication.getName() : null;
 	}
 
-
 	private static final Logger logger = LoggerFactory.getLogger(DistribucioPlugin.class);
 
+	// Mètodes de SALUT
+	// /////////////////////////////////////////////////////////////////////////////////////////////
+
+	private boolean configuracioEspecifica = false;
+	private int operacionsOk = 0;
+	private int operacionsError = 0;
+
+	@Synchronized
+	private void incrementarOperacioOk() {
+		operacionsOk++;
+	}
+
+	@Synchronized
+	private void incrementarOperacioError() {
+		operacionsError++;
+	}
+
+	@Synchronized
+	private void resetComptadors() {
+		operacionsOk = 0;
+		operacionsError = 0;
+	}
+
+	@Override
+	public boolean teConfiguracioEspecifica() {
+		return this.configuracioEspecifica;
+	}
+
+	@Override
+	public EstatSalut getEstatPlugin() {
+		try {
+			Instant start = Instant.now();
+			String identificador = "00000000-0000-0000-0000-000000000000";
+			documentDescarregar(identificador, null, true, true);
+			return EstatSalut.builder()
+					.latencia((int) Duration.between(start, Instant.now()).toMillis())
+					.estat(EstatSalutEnum.UP)
+					.build();
+		} catch (Exception ex) {}
+		return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
+	}
+
+	@Override
+	public IntegracioPeticions getPeticionsPlugin() {
+		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
+				.totalOk(operacionsOk)
+				.totalError(operacionsError)
+				.build();
+		resetComptadors();
+		return integracioPeticions;
+	}
+	
 }

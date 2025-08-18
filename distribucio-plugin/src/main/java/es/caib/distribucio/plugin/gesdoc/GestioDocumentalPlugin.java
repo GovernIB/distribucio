@@ -6,6 +6,7 @@ package es.caib.distribucio.plugin.gesdoc;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 
@@ -14,7 +15,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface GestioDocumentalPlugin {
+public interface GestioDocumentalPlugin extends SalutPlugin {
 
 	/**
 	 * Puja un document a la gestió documental.

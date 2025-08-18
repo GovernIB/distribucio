@@ -1,6 +1,7 @@
 package es.caib.distribucio.plugin.signatura;
 
 import es.caib.distribucio.plugin.IntegracioPlugin;
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 /**
@@ -8,7 +9,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface SignaturaPlugin extends IntegracioPlugin{
+public interface SignaturaPlugin extends IntegracioPlugin, SalutPlugin {
 
 	public SignaturaResposta signar(
 			String id, 

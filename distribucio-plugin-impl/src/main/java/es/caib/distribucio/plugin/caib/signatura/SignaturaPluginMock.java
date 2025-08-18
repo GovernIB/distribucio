@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
@@ -75,4 +78,23 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 	public String getUsuariIntegracio() {
 		return "Mock";
 	}
+	
+	// Mètodes de SALUT
+	// /////////////////////////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public boolean teConfiguracioEspecifica() {
+		return false;
+	}
+
+	@Override
+	public EstatSalut getEstatPlugin() {
+		return EstatSalut.builder().estat(EstatSalutEnum.UP).latencia(1).build();
+	}
+
+	@Override
+	public IntegracioPeticions getPeticionsPlugin() {
+		return IntegracioPeticions.builder().build();
+	}
+	
 }

@@ -72,6 +72,7 @@ import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.representation.Form;
 
+import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
@@ -1594,12 +1595,18 @@ public class RegistreHelper {
 	 * @return
 	 */
 	public Throwable enviarIdsAnotacionsBackUpdateDelayTime(List<Long> pendentsIdsGroupedByRegla) {
+		long start = System.currentTimeMillis();
 		Date dataComunicacio = new Date();
 		Throwable throwable; 
 		try {
 			throwable = self.enviarIdsAnotacionsBackoffice(pendentsIdsGroupedByRegla);
+			if (throwable == null)
+				SubsistemesHelper.addSuccessOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
+			else
+				SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
 		} catch(Throwable th) {
 			logger.error("Error no controlat enviant ids d'anotacions pendents: " + th.getMessage());
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
 			throwable = th;
 		}
 		int minutesEspera = 1;

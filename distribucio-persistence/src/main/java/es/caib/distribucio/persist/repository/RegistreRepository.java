@@ -522,4 +522,6 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 	int updateUsuariCodi(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
+
+	public RegistreEntity findTopByEntitatAndExpedientArxiuUuidNotNull(EntitatEntity entitat);
 }

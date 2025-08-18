@@ -31,10 +31,11 @@ import es.caib.comanda.ms.salut.model.IntegracioSalut;
 import es.caib.comanda.ms.salut.model.MissatgeSalut;
 import es.caib.comanda.ms.salut.model.SalutInfo;
 import es.caib.comanda.ms.salut.model.SubsistemaSalut;
-import es.caib.distribucio.logic.helper.AbstractPluginHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.MonitorHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
+import es.caib.distribucio.logic.helper.plugin.AbstractPluginHelper;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import es.caib.distribucio.logic.utils.DistribucioBenchmark;
 import es.caib.distribucio.persist.repository.AvisRepository;
@@ -66,14 +67,11 @@ public class SalutServiceImpl implements SalutService {
 	@Override
 	public List<AppInfo> getSubsistemes() {
 		return List.of(
-				AppInfo.builder().codi("AWE").nom("Alta web").build(),
-				AppInfo.builder().codi("ARE").nom("Alta REST").build(),
-				AppInfo.builder().codi("MAS").nom("Alta massiva").build(),
-				AppInfo.builder().codi("REG").nom("Registre").build(), 
-				AppInfo.builder().codi("SIR").nom("SIR").build(),
-				AppInfo.builder().codi("NOT").nom("Notificació").build(),
-				AppInfo.builder().codi("CBK").nom("Callback de client").build(),
-				AppInfo.builder().codi("CIE").nom("CIE").build(),
+				AppInfo.builder().codi("AWS").nom("Alta Registre WS").build(),
+				AppInfo.builder().codi("BKC").nom("Backoffice consulta").build(), 
+				AppInfo.builder().codi("BKE").nom("Backoffice canvi estat").build(),
+				AppInfo.builder().codi("BKL").nom("Backoffice llistar").build(),
+				AppInfo.builder().codi("RGB").nom("Aplicar Regla Backoffice").build(),
 				AppInfo.builder().codi("GDO").nom("Gestió documental FileSystem").build()
 		);
 	}
@@ -83,10 +81,19 @@ public class SalutServiceImpl implements SalutService {
         var estatSalut = checkEstatSalut(performanceUrl);   // Estat
         var salutDatabase = checkDatabase();                // Base de dades
         var integracions = checkIntegracions();             // Integracions
-        var subsistemes = checkSubsistemes();               // Subsistemes
         var altres = checkAltres();                         // Altres
         var missatges = checkMissatges();                   // Missatges
 
+        SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
+        var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
+        var estatGlobalSubsistemes = subsistemesInfo.getEstatGlobal();
+        if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes)) {
+            estatSalut = EstatSalut.builder()
+                    .estat(estatGlobalSubsistemes)
+                    .latencia(estatSalut.getLatencia())
+                    .build();
+        }
+        
         return SalutInfo.builder()
                 .codi("DIS")
                 .versio(versio)
@@ -107,7 +114,6 @@ public class SalutServiceImpl implements SalutService {
         try {
             executePerformanceTest();
         } catch (Exception e) {}
-        String response = null;
         for (int i = 1; i <= MAX_CONNECTION_RETRY; i++) {
             try {
                 restTemplate.getForObject(performanceUrl, String.class);
@@ -174,7 +180,7 @@ public class SalutServiceImpl implements SalutService {
         List<IntegracioSalut> integracionsSalut = new ArrayList<>();
         try {
             List<AbstractPluginHelper<?>> helpers = pluginHelper.getPluginHelpers();
-            for (AbstractPluginHelper helper : helpers) {
+            for (AbstractPluginHelper<?> helper : helpers) {
                 integracionsSalut.addAll(helper.getIntegracionsSalut());
             }
         } catch (Exception e) {

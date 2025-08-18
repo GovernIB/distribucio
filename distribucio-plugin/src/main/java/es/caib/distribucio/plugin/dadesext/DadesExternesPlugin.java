@@ -6,6 +6,7 @@ package es.caib.distribucio.plugin.dadesext;
 import java.util.List;
 
 import es.caib.distribucio.plugin.IntegracioPlugin;
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 
@@ -14,7 +15,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface DadesExternesPlugin extends IntegracioPlugin {
+public interface DadesExternesPlugin extends IntegracioPlugin, SalutPlugin {
 
 	/**
 	 * Consulta la llista de paisos disponibles.

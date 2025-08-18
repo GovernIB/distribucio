@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import es.caib.distribucio.plugin.IntegracioPlugin;
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 
 
@@ -16,7 +17,7 @@ import es.caib.distribucio.plugin.SistemaExternException;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface UnitatsOrganitzativesPlugin extends IntegracioPlugin{
+public interface UnitatsOrganitzativesPlugin extends IntegracioPlugin, SalutPlugin {
 
 	/**
 	 * Retorna la unitat organtizativa donat el pareCodi

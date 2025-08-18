@@ -12,6 +12,9 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
@@ -138,4 +141,24 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 		}
 		return baseDir;
 	}
+	
+	// Mètodes de SALUT
+	// /////////////////////////////////////////////////////////////////////////////////////////////
+	private boolean configuracioEspecifica = false;
+	
+	@Override
+	public boolean teConfiguracioEspecifica() {
+		return configuracioEspecifica;
+	}
+
+	@Override
+	public EstatSalut getEstatPlugin() {
+		return EstatSalut.builder().estat(EstatSalutEnum.UP).latencia(1).build();
+	}
+
+	@Override
+	public IntegracioPeticions getPeticionsPlugin() {
+		return null;
+	}
+	
 }

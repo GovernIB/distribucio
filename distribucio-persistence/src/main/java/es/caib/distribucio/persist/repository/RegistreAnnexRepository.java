@@ -136,4 +136,12 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("codiNou") String codiNou);
 
 	public List<RegistreAnnexEntity> findByIdIn(List<Long> multipleAnnexosIds);
+
+//	@Query("Select ra from RegistreAnnexEntity ra " + 
+//			"where ra.registre.entitat = :entitat " + 
+//			"and ra.fitxerArxiuUuid is not null " + 
+//			"order by ra.id desc")
+//	public RegistreAnnexEntity findTopByEntitatAndFitxerArxiuUuidNotNull(@Param("entitat") EntitatEntity entitat);
+	
+	public RegistreAnnexEntity findTopByRegistre_EntitatAndFitxerArxiuUuidNotNull(EntitatEntity entitat);
 }

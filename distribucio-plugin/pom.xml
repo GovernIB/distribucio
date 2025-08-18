@@ -33,6 +33,20 @@
 			<artifactId>distribucio-service-intf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<!-- valdiació amb afirma -->
+		<dependency>
+			<groupId>org.fundaciobit.pluginsib.validatesignature</groupId>
+			<artifactId>pluginsib-validatesignature-afirmacxf</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcpkix-jdk15on</artifactId>
+		    <version>1.56</version>
+		</dependency>
+		
 	</dependencies>
 	<repositories>
 		<repository>

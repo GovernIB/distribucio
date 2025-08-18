@@ -7,6 +7,9 @@ package es.caib.distribucio.plugin.caib.servei;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.servei.Servei;
@@ -44,4 +47,22 @@ public class ServeiPluginMock implements ServeiPlugin {
 		return response;
 	}
 
+	// Mètodes de SALUT
+	// /////////////////////////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public boolean teConfiguracioEspecifica() {
+		return false;
+	}
+
+	@Override
+	public EstatSalut getEstatPlugin() {
+		return EstatSalut.builder().estat(EstatSalutEnum.UP).latencia(1).build();
+	}
+
+	@Override
+	public IntegracioPeticions getPeticionsPlugin() {
+		return IntegracioPeticions.builder().build();
+	}
+	
 }

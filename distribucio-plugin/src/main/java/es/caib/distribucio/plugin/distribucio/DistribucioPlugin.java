@@ -4,6 +4,7 @@ import java.util.Map;
 
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.plugin.IntegracioPlugin;
+import es.caib.distribucio.plugin.SalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
@@ -14,7 +15,7 @@ import es.caib.pluginsib.arxiu.api.DocumentContingut;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public interface DistribucioPlugin extends IntegracioPlugin {
+public interface DistribucioPlugin extends IntegracioPlugin, SalutPlugin {
 	
 	/**
 	 * Crea un contenidor de contingut, per exemple un expedient

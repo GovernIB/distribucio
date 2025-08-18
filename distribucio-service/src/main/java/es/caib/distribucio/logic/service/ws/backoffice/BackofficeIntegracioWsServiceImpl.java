@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.logic.helper.IntegracioHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -89,6 +91,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 
     @Override
 	public List<AnotacioRegistreEntrada> llistar(String identificador, Date dataRegistre) {
+		long start = System.currentTimeMillis();
 		List<AnotacioRegistreEntrada> anotacionsRegistreEntrada;
 		String accioDescripcio = "Consulta anotacions registre "+ identificador;
 		String usuariIntegracio = this.getUsuariIntegracio();
@@ -120,7 +123,8 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					System.currentTimeMillis() - t0
 			);			
 			logger.trace(">>> Despres de cridar el servei de consulta de registre");	
-			
+
+	        SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKL, System.currentTimeMillis() - start);
 			return anotacionsRegistreEntrada;
 
 		} catch (Exception ex) {
@@ -138,7 +142,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
-			
+	        SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKL, System.currentTimeMillis() - start);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
@@ -150,14 +154,17 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
     public void canviEstatComunicadaARebuda(
     		 AnotacioRegistreId id,             
              String observacions) {
+		long start = System.currentTimeMillis();
     	try {
     		List<Long> registresId = registreService.findRegistresPerIdentificador(id);
 			
 			for (Long registreId : registresId) {
 				registreService.canviEstatComunicadaARebuda(registreId, observacions);
 			}
+			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
     	} catch (Exception ex) {
     		logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="+ id + ex);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
     	}
     }
     
@@ -166,6 +173,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             AnotacioRegistreId id,
             Estat estat,
             String observacions) {
+		long start = System.currentTimeMillis();
         String accioDescripcio = "Canvi d'estat de l'anotació " + (id != null ? id.getIndetificador() : "-") + " a " + estat;
         String usuariIntegracio = this.getUsuariIntegracio();
         Map<String, String> accioParams = new HashMap<String, String>();
@@ -197,6 +205,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
                     IntegracioAccioTipusEnumDto.RECEPCIO,
                     System.currentTimeMillis() - t0
             );
+			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
             logger.trace(">>> Despres de cridar el servei de canvi d'estat");
         } catch (Exception ex) {
             logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="
@@ -211,6 +220,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
                     System.currentTimeMillis() - t0,
                     errorDescripcio,
                     ex);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
             throw new SistemaExternException(
                     IntegracioHelper.INTCODI_BACKOFFICE,
                     errorDescripcio,

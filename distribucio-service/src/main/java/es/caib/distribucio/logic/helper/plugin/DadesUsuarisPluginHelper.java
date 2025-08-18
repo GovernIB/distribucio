@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.helper.plugin;
 
 import static es.caib.distribucio.logic.intf.dto.IntegracioCodi.USUARIS;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,18 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioApp;
-import es.caib.comanda.ms.salut.model.IntegracioSalut;
-import es.caib.distribucio.logic.helper.AbstractPluginHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
-import es.caib.distribucio.logic.intf.dto.AccioParam;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioCodi;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
-import es.caib.distribucio.logic.intf.dto.IntegracioInfo;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -56,52 +50,120 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 	
 	public DadesUsuari dadesUsuariFindAmbCodi(String usuariCodi) {
 		
-		var info = new IntegracioInfo(
-				IntegracioCodi.USUARIS,
-				null,
-				"Consulta d'usuari amb codi", 
-				getUsuariAutenticat(),
-				IntegracioAccioTipusEnumDto.ENVIAMENT,
-				new AccioParam("Codi d'usuari", usuariCodi));
-
+//		var info = new IntegracioInfo(
+//				IntegracioCodi.USUARIS,
+//				null,
+//				"Consulta d'usuari amb codi", 
+//				getUsuariAutenticat(),
+//				IntegracioAccioTipusEnumDto.ENVIAMENT,
+//				new AccioParam("Codi d'usuari", usuariCodi));
+//
+//		try {
+//			var dadesUsuari = getPlugin().findAmbCodi(usuariCodi);
+//			integracioHelper.addAccioOk(
+//					info, 
+//					false);
+//			return dadesUsuari;
+//		} catch (Exception ex) {
+//			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
+//			integracioHelper.addAccioError(
+//					info, 
+//					errorDescripcio, 
+//					ex);
+//			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
+//		}
+		String accioDescripcio = "Consulta d'usuari amb codi";
+		
+		String usuariIntegracio = this.getUsuariAutenticat();
+		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codi", usuariCodi);
+		long t0 = System.currentTimeMillis();
 		try {
-			var dadesUsuari = getPlugin().findAmbCodi(usuariCodi);
+			DadesUsuari dadesUsuari = getPlugin().findAmbCodi(
+					usuariCodi);
 			integracioHelper.addAccioOk(
-					info, 
-					false);
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 			return dadesUsuari;
 		} catch (Exception ex) {
-			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
+			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
 			integracioHelper.addAccioError(
-					info, 
-					errorDescripcio, 
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
 					ex);
-			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
 		}
 	}
 
 	public List<DadesUsuari> findAmbGrup(String grupCodi) {
-		var info = new IntegracioInfo(
-				IntegracioCodi.USUARIS,
-				null,
-				"Consulta d'usuaris d'un grup", 
-				getUsuariAutenticat(),
-				IntegracioAccioTipusEnumDto.ENVIAMENT,
-				new AccioParam("Codi del grup", grupCodi));
+//		var info = new IntegracioInfo(
+//				IntegracioCodi.USUARIS,
+//				null,
+//				"Consulta d'usuaris d'un grup", 
+//				getUsuariAutenticat(),
+//				IntegracioAccioTipusEnumDto.ENVIAMENT,
+//				new AccioParam("Codi del grup", grupCodi));
+//
+//		try {
+//			var dadesUsuari = getPlugin().findAmbGrup(grupCodi);
+//			integracioHelper.addAccioOk(
+//					info, 
+//					false);
+//			return dadesUsuari;
+//		} catch (Exception ex) {
+//			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
+//			integracioHelper.addAccioError(
+//					info, 
+//					errorDescripcio, 
+//					ex);
+//			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
+//		}
+		String accioDescripcio = "Consulta d'usuaris d'un grup";
 
+		String usuariIntegracio = this.getUsuariAutenticat();
+		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("grup", grupCodi);
+		long t0 = System.currentTimeMillis();
 		try {
-			var dadesUsuari = getPlugin().findAmbGrup(grupCodi);
+			List<DadesUsuari> dadesUsuari = getPlugin().findAmbGrup(
+					grupCodi);
 			integracioHelper.addAccioOk(
-					info, 
-					false);
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
 			return dadesUsuari;
 		} catch (Exception ex) {
-			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
+			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
 			integracioHelper.addAccioError(
-					info, 
-					errorDescripcio, 
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
 					ex);
-			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
 		}
 	}
 	
@@ -111,6 +173,8 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 		if (plugin != null) {
 			return plugin;
 		}
+		
+		loadPluginProperties(GRUP);
 		
 		String pluginClass = getPluginClassProperty();
 		
@@ -154,32 +218,6 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 	@Override
 	protected String getConfigGrup() {
 		return GRUP;
-	}
-	
-	// SALUT
-
-	@Override
-	public List<es.caib.comanda.ms.salut.model.IntegracioInfo> getIntegracionsInfo() {
-		return List.of(es.caib.comanda.ms.salut.model.IntegracioInfo.builder()
-				.codi(getCodiApp().name())
-				.nom(getCodiApp().getNom())
-				.build());
-	}
-
-	@Override
-	public List<IntegracioSalut> getIntegracionsSalut() {
-		var plugin = pluginMap.get(GLOBAL);
-		if (plugin == null) {
-			return List.of(IntegracioSalut.builder().codi(getCodiApp().name()).estat(EstatSalutEnum.UNKNOWN).build());
-		}
-
-		EstatSalut estatSalut = plugin.getEstatPlugin();
-		return List.of(IntegracioSalut.builder()
-				.codi(getCodiApp().name())
-				.estat(estatSalut.getEstat())
-				.latencia(estatSalut.getLatencia())
-				.peticions(plugin.getPeticionsPlugin())
-				.build());
 	}
 	
 	private String getUsuariAutenticat() {
