@@ -290,14 +290,22 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	@Override
 	public List<ExecucioMassivaContingutDto> findExecucioPerContingut(List<Long> continguts) throws NotFoundException {
 		
-		List<ExecucioMassivaContingutEntity> execucioMassivaContinguts = execucioMassivaContingutRepository.findByContingutsAndEstatIn(
-				continguts,
-				new ArrayList<> (
-						Arrays.asList(
-								ExecucioMassivaContingutEstatDto.PENDENT, 
-								ExecucioMassivaContingutEstatDto.PROCESSANT)
-						)
-				);
+		List<ExecucioMassivaContingutEntity> execucioMassivaContinguts = new ArrayList<> ();
+		if (continguts != null) {
+			// Consulta de 1000 en 1000 els que estan en el llistat.
+			for (int i = 0; i < continguts.size(); i += 1000) {
+				execucioMassivaContinguts.addAll(
+						execucioMassivaContingutRepository.findByContingutsAndEstatIn(
+						continguts.subList(i, Math.min(continguts.size(), i+1000)),
+						new ArrayList<> (
+								Arrays.asList(
+										ExecucioMassivaContingutEstatDto.PENDENT, 
+										ExecucioMassivaContingutEstatDto.PROCESSANT)
+								)
+						));
+				
+			}
+		}
 		
 		return conversioTipusHelper.convertirList(
 				execucioMassivaContinguts, 
@@ -308,14 +316,22 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	@Override
 	public List<String> findElementNomExecucioPerContingut(List<Long> continguts) throws NotFoundException {
 		
-		List<String> elementsNom = execucioMassivaContingutRepository.findElementNomByContingutsAndEstatIn(
-				continguts,
-				new ArrayList<> (
-						Arrays.asList(
-								ExecucioMassivaContingutEstatDto.PENDENT, 
-								ExecucioMassivaContingutEstatDto.PROCESSANT)
-						)
-				);
+		List<String> elementsNom = new ArrayList<>();		
+		if (continguts != null) {
+			// Consulta de 1000 en 1000 els que estan en el llistat.
+			for (int i = 0; i < continguts.size(); i += 1000) {
+				elementsNom.addAll(
+						execucioMassivaContingutRepository.findElementNomByContingutsAndEstatIn(
+								continguts.subList(i, Math.min(continguts.size(), i+1000)),
+								new ArrayList<> (
+										Arrays.asList(
+												ExecucioMassivaContingutEstatDto.PENDENT, 
+												ExecucioMassivaContingutEstatDto.PROCESSANT)
+										)
+								));
+			}
+		}
+
 		
 		return elementsNom;
 	}

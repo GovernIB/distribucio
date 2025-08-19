@@ -343,13 +343,12 @@ public class AnnexosServiceImpl implements AnnexosService {
 				false,
 				true);
 		
-		List<RegistreAnnexEntity> annexos = registreAnnexRepository.findByIdIn(multipleAnnexosIds);
-
 		List<RegistreAnnexDto> resposta = new ArrayList<RegistreAnnexDto>();
-		for (RegistreAnnexEntity registreAnnexEntity: annexos) {
-			RegistreAnnexDto registreAnnexDto = conversioTipusHelper.convertir(registreAnnexEntity, RegistreAnnexDto.class);
-			
-			resposta.add(registreAnnexDto);
+		// Consulta de 1000 en 1000 els que estan en el llistat.
+		List<RegistreAnnexEntity> annexos;
+		for (int i = 0; i < multipleAnnexosIds.size(); i += 100) {
+			 annexos = registreAnnexRepository.findByIdIn(multipleAnnexosIds.subList(i, Math.min(multipleAnnexosIds.size(), i+100)));
+			 resposta.addAll(conversioTipusHelper.convertirList(annexos, RegistreAnnexDto.class));
 		}
 		return resposta;
 	}
