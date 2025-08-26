@@ -265,7 +265,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 			case "VALIDASIG":
 				byte[] axiuSignat = imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_validacio_firma.pdf"));	
 				// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
-				pluginHelper.validaSignaturaObtenirDetalls(null, axiuSignat, "");
+				pluginHelper.validaSignaturaObtenirDetalls("/diagnostic/test_validacio_firma.pdf", "application/pdf",null, axiuSignat, "");
 				accioDescripcio = "Obtenir informació de document firmat";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 

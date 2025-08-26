@@ -16,13 +16,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.fundaciobit.pluginsib.validatecertificate.InformacioCertificat;
-import org.fundaciobit.pluginsib.validatesignature.api.IValidateSignaturePlugin;
-import org.fundaciobit.pluginsib.validatesignature.api.SignatureDetailInfo;
-import org.fundaciobit.pluginsib.validatesignature.api.SignatureRequestedInformation;
-import org.fundaciobit.pluginsib.validatesignature.api.TimeStampInfo;
-import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureRequest;
-import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.logic.helper.plugin.DadesUsuarisPluginHelper;
-import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
@@ -39,7 +31,6 @@ import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.TipusViaDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
-import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
@@ -62,6 +53,7 @@ import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
+import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
 import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
@@ -82,7 +74,7 @@ public class PluginHelper {
 	private Map<String, UnitatsOrganitzativesPlugin> unitatsOrganitzativesPlugin = new HashMap<>();
 	private Map<String, DadesExternesPlugin> dadesExternesPlugin = new HashMap<>();
 	private Map<String, IArxiuPlugin> arxiuPlugin = new HashMap<>();
-	private Map<String, IValidateSignaturePlugin> validaSignaturaPlugin = new HashMap<>();
+	private Map<String, ValidacioSignaturaPlugin> validaSignaturaPlugin = new HashMap<>();
 	private Map<String, ProcedimentPlugin> procedimentPlugin = new HashMap<>();
 	private Map<String, ServeiPlugin> serveiPlugin = new HashMap<>();
 	private Map<String, GestioDocumentalPlugin> gestioDocumentalPlugin = new HashMap<>();
@@ -682,6 +674,8 @@ public class PluginHelper {
 	}
 
 	public ValidaSignaturaResposta validaSignaturaObtenirDetalls(
+			String documentNom,
+			String documentMime,
 			byte[] documentContingut,
 			byte[] firmaContingut,
 			String registreNumero) {
@@ -706,54 +700,8 @@ public class PluginHelper {
 		accioParams.put("firmaContingut", firmaContingut != null ? firmaContingut.length + " bytes" : "null");
 		long t0 = System.currentTimeMillis();
 		try {
-			ValidateSignatureRequest validationRequest = new ValidateSignatureRequest();
-			if (documentContingut != null && firmaContingut == null) {
-				firmaContingut = documentContingut;
-				documentContingut = null;
-			}
-			if (firmaContingut != null) {
-				validationRequest.setSignedDocumentData(documentContingut);
-				validationRequest.setSignatureData(firmaContingut);
-			} else {
-				validationRequest.setSignatureData(documentContingut);
-			}
-			SignatureRequestedInformation sri = new SignatureRequestedInformation();
-			sri.setReturnSignatureTypeFormatProfile(true);
-			sri.setReturnCertificateInfo(true);
-			sri.setReturnValidationChecks(false);
-			sri.setValidateCertificateRevocation(false);
-			sri.setReturnCertificates(false);
-			sri.setReturnTimeStampInfo(true);
-			validationRequest.setSignatureRequestedInformation(sri);
-			ValidateSignatureResponse validateSignatureResponse = getValidaSignaturaPlugin().validateSignature(validationRequest);
-			
-			// Completa la resposta
-			resposta.setStatus(validateSignatureResponse.getValidationStatus().getStatus());
-			resposta.setErrMsg(validateSignatureResponse.getValidationStatus().getErrorMsg());
-			resposta.setErrException(validateSignatureResponse.getValidationStatus().getErrorException());
-			
-			if (validateSignatureResponse.getSignatureDetailInfo() != null) {
-				for (SignatureDetailInfo signatureInfo: validateSignatureResponse.getSignatureDetailInfo()) {
-					ArxiuFirmaDetallDto detall = new ArxiuFirmaDetallDto();
-					TimeStampInfo timeStampInfo = signatureInfo.getTimeStampInfo();
-					if (timeStampInfo != null) {
-						detall.setData(timeStampInfo.getCreationTime());
-					} else {
-						detall.setData(signatureInfo.getSignDate());
-					}
-					InformacioCertificat certificateInfo = signatureInfo.getCertificateInfo();
-					if (certificateInfo != null) {
-						detall.setResponsableNif(certificateInfo.getNifResponsable());
-						detall.setResponsableNom(certificateInfo.getNomCompletResponsable());
-						detall.setEmissorCertificat(certificateInfo.getEmissorOrganitzacio());
-					}
-					resposta.getFirmaDetalls().add(detall);
-				}
-				resposta.setPerfil(ArxiuConversions.toPerfilFirmaArxiu(validateSignatureResponse.getSignProfile()));
-				resposta.setTipus(ArxiuConversions.toFirmaTipus(
-						validateSignatureResponse.getSignType(),
-						validateSignatureResponse.getSignFormat()));
-			}
+			resposta = 	this.getValidaSignaturaPlugin().validaSignatura(documentNom, documentMime, documentContingut, firmaContingut);
+
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_VALIDASIG,
 					registreNumero,
@@ -1586,21 +1534,19 @@ public class PluginHelper {
 		return plugin;
 	}
 	
-	private IValidateSignaturePlugin getValidaSignaturaPlugin() {
+	private ValidacioSignaturaPlugin getValidaSignaturaPlugin() {
 		loadPluginProperties("VALID_SIGN");
 		String codiEntitat = getCodiEntitatActual();
-		IValidateSignaturePlugin plugin = validaSignaturaPlugin.get(codiEntitat);
+		ValidacioSignaturaPlugin plugin = validaSignaturaPlugin.get(codiEntitat);
 		if (plugin == null) {
 			String pluginClass = getPropertyPluginValidaSignatura();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-//					Properties properties = ConfigHelper.JBossPropertiesHelper.getProperties().findAll();
-//					properties.putAll(configHelper.getAllEntityProperties(codiEntitat));
 					Properties properties = configHelper.getAllProperties(codiEntitat);
-					plugin = (IValidateSignaturePlugin)clazz.
-							getDeclaredConstructor(String.class, Properties.class).
-							newInstance("es.caib.distribucio.", properties);
+					plugin = (ValidacioSignaturaPlugin)clazz.
+							getDeclaredConstructor(Properties.class).
+							newInstance(properties);
 					validaSignaturaPlugin.put(codiEntitat, plugin);
 				} catch (Exception ex) {
 					throw new SistemaExternException(

@@ -61,6 +61,26 @@ public class ArxiuConversions {
 		}
 		return tipusFirma;
 	}
+	
+	/** Mètode per obrtenir el tipus de firma a partir del tipus i mode retornat pel plugin de validació de firmes. */
+	public static String toFirmaTipusPortafib(String tipus, Integer mode) {
+		
+		String tipusFirma = null;
+		if ("XAdES".equals(tipus) && mode.equals(1)) {
+			tipusFirma = "TF02"; // ArxiuFirmaTipusEnumDto.XADES_DET
+		} else if ("XAdES".equals(tipus) && mode.equals(3)) {
+			tipusFirma = "TF03"; // ArxiuFirmaTipusEnumDto.XADES_ENV;
+		} else if ("CAdES".equals(tipus) && mode.equals(1)) {
+			tipusFirma = "TF04"; // ArxiuFirmaTipusEnumDto.CADES_DET;
+		} else if ("CAdES".equals(tipus) && mode.equals(3)) {
+			tipusFirma = "TF05"; // ArxiuFirmaTipusEnumDto.CADES_ATT;
+		} else if ("PAdES".equals(tipus) || mode.equals(0)) {
+				tipusFirma = "TF06"; // ArxiuFirmaTipusEnumDto.PADES
+		} else {
+			tipusFirma = tipus;
+		}
+		return tipusFirma;
+	}
 
 	public static ArxiuFirmaTipusEnumDto toArxiuFirmaTipus(String tipusFirmaEni) {
 		
