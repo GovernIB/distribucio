@@ -935,7 +935,7 @@ public class RegistreHelper {
 						logger.debug("Validant la firma " + nFirma++ + "/" + annex.getFirmes().size() + " " + firma.getTipus()
 									 + " de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador());
 						
-						ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(documentContingut, firmaContingut,registre.getNumero());
+						ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(fitxer.getNom(), annex.getFitxerTipusMime(), documentContingut, firmaContingut, registre.getNumero());
 						switch(validacioFirma.getStatus()) {
 							case ValidaSignaturaResposta.FIRMA_VALIDA:
 								validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
@@ -967,7 +967,7 @@ public class RegistreHelper {
 			} else {
 				// 1- Valida el document com si no tingués firmes
 				try {
-					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(null, documentContingut,registre.getNumero());
+					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(fitxer.getNom(), annex.getFitxerTipusMime(), documentContingut, firmaContingut, registre.getNumero());
 					switch(validacioFirma.getStatus()) {
 						case ValidaSignaturaResposta.FIRMA_VALIDA:
 							validacioFirmaEstat = ValidacioFirmaEnum.FIRMA_VALIDA;
@@ -1107,6 +1107,8 @@ public class RegistreHelper {
 						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registre.getNumero());
 					}
 					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
+							registreAnnexEntity.getFitxerNom(),
+							registreAnnexEntity.getFitxerTipusMime(),
 							documentContingut,
 							firmaContingut,
 							registre.getNumero()); 
@@ -1243,6 +1245,8 @@ public class RegistreHelper {
 							final Timer timevalidaSignaturaObtenirDetalls = metricRegistry.timer(MetricRegistry.name(RegistreServiceImpl.class, "getAnnexosAmbArxiu.validaSignaturaObtenirDetalls"));
 							Timer.Context contevalidaSignaturaObtenirDetalls = timevalidaSignaturaObtenirDetalls.time();
 							ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
+									annexEntity.getFitxerNom(),
+									annexEntity.getFitxerTipusMime(),									
 									documentContingut,
 									firmaContingut,
 									registre.getNumero()) ;

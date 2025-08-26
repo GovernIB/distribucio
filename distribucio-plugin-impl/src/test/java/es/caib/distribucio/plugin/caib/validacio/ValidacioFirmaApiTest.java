@@ -1,7 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.plugin.caib.signatura;
+package es.caib.distribucio.plugin.caib.validacio;
 
 import static org.junit.Assert.fail;
 
@@ -18,33 +18,32 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
-import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
+import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
+import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
 
 /**
  * Test del plugin de firma simple del portasignatures.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class FirmaSimplePluginPortafibTest {
+public class ValidacioFirmaApiTest {
 
-	private static final String API_ENDPOINT_ADDRESS = "https://se.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";
+	private static final String API_ENDPOINT_ADDRESS = "https://se.caib.es/portafibapi/interna";
 	//private static final String API_ENDPOINT_ADDRESS = "https://proves.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";	
 	private static final String API_USERNAME = "$distribucio_portafib_se";
 	private static final String API_PASSWORD = "distribucio_portafib_se";
-	private static final String PERFIL = "FIRMA_PROVA_KML"; //"FIRMAAPISIMPLE";
+	private static final String PERFIL = "FIRMAAPISIMPLE";
 	//private static final String PERFIL = "XADES_DETACHED"; //TF02
 	//private static final String PERFIL = "CADES_DETACHED"; //TF04
 	//private static final String PERFIL = "CADES_ATTACHED"; //TF05
 	//private static final String PERFIL = "PADES"; //TF06
 	//private static final String PERFIL = "FIRMAAPISIMPLE"; //TF02
 	// Nom del certificat emprat per @firma per firmar
-	//private static final String USERNAME = "afirmades-firma";
+	private static final String USERNAME = "afirmades-firma";
 	//private static final String USERNAME = "preprod-dgmad";
-	private static final String USERNAME = "preprod-dgmad";
-	
-	private SignaturaPlugin plugin;
+
+	private ValidacioSignaturaPlugin plugin;
 
 	/** Accepta els certificats i afegeix el protocol TLSv1.2.
 	 * @throws Exception */
@@ -76,43 +75,26 @@ public class FirmaSimplePluginPortafibTest {
 	public void setUp() throws Exception {
 		PropertiesHelper.getProperties().setLlegirSystem(false);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.endpoint",
+				"es.caib.distribucio.pluginsib.validatesignature.api.portafib.endpoint",
 				API_ENDPOINT_ADDRESS);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.username",
+				"es.caib.distribucio.pluginsib.validatesignature.api.portafib.username",
 				API_USERNAME);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.password",
+				"es.caib.distribucio.pluginsib.validatesignature.api.portafib.password",
 				API_PASSWORD);
-		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugin.api.firma.en.servidor.simple.perfil",
-				PERFIL);
-		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugin.signatura.portafib.username",
-				USERNAME);
-		plugin = new FirmaSimplePluginPortafib(PropertiesHelper.getProperties());
+		plugin = new ValidacioFirmaPluginApiPortafib(PropertiesHelper.getProperties());
 	}
 
 	@Test
 	public void test() {
 		try {
-			String annexId = "annexId";
-			String fitxerNom = "annex_sense_firma.pdf";
-			String motiu = "Prova firma en servidor";
-			String mime = "application/pdf";
-			String tipusDocumental = null;
-			byte[] contingut = this.getContingut("/" + fitxerNom);
-			SignaturaResposta resposta = plugin.signar(
-					annexId, 
-					fitxerNom, 
-					motiu, 
-					contingut, 
-					mime,
-					tipusDocumental);
+			String documentNom = "annex_sense_firma.pdf";
+			String documentMime = "application/pdf";
+			byte[] documentContingut = this.getContingut("/" + documentNom);
+			ValidaSignaturaResposta resposta = plugin.validaSignatura(documentNom, documentMime, documentContingut, null);
 			
-			System.out.println("contingut: " + resposta.getContingut().length + " b");
-			System.out.println("tipus: " + resposta.getTipusFirmaEni());
-			System.out.println("perfil: " + resposta.getPerfilFirmaEni());
+			System.out.println("status: " + resposta.getStatus());
 			
 			// Per guardar la resposta en un arxiu
 			//Path path = Paths.get("/tmp/annex_signat_TF05.csig");

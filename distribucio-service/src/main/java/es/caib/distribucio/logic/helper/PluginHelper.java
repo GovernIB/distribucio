@@ -189,10 +189,14 @@ public class PluginHelper {
 	}
 
 	public ValidaSignaturaResposta validaSignaturaObtenirDetalls(
+			String documentNom,
+			String documentMime,
 			byte[] documentContingut,
 			byte[] firmaContingut,
 			String registreNumero) {
 		return validaSignaturaPluginHelper.validaSignaturaObtenirDetalls(
+				documentNom,
+				documentMime,
 				documentContingut, 
 				firmaContingut, 
 				registreNumero);
