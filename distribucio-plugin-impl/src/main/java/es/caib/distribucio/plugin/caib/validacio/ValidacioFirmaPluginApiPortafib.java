@@ -50,25 +50,19 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 		
-		if (documentContingut != null && firmaContingut == null) {
-			firmaContingut = documentContingut;
-			documentContingut = null;
-		}
-		
 		Document document = new Document();
 		document.setName(documentNom);
 		document.setMime(documentMime);
 		document.setData(documentContingut);
-		
-		Document firma = new Document();
-		firma.setData(firmaContingut);
-		
+
+		Document firma = null;
 		if (firmaContingut != null) {
-			validateRequest.setSignatureDocument(document);
-			validateRequest.setDetachedDocument(firma);
-		} else {
-			validateRequest.setSignatureDocument(document);
+			firma = new Document();
+			firma.setData(firmaContingut);
 		}
+        validateRequest.setSignatureDocument(document);
+		validateRequest.setDetachedDocument(firma);
+		
 		SignatureRequestedInformation sri = new SignatureRequestedInformation();
 		sri.setReturnSignatureTypeFormatProfile(true);
 		sri.setReturnCertificateInfo(true);
@@ -95,7 +89,7 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 					TimeStampInfo timeStampInfo = signatureInfo.getTimeStampInfo();
 					if (timeStampInfo != null) {					
 						detall.setData(Date.from(timeStampInfo.getCreationTime().toInstant()));
-					} else {					
+					} else if (signatureInfo.getSignDate() != null){					
 						detall.setData(Date.from(signatureInfo.getSignDate().toInstant()));
 					}
 					CertificateInformation certificateInformation = signatureInfo.getCertificateInfo();

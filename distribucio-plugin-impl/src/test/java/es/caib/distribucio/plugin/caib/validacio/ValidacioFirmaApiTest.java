@@ -30,18 +30,8 @@ import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
 public class ValidacioFirmaApiTest {
 
 	private static final String API_ENDPOINT_ADDRESS = "https://se.caib.es/portafibapi/interna";
-	//private static final String API_ENDPOINT_ADDRESS = "https://proves.caib.es/portafib/common/rest/apifirmaenservidorsimple/v1/";	
 	private static final String API_USERNAME = "$distribucio_portafib_se";
 	private static final String API_PASSWORD = "distribucio_portafib_se";
-	private static final String PERFIL = "FIRMAAPISIMPLE";
-	//private static final String PERFIL = "XADES_DETACHED"; //TF02
-	//private static final String PERFIL = "CADES_DETACHED"; //TF04
-	//private static final String PERFIL = "CADES_ATTACHED"; //TF05
-	//private static final String PERFIL = "PADES"; //TF06
-	//private static final String PERFIL = "FIRMAAPISIMPLE"; //TF02
-	// Nom del certificat emprat per @firma per firmar
-	private static final String USERNAME = "afirmades-firma";
-	//private static final String USERNAME = "preprod-dgmad";
 
 	private ValidacioSignaturaPlugin plugin;
 
@@ -89,7 +79,7 @@ public class ValidacioFirmaApiTest {
 	@Test
 	public void test() {
 		try {
-			String documentNom = "annex_sense_firma.pdf";
+			String documentNom = "annex_firmat.pdf";
 			String documentMime = "application/pdf";
 			byte[] documentContingut = this.getContingut("/" + documentNom);
 			ValidaSignaturaResposta resposta = plugin.validaSignatura(documentNom, documentMime, documentContingut, null);
