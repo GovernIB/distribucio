@@ -616,19 +616,34 @@ public class RegistreDto extends ContingutDto {
 		String interessatsResum = "";
 		if (this.interessats != null)
 			for (RegistreInteressat interessat : this.interessats) {
+				
 				if (interessat.getRepresentat() == null) {
-					if (interessat.getTipus().equals("PERSONA_FIS")) {
-					interessatsResum += interessat.getNom() == null ? "" : interessat.getNom() + " ";
-					interessatsResum += interessat.getLlinatge1() == null ? "" : interessat.getLlinatge1() + " ";
-					interessatsResum += interessat.getLlinatge2() == null ? "" : interessat.getLlinatge2() + "<br>";
-					} else {
-						interessatsResum += interessat.getRaoSocial() + "<br>";
-					}
+					interessatsResum += "- " + getNomComplet(interessat);
+				}
+				
+				if (interessat.getRepresentant() != null) {
+					interessatsResum += " (R: " + getNomComplet(interessat.getRepresentant()) + ")";
+				}
+				
+				if (interessat.getRepresentat() == null) {
+					interessatsResum += "<br>";
 				}
 			}
 		return interessatsResum;
 	}
 	
+	private String getNomComplet(RegistreInteressat persona) {
+		String nomComplet = "";
+		if (persona.getTipus().equals("PERSONA_FIS")) {
+			nomComplet += persona.getNom() == null ? "" : persona.getNom() + " ";
+			nomComplet += persona.getLlinatge1() == null ? "" : persona.getLlinatge1() + " ";
+			nomComplet += persona.getLlinatge2() == null ? "" : persona.getLlinatge2();
+		} else {
+			nomComplet += persona.getRaoSocial();
+		}
+		
+		return nomComplet;
+	}
 
 	public Boolean getLlegida() {
 		return llegida;
