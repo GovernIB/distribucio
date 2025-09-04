@@ -80,7 +80,9 @@ public class ValidacioFirmaPluginAfirma extends DistribucioAbstractPluginPropert
 					"es.caib.distribucio.",
 					this.getProperties()).
 			validateSignature(validationRequest);
+			incrementarOperacioOk();
 		} catch (Exception e) {
+			incrementarOperacioError();
 			throw new es.caib.distribucio.plugin.SistemaExternException(e);
 		}
 		

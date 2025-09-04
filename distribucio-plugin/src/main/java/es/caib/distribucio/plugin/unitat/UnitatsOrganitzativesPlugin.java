@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.plugin.unitat;
 
-import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public interface UnitatsOrganitzativesPlugin extends IntegracioPlugin, SalutPlug
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
-			Timestamp fechaSincronizacion) throws MalformedURLException;
+			Timestamp fechaSincronizacion) throws SistemaExternException;
 
 	/**
 	 * Retorna la llista d'unitats organitzatives filles donada

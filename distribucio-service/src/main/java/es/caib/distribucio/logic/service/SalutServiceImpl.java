@@ -8,7 +8,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.DoubleSummaryStatistics;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ import es.caib.comanda.ms.salut.model.DetallSalut;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioInfo;
+import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.comanda.ms.salut.model.IntegracioSalut;
 import es.caib.comanda.ms.salut.model.MissatgeSalut;
 import es.caib.comanda.ms.salut.model.SalutInfo;
@@ -71,7 +74,7 @@ public class SalutServiceImpl implements SalutService {
 				AppInfo.builder().codi("BKC").nom("Backoffice consulta").build(), 
 				AppInfo.builder().codi("BKE").nom("Backoffice canvi estat").build(),
 				AppInfo.builder().codi("BKL").nom("Backoffice llistar").build(),
-				AppInfo.builder().codi("RGB").nom("Aplicar Regla Backoffice").build(),
+				AppInfo.builder().codi("RGB").nom("Aplicar Regla tipus Backoffice").build(),
 				AppInfo.builder().codi("GDO").nom("Gestió documental FileSystem").build()
 		);
 	}
@@ -186,7 +189,20 @@ public class SalutServiceImpl implements SalutService {
         } catch (Exception e) {
             return Collections.emptyList();
         }
-        return integracionsSalut;
+        
+        // Hi ha diferents pluginHelper que criden al mateix sistma extern
+        Map<String, IntegracioSalut> integracionsSalutUnificades = new HashMap<>();
+        for (IntegracioSalut integracio : integracionsSalut) {
+        	integracionsSalutUnificades.merge(
+                integracio.getCodi(),
+                integracio,
+                (a, b) -> mergeIntegracions(a, b)
+            );
+        }
+
+        return new ArrayList<>(integracionsSalutUnificades.values());
+        
+//        return integracionsSalut;
     }
 
     public List<SubsistemaSalut> checkSubsistemes() {
@@ -237,6 +253,44 @@ public class SalutServiceImpl implements SalutService {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    private IntegracioSalut mergeIntegracions(IntegracioSalut a, IntegracioSalut b) {
+        return IntegracioSalut.builder()
+                .codi(a.getCodi())
+                .estat(recuperarEstat(a.getEstat(), b.getEstat()))
+                .latencia(mergeLatencia(a.getLatencia(), b.getLatencia()))
+                .peticions(mergePeticions(a.getPeticions(), b.getPeticions()))
+                .build();
+    }
+
+    private EstatSalutEnum recuperarEstat(EstatSalutEnum e1, EstatSalutEnum e2) {
+        if (e1 == EstatSalutEnum.DOWN || e2 == EstatSalutEnum.DOWN) return EstatSalutEnum.DOWN;
+        if (e1 == EstatSalutEnum.UP   || e2 == EstatSalutEnum.UP)   return EstatSalutEnum.UP;
+        return EstatSalutEnum.UNKNOWN;
+    }
+
+    private Integer mergeLatencia(Integer l1, Integer l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        return Math.min(l1, l2);
+    }
+
+    private IntegracioPeticions mergePeticions(IntegracioPeticions p1, IntegracioPeticions p2) {
+        if (p1 == null) return p2;
+        if (p2 == null) return p1;
+
+        p1.setTotalOk(p1.getTotalOk() + p2.getTotalOk());
+        p1.setTotalError(p1.getTotalError() + p2.getTotalError());
+
+        if (p2.getOrganOk() != null) {
+            p2.getOrganOk().forEach((k,v) -> p1.getOrganOk().merge(k, v, Long::sum));
+        }
+        if (p2.getOrganError() != null) {
+            p2.getOrganError().forEach((k,v) -> p1.getOrganError().merge(k, v, Long::sum));
+        }
+
+        return p1;
     }
     
 }

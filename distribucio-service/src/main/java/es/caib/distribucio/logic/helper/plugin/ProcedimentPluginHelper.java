@@ -260,7 +260,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 				Class<?> clazz = Class.forName(pluginClass);
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (ProcedimentPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
+						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
 			} catch (Exception ex) {
 				throw new SistemaExternException(

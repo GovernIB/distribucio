@@ -142,7 +142,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 				Class<?> clazz = Class.forName(pluginClass);
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (ServeiPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
+						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
 			} catch (Exception ex) {
 				throw new SistemaExternException(

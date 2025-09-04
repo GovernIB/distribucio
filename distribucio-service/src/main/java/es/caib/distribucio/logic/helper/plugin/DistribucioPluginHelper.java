@@ -334,7 +334,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 				Class<?> clazz = Class.forName(pluginClass);
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (DistribucioPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
+						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
 				
 				plugin.configurar(

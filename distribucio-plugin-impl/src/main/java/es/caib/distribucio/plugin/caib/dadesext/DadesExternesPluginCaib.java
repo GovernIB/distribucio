@@ -85,8 +85,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 						paisJson.getNom());
 				paisos.add(pais);
 			}
+			incrementarOperacioOk();
 			return paisos;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -117,9 +119,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			
+			incrementarOperacioOk();
 			return comunitats;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -150,9 +153,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			
+			incrementarOperacioOk();
 			return provincies;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -185,9 +189,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			
+			incrementarOperacioOk();
 			return provincies;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -220,9 +225,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return m1.getNom().compareToIgnoreCase(m2.getNom());
 						}
 					});
-			
+			incrementarOperacioOk();
 			return municipis;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);

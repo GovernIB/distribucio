@@ -54,12 +54,17 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 			String usuariCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta de les dades de l'usuari (codi=" + usuariCodi + ")");
 		try {
-			return consultaUsuariUnic(
+			DadesUsuari dadesUsuari = consultaUsuariUnic(
 					getLdapFiltreCodi(),
 					usuariCodi);
+			
+			incrementarOperacioOk();
+			return dadesUsuari;
 		} catch (SistemaExternException ex) {
+			incrementarOperacioError();
 			throw ex;
 		} catch (NamingException ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar l'usuari amb codi (codi=" + usuariCodi + ")",
 					ex);
@@ -71,10 +76,14 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 			String grupCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
-			return consultaUsuaris(
+			List<DadesUsuari> dadesUsuaris = consultaUsuaris(
 					getLdapFiltreGrup(),
 					grupCodi);
+			
+			incrementarOperacioOk();
+			return dadesUsuaris;
 		} catch (NamingException ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup (grupCodi=" + grupCodi + ")",
 					ex);

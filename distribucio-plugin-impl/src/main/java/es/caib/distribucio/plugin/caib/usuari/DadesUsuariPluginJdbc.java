@@ -110,7 +110,9 @@ public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties i
 				dadesUsuari.setEmail(rs.getString(4));
 				llistaUsuaris.add(dadesUsuari);
 			}
+			incrementarOperacioOk();
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error("Error consultant les dades de l'usuari amb la base de dades", ex);
 			throw new SistemaExternException("Error consultant les dades de l'usuari amb la base de dades", ex);
 		} finally {

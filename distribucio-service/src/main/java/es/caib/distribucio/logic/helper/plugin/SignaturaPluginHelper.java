@@ -148,7 +148,7 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 				Class<?> clazz = Class.forName(pluginClass);
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (SignaturaPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
+						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
 			} catch (Exception ex) {
 				throw new SistemaExternException(

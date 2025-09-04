@@ -4,7 +4,6 @@
 package es.caib.distribucio.plugin.caib.unitat;
 
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -53,17 +52,26 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 	public UnitatOrganitzativa findUnidad(
 			String pareCodi, 
 			Timestamp fechaActualizacion, 
-			Timestamp fechaSincronizacion) throws MalformedURLException {
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
-		UnidadRest unidad = getUnitatsOrganitzativesRestClient().obtenerUnidad(
-				pareCodi,
-				fechaActualizacion != null ? dateFormat.format(fechaActualizacion) : null,
-				fechaSincronizacion != null ? dateFormat.format(fechaSincronizacion) : null, false);
-		if (unidad != null) {
-			return toUnitatOrganitzativa(unidad);
-		} else {
-			return null;
+			Timestamp fechaSincronizacion) throws SistemaExternException {
+		try {
+	        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+			UnidadRest unidad = getUnitatsOrganitzativesRestClient().obtenerUnidad(
+					pareCodi,
+					fechaActualizacion != null ? dateFormat.format(fechaActualizacion) : null,
+					fechaSincronizacion != null ? dateFormat.format(fechaSincronizacion) : null, false);
+			if (unidad != null) {
+				incrementarOperacioOk();
+				return toUnitatOrganitzativa(unidad);
+			} else {
+				incrementarOperacioError();
+				return null;
+			}
+		} catch (Exception ex) {
+			incrementarOperacioError();
+			throw new SistemaExternException(
+					"No s'han pogut consultar la unitat organitzativa via WS (" +
+					"pareCodi=" + pareCodi + ")",
+					ex);
 		}
 
 	}
@@ -87,8 +95,10 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
                 	unitatOrganitzativa.add(toUnitatOrganitzativa(unidad));
                 }
             }
+            incrementarOperacioOk();
 			return unitatOrganitzativa;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
 					"pareCodi=" + pareCodi + ")",
@@ -130,8 +140,10 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 							List.class,  
 							UnitatOrganitzativa.class));
 			Collections.sort(unitats);
+			incrementarOperacioOk();
 			return unitats;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via REST (" +
 					"codi=" + codi + ", " +

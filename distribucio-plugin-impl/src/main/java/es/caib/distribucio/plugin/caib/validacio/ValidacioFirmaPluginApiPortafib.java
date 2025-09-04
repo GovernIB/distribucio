@@ -3,10 +3,15 @@
  */
 package es.caib.distribucio.plugin.caib.validacio;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
+
 import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
@@ -22,6 +27,7 @@ import es.caib.portafib.apiinterna.client.signature.v1.model.TimeStampInfo;
 import es.caib.portafib.apiinterna.client.signature.v1.model.ValidateSignatureRequest;
 import es.caib.portafib.apiinterna.client.signature.v1.model.ValidateSignatureResponse;
 import es.caib.portafib.apiinterna.client.signature.v1.services.ApiClient;
+import lombok.Synchronized;
 
 /**
  * Implementació del plugin de validació de firmes emprant el client del portafirmes
@@ -105,7 +111,9 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 						response.getSignType(),
 						response.getSignMode()));
 			}
+			incrementarOperacioOk();
 		} catch (Exception e) {
+			incrementarOperacioError();
 			e.printStackTrace();
 		}		
 		return resposta;
@@ -173,23 +181,62 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 				"es.caib.distribucio.pluginsib.validatesignature.api.portafib.password");
 	}
 
-	@Override
-	public boolean teConfiguracioEspecifica() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    // Mètodes de SALUT
+    // /////////////////////////////////////////////////////////////////////////////////////////////
+
+    private boolean configuracioEspecifica = false;
+    private int operacionsOk = 0;
+    private int operacionsError = 0;
+
+    @Synchronized
+    private void incrementarOperacioOk() {
+        operacionsOk++;
+    }
+
+    @Synchronized
+    private void incrementarOperacioError() {
+        operacionsError++;
+    }
+
+    @Synchronized
+    private void resetComptadors() {
+        operacionsOk = 0;
+        operacionsError = 0;
+    }
+    
+    @Override
+    public boolean teConfiguracioEspecifica() {
+        return this.configuracioEspecifica;
+    }
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Instant start = Instant.now();
+            
+			String documentNom = "validacio_firma.pdf";
+			String documentMime = "application/pdf";
+			byte[] documentContingut = IOUtils.toByteArray(this.getClass().getResourceAsStream("/es/caib/distribucio/plugin/validacio/validacio_firma.pdf"));
+			
+			validaSignatura(documentNom, documentMime, documentContingut, null);
+			
+			return EstatSalut.builder()
+                    .latencia((int) Duration.between(start, Instant.now()).toMillis())
+                    .estat(EstatSalutEnum.UP)
+                    .build();
+        } catch (Exception ex) {
+            return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
+        }
 	}
 
-	@Override
-	public IntegracioPeticions getPeticionsPlugin() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    @Override
+    public IntegracioPeticions getPeticionsPlugin() {
+        IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
+                .totalOk(operacionsOk)
+                .totalError(operacionsError)
+                .build();
+        resetComptadors();
+        return integracioPeticions;
+    }
 
 }

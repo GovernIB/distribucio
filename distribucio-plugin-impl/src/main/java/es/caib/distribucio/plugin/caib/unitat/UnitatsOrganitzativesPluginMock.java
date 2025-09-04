@@ -3,7 +3,6 @@
  */
 package es.caib.distribucio.plugin.caib.unitat;
 
-import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +101,7 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 	}
 	
 	@Override
-	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws MalformedURLException{
+	public UnitatOrganitzativa findUnidad(String pareCodi, Timestamp fechaActualizacion, Timestamp fechaSincronizacion) throws SistemaExternException{
 		return new UnitatOrganitzativa("E00003601", "Ministerio de Fomento","EA9999999", "E00003601","V", null);
 	}
 

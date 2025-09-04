@@ -22,7 +22,7 @@ public class SubsistemesHelper {
         BKC("Backoffice consulta"),
         BKE("Backoffice canvi estat"),
         BKL("Backoffice llistar"),
-        RGB("Aplicar Regla Backoffice"),
+        RGB("Aplicar Regla tipus Backoffice"),
         GDO("Gestió documental FileSystem");
 
         private final String nom;

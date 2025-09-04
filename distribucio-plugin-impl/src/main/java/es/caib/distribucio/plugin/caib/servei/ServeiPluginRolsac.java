@@ -73,8 +73,10 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
+			incrementarOperacioOk();
 			return response.getResultado();
 		} else {
+			incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 			throw new SistemaExternException(
@@ -138,8 +140,9 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 			response = findServeisRolsac(
 					sb.toString(),
 					params);
-			
+			incrementarOperacioOk();
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			logger.error("Error consultant el servei de ROLSAC (" +
 					"codiSia=" + codiSia + "): " + ex.getMessage(),
 					ex);

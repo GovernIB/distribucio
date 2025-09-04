@@ -72,8 +72,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					paisos.add(pais);
 				}
 			}
+			incrementarOperacioOk();
 			return paisos;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els paisos",
 					ex);
@@ -97,8 +99,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					comunitats.add(comunitat);
 				}
 			}
+			incrementarOperacioOk();
 			return comunitats;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les comunitats",
 					ex);
@@ -122,8 +126,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					provincies.add(provincia);
 				}
 			}
+			incrementarOperacioOk();
 			return provincies;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les provincies",
 					ex);
@@ -185,8 +191,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					entitatsGeografiques.add(entitatGeografica);
 				}
 			}
+			incrementarOperacioOk();
 			return entitatsGeografiques;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les entitats geografiques",
 					ex);
@@ -209,8 +217,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					nivellsAdministracio.add(nivellAdministracio);
 				}
 			}
+			incrementarOperacioOk();
 			return nivellsAdministracio;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els nivells d'administració",
 					ex);
@@ -233,8 +243,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					tipusVia.add(tipoVia);
 				}
 			}
+			incrementarOperacioOk();
 			return tipusVia;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els tipus de via",
 					ex);

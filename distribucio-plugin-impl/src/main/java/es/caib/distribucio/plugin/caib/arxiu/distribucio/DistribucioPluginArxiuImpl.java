@@ -158,8 +158,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						accioParams,
 						System.currentTimeMillis() - t0);
 				identificador = expedientCreat.getIdentificador();
+				incrementarOperacioOk();
 			} catch (Exception ex) {
-				
+				incrementarOperacioError();
 				if (ex.getMessage().contains("Duplicate child name not allowed") 
 						&& intent < 10) {
 					intent++;
@@ -481,12 +482,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		long t0 = System.currentTimeMillis();
 		try {
 			getArxiuPlugin().expedientEsborrar(idContingut);
+			incrementarOperacioOk();
 			integracioAddAccioOk(
 					integracioArxiuCodi,
 					accioDescripcio,
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			String errorDescripcio = "Error al esborrar l'expedient. ";
 			integracioAddAccioError(
 					integracioArxiuCodi,
@@ -520,12 +523,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			try {
 				document.setEstat(DocumentEstat.DEFINITIU);
 				getArxiuPlugin().documentModificar(document);
+				incrementarOperacioOk();
 				integracioAddAccioOk(
 						integracioArxiuCodi,
 						accioDescripcio,
 						accioParams,
 						System.currentTimeMillis() - t0);
 			} catch (Exception ex) {
+				incrementarOperacioError();
 				String errorDescripcio = "Error modificant el document a definitiu. ";
 				integracioAddAccioError(
 						integracioArxiuCodi,
@@ -680,9 +685,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 						accioParams,
 						System.currentTimeMillis() - t0);
 			}
+			incrementarOperacioOk();
 			return annexFitxerArxiuUuid;
 		} catch (Exception ex) {
-			
+			incrementarOperacioError();
 			String errorDescripcio = "Error al crear document annex amb el nom " + annex.getFitxerNom() + obtenirNumeroRegistre() + " i amb estat ";
 			if (DocumentEstat.ESBORRANY.equals(estatDocument)) {
 				errorDescripcio = errorDescripcio + "esborrany. ";
@@ -1066,12 +1072,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuUuid,
 					versio,
 					ambContingut);
+			incrementarOperacioOk();
 			integracioAddAccioOk(
 					integracioArxiuCodi,
 					accioDescripcio,
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			String excMsg = ex.getMessage();
 			if (ex.getCause() != null && !ex.getCause().getClass().equals(ex.getClass())) {
 				excMsg += ": " + ex.getCause().getMessage();

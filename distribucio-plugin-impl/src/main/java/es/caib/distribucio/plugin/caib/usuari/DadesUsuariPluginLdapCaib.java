@@ -52,8 +52,10 @@ public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin impleme
 		LOGGER.debug("Consulta de les dades de l'usuari LDAP CAIB (usuariCodi=" + usuariCodi + ")");
 		try {
 			UserInfo userInfo = getUserInfoByUserName(usuariCodi);
+			incrementarOperacioOk();
 			return toDadesUsuari(userInfo);
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar l'usuari amb codi " + usuariCodi,
 					ex);
@@ -72,8 +74,10 @@ public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin impleme
 					dadesUsuaris.add(toDadesUsuari(usersInfo[i]));
 				}
 			}
+			incrementarOperacioOk();
 			return dadesUsuaris;
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup LDAP CAIB " + grupCodi,
 					ex);

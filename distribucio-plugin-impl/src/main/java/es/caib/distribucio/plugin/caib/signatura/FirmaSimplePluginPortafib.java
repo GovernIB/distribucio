@@ -89,15 +89,13 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 				resposta.setTipusFirmaEni(result.getSignedFileInfo().getEniTipoFirma());
 				resposta.setPerfilFirmaEni(result.getSignedFileInfo().getEniPerfilFirma());
 			}
-			
+			incrementarOperacioOk();
 			return resposta;
 		} catch (Exception e) {
+			incrementarOperacioError();
 			throw new SistemaExternException("No s'ha pogut signar el document.", e);
 		}
 	}  
-	
-
-   
 	
 	protected FirmaSimpleSignatureResult internalSignDocument(
 			String id, 

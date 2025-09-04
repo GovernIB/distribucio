@@ -7,11 +7,83 @@ import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.arxiu.ArxiuPlugin;
+import es.caib.pluginsib.arxiu.api.ArxiuException;
+import es.caib.pluginsib.arxiu.api.ContingutArxiu;
+import es.caib.pluginsib.arxiu.api.Expedient;
 import es.caib.pluginsib.arxiu.caib.ArxiuPluginCaib;
 import lombok.Synchronized;
 
 public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin {
-
+	
+	@Override
+	public ContingutArxiu expedientCrear(
+			final Expedient expedient) throws ArxiuException {
+		try {
+			ContingutArxiu resposta = super.expedientCrear(expedient);
+			incrementarOperacioOk();
+			
+			return resposta;
+		} catch (Exception e) {
+			incrementarOperacioError();
+			throw e;
+		}
+	}
+	@Override
+	public void expedientEsborrar(
+			final String identificador) throws ArxiuException {
+		try {
+			super.expedientEsborrar(identificador);
+			incrementarOperacioOk();
+		} catch (Exception e) {
+			incrementarOperacioError();
+			throw e;
+		}
+	}
+	
+	@Override
+	public String expedientReobrir(
+			final String identificador) throws ArxiuException {
+		try {
+			String resposta = super.expedientReobrir(identificador);
+			incrementarOperacioOk();
+			
+			return resposta;
+		} catch (Exception e) {
+			incrementarOperacioError();
+			throw e;
+		}
+	}
+	
+	@Override
+	public String expedientTancar(
+			final String identificador) throws ArxiuException {
+		try {
+			String resposta = super.expedientTancar(identificador);
+			incrementarOperacioOk();
+			
+			return resposta;
+		} catch (Exception e) {
+			incrementarOperacioError();
+			throw e;
+		}
+	}
+	
+	@Override
+	public Expedient expedientDetalls(
+			final String identificador,
+			final String versio) throws ArxiuException {
+		try {
+			Expedient resposta = super.expedientDetalls(identificador, versio);
+			incrementarOperacioOk();
+			
+			return resposta;
+		} catch (Exception e) {
+			incrementarOperacioError();
+			throw e;
+		}
+	}
+	
+	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
 

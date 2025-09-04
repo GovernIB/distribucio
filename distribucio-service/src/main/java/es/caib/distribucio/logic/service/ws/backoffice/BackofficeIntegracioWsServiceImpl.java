@@ -48,6 +48,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
         Map<String, String> accioParams = new HashMap<String, String>();
         accioParams.put("Anotació identificador", id.getIndetificador());
         accioParams.put("Anotació clau accés", id.getClauAcces());
+        long start = System.currentTimeMillis();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth!=null) {
             String usuariCodi = auth.getName();
@@ -67,11 +68,13 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
                     System.currentTimeMillis() - t0
             );
             logger.trace(">>> Despres de cridar el servei de registre");
+            SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
             return anotacioRegistreEntrada;
         } catch (Exception ex) {
             logger.error(
                     "Error al processar nou registre d'entrada en el servei web de backoffice integració (" + "id=" + id + ")",
                     ex);
+            SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
             String errorDescripcio = "Error  al processar nou registre d'entrada en el servei web de backoffice integració";
             integracioHelper.addAccioError(
                     IntegracioHelper.INTCODI_BACKOFFICE,

@@ -66,8 +66,10 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		LOGGER.debug("Consulta de les dades de l'usuari (usuariCodi=" + usuariCodi + ")");
 		try {
 			UserInfo userInfo = getUserInfoByUserName(usuariCodi);
+			incrementarOperacioOk();
 			return toDadesUsuari(userInfo);
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar l'usuari amb codi " + usuariCodi,
 					ex);
@@ -80,6 +82,7 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
 			Collection<UserRepresentation> usuaris = internalGetUserNamesByRol(grupCodi);
+			incrementarOperacioOk();
 			if (usuaris != null) {
 				return usuaris.stream().
 						map(ur -> {
@@ -94,6 +97,7 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 				return Arrays.asList(new DadesUsuari[0]);
 			}
 		} catch (Exception ex) {
+			incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup " + grupCodi,
 					ex);
@@ -102,13 +106,21 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 
 	@Override
 	public String[] getUsernamesByRol(String rol) throws Exception {
-		Collection<UserRepresentation> users = internalGetUserNamesByRol(rol);
-		if (users != null) {
-			return users.stream().
-					map(ur -> ur.getUsername()).
-					toArray(String[]::new);
-		} else {
-			return new String[0];
+		try {
+			Collection<UserRepresentation> users = internalGetUserNamesByRol(rol);
+			incrementarOperacioOk();
+			if (users != null) {
+				return users.stream().
+						map(ur -> ur.getUsername()).
+						toArray(String[]::new);
+			} else {
+				return new String[0];
+			}
+		} catch (Exception ex) {
+			incrementarOperacioError();
+			throw new SistemaExternException(
+					"Error al consultar els usuaris del rol " + rol,
+					ex);
 		}
 	}
 
@@ -175,8 +187,10 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		RolesResource rrs = c.roles();
 		try {
 			RoleResource rr = rrs.get(rol);
+			incrementarOperacioOk();
 			return rr.getRoleUserMembers();
 		} catch (NotFoundException var13) {
+			incrementarOperacioError();
 			return null;
 		}
 	}

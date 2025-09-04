@@ -306,7 +306,7 @@ public class UnitatsOrganitzativesPluginHelper extends AbstractPluginHelper<Unit
 				Class<?> clazz = Class.forName(pluginClass);
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (UnitatsOrganitzativesPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
+						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
 			} catch (Exception ex) {
 				throw new SistemaExternException(
