@@ -44,6 +44,7 @@ public class RegistreDto extends ContingutDto {
 	private String numero;
 	private Date data;
 	private Date dataOrigen;
+	private Date dataPosadaBustia; 
 	private String identificador;
 	private String entitatCodi;
 	private String entitatDescripcio;
@@ -362,6 +363,12 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setDataOrigen(Date dataOrigen) {
 		this.dataOrigen = dataOrigen;
+	}
+	public Date getDataPosadaBustia() {
+		return dataPosadaBustia;
+	}
+	public void setDataPosadaBustia(Date dataPosadaBustia) {
+		this.dataPosadaBustia = dataPosadaBustia;
 	}
 	public String getIdentificador() {
 		return identificador;

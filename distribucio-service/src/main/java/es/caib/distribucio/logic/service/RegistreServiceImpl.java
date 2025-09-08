@@ -5,6 +5,7 @@ package es.caib.distribucio.logic.service;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -141,6 +143,7 @@ import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.entity.VistaMovimentEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
+import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
 import es.caib.distribucio.persist.repository.DadaRepository;
 import es.caib.distribucio.persist.repository.MetaDadaRepository;
 import es.caib.distribucio.persist.repository.ProcedimentRepository;
@@ -224,6 +227,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private MetaDadaRepository metaDadaRepository;
 	@Autowired
 	private MessageHelper messageHelper;
+	@Autowired
+	private ContingutMovimentRepository contingutMovimentRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -432,7 +437,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 		List<RegistreDto> resposta = new ArrayList<RegistreDto>();
 		for (RegistreEntity registre: registres) {
-			resposta.add((RegistreDto)contingutHelper.toContingutDto(
+			RegistreDto registreDto = (RegistreDto)contingutHelper.toContingutDto(
 					registre,
 					false,
 					false,
@@ -440,7 +445,11 @@ public class RegistreServiceImpl implements RegistreService {
 					false,
 					true,
 					false,
-					true));
+					true);
+			
+			definirDataMoviment(registre, registreDto);
+			
+			resposta.add(registreDto);
 		}
 		return resposta;
 	}
@@ -862,6 +871,16 @@ public class RegistreServiceImpl implements RegistreService {
 			ret = pagina;
 		}
 		return ret;
+	}
+
+	private void definirDataMoviment(RegistreEntity registre, RegistreDto registreDto) {
+		ContingutMovimentEntity moviment = contingutMovimentRepository.findFirstByContingutOrderByCreatedDateAsc(registre); 
+		if (moviment != null) {
+			Optional<LocalDateTime> localDateTime = moviment.getCreatedDate();
+			if (localDateTime.isPresent()) {
+				registreDto.setDataPosadaBustia(java.sql.Timestamp.valueOf(localDateTime.get()));
+			}
+		}
 	}
 
 	private Object getNombreAnnexosSize(RegistreNombreAnnexesEnumDto nombreAnnexos) {

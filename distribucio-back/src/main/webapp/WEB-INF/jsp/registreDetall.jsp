@@ -2121,6 +2121,7 @@ li[id^="anotacio_"] {
 									<th class="perConeixement"></th>
 								</c:if>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.datacreacio"/></th>
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.dataposadabustia"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.estat"/></th>								
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.bustia"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.numerocopia"/></th>
@@ -2135,6 +2136,7 @@ li[id^="anotacio_"] {
 											title='<spring:message code="${copia.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/>'></td>
 									</c:if>
 									<td>${copia.data}</td>
+									<td>${copia.dataPosadaBustia}</td>
 									<td>${copia.estatDescripcio}</td>
 									<td>
 										<c:forEach var="item" items="${copia.path}" varStatus="status">
