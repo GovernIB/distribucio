@@ -273,7 +273,7 @@ public class SalutServiceImpl implements SalutService {
     private Integer mergeLatencia(Integer l1, Integer l2) {
         if (l1 == null) return l2;
         if (l2 == null) return l1;
-        return Math.min(l1, l2);
+        return Math.max(l1, l2);
     }
 
     private IntegracioPeticions mergePeticions(IntegracioPeticions p1, IntegracioPeticions p2) {
