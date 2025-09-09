@@ -265,7 +265,8 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 							} catch (Exception e) {
 								logger.error("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId() + "]", e);
 								execucioMassivaHelper.updateErrorNewTransaction(
-										emc, 
+										emc,
+										new Date(),
 										e.getMessage());
 								continue;
 							} finally {

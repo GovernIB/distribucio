@@ -91,9 +91,10 @@ public class ExecucioMassivaContingutEntity extends DistribucioAuditable<Long> {
 		this.missatge = missatge;
 	}
 	
-	public void updateError(String error) {
+	public void updateError(String error, Date dataFi) {
 		this.estat = ExecucioMassivaContingutEstatDto.ERROR;
 		this.error = error;
+		this.dataFi = dataFi;
 	}
 	
 	public void updateProcessant(Date dataInici) {

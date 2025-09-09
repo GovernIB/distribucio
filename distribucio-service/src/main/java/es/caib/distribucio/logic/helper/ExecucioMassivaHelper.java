@@ -298,8 +298,8 @@ public class ExecucioMassivaHelper {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void updateErrorNewTransaction(ExecucioMassivaContingutEntity emc, String error) {
-		emc.updateError(error);
+	public void updateErrorNewTransaction(ExecucioMassivaContingutEntity emc, Date dataFi, String error) {
+		emc.updateError(error, dataFi);
 		execucioMassivaContingutRepository.saveAndFlush(emc);
 	}
 	

@@ -218,7 +218,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 		AnnexEstat arxiuEstat = registreAnnex.getArxiuEstat();
 		if ((arxiuEstat!=null)&&(arxiuEstat.equals(AnnexEstat.DEFINITIU))) {		
 			resultatAnnexDefinitiu.setKeyMessage("annex.accio.marcardefinitiu.jaDefinitiu");
-			resultatAnnexDefinitiu.setOk(false);
+			resultatAnnexDefinitiu.setOk(true);
 			return resultatAnnexDefinitiu;						
 		}
 		
