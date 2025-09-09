@@ -2122,7 +2122,8 @@ li[id^="anotacio_"] {
 								</c:if>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.datacreacio"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.dataposadabustia"/></th>
-								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.estat"/></th>								
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.estat"/></th>			
+								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.processadaper"/></th>					
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.bustia"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.numerocopia"/></th>
 								<th style="width: 150px;"><spring:message code="registre.detalls.camp.copies.actual"/></th>
@@ -2138,6 +2139,11 @@ li[id^="anotacio_"] {
 									<td>${copia.data}</td>
 									<td>${copia.dataPosadaBustia}</td>
 									<td>${copia.estatDescripcio}</td>
+									<td>
+										<c:if test="${not empty copia.processadaPer}">
+											${copia.processadaPer.nom}
+										</c:if>
+									</td>
 									<td>
 										<c:forEach var="item" items="${copia.path}" varStatus="status">
 										   /<c:if test="${item.bustia}">

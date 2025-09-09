@@ -24,6 +24,7 @@ public class RegistreDto extends ContingutDto {
 	private String unitatAdministrativaDescripcio;
 	private Date procesData;
 	private RegistreProcesEstatEnum procesEstat;
+	private UsuariDto processadaPer;
 	private String estatDescripcio;
 	private RegistreProcesEstatSistraEnum procesEstatSistra;
 	private String procesError;
@@ -292,6 +293,12 @@ public class RegistreDto extends ContingutDto {
 	public void setProcesEstat(RegistreProcesEstatEnum procesEstat) {
 		this.procesEstat = procesEstat;
 	}	
+	public UsuariDto getProcessadaPer() {
+		return processadaPer;
+	}
+	public void setProcessadaPer(UsuariDto processadaPer) {
+		this.processadaPer = processadaPer;
+	}
 	public String getEstatDescripcio() {		
 		return estatDescripcio;
 	}
