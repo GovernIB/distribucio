@@ -1,5 +1,9 @@
 package es.caib.distribucio.back.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,22 +95,59 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	}
 	
 	
-	@RequestMapping(value = "/excelUsuarisPerBustia", method = RequestMethod.GET)
-	public void excelUsuarisPermissionsPerBustia(
-			HttpServletRequest request,
-			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
-		
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
-		
-		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
-				entitatActual.getId(),
-				BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
+//	@RequestMapping(value = "/excelUsuarisPerBustiaAntic", method = RequestMethod.GET)
+//	public void excelUsuarisPermissionsPerBustia(
+//			HttpServletRequest request,
+//			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
+//		
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+//		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
+//		
+//		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
+//				entitatActual.getId(),
+//				BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
+//
+//		bustiaHelper.generarExcelUsuarisPermissionsPerBustiaAntic(
+//				response,
+//				busties);
+//	}
+	
+    @RequestMapping(value = "/excelUsuarisPerBustia", method = RequestMethod.GET)
+    @ResponseBody
+    public String startExcelGeneration(HttpServletRequest request) {
+        EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+        BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 
-		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
-				response,
-				busties);
-	}
+        List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
+                entitatActual.getId(),
+                BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
+
+        // Arranca la generación en segundo plano
+        String taskId = bustiaHelper.generateExcelAsync(busties);
+        return taskId; // el cliente recibe este ID
+    }
+    
+    @RequestMapping(value = "/excelStatus/{taskId}", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean checkStatus(@PathVariable String taskId) {
+        return bustiaHelper.isReady(taskId);
+    }
+
+    @RequestMapping(value = "/excelDownload/{taskId}", method = RequestMethod.GET)
+    public void downloadExcel(@PathVariable String taskId, HttpServletResponse response) throws IOException {
+        File file = bustiaHelper.getFile(taskId);
+        if (file == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        response.setHeader("Content-Disposition", "attachment; filename=UsuarisPerBustia.xls");
+        response.setContentType("application/vnd.ms-excel");
+
+        try (InputStream is = new FileInputStream(file)) {
+            is.transferTo(response.getOutputStream());
+        }
+    }
 	
 	
 	@RequestMapping(value = "/findAllAmbEntitat", method = RequestMethod.GET)
