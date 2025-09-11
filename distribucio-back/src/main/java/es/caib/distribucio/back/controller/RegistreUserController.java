@@ -62,6 +62,7 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DominiDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ErrorDto;
 import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -418,6 +419,10 @@ public class RegistreUserController extends BaseUserController {
 							registreId,
 							isVistaMoviments,
 							RolHelper.getRolActual(request));
+			
+			if (!registre.isPermisLecturaBustia() ) {
+				return crearErrorPermisLectura(model);				
+			}
 						
 			//recupera la ruta del destí lògic del moviment o no l'actual
 			if (isVistaMoviments && destiLogic != null) {
@@ -497,6 +502,16 @@ public class RegistreUserController extends BaseUserController {
 			}
 		}
 		return "registreDetall";
+	}
+	
+	private String crearErrorPermisLectura(Model model) {
+		ErrorDto errorDto = new ErrorDto();
+		errorDto.setData(new Date());
+		errorDto.setTitol("Usuari sense permís de lectura");
+		errorDto.setTipus("Permisos");
+		errorDto.setDescripcio("L'usuari que vol consultar el registre no té permisos de lectura sobre la bústia");		
+		model.addAttribute("error", errorDto);
+		return "errorDetall";		
 	}
 	
 	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des

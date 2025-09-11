@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -112,9 +113,11 @@ import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
+import es.caib.distribucio.logic.permission.ExtendedPermission;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
+import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.ContingutEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
@@ -173,6 +176,8 @@ public class RegistreHelper {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
+	@Autowired
+	private PermisosHelper permisosHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;
 	@Autowired
@@ -2380,7 +2385,8 @@ public class RegistreHelper {
 			Long entitatId,
 			Long registreId,
 			boolean isVistaMoviments,
-			String rolActual) throws NotFoundException {
+			String rolActual,
+			boolean comprovarPermisRead) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "registreId=" + registreId + ")");
@@ -2392,11 +2398,23 @@ public class RegistreHelper {
 		RegistreEntity registre = registreRepository.findById(registreId).orElse(null);
 		if (registre == null)
 			throw new NotFoundException(registreId, RegistreEntity.class);
-		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
+		
+		boolean permisLecturaSobreLaBustia = false;
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments) {
+			
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			permisLecturaSobreLaBustia = permisosHelper.isGrantedAll(
+					registre.getPareId(),
+					BustiaEntity.class,
+					new Permission[] {ExtendedPermission.READ},
+					auth);
+			
 			entityComprovarHelper.comprovarBustia(
-							entitat,
-							registre.getPareId(),
-							true);
+					entitat,
+					registre.getPareId(),
+					comprovarPermisRead);
+		}
+		
 		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
 				registre,
 				false,
@@ -2406,6 +2424,8 @@ public class RegistreHelper {
 				true,
 				false,
 				true);
+		
+		if (permisLecturaSobreLaBustia) registreAnotacio.setPermisLecturaBustia(true);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
 		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
