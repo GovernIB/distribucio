@@ -94,6 +94,10 @@ public class PluginHelper {
 	public List<DadesUsuari> dadesUsuariFindAmbGrup(String grupCodi) {
 		return dadesUsuarisPluginHelper.findAmbGrup(grupCodi);
 	}
+
+	public List<String> findRolsPerUsuari(String usuariCodi) {
+		return dadesUsuarisPluginHelper.findRolsPerUsuari(usuariCodi);
+	}
 	
 	public boolean isActiuPluginUnitatsOrganitzatives() {
 		return unitatsOrganitzativesPluginHelper.isActiu();

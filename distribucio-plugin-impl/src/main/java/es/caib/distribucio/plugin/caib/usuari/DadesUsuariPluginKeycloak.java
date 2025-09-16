@@ -5,9 +5,11 @@ package es.caib.distribucio.plugin.caib.usuari;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.NotFoundException;
 
+import org.fundaciobit.pluginsib.userinformation.RolesInfo;
 import org.fundaciobit.pluginsib.userinformation.UserInfo;
 import org.fundaciobit.pluginsib.userinformation.keycloak.KeyCloakUserInformationPlugin;
 import org.keycloak.admin.client.Keycloak;
@@ -124,6 +127,28 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		}
 	}
 
+	@Override
+	public List<String> findRolsPerUsuari(String usuariCodi) throws SistemaExternException {
+		
+		List<String> resultat = new ArrayList<String>();
+		
+		try {
+			RolesInfo ri = getRolesByUsername(usuariCodi);
+			if (ri!=null && ri.getRoles()!=null) {
+				return eliminarDuplicados(Arrays.asList(ri.getRoles()));
+			}
+		} catch (Exception ex) {
+			log.error("Error al consultar els rols del usuari "+usuariCodi, ex);
+		}
+		
+		return resultat;
+	}
+	
+	private List<String> eliminarDuplicados(List<String> lista) {
+		if (lista==null) return null;
+        return new ArrayList<>(new LinkedHashSet<>(lista)); // Set elimina duplicados y mantiene el orden
+    }
+	
 	private Collection<UserRepresentation> internalGetUserNamesByRol(String rol) {
 		Set<UserRepresentation> usernamesClientApp = null;
 		Set<UserRepresentation> usernamesClientPersons = null;

@@ -37,5 +37,16 @@ public interface DadesUsuariPlugin extends SalutPlugin {
 	 *            Si es produeix un error al consultar les dades de l'usuari.
 	 */
 	public List<DadesUsuari> findAmbGrup(String grupCodi) throws SistemaExternException;
+	
+	/**
+	 * Retorna un llistat dels rols d'un usuari.
+	 * 
+	 * @param usuariCodi
+	 *            Codi de l'usuari que es vol consultar.
+	 * @return el llistat de rols o una llista buida si no en té cap.
+	 * @throws SistemaExternException
+	 *            Si es produeix un error al consultar les dades de l'usuari.
+	 */
+	public List<String> findRolsPerUsuari(String usuariCodi) throws SistemaExternException;
 
 }
