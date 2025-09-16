@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
+import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
@@ -66,6 +67,8 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
 	@Autowired
 	private UsuariRepository usuariRepository;
+	@Autowired
+	private PluginHelper pluginHelper;
 	
 	@Transactional
 	@Override
@@ -341,10 +344,10 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();
 		UsuariEntity usuariEmc = emc.getExecucioMassiva().getUsuari();
 		if (usuariActual == null && usuariEmc != null) {
-			List<String> rolsUsuariActual = new ArrayList<String>();
-			rolsUsuariActual.add("tothom");
-			rolsUsuariActual.add("DIS_ADMIN");
-			
+			List<String> rolsUsuariActual = pluginHelper.findRolsPerUsuari(usuariEmc.getCodi());
+			if (rolsUsuariActual.isEmpty())
+				rolsUsuariActual.add("tothom");
+	
 			List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 			for (String rol : rolsUsuariActual) {
 				SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(rol);

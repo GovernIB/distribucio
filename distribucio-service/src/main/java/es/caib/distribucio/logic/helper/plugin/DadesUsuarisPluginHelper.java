@@ -166,6 +166,43 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 					ex);
 		}
 	}
+
+	public List<String> findRolsPerUsuari(String usuariCodi) {
+		String accioDescripcio = "Consulta rols d'un usuari amb codi";
+		
+		String usuariIntegracio = this.getUsuariAutenticat();
+		
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("codi", usuariCodi);
+		long t0 = System.currentTimeMillis();
+		try {
+			List<String> rols = getPlugin().findRolsPerUsuari(usuariCodi);
+			// RegistreNumero no cal!!!
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return rols;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_USUARIS,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_USUARIS,
+					errorDescripcio,
+					ex);
+		}
+	}
 	
 	@Override
 	protected DadesUsuariPlugin getPlugin() {
@@ -204,7 +241,7 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 					"No està configurada la classe pel plugin de dades d'usuari");
 		}
 	}
-
+	
 	@Override
 	protected String getPluginClassProperty() {
 		return configHelper.getConfig("es.caib.distribucio.plugin.dades.usuari.class");

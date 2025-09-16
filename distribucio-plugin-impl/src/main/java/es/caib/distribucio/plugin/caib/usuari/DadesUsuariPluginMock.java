@@ -50,6 +50,11 @@ public class DadesUsuariPluginMock extends DistribucioAbstractPluginProperties i
 			String grupCodi) throws SistemaExternException {
 		throw new SistemaExternException("Mètode no implementat");
 	}
+
+	@Override
+	public List<String> findRolsPerUsuari(String usuariCodi) throws SistemaExternException {
+		throw new SistemaExternException("Mètode no implementat");
+	}
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////

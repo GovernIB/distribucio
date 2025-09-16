@@ -6,6 +6,7 @@ package es.caib.distribucio.plugin.caib.usuari;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -84,6 +85,20 @@ public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin impleme
 		}
 	}
 
+	@Override
+	public List<String> findRolsPerUsuari(String usuariCodi) throws SistemaExternException {
+		try {
+			var info = getRolesByUsername(usuariCodi);
+			return info != null && info.getRoles() != null ? eliminarDuplicados(List.of(info.getRoles())) : new ArrayList<String>();
+		} catch (Exception e) {
+			return new ArrayList<String>();
+		}
+	}
+	
+	private List<String> eliminarDuplicados(List<String> lista) {
+        return new ArrayList<>(new LinkedHashSet<>(lista)); // Set elimina duplicados y mantiene el orden
+    }
+	
 	private DadesUsuari toDadesUsuari(UserInfo userInfo) {
 		if (userInfo != null) {
 			DadesUsuari dadesUsuari = new DadesUsuari();
