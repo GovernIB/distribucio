@@ -654,6 +654,11 @@ public class ContingutController extends BaseUserController {
 			if (registre.getMotiuRebuig() != null && ! registre.getMotiuRebuig().isEmpty()) {
 				sb.append(" ");
 				sb.append(this.getMessage(request, "contingut.log.resum.msg.motiu", new Object[] {registre.getMotiuRebuig()}));
+			} else {
+				if (registre.getBackObservacions() != null && ! registre.getBackObservacions().isEmpty()) {
+					sb.append(" ");
+					sb.append(this.getMessage(request, "contingut.log.resum.msg.motiu", new Object[] {registre.getBackObservacions()}));
+				}
 			}
 			break;
 		case BACK_ERROR:
