@@ -41,6 +41,7 @@ public class RegistreFiltreCommand {
 	
 	private RegistreEnviatPerEmailEnumDto enviatPerEmail;
 	private String backCodi;
+	private String backObservacions;
 	
 	private ReglaDto regla;
 	
@@ -78,6 +79,12 @@ public class RegistreFiltreCommand {
 	}
 	public void setBackCodi(String backCodi) {
 		this.backCodi = backCodi;
+	}	
+	public String getBackObservacions() {
+		return backObservacions;
+	}
+	public void setBackObservacions(String backObservacions) {
+		this.backObservacions = backObservacions;
 	}
 	public ReglaDto getRegla() {
 		return regla;

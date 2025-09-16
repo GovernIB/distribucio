@@ -528,9 +528,14 @@ $(document).ready(function() {
 						{{else procesEstat == 'BACK_PROCESSADA'}}
 							<spring:message code="registre.proces.estat.detall.BACK_PROCESSADA"/>
 							<br> <span class="" style="font-size:1rem">{{:backCodi}}</span>
-						{{else procesEstat == 'BACK_REBUTJADA'}}
+						{{else procesEstat == 'BACK_REBUTJADA'}}							
 							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+							{{if backObservacions != ''}}
+								<span class="d-inline-flex align-items-center">
+        							<span class="fa fa-exclamation-circle text-warning ms-1" title="{{:backObservacions}}"></span>
+    							</span>							
+							{{/if}}
+							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>							
 						{{else procesEstat == 'BACK_ERROR'}}
 							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
@@ -544,7 +549,7 @@ $(document).ready(function() {
     							<span class="fa fa-exclamation-circle text-warning" title="{{:motiuRebuig}}"></span>
 							</div>						
 						{{/if}}
-						</div>
+						</div>						
 					</script>
 				</th>
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
@@ -691,6 +696,7 @@ $(document).ready(function() {
 				<th data-col-name="annexosEstatEsborrany" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="regla.nom" data-visible="false"></th>
 				<th data-col-name="backCodi" data-visible="false"></th>
+				<th data-col-name="backObservacions" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>
