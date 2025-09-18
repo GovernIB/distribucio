@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -270,5 +269,8 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("tipus") ContingutTipusEnumDto tipus, 
 			@Param("isNullFiltre") boolean isNullFiltre, 
 			@Param("filtre") String filtre);
+
+	@Query("select distinct b.nom from BustiaEntity b where b.activa = true order by b.nom")
+	List<String> findDistinctNomOrderByNomAsc();
 
 }

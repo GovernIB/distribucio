@@ -13,6 +13,12 @@ import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import lombok.experimental.Delegate;
 
+/**
+ * Implementació de ReglaService com a EJB que empra una clase
+ * delegada per accedir a la funcionalitat del servei.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
 @Primary
 @Stateless
 public class SalutServiceEjb extends AbstractServiceEjb<SalutService> implements SalutService {

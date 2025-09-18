@@ -238,4 +238,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("ambArrel") boolean ambArrel,
 			@Param("bustiesPermesesIds") List<Long> bustiesPermesesIds);
 
+	@Query("select distinct uo.codi from UnitatOrganitzativaEntity uo order by uo.codi")
+	List<String> findDistinctCodiOrderByCodiAsc();
+
 }

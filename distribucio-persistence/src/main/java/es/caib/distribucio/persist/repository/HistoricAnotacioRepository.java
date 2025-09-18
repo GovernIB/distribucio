@@ -201,5 +201,7 @@ public interface HistoricAnotacioRepository extends JpaRepository<HistoricAnotac
 			@Param("data") Date data,
 			@Param("diaSeguent") Date diaSeguent,
 			@Param("mesSeguent") Date mesSeguent);
+	
+	public List<HistoricAnotacioEntity> findByData(Date data);
 
 }

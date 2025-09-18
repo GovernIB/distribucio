@@ -79,4 +79,6 @@ public interface HistoricBustiaRepository extends JpaRepository<HistoricBustiaEn
 			@Param("esNullDataFi") boolean esNullDataFi,
 			@Param("dataFi") Date dataFi);
 
+	public List<HistoricBustiaEntity> findByData(Date data);
+
 }

@@ -12,6 +12,7 @@ import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
+import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.logic.intf.service.SalutService;
@@ -76,6 +77,11 @@ public class EjbClientConfig {
 	@Bean
 	public LocalStatelessSessionProxyFactoryBean salutService() {
 		return getLocalEjbFactoyBean(SalutService.class);
+	}
+	
+	@Bean
+	public LocalStatelessSessionProxyFactoryBean estadisticaService() {
+		return getLocalEjbFactoyBean(EstadisticaService.class);
 	}
 	
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
