@@ -127,7 +127,8 @@ public class BackofficeController extends BaseAdminController {
 				return getModalControllerReturnValueSuccess(
 						request,
 						"redirect:../../backoffice",
-						"backoffice.controller.modificat.ok");
+						"backoffice.controller.modificat.ok",
+                        new Object[]{command.getCodi()});
 			} else {
 				backofficeService.create(
 						entitatActual.getId(), 
@@ -135,7 +136,8 @@ public class BackofficeController extends BaseAdminController {
 				return getModalControllerReturnValueSuccess(
 						request,
 						"redirect:../../backoffice",
-						"backoffice.controller.creat.ok");
+						"backoffice.controller.creat.ok",
+                        new Object[]{command.getCodi()});
 			}
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueErrorMessage(
@@ -237,13 +239,15 @@ public class BackofficeController extends BaseAdminController {
 									"backoffice.controller.esborrat.ko.constraintviolation",
 									new Object[] {reglesBackoffice.size()}));
 			}
+            BackofficeDto command = backofficeService.findById(entitatActual.getId(), backofficeId);
 			backofficeService.delete(
 					entitatActual.getId(),
 					backofficeId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../backoffice",
-					"backoffice.controller.esborrat.ok");
+					"backoffice.controller.esborrat.ok",
+                    new Object[]{command.getCodi()});
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueErrorMessage(
 					request,
