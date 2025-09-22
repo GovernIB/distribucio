@@ -6,15 +6,16 @@ package es.caib.distribucio.back.command;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import es.caib.distribucio.logic.intf.dto.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
 import es.caib.distribucio.back.validation.Regla;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+
+import java.util.Date;
 
 /**
  * Command per al manteniment de regles.
@@ -22,6 +23,8 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Regla(groups = {CreateUpdate.class})
+@Getter
+@Setter
 public class ReglaCommand {
 
 	private Long id;
@@ -48,80 +51,9 @@ public class ReglaCommand {
 	private Long backofficeDestiId;
 	private Long unitatDestiId;
 	private boolean aturarAvaluacio;
-	
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
-	}
-	public ReglaTipusEnumDto getTipus() {
-		return tipus;
-	}
-	public void setTipus(ReglaTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
-	public ReglaPresencialEnumDto getPresencial() {
-		return presencial;
-	}
-	public void setPresencial(ReglaPresencialEnumDto presencial) {
-		this.presencial = presencial;
-	}
-	public Long getBustiaDestiId() {
-		return bustiaDestiId;
-	}
-	public void setBustiaDestiId(Long bustiaDestiId) {
-		this.bustiaDestiId = bustiaDestiId;
-	}
-	public String getAssumpteCodiFiltre() {
-		return assumpteCodiFiltre;
-	}
-	public void setAssumpteCodiFiltre(String assumpteCodiFiltre) {
-		this.assumpteCodiFiltre = assumpteCodiFiltre;
-	}
-	public String getProcedimentCodiFiltre() {
-		return procedimentCodiFiltre;
-	}
-	public void setProcedimentCodiFiltre(String procedimentCodiFiltre) {
-		this.procedimentCodiFiltre = procedimentCodiFiltre;
-	}	
-	public String getServeiCodiFiltre() {
-		return serveiCodiFiltre;
-	}
-	public void setServeiCodiFiltre(String serveiCodiFiltre) {
-		this.serveiCodiFiltre = serveiCodiFiltre;
-	}
-	public Long getUnitatFiltreId() {
-		return unitatFiltreId;
-	}
-	public void setUnitatFiltreId(Long unitatFiltreId) {
-		this.unitatFiltreId = unitatFiltreId;
-	}
-	public Long getBustiaFiltreId() {
-		return bustiaFiltreId;
-	}
-	public void setBustiaFiltreId(Long bustiaFiltreId) {
-		this.bustiaFiltreId = bustiaFiltreId;
-	}
-	public Long getBackofficeDestiId() {
-		return backofficeDestiId;
-	}
-	public void setBackofficeDestiId(Long backofficeDestiId) {
-		this.backofficeDestiId = backofficeDestiId;
-	}
+
+    private UsuariDto createdBy;
+    private Date createdDate;
 
 	public static ReglaCommand asCommand(ReglaDto dto) {
 		ReglaCommand command = ConversioTipusHelper.convertir(
@@ -150,20 +82,6 @@ public class ReglaCommand {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
-	}
-	
-	public Long getUnitatDestiId() {
-		return unitatDestiId;
-	}
-	public void setUnitatDestiId(Long unitatDestiId) {
-		this.unitatDestiId = unitatDestiId;
-	}
-
-	public boolean isAturarAvaluacio() {
-		return aturarAvaluacio;
-	}
-	public void setAturarAvaluacio(boolean aturarAvaluacio) {
-		this.aturarAvaluacio = aturarAvaluacio;
 	}
 
 	public interface CreateUpdate {}
