@@ -20,6 +20,7 @@ import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,8 +37,9 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 	public ServeiPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -144,6 +146,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 				plugin = (ServeiPlugin)clazz.
 						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						PROCEDIMENT.name(),

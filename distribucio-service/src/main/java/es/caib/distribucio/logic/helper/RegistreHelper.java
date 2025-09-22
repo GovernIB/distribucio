@@ -1612,10 +1612,10 @@ public class RegistreHelper {
 			if (throwable == null)
 				SubsistemesHelper.addSuccessOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
 			else
-				SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
+				SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB);
 		} catch(Throwable th) {
 			logger.error("Error no controlat enviant ids d'anotacions pendents: " + th.getMessage());
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB);
 			throwable = th;
 		}
 		int minutesEspera = 1;

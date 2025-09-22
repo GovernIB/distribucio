@@ -23,6 +23,7 @@ import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,8 +40,9 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 	public GestioDocumentalPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -213,6 +215,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 				plugin = (GestioDocumentalPlugin)clazz.
 						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						GESDOC.name(),

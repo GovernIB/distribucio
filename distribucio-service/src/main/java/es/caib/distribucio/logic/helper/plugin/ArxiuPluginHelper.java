@@ -24,6 +24,7 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.plugin.arxiu.ArxiuPlugin;
 import es.caib.pluginsib.arxiu.api.Expedient;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,8 +44,9 @@ public class ArxiuPluginHelper extends AbstractPluginHelper<ArxiuPlugin> {
 	public ArxiuPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -274,6 +276,7 @@ public class ArxiuPluginHelper extends AbstractPluginHelper<ArxiuPlugin> {
 				plugin = (ArxiuPlugin)clazz.
 						getDeclaredConstructor(String.class, Properties.class).
 						newInstance("es.caib.distribucio.", properties);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						USUARIS.name(),

@@ -184,7 +184,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					System.currentTimeMillis() - t0,
 					"Error al processar registre d'entrada al servei web de bústia",
 					ex);
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.AWS, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.AWS);
 			throw new RuntimeException(ex);
 		}
 	}

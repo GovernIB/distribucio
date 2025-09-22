@@ -5,8 +5,6 @@ package es.caib.distribucio.plugin.caib.dadesext;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.dadesext.ComunitatAutonoma;
@@ -29,7 +27,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de dades externes que consulta la
@@ -54,6 +52,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 		String errorDescripcio = "No s'ha pogut consultar la llista de paisos (" +
 				"url=" + url + ")";
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection httpConnection = (HttpURLConnection)new URL(url).openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -85,10 +84,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 						paisJson.getNom());
 				paisos.add(pais);
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return paisos;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -101,6 +100,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 		String errorDescripcio = "No s'ha pogut consultar la llista de comunitats (" +
 				"url=" + url + ")";
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection httpConnection = (HttpURLConnection)new URL(url).openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -119,10 +119,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return comunitats;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -135,6 +135,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 		String errorDescripcio = "No s'ha pogut consultar la llista de províncies (" +
 				"url=" + url + ")";
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection httpConnection = (HttpURLConnection)new URL(url).openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -153,10 +154,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return provincies;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -171,6 +172,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 				"url=" + url + ", " +
 				"comunitatCodi=" + comunitatCodi + ")";
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection httpConnection = (HttpURLConnection)new URL(url).openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -189,10 +191,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return p1.getNom().compareToIgnoreCase(p2.getNom());
 						}
 					});
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return provincies;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -207,6 +209,7 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 				"url=" + url + ", " +
 				"provinciaCodi=" + provinciaCodi + ")";
 		try {
+			long start = System.currentTimeMillis();
 			HttpURLConnection httpConnection = (HttpURLConnection)new URL(url).openConnection();
 			httpConnection.setRequestMethod("GET");
 			httpConnection.setDoInput(true);
@@ -225,10 +228,10 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 							return m1.getNom().compareToIgnoreCase(m2.getNom());
 						}
 					});
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return municipis;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					errorDescripcio,
 					ex);
@@ -363,54 +366,24 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			tipusViaFindAll();
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
 	
 }

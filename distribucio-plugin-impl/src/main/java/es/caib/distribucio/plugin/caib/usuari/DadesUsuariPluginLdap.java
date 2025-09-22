@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.plugin.caib.usuari;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -24,14 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de consulta de dades d'usuaris emprant JDBC.
@@ -54,17 +52,18 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 			String usuariCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta de les dades de l'usuari (codi=" + usuariCodi + ")");
 		try {
+			long start = System.currentTimeMillis();
 			DadesUsuari dadesUsuari = consultaUsuariUnic(
 					getLdapFiltreCodi(),
 					usuariCodi);
 			
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return dadesUsuari;
 		} catch (SistemaExternException ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw ex;
 		} catch (NamingException ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar l'usuari amb codi (codi=" + usuariCodi + ")",
 					ex);
@@ -76,14 +75,15 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 			String grupCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
+			long start = System.currentTimeMillis();
 			List<DadesUsuari> dadesUsuaris = consultaUsuaris(
 					getLdapFiltreGrup(),
 					grupCodi);
 			
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return dadesUsuaris;
 		} catch (NamingException ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup (grupCodi=" + grupCodi + ")",
 					ex);
@@ -299,54 +299,24 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			findAmbCodi("fakeUser");
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginLdap.class);

@@ -3,18 +3,14 @@
  */
 package es.caib.distribucio.plugin.caib.validacio;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
@@ -27,7 +23,7 @@ import es.caib.portafib.apiinterna.client.signature.v1.model.TimeStampInfo;
 import es.caib.portafib.apiinterna.client.signature.v1.model.ValidateSignatureRequest;
 import es.caib.portafib.apiinterna.client.signature.v1.model.ValidateSignatureResponse;
 import es.caib.portafib.apiinterna.client.signature.v1.services.ApiClient;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de validació de firmes emprant el client del portafirmes
@@ -52,8 +48,8 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 			byte[] documentContingut,
 			byte[] firmaContingut
 			) throws es.caib.distribucio.plugin.SistemaExternException {
+		long start = System.currentTimeMillis();
 		ValidateSignatureRequest validateRequest = new ValidateSignatureRequest();
-		
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 		
 		Document document = new Document();
@@ -111,9 +107,9 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 						response.getSignType(),
 						response.getSignMode()));
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			e.printStackTrace();
 		}		
 		return resposta;
@@ -183,60 +179,24 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 
     // Mètodes de SALUT
     // /////////////////////////////////////////////////////////////////////////////////////////////
-
-    private boolean configuracioEspecifica = false;
-    private int operacionsOk = 0;
-    private int operacionsError = 0;
-
-    @Synchronized
-    private void incrementarOperacioOk() {
-        operacionsOk++;
-    }
-
-    @Synchronized
-    private void incrementarOperacioError() {
-        operacionsError++;
-    }
-
-    @Synchronized
-    private void resetComptadors() {
-        operacionsOk = 0;
-        operacionsError = 0;
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
     }
     
     @Override
-    public boolean teConfiguracioEspecifica() {
-        return this.configuracioEspecifica;
-    }
+	public boolean teConfiguracioEspecifica() {
+		return salutPluginComponent.teConfiguracioEspecifica();
+	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-            
-			String documentNom = "validacio_firma.pdf";
-			String documentMime = "application/pdf";
-			byte[] documentContingut = IOUtils.toByteArray(this.getClass().getResourceAsStream("/es/caib/distribucio/plugin/validacio/validacio_firma.pdf"));
-			
-			validaSignatura(documentNom, documentMime, documentContingut, null);
-			
-			return EstatSalut.builder()
-                    .latencia((int) Duration.between(start, Instant.now()).toMillis())
-                    .estat(EstatSalutEnum.UP)
-                    .build();
-        } catch (Exception ex) {
-            return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-        }
+		return salutPluginComponent.getEstatPlugin();
 	}
 
-    @Override
-    public IntegracioPeticions getPeticionsPlugin() {
-        IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-                .totalOk(operacionsOk)
-                .totalError(operacionsError)
-                .build();
-        resetComptadors();
-        return integracioPeticions;
-    }
+	@Override
+	public IntegracioPeticions getPeticionsPlugin() {
+		return salutPluginComponent.getPeticionsPlugin();
+	}
 
 }

@@ -1,17 +1,14 @@
 package es.caib.distribucio.plugin.caib.arxiu;
 
-import java.time.Duration;
-import java.time.Instant;
-
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.arxiu.ArxiuPlugin;
 import es.caib.pluginsib.arxiu.api.ArxiuException;
 import es.caib.pluginsib.arxiu.api.ContingutArxiu;
 import es.caib.pluginsib.arxiu.api.Expedient;
 import es.caib.pluginsib.arxiu.caib.ArxiuPluginCaib;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin {
 	
@@ -19,12 +16,13 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 	public ContingutArxiu expedientCrear(
 			final Expedient expedient) throws ArxiuException {
 		try {
+			long start = System.currentTimeMillis();
 			ContingutArxiu resposta = super.expedientCrear(expedient);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			
 			return resposta;
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw e;
 		}
 	}
@@ -32,10 +30,11 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 	public void expedientEsborrar(
 			final String identificador) throws ArxiuException {
 		try {
+			long start = System.currentTimeMillis();
 			super.expedientEsborrar(identificador);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw e;
 		}
 	}
@@ -44,12 +43,13 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 	public String expedientReobrir(
 			final String identificador) throws ArxiuException {
 		try {
+			long start = System.currentTimeMillis();
 			String resposta = super.expedientReobrir(identificador);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			
 			return resposta;
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw e;
 		}
 	}
@@ -58,12 +58,13 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 	public String expedientTancar(
 			final String identificador) throws ArxiuException {
 		try {
+			long start = System.currentTimeMillis();
 			String resposta = super.expedientTancar(identificador);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			
 			return resposta;
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw e;
 		}
 	}
@@ -73,12 +74,13 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 			final String identificador,
 			final String versio) throws ArxiuException {
 		try {
+			long start = System.currentTimeMillis();
 			Expedient resposta = super.expedientDetalls(identificador, versio);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			
 			return resposta;
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw e;
 		}
 	}
@@ -86,55 +88,24 @@ public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			String identificador = "00000000-0000-0000-0000-000000000000";
-			documentDetalls(identificador, null, false);
-
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-		}
-		return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
+	
 }

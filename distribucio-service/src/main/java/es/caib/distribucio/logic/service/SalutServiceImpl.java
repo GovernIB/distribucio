@@ -283,13 +283,6 @@ public class SalutServiceImpl implements SalutService {
         p1.setTotalOk(p1.getTotalOk() + p2.getTotalOk());
         p1.setTotalError(p1.getTotalError() + p2.getTotalError());
 
-        if (p2.getOrganOk() != null) {
-            p2.getOrganOk().forEach((k,v) -> p1.getOrganOk().merge(k, v, Long::sum));
-        }
-        if (p2.getOrganError() != null) {
-            p2.getOrganError().forEach((k,v) -> p1.getOrganError().merge(k, v, Long::sum));
-        }
-
         return p1;
     }
     

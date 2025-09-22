@@ -23,6 +23,7 @@ import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,8 +40,9 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 	public SignaturaPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -150,6 +152,7 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 				plugin = (SignaturaPlugin)clazz.
 						getDeclaredConstructor(Properties.class).
 						newInstance(properties);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						SIGNATURA.name(),

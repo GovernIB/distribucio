@@ -47,6 +47,10 @@
 		    <version>1.56</version>
 		</dependency>
 		
+		<dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

@@ -5,8 +5,6 @@ package es.caib.distribucio.plugin.caib.dadesext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.dir3caib.ws.api.catalogo.CatComunidadAutonomaTF;
 import es.caib.dir3caib.ws.api.catalogo.CatEntidadGeograficaTF;
@@ -30,6 +27,7 @@ import es.caib.dir3caib.ws.api.catalogo.CatProvinciaTF;
 import es.caib.dir3caib.ws.api.catalogo.CatTipoVia;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWs;
 import es.caib.dir3caib.ws.api.catalogo.Dir3CaibObtenerCatalogosWsService;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.dadesext.ComunitatAutonoma;
@@ -40,7 +38,7 @@ import es.caib.distribucio.plugin.dadesext.NivellAdministracio;
 import es.caib.distribucio.plugin.dadesext.Pais;
 import es.caib.distribucio.plugin.dadesext.Provincia;
 import es.caib.distribucio.plugin.dadesext.TipusVia;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -60,6 +58,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<Pais> paisFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<Pais> paisos = new ArrayList<Pais>();
 			List<CatPais> catPaisos = getCatalegService().obtenerCatPais();
 			if (catPaisos != null) {
@@ -72,10 +71,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					paisos.add(pais);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return paisos;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els paisos",
 					ex);
@@ -88,6 +87,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<ComunitatAutonoma> comunitatFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<ComunitatAutonoma> comunitats = new ArrayList<ComunitatAutonoma>();
 			List<CatComunidadAutonomaTF> catComunitats = getCatalegService().obtenerCatComunidadAutonoma();
 			if (catComunitats != null) {
@@ -99,10 +99,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					comunitats.add(comunitat);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return comunitats;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les comunitats",
 					ex);
@@ -115,6 +115,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<Provincia> provinciaFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<Provincia> provincies = new ArrayList<Provincia>();
 			List<CatProvinciaTF> catProvincies = getCatalegService().obtenerCatProvincia();
 			if (catProvincies != null) {
@@ -126,10 +127,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					provincies.add(provincia);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return provincies;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les provincies",
 					ex);
@@ -181,6 +182,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<EntitatGeografica> entitatGeograficaFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<EntitatGeografica> entitatsGeografiques = new ArrayList<EntitatGeografica>();
 			List<CatEntidadGeograficaTF> catEntitatsGeografiques = getCatalegService().obtenerCatEntidadGeografica();
 			if (catEntitatsGeografiques != null) {
@@ -191,10 +193,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					entitatsGeografiques.add(entitatGeografica);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return entitatsGeografiques;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar les entitats geografiques",
 					ex);
@@ -207,6 +209,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<NivellAdministracio> nivellAdministracioFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<NivellAdministracio> nivellsAdministracio = new ArrayList<NivellAdministracio>();
 			List<CatNivelAdministracion> catNivellsAdministracio = getCatalegService().obtenerCatNivelAdministracion();
 			if (catNivellsAdministracio != null) {
@@ -217,10 +220,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					nivellsAdministracio.add(nivellAdministracio);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return nivellsAdministracio;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els nivells d'administració",
 					ex);
@@ -233,6 +236,7 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 	@Override
 	public List<TipusVia> tipusViaFindAll() throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<TipusVia> tipusVia = new ArrayList<TipusVia>();
 			List<CatTipoVia> catTiposVia = getCatalegService().obtenerCatTipoVia();
 			if (catTiposVia != null) {
@@ -243,10 +247,10 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 					tipusVia.add(tipoVia);
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return tipusVia;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			LOGGER.error(
 					"No s'han pogut consultar els tipus de via",
 					ex);
@@ -333,54 +337,24 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			comunitatFindAll();
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
 	
 }

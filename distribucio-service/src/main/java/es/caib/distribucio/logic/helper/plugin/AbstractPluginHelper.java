@@ -23,6 +23,7 @@ import es.caib.distribucio.logic.helper.LoadedPropertiesHelper;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.SalutPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 	protected final IntegracioHelper integracioHelper;
 	protected final ConfigHelper configHelper;
 	protected final EntitatRepository entitatRepository;
+	protected final MeterRegistry meterRegistry;
 	
 	@Autowired
 	protected LoadedPropertiesHelper loadedPropertiesHelper;

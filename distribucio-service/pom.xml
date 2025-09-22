@@ -130,6 +130,11 @@
 			<version>1.36</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>
