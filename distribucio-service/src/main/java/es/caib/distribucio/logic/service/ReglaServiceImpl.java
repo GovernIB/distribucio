@@ -459,8 +459,10 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatId()).orElse(null);
-		
+		UnitatOrganitzativaEntity unitatDesti = filtre.getUnitatDestiId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatDestiId()).orElse(null);
+
 		BustiaEntity bustia = filtre.getBustiaId() == null ? null : bustiaRepository.findById(filtre.getBustiaId()).orElse(null);
+		BustiaEntity bustiaDesti = filtre.getBustiaDestiId() == null ? null : bustiaRepository.findById(filtre.getBustiaDestiId()).orElse(null);
 
 		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findById(filtre.getBackofficeId()).orElse(null);
 		
@@ -490,9 +492,13 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getPresencial() == null,
 						filtre.getPresencial(),
 						bustia == null, 
-						bustia, 
-						backoffice == null ,
+						bustia,
+                        !ReglaTipusEnumDto.BACKOFFICE.equals(filtre.getTipus()) || backoffice == null,
 						backoffice,
+                        !ReglaTipusEnumDto.UNITAT.equals(filtre.getTipus()) || filtre.getUnitatDestiId() == null,
+                        unitatDesti,
+                        !ReglaTipusEnumDto.BUSTIA.equals(filtre.getTipus()) || filtre.getBustiaDestiId() == null,
+                        bustiaDesti,
 //						filtre.isActiva(),
 						totes,
 						activa, 
